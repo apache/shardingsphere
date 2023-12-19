@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.transaction.xa;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.SneakyThrows;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;

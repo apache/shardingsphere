@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.h2.ingest.dumper;
+package org.apache.shardingsphere.test.it.data.pipeline.h2.dumper;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDum
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * H2 incremental dumper creator.
@@ -32,12 +34,7 @@ public final class H2IncrementalDumperCreator implements IncrementalDumperCreato
     @Override
     public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        throw new UnsupportedOperationException("H2 database can not support incremental dump.");
-    }
-    
-    @Override
-    public boolean isSupportIncrementalDump() {
-        return false;
+        return mock(IncrementalDumper.class);
     }
     
     @Override

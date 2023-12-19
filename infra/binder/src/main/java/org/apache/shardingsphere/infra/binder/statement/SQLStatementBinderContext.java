@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.statement;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;

@@ -41,13 +41,4 @@ public interface IncrementalDumperCreator extends DatabaseTypedSPI {
      * @return incremental dumper
      */
     IncrementalDumper createIncrementalDumper(IncrementalDumperContext context, IngestPosition position, PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
-    
-    /**
-     * Whether support incremental dump.
-     * 
-     * @return support incremental dump or not
-     */
-    default boolean isSupportIncrementalDump() {
-        return true;
-    }
 }

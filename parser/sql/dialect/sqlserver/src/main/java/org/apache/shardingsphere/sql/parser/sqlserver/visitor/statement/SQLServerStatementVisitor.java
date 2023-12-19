@@ -25,11 +25,94 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.*;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentValuesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitValueLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanPrimaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CastFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CharFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameWithSortContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesWithSortContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConstraintNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConvertFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableAsSelectClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseSetContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DatabaseNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DelimitedIdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FromClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FunctionCallContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.HavingClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.HexadecimalLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IndexNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertDefaultValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertSelectClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTableNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTablesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NullValueLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputTableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumnsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OwnerContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParameterMarkerContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularIdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ScriptVariableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetAssignmentsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SimpleExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SingleTableClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SpecialFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StringLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SubqueryContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableFactorContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferencesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TopContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnqualifiedShorthandContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -39,14 +122,27 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.*;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.*;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -63,13 +159,29 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ro
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.*;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.*;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.keyword.KeywordValue;
-import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.*;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NullLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
@@ -741,8 +853,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
-        if (null != ctx.unqualifiedShorthand()) {
-            projections.add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
+        for (UnqualifiedShorthandContext each : ctx.unqualifiedShorthand()) {
+            projections.add(new ShorthandProjectionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex()));
         }
         for (ProjectionContext each : ctx.projection()) {
             projections.add((ProjectionSegment) visit(each));
@@ -804,8 +916,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result = (SQLServerInsertStatement) visit(ctx.insertDefaultValue());
         } else if (null != ctx.insertValuesClause()) {
             result = (SQLServerInsertStatement) visit(ctx.insertValuesClause());
-        }
-        else {
+        } else {
             result = (SQLServerInsertStatement) visit(ctx.insertSelectClause());
         }
         if (null != ctx.withClause()) {
@@ -1095,8 +1206,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (projection instanceof BinaryOperationExpression) {
             BinaryOperationExpression binaryExpression = (BinaryOperationExpression) projection;
-            int startIndex = binaryExpression.getStartIndex();
-            int stopIndex = null == alias ? binaryExpression.getStopIndex() : alias.getStopIndex();
+            int startIndex = getStartIndexWithAlias(binaryExpression, alias);
+            int stopIndex = getStopIndexWithAlias(binaryExpression, alias);
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, binaryExpression.getText(), binaryExpression);
             result.setAlias(alias);
             return result;
@@ -1107,12 +1218,19 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return projection;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
+        ExpressionProjectionSegment result = new ExpressionProjectionSegment(getStartIndexWithAlias(column, alias), getStopIndexWithAlias(column, alias), String.valueOf(column.getLiterals()), column);
         result.setAlias(alias);
         return result;
     }
     
+    private int getStartIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
+        return null != alias && alias.getStartIndex() < sqlSegment.getStartIndex() ? alias.getStartIndex() : sqlSegment.getStartIndex();
+    }
+
+    private int getStopIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
+        return null != alias && alias.getStopIndex() > sqlSegment.getStopIndex() ? alias.getStopIndex() : sqlSegment.getStopIndex();
+    }
+
     @Override
     public ASTNode visitFromClause(final FromClauseContext ctx) {
         return visit(ctx.tableReferences());
@@ -1150,15 +1268,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             }
             return result;
         }
-        if(null != ctx.tableValuedFunction()) {
-            FunctionSegment functionSegment = (FunctionSegment) visit(ctx.tableValuedFunction());
-            FunctionTableSegment result = new FunctionTableSegment(ctx.start.getStartIndex(),ctx.stop.getStopIndex(),functionSegment);
+        if (null != ctx.expr()) {
+            ExpressionSegment exprSegment = (ExpressionSegment) visit(ctx.expr());
+            FunctionTableSegment result = new FunctionTableSegment(exprSegment.getStartIndex(), exprSegment.getStopIndex(), exprSegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));
             }
             return result;
         }
-
         return visit(ctx.tableReferences());
     }
     
@@ -1175,7 +1292,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private String getJoinType(final JoinedTableContext ctx) {
         if (null != ctx.LEFT()) {
             return JoinType.LEFT.name();
@@ -1187,8 +1304,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return JoinType.INNER.name();
         } else if (null != ctx.CROSS()) {
             return JoinType.CROSS.name();
-        }else if(null != ctx.APPLY()) {
-            return  JoinType.APPLY.name();
         }
         return JoinType.INNER.name();
     }

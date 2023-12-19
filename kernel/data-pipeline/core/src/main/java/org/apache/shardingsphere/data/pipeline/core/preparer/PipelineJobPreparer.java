@@ -31,18 +31,13 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PipelineJobDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -59,47 +54,14 @@ public final class PipelineJobPreparer {
     private final DatabaseType databaseType;
     
     /**
-     * Is incremental supported.
-     *
-     * @return support incremental or not
-     */
-    public boolean isIncrementalSupported() {
-        return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).map(IncrementalDumperCreator::isSupportIncrementalDump).orElse(false);
-    }
-    
-    /**
-     * Prepare target schema.
-     *
-     * @param param prepare target schemas parameter
-     * @throws SQLException if prepare target schema fail
-     */
-    public void prepareTargetSchema(final PrepareTargetSchemasParameter param) throws SQLException {
-        DialectPipelineJobDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
-                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, null));
-        new PipelineJobDataSourcePreparer(option).prepareTargetSchemas(param);
-    }
-    
-    /**
-     * Get SQL parser engine.
-     *
-     * @param metaData meta data
-     * @return SQL parser engine
-     */
-    public SQLParserEngine getSQLParserEngine(final ShardingSphereMetaData metaData) {
-        return metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType);
-    }
-    
-    /**
      * Prepare target tables.
      *
      * @param prepareTargetTablesParam prepare target tables parameter
      * @throws SQLException SQL exception
      */
     public void prepareTargetTables(final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
-        DialectPipelineJobDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
-                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, null));
         long startTimeMillis = System.currentTimeMillis();
-        new PipelineJobDataSourcePreparer(option).prepareTargetTables(prepareTargetTablesParam);
+        new PipelineJobDataSourcePreparer(DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)).prepareTargetTables(prepareTargetTablesParam);
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
