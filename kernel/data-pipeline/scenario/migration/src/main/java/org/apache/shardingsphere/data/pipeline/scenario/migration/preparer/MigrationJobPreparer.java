@@ -99,8 +99,8 @@ public final class MigrationJobPreparer {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(
                 jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration"));
-        PipelineJobPreparer preparer = new PipelineJobPreparer(jobItemContext.getJobConfig().getSourceDatabaseType());
-        preparer.checkSourceDataSource(Collections.singleton(jobItemContext.getSourceDataSource()));
+        DatabaseType sourceDatabaseType = jobItemContext.getJobConfig().getSourceDatabaseType();
+        new PipelineJobPreparer(sourceDatabaseType).checkSourceDataSource(Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
             PipelineJobRegistry.stop(jobItemContext.getJobId());
             return;
@@ -110,7 +110,7 @@ public final class MigrationJobPreparer {
             PipelineJobRegistry.stop(jobItemContext.getJobId());
             return;
         }
-        boolean isIncrementalSupported = preparer.isIncrementalSupported();
+        boolean isIncrementalSupported = DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, sourceDatabaseType).isPresent();
         if (isIncrementalSupported) {
             prepareIncremental(jobItemContext);
         }
