@@ -33,7 +33,7 @@ public abstract class ConnectionSQLException extends KernelSQLException {
         super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
     
-    public ConnectionSQLException(final SQLState sqlState, final int errorCode, final String reason, final Exception cause) {
+    protected ConnectionSQLException(final SQLState sqlState, final int errorCode, final String reason, final Exception cause) {
         super(sqlState, KERNEL_CODE, errorCode, reason, cause);
     }
 }

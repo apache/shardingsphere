@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @Getter
-public class AbstractShardingCommonTest {
+public final class TestShardingService {
     
     private final OrderRepository orderRepository;
     
@@ -46,14 +46,15 @@ public class AbstractShardingCommonTest {
     
     private final AddressRepository addressRepository;
     
-    public AbstractShardingCommonTest(final DataSource dataSource) {
-        this.orderRepository = new OrderRepository(dataSource);
-        this.orderItemRepository = new OrderItemRepository(dataSource);
-        this.addressRepository = new AddressRepository(dataSource);
+    public TestShardingService(final DataSource dataSource) {
+        orderRepository = new OrderRepository(dataSource);
+        orderItemRepository = new OrderItemRepository(dataSource);
+        addressRepository = new AddressRepository(dataSource);
     }
     
     /**
-     * process success.
+     * Process success.
+     * 
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void processSuccess() throws SQLException {
@@ -83,7 +84,8 @@ public class AbstractShardingCommonTest {
     }
     
     /**
-     * insert data.
+     * Insert data.
+     * 
      * @return orderId of the insert statement.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
@@ -110,7 +112,8 @@ public class AbstractShardingCommonTest {
     }
     
     /**
-     * delete data.
+     * Delete data.
+     * 
      * @param orderIds orderId of the insert statement.
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
@@ -124,7 +127,8 @@ public class AbstractShardingCommonTest {
     }
     
     /**
-     * clean environment.
+     * Clean environment.
+     * 
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void cleanEnvironment() throws SQLException {

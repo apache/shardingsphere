@@ -23,5 +23,5 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
  * Abstract Database type in testcontainers-java.
  * All jdbcUrl prefixes supported by testcontainers-java should extend this class.
  */
-public abstract class AbstractTestcontainersDatabaseType implements DatabaseType {
+public interface TestcontainersDatabaseType extends DatabaseType {
 }
