@@ -105,8 +105,9 @@ public final class CDCJobPreparer {
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         JobItemIncrementalTasksProgress initIncremental = null == jobItemContext.getInitProgress() ? null : jobItemContext.getInitProgress().getIncremental();
         try {
-            taskConfig.getDumperContext().getCommonContext().setPosition(new PipelineJobPreparer(taskConfig.getDumperContext().getCommonContext().getDataSourceConfig().getDatabaseType())
-                    .getIncrementalPosition(initIncremental, taskConfig.getDumperContext(), jobItemContext.getDataSourceManager()));
+            DatabaseType databaseType = taskConfig.getDumperContext().getCommonContext().getDataSourceConfig().getDatabaseType();
+            IngestPosition position = new PipelineJobPreparer(databaseType).getIncrementalPosition(initIncremental, taskConfig.getDumperContext(), jobItemContext.getDataSourceManager());
+            taskConfig.getDumperContext().getCommonContext().setPosition(position);
         } catch (final SQLException ex) {
             throw new PrepareJobWithGetBinlogPositionException(jobItemContext.getJobId(), ex);
         }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.preparer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChann
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
@@ -72,6 +74,7 @@ import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -100,7 +103,7 @@ public final class MigrationJobPreparer {
                 jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration"));
         DatabaseType sourceDatabaseType = jobItemContext.getJobConfig().getSourceDatabaseType();
-        new PipelineJobPreparer(sourceDatabaseType).checkSourceDataSource(Collections.singleton(jobItemContext.getSourceDataSource()));
+        checkSourceDataSource(jobItemContext, sourceDatabaseType);
         if (jobItemContext.isStopping()) {
             PipelineJobRegistry.stop(jobItemContext.getJobId());
             return;
@@ -124,6 +127,14 @@ public final class MigrationJobPreparer {
         }
         log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
                 jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
+    }
+    
+    private void checkSourceDataSource(final MigrationJobItemContext jobItemContext, final DatabaseType sourceDatabaseType) {
+        DataSourceCheckEngine checkEngine = new DataSourceCheckEngine(sourceDatabaseType);
+        Collection<DataSource> dataSources = Collections.singleton(jobItemContext.getSourceDataSource());
+        checkEngine.checkConnection(dataSources);
+        checkEngine.checkPrivilege(dataSources);
+        checkEngine.checkVariable(dataSources);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -184,8 +195,9 @@ public final class MigrationJobPreparer {
         MigrationTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         JobItemIncrementalTasksProgress initIncremental = null == jobItemContext.getInitProgress() ? null : jobItemContext.getInitProgress().getIncremental();
         try {
-            taskConfig.getDumperContext().getCommonContext().setPosition(new PipelineJobPreparer(taskConfig.getDumperContext().getCommonContext().getDataSourceConfig().getDatabaseType())
-                    .getIncrementalPosition(initIncremental, taskConfig.getDumperContext(), jobItemContext.getDataSourceManager()));
+            DatabaseType databaseType = taskConfig.getDumperContext().getCommonContext().getDataSourceConfig().getDatabaseType();
+            IngestPosition position = new PipelineJobPreparer(databaseType).getIncrementalPosition(initIncremental, taskConfig.getDumperContext(), jobItemContext.getDataSourceManager());
+            taskConfig.getDumperContext().getCommonContext().setPosition(position);
         } catch (final SQLException ex) {
             throw new PrepareJobWithGetBinlogPositionException(jobItemContext.getJobId(), ex);
         }

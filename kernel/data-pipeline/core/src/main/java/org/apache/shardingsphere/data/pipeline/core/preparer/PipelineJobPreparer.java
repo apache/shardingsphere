@@ -54,7 +54,7 @@ public final class PipelineJobPreparer {
      * Get incremental position.
      *
      * @param initIncremental init incremental
-     * @param dumperContext dumper config
+     * @param dumperContext incremental dumper context
      * @param dataSourceManager data source manager
      * @return ingest position
      * @throws SQLException SQL exception
@@ -69,21 +69,6 @@ public final class PipelineJobPreparer {
         }
         DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
         return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperContext.getJobId());
-    }
-    
-    /**
-     * Check data source.
-     *
-     * @param dataSources data source
-     */
-    public void checkSourceDataSource(final Collection<? extends DataSource> dataSources) {
-        if (dataSources.isEmpty()) {
-            return;
-        }
-        DataSourceCheckEngine checkEngine = new DataSourceCheckEngine(databaseType);
-        checkEngine.checkConnection(dataSources);
-        checkEngine.checkPrivilege(dataSources);
-        checkEngine.checkVariable(dataSources);
     }
     
     /**
