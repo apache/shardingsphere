@@ -31,7 +31,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Data source check engine.
@@ -50,23 +49,21 @@ public final class DataSourceCheckEngine {
     /**
      * Check source data source.
      * 
-     * @param dataSource to be checked source data source
+     * @param dataSources to be checked source data source
      */
-    public void checkSourceDataSource(final DataSource dataSource) {
-        Collection<DataSource> dataSources = Collections.singleton(dataSource);
+    public void checkSourceDataSource(final Collection<DataSource> dataSources) {
         checkConnection(dataSources);
         checkPrivilege(dataSources);
         checkVariable(dataSources);
     }
     
     /**
-     * Check target data source.
+     * Check target data sources.
      *
-     * @param dataSource to be checked target data source
+     * @param dataSources to be checked target data sources
      * @param importerConfig importer configuration
      */
-    public void checkTargetDataSource(final DataSource dataSource, final ImporterConfiguration importerConfig) {
-        Collection<DataSource> dataSources = Collections.singleton(dataSource);
+    public void checkTargetDataSources(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
         checkConnection(dataSources);
         checkTargetTable(dataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
     }
