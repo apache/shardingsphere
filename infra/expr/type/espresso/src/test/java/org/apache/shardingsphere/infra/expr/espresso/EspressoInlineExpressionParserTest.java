@@ -20,8 +20,9 @@ package org.apache.shardingsphere.infra.expr.espresso;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Disabled("Unit tests for this class only run on GraalVM CE 23.0.1 For JDK17. Wait for https://github.com/oracle/graal/issues/7500 .")
+@EnabledForJreRange(min = JRE.JAVA_21)
 class EspressoInlineExpressionParserTest {
     
     @Test

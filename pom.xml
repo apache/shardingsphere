@@ -146,7 +146,7 @@
         <testcontainers.version>1.19.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
-        <graal-sdk.version>21.2.0</graal-sdk.version>
+        <graal-sdk.version>23.1.2</graal-sdk.version>
         
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
