@@ -49,7 +49,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public final class CDCSocketSink implements PipelineSink {
     
-    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
+    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 100L;
     
     private final Lock lock = new ReentrantLock();
     
