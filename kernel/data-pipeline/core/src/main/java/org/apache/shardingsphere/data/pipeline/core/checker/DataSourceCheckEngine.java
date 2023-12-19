@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,7 +32,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Data source check engine.
@@ -48,36 +48,12 @@ public final class DataSourceCheckEngine {
     }
     
     /**
-     * Check source data source.
-     * 
-     * @param dataSource to be checked source data source
-     */
-    public void checkSourceDataSource(final DataSource dataSource) {
-        Collection<DataSource> dataSources = Collections.singleton(dataSource);
-        checkConnection(dataSources);
-        checkPrivilege(dataSources);
-        checkVariable(dataSources);
-    }
-    
-    /**
-     * Check target data source.
-     *
-     * @param dataSource to be checked target data source
-     * @param importerConfig importer configuration
-     */
-    public void checkTargetDataSource(final DataSource dataSource, final ImporterConfiguration importerConfig) {
-        Collection<DataSource> dataSources = Collections.singleton(dataSource);
-        checkConnection(dataSources);
-        checkTargetTable(dataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
-    }
-    
-    /**
      * Check data source connections.
      *
      * @param dataSources data sources
      * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
      */
-    public void checkConnection(final Collection<? extends DataSource> dataSources) {
+    public void checkConnection(final Collection<DataSource> dataSources) {
         try {
             for (DataSource each : dataSources) {
                 each.getConnection().close();
@@ -88,22 +64,38 @@ public final class DataSourceCheckEngine {
     }
     
     /**
-     * Check table is empty.
-     *
-     * @param dataSources data sources
-     * @param tableAndSchemaNameMapper mapping
-     * @param logicTableNames logic table names
-     * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
+     * Check source data source.
+     * 
+     * @param dataSources to be checked source data source
      */
+    public void checkSourceDataSource(final Collection<DataSource> dataSources) {
+        checkConnection(dataSources);
+        if (null == checker) {
+            return;
+        }
+        dataSources.forEach(checker::checkPrivilege);
+        dataSources.forEach(checker::checkVariable);
+    }
+    
+    /**
+     * Check target data sources.
+     *
+     * @param dataSources to be checked target data sources
+     * @param importerConfig importer configuration
+     */
+    public void checkTargetDataSources(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
+        checkConnection(dataSources);
+        checkTargetTable(dataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
+    }
+    
     // TODO rename to common usage name
     // TODO Merge schemaName and tableNames
-    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
+    private void checkTargetTable(final Collection<DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
         try {
             for (DataSource each : dataSources) {
                 for (String tableName : logicTableNames) {
-                    if (!checkEmpty(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName)) {
-                        throw new PrepareJobWithTargetTableNotEmptyException(tableName);
-                    }
+                    ShardingSpherePreconditions.checkState(checkEmpty(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName),
+                            () -> new PrepareJobWithTargetTableNotEmptyException(tableName));
                 }
             }
         } catch (final SQLException ex) {
@@ -118,34 +110,6 @@ public final class DataSourceCheckEngine {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             return !resultSet.next();
-        }
-    }
-    
-    /**
-     * Check user privileges.
-     *
-     * @param dataSources data sources
-     */
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        if (null == checker) {
-            return;
-        }
-        for (DataSource each : dataSources) {
-            checker.checkPrivilege(each);
-        }
-    }
-    
-    /**
-     * Check data source variables.
-     *
-     * @param dataSources data sources
-     */
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
-        if (null == checker) {
-            return;
-        }
-        for (DataSource each : dataSources) {
-            checker.checkVariable(each);
         }
     }
 }

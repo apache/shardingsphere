@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngine;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
@@ -39,6 +40,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -82,20 +84,25 @@ class DataSourceCheckEngineTest {
     }
     
     @Test
-    void assertCheckTargetTable() throws SQLException {
+    void assertCheckTargetDataSources() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        dataSourceCheckEngine.checkTargetTable(dataSources, new TableAndSchemaNameMapper(Collections.emptyMap()), Collections.singletonList("t_order"));
+        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
+        when(importerConfig.getTableAndSchemaNameMapper()).thenReturn(new TableAndSchemaNameMapper(Collections.emptyMap()));
+        when(importerConfig.getLogicTableNames()).thenReturn(Collections.singleton("t_order"));
+        dataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig);
     }
     
     @Test
-    void assertCheckTargetTableFailed() throws SQLException {
+    void assertCheckTargetDataSourcesFailed() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
-        assertThrows(PrepareJobWithTargetTableNotEmptyException.class,
-                () -> dataSourceCheckEngine.checkTargetTable(dataSources, new TableAndSchemaNameMapper(Collections.emptyMap()), Collections.singletonList("t_order")));
+        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
+        when(importerConfig.getTableAndSchemaNameMapper()).thenReturn(new TableAndSchemaNameMapper(Collections.emptyMap()));
+        when(importerConfig.getLogicTableNames()).thenReturn(Collections.singleton("t_order"));
+        assertThrows(PrepareJobWithTargetTableNotEmptyException.class, () -> dataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig));
     }
 }
