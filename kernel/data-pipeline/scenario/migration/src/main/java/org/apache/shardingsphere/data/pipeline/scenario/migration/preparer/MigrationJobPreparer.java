@@ -74,7 +74,6 @@ import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -103,7 +102,7 @@ public final class MigrationJobPreparer {
                 jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration"));
         DatabaseType sourceDatabaseType = jobItemContext.getJobConfig().getSourceDatabaseType();
-        checkSourceDataSource(jobItemContext, sourceDatabaseType);
+        new DataSourceCheckEngine(sourceDatabaseType).checkSourceDataSource(jobItemContext.getSourceDataSource());
         if (jobItemContext.isStopping()) {
             PipelineJobRegistry.stop(jobItemContext.getJobId());
             return;
@@ -127,14 +126,6 @@ public final class MigrationJobPreparer {
         }
         log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
                 jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
-    }
-    
-    private void checkSourceDataSource(final MigrationJobItemContext jobItemContext, final DatabaseType sourceDatabaseType) {
-        DataSourceCheckEngine checkEngine = new DataSourceCheckEngine(sourceDatabaseType);
-        Collection<DataSource> dataSources = Collections.singleton(jobItemContext.getSourceDataSource());
-        checkEngine.checkConnection(dataSources);
-        checkEngine.checkPrivilege(dataSources);
-        checkEngine.checkVariable(dataSources);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
