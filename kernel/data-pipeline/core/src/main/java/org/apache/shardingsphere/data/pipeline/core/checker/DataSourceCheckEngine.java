@@ -56,20 +56,8 @@ public final class DataSourceCheckEngine {
         if (null == checker) {
             return;
         }
-        checkPrivilege(dataSources);
-        checkVariable(dataSources);
-    }
-    
-    private void checkPrivilege(final Collection<DataSource> dataSources) {
-        for (DataSource each : dataSources) {
-            checker.checkPrivilege(each);
-        }
-    }
-    
-    private void checkVariable(final Collection<DataSource> dataSources) {
-        for (DataSource each : dataSources) {
-            checker.checkVariable(each);
-        }
+        dataSources.forEach(checker::checkPrivilege);
+        dataSources.forEach(checker::checkVariable);
     }
     
     /**
