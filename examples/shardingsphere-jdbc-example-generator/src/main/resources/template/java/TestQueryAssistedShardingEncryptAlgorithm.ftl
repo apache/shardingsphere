@@ -25,16 +25,10 @@ import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlg
 
 import java.util.Properties;
 
-@SuppressWarnings("LombokGetterMayBeUsed")
-public final class TestQueryAssistedShardingEncryptAlgorithm implements AssistedEncryptAlgorithm {
+public final class TestQueryAssistedShardingEncryptAlgorithm implements AssistedEncryptAlgorithm<Object, String> {
 
     @Getter
-    private Properties properties;
-
-    @Override
-    public void init(final Properties props) {
-        this.properties = props;
-    }
+    private Properties props;
 
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -44,5 +38,10 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements Assisted
     @Override
     public String getType() {
         return "assistedTest";
+    }
+
+    @Override
+    public void init(Properties props) {
+        this.props = props;
     }
 }
