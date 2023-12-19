@@ -205,7 +205,7 @@ class ExportMetaDataExecutorTest {
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration_for_win.data")).getFile();
         } else {
-            fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration.data")).getFile();
+            fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration_for_unix.data")).getFile();
         }
         try (
                 FileReader fileReader = new FileReader(fileName);
