@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -101,9 +102,8 @@ public final class DataSourceCheckEngine {
         try {
             for (DataSource each : dataSources) {
                 for (String tableName : logicTableNames) {
-                    if (!checkEmpty(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName)) {
-                        throw new PrepareJobWithTargetTableNotEmptyException(tableName);
-                    }
+                    ShardingSpherePreconditions.checkState(checkEmpty(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName),
+                            () -> new PrepareJobWithTargetTableNotEmptyException(tableName));
                 }
             }
         } catch (final SQLException ex) {
