@@ -126,10 +126,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)?
-    | subquery AS? alias columnNames?
-    | expr (AS? alias) ?
-    | LP_ tableReferences RP_
+    : tableName (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias) ? | LP_ tableReferences RP_
     ;
 
 joinedTable

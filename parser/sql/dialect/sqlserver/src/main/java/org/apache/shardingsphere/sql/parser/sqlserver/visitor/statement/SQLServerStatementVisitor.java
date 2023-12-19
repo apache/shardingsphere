@@ -1223,11 +1223,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     private int getStartIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
-        return alias != null && alias.getStartIndex() < sqlSegment.getStartIndex() ? alias.getStartIndex() : sqlSegment.getStartIndex();
+        return null != alias && alias.getStartIndex() < sqlSegment.getStartIndex() ? alias.getStartIndex() : sqlSegment.getStartIndex();
     }
     
     private int getStopIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
-        return alias != null && alias.getStopIndex() > sqlSegment.getStopIndex() ? alias.getStopIndex() : sqlSegment.getStopIndex();
+        return null != alias && alias.getStopIndex() > sqlSegment.getStopIndex() ? alias.getStopIndex() : sqlSegment.getStopIndex();
     }
     
     @Override

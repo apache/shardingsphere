@@ -60,12 +60,12 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     
     @Override
     public int getStartIndex() {
-        return alias != null && alias.getStartIndex() < column.getStartIndex() ? alias.getStartIndex() : column.getStartIndex();
+        return null != alias && alias.getStartIndex() < column.getStartIndex() ? alias.getStartIndex() : column.getStartIndex();
     }
     
     @Override
     public int getStopIndex() {
-        return alias != null && alias.getStopIndex() > column.getStopIndex() ? alias.getStopIndex() : column.getStopIndex();
+        return null != alias && alias.getStopIndex() > column.getStopIndex() ? alias.getStopIndex() : column.getStopIndex();
     }
     
     /**
