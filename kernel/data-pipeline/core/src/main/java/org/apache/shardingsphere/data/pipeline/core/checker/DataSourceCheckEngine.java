@@ -48,6 +48,22 @@ public final class DataSourceCheckEngine {
     }
     
     /**
+     * Check data source connections.
+     *
+     * @param dataSources data sources
+     * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
+     */
+    public void checkConnection(final Collection<DataSource> dataSources) {
+        try {
+            for (DataSource each : dataSources) {
+                each.getConnection().close();
+            }
+        } catch (final SQLException ex) {
+            throw new PrepareJobWithInvalidConnectionException(ex);
+        }
+    }
+    
+    /**
      * Check source data source.
      * 
      * @param dataSources to be checked source data source
@@ -72,33 +88,9 @@ public final class DataSourceCheckEngine {
         checkTargetTable(dataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
     }
     
-    /**
-     * Check data source connections.
-     *
-     * @param dataSources data sources
-     * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
-     */
-    public void checkConnection(final Collection<DataSource> dataSources) {
-        try {
-            for (DataSource each : dataSources) {
-                each.getConnection().close();
-            }
-        } catch (final SQLException ex) {
-            throw new PrepareJobWithInvalidConnectionException(ex);
-        }
-    }
-    
-    /**
-     * Check table is empty.
-     *
-     * @param dataSources data sources
-     * @param tableAndSchemaNameMapper mapping
-     * @param logicTableNames logic table names
-     * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
-     */
     // TODO rename to common usage name
     // TODO Merge schemaName and tableNames
-    public void checkTargetTable(final Collection<DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
+    private void checkTargetTable(final Collection<DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
         try {
             for (DataSource each : dataSources) {
                 for (String tableName : logicTableNames) {
