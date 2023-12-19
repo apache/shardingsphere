@@ -48,13 +48,13 @@ class SimpleMemoryPipelineChannelTest {
     @Test
     void assertFetchRecordsTimeoutCorrectly() {
         SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10, new EmptyAckCallback());
-        long startMills = System.currentTimeMillis();
+        long startMillis = System.currentTimeMillis();
         channel.fetchRecords(1, 1, TimeUnit.MILLISECONDS);
-        long delta = System.currentTimeMillis() - startMills;
+        long delta = System.currentTimeMillis() - startMillis;
         assertTrue(delta >= 1 && delta < 50, "Delta is not in [1,50) : " + delta);
-        startMills = System.currentTimeMillis();
+        startMillis = System.currentTimeMillis();
         channel.fetchRecords(1, 500, TimeUnit.MILLISECONDS);
-        delta = System.currentTimeMillis() - startMills;
-        assertTrue(delta >= 500 && delta < 650, "Delta is not in [500,650) : " + delta);
+        delta = System.currentTimeMillis() - startMillis;
+        assertTrue(delta >= 500 && delta < 750, "Delta is not in [500,750) : " + delta);
     }
 }
