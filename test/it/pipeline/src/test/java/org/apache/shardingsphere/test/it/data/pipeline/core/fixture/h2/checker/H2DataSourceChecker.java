@@ -15,34 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.checker;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.data.pipeline.core.checker.DialectDataSourceChecker;
 
-@RequiredArgsConstructor
-public final class FixturePipelineDataSourceConfiguration implements PipelineDataSourceConfiguration {
-    
-    private final DatabaseType databaseType;
+import javax.sql.DataSource;
+
+/**
+ * Data source checker for H2.
+ */
+public final class H2DataSourceChecker implements DialectDataSourceChecker {
     
     @Override
-    public String getParameter() {
-        return null;
+    public void checkPrivilege(final DataSource dataSource) {
     }
     
     @Override
-    public Object getDataSourceConfiguration() {
-        return null;
+    public void checkVariable(final DataSource dataSource) {
     }
     
     @Override
-    public DatabaseType getDatabaseType() {
-        return databaseType;
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    public String getDatabaseType() {
+        return "H2";
     }
 }

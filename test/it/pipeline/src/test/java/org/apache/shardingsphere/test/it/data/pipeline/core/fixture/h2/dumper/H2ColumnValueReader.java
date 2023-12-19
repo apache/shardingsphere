@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.h2.ingest.position;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.dumper;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.DialectColumnValueReader;
 
-import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.Optional;
 
 /**
- * Position initializer for H2.
+ * Column value reader for H2.
  */
-public final class H2PositionInitializer implements PositionInitializer {
+public final class H2ColumnValueReader implements DialectColumnValueReader {
     
     @Override
-    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
-        return new PlaceholderPosition();
-    }
-    
-    @Override
-    public PlaceholderPosition init(final String data) {
-        return new PlaceholderPosition();
+    public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) {
+        return Optional.empty();
     }
     
     @Override

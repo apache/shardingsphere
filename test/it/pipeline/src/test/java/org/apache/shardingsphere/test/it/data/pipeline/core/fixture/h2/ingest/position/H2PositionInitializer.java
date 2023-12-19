@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.h2.query;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.core.query.DialectJDBCStreamQueryBuilder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
 /**
- * JDBC stream query builder for H2.
+ * Position initializer for H2.
  */
-public final class H2JDBCStreamQueryBuilder implements DialectJDBCStreamQueryBuilder {
+public final class H2PositionInitializer implements PositionInitializer {
     
     @Override
-    public PreparedStatement build(final DatabaseType databaseType, final Connection connection, final String sql) throws SQLException {
-        return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
+        return new PlaceholderPosition();
+    }
+    
+    @Override
+    public PlaceholderPosition init(final String data) {
+        return new PlaceholderPosition();
     }
     
     @Override

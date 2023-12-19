@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.h2.checker;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.query;
 
-import org.apache.shardingsphere.data.pipeline.core.checker.DialectDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.core.query.DialectJDBCStreamQueryBuilder;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * Data source checker for H2.
+ * JDBC stream query builder for H2.
  */
-public final class H2DataSourceChecker implements DialectDataSourceChecker {
+public final class H2JDBCStreamQueryBuilder implements DialectJDBCStreamQueryBuilder {
     
     @Override
-    public void checkPrivilege(final DataSource dataSource) {
-    }
-    
-    @Override
-    public void checkVariable(final DataSource dataSource) {
+    public PreparedStatement build(final DatabaseType databaseType, final Connection connection, final String sql) throws SQLException {
+        return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
     }
     
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.h2.datasource;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.datasource;
 
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 

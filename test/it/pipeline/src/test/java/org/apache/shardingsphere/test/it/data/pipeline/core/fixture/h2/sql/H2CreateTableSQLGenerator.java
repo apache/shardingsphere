@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.h2.dumper;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.sql;
 
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.DialectColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.core.exception.syntax.CreateTableSQLGenerateException;
+import org.apache.shardingsphere.data.pipeline.core.spi.sql.CreateTableSQLGenerator;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.Optional;
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Column value reader for H2.
+* Create table SQL generator for H2.
  */
-public final class H2ColumnValueReader implements DialectColumnValueReader {
+public final class H2CreateTableSQLGenerator implements CreateTableSQLGenerator {
     
     @Override
-    public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) {
-        return Optional.empty();
+    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) {
+        if ("t_order".equalsIgnoreCase(tableName)) {
+            return Collections.singletonList(PipelineContextUtils.getCreateOrderTableSchema());
+        }
+        throw new CreateTableSQLGenerateException(tableName);
     }
     
     @Override
