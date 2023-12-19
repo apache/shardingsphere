@@ -53,23 +53,20 @@ public final class DataSourceCheckEngine {
      */
     public void checkSourceDataSource(final Collection<DataSource> dataSources) {
         checkConnection(dataSources);
+        if (null == checker) {
+            return;
+        }
         checkPrivilege(dataSources);
         checkVariable(dataSources);
     }
     
     private void checkPrivilege(final Collection<DataSource> dataSources) {
-        if (null == checker) {
-            return;
-        }
         for (DataSource each : dataSources) {
             checker.checkPrivilege(each);
         }
     }
     
     private void checkVariable(final Collection<DataSource> dataSources) {
-        if (null == checker) {
-            return;
-        }
         for (DataSource each : dataSources) {
             checker.checkVariable(each);
         }
