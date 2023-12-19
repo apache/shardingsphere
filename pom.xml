@@ -74,6 +74,7 @@
         <commons-math3.version>3.6.1</commons-math3.version>
         <caffeine.version>2.9.3</caffeine.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
+        <java-util.version>2.4.0</java-util.version>
         
         <antlr4.version>4.10.1</antlr4.version>
         <snakeyaml.version>2.2</snakeyaml.version>
@@ -562,6 +563,11 @@
                 <version>${bytebuddy.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.cedarsoftware</groupId>
+                <artifactId>java-util</artifactId>
+                <version>${java-util.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -635,6 +641,10 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cedarsoftware</groupId>
+            <artifactId>java-util</artifactId>
         </dependency>
     </dependencies>
     

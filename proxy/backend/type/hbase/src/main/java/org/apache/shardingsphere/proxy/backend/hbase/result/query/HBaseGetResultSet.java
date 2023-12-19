@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Get;
