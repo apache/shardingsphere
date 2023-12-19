@@ -93,7 +93,7 @@ public final class InventoryRecordsCountCalculator {
                 result = resultSet.getLong(1);
             }
         }
-        log.info("getCount cost {} ms, sql: {}", System.currentTimeMillis() - startTimeMillis, countSQL);
+        log.info("getCount cost {} ms, sql: {}, count: {}", System.currentTimeMillis() - startTimeMillis, countSQL, result);
         return result;
     }
 }

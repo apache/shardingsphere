@@ -21,10 +21,17 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPositionFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
@@ -33,17 +40,10 @@ import org.apache.shardingsphere.data.pipeline.core.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPositionFactory;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
+import org.apache.shardingsphere.data.pipeline.core.spi.algorithm.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineInventoryDumpSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
-import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
-import org.apache.shardingsphere.data.pipeline.core.spi.algorithm.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -146,7 +146,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
                 dataRecords.add(new FinishedRecord(new FinishedPosition()));
                 channel.pushRecords(dataRecords);
                 dumpStatement.set(null);
-                log.info("Inventory dump done, rowCount={}", rowCount);
+                log.info("Inventory dump done, rowCount={}, dataSource={}, actualTable={}", rowCount, dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
             }
         }
     }

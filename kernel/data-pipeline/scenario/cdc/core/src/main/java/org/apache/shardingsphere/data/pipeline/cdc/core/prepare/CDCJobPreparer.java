@@ -41,8 +41,8 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
-import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparer;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
@@ -53,7 +53,6 @@ import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabase
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -79,7 +78,7 @@ public final class CDCJobPreparer {
         AtomicBoolean inventoryImporterUsed = new AtomicBoolean();
         List<CDCChannelProgressPair> inventoryChannelProgressPairs = new CopyOnWriteArrayList<>();
         AtomicBoolean incrementalImporterUsed = new AtomicBoolean();
-        List<CDCChannelProgressPair> incrementalChannelProgressPairs = new LinkedList<>();
+        List<CDCChannelProgressPair> incrementalChannelProgressPairs = new CopyOnWriteArrayList<>();
         for (CDCJobItemContext each : jobItemContexts) {
             initTasks0(each, inventoryImporterUsed, inventoryChannelProgressPairs, incrementalImporterUsed, incrementalChannelProgressPairs);
         }
@@ -127,7 +126,7 @@ public final class CDCJobPreparer {
             }
             Dumper dumper = new InventoryDumper(each, channel, jobItemContext.getSourceDataSource(), jobItemContext.getSourceMetaDataLoader());
             Importer importer = importerUsed.get() ? null
-                    : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 3, TimeUnit.SECONDS, jobItemContext.getSink(),
+                    : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 100, TimeUnit.MILLISECONDS, jobItemContext.getSink(),
                             needSorting(ImporterType.INVENTORY, hasGlobalCSN(taskConfig.getDumperContext().getCommonContext().getDataSourceConfig().getDatabaseType())),
                             importerConfig.getRateLimitAlgorithm());
             jobItemContext.getInventoryTasks().add(new CDCInventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
@@ -156,7 +155,7 @@ public final class CDCJobPreparer {
         channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
         Dumper dumper = DatabaseTypedSPILoader.getService(IncrementalDumperCreator.class, dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType())
                 .createIncrementalDumper(dumperContext, dumperContext.getCommonContext().getPosition(), channel, jobItemContext.getSourceMetaDataLoader());
-        boolean needSorting = needSorting(ImporterType.INCREMENTAL, hasGlobalCSN(importerConfig.getDataSourceConfig().getDatabaseType()));
+        boolean needSorting = jobItemContext.getJobConfig().isDecodeWithTX();
         Importer importer = importerUsed.get() ? null
                 : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 300, TimeUnit.MILLISECONDS,
                         jobItemContext.getSink(), needSorting, importerConfig.getRateLimitAlgorithm());
