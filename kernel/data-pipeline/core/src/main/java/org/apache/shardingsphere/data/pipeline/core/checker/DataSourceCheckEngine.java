@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.checker;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,6 +31,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Data source check engine.
@@ -43,6 +45,30 @@ public final class DataSourceCheckEngine {
     public DataSourceCheckEngine(final DatabaseType databaseType) {
         checker = DatabaseTypedSPILoader.findService(DialectDataSourceChecker.class, databaseType).orElse(null);
         sqlBuilder = new PipelineCommonSQLBuilder(databaseType);
+    }
+    
+    /**
+     * Check source data source.
+     * 
+     * @param dataSource to be checked source data source
+     */
+    public void checkSourceDataSource(final DataSource dataSource) {
+        Collection<DataSource> dataSources = Collections.singleton(dataSource);
+        checkConnection(dataSources);
+        checkPrivilege(dataSources);
+        checkVariable(dataSources);
+    }
+    
+    /**
+     * Check target data source.
+     *
+     * @param dataSource to be checked target data source
+     * @param importerConfig importer configuration
+     */
+    public void checkTargetDataSource(final DataSource dataSource, final ImporterConfiguration importerConfig) {
+        Collection<DataSource> dataSources = Collections.singleton(dataSource);
+        checkConnection(dataSources);
+        checkTargetTable(dataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
     }
     
     /**

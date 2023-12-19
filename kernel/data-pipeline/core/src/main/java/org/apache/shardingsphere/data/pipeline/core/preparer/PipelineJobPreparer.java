@@ -22,10 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
@@ -38,7 +36,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -54,7 +51,7 @@ public final class PipelineJobPreparer {
      * Get incremental position.
      *
      * @param initIncremental init incremental
-     * @param dumperContext dumper config
+     * @param dumperContext incremental dumper context
      * @param dataSourceManager data source manager
      * @return ingest position
      * @throws SQLException SQL exception
@@ -69,37 +66,6 @@ public final class PipelineJobPreparer {
         }
         DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
         return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperContext.getJobId());
-    }
-    
-    /**
-     * Check data source.
-     *
-     * @param dataSources data source
-     */
-    public void checkSourceDataSource(final Collection<? extends DataSource> dataSources) {
-        if (dataSources.isEmpty()) {
-            return;
-        }
-        DataSourceCheckEngine checkEngine = new DataSourceCheckEngine(databaseType);
-        checkEngine.checkConnection(dataSources);
-        checkEngine.checkPrivilege(dataSources);
-        checkEngine.checkVariable(dataSources);
-    }
-    
-    /**
-     * Check target data source.
-     *
-     * @param importerConfig importer config
-     * @param targetDataSources target data sources
-     */
-    public void checkTargetDataSource(final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
-        if (null == targetDataSources || targetDataSources.isEmpty()) {
-            log.info("target data source is empty, skip check");
-            return;
-        }
-        DataSourceCheckEngine dataSourceCheckEngine = new DataSourceCheckEngine(databaseType);
-        dataSourceCheckEngine.checkConnection(targetDataSources);
-        dataSourceCheckEngine.checkTargetTable(targetDataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
     }
     
     /**
