@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.job.statistics;
+package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ShardingSphere statistics collector fixture.
+ * Statistics collector fixture.
  */
-public final class ShardingSphereStatisticsCollectorFixture implements ShardingSphereStatisticsCollector {
+public final class StatisticsCollectorFixture implements ShardingSphereStatisticsCollector {
     
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,

@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.job.statistics;
+package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
 /**
- * Statistics context manager lifecycle listener.
+ * Statistics collect context manager lifecycle listener.
  */
-public final class StatisticsContextManagerLifecycleListener implements ContextManagerLifecycleListener {
+public final class StatisticsCollectContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
     public void onInitialized(final String databaseName, final ContextManager contextManager) {
@@ -34,7 +34,7 @@ public final class StatisticsContextManagerLifecycleListener implements ContextM
         if (InstanceType.PROXY != contextManager.getInstanceContext().getInstance().getMetaData().getType()) {
             return;
         }
-        StatisticsJobWorker.initialize(contextManager);
+        StatisticsCollectJobWorker.initialize(contextManager);
     }
     
     @Override
