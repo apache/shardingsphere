@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.job.statistics;
+package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.schedule.core.job.statistics.StatisticsScheduleCollector.StatisticsCollectorRunnable;
+import org.apache.shardingsphere.schedule.core.job.statistics.collect.StatisticsCollectScheduler.StatisticsCollectRunnable;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class StatisticsScheduleCollectorTest {
+class StatisticsCollectSchedulerTest {
     
     @Test
     void assertCollect() {
@@ -52,7 +52,7 @@ class StatisticsScheduleCollectorTest {
         ShardingSphereMetaData metaData = mockMetaData();
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        new StatisticsCollectorRunnable(contextManager).run();
+        new StatisticsCollectRunnable(contextManager).run();
         verify(contextManager).getInstanceContext();
     }
     

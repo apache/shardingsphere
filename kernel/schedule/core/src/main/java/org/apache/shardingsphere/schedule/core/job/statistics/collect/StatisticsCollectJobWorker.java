@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.job.statistics;
+package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Statistics job worker.
+ * Statistics collect job worker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatisticsJobWorker {
+public final class StatisticsCollectJobWorker {
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
     
@@ -41,12 +41,13 @@ public final class StatisticsJobWorker {
         if (WORKER_INITIALIZED.compareAndSet(false, true)) {
             boolean collectorEnabled = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED);
             if (collectorEnabled) {
+                // TODO use ejob to schedule statistics collect
                 startScheduleThread(contextManager);
             }
         }
     }
     
     private static void startScheduleThread(final ContextManager contextManager) {
-        new StatisticsScheduleCollector(contextManager).start();
+        new StatisticsCollectScheduler(contextManager).start();
     }
 }
