@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.listener;
+package org.apache.shardingsphere.schedule.core.job.statistics;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * ShardingSphere statistics job worker.
+ * Statistics job worker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereStatisticsJobWorker {
+public final class StatisticsJobWorker {
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
     
@@ -47,6 +47,6 @@ public final class ShardingSphereStatisticsJobWorker {
     }
     
     private static void startScheduleThread(final ContextManager contextManager) {
-        new ShardingSphereStatisticsScheduleCollector(contextManager).start();
+        new StatisticsScheduleCollector(contextManager).start();
     }
 }

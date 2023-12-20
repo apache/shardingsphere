@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.listener;
+package org.apache.shardingsphere.schedule.core.job.statistics;
 
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ShardingSphere data collector fixture.
+ * ShardingSphere statistics collector fixture.
  */
-public final class ShardingSphereDataCollectorFixture implements ShardingSphereStatisticsCollector {
+public final class ShardingSphereStatisticsCollectorFixture implements ShardingSphereStatisticsCollector {
     
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,

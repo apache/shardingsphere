@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.listener;
+package org.apache.shardingsphere.schedule.core.job.statistics;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
 /**
- * ShardingSphere statistics context manager lifecycle listener.
+ * Statistics context manager lifecycle listener.
  */
-// TODO now Move to mode-core module, and also referenced ShardingSphereDataJobWorker & ShardingSphereDataScheduleCollector
-public final class ShardingSphereStatisticsContextManagerLifecycleListener implements ContextManagerLifecycleListener {
+public final class StatisticsContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
     public void onInitialized(final String databaseName, final ContextManager contextManager) {
@@ -35,7 +34,7 @@ public final class ShardingSphereStatisticsContextManagerLifecycleListener imple
         if (InstanceType.PROXY != contextManager.getInstanceContext().getInstance().getMetaData().getType()) {
             return;
         }
-        ShardingSphereStatisticsJobWorker.initialize(contextManager);
+        StatisticsJobWorker.initialize(contextManager);
     }
     
     @Override
