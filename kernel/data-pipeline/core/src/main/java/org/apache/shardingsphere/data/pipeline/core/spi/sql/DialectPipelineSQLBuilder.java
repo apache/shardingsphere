@@ -48,12 +48,12 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     }
     
     /**
-     * Build check empty SQL.
+     * Build check empty table SQL.
      *
      * @param qualifiedTableName qualified table name
      * @return built SQL
      */
-    String buildCheckEmptySQL(String qualifiedTableName);
+    String buildCheckEmptyTableSQL(String qualifiedTableName);
     
     /**
      * Build estimated count SQL.

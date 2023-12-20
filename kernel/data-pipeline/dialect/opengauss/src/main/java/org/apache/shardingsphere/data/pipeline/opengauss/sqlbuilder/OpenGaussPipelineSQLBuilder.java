@@ -45,7 +45,7 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     }
     
     @Override
-    public String buildCheckEmptySQL(final String qualifiedTableName) {
+    public String buildCheckEmptyTableSQL(final String qualifiedTableName) {
         return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
     }
     

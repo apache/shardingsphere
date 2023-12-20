@@ -101,6 +101,6 @@ public final class PipelineCommonSQLBuilder {
      * @return check SQL
      */
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildCheckEmptySQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+        return dialectSQLBuilder.buildCheckEmptyTableSQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
 }
