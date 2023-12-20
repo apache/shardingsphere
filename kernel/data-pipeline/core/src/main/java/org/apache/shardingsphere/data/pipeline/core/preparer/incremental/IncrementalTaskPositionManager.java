@@ -54,7 +54,7 @@ public final class IncrementalTaskPositionManager {
     /**
      * Get ingest position.
      *
-     * @param initialProgress initial iob item incremental tasks progress
+     * @param initialProgress initial job item incremental tasks progress
      * @param dumperContext incremental dumper context
      * @param dataSourceManager pipeline data source manager
      * @return ingest position
