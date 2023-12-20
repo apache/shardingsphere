@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.core.spi.sql.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
