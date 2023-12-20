@@ -68,7 +68,7 @@ public final class DataSourceCheckEngine {
      * 
      * @param dataSources to be checked source data source
      */
-    public void checkSourceDataSource(final Collection<DataSource> dataSources) {
+    public void checkSourceDataSources(final Collection<DataSource> dataSources) {
         checkConnection(dataSources);
         if (null == checker) {
             return;
