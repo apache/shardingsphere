@@ -83,7 +83,8 @@ class SQLFederationEngineTest {
     @Test
     void assertDecideWhenNotConfigSqlFederationEnabled() throws SQLException {
         Collection<ShardingSphereRule> globalRules =
-                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
+                Collections
+                        .singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(globalRules), Collections.emptyMap());
