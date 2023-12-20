@@ -31,5 +31,7 @@ public final class AlterSQLFederationRuleStatement extends UpdatableGlobalRuleRA
     
     private final Boolean sqlFederationEnabled;
     
+    private final Boolean allQueryUseSQLFederation;
+    
     private final CacheOptionSegment executionPlanCache;
 }
