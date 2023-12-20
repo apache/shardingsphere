@@ -33,5 +33,7 @@ public final class SQLFederationRuleConfiguration implements GlobalRuleConfigura
     
     private final boolean sqlFederationEnabled;
     
+    private final boolean allQueryUseSQLFederation;
+    
     private final CacheOption executionPlanCache;
 }
