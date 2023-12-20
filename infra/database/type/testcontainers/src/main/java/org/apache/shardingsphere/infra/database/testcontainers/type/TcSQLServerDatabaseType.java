@@ -31,7 +31,7 @@ public final class TcSQLServerDatabaseType implements TestcontainersDatabaseType
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:tc:sqlserver:");
+        return Collections.singleton("jdbc:tc:sqlserver:");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class TcSQLServerDatabaseType implements TestcontainersDatabaseType
     
     @Override
     public String getType() {
-        return "TestContainersSQLServer";
+        return "TC-SQLServer";
     }
 }

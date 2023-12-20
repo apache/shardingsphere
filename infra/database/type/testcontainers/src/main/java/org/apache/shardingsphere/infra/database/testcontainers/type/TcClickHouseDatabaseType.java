@@ -31,7 +31,7 @@ public final class TcClickHouseDatabaseType implements TestcontainersDatabaseTyp
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:tc:clickhouse:");
+        return Collections.singleton("jdbc:tc:clickhouse:");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class TcClickHouseDatabaseType implements TestcontainersDatabaseTyp
     
     @Override
     public String getType() {
-        return "TestContainersClickHouse";
+        return "TC-ClickHouse";
     }
 }
