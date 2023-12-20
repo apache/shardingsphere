@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.core.sql.builder.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;

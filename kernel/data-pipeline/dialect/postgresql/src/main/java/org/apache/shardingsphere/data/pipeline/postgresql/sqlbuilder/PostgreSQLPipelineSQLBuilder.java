@@ -19,9 +19,20 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.sql.builder.PipelineSQLSegmentBuilder;
-import org.apache.shardingsphere.data.pipeline.core.sql.builder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLColumnPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLConstraintsPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLIndexSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLTablePropertiesLoader;
+import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -59,6 +70,55 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     @Override
     public Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
+    }
+    
+    // TODO support partitions etc.
+    @Override
+    public Collection<String> buildCreateTableSQLs(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
+            int minorVersion = connection.getMetaData().getDatabaseMinorVersion();
+            Map<String, Object> materials = loadMaterials(tableName, schemaName, connection, majorVersion, minorVersion);
+            String tableSQL = generateCreateTableSQL(majorVersion, minorVersion, materials);
+            String indexSQL = generateCreateIndexSQL(connection, majorVersion, minorVersion, materials);
+            // TODO use ";" to split is not always correct
+            return Arrays.asList((tableSQL + System.lineSeparator() + indexSQL).trim().split(";"));
+        }
+    }
+    
+    private Map<String, Object> loadMaterials(final String tableName, final String schemaName, final Connection connection, final int majorVersion, final int minorVersion) throws SQLException {
+        Map<String, Object> result = new PostgreSQLTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).load();
+        new PostgreSQLColumnPropertiesAppender(connection, majorVersion, minorVersion).append(result);
+        new PostgreSQLConstraintsPropertiesAppender(connection, majorVersion, minorVersion).append(result);
+        formatColumns(result);
+        return result;
+    }
+    
+    private String generateCreateTableSQL(final int majorVersion, final int minorVersion, final Map<String, Object> materials) {
+        return PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", majorVersion, minorVersion).trim();
+    }
+    
+    private String generateCreateIndexSQL(final Connection connection, final int majorVersion, final int minorVersion, final Map<String, Object> materials) throws SQLException {
+        return new PostgreSQLIndexSQLGenerator(connection, majorVersion, minorVersion).generate(materials);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void formatColumns(final Map<String, Object> context) {
+        Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
+        for (Map<String, Object> each : columns) {
+            if (each.containsKey("cltype")) {
+                typeFormatter(each, (String) each.get("cltype"));
+            }
+        }
+    }
+    
+    private void typeFormatter(final Map<String, Object> column, final String columnType) {
+        if (columnType.contains("[]")) {
+            column.put("cltype", columnType.substring(0, columnType.length() - 2));
+            column.put("hasSqrBracket", true);
+        } else {
+            column.put("hasSqrBracket", false);
+        }
     }
     
     @Override

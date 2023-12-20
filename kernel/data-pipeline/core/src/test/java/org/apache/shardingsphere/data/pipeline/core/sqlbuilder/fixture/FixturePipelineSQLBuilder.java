@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.sql.builder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.DialectPipelineSQLBuilder;
 
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilder {
@@ -31,6 +34,11 @@ public final class FixturePipelineSQLBuilder implements DialectPipelineSQLBuilde
     @Override
     public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
         return Optional.of(String.format("SELECT CRC32(%s) FROM %s", columnName, qualifiedTableName));
+    }
+    
+    @Override
+    public Collection<String> buildCreateTableSQLs(final DataSource dataSource, final String schemaName, final String tableName) {
+        return Collections.emptyList();
     }
     
     @Override
