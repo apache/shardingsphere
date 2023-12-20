@@ -36,7 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.type.Stri
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.type.UnsupportedKeyPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sql.builder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.IntervalToRangeIterator;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;

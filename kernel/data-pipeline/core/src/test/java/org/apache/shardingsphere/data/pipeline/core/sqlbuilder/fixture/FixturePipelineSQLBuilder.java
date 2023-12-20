@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sql.builder.DialectPipelineSQLBuilder;
 
 import java.util.Optional;
 

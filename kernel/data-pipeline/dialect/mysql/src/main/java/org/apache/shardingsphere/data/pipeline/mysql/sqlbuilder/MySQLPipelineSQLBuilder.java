@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLSegmentBuilder;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sql.builder.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sql.builder.DialectPipelineSQLBuilder;
 
 import java.util.Optional;
 

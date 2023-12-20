@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.sql.builder;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 

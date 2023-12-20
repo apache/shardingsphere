@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sql.builder.DialectPipelineSQLBuilder;
 
 /**
  * Pipeline SQL builder for H2.
