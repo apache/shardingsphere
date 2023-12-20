@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.checker;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -85,16 +85,14 @@ public final class DataSourceCheckEngine {
      */
     public void checkTargetDataSources(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
         checkConnection(dataSources);
-        checkEmptyTable(dataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
+        checkEmptyTable(dataSources, importerConfig);
     }
     
-    // TODO Merge schemaName and tableNames
-    private void checkEmptyTable(final Collection<DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
+    private void checkEmptyTable(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
         try {
             for (DataSource each : dataSources) {
-                for (String tableName : logicTableNames) {
-                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName),
-                            () -> new PrepareJobWithTargetTableNotEmptyException(tableName));
+                for (CaseInsensitiveQualifiedTable qualifiedTable : importerConfig.getQualifiedTables()) {
+                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName().toString()));
                 }
             }
         } catch (final SQLException ex) {
@@ -102,8 +100,16 @@ public final class DataSourceCheckEngine {
         }
     }
     
-    private boolean checkEmptyTable(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
-        String sql = sqlBuilder.buildCheckEmptySQL(schemaName, tableName);
+    /**
+     * Check whether empty table.
+     *
+     * @param dataSource data source
+     * @param qualifiedTable qualified table
+     * @return empty or not
+     * @throws SQLException if there's database operation failure
+     */
+    public boolean checkEmptyTable(final DataSource dataSource, final CaseInsensitiveQualifiedTable qualifiedTable) throws SQLException {
+        String sql = sqlBuilder.buildCheckEmptySQL(qualifiedTable.getSchemaName().toString(), qualifiedTable.getTableName().toString());
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
