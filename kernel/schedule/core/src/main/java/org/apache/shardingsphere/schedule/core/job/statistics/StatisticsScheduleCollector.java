@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.listener;
+package org.apache.shardingsphere.schedule.core.job.statistics;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,13 +47,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere statistics schedule collector.
+ * Statistics schedule collector.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ShardingSphereStatisticsScheduleCollector {
+public final class StatisticsScheduleCollector {
     
-    private final ScheduledExecutorService dataCollectorExecutor = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("data-collect-%d"));
+    private final ScheduledExecutorService statisticsCollector = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("statistics-collect-%d"));
     
     private final ContextManager contextManager;
     
@@ -61,11 +61,11 @@ public final class ShardingSphereStatisticsScheduleCollector {
      * Start.
      */
     public void start() {
-        dataCollectorExecutor.scheduleWithFixedDelay(new ShardingSphereDataCollectorRunnable(contextManager), 0, 30, TimeUnit.SECONDS);
+        statisticsCollector.scheduleWithFixedDelay(new StatisticsCollectorRunnable(contextManager), 0, 30, TimeUnit.SECONDS);
     }
     
     @RequiredArgsConstructor
-    protected static final class ShardingSphereDataCollectorRunnable implements Runnable {
+    protected static final class StatisticsCollectorRunnable implements Runnable {
         
         private final ContextManager contextManager;
         

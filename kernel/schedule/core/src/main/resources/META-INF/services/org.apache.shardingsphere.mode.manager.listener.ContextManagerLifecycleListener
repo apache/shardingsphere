@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.listener.ShardingSphereDataCollectorFixture
+org.apache.shardingsphere.schedule.core.job.statistics.StatisticsContextManagerLifecycleListener

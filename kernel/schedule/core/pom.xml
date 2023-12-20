@@ -20,26 +20,37 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-schedule</artifactId>
         <version>5.4.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-kernel</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-schedule-core</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>single</module>
-        <module>authority</module>
-        <module>transaction</module>
-        <module>time-service</module>
-        <module>data-pipeline</module>
-        <module>sql-federation</module>
-        <module>sql-parser</module>
-        <module>sql-translator</module>
-        <module>traffic</module>
-        <module>logging</module>
-        <module>metadata</module>
-        <module>global-clock</module>
-        <module>schedule</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-cluster-mode-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere.elasticjob</groupId>
+            <artifactId>elasticjob-lite-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere.elasticjob</groupId>
+            <artifactId>elasticjob-lite-lifecycle</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>
