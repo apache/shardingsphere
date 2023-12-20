@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer;
+package org.apache.shardingsphere.data.pipeline.core.preparer.incremental;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
@@ -34,67 +33,75 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Pipeline job preparer.
+ * Incremental task position manager.
  */
-@RequiredArgsConstructor
 @Slf4j
-public final class PipelineJobPreparer {
+public final class IncrementalTaskPositionManager {
     
     private final DatabaseType databaseType;
     
+    private final PositionInitializer positionInitializer;
+    
+    public IncrementalTaskPositionManager(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
+        positionInitializer = DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType);
+    }
+    
     /**
-     * Get incremental position.
+     * Get ingest position.
      *
      * @param initialProgress initial iob item incremental tasks progress
      * @param dumperContext incremental dumper context
-     * @param dataSourceManager data source manager
+     * @param dataSourceManager pipeline data source manager
      * @return ingest position
      * @throws SQLException SQL exception
      */
-    public IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initialProgress, final IncrementalDumperContext dumperContext,
-                                                 final PipelineDataSourceManager dataSourceManager) throws SQLException {
+    public IngestPosition getPosition(final JobItemIncrementalTasksProgress initialProgress,
+                                      final IncrementalDumperContext dumperContext, final PipelineDataSourceManager dataSourceManager) throws SQLException {
         if (null != initialProgress) {
             Optional<IngestPosition> position = initialProgress.getIncrementalPosition();
             if (position.isPresent()) {
                 return position.get();
             }
         }
-        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
-        return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperContext.getJobId());
+        return positionInitializer.init(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig()), dumperContext.getJobId());
     }
     
     /**
-     * Cleanup job preparer.
+     * Destroy ingest position.
      *
      * @param jobId pipeline job id
-     * @param pipelineDataSourceConfig pipeline data source config
+     * @param pipelineDataSourceConfig pipeline data source configuration
      * @throws SQLException SQL exception
      */
     public void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
-        PositionInitializer positionInitializer = DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType);
         final long startTimeMillis = System.currentTimeMillis();
-        log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());
+        log.info("Cleanup position, database type: {}, pipeline data source type: {}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
-            ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig;
-            for (DataSourcePoolProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePoolPropertiesMap(dataSourceConfig.getRootConfig()).values()) {
-                try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(each), databaseType)) {
-                    positionInitializer.destroy(dataSource, jobId);
-                }
-            }
+            destroyPosition(jobId, (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig, positionInitializer);
+        } else if (pipelineDataSourceConfig instanceof StandardPipelineDataSourceConfiguration) {
+            destroyPosition(jobId, (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig, positionInitializer);
         }
-        if (pipelineDataSourceConfig instanceof StandardPipelineDataSourceConfiguration) {
-            StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig;
-            try (
-                    PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(
-                            DataSourcePoolCreator.create((DataSourcePoolProperties) dataSourceConfig.getDataSourceConfiguration()), databaseType)) {
+        log.info("destroyPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
+    }
+    
+    private void destroyPosition(final String jobId, final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig, final PositionInitializer positionInitializer) throws SQLException {
+        for (DataSourcePoolProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePoolPropertiesMap(pipelineDataSourceConfig.getRootConfig()).values()) {
+            try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(each), databaseType)) {
                 positionInitializer.destroy(dataSource, jobId);
             }
         }
-        log.info("destroyPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
+    }
+    
+    private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig, final PositionInitializer positionInitializer) throws SQLException {
+        try (
+                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(
+                        DataSourcePoolCreator.create((DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration()), databaseType)) {
+            positionInitializer.destroy(dataSource, jobId);
+        }
     }
 }
