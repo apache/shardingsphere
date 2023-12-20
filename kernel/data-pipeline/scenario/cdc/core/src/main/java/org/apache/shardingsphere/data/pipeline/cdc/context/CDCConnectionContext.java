@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 /**
  * CDC connection context.
  */
@@ -32,7 +35,7 @@ public final class CDCConnectionContext {
     
     private final ShardingSphereUser currentUser;
     
-    private volatile String database;
+    private final Set<String> jobIds = new CopyOnWriteArraySet<>();
     
-    private volatile String jobId;
+    private volatile String database;
 }

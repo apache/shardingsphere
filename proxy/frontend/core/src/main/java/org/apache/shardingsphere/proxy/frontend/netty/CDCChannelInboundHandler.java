@@ -78,8 +78,10 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) {
         CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
-        if (null != connectionContext && null != connectionContext.getJobId()) {
-            backendHandler.stopStreaming(connectionContext.getJobId(), ctx.channel().id());
+        if (null != connectionContext && !connectionContext.getJobIds().isEmpty()) {
+            for (String each : connectionContext.getJobIds()) {
+                backendHandler.stopStreaming(each, ctx.channel().id());
+            }
         }
         ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(null);
     }
@@ -211,7 +213,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
         backendHandler.stopStreaming(requestBody.getStreamingId(), ctx.channel().id());
-        connectionContext.setJobId(null);
+        connectionContext.getJobIds().remove(requestBody.getStreamingId());
         ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }
     
@@ -219,7 +221,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         DropStreamingRequestBody requestBody = request.getDropStreamingRequestBody();
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId()));
         backendHandler.dropStreaming(requestBody.getStreamingId());
-        connectionContext.setJobId(null);
+        connectionContext.getJobIds().remove(requestBody.getStreamingId());
         ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }
 }

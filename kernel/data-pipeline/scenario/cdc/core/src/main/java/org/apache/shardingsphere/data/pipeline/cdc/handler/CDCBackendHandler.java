@@ -119,7 +119,7 @@ public final class CDCBackendHandler {
         boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
         StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), new ArrayList<>(schemaTableNames), requestBody.getFull(), actualDataNodesMap, decodeWithTx);
         String jobId = jobAPI.create(parameter, CDCSinkType.SOCKET, new Properties());
-        connectionContext.setJobId(jobId);
+        connectionContext.getJobIds().add(jobId);
         startStreaming(jobId, connectionContext, channel);
         return CDCResponseUtils.succeed(requestId, ResponseCase.STREAM_DATA_RESULT, StreamDataResult.newBuilder().setStreamingId(jobId).build());
     }
@@ -137,7 +137,7 @@ public final class CDCBackendHandler {
         PipelineJobRegistry.stop(jobId);
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
         jobAPI.start(jobId, new CDCSocketSink(channel, database, cdcJobConfig.getSchemaTableNames()));
-        connectionContext.setJobId(jobId);
+        connectionContext.getJobIds().add(jobId);
     }
     
     /**
