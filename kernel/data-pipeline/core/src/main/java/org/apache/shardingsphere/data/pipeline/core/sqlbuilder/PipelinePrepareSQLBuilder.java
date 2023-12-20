@@ -23,15 +23,15 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import java.util.Optional;
 
 /**
- * Pipeline common SQL builder.
+ * Pipeline prepare SQL builder.
  */
-public final class PipelineCommonSQLBuilder {
+public final class PipelinePrepareSQLBuilder {
     
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
-    public PipelineCommonSQLBuilder(final DatabaseType databaseType) {
+    public PipelinePrepareSQLBuilder(final DatabaseType databaseType) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
     }

@@ -46,9 +46,9 @@ import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.Incrementa
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -139,7 +139,7 @@ public final class CDCJobPreparer {
     }
     
     private boolean needSorting(final DatabaseType databaseType) {
-        return DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).isSupportGlobalCSN();
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isSupportGlobalCSN();
     }
     
     private void initIncrementalTask(final CDCJobItemContext jobItemContext, final AtomicBoolean importerUsed, final List<CDCChannelProgressPair> channelProgressPairs) {
