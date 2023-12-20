@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
@@ -93,13 +95,13 @@ public final class PipelinePrepareSQLBuilder {
     }
     
     /**
-     * Build check empty SQL.
+     * Build check empty table SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
      * @return check SQL
      */
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
+    public String buildCheckEmptyTableSQL(final String schemaName, final String tableName) {
         return dialectSQLBuilder.buildCheckEmptyTableSQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.syntax.CreateTableSQLGenerateException;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 

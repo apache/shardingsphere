@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWith
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelinePrepareSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -109,7 +109,7 @@ public final class DataSourceCheckEngine {
      * @throws SQLException if there's database operation failure
      */
     public boolean checkEmptyTable(final DataSource dataSource, final CaseInsensitiveQualifiedTable qualifiedTable) throws SQLException {
-        String sql = sqlBuilder.buildCheckEmptySQL(qualifiedTable.getSchemaName().toString(), qualifiedTable.getTableName().toString());
+        String sql = sqlBuilder.buildCheckEmptyTableSQL(qualifiedTable.getSchemaName().toString(), qualifiedTable.getTableName().toString());
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
