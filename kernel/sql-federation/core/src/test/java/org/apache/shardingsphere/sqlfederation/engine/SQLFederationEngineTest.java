@@ -63,7 +63,7 @@ class SQLFederationEngineTest {
     @Test
     void assertDecideWhenSelectStatementContainsSystemSchema() throws SQLException {
         Collection<ShardingSphereRule> globalRules =
-                Collections.singleton(new SQLFederationRule(new SQLFederationRuleConfiguration(false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
+                Collections.singleton(new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, Collections.emptyList());
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
@@ -83,7 +83,7 @@ class SQLFederationEngineTest {
     @Test
     void assertDecideWhenNotConfigSqlFederationEnabled() throws SQLException {
         Collection<ShardingSphereRule> globalRules =
-                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
+                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(globalRules), Collections.emptyMap());
@@ -93,9 +93,23 @@ class SQLFederationEngineTest {
     }
     
     @Test
+    void assertDecideWhenConfigAllQueryUseSQLFederation() throws SQLException {
+        Collection<ShardingSphereRule> globalRules =
+                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
+        SQLFederationEngine engine = createSQLFederationEngine(globalRules, Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(globalRules), Collections.emptyMap());
+        RuleMetaData globalRuleMetaData = new RuleMetaData(globalRules);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
+        assertTrue(engine.decide(selectStatementContext, Collections.emptyList(), database, globalRuleMetaData));
+        engine.close();
+    }
+    
+    @Test
     void assertDecideWhenExecuteNotSelectStatement() throws SQLException {
         Collection<ShardingSphereRule> globalRules =
-                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
+                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(globalRules), Collections.emptyMap());
@@ -107,7 +121,7 @@ class SQLFederationEngineTest {
     @Test
     void assertDecideWhenConfigSingleMatchedRule() throws SQLException {
         Collection<ShardingSphereRule> globalRules =
-                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
+                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         Collection<ShardingSphereRule> databaseRules = Collections.singletonList(new SQLFederationDeciderRuleMatchFixture());
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, databaseRules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
@@ -122,7 +136,7 @@ class SQLFederationEngineTest {
     @Test
     void assertDecideWhenConfigSingleNotMatchedRule() throws SQLException {
         Collection<ShardingSphereRule> globalRules =
-                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
+                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         Collection<ShardingSphereRule> databaseRules = Collections.singletonList(new SQLFederationDeciderRuleNotMatchFixture());
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, databaseRules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
@@ -136,7 +150,7 @@ class SQLFederationEngineTest {
     @Test
     void assertDecideWhenConfigMultiRule() throws SQLException {
         Collection<ShardingSphereRule> globalRules =
-                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
+                Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         Collection<ShardingSphereRule> databaseRules = Arrays.asList(new SQLFederationDeciderRuleNotMatchFixture(),
                 new SQLFederationDeciderRuleMatchFixture());
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, databaseRules);
