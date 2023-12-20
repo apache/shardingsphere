@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.data.pipeline.core.spi.sql.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLSegmentBuilder;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -59,6 +59,11 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     @Override
     public Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
+    }
+    
+    @Override
+    public Optional<String> buildQueryCurrentPositionSQL() {
+        return Optional.of("SELECT * from pg_current_xlog_location()");
     }
     
     @Override

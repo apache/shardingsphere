@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
-import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 
 import java.util.Collection;
@@ -71,7 +71,13 @@ public final class TransmissionJobManager {
         return result;
     }
     
-    private static int getInventoryFinishedPercentage(final TransmissionJobItemProgress jobItemProgress) {
+    /**
+     * Get inventory finished percentage.
+     *
+     * @param jobItemProgress job item progress
+     * @return inventory finished percentage
+     */
+    public static int getInventoryFinishedPercentage(final TransmissionJobItemProgress jobItemProgress) {
         if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemProgress.getStatus() || JobStatus.FINISHED == jobItemProgress.getStatus()) {
             return 100;
         }

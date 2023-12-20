@@ -15,24 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
+package org.apache.shardingsphere.data.pipeline.cdc.core.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 
 /**
- * WAL position.
+ * CDC job item info.
  */
 @RequiredArgsConstructor
 @Getter
-public final class WALPosition implements IngestPosition {
+public class CDCJobItemInfo {
     
-    private final BaseLogSequenceNumber logSequenceNumber;
+    private final int shardingItem;
     
-    @Override
-    public String toString() {
-        return logSequenceNumber.toString();
-    }
+    private final String dataSourceName;
+    
+    private final String tableNames;
+    
+    private final JobStatus status;
+    
+    private final boolean active;
+    
+    private final long inventoryRecordsCount;
+    
+    private final long processedRecordsCount;
+    
+    private final int inventoryFinishedPercentage;
+    
+    private final JobItemIncrementalTasksProgress incremental;
+    
+    private final String confirmedPosition;
+    
+    private final String currentPosition;
+    
+    private final String errorMessage;
 }

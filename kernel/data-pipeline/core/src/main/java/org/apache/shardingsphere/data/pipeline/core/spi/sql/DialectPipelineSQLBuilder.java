@@ -75,4 +75,13 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     default Optional<String> buildCRC32SQL(String qualifiedTableName, final String columnName) {
         return Optional.empty();
     }
+    
+    /**
+     * Build query current position SQL.
+     *
+     * @return built SQL
+     */
+    default Optional<String> buildQueryCurrentPositionSQL() {
+        return Optional.empty();
+    }
 }
