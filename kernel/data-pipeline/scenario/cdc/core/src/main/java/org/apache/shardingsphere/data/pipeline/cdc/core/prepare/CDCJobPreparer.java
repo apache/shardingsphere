@@ -111,7 +111,7 @@ public final class CDCJobPreparer {
             throw new PrepareJobWithGetBinlogPositionException(jobItemContext.getJobId(), ex);
         }
     }
-     
+    
     private void initInventoryTasks(final CDCJobItemContext jobItemContext, final AtomicBoolean importerUsed, final List<CDCChannelProgressPair> channelProgressPairs) {
         long startTimeMillis = System.currentTimeMillis();
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
