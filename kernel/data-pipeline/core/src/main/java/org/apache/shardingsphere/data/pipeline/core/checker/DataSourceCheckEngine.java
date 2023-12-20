@@ -94,7 +94,7 @@ public final class DataSourceCheckEngine {
         try {
             for (DataSource each : dataSources) {
                 for (String tableName : logicTableNames) {
-                    ShardingSpherePreconditions.checkState(checkEmpty(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName),
+                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName),
                             () -> new PrepareJobWithTargetTableNotEmptyException(tableName));
                 }
             }
@@ -103,7 +103,7 @@ public final class DataSourceCheckEngine {
         }
     }
     
-    private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
+    private boolean checkEmptyTable(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         String sql = sqlBuilder.buildCheckEmptySQL(schemaName, tableName);
         try (
                 Connection connection = dataSource.getConnection();
