@@ -85,16 +85,15 @@ public final class DataSourceCheckEngine {
      */
     public void checkTargetDataSources(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
         checkConnection(dataSources);
-        checkTargetTable(dataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
+        checkEmptyTable(dataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
     }
     
-    // TODO rename to common usage name
     // TODO Merge schemaName and tableNames
-    private void checkTargetTable(final Collection<DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
+    private void checkEmptyTable(final Collection<DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
         try {
             for (DataSource each : dataSources) {
                 for (String tableName : logicTableNames) {
-                    ShardingSpherePreconditions.checkState(checkEmpty(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName),
+                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName),
                             () -> new PrepareJobWithTargetTableNotEmptyException(tableName));
                 }
             }
@@ -103,7 +102,7 @@ public final class DataSourceCheckEngine {
         }
     }
     
-    private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
+    private boolean checkEmptyTable(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         String sql = sqlBuilder.buildCheckEmptySQL(schemaName, tableName);
         try (
                 Connection connection = dataSource.getConnection();

@@ -50,16 +50,16 @@ public final class PipelineJobPreparer {
     /**
      * Get incremental position.
      *
-     * @param initIncremental init incremental
+     * @param initialProgress initial iob item incremental tasks progress
      * @param dumperContext incremental dumper context
      * @param dataSourceManager data source manager
      * @return ingest position
      * @throws SQLException SQL exception
      */
-    public IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final IncrementalDumperContext dumperContext,
+    public IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initialProgress, final IncrementalDumperContext dumperContext,
                                                  final PipelineDataSourceManager dataSourceManager) throws SQLException {
-        if (null != initIncremental) {
-            Optional<IngestPosition> position = initIncremental.getIncrementalPosition();
+        if (null != initialProgress) {
+            Optional<IngestPosition> position = initialProgress.getIncrementalPosition();
             if (position.isPresent()) {
                 return position.get();
             }
