@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Data source name existed exception.
+ * Data source name not existed exception.
  */
-public final class DataSourceNameExistedException extends ReadwriteSplittingSQLException {
+public final class DataSourceNameNotExistedException extends ReadwriteSplittingSQLException {
     
     private static final long serialVersionUID = 1284608200400804784L;
     
-    public DataSourceNameExistedException(final String reason) {
+    public DataSourceNameNotExistedException(final String reason) {
         super(XOpenSQLState.NOT_FOUND, 94, reason);
     }
 }
