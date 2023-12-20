@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer;
+package org.apache.shardingsphere.data.pipeline.core.preparer.incremental;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,11 +39,11 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Pipeline job preparer.
+ * Incremental task preparer.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class PipelineJobPreparer {
+public final class IncrementalTaskPreparer {
     
     private final DatabaseType databaseType;
     
