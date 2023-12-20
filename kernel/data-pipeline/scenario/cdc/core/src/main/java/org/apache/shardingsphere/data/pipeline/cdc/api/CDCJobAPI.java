@@ -201,8 +201,8 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         TransmissionJobItemProgress result = new TransmissionJobItemProgress();
         result.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
         result.setDataSourceName(incrementalDumperContext.getCommonContext().getDataSourceName());
-        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(new IncrementalTaskPositionManager(
-                incrementalDumperContext.getCommonContext().getDataSourceConfig().getDatabaseType()).getPosition(null, incrementalDumperContext, dataSourceManager));
+        IncrementalTaskPositionManager positionManager = new IncrementalTaskPositionManager(incrementalDumperContext.getCommonContext().getDataSourceConfig().getDatabaseType());
+        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(positionManager.getPosition(null, incrementalDumperContext, dataSourceManager));
         result.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
         return result;
     }
