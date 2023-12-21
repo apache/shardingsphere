@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.sql;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -48,12 +51,12 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     }
     
     /**
-     * Build check empty SQL.
+     * Build check empty table SQL.
      *
      * @param qualifiedTableName qualified table name
      * @return built SQL
      */
-    String buildCheckEmptySQL(String qualifiedTableName);
+    String buildCheckEmptyTableSQL(String qualifiedTableName);
     
     /**
      * Build estimated count SQL.
@@ -75,4 +78,15 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     default Optional<String> buildCRC32SQL(String qualifiedTableName, final String columnName) {
         return Optional.empty();
     }
+    
+    /**
+     * Build create table SQLs.
+     *
+     * @param dataSource dataSource
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return built SQLs
+     * @throws SQLException SQL exception
+     */
+    Collection<String> buildCreateTableSQLs(DataSource dataSource, String schemaName, String tableName) throws SQLException;
 }

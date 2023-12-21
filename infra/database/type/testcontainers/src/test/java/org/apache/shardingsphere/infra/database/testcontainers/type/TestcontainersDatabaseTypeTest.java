@@ -30,11 +30,11 @@ class TestcontainersDatabaseTypeTest {
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersClickHouse").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:clickhouse:")));
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersMariaDB").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:mariadb:")));
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersMySQL").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:mysql:")));
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersOracle").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:oracle:")));
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersPostgreSQL").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:postgresql:")));
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersSQLServer").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:sqlserver:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-ClickHouse").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:clickhouse:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-MariaDB").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:mariadb:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-MySQL").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:mysql:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-Oracle").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:oracle:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-PostgreSQL").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:postgresql:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TC-SQLServer").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:tc:sqlserver:")));
     }
 }

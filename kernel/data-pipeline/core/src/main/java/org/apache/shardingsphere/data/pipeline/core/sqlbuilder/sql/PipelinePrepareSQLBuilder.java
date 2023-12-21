@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
-import org.apache.shardingsphere.data.pipeline.core.spi.sql.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
 import java.util.Optional;
 
 /**
- * Pipeline common SQL builder.
+ * Pipeline prepare SQL builder.
  */
-public final class PipelineCommonSQLBuilder {
+public final class PipelinePrepareSQLBuilder {
     
     private final DialectPipelineSQLBuilder dialectSQLBuilder;
     
     private final PipelineSQLSegmentBuilder sqlSegmentBuilder;
     
-    public PipelineCommonSQLBuilder(final DatabaseType databaseType) {
+    public PipelinePrepareSQLBuilder(final DatabaseType databaseType) {
         dialectSQLBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
         sqlSegmentBuilder = new PipelineSQLSegmentBuilder(databaseType);
     }
@@ -94,13 +95,13 @@ public final class PipelineCommonSQLBuilder {
     }
     
     /**
-     * Build check empty SQL.
+     * Build check empty table SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
      * @return check SQL
      */
-    public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildCheckEmptySQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+    public String buildCheckEmptyTableSQL(final String schemaName, final String tableName) {
+        return dialectSQLBuilder.buildCheckEmptyTableSQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
 }
