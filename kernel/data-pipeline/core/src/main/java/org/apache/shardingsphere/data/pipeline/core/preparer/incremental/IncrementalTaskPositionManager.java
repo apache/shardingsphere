@@ -89,7 +89,8 @@ public final class IncrementalTaskPositionManager {
         log.info("destroyPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
-    private void destroyPosition(final String jobId, final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig, final IngestPositionInitializer positionInitializer) throws SQLException {
+    private void destroyPosition(final String jobId,
+                                 final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig, final IngestPositionInitializer positionInitializer) throws SQLException {
         for (DataSourcePoolProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePoolPropertiesMap(pipelineDataSourceConfig.getRootConfig()).values()) {
             try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(each), databaseType)) {
                 positionInitializer.destroy(dataSource, jobId);
