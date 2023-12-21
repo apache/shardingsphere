@@ -32,15 +32,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
- * Pipeline data source wrapper is for abstract standard jdbc and sharding jdbc.
+ * Pipeline data source wrapper.
  */
 @RequiredArgsConstructor
-@Getter
 @Slf4j
 public final class PipelineDataSourceWrapper implements DataSource, AutoCloseable {
     
     private final DataSource dataSource;
     
+    @Getter
     private final DatabaseType databaseType;
     
     private final AtomicBoolean closed = new AtomicBoolean(false);
