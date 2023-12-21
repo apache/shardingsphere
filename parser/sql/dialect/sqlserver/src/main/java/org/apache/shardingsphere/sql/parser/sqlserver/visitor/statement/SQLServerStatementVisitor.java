@@ -853,6 +853,10 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
+        if (null != ctx.top()) {
+            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
+            projections.add(new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber, null));
+        }
         for (UnqualifiedShorthandContext each : ctx.unqualifiedShorthand()) {
             projections.add(new ShorthandProjectionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex()));
         }
@@ -1135,10 +1139,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return result;
         }
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
-        if (null != ctx.top()) {
-            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
-            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber, null == alias ? null : alias.getIdentifier().getValue());
-        }
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
             ColumnProjectionSegment result = new ColumnProjectionSegment(column);

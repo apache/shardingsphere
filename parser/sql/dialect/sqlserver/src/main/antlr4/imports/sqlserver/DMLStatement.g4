@@ -89,12 +89,12 @@ duplicateSpecification
     ;
 
 projections
-    : (unqualifiedShorthand | projection) (COMMA_ (unqualifiedShorthand | projection))*
+    : (unqualifiedShorthand | projection | top (unqualifiedShorthand | projection)) (COMMA_ (unqualifiedShorthand | projection))*
     ;
 
 projection
-    : (alias EQ_)? (top | columnName | expr) | qualifiedShorthand
-    | (top | columnName | expr) (AS? alias)? | qualifiedShorthand
+    : (alias EQ_)? (columnName | expr) | qualifiedShorthand
+    | (columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
 top
