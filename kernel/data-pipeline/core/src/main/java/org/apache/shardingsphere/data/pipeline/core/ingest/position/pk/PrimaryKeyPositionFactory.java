@@ -35,7 +35,7 @@ import java.util.List;
 public final class PrimaryKeyPositionFactory {
     
     /**
-     * New instance by string data.
+     * Create new instance by string data.
      *
      * @param data string data
      * @return primary key position
