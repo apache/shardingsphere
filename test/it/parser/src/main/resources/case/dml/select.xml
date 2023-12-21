@@ -27,7 +27,7 @@
         <comment start-index="0" stop-index="19" text="/*FORCE_IMCI_NODES*/" />
         <comment start-index="28" stop-index="68" text="/*+ SET_VAR(cost_threshold_for_imci=0) */" />
     </select>
-    
+
     <select sql-case-id="select_position_function">
         <projections start-index="7" stop-index="97">
             <expression-projection text="position(&quot;0&quot; in &quot;baaa&quot; in (1))" start-index="7" stop-index="36">
@@ -96,7 +96,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_extract_function_with_day_hour">
         <projections start-index="7" stop-index="50">
             <expression-projection text="extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" start-index="7" stop-index="50">
@@ -113,7 +113,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_latin1">
         <projections start-index="7" stop-index="62">
             <expression-projection text="_latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" start-index="7" stop-index="62">
@@ -141,7 +141,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_default_str">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -167,7 +167,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_subquery_excpet">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -208,7 +208,7 @@
             </subquery-table>
         </from>
     </select>
-    
+
     <select sql-case-id="select_point_function_with_in">
         <projections start-index="7" stop-index="38">
             <expression-projection alias="res" text="point(1,1) IN ('1',1,'1')" start-index="7" stop-index="38">
@@ -242,7 +242,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_in">
         <projections start-index="7" stop-index="48">
             <column-projection name="b" start-index="7" stop-index="7" />
@@ -286,7 +286,7 @@
             <simple-table name="t2" start-index="55" stop-index="56" />
         </from>
     </select>
-    
+
     <select sql-case-id="select_with_st_geom_from_text">
         <projections start-index="7" stop-index="67">
             <expression-projection alias="result" text="ST_GeomFromText('POINT(0 0)') IN (SELECT b FROM t1)" start-index="7" stop-index="67">
@@ -316,7 +316,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_st_aswkb_st_geom_form_text">
         <projections start-index="7" stop-index="77">
             <expression-projection alias="result" text="ST_AsWKB(ST_GeomFromText('POINT(0 0)')) IN (SELECT b FROM t1)" start-index="7" stop-index="77">
@@ -350,7 +350,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_null_in_subquery">
         <projections start-index="7" stop-index="94">
             <expression-projection text="NULL IN(SELECT (f1 between 0 and 1) FROM (SELECT f1 FROM t WHERE (@b:=NULL) - f2) as dt)" start-index="7" stop-index="94">
@@ -422,7 +422,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_collate">
         <projections start-index="7" stop-index="58">
             <expression-projection text="NAME_CONST('var', 'value') COLLATE latin1_general_cs" start-index="7" stop-index="58">
@@ -436,7 +436,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_hex_function">
         <projections start-index="7" stop-index="50">
             <expression-projection text="HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" start-index="7" stop-index="50">
@@ -589,7 +589,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_global_default_key_buffer_size">
         <projections start-index="7" stop-index="40">
             <expression-projection text="@@global.default.`key_buffer_size`" start-index="7" stop-index="40">
@@ -636,7 +636,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_constant_without_table" >
         <projections start-index="7" stop-index="12">
             <expression-projection text="1" alias="a" start-index="7" stop-index="12">
@@ -693,7 +693,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_system_variables" >
         <projections start-index="7" stop-index="121">
             <expression-projection text="@@session.auto_increment_increment" alias="auto_increment_increment" start-index="7" stop-index="65">
@@ -1066,7 +1066,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -1459,7 +1459,7 @@
             <offset value="0" parameter-index="2" start-index="75" stop-index="75" literal-start-index="77" literal-stop-index="77" />
         </limit>
     </select>
-    
+
     <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
@@ -1549,7 +1549,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_count_like_concat_postgres" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
@@ -1638,7 +1638,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_like_with_single_quotes" >
         <from>
             <simple-table name="admin" start-index="15" stop-index="19" />
@@ -1664,7 +1664,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
@@ -2875,7 +2875,7 @@
             <column-projection name="item_id" start-index="14" stop-index="20" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_distinct_with_multi_column_without_order_by" >
         <from>
             <simple-table name="t_order" start-index="47" stop-index="53" />
@@ -2897,7 +2897,7 @@
             <column-projection name="status" start-index="33" stop-index="38" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_distinct_with_owner_column_without_order_by" >
         <from>
             <simple-table name="t_order" start-index="38" stop-index="44" />
@@ -4286,7 +4286,7 @@
             <expression-projection text="1" start-index="7" stop-index="7" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_cast_as_signed">
         <from>
             <simple-table name="t_order" start-index="45" stop-index="51" />
@@ -4370,7 +4370,7 @@
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_cast_as_signed_integer">
         <from>
             <simple-table name="t_order" start-index="53" stop-index="59" />
@@ -4412,7 +4412,7 @@
             <column-projection name="user_id" start-index="42" stop-index="48" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_simple_table" >
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -5005,7 +5005,7 @@
             <column-item name="product" start-index="309" stop-index="315" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_with_comments">
         <from>
             <simple-table name="t_order" start-index="51" stop-index="57" />
@@ -5049,7 +5049,7 @@
             <column-projection name="order_item_id_value" start-index="22" stop-index="40" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_dollar_parameter_for_postgresql" parameters="1, 12" >
         <projections start-index="7" stop-index="14">
             <column-projection name="order_id" start-index="7" stop-index="14" />
@@ -6056,7 +6056,7 @@
             <simple-table name="t_order" start-index="38" stop-index="44" />
         </from>
     </select>
-    
+
     <select sql-case-id="select_literal_type_cast_money">
         <projections start-index="7" stop-index="18">
             <expression-projection text="'$99'::money" start-index="7" stop-index="18">
@@ -6071,7 +6071,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_positional_parameter_type_cast_money" parameters="123.00">
         <projections start-index="7" stop-index="15">
             <expression-projection text="$1::money" start-index="7" stop-index="15">
@@ -6086,7 +6086,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_string_constant_type_cast">
         <projections start-index="7" stop-index="25">
             <expression-projection text="int4 '1'" start-index="7" stop-index="14">
@@ -6111,7 +6111,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_constant_with_nested_type_cast">
         <projections start-index="7" stop-index="60">
             <expression-projection text="CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" start-index="7" stop-index="60">
@@ -6185,7 +6185,7 @@
             <simple-table name="DUAL" start-index="19" stop-index="22" />
         </from>
     </select>
-    
+
     <select sql-case-id="select_with_keyword_system" parameters="0">
         <from>
             <simple-table name="vtx_project" start-index="14" stop-index="24" />
@@ -6222,7 +6222,7 @@
             </column-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_format_function">
         <projections start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
             <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
@@ -6292,7 +6292,7 @@
             <simple-table name="employees" start-index="48" stop-index="56" literal-start-index="48" literal-stop-index="56"/>
         </from>
     </select>
-    
+
     <select sql-case-id="select_with_ntile_function">
         <projections start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
             <expression-projection text="NTILE(4) OVER (ORDER BY salary DESC)" alias="quartile" start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
@@ -7117,7 +7117,7 @@
             </join-table>
         </from>
     </select>
-    
+
     <select sql-case-id="select_with_group_by_and_having">
         <projections start-index="7" stop-index="14">
             <column-projection name="cfg_name" start-index="7" stop-index="14" />
@@ -7283,7 +7283,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_numeric_operator">
         <projections start-index="7" stop-index="18">
             <expression-projection start-index="7" stop-index="18" text="5!" alias="RESULT" />
@@ -7340,7 +7340,7 @@
                           literal-stop-index="32"/>
         </from>
     </select>
-    
+
     <select sql-case-id="select_wm_concat_function1">
         <projections start-index="7" stop-index="72">
             <expression-projection alias="ID" text="TO_CHAR(WM_CONCAT(DISTINCT TEST_ID) OVER(PARTITION BY TEST_ID))" start-index="7" stop-index="72">
@@ -7361,7 +7361,7 @@
             <simple-table name="TEST_TABLE" start-index="79" stop-index="88" />
         </from>
     </select>
-    
+
     <select sql-case-id="select_wm_concat_function2">
         <projections start-index="7" stop-index="26">
             <expression-projection alias="NAME" text="WM_CONCAT(NAME)" start-index="7" stop-index="26">
@@ -7378,7 +7378,7 @@
             <simple-table name="TEST_TABLE" start-index="33" stop-index="42" />
         </from>
     </select>
-    
+
     <select sql-case-id="select_wm_concat_function3">
         <projections start-index="7" stop-index="38">
             <expression-projection text="REPLACE(WM_CONCAT(NAME),',','|')" start-index="7" stop-index="38">
@@ -7405,7 +7405,7 @@
             <simple-table name="TEST_TABLE" start-index="45" stop-index="54" />
         </from>
     </select>
-    
+
     <select sql-case-id="select_wm_concat_function4">
         <projections start-index="7" stop-index="102">
             <column-projection name="NAME" start-index="7" stop-index="10" />
@@ -7482,7 +7482,7 @@
             <column-item name="NAME" order-direction="ASC" start-index="148" stop-index="151" />
         </group-by>
     </select>
-    
+
     <select sql-case-id="select_with_user_updatable_columns">
         <projections start-index="7" stop-index="28">
             <column-projection name="column_name" start-index="7" stop-index="17" />
@@ -7536,7 +7536,7 @@
             </expr>
         </where>
     </select>
-    
+
     <select sql-case-id="select_not_expression">
         <projections start-index="7" stop-index="75">
             <expression-projection text="!0" start-index="7" stop-index="8">
@@ -7805,5 +7805,57 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_with_top_restrict1">
+        <from>
+            <simple-table name="TableName" start-index="21" stop-index="29"/>
+        </from>
+        <projections start-index="7" stop-index="14">
+            <top-projection start-index="7" stop-index="12">
+                <top-value value="10" start-index="11" stop-index="12" />
+            </top-projection>
+            <shorthand-projection stop-index="14" start-index="14"/>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_top_restrict2">
+        <from>
+            <simple-table name="TableName" start-index="30" stop-index="38"/>
+        </from>
+        <projections start-index="7" stop-index="23">
+            <top-projection start-index="7" stop-index="12">
+                <top-value value="10" start-index="11" stop-index="12"/>
+            </top-projection>
+            <column-projection name="columnName" start-index="14" stop-index="23"/>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_top_restrict3">
+        <from>
+            <simple-table name="TableName" start-index="37" stop-index="52" alias="alias1"/>
+        </from>
+        <projections start-index="7" stop-index="30">
+            <top-projection start-index="7" stop-index="12">
+                <top-value value="10" start-index="11" stop-index="12"/>
+            </top-projection>
+            <column-projection name="columnName" start-index="14" stop-index="30">
+                <owner name="alias1" start-index="14" stop-index="19"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_top_with_ties">
+        <from>
+            <simple-table name="TableName" start-index="47" stop-index="62" alias="alias1"/>
+        </from>
+        <projections start-index="7" stop-index="40">
+            <top-projection start-index="7" stop-index="22">
+                <top-value value="10" start-index="11" stop-index="12"/>
+            </top-projection>
+            <column-projection name="columnName" start-index="24" stop-index="40">
+                <owner name="alias1" start-index="24" stop-index="29"/>
+            </column-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>
