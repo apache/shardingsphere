@@ -46,7 +46,6 @@ import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.Incrementa
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
@@ -126,9 +125,7 @@ public final class CDCJobPreparer {
             }
             Dumper dumper = new InventoryDumper(each, channel, jobItemContext.getSourceDataSource(), jobItemContext.getSourceMetaDataLoader());
             Importer importer = importerUsed.get() ? null
-                    : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 100, TimeUnit.MILLISECONDS, jobItemContext.getSink(),
-                            needSorting(taskConfig.getDumperContext().getCommonContext().getDataSourceConfig().getDatabaseType()),
-                            importerConfig.getRateLimitAlgorithm());
+                    : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 100, TimeUnit.MILLISECONDS, jobItemContext.getSink(), false, importerConfig.getRateLimitAlgorithm());
             jobItemContext.getInventoryTasks().add(new CDCInventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
                     processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));
             if (!(position.get() instanceof FinishedPosition)) {
@@ -136,10 +133,6 @@ public final class CDCJobPreparer {
             }
         }
         log.info("initInventoryTasks cost {} ms", System.currentTimeMillis() - startTimeMillis);
-    }
-    
-    private boolean needSorting(final DatabaseType databaseType) {
-        return DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).isSupportGlobalCSN();
     }
     
     private void initIncrementalTask(final CDCJobItemContext jobItemContext, final AtomicBoolean importerUsed, final List<CDCChannelProgressPair> channelProgressPairs) {
