@@ -71,7 +71,7 @@ class GeneratedKeyContextEngineTest {
     void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForMySQL() {
         assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new MySQLInsertStatement());
     }
-
+    
     @Test
     void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForOracle() {
         assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new OracleInsertStatement());
@@ -103,7 +103,7 @@ class GeneratedKeyContextEngineTest {
     void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForMySQL() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new MySQLInsertStatement());
     }
-
+    
     @Test
     void assertCreateGenerateKeyContextWhenCreateWithGenerateUpperCaseKeyColumnConfigurationForMySQL2() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new MySQLInsertStatement(), "tbl2");
@@ -128,7 +128,7 @@ class GeneratedKeyContextEngineTest {
     void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForSQLServer() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new SQLServerInsertStatement());
     }
-
+    
     private void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(final InsertStatement insertStatement) {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(insertStatement, "tbl");
     }
