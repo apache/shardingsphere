@@ -31,6 +31,6 @@ class NewYamlSQLFederationRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new SQLFederationRuleConfiguration(false, new CacheOption(0, 0))).iterator().next().getKey(), is("sql_federation"));
+        assertThat(swapper.swapToDataNodes(new SQLFederationRuleConfiguration(false, false, new CacheOption(0, 0))).iterator().next().getKey(), is("sql_federation"));
     }
 }

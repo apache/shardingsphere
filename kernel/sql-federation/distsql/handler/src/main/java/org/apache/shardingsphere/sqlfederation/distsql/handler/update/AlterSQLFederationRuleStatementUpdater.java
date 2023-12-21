@@ -35,10 +35,11 @@ public final class AlterSQLFederationRuleStatementUpdater implements GlobalRuleR
     @Override
     public SQLFederationRuleConfiguration buildAlteredRuleConfiguration(final SQLFederationRuleConfiguration currentRuleConfig, final AlterSQLFederationRuleStatement sqlStatement) {
         boolean sqlFederationEnabled = null == sqlStatement.getSqlFederationEnabled() ? currentRuleConfig.isSqlFederationEnabled() : sqlStatement.getSqlFederationEnabled();
+        boolean allQueryUseSQLFederation = null == sqlStatement.getAllQueryUseSQLFederation() ? currentRuleConfig.isAllQueryUseSQLFederation() : sqlStatement.getAllQueryUseSQLFederation();
         CacheOption executionPlanCache = null == sqlStatement.getExecutionPlanCache()
                 ? currentRuleConfig.getExecutionPlanCache()
                 : createCacheOption(currentRuleConfig.getExecutionPlanCache(), sqlStatement.getExecutionPlanCache());
-        return new SQLFederationRuleConfiguration(sqlFederationEnabled, executionPlanCache);
+        return new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
     }
     
     private CacheOption createCacheOption(final CacheOption cacheOption, final CacheOptionSegment segment) {
