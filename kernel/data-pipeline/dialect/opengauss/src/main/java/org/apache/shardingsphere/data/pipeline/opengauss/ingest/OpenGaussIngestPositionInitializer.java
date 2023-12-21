@@ -22,7 +22,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.pojo.ReplicationSlotInfo;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositionInitializer;
 import org.opengauss.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
@@ -34,11 +34,11 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * OpenGauss WAL position initializer.
+ * Ingest position initializer for openGauss.
  */
 // TODO reuse PostgreSQLPositionInitializer
 @Slf4j
-public final class OpenGaussPositionInitializer implements PositionInitializer {
+public final class OpenGaussIngestPositionInitializer implements IngestPositionInitializer {
     
     private static final String SLOT_NAME_PREFIX = "pipeline";
     

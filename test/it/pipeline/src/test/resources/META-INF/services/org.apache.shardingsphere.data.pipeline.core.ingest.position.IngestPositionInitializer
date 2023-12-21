@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.ingest.position.H2PositionInitializer
+org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.ingest.position.H2IngestPositionInitializer

@@ -15,10 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-/**
- * Finished inventory position.
- */
-public final class FinishedPosition implements IngestPosition {
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPositionFactory;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+class UnsupportedKeyPositionTest {
+    
+    @Test
+    void assertInit() {
+        UnsupportedKeyPosition position = (UnsupportedKeyPosition) PrimaryKeyPositionFactory.newInstance("u,,");
+        assertNull(position.getBeginValue());
+        assertNull(position.getEndValue());
+    }
+    
+    @Test
+    void assertToString() {
+        assertThat(new UnsupportedKeyPosition().toString(), is("u,,"));
+    }
 }

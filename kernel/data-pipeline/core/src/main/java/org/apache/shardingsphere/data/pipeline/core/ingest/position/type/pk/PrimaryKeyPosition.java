@@ -15,30 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializer;
-
-import javax.sql.DataSource;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
- * Position initializer for H2.
+ * Primary key position.
+ * 
+ * @param <T> type of value
  */
-public final class H2PositionInitializer implements PositionInitializer {
+public interface PrimaryKeyPosition<T> extends IngestPosition {
     
-    @Override
-    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
-        return new PlaceholderPosition();
-    }
+    /**
+     * Get begin value.
+     *
+     * @return begin value
+     */
+    T getBeginValue();
     
-    @Override
-    public PlaceholderPosition init(final String data) {
-        return new PlaceholderPosition();
-    }
+    /**
+     * Get end value.
+     *
+     * @return end value
+     */
+    T getEndValue();
     
-    @Override
-    public String getDatabaseType() {
-        return "H2";
-    }
+    /**
+     * Convert value.
+     * @param value value to be converted
+     * @return converted value
+     */
+    T convert(String value);
+    
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    char getType();
 }

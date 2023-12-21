@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositionInitializer;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -28,9 +28,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * MySQL binlog position initializer.
+ * Ingest position initializer for MySQL.
  */
-public final class MySQLPositionInitializer implements PositionInitializer {
+public final class MySQLIngestPositionInitializer implements IngestPositionInitializer {
     
     @Override
     public BinlogPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {

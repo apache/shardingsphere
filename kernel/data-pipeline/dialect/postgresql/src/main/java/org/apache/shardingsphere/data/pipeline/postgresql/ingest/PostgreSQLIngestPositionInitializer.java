@@ -22,7 +22,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositionInitializer;
 import org.postgresql.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
@@ -32,10 +32,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL WAL position initializer.
+ * Ingest position initializer for PostgreSQ.
  */
 @Slf4j
-public final class PostgreSQLPositionInitializer implements PositionInitializer {
+public final class PostgreSQLIngestPositionInitializer implements IngestPositionInitializer {
     
     private static final String SLOT_NAME_PREFIX = "pipeline";
     

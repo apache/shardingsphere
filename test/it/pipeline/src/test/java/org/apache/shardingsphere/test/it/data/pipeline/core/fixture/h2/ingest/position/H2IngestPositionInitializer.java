@@ -15,18 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.ingest.position;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.PlaceholderPosition;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositionInitializer;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import javax.sql.DataSource;
 
-class PlaceholderPositionTest {
+/**
+ * Ingest position initializer for H2.
+ */
+public final class H2IngestPositionInitializer implements IngestPositionInitializer {
     
-    @Test
-    void assertToString() {
-        assertThat(new PlaceholderPosition().toString(), is(""));
+    @Override
+    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
+        return new PlaceholderPosition();
+    }
+    
+    @Override
+    public PlaceholderPosition init(final String data) {
+        return new PlaceholderPosition();
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "H2";
     }
 }

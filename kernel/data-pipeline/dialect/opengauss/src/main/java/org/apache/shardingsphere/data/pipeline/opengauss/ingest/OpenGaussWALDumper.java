@@ -110,7 +110,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.get().getLogSequenceNumber(),
-                    OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperContext.getJobId()));
+                    OpenGaussIngestPositionInitializer.getUniqueSlotName(connection, dumperContext.getJobId()));
             DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();

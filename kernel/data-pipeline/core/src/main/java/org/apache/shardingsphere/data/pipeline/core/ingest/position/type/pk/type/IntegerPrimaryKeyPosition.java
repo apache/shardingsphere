@@ -15,39 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.type;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import com.google.common.base.Strings;
-import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPosition;
 
 /**
- * String primary key position.
+ * Integer primary key position.
  */
-@Getter
-public final class StringPrimaryKeyPosition implements PrimaryKeyPosition<String> {
+public final class IntegerPrimaryKeyPosition implements PrimaryKeyPosition<Long> {
     
-    private final String beginValue;
+    private final long beginValue;
     
-    private final String endValue;
+    private final long endValue;
     
-    public StringPrimaryKeyPosition(final String beginValue, final String endValue) {
-        this.beginValue = Strings.emptyToNull(beginValue);
-        this.endValue = Strings.emptyToNull(endValue);
+    public IntegerPrimaryKeyPosition(final long beginValue, final long endValue) {
+        this.beginValue = beginValue;
+        this.endValue = endValue;
     }
     
     @Override
-    public String convert(final String value) {
-        return value;
+    public Long getBeginValue() {
+        return beginValue;
+    }
+    
+    @Override
+    public Long getEndValue() {
+        return endValue;
+    }
+    
+    @Override
+    public Long convert(final String value) {
+        return Long.parseLong(value);
     }
     
     @Override
     public char getType() {
-        return 's';
+        return 'i';
     }
     
     @Override
     public String toString() {
-        return String.format("%s,%s,%s", getType(), null == beginValue ? "" : beginValue, null == endValue ? "" : endValue);
+        return String.format("%s,%s,%s", getType(), beginValue, endValue);
     }
 }

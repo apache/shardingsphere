@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type;
+
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
  * Placeholder position.

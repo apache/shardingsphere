@@ -15,24 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import javax.sql.DataSource;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPosition;
 
-public final class FixturePositionInitializer implements PositionInitializer {
+/**
+ * Unsupported key position.
+ */
+public final class UnsupportedKeyPosition implements PrimaryKeyPosition<Void> {
     
     @Override
-    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
-        return new PlaceholderPosition();
+    public Void getBeginValue() {
+        return null;
     }
     
     @Override
-    public PlaceholderPosition init(final String data) {
-        return new PlaceholderPosition();
+    public Void getEndValue() {
+        return null;
     }
     
     @Override
-    public String getDatabaseType() {
-        return "H2";
+    public Void convert(final String value) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public char getType() {
+        return 'u';
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s,,", getType());
     }
 }

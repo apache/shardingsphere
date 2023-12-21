@@ -15,37 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.type;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPosition;
+import com.google.common.base.Strings;
+import lombok.Getter;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPosition;
 
 /**
- * Unsupported key position.
+ * String primary key position.
  */
-public final class UnsupportedKeyPosition implements PrimaryKeyPosition<Void> {
+@Getter
+public final class StringPrimaryKeyPosition implements PrimaryKeyPosition<String> {
     
-    @Override
-    public Void getBeginValue() {
-        return null;
+    private final String beginValue;
+    
+    private final String endValue;
+    
+    public StringPrimaryKeyPosition(final String beginValue, final String endValue) {
+        this.beginValue = Strings.emptyToNull(beginValue);
+        this.endValue = Strings.emptyToNull(endValue);
     }
     
     @Override
-    public Void getEndValue() {
-        return null;
-    }
-    
-    @Override
-    public Void convert(final String value) {
-        throw new UnsupportedOperationException();
+    public String convert(final String value) {
+        return value;
     }
     
     @Override
     public char getType() {
-        return 'u';
+        return 's';
     }
     
     @Override
     public String toString() {
-        return String.format("%s,,", getType());
+        return String.format("%s,%s,%s", getType(), null == beginValue ? "" : beginValue, null == endValue ? "" : endValue);
     }
 }

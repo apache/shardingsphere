@@ -15,42 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.pk;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
- * Primary key position.
- * 
- * @param <T> type of value
+ * Finished inventory position.
  */
-public interface PrimaryKeyPosition<T> extends IngestPosition {
-    
-    /**
-     * Get begin value.
-     *
-     * @return begin value
-     */
-    T getBeginValue();
-    
-    /**
-     * Get end value.
-     *
-     * @return end value
-     */
-    T getEndValue();
-    
-    /**
-     * Convert value.
-     * @param value value to be converted
-     * @return converted value
-     */
-    T convert(String value);
-    
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    char getType();
+public final class FinishedPosition implements IngestPosition {
 }

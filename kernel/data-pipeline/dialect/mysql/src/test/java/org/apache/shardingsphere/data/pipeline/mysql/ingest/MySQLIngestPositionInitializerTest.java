@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MySQLPositionInitializerTest {
+class MySQLIngestPositionInitializerTest {
     
     private static final String LOG_FILE_NAME = "binlog-000001";
     
@@ -61,7 +61,7 @@ class MySQLPositionInitializerTest {
     
     @Test
     void assertGetCurrentPosition() throws SQLException {
-        MySQLPositionInitializer positionInitializer = new MySQLPositionInitializer();
+        MySQLIngestPositionInitializer positionInitializer = new MySQLIngestPositionInitializer();
         BinlogPosition actual = positionInitializer.init(dataSource, "");
         assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));

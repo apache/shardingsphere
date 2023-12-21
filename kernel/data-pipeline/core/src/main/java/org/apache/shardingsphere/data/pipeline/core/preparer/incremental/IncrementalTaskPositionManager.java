@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositionInitializer;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -44,11 +44,11 @@ public final class IncrementalTaskPositionManager {
     
     private final DatabaseType databaseType;
     
-    private final PositionInitializer positionInitializer;
+    private final IngestPositionInitializer positionInitializer;
     
     public IncrementalTaskPositionManager(final DatabaseType databaseType) {
         this.databaseType = databaseType;
-        positionInitializer = DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType);
+        positionInitializer = DatabaseTypedSPILoader.getService(IngestPositionInitializer.class, databaseType);
     }
     
     /**
@@ -89,7 +89,7 @@ public final class IncrementalTaskPositionManager {
         log.info("destroyPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
-    private void destroyPosition(final String jobId, final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig, final PositionInitializer positionInitializer) throws SQLException {
+    private void destroyPosition(final String jobId, final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig, final IngestPositionInitializer positionInitializer) throws SQLException {
         for (DataSourcePoolProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePoolPropertiesMap(pipelineDataSourceConfig.getRootConfig()).values()) {
             try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(each), databaseType)) {
                 positionInitializer.destroy(dataSource, jobId);
@@ -97,7 +97,7 @@ public final class IncrementalTaskPositionManager {
         }
     }
     
-    private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig, final PositionInitializer positionInitializer) throws SQLException {
+    private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig, final IngestPositionInitializer positionInitializer) throws SQLException {
         try (
                 PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(
                         DataSourcePoolCreator.create((DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration()), databaseType)) {

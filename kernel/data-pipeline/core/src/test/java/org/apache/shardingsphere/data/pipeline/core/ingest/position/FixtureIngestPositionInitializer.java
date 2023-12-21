@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.type;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPositionFactory;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.PlaceholderPosition;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import javax.sql.DataSource;
 
-class UnsupportedKeyPositionTest {
+public final class FixtureIngestPositionInitializer implements IngestPositionInitializer {
     
-    @Test
-    void assertInit() {
-        UnsupportedKeyPosition position = (UnsupportedKeyPosition) PrimaryKeyPositionFactory.newInstance("u,,");
-        assertNull(position.getBeginValue());
-        assertNull(position.getEndValue());
+    @Override
+    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
+        return new PlaceholderPosition();
     }
     
-    @Test
-    void assertToString() {
-        assertThat(new UnsupportedKeyPosition().toString(), is("u,,"));
+    @Override
+    public PlaceholderPosition init(final String data) {
+        return new PlaceholderPosition();
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "H2";
     }
 }
