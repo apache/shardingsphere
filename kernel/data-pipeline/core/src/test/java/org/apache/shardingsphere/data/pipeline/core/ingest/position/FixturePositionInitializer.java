@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
-
 import javax.sql.DataSource;
 
 public final class FixturePositionInitializer implements PositionInitializer {

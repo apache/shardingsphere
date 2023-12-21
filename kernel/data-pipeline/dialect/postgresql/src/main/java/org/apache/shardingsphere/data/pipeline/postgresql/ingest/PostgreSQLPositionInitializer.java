@@ -22,7 +22,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializer;
 import org.postgresql.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;

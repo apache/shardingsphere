@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDum
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumperCreator;
 
 /**
  * MySQL incremental dumper creator.

@@ -15,46 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-
 /**
- * Position initializer.
+ * Incremental dumper creator.
  */
 @SingletonSPI
-public interface PositionInitializer extends DatabaseTypedSPI {
+public interface IncrementalDumperCreator extends DatabaseTypedSPI {
     
     /**
-     * Init position by data source.
+     * Create incremental dumper.
      *
-     * @param dataSource data source
-     * @param slotNameSuffix slot name suffix
-     * @return position
-     * @throws SQLException SQL exception
+     * @param context incremental dumper context
+     * @param position position
+     * @param channel channel
+     * @param metaDataLoader meta data loader
+     * @return incremental dumper
      */
-    IngestPosition init(DataSource dataSource, String slotNameSuffix) throws SQLException;
-    
-    /**
-     * Init position by string data.
-     *
-     * @param data string data
-     * @return position
-     */
-    IngestPosition init(String data);
-    
-    /**
-     * Clean up by data source if necessary.
-     *
-     * @param dataSource data source
-     * @param slotNameSuffix slot name suffix
-     * @throws SQLException SQL exception
-     */
-    default void destroy(DataSource dataSource, final String slotNameSuffix) throws SQLException {
-    }
+    IncrementalDumper createIncrementalDumper(IncrementalDumperContext context, IngestPosition position, PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
 }

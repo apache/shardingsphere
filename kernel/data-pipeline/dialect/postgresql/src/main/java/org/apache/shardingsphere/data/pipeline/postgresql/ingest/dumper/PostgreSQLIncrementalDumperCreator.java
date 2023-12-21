@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDum
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWALDumper;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumperCreator;
 
 /**
  * PostgreSQL incremental dumper creator.
