@@ -65,7 +65,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WALEventConverterTest {
     
@@ -148,8 +147,8 @@ class WALEventConverterTest {
         BeginTXEvent beginTXEvent = new BeginTXEvent(100);
         beginTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(beginTXEvent);
-        assertTrue(record instanceof PlaceholderRecord);
-        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(21953976L));
+        assertInstanceOf(PlaceholderRecord.class, record);
+        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asString(), is(logSequenceNumber.asString()));
     }
     
     @Test
@@ -157,8 +156,8 @@ class WALEventConverterTest {
         CommitTXEvent commitTXEvent = new CommitTXEvent(1, 3468L);
         commitTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(commitTXEvent);
-        assertTrue(record instanceof PlaceholderRecord);
-        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(21953976L));
+        assertInstanceOf(PlaceholderRecord.class, record);
+        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asString(), is(logSequenceNumber.asString()));
     }
     
     @Test

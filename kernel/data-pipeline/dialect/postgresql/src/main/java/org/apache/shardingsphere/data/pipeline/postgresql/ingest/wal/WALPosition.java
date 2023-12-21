@@ -33,6 +33,6 @@ public final class WALPosition implements IngestPosition {
     
     @Override
     public String toString() {
-        return logSequenceNumber.toString();
+        return logSequenceNumber.asString();
     }
 }

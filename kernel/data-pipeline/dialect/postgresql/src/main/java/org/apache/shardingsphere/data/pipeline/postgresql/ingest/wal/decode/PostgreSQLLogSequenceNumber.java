@@ -18,28 +18,25 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.postgresql.replication.LogSequenceNumber;
 
 /**
  * PostgreSQL sequence.
  */
 @AllArgsConstructor
+@ToString
 public final class PostgreSQLLogSequenceNumber implements BaseLogSequenceNumber {
     
     private final LogSequenceNumber logSequenceNumber;
     
     @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
+    public String asString() {
+        return logSequenceNumber.asString();
     }
     
     @Override
     public Object get() {
         return logSequenceNumber;
-    }
-    
-    @Override
-    public String toString() {
-        return logSequenceNumber.asString();
     }
 }

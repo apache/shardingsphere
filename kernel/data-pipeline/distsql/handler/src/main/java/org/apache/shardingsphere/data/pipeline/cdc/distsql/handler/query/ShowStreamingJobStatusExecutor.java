@@ -21,15 +21,14 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.core.pojo.CDCJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreamingStatusStatement;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -42,25 +41,25 @@ public final class ShowStreamingJobStatusExecutor implements QueryableRALExecuto
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingStatusStatement sqlStatement) {
-        List<CDCJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
+        Collection<CDCJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
-        long startTimeMillis = Long.parseLong(Optional.ofNullable(PipelineJobIdUtils.getElasticJobConfigurationPOJO(sqlStatement.getJobId()).getProps().getProperty("start_time_millis")).orElse("0"));
-        return jobItemInfos.stream().map(each -> getRow(each, startTimeMillis, currentTimeMillis)).collect(Collectors.toList());
+        return jobItemInfos.stream().map(each -> getRow(each, currentTimeMillis)).collect(Collectors.toList());
     }
     
-    private LocalDataQueryResultRow getRow(final CDCJobItemInfo jobItemInfo, final long startTimeMillis, final long currentTimeMillis) {
-        if (null == jobItemInfo.getStatus()) {
-            return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", jobItemInfo.getErrorMessage());
+    private LocalDataQueryResultRow getRow(final CDCJobItemInfo cdcJobItemInfo, final long currentTimeMillis) {
+        TransmissionJobItemInfo transmissionJobItemInfo = cdcJobItemInfo.getTransmissionJobItemInfo();
+        TransmissionJobItemProgress jobItemProgress = transmissionJobItemInfo.getJobItemProgress();
+        if (null == jobItemProgress) {
+            return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), "", "", "", "", "", "", "", "", transmissionJobItemInfo.getErrorMessage());
         }
         String incrementalIdleSeconds = "";
-        if (null != jobItemInfo.getIncremental() && jobItemInfo.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
-            long incrementalLatestActiveTimeMillis = jobItemInfo.getIncremental().getIncrementalLatestActiveTimeMillis();
-            long latestActiveTimeMillis = Math.max(startTimeMillis, incrementalLatestActiveTimeMillis);
+        if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
+            long latestActiveTimeMillis = Math.max(transmissionJobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
             incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
         }
-        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemInfo.getDataSourceName(), jobItemInfo.getStatus().toString(),
-                jobItemInfo.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemInfo.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(),
-                incrementalIdleSeconds, jobItemInfo.getConfirmedPosition(), jobItemInfo.getCurrentPosition(), jobItemInfo.getErrorMessage());
+        return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
+                jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), transmissionJobItemInfo.getInventoryFinishedPercentage(),
+                incrementalIdleSeconds, cdcJobItemInfo.getConfirmedPosition(), cdcJobItemInfo.getCurrentPosition(), transmissionJobItemInfo.getErrorMessage());
     }
     
     @Override

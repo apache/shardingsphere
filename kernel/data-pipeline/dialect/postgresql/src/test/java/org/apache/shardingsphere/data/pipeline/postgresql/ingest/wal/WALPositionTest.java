@@ -29,6 +29,5 @@ class WALPositionTest {
     @Test
     void assertToString() {
         assertThat(new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))).toString(), is("0/64"));
-        assertThat(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)).asLong(), is(100L));
     }
 }

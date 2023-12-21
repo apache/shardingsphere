@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.opengauss.replication.LogSequenceNumber;
 
@@ -25,22 +26,18 @@ import org.opengauss.replication.LogSequenceNumber;
  * Log sequence number of openGauss.
  */
 @RequiredArgsConstructor
+@ToString
 public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
     
     private final LogSequenceNumber logSequenceNumber;
     
     @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
+    public String asString() {
+        return logSequenceNumber.asString();
     }
     
     @Override
     public Object get() {
         return logSequenceNumber;
-    }
-    
-    @Override
-    public String toString() {
-        return logSequenceNumber.asString();
     }
 }

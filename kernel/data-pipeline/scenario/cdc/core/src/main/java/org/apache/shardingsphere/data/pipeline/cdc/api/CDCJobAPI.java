@@ -54,6 +54,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfi
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
+import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.preparer.incremental.IncrementalTaskPositionManager;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.spi.sql.DialectPipelineSQLBuilder;
@@ -61,7 +62,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTas
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -76,6 +76,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -283,25 +284,17 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      */
     public List<CDCJobItemInfo> getJobItemInfos(final String jobId) {
         CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(jobId);
-        Map<Integer, TransmissionJobItemProgress> jobProgress = new TransmissionJobManager(jobType).getJobProgress(jobConfig);
-        List<CDCJobItemInfo> result = new LinkedList<>();
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(jobConfig.getDatabaseName());
-        for (Entry<Integer, TransmissionJobItemProgress> entry : jobProgress.entrySet()) {
-            int shardingItem = entry.getKey();
-            String tableNames = jobConfig.getJobShardingDataNodes().get(shardingItem).getEntries().stream().flatMap(each -> each.getDataNodes().stream()).map(DataNode::format)
-                    .collect(Collectors.joining(","));
-            TransmissionJobItemProgress jobItemProgress = entry.getValue();
-            String errorMessage = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().load(jobId, shardingItem);
+        Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(jobType).getJobItemInfos(jobId);
+        List<CDCJobItemInfo> result = new LinkedList<>();
+        for (TransmissionJobItemInfo each : jobItemInfos) {
+            TransmissionJobItemProgress jobItemProgress = each.getJobItemProgress();
             if (null == jobItemProgress) {
-                result.add(new CDCJobItemInfo(shardingItem, "", tableNames, null, false, 0, 0, 0, null, "", "", errorMessage));
+                result.add(new CDCJobItemInfo(each, "", ""));
                 continue;
             }
-            int inventoryFinishedPercentage = TransmissionJobManager.getInventoryFinishedPercentage(jobItemProgress);
-            String confirmedPosition = jobItemProgress.getIncremental().getIncrementalPosition().map(Object::toString).orElse("");
-            String currentPosition = getCurrentPosition(database, jobItemProgress.getDataSourceName());
-            result.add(new CDCJobItemInfo(shardingItem, jobItemProgress.getDataSourceName(), tableNames, jobItemProgress.getStatus(), jobItemProgress.isActive(),
-                    jobItemProgress.getInventoryRecordsCount(), jobItemProgress.getProcessedRecordsCount(), inventoryFinishedPercentage, jobItemProgress.getIncremental(), confirmedPosition,
-                    currentPosition, errorMessage));
+            result.add(new CDCJobItemInfo(each, jobItemProgress.getIncremental().getIncrementalPosition().map(Object::toString).orElse(""),
+                    getCurrentPosition(database, jobItemProgress.getDataSourceName())));
         }
         return result;
     }

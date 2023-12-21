@@ -19,8 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
+import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
 
 /**
  * CDC job item info.
@@ -29,27 +28,9 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncremen
 @Getter
 public class CDCJobItemInfo {
     
-    private final int shardingItem;
-    
-    private final String dataSourceName;
-    
-    private final String tableNames;
-    
-    private final JobStatus status;
-    
-    private final boolean active;
-    
-    private final long inventoryRecordsCount;
-    
-    private final long processedRecordsCount;
-    
-    private final int inventoryFinishedPercentage;
-    
-    private final JobItemIncrementalTasksProgress incremental;
+    private final TransmissionJobItemInfo transmissionJobItemInfo;
     
     private final String confirmedPosition;
     
     private final String currentPosition;
-    
-    private final String errorMessage;
 }
