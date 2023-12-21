@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.engine;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -61,14 +62,16 @@ class GeneratedKeyContextEngineTest {
     void setUp() {
         ShardingSphereTable table = new ShardingSphereTable(
                 "tbl", Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, true, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap());
+        ShardingSphereTable table2 = new ShardingSphereTable(
+                "tbl2", Collections.singletonList(new ShardingSphereColumn("ID", Types.INTEGER, true, true, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
+        schema = new ShardingSphereSchema(ImmutableMap.of(table.getName(), table, table2.getName(), table2), Collections.emptyMap());
     }
     
     @Test
     void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForMySQL() {
         assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new MySQLInsertStatement());
     }
-    
+
     @Test
     void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfigurationForOracle() {
         assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration(new OracleInsertStatement());
@@ -100,6 +103,11 @@ class GeneratedKeyContextEngineTest {
     void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForMySQL() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new MySQLInsertStatement());
     }
+
+    @Test
+    void assertCreateGenerateKeyContextWhenCreateWithGenerateUpperCaseKeyColumnConfigurationForMySQL2() {
+        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new MySQLInsertStatement(), "tbl2");
+    }
     
     @Test
     void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForOracle() {
@@ -120,9 +128,13 @@ class GeneratedKeyContextEngineTest {
     void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfigurationForSQLServer() {
         assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(new SQLServerInsertStatement());
     }
-    
+
     private void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(final InsertStatement insertStatement) {
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(insertStatement, "tbl");
+    }
+    
+    private void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration(final InsertStatement insertStatement, final String tableName) {
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName))));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
         List<ExpressionSegment> expressionSegments = Collections.singletonList(new LiteralExpressionSegment(0, 0, 1));
         InsertValueContext insertValueContext = new InsertValueContext(expressionSegments, Collections.emptyList(), 0);
