@@ -27,11 +27,11 @@ import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLife
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPositionFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
@@ -96,7 +96,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     @Override
     protected void runBlocking() {
         IngestPosition position = dumperContext.getCommonContext().getPosition();
-        if (position instanceof FinishedPosition) {
+        if (position instanceof IngestFinishedPosition) {
             log.info("Ignored because of already finished.");
             return;
         }
@@ -143,7 +143,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
                         rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
                 }
-                dataRecords.add(new FinishedRecord(new FinishedPosition()));
+                dataRecords.add(new FinishedRecord(new IngestFinishedPosition()));
                 channel.pushRecords(dataRecords);
                 dumpStatement.set(null);
                 log.info("Inventory dump done, rowCount={}, dataSource={}, actualTable={}", rowCount, dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
@@ -159,7 +159,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         if (!dumperContext.hasUniqueKey()) {
             return inventoryDumpSQLBuilder.buildFetchAllSQL(schemaName, dumperContext.getActualTableName());
         }
-        PrimaryKeyPosition<?> primaryKeyPosition = (PrimaryKeyPosition<?>) dumperContext.getCommonContext().getPosition();
+        PrimaryKeyIngestPosition<?> primaryKeyPosition = (PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition();
         PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
         Collection<String> columnNames = Collections.singleton("*");
         if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) || PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
@@ -178,7 +178,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
             return;
         }
         PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
-        PrimaryKeyPosition<?> position = (PrimaryKeyPosition<?>) dumperContext.getCommonContext().getPosition();
+        PrimaryKeyIngestPosition<?> position = (PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition();
         if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) && null != position.getBeginValue() && null != position.getEndValue()) {
             preparedStatement.setObject(1, position.getBeginValue());
             preparedStatement.setObject(2, position.getEndValue());
@@ -211,9 +211,9 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     
     private IngestPosition newPosition(final ResultSet resultSet) throws SQLException {
         return dumperContext.hasUniqueKey()
-                ? PrimaryKeyPositionFactory.newInstance(
-                        resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperContext.getCommonContext().getPosition()).getEndValue())
-                : new PlaceholderPosition();
+                ? PrimaryKeyIngestPositionFactory.newInstance(
+                        resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyIngestPosition<?>) dumperContext.getCommonContext().getPosition()).getEndValue())
+                : new IngestPlaceholderPosition();
     }
     
     @Override

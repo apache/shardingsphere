@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPositionFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,13 +28,13 @@ class UnsupportedKeyPositionTest {
     
     @Test
     void assertInit() {
-        UnsupportedKeyPosition position = (UnsupportedKeyPosition) PrimaryKeyPositionFactory.newInstance("u,,");
+        UnsupportedKeyIngestPosition position = (UnsupportedKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("u,,");
         assertNull(position.getBeginValue());
         assertNull(position.getEndValue());
     }
     
     @Test
     void assertToString() {
-        assertThat(new UnsupportedKeyPosition().toString(), is("u,,"));
+        assertThat(new UnsupportedKeyIngestPosition().toString(), is("u,,"));
     }
 }

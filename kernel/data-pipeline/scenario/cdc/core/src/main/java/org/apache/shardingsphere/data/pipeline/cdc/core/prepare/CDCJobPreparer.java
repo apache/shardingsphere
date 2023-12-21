@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
@@ -121,7 +121,7 @@ public final class CDCJobPreparer {
                 .splitInventoryDumperContext(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
             PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getPipelineChannelCreator(), importerConfig.getBatchSize(), position);
-            if (!(position.get() instanceof FinishedPosition)) {
+            if (!(position.get() instanceof IngestFinishedPosition)) {
                 channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
             }
             Dumper dumper = new InventoryDumper(each, channel, jobItemContext.getSourceDataSource(), jobItemContext.getSourceMetaDataLoader());
@@ -131,7 +131,7 @@ public final class CDCJobPreparer {
                             importerConfig.getRateLimitAlgorithm());
             jobItemContext.getInventoryTasks().add(new CDCInventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
                     processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));
-            if (!(position.get() instanceof FinishedPosition)) {
+            if (!(position.get() instanceof IngestFinishedPosition)) {
                 importerUsed.set(true);
             }
         }

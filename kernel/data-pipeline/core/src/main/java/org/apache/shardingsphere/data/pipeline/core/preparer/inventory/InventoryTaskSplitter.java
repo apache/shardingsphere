@@ -30,10 +30,10 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.config.Pipeline
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
@@ -115,7 +115,7 @@ public final class InventoryTaskSplitter {
             // use original table name, for metadata loader, since some database table name case-sensitive
             inventoryDumperContext.setActualTableName(key.toString());
             inventoryDumperContext.setLogicTableName(value.toString());
-            inventoryDumperContext.getCommonContext().setPosition(new PlaceholderPosition());
+            inventoryDumperContext.getCommonContext().setPosition(new IngestPlaceholderPosition());
             inventoryDumperContext.setInsertColumnNames(dumperContext.getInsertColumnNames());
             inventoryDumperContext.setUniqueKeyColumns(dumperContext.getUniqueKeyColumns());
             result.add(inventoryDumperContext);
@@ -166,7 +166,7 @@ public final class InventoryTaskSplitter {
         long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperContext, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         if (!dumperContext.hasUniqueKey()) {
-            return Collections.singleton(new UnsupportedKeyPosition());
+            return Collections.singleton(new UnsupportedKeyIngestPosition());
         }
         List<PipelineColumnMetaData> uniqueKeyColumns = dumperContext.getUniqueKeyColumns();
         if (1 == uniqueKeyColumns.size()) {
@@ -176,16 +176,16 @@ public final class InventoryTaskSplitter {
             }
             if (PipelineJdbcUtils.isStringColumn(firstColumnDataType)) {
                 // TODO Support string unique key table splitting. Ascii characters ordering are different in different versions of databases.
-                return Collections.singleton(new StringPrimaryKeyPosition(null, null));
+                return Collections.singleton(new StringPrimaryKeyIngestPosition(null, null));
             }
         }
-        return Collections.singleton(new UnsupportedKeyPosition());
+        return Collections.singleton(new UnsupportedKeyIngestPosition());
     }
     
     private Collection<IngestPosition> getPositionByIntegerUniqueKeyRange(final InventoryDumperContext dumperContext, final long tableRecordsCount,
                                                                           final TransmissionJobItemContext jobItemContext, final PipelineDataSourceWrapper dataSource) {
         if (0 == tableRecordsCount) {
-            return Collections.singletonList(new IntegerPrimaryKeyPosition(0, 0));
+            return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0, 0));
         }
         Collection<IngestPosition> result = new LinkedList<>();
         Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dataSource, dumperContext);
@@ -195,7 +195,7 @@ public final class InventoryTaskSplitter {
         IntervalToRangeIterator rangeIterator = new IntervalToRangeIterator(uniqueKeyValuesRange.getMinimum(), uniqueKeyValuesRange.getMaximum(), interval);
         while (rangeIterator.hasNext()) {
             Range<Long> range = rangeIterator.next();
-            result.add(new IntegerPrimaryKeyPosition(range.getMinimum(), range.getMaximum()));
+            result.add(new IntegerPrimaryKeyIngestPosition(range.getMinimum(), range.getMaximum()));
         }
         return result;
     }

@@ -15,18 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.PlaceholderPosition;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class PlaceholderPositionTest {
+/**
+ * Primary key ingest position.
+ * 
+ * @param <T> type of value
+ */
+public interface PrimaryKeyIngestPosition<T> extends IngestPosition {
     
-    @Test
-    void assertToString() {
-        assertThat(new PlaceholderPosition().toString(), is(""));
-    }
+    /**
+     * Get begin value.
+     *
+     * @return begin value
+     */
+    T getBeginValue();
+    
+    /**
+     * Get end value.
+     *
+     * @return end value
+     */
+    T getEndValue();
+    
+    /**
+     * Convert value.
+     * @param value value to be converted
+     * @return converted value
+     */
+    T convert(String value);
+    
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    char getType();
 }

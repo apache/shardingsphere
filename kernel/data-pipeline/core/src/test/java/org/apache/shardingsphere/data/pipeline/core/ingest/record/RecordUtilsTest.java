@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.record;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -40,7 +40,7 @@ class RecordUtilsTest {
     }
     
     private DataRecord mockDataRecord() {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, "t2", new PlaceholderPosition(), 4);
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, "t2", new IngestPlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("sc", "", false, true));
         result.addColumn(new Column("c1", "", true, false));

@@ -15,37 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
- * Unsupported key position.
+ * Ingest placeholder position.
  */
-public final class UnsupportedKeyPosition implements PrimaryKeyPosition<Void> {
-    
-    @Override
-    public Void getBeginValue() {
-        return null;
-    }
-    
-    @Override
-    public Void getEndValue() {
-        return null;
-    }
-    
-    @Override
-    public Void convert(final String value) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public char getType() {
-        return 'u';
-    }
+public final class IngestPlaceholderPosition implements IngestPosition {
     
     @Override
     public String toString() {
-        return String.format("%s,,", getType());
+        return "";
     }
 }

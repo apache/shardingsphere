@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 
 import javax.sql.DataSource;
 
 public final class FixtureIngestPositionManager implements DialectIngestPositionManager {
     
     @Override
-    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
-        return new PlaceholderPosition();
+    public IngestPlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
+        return new IngestPlaceholderPosition();
     }
     
     @Override
-    public PlaceholderPosition init(final String data) {
-        return new PlaceholderPosition();
+    public IngestPlaceholderPosition init(final String data) {
+        return new IngestPlaceholderPosition();
     }
     
     @Override

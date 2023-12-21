@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
 
 /**
- * Integer primary key position.
+ * Integer primary key ingest position.
  */
-public final class IntegerPrimaryKeyPosition implements PrimaryKeyPosition<Long> {
+public final class IntegerPrimaryKeyIngestPosition implements PrimaryKeyIngestPosition<Long> {
     
     private final long beginValue;
     
     private final long endValue;
     
-    public IntegerPrimaryKeyPosition(final long beginValue, final long endValue) {
+    public IntegerPrimaryKeyIngestPosition(final long beginValue, final long endValue) {
         this.beginValue = beginValue;
         this.endValue = endValue;
     }

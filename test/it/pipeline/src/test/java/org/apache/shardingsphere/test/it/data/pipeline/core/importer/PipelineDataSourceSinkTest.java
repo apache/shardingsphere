@@ -23,8 +23,8 @@ import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfigurati
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineDataSourceSink;
@@ -146,7 +146,7 @@ class PipelineDataSourceSinkTest {
     }
     
     private DataRecord getUpdatePrimaryKeyDataRecord() {
-        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, TABLE_NAME, new PlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, TABLE_NAME, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", 1, 2, true, true));
         result.addColumn(new Column("user", 0, 10, true, false));
         result.addColumn(new Column("status", null, "UPDATE", true, false));
@@ -156,7 +156,7 @@ class PipelineDataSourceSinkTest {
     private List<Record> mockRecords(final DataRecord dataRecord) {
         List<Record> result = new LinkedList<>();
         result.add(dataRecord);
-        result.add(new FinishedRecord(new FinishedPosition()));
+        result.add(new FinishedRecord(new IngestFinishedPosition()));
         return result;
     }
     
@@ -184,7 +184,7 @@ class PipelineDataSourceSinkTest {
             userOldValue = 10;
             statusOldValue = recordType;
         }
-        DataRecord result = new DataRecord(recordType, TABLE_NAME, new PlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(recordType, TABLE_NAME, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", idOldValue, idValue, false, true));
         result.addColumn(new Column("user", userOldValue, userValue, true, false));
         result.addColumn(new Column("status", statusOldValue, statusValue, true, false));

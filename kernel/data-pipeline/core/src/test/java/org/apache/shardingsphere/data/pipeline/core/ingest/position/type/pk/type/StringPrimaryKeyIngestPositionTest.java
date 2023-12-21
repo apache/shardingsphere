@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPositionFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class StringPrimaryKeyPositionTest {
+class StringPrimaryKeyIngestPositionTest {
     
     @Test
     void assertInit() {
-        StringPrimaryKeyPosition position = (StringPrimaryKeyPosition) PrimaryKeyPositionFactory.newInstance("s,hi,jk");
+        StringPrimaryKeyIngestPosition position = (StringPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("s,hi,jk");
         assertThat(position.getBeginValue(), is("hi"));
         assertThat(position.getEndValue(), is("jk"));
     }
     
     @Test
     void assertToString() {
-        assertThat(new StringPrimaryKeyPosition("hi", "jk").toString(), is("s,hi,jk"));
+        assertThat(new StringPrimaryKeyIngestPosition("hi", "jk").toString(), is("s,hi,jk"));
     }
     
     @Test
     void assertEmptyToNull() {
-        StringPrimaryKeyPosition actual = (StringPrimaryKeyPosition) PrimaryKeyPositionFactory.newInstance("s,,");
+        StringPrimaryKeyIngestPosition actual = (StringPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("s,,");
         assertNull(actual.getBeginValue());
         assertNull(actual.getEndValue());
     }

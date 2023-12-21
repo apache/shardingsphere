@@ -19,19 +19,19 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.typ
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
 
 /**
- * String primary key position.
+ * String primary key ingest position.
  */
 @Getter
-public final class StringPrimaryKeyPosition implements PrimaryKeyPosition<String> {
+public final class StringPrimaryKeyIngestPosition implements PrimaryKeyIngestPosition<String> {
     
     private final String beginValue;
     
     private final String endValue;
     
-    public StringPrimaryKeyPosition(final String beginValue, final String endValue) {
+    public StringPrimaryKeyIngestPosition(final String beginValue, final String endValue) {
         this.beginValue = Strings.emptyToNull(beginValue);
         this.endValue = Strings.emptyToNull(endValue);
     }

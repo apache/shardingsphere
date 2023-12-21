@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
@@ -103,7 +103,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (PipelineTask each : inventoryTasks) {
-            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
+            if (each.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
                 continue;
             }
             futures.addAll(each.start());
@@ -132,7 +132,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (PipelineTask each : incrementalTasks) {
-            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
+            if (each.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
                 continue;
             }
             futures.addAll(each.start());

@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.type;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
+import org.junit.jupiter.api.Test;
 
-/**
- * Placeholder position.
- */
-public final class PlaceholderPosition implements IngestPosition {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class IntegerPrimaryKeyIngestPositionTest {
     
-    @Override
-    public String toString() {
-        return "";
+    @Test
+    void assertInit() {
+        IntegerPrimaryKeyIngestPosition position = (IntegerPrimaryKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("i,1,100");
+        assertThat(position.getBeginValue(), is(1L));
+        assertThat(position.getEndValue(), is(100L));
+    }
+    
+    @Test
+    void assertToString() {
+        assertThat(new IntegerPrimaryKeyIngestPosition(1, 100).toString(), is("i,1,100"));
     }
 }

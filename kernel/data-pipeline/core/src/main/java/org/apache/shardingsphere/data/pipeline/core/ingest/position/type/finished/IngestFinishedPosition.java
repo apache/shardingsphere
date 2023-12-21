@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.type;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
- * Finished inventory position.
+ * Ingest finished position.
  */
-public final class FinishedPosition implements IngestPosition {
+public final class IngestFinishedPosition implements IngestPosition {
 }

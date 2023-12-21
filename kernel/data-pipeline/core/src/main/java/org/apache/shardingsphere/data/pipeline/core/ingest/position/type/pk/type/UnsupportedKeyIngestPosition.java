@@ -15,42 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
 
 /**
- * Primary key position.
- * 
- * @param <T> type of value
+ * Unsupported key ingest position.
  */
-public interface PrimaryKeyPosition<T> extends IngestPosition {
+public final class UnsupportedKeyIngestPosition implements PrimaryKeyIngestPosition<Void> {
     
-    /**
-     * Get begin value.
-     *
-     * @return begin value
-     */
-    T getBeginValue();
+    @Override
+    public Void getBeginValue() {
+        return null;
+    }
     
-    /**
-     * Get end value.
-     *
-     * @return end value
-     */
-    T getEndValue();
+    @Override
+    public Void getEndValue() {
+        return null;
+    }
     
-    /**
-     * Convert value.
-     * @param value value to be converted
-     * @return converted value
-     */
-    T convert(String value);
+    @Override
+    public Void convert(final String value) {
+        throw new UnsupportedOperationException();
+    }
     
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    char getType();
+    @Override
+    public char getType() {
+        return 'u';
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s,,", getType());
+    }
 }

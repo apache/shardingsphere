@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class SimpleMemoryPipelineChannelTest {
     @Test
     void assertZeroQueueSizeWorks() {
         SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(0, new EmptyAckCallback());
-        List<Record> records = Collections.singletonList(new PlaceholderRecord(new FinishedPosition()));
+        List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
         Thread thread = new Thread(() -> channel.pushRecords(records));
         thread.start();
         assertThat(channel.fetchRecords(1, 500, TimeUnit.MILLISECONDS), is(records));

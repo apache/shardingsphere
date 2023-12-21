@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.progress;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlTransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
@@ -59,16 +59,16 @@ class TransmissionJobItemProgressTest {
         TransmissionJobItemProgress actual = getJobItemProgress(ConfigurationFileUtils.readFile("job-progress.yaml"));
         Optional<IngestPosition> position = actual.getIncremental().getIncrementalPosition();
         assertTrue(position.isPresent());
-        assertThat(position.get(), instanceOf(PlaceholderPosition.class));
+        assertThat(position.get(), instanceOf(IngestPlaceholderPosition.class));
     }
     
     @Test
     void assertGetInventoryPosition() {
         TransmissionJobItemProgress actual = getJobItemProgress(ConfigurationFileUtils.readFile("job-progress.yaml"));
-        assertThat(actual.getInventory().getInventoryPosition("t_1").get("ds0.t_1#1"), instanceOf(FinishedPosition.class));
-        assertThat(actual.getInventory().getInventoryPosition("t_1").get("ds1.t_1#1"), instanceOf(PlaceholderPosition.class));
-        assertThat(actual.getInventory().getInventoryPosition("t_2").get("ds0.t_2#2"), instanceOf(FinishedPosition.class));
-        assertThat(actual.getInventory().getInventoryPosition("t_2").get("ds1.t_2#2"), instanceOf(IntegerPrimaryKeyPosition.class));
+        assertThat(actual.getInventory().getInventoryPosition("t_1").get("ds0.t_1#1"), instanceOf(IngestFinishedPosition.class));
+        assertThat(actual.getInventory().getInventoryPosition("t_1").get("ds1.t_1#1"), instanceOf(IngestPlaceholderPosition.class));
+        assertThat(actual.getInventory().getInventoryPosition("t_2").get("ds0.t_2#2"), instanceOf(IngestFinishedPosition.class));
+        assertThat(actual.getInventory().getInventoryPosition("t_2").get("ds1.t_2#2"), instanceOf(IntegerPrimaryKeyIngestPosition.class));
     }
     
     @Test
@@ -84,21 +84,21 @@ class TransmissionJobItemProgressTest {
     @Test
     void assertGetProgressesCorrectly() {
         Map<String, InventoryTaskProgress> progresses = new HashMap<>();
-        progresses.put("ds.order_item#0", new InventoryTaskProgress(new IntegerPrimaryKeyPosition(1, 100)));
-        progresses.put("ds.order_item#1", new InventoryTaskProgress(new UnsupportedKeyPosition()));
-        progresses.put("ds.order#0", new InventoryTaskProgress(new FinishedPosition()));
-        progresses.put("ds.test_order#0", new InventoryTaskProgress(new StringPrimaryKeyPosition("1", "100")));
+        progresses.put("ds.order_item#0", new InventoryTaskProgress(new IntegerPrimaryKeyIngestPosition(1, 100)));
+        progresses.put("ds.order_item#1", new InventoryTaskProgress(new UnsupportedKeyIngestPosition()));
+        progresses.put("ds.order#0", new InventoryTaskProgress(new IngestFinishedPosition()));
+        progresses.put("ds.test_order#0", new InventoryTaskProgress(new StringPrimaryKeyIngestPosition("1", "100")));
         JobItemInventoryTasksProgress progress = new JobItemInventoryTasksProgress(progresses);
         Map<String, IngestPosition> orderPosition = progress.getInventoryPosition("order");
         assertThat(orderPosition.size(), is(1));
-        assertThat(orderPosition.get("ds.order#0"), instanceOf(FinishedPosition.class));
+        assertThat(orderPosition.get("ds.order#0"), instanceOf(IngestFinishedPosition.class));
         Map<String, IngestPosition> testOrderPosition = progress.getInventoryPosition("test_order");
         assertThat(testOrderPosition.size(), is(1));
-        assertThat(testOrderPosition.get("ds.test_order#0"), instanceOf(StringPrimaryKeyPosition.class));
+        assertThat(testOrderPosition.get("ds.test_order#0"), instanceOf(StringPrimaryKeyIngestPosition.class));
         Map<String, IngestPosition> orderItemPosition = progress.getInventoryPosition("order_item");
         assertThat(orderItemPosition.size(), is(2));
-        assertThat(orderItemPosition.get("ds.order_item#0"), instanceOf(IntegerPrimaryKeyPosition.class));
-        assertThat(orderItemPosition.get("ds.order_item#1"), instanceOf(UnsupportedKeyPosition.class));
+        assertThat(orderItemPosition.get("ds.order_item#0"), instanceOf(IntegerPrimaryKeyIngestPosition.class));
+        assertThat(orderItemPosition.get("ds.order_item#1"), instanceOf(UnsupportedKeyIngestPosition.class));
     }
     
     private TransmissionJobItemProgress getJobItemProgress(final String data) {

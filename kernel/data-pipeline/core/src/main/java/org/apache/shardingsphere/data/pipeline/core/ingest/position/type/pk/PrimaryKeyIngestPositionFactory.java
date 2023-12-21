@@ -22,17 +22,17 @@ import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 
 import java.util.List;
 
 /**
- * Primary key position factory.
+ * Primary key ingest position factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PrimaryKeyPositionFactory {
+public final class PrimaryKeyIngestPositionFactory {
     
     /**
      * Create new instance by string data.
@@ -50,11 +50,11 @@ public final class PrimaryKeyPositionFactory {
         String endValue = parts.get(2);
         switch (type) {
             case 'i':
-                return new IntegerPrimaryKeyPosition(Long.parseLong(beginValue), Long.parseLong(endValue));
+                return new IntegerPrimaryKeyIngestPosition(Long.parseLong(beginValue), Long.parseLong(endValue));
             case 's':
-                return new StringPrimaryKeyPosition(beginValue, endValue);
+                return new StringPrimaryKeyIngestPosition(beginValue, endValue);
             case 'u':
-                return new UnsupportedKeyPosition();
+                return new UnsupportedKeyIngestPosition();
             default:
                 throw new IllegalArgumentException("Unknown primary key position type: " + type);
         }
@@ -69,12 +69,12 @@ public final class PrimaryKeyPositionFactory {
      */
     public static IngestPosition newInstance(final Object beginValue, final Object endValue) {
         if (beginValue instanceof Number) {
-            return new IntegerPrimaryKeyPosition(((Number) beginValue).longValue(), null != endValue ? ((Number) endValue).longValue() : Long.MAX_VALUE);
+            return new IntegerPrimaryKeyIngestPosition(((Number) beginValue).longValue(), null != endValue ? ((Number) endValue).longValue() : Long.MAX_VALUE);
         }
         if (beginValue instanceof CharSequence) {
-            return new StringPrimaryKeyPosition(beginValue.toString(), null != endValue ? endValue.toString() : null);
+            return new StringPrimaryKeyIngestPosition(beginValue.toString(), null != endValue ? endValue.toString() : null);
         }
         // TODO support more types, e.g. byte[] (MySQL varbinary)
-        return new UnsupportedKeyPosition();
+        return new UnsupportedKeyIngestPosition();
     }
 }
