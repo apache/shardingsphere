@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.engine;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
@@ -71,7 +72,7 @@ public final class GeneratedKeyContextEngine {
     
     private boolean containsGenerateKey(final List<String> insertColumnNames, final String generateKeyColumnName) {
         return insertColumnNames.isEmpty() ? schema.getVisibleColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).size() == getValueCountForPerGroup()
-                : insertColumnNames.contains(generateKeyColumnName);
+                : new CaseInsensitiveSet<>(insertColumnNames).contains(generateKeyColumnName);
     }
     
     private int getValueCountForPerGroup() {
