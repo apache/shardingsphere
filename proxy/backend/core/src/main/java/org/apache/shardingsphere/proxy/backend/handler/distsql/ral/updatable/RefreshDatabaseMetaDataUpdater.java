@@ -34,7 +34,7 @@ public final class RefreshDatabaseMetaDataUpdater implements RALUpdater<RefreshD
     
     @Override
     public void executeUpdate(final String databaseName, final RefreshDatabaseMetaDataStatement sqlStatement) {
-        ProxyContext.getInstance().getContextManager().reloadDatabaseMetaData(getDatabaseName(databaseName, sqlStatement));
+        ProxyContext.getInstance().getContextManager().refreshDatabaseMetaData(getDatabaseName(databaseName, sqlStatement), true);
     }
     
     private String getDatabaseName(final String databaseName, final RefreshDatabaseMetaDataStatement sqlStatement) {
