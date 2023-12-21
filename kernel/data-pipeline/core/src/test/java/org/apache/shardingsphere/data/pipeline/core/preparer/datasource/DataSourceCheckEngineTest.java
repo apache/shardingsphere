@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngine;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,8 +89,7 @@ class DataSourceCheckEngineTest {
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
-        when(importerConfig.getTableAndSchemaNameMapper()).thenReturn(new TableAndSchemaNameMapper(Collections.emptyMap()));
-        when(importerConfig.getLogicTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new CaseInsensitiveQualifiedTable(null, "t_order")));
         dataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig);
     }
     
@@ -101,8 +100,7 @@ class DataSourceCheckEngineTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
-        when(importerConfig.getTableAndSchemaNameMapper()).thenReturn(new TableAndSchemaNameMapper(Collections.emptyMap()));
-        when(importerConfig.getLogicTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new CaseInsensitiveQualifiedTable(null, "t_order")));
         assertThrows(PrepareJobWithTargetTableNotEmptyException.class, () -> dataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig));
     }
 }

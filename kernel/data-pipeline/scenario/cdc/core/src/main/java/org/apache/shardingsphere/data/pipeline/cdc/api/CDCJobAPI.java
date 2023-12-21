@@ -54,7 +54,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfi
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
-import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparer;
+import org.apache.shardingsphere.data.pipeline.core.preparer.incremental.IncrementalTaskPositionManager;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.spi.sql.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
@@ -210,8 +210,8 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         TransmissionJobItemProgress result = new TransmissionJobItemProgress();
         result.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
         result.setDataSourceName(incrementalDumperContext.getCommonContext().getDataSourceName());
-        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(new PipelineJobPreparer(
-                incrementalDumperContext.getCommonContext().getDataSourceConfig().getDatabaseType()).getIncrementalPosition(null, incrementalDumperContext, dataSourceManager));
+        IncrementalTaskPositionManager positionManager = new IncrementalTaskPositionManager(incrementalDumperContext.getCommonContext().getDataSourceConfig().getDatabaseType());
+        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(positionManager.getPosition(null, incrementalDumperContext, dataSourceManager));
         result.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
         return result;
     }
@@ -268,7 +268,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         for (Entry<String, Map<String, Object>> entry : jobConfig.getDataSourceConfig().getRootConfig().getDataSources().entrySet()) {
             try {
                 StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(entry.getValue());
-                new PipelineJobPreparer(pipelineDataSourceConfig.getDatabaseType()).destroyPosition(jobConfig.getJobId(), pipelineDataSourceConfig);
+                new IncrementalTaskPositionManager(pipelineDataSourceConfig.getDatabaseType()).destroyPosition(jobConfig.getJobId(), pipelineDataSourceConfig);
             } catch (final SQLException ex) {
                 log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), entry.getKey(), ex);
             }

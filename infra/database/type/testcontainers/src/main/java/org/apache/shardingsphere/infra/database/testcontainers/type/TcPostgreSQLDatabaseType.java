@@ -31,7 +31,7 @@ public final class TcPostgreSQLDatabaseType implements TestcontainersDatabaseTyp
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:tc:postgresql:");
+        return Collections.singleton("jdbc:tc:postgresql:");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class TcPostgreSQLDatabaseType implements TestcontainersDatabaseTyp
     
     @Override
     public String getType() {
-        return "TestContainersPostgreSQL";
+        return "TC-PostgreSQL";
     }
 }
