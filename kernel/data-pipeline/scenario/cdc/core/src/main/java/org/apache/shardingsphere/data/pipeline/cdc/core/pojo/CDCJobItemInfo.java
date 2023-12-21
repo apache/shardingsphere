@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
+package org.apache.shardingsphere.data.pipeline.cdc.core.pojo;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
 
 /**
- * Base of log sequence number interface.
+ * CDC job item info.
  */
-public interface BaseLogSequenceNumber {
+@RequiredArgsConstructor
+@Getter
+public class CDCJobItemInfo {
     
-    /**
-     * Convert log sequence number to String.
-     *
-     * @return Long the sequence number of String value
-     */
-    String asString();
+    private final TransmissionJobItemInfo transmissionJobItemInfo;
     
-    /**
-     * Get the binded object.
-     *
-     * @return Object the bind log sequence number
-     */
-    Object get();
+    private final String confirmedPosition;
+    
+    private final String currentPosition;
 }

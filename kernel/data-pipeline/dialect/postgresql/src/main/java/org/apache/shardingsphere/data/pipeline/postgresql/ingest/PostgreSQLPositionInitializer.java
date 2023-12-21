@@ -53,7 +53,7 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     
     @Override
     public WALPosition init(final String data) {
-        return new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data))));
+        return new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(data)));
     }
     
     private void createSlotIfNotExist(final Connection connection, final String slotName) throws SQLException {

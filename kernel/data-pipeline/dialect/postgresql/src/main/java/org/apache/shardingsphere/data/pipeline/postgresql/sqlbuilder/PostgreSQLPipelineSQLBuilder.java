@@ -122,6 +122,11 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     }
     
     @Override
+    public Optional<String> buildQueryCurrentPositionSQL() {
+        return Optional.of("SELECT * FROM pg_current_wal_lsn()");
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "PostgreSQL";
     }

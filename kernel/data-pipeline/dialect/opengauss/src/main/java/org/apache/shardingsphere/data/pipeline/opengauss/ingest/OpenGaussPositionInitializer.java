@@ -56,7 +56,7 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     
     @Override
     public WALPosition init(final String data) {
-        return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data))));
+        return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(data)));
     }
     
     /**

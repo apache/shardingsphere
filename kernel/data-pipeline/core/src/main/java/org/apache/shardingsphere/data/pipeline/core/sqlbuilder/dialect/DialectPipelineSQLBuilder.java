@@ -89,4 +89,13 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * @throws SQLException SQL exception
      */
     Collection<String> buildCreateTableSQLs(DataSource dataSource, String schemaName, String tableName) throws SQLException;
+    
+    /**
+     * Build query current position SQL.
+     *
+     * @return built SQL
+     */
+    default Optional<String> buildQueryCurrentPositionSQL() {
+        return Optional.empty();
+    }
 }
