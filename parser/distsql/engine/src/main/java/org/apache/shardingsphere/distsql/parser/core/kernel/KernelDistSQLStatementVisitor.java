@@ -255,7 +255,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitRefreshDatabaseMetadata(final RefreshDatabaseMetadataContext ctx) {
-        return new RefreshDatabaseMetaDataStatement(null == ctx.databaseName() ? null : getIdentifierValue(ctx.databaseName()));
+        return new RefreshDatabaseMetaDataStatement(null == ctx.databaseName() ? null : getIdentifierValue(ctx.databaseName()), null != ctx.FORCE());
     }
     
     @Override
