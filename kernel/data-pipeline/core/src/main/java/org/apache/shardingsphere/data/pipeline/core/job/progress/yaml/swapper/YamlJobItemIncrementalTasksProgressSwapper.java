@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlJobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -62,7 +62,7 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
             return new JobItemIncrementalTasksProgress(null);
         }
         // TODO consider to remove parameter databaseType
-        IngestPositionInitializer positionInitializer = DatabaseTypedSPILoader.getService(IngestPositionInitializer.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
+        DialectIngestPositionManager positionInitializer = DatabaseTypedSPILoader.getService(DialectIngestPositionManager.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
         IncrementalTaskProgress taskProgress = new IncrementalTaskProgress(positionInitializer.init(yamlProgress.getPosition()));
         taskProgress.setIncrementalTaskDelay(yamlProgress.getDelay());
         return new JobItemIncrementalTasksProgress(taskProgress);

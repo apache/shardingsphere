@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.Placeho
 
 import javax.sql.DataSource;
 
-public final class FixtureIngestPositionInitializer implements IngestPositionInitializer {
+public final class FixtureIngestPositionManager implements DialectIngestPositionManager {
     
     @Override
     public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {

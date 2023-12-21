@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussIngestPositionInitializer
+org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussIngestPositionManager

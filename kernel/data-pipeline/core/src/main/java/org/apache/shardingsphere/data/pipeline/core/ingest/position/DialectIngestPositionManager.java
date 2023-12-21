@@ -24,10 +24,10 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * Ingest position initializer.
+ * Dialect ingest position manager.
  */
 @SingletonSPI
-public interface IngestPositionInitializer extends DatabaseTypedSPI {
+public interface DialectIngestPositionManager extends DatabaseTypedSPI {
     
     /**
      * Init position by data source.
