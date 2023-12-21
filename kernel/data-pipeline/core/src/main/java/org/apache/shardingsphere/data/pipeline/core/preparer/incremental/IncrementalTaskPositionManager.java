@@ -98,7 +98,8 @@ public final class IncrementalTaskPositionManager {
         }
     }
     
-    private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig, final DialectIngestPositionManager positionInitializer) throws SQLException {
+    private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig,
+                                 final DialectIngestPositionManager positionInitializer) throws SQLException {
         try (
                 PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(
                         DataSourcePoolCreator.create((DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration()), databaseType)) {
