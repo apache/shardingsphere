@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.TaskExecuteCallback;
@@ -61,7 +61,7 @@ public final class CDCInventoryTask implements PipelineTask {
     
     @Override
     public Collection<CompletableFuture<?>> start() {
-        if (position.get() instanceof FinishedPosition) {
+        if (position.get() instanceof IngestFinishedPosition) {
             return Collections.emptyList();
         }
         Collection<CompletableFuture<?>> result = new LinkedList<>();

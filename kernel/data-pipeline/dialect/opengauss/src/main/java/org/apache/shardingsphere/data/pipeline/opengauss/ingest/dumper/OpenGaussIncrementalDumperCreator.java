@@ -23,12 +23,12 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDum
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWALDumper;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DialectIncrementalDumperCreator;
 
 /**
  * OpenGauss incremental dumper creator.
  */
-public final class OpenGaussIncrementalDumperCreator implements IncrementalDumperCreator {
+public final class OpenGaussIncrementalDumperCreator implements DialectIncrementalDumperCreator {
     
     @Override
     public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,

@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
@@ -63,7 +63,7 @@ class MultiplexMemoryPipelineChannelTest {
     
     @Test
     void assertBroadcastFinishedRecord() {
-        execute(records -> assertThat(records.size(), is(1)), 2, new FinishedRecord(new PlaceholderPosition()));
+        execute(records -> assertThat(records.size(), is(1)), 2, new FinishedRecord(new IngestPlaceholderPosition()));
     }
     
     @SneakyThrows(InterruptedException.class)

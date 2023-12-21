@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.channel;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 
@@ -52,7 +52,7 @@ public final class AckCallbacks {
      */
     public static void incrementalCallback(final List<Record> records, final IncrementalTaskProgress progress) {
         Record lastHandledRecord = records.get(records.size() - 1);
-        if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
+        if (!(lastHandledRecord.getPosition() instanceof IngestPlaceholderPosition)) {
             progress.setPosition(lastHandledRecord.getPosition());
             progress.getIncrementalTaskDelay().setLastEventTimestamps(lastHandledRecord.getCommitTime());
         }
