@@ -22,14 +22,14 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChann
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DialectIncrementalDumperCreator;
 
 import static org.mockito.Mockito.mock;
 
 /**
  * H2 incremental dumper creator.
  */
-public final class H2IncrementalDumperCreator implements IncrementalDumperCreator {
+public final class H2IncrementalDumperCreator implements DialectIncrementalDumperCreator {
     
     @Override
     public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,
