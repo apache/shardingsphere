@@ -48,7 +48,7 @@ showComputeNodes
     ;
 
 refreshDatabaseMetadata
-    : REFRESH DATABASE METADATA databaseName? FROM GOVERNANCE CENTER
+    : FORCE? REFRESH DATABASE METADATA databaseName?
     ;
 
 refreshTableMetadata

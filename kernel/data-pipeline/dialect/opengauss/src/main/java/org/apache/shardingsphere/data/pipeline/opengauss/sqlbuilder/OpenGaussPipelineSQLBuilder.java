@@ -77,6 +77,11 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     }
     
     @Override
+    public Optional<String> buildQueryCurrentPositionSQL() {
+        return Optional.of("SELECT * FROM pg_current_xlog_location()");
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "openGauss";
     }

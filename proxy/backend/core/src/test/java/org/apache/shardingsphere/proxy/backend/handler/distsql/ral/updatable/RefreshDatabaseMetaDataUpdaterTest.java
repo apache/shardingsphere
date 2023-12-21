@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.sql.SQLException;
+
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,10 +37,13 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class RefreshDatabaseMetaDataUpdaterTest {
     
+    @Mock
+    private ConnectionSession connectionSession;
+    
     @Test
-    void assertExecuteWithNoDatabase() {
+    void assertExecuteWithNoDatabase() throws SQLException {
         RefreshDatabaseMetaDataUpdater updater = new RefreshDatabaseMetaDataUpdater();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        assertThrows(UnknownDatabaseException.class, () -> updater.executeUpdate("foo_db", mock(RefreshDatabaseMetaDataStatement.class)));
+        updater.executeUpdate(connectionSession, mock(RefreshDatabaseMetaDataStatement.class));
     }
 }

@@ -51,6 +51,10 @@ SHOW
     : S H O W
     ;
 
+FOR
+    : F O R
+    ;
+
 FROM
     : F R O M
     ;
@@ -167,7 +171,7 @@ FALSE
     : F A L S E
     ;
 
-IF  
+IF
     : I F
     ;
 
@@ -365,4 +369,8 @@ GENERATE
 
 ALGORITHM
     : A L G O R I T H M
+    ;
+
+FORCE
+    : F O R C E
     ;

@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.updatable;
+package org.apache.shardingsphere.data.pipeline.cdc.core.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
 
 /**
- * Refresh database meta data statement.
+ * CDC job item info.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RefreshDatabaseMetaDataStatement extends UpdatableRALStatement {
+public class CDCJobItemInfo {
     
-    private final String databaseName;
+    private final TransmissionJobItemInfo transmissionJobItemInfo;
     
-    private final boolean force;
+    private final String confirmedPosition;
     
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    public Optional<String> getDatabaseName() {
-        return Optional.ofNullable(databaseName);
-    }
+    private final String currentPosition;
 }
