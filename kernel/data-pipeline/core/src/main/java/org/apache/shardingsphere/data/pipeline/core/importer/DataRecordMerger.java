@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.GroupedDataRec
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -45,7 +46,7 @@ public final class DataRecordMerger {
      * @param dataRecords data records
      * @return grouped data records
      */
-    public List<GroupedDataRecord> group(final List<DataRecord> dataRecords) {
+    public Collection<GroupedDataRecord> group(final Collection<DataRecord> dataRecords) {
         int insertCount = 0;
         Map<Key, Boolean> duplicateKeyMap = new HashMap<>();
         Set<String> tableNames = new LinkedHashSet<>();
