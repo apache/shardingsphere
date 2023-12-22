@@ -21,27 +21,28 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
+import org.apache.shardingsphere.data.pipeline.core.importer.DataRecordMerger;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.job.JobOperationType;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.RecordUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
-import org.apache.shardingsphere.data.pipeline.core.importer.DataRecordMerger;
-import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -84,12 +85,12 @@ public final class PipelineDataSourceSink implements PipelineSink {
     }
     
     @Override
-    public PipelineJobProgressUpdatedParameter write(final String ackId, final List<Record> records) {
+    public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
         return flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
     }
     
-    private PipelineJobProgressUpdatedParameter flush(final DataSource dataSource, final List<Record> buffer) {
-        List<DataRecord> dataRecords = buffer.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
+    private PipelineJobProgressUpdatedParameter flush(final DataSource dataSource, final Collection<Record> buffer) {
+        Collection<DataRecord> dataRecords = buffer.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
         if (dataRecords.isEmpty()) {
             return new PipelineJobProgressUpdatedParameter(0);
         }
@@ -99,8 +100,8 @@ public final class PipelineDataSourceSink implements PipelineSink {
                 insertRecordNumber++;
             }
         }
-        List<GroupedDataRecord> result = MERGER.group(dataRecords);
-        for (GroupedDataRecord each : result) {
+        Collection<GroupedDataRecord> groupedDataRecords = MERGER.group(dataRecords);
+        for (GroupedDataRecord each : groupedDataRecords) {
             flushInternal(dataSource, each.getBatchDeleteDataRecords());
             flushInternal(dataSource, each.getBatchInsertDataRecords());
             flushInternal(dataSource, each.getBatchUpdateDataRecords());
