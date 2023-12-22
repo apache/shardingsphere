@@ -20,10 +20,12 @@ package org.apache.shardingsphere.infra.rule.identifier.type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
+import java.util.Iterator;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TableNamesMapperTest {
 
@@ -37,28 +39,36 @@ class TableNamesMapperTest {
     @Test
     void assertContainsTable() {
         tableNamesMapper.put("foo_table");
+        tableNamesMapper.put("FoO_TaBlE_2");
         assertTrue(tableNamesMapper.contains("foo_table"));
+        assertTrue(tableNamesMapper.contains("foo_table_2"));
     }
 
     @Test
     void assertGetTableNames() {
         tableNamesMapper.put("foo_table_1");
         tableNamesMapper.put("foo_table_2");
-        assertThat(tableNamesMapper.getTableNames(), hasItems("foo_table_1", "foo_table_2"));
-        assertThat(tableNamesMapper.getTableNames(), hasSize(2));
+        Collection<String> actualTables = tableNamesMapper.getTableNames();
+        assertThat(actualTables.size(), is(2));
+        Iterator<String> iterator = actualTables.iterator();
+        assertThat(iterator.next(), is("foo_table_1"));
+        assertThat(iterator.next(), is("foo_table_2"));
     }
 
     @Test
     void assertRemove() {
         tableNamesMapper.put("foo_table_1");
+        Collection<String> actualTables = tableNamesMapper.getTableNames();
+        assertThat(actualTables.size(), is(1));
         tableNamesMapper.remove("foo_table_1");
-        assertFalse(tableNamesMapper.contains("foo_table_1"));
-        assertThat(tableNamesMapper.getTableNames(), hasSize(0));
+        assertThat(actualTables.size(), is(0));
     }
 
     @Test
     void assertPut() {
+        Collection<String> actualTables = tableNamesMapper.getTableNames();
+        assertThat(actualTables.size(), is(0));
         tableNamesMapper.put("foo_table");
-        assertThat(tableNamesMapper.getTableNames(), hasSize(1));
+        assertThat(actualTables.size(), is(1));
     }
 }
