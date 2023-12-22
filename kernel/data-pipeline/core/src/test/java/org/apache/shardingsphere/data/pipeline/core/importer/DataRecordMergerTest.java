@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -152,13 +153,14 @@ class DataRecordMergerTest {
                 mockInsertDataRecord("t2", 1, 1, 1));
         Collection<GroupedDataRecord> groupedDataRecords = dataRecordMerger.group(dataRecords);
         assertThat(groupedDataRecords.size(), is(2));
-        GroupedDataRecord actualGroupedDataRecord1 = groupedDataRecords.iterator().next();
+        Iterator<GroupedDataRecord> groupedDataRecordsIterator = groupedDataRecords.iterator();
+        GroupedDataRecord actualGroupedDataRecord1 = groupedDataRecordsIterator.next();
         assertThat(actualGroupedDataRecord1.getTableName(), is("t1"));
         assertThat(actualGroupedDataRecord1.getBatchInsertDataRecords().size(), is(1));
         assertThat(actualGroupedDataRecord1.getBatchUpdateDataRecords().size(), is(0));
         assertThat(actualGroupedDataRecord1.getBatchDeleteDataRecords().size(), is(1));
         assertThat(actualGroupedDataRecord1.getNonBatchRecords().size(), is(6));
-        GroupedDataRecord actualGroupedDataRecord2 = groupedDataRecords.iterator().next();
+        GroupedDataRecord actualGroupedDataRecord2 = groupedDataRecordsIterator.next();
         assertThat(actualGroupedDataRecord2.getTableName(), is("t2"));
         assertThat(actualGroupedDataRecord2.getBatchInsertDataRecords().size(), is(1));
     }
