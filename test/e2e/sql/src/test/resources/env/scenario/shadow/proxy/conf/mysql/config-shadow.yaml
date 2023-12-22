@@ -19,7 +19,7 @@ databaseName: shadow
 
 dataSources:
   db:
-    url: jdbc:mysql://mysql.shadow.host:3306/db?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.shadow.host:3306/db?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db:
-    url: jdbc:mysql://mysql.shadow.host:3306/shadow_db?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.shadow.host:3306/shadow_db?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000

@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.prepare;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
-import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataUtils;
-import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.preparer.InventoryTaskSplitter;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
@@ -89,8 +89,8 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
         InventoryTask task = actual.get(0);
-        assertThat(((IntegerPrimaryKeyPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(0L));
-        assertThat(((IntegerPrimaryKeyPosition) task.getTaskProgress().getPosition()).getEndValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue(), is(0L));
     }
     
     @Test
@@ -99,8 +99,8 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(10));
         InventoryTask task = actual.get(9);
-        assertThat(((IntegerPrimaryKeyPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(91L));
-        assertThat(((IntegerPrimaryKeyPosition) task.getTaskProgress().getPosition()).getEndValue(), is(100L));
+        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(91L));
+        assertThat(((IntegerPrimaryKeyIngestPosition) task.getTaskProgress().getPosition()).getEndValue(), is(100L));
     }
     
     @Test
@@ -109,7 +109,7 @@ class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getTaskId(), is("ds_0.t_order#0"));
-        IntegerPrimaryKeyPosition keyPosition = (IntegerPrimaryKeyPosition) actual.get(0).getTaskProgress().getPosition();
+        IntegerPrimaryKeyIngestPosition keyPosition = (IntegerPrimaryKeyIngestPosition) actual.get(0).getTaskProgress().getPosition();
         assertThat(keyPosition.getBeginValue(), is(1L));
         assertThat(keyPosition.getEndValue(), is(999L));
     }

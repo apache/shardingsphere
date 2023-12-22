@@ -110,7 +110,7 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().delete(databaseName,
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().deleteConfig(databaseName,
                 getToBeDroppedDataSourcePoolProperties(contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     
@@ -142,7 +142,7 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     @Override
     public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
         if (null != toBeRemovedRuleConfig) {
-            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().deleteConfig(databaseName, Collections.singleton(toBeRemovedRuleConfig));
         }
     }
     

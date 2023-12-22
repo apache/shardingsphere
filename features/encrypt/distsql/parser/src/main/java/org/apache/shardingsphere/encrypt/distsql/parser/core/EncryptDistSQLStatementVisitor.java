@@ -29,6 +29,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementP
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.EncryptRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.PropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.ShowEncryptAlgorithmImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.ShowEncryptRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleState
 import org.apache.shardingsphere.encrypt.distsql.statement.CountEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.statement.DropEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -136,5 +138,10 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     @Override
     public ASTNode visitCountEncryptRule(final CountEncryptRuleContext ctx) {
         return new CountEncryptRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+    }
+    
+    @Override
+    public ASTNode visitShowEncryptAlgorithmImplementations(final ShowEncryptAlgorithmImplementationsContext ctx) {
+        return new ShowEncryptAlgorithmImplementationsStatement();
     }
 }

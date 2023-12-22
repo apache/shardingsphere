@@ -21,7 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
+import java.util.LinkedHashMap;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Properties converter.
@@ -36,6 +38,8 @@ public final class PropertiesConverter {
      * @return converted string content
      */
     public static String convert(final Properties props) {
-        return JsonUtils.toJsonString(props);
+        return null == props || props.isEmpty() ? ""
+                : JsonUtils.toJsonString(props.keySet().stream().map(Object::toString).sorted()
+                        .collect(Collectors.toMap(each -> each, props::get, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
 }

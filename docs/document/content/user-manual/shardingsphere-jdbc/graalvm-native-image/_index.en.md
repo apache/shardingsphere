@@ -10,21 +10,20 @@ ShardingSphere JDBC has been validated for availability under GraalVM Native Ima
 
 Build GraalVM Native containing Maven dependencies of `org.apache.shardingsphere:shardingsphere-jdbc-core:${shardingsphere.version}`
 Image, you need to resort to GraalVM Native Build Tools. GraalVM Native Build Tools provides Maven Plugin and Gradle Plugin 
-to simplify long list of shell commands for GraalVM CE's `native-image` tool.
+to simplify long list of shell commands for GraalVM CE's `native-image` command line tool.
 
 ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as follows or higher. Users can quickly switch 
 JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as `Oracle GraalVM`, `Liberica Native Image Kit` 
 and `Mandrel`.
 
 - GraalVM CE 23.0.2 For JDK 17.0.9, corresponding to `17.0.9-graalce` of SDKMAN!
-- GraalVM CE 23.0.2 For JDK 21.0.1, corresponding to `21.0.1-graalce` of SDKMAN!
+- GraalVM CE 23.1.1 For JDK 21.0.1, corresponding to `21.0.1-graalce` of SDKMAN!
 
 ### Maven Ecology
 
-Users need to configure additional `BuildArgs` to prevent GroovyShell related classes from reporting errors when building 
-GraalVM Native Image. and proactively use GraalVM Reachability Metadata central repository. The following configuration 
-is for reference to configure additional Maven Profiles for the project, and the documentation of GraalVM Native Build 
-Tools shall prevail.
+Users need to actively use the GraalVM Reachability Metadata central repository. 
+The following configuration is for reference to configure additional Maven Profiles for the project, 
+and the documentation of GraalVM Native Build Tools shall prevail.
 
 ```xml
 <project>
@@ -44,12 +43,12 @@ Tools shall prevail.
                  <version>0.9.28</version>
                  <extensions>true</extensions>
                  <configuration>
-                     <buildArgs>
-                         <arg>--report-unsupported-elements-at-runtime</arg>
-                     </buildArgs>
-                     <metadataRepository>
-                         <enabled>true</enabled>
-                     </metadataRepository>
+                    <buildArgs>
+                       <buildArg>-H:+AddAllCharsets</buildArg>
+                    </buildArgs>
+                    <metadataRepository>
+                       <enabled>true</enabled>
+                    </metadataRepository>
                  </configuration>
                  <executions>
                      <execution>
@@ -75,10 +74,9 @@ Tools shall prevail.
 
 ### Gradle Ecosystem
 
-Users need to configure additional `BuildArgs` to prevent GroovyShell related classes from reporting errors when building
-GraalVM Native Image. and proactively use GraalVM Reachability Metadata central repository. The following configuration
-is for reference to configure additional Gradle Task for the project, and the documentation of GraalVM Native Build
-Tools shall prevail.
+Users need to actively use the GraalVM Reachability Metadata central repository.
+The following configuration is for reference to configure additional Gradle Tasks for the project,
+and the documentation of GraalVM Native Build Tools shall prevail.
 
 ```groovy
 plugins {
@@ -90,27 +88,26 @@ dependencies {
 }
 
 graalvmNative {
-     binaries {
-         main {
-             buildArgs.add('--report-unsupported-elements-at-runtime')
-         }
-         test {
-             buildArgs.add('--report-unsupported-elements-at-runtime')
-         }
-     }
-     metadataRepository {
-         enabled = true
-     }
+   binaries {
+      main {
+         buildArgs.add('-H:+AddAllCharsets')
+      }
+      test {
+         buildArgs.add('-H:+AddAllCharsets')
+      }
+   }
+   metadataRepository {
+      enabled = true
+   }
 }
 ```
 
-### For build tools such as SBT that are not supported by GraalVM Native Build Tools
+### For build tools such as sbt that are not supported by GraalVM Native Build Tools
 
-Such requirements require opening additional issues at https://github.com/graalvm/native-build-tools and providing the Plugin 
-implementation of the corresponding build tool.
+Such requirements require opening additional issues at https://github.com/graalvm/native-build-tools 
+and providing the Plugin implementation of the corresponding build tool.
 
-
-### Usage restrictions
+## Usage restrictions
 
 1. The following algorithm classes are not available under GraalVM Native Image due to the involvement of https://github.com/oracle/graal/issues/5522.
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
@@ -215,7 +212,22 @@ rules:
 folder or `src/test/resources/META-INF/native-image` folder. Users can quickly collect GraalVM Reachability Metadata through 
 the GraalVM Tracing Agent of GraalVM Native Build Tools. 
 
-4. DistSQL availability has not been verified. Users need to add additional GraalVM Reachability Metadata by themselves.
+4. Maven modules such as `com.microsoft.sqlserver:mssql-jdbc`, represented by the JDBC Driver of MS SQL Server,
+will dynamically load different character sets based on the encoding used in the database, which is unpredictable behavior. 
+When encountering the following Error, users need to add the `buildArg` of `-H:+AddAllCharsets` to the configuration of GraalVM Native Build Tools.
+
+```shell
+Caused by: java.io.UnsupportedEncodingException: SQL Server collation SQL_Latin1_General_CP1_CI_AS is not supported by this driver.
+ com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:506)
+ com.microsoft.sqlserver.jdbc.SQLCollation.<init>(SQLCollation.java:63)
+ com.microsoft.sqlserver.jdbc.SQLServerConnection.processEnvChange(SQLServerConnection.java:3174)
+ [...]
+Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supported by the Java environment.
+ com.microsoft.sqlserver.jdbc.Encoding.checkSupported(SQLCollation.java:572)
+ com.microsoft.sqlserver.jdbc.SQLCollation$SortOrder.getEncoding(SQLCollation.java:473)
+ com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:501)
+ [...]
+```
 
 ## Contribute GraalVM Reachability Metadata
 
@@ -225,13 +237,15 @@ and then build it as GraalVM Native Image for nativeTest to test Unit Test Cover
 Please do not use `io.kotest:kotest-runner-junit5-jvm:5.5.4` and some third-party test libraries, they are in `test listener` 
 mode failed to discover tests.
 
-ShardingSphere defines the Maven Module of `shardingsphere-infra-nativetest` to provide a small subset of unit tests for native Test.
+ShardingSphere defines the Maven Module of `shardingsphere-test-native` to provide a small subset of unit tests for native Test.
 This subset of unit tests avoids the use of third-party libraries such as Mockito that are not available under native Test.
 
-ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for executing nativeTest for the `shardingsphere-infra-nativetest` module.
+ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for executing nativeTest for the `shardingsphere-test-native` module.
 
 Assuming that the contributor is under a new Ubuntu 22.04.3 LTS instance, Contributors can manage the JDK and tool chain through 
-`SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-infra-nativetest` submodule.
+`SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-test-native` submodule.
+
+You must install Docker Engine to execute `testcontainers-java` related unit tests.
 
 ```bash
 sudo apt install unzip zip curl sed -y
@@ -261,11 +275,11 @@ Metadata files in a specific directory.
 This process can be easily handled with the following bash command. Contributors may still need to manually adjust specific 
 JSON entries and GraalVM Tracing Agent Filter chain of Maven Profile.
 
-The following command is only an example of using `shardingsphere-infra-nativetest` to generate GraalVM Reachability Metadata 
+The following command is only an example of using `shardingsphere-test-native` to generate GraalVM Reachability Metadata 
 in Conditional form. Generated GraalVM Reachability Metadata is located under the `shardingsphere-infra-reachability-metadata` submodule.
 
 For GraalVM Reachability Metadata used independently by test classes and test files, contributors should place
-`${user.dir}/infra/nativetest/src/test/resources/META-INF/native-image/shardingsphere-infra-nativetest-test-metadata/`
+`${user.dir}/infra/nativetest/src/test/resources/META-INF/native-image/shardingsphere-test-native-test-metadata/`
 folder. `${}` contains the regular system variables of POM 4.0 corresponding to the relevant submodules, which can be replaced by yourself.
 
 ```bash

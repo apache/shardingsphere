@@ -30,6 +30,6 @@ class PostgreSQLDatabaseTypeTest {
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:postgresql:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:postgresql:")));
     }
 }

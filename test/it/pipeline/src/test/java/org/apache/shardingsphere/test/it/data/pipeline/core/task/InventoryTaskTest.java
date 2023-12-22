@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.task;
 
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
@@ -52,7 +51,7 @@ import static org.mockito.Mockito.mock;
 
 class InventoryTaskTest {
     
-    private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new DefaultPipelineDataSourceManager();
+    private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new PipelineDataSourceManager();
     
     private MigrationTaskConfiguration taskConfig;
     
@@ -80,12 +79,12 @@ class InventoryTaskTest {
         InventoryTask inventoryTask = new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperContext),
                 PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), mock(Dumper.class), mock(Importer.class), position);
         CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
-        assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
+        assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyIngestPosition.class));
         inventoryTask.close();
     }
     
     private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
-        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         try (
                 PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
@@ -103,7 +102,7 @@ class InventoryTaskTest {
         result.setActualTableName(actualTableName);
         result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
         result.getCommonContext().setPosition(
-                null == taskConfig.getDumperContext().getCommonContext().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperContext().getCommonContext().getPosition());
+                null == taskConfig.getDumperContext().getCommonContext().getPosition() ? new IntegerPrimaryKeyIngestPosition(0, 1000) : taskConfig.getDumperContext().getCommonContext().getPosition());
         return result;
     }
 }

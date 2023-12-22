@@ -93,6 +93,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRestorePointContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRelationalTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRollbackSegmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSPFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSequenceContext;
@@ -402,13 +403,23 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         return new TypeDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.name().getText(), (DataTypeSegment) visit(ctx.dataType()));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
-        if (null == ctx.createRelationalTableClause()) {
+        if (null != ctx.createRelationalTableClause()) {
+            result.combine((CollectionValue<CreateDefinitionSegment>) visit(ctx.createRelationalTableClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateRelationalTableClause(final CreateRelationalTableClauseContext ctx) {
+        CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
+        if (null == ctx.relationalProperties()) {
             return result;
         }
-        for (RelationalPropertyContext each : ctx.createRelationalTableClause().relationalProperties().relationalProperty()) {
+        for (RelationalPropertyContext each : ctx.relationalProperties().relationalProperty()) {
             if (null != each.columnDefinition()) {
                 result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }

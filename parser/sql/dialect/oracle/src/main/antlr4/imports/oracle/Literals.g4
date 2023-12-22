@@ -28,7 +28,7 @@ IDENTIFIER_
     ;
 
 STRING_
-    : (N | U)? SINGLE_QUOTED_TEXT
+    : SINGLE_QUOTED_TEXT
     ;
 
 SINGLE_QUOTED_TEXT
@@ -53,6 +53,14 @@ HEX_DIGIT_
 
 BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
+    ;
+
+NCHAR_TEXT
+    : N STRING_
+    ;
+
+UCHAR_TEXT
+    : U STRING_
     ;
 
 fragment INT_

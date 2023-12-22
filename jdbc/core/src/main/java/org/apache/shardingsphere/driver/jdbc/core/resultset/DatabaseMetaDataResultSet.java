@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.driver.jdbc.exception.connection.ResultSetClosedException;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnLabelNotFoundException;

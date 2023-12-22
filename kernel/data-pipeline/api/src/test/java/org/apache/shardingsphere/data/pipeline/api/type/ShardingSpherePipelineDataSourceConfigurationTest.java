@@ -75,11 +75,11 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
                 + "    minPoolSize: 20\n"
                 + "    minimumIdle: 20\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    url: jdbc:mysql://192.168.0.2:3306/ds_1?serverTimezone=UTC&useSSL=false\n"
+                + "    url: jdbc:mysql://192.168.0.2:3306/ds_1?useSSL=false\n"
                 + "  ds_0:\n"
                 + "    minPoolSize: 20\n"
                 + "    minimumIdle: 20\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    url: jdbc:mysql://192.168.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false\n";
+                + "    url: jdbc:mysql://192.168.0.1:3306/ds_0?useSSL=false\n";
     }
 }

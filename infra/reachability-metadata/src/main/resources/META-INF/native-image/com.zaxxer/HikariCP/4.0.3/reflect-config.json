@@ -11,10 +11,5 @@
   "name":"com.zaxxer.hikari.HikariDataSource",
   "fields":[{"name":"dataSourceProperties"}, {"name":"jdbcUrl"}],
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getAllowPoolSuspension","parameterTypes":[] }, {"name":"getAutoCommit","parameterTypes":[] }, {"name":"getIsolateInternalQueries","parameterTypes":[] }, {"name":"getReadOnly","parameterTypes":[] }, {"name":"getRegisterMbeans","parameterTypes":[] }, {"name":"isClosed","parameterTypes":[] }, {"name":"isRunning","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"com.zaxxer.hikari.util.PropertyElf"},
-  "name":"com.zaxxer.hikari.HikariDataSource",
-  "methods":[{"name":"getAllowPoolSuspension","parameterTypes":[] }, {"name":"getAutoCommit","parameterTypes":[] }, {"name":"getIsolateInternalQueries","parameterTypes":[] }, {"name":"getReadOnly","parameterTypes":[] }, {"name":"getRegisterMbeans","parameterTypes":[] }]
 }
 ]

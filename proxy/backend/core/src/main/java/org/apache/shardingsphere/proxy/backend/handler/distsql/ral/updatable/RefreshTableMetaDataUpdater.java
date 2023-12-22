@@ -56,7 +56,7 @@ public final class RefreshTableMetaDataUpdater implements ConnectionSessionRequi
         if (sqlStatement.getTableName().isPresent()) {
             contextManager.reloadTable(databaseName, schemaName, sqlStatement.getTableName().get());
         } else {
-            contextManager.reloadDatabaseMetaData(databaseName);
+            contextManager.refreshTableMetaData(databaseName);
         }
     }
     

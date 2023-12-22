@@ -21,10 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.util.List;
@@ -68,10 +66,5 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     @Override
     public int getJobShardingCount() {
         return jobShardingDataNodes.size();
-    }
-    
-    @Override
-    public YamlPipelineJobConfiguration swapToYamlJobConfiguration() {
-        return new YamlMigrationJobConfigurationSwapper().swapToYamlConfiguration(this);
     }
 }

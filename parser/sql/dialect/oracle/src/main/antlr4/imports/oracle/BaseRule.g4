@@ -48,6 +48,8 @@ intervalUnit
 
 stringLiterals
     : STRING_
+    | NCHAR_TEXT
+    | UCHAR_TEXT
     ;
 
 numberLiterals
@@ -912,6 +914,10 @@ orderByItem
     : (columnName | numberLiterals | expr) (ASC | DESC)? (NULLS FIRST | NULLS LAST)?
     ;
 
+attribute
+    : (owner DOT_)? identifier
+    ;
+
 attributeName
     : oracleId
     ;
@@ -1018,10 +1024,6 @@ ignoredIdentifiers
 
 matchNone
     : 'Default does not match anything'
-    ;
-
-hashSubpartitionQuantity
-    : NUMBER
     ;
 
 odciParameters
@@ -2042,18 +2044,18 @@ xmlSerializeFunction
     ;
 
 xmlTableFunction
-    : XMLTABLE LP_ (xmlNameSpacesClause COMMA_)? STRING_ xmlTableOptions RP_
+    : XMLTABLE LP_ (xmlNamespacesClause COMMA_)? STRING_ xmlTableOptions RP_
     ;
 
 xmlIsSchemaValidFunction
     : (owner DOT_)* name DOT_ ISSCHEMAVALID LP_ expr (COMMA_ expr)* RP_ 
     ;
 
-xmlNameSpacesClause
-    : XMLNAMESPACES LP_ (defaultString COMMA_)? (xmlNameSpaceStringAsIdentifier | defaultString) (COMMA_ (xmlNameSpaceStringAsIdentifier | defaultString))* RP_
+xmlNamespacesClause
+    : XMLNAMESPACES LP_ (defaultString COMMA_)? (xmlNamespaceStringAsIdentifier | defaultString) (COMMA_ (xmlNamespaceStringAsIdentifier | defaultString))* RP_
     ;
 
-xmlNameSpaceStringAsIdentifier
+xmlNamespaceStringAsIdentifier
     : STRING_ AS identifier
     ;
 
@@ -2116,5 +2118,9 @@ credentialName
     ;
 
 agentDblink
+    : STRING_
+    ;
+
+xPathsList
     : STRING_
     ;

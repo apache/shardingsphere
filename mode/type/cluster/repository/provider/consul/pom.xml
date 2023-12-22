@@ -32,6 +32,12 @@
                 <groupId>com.ecwid.consul</groupId>
                 <artifactId>consul-api</artifactId>
                 <version>${consul.api.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpcore</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>

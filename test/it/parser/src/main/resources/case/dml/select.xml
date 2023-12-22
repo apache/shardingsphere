@@ -17,6 +17,17 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_with_comment">
+        <projections start-index="70" stop-index="70">
+            <shorthand-projection start-index="70" stop-index="70" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="77" stop-index="83" />
+        </from>
+        <comment start-index="0" stop-index="19" text="/*FORCE_IMCI_NODES*/" />
+        <comment start-index="28" stop-index="68" text="/*+ SET_VAR(cost_threshold_for_imci=0) */" />
+    </select>
+    
     <select sql-case-id="select_position_function">
         <projections start-index="7" stop-index="97">
             <expression-projection text="position(&quot;0&quot; in &quot;baaa&quot; in (1))" start-index="7" stop-index="36">
@@ -2521,7 +2532,11 @@
         <from>
             <join-table join-type="INNER">
                 <left>
-                    <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
+                    <simple-table name="t_order" alias="o" start-index="16" stop-index="24">
+                        <index-hint origin-text="FORCE INDEX(order_index)" start-index="26" stop-index="49">
+                            <hint-index-name name="order_index" start-index="38" stop-index="48"/>
+                        </index-hint>
+                    </simple-table>
                 </left>
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="56" stop-index="69" />
@@ -3771,7 +3786,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_with_convert_function">
+    <select sql-case-id="select_with_convert_function1">
         <from>
             <simple-table name="t_order" start-index="70" stop-index="76" />
         </from>
@@ -3795,6 +3810,299 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_with_convert_function2">
+        <projections start-index="7" stop-index="246">
+            <column-projection name="sequence_name" start-index="7" stop-index="19" />
+            <column-projection name="sequence_catalog" start-index="22" stop-index="37" />
+            <column-projection name="sequence_schema" start-index="40" stop-index="54" />
+            <expression-projection alias="start_value" text="convert( bigint, start_value )" start-index="57" stop-index="101">
+                <expr>
+                    <function function-name="convert" text="convert( bigint, start_value )" start-index="57" stop-index="86">
+                        <parameter>
+                            <data-type value="bigint" start-index="66" stop-index="71" />
+                        </parameter>
+                        <parameter>
+                            <column name="start_value" start-index="74" stop-index="84" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="minimum_value" text="convert( bigint, minimum_value )" start-index="104" stop-index="152">
+                <expr>
+                    <function function-name="convert" text="convert( bigint, minimum_value )" start-index="104" stop-index="135">
+                        <parameter>
+                            <data-type value="bigint" start-index="113" stop-index="118" />
+                        </parameter>
+                        <parameter>
+                            <column name="minimum_value" start-index="121" stop-index="133" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="maximum_value" text="convert( bigint, maximum_value )" start-index="155" stop-index="203">
+                <expr>
+                    <function function-name="convert" text="convert( bigint, maximum_value )" start-index="155" stop-index="186">
+                        <parameter>
+                            <data-type value="bigint" start-index="164" stop-index="169" />
+                        </parameter>
+                        <parameter>
+                            <column name="maximum_value" start-index="172" stop-index="184" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="increment" text="convert( bigint, increment )" start-index="206" stop-index="246">
+                <expr>
+                    <function function-name="convert" text="convert( bigint, increment )" start-index="206" stop-index="233">
+                        <parameter>
+                            <data-type value="bigint" start-index="215" stop-index="220" />
+                        </parameter>
+                        <parameter>
+                            <column name="increment" start-index="223" stop-index="231" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SEQUENCES" start-index="253" stop-index="280">
+                <owner name="INFORMATION_SCHEMA" start-index="253" stop-index="270" />
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_convert_function3">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="CONVERT(NVARCHAR, GETDATE(), 0)" start-index="7" stop-index="37">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(NVARCHAR, GETDATE(), 0)" start-index="7" stop-index="37">
+                        <parameter>
+                            <data-type value="NVARCHAR" start-index="15" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="GETDATE" text="GETDATE()" start-index="25" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="7" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_function4">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="CONVERT(DECIMAL(10, 5), CONVERT(VARBINARY(20), @myval))" start-index="7" stop-index="61">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(DECIMAL(10, 5), CONVERT(VARBINARY(20), @myval))" start-index="7" stop-index="61">
+                        <parameter>
+                            <data-type value="DECIMAL" start-index="15" stop-index="28" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="CONVERT" text="CONVERT(VARBINARY(20), @myval)" start-index="31" stop-index="60">
+                                <parameter>
+                                    <data-type value="VARBINARY" start-index="39" stop-index="51" />
+                                </parameter>
+                                <parameter>
+                                    <column name="@myval" start-index="54" stop-index="59" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_function5">
+        <projections start-index="7" stop-index="69">
+            <expression-projection alias="Style 0, character to binary" text="CONVERT(BINARY(8), 'Name', 0)" start-index="7" stop-index="69">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(BINARY(8), 'Name', 0)" start-index="7" stop-index="35">
+                        <parameter>
+                            <data-type value="BINARY" start-index="15" stop-index="23" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Name" start-index="26" stop-index="31" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="7" stop-index="35" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_xml1">
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="CONVERT(XML, '&lt;root&gt;&lt;child/&gt;&lt;/root&gt;')" start-index="7" stop-index="43">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(XML, '&lt;root&gt;&lt;child/&gt;&lt;/root&gt;')" start-index="7" stop-index="43">
+                        <parameter>
+                            <data-type value="XML" start-index="15" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="&lt;root&gt;&lt;child/&gt;&lt;/root&gt;" start-index="20" stop-index="42" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_xml2">
+        <projections start-index="7" stop-index="65">
+            <expression-projection text="CONVERT(XML, '&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;', 1)" start-index="7" stop-index="65">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(XML, '&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;', 1)" start-index="7" stop-index="65">
+                        <parameter>
+                            <data-type value="XML" start-index="15" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;" start-index="20" stop-index="61" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="7" stop-index="65" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_convert_function">
+        <projections start-index="7" stop-index="149">
+            <expression-projection alias="UnconvertedDateTime" text="GETDATE()" start-index="7" stop-index="38">
+                <expr>
+                    <function function-name="GETDATE" text="GETDATE()" start-index="7" stop-index="15" />
+                </expr>
+            </expression-projection>
+            <expression-projection alias="UsingCast" text="CAST(GETDATE() AS NVARCHAR(30))" start-index="41" stop-index="84">
+                <expr>
+                    <function function-name="CAST" text="CAST(GETDATE() AS NVARCHAR(30))" start-index="41" stop-index="71">
+                        <parameter>
+                            <data-type value="NVARCHAR" start-index="59" stop-index="70" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="UsingConvertTo_ISO8601" text="CONVERT(NVARCHAR(30), GETDATE(), 126)" start-index="87" stop-index="149">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(NVARCHAR(30), GETDATE(), 126)" start-index="87" stop-index="123">
+                        <parameter>
+                            <data-type value="NVARCHAR" start-index="95" stop-index="106" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="GETDATE" text="GETDATE()" start-index="109" stop-index="117" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="126" start-index="87" stop-index="123" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_convert_datetime">
+        <projections start-index="7" stop-index="187">
+            <expression-projection alias="UnconvertedText" text="2006-04-25T15:50:59.997" start-index="7" stop-index="50">
+                <expr>
+                    <literal-expression value="2006-04-25T15:50:59.997" start-index="7" stop-index="31" />
+                </expr>
+            </expression-projection>
+            <expression-projection alias="UsingCast" text="CAST('2006-04-25T15:50:59.997' AS DATETIME)" start-index="53" stop-index="108">
+                <expr>
+                    <function function-name="CAST" text="CAST('2006-04-25T15:50:59.997' AS DATETIME)" start-index="53" stop-index="95">
+                        <parameter>
+                            <literal-expression value="2006-04-25T15:50:59.997" start-index="58" stop-index="82" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="DATETIME" start-index="87" stop-index="94" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="UsingConvertFrom_ISO8601" text="CONVERT(DATETIME, '2006-04-25T15:50:59.997', 126)" start-index="111" stop-index="187">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(DATETIME, '2006-04-25T15:50:59.997', 126)" start-index="111" stop-index="159">
+                        <parameter>
+                            <data-type value="DATETIME" start-index="119" stop-index="126" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2006-04-25T15:50:59.997" start-index="129" stop-index="153" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="126" start-index="111" stop-index="159" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_hex1">
+        <projections start-index="7" stop-index="71">
+            <expression-projection alias="Style 0, binary to character" text="CONVERT(CHAR(8), 0x4E616d65, 0)" start-index="7" stop-index="71">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(CHAR(8), 0x4E616d65, 0)" start-index="7" stop-index="37">
+                        <parameter>
+                            <data-type value="CHAR" start-index="15" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <common-expression literal-text="0x4E616d65" start-index="24" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="7" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_hex2">
+        <projections start-index="7" stop-index="71">
+            <expression-projection alias="Style 1, binary to character" text="CONVERT(CHAR(8), 0x4E616d65, 1)" start-index="7" stop-index="71">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(CHAR(8), 0x4E616d65, 1)" start-index="7" stop-index="37">
+                        <parameter>
+                            <data-type value="CHAR" start-index="15" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <common-expression literal-text="0x4E616d65" start-index="24" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="7" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_hex3">
+        <projections start-index="7" stop-index="75">
+            <expression-projection alias="Style 1, character to binary" text="CONVERT(BINARY(4), '0x4E616D65', 1)" start-index="7" stop-index="75">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(BINARY(4), '0x4E616D65', 1)" start-index="7" stop-index="41">
+                        <parameter>
+                            <data-type value="BINARY" start-index="15" stop-index="23" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0x4E616D65" start-index="26" stop-index="37" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="7" stop-index="41" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 
     <select sql-case-id="select_with_json_extract">
@@ -7010,19 +7318,19 @@
 
     <select sql-case-id="select_with_unicode_string">
         <projections start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
-            <expression-projection text="'test" start-index="7" stop-index="13" literal-start-index="7"
+            <expression-projection text="test" start-index="7" stop-index="13" literal-start-index="7"
                                    literal-stop-index="13">
-                <literalText>'test</literalText>
+                <literalText>test</literalText>
                 <expr>
-                    <literal-expression value="'test" start-index="7" stop-index="13" literal-start-index="7"
+                    <literal-expression value="test" start-index="7" stop-index="13" literal-start-index="7"
                                         literal-stop-index="13"/>
                 </expr>
             </expression-projection>
-            <expression-projection text="'test" start-index="16" stop-index="22" literal-start-index="16"
+            <expression-projection text="test" start-index="16" stop-index="22" literal-start-index="16"
                                    literal-stop-index="22">
-                <literalText>'test</literalText>
+                <literalText>test</literalText>
                 <expr>
-                    <literal-expression value="'test" start-index="16" stop-index="22" literal-start-index="16"
+                    <literal-expression value="test" start-index="16" stop-index="22" literal-start-index="16"
                                         literal-stop-index="22"/>
                 </expr>
             </expression-projection>
@@ -7173,5 +7481,329 @@
         <group-by>
             <column-item name="NAME" order-direction="ASC" start-index="148" stop-index="151" />
         </group-by>
+    </select>
+    
+    <select sql-case-id="select_with_user_updatable_columns">
+        <projections start-index="7" stop-index="28">
+            <column-projection name="column_name" start-index="7" stop-index="17" />
+            <column-projection name="updatable" start-index="20" stop-index="28" />
+        </projections>
+        <from>
+            <simple-table name="user_updatable_columns" start-index="35" stop-index="56" />
+        </from>
+        <where start-index="58" stop-index="92">
+            <expr>
+                <binary-operation-expression text="table_name = 'LOCATIONS_VIEW'" start-index="64" stop-index="92">
+                    <left>
+                        <column name="table_name" start-index="64" stop-index="73" />
+                    </left>
+                    <right>
+                        <literal-expression start-index="77" stop-index="92" value="LOCATIONS_VIEW" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="column_name" order-direction="ASC" start-index="103" stop-index="113" />
+            <column-item name="updatable" order-direction="ASC" start-index="116" stop-index="124" />
+        </order-by>
+    </select>
+    <select sql-case-id="select_with_script_variables">
+        <from>
+            <simple-table name="Person" alias="x" start-index="28" stop-index="42">
+                <owner name="Person" start-index="28" stop-index="33"/>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="21">
+            <column-projection name="$(ColumnName)" start-index="7" stop-index="21">
+                <owner name="x" start-index="7" stop-index="7" />
+            </column-projection>>
+        </projections>
+        <where start-index="44" stop-index="71">
+            <expr>
+                <binary-operation-expression start-index="50" stop-index="71">
+                    <left>
+                        <column name="BusinessEntityID" start-index="50" stop-index="67">
+                            <owner name="x" start-index="50" stop-index="50" />
+                        </column>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression value="5" start-index="71" stop-index="71" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_not_expression">
+        <projections start-index="7" stop-index="75">
+            <expression-projection text="!0" start-index="7" stop-index="8">
+                <expr>
+                    <not-expression start-index="7" stop-index="8">
+                        <expr>
+                            <literal-expression value="0" start-index="8" stop-index="8" />
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="NOT 0=1" start-index="10" stop-index="16">
+                <expr>
+                    <binary-operation-expression start-index="10" stop-index="16">
+                        <left>
+                            <not-expression start-index="10" stop-index="14">
+                                <expr>
+                                    <literal-expression value="0" start-index="14" stop-index="14" />
+                                </expr>
+                            </not-expression>
+                        </left>
+                        <right>
+                            <literal-expression value="1" start-index="16" stop-index="16" />
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="!(0=0)" start-index="18" stop-index="23">
+                <expr>
+                    <not-expression start-index="18" stop-index="23">
+                        <expr>
+                            <binary-operation-expression start-index="20" stop-index="22">
+                                <left>
+                                    <literal-expression value="0" start-index="20" stop-index="20" />
+                                </left>
+                                <right>
+                                    <literal-expression value="0" start-index="22" stop-index="22" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="1 AND 1" start-index="25" stop-index="31">
+                <expr>
+                    <binary-operation-expression start-index="25" stop-index="31">
+                        <left>
+                            <literal-expression value="1" start-index="25" stop-index="25" />
+                        </left>
+                        <right>
+                            <literal-expression value="1" start-index="31" stop-index="31" />
+                        </right>
+                        <operator>AND</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="1 &amp;&amp; 0" start-index="33" stop-index="38">
+                <expr>
+                    <binary-operation-expression start-index="33" stop-index="38">
+                        <left>
+                            <literal-expression value="1" start-index="33" stop-index="33" />
+                        </left>
+                        <right>
+                            <literal-expression value="0" start-index="38" stop-index="38" />
+                        </right>
+                        <operator>&amp;&amp;</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="0 OR 1" start-index="40" stop-index="45">
+                <expr>
+                    <binary-operation-expression start-index="40" stop-index="45">
+                        <left>
+                            <literal-expression value="0" start-index="40" stop-index="40" />
+                        </left>
+                        <right>
+                            <literal-expression value="1" start-index="45" stop-index="45" />
+                        </right>
+                        <operator>OR</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="1 || NULL" start-index="47" stop-index="55">
+                <expr>
+                    <binary-operation-expression start-index="47" stop-index="55">
+                        <left>
+                            <literal-expression value="1" start-index="47" stop-index="47" />
+                        </left>
+                        <right>
+                            <literal-expression value="null" start-index="52" stop-index="55" />
+                        </right>
+                        <operator>||</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="1=1 or 1=1 and 1=0" start-index="58" stop-index="75">
+                <expr>
+                    <binary-operation-expression start-index="58" stop-index="75">
+                        <left>
+                            <binary-operation-expression start-index="58" stop-index="60">
+                                <left>
+                                    <literal-expression value="1" start-index="58" stop-index="58" />
+                                </left>
+                                <right>
+                                    <literal-expression value="1" start-index="60" stop-index="60" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="65" stop-index="75">
+                                <left>
+                                    <binary-operation-expression start-index="65" stop-index="67">
+                                        <left>
+                                            <literal-expression value="1" start-index="65" stop-index="65" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="1" start-index="67" stop-index="67" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="73" stop-index="75">
+                                        <left>
+                                            <literal-expression value="1" start-index="73" stop-index="73" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="0" start-index="75" stop-index="75" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>and</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>or</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_count_temp_table">
+        <from>
+            <simple-table name="#Test" start-index="41" stop-index="45" />
+        </from>
+        <projections start-index="7" stop-index="34">
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" alias="Number of rows"/>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_bracket_alias">
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="dm_xe_objects" alias="obj1" start-index="139" stop-index="163">
+                        <owner name="sys" start-index="139" stop-index="141"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="dm_xe_object_columns" alias="col2"  start-index="176" stop-index="207">
+                        <owner name="sys" start-index="176" stop-index="178"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="212" stop-index="239">
+                        <left>
+                            <column name="object_name" start-index="212" stop-index="227">
+                                <owner name="col2" start-index="212" stop-index="215"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="name" start-index="231" stop-index="239">
+                                <owner name="obj1" start-index="231" stop-index="234"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="132">
+            <column-projection name="name" alias="XEvent-name" start-index="7" stop-index="32">
+                <owner name="obj1" start-index="7" stop-index="10"/>
+            </column-projection>
+            <column-projection name="name" alias="XEvent-column" start-index="35" stop-index="62">
+                <owner name="col2" start-index="35" stop-index="38"/>
+            </column-projection>
+            <column-projection name="description" alias="Descr-name" start-index="65" stop-index="96">
+                <owner name="obj1" start-index="65" stop-index="68"/>
+            </column-projection>
+            <column-projection name="description" alias="Descr-column" start-index="99" stop-index="132">
+                <owner name="col2" start-index="99" stop-index="102"/>
+            </column-projection>
+        </projections>
+        <order-by>
+            <column-item name="name" start-index="250" stop-index="258">
+                <owner name="obj1" start-index="250" stop-index="253"/>
+            </column-item>
+            <column-item name="name" start-index="261" stop-index="269">
+                <owner name="col2" start-index="261" stop-index="264"/>
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_cross_apply">
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="dm_exec_requests" alias="r" start-index="122" stop-index="143">
+                        <owner name="sys" start-index="122" stop-index="124"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="a">
+                        <table-function function-name="sys.dm_exec_sql_text" text="sys.dm_exec_sql_text(r.sql_handle)"/>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="115">
+            <column-projection name="text" alias="query" start-index="7" stop-index="20">
+                <owner name="a" start-index="15" stop-index="15"/>
+            </column-projection>
+            <column-projection name="start_time" start-index="23" stop-index="32"/>
+            <column-projection name="percent_complete" start-index="35" stop-index="50"/>
+            <expression-projection text="dateadd(second,estimated_completion_time/1000, getdate())" alias="eta" start-index="53" stop-index="115">
+                <expr>
+                    <function function-name="dateadd" text="dateadd(second,estimated_completion_time/1000, getdate())" start-index="59" stop-index="115">
+                        <parameter>
+                            <column name="second" start-index="67" stop-index="72"/>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="74" stop-index="103" text="estimated_completion_time/1000">
+                                <left>
+                                    <column name="estimated_completion_time" start-index="74" stop-index="98"/>
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <literal-expression value="1000" start-index="100" stop-index="103"/>
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <function function-name="getdate" text="getdate()" start-index="106" stop-index="114"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <where start-index="194" stop-index="229">
+            <expr>
+                <binary-operation-expression text="r.command = 'RESTORE DATABASE'" start-index="200" stop-index="229">
+                    <left>
+                        <column name="command" start-index="200" stop-index="208">
+                            <owner name="r" start-index="200" stop-index="200"/>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="RESTORE DATABASE" start-index="212" stop-index="229"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 </sql-parser-test-cases>

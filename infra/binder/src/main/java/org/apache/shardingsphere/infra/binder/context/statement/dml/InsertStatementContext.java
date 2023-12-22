@@ -96,7 +96,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         ShardingSphereSchema schema = getSchema(metaData, defaultDatabaseName);
         columnNames = containsInsertColumns() ? insertColumnNames
                 : Optional.ofNullable(sqlStatement.getTable()).map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), params).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, insertValueContexts, params).orElse(null);
     }
     
     private ShardingSphereSchema getSchema(final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
@@ -276,6 +276,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         insertSelectContext = getInsertSelectContext(metaData, params, parametersOffset, defaultDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
         ShardingSphereSchema schema = getSchema(metaData, defaultDatabaseName);
-        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNames, valueExpressions, params).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNames, insertValueContexts, params).orElse(null);
     }
 }

@@ -1,19 +1,19 @@
 +++
-title = "REFRESH DATABASE METADATA FROM GOVERNANCE CENTER"
+title = "REFRESH DATABASE METADATA"
 weight = 9
 +++
 
 ### 描述
 
-`REFRESH DATABASE METADATA FROM GOVERNANCE CENTER` 语法用于从治理中心拉取最新配置，刷新本地逻辑库元数据。
+`REFRESH DATABASE METADATA` 语法用于刷新本地逻辑库元数据。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-RefreshDatabaseMetadataFromGovernanceCenter ::=
-  'REFRESH' 'DATABASE' 'METADATA' databaseName? 'FROM' 'GOVERNANCE' 'CENTER'
+RefreshDatabaseMetadata ::=
+  'FORCE'? 'REFRESH' 'DATABASE' 'METADATA' databaseName?
 
 databaseName ::=
   identifier
@@ -28,25 +28,31 @@ databaseName ::=
 
 - 未指定 `databaseName` 时，默认刷新所有逻辑库的元数据
 
-- 刷新元数据需要使用 `DATABASE` 如果未使用 `DATABASE` 则会提示 `No database selected`
+- 刷新元数据使用 `FORCE` 时，将会从本地获取最新元数据，并写入到治理中心，未开启 `FORCE` 则会从治理中心拉取最新配置
 
 ### 示例
 
 - 刷新指定逻辑库的元数据
 
 ```sql
-REFRESH DATABASE METADATA sharding_db FROM GOVERNANCE CENTER;
+REFRESH DATABASE METADATA sharding_db;
 ```
 
 - 刷新所有逻辑库的元数据
 
 ```sql
-REFRESH DATABASE METADATA FROM GOVERNANCE CENTER;
+REFRESH DATABASE METADATA;
+```
+
+- 强制刷新所有逻辑库的元数据
+
+```sql
+FORCE REFRESH DATABASE METADATA;
 ```
 
 ### 保留字
 
-`REFRESH`、`DATABASE`、`METADATA`、`FROM`、`GOVERNANCE`、`CENTER`
+`FORCE`、`REFRESH`、`DATABASE`、`METADATA`
 
 ### 相关链接
 

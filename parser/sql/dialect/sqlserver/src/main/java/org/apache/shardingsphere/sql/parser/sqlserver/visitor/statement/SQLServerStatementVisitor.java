@@ -42,9 +42,11 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesWithSortContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConstraintNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConvertFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableAsSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseSetContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeNameContext;
@@ -85,6 +87,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Qua
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ScriptVariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetAssignmentsClauseContext;
@@ -99,6 +102,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TopContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnqualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
@@ -108,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -168,6 +173,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.keyword.KeywordValue;
@@ -227,7 +233,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        return new StringLiteralValue(ctx.getText());
+        if (null != ctx.STRING_()) {
+            return new StringLiteralValue(ctx.getText());
+        } else {
+            return new StringLiteralValue(ctx.getText().substring(1));
+        }
     }
     
     @Override
@@ -288,19 +298,37 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+            OwnerSegment ownerSegment = new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier()));
+            if (null != ctx.databaseName()) {
+                DatabaseNameContext databaseName = ctx.databaseName();
+                ownerSegment.setOwner(new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier())));
+            }
+            result.setOwner(ownerSegment);
+        } else if (null != ctx.databaseName()) {
+            DatabaseNameContext databaseName = ctx.databaseName();
+            result.setOwner(new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier())));
         }
         return result;
     }
     
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
-        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
+        ColumnSegment result;
+        if (null != ctx.name()) {
+            result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
+        } else {
+            result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.scriptVariableName()));
+        }
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitScriptVariableName(final ScriptVariableNameContext ctx) {
+        return new IdentifierValue(ctx.getText());
     }
     
     @Override
@@ -598,6 +626,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.castFunction()) {
             return visit(ctx.castFunction());
         }
+        if (null != ctx.convertFunction()) {
+            return visit(ctx.convertFunction());
+        }
         if (null != ctx.charFunction()) {
             return visit(ctx.charFunction());
         }
@@ -615,6 +646,17 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.getParameters().add((LiteralExpressionSegment) exprSegment);
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CONVERT().getText(), getOriginalText(ctx));
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        if (null != ctx.NUMBER_()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.NUMBER_().getText()));
+        }
         return result;
     }
     
@@ -811,8 +853,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
-        if (null != ctx.unqualifiedShorthand()) {
-            projections.add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
+        for (UnqualifiedShorthandContext each : ctx.unqualifiedShorthand()) {
+            projections.add(new ShorthandProjectionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex()));
         }
         for (ProjectionContext each : ctx.projection()) {
             projections.add((ProjectionSegment) visit(each));
@@ -1164,8 +1206,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (projection instanceof BinaryOperationExpression) {
             BinaryOperationExpression binaryExpression = (BinaryOperationExpression) projection;
-            int startIndex = binaryExpression.getStartIndex();
-            int stopIndex = null == alias ? binaryExpression.getStopIndex() : alias.getStopIndex();
+            int startIndex = getStartIndexWithAlias(binaryExpression, alias);
+            int stopIndex = getStopIndexWithAlias(binaryExpression, alias);
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, binaryExpression.getText(), binaryExpression);
             result.setAlias(alias);
             return result;
@@ -1176,10 +1218,17 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return projection;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
+        ExpressionProjectionSegment result = new ExpressionProjectionSegment(getStartIndexWithAlias(column, alias), getStopIndexWithAlias(column, alias), String.valueOf(column.getLiterals()), column);
         result.setAlias(alias);
         return result;
+    }
+    
+    private int getStartIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
+        return null != alias && alias.getStartIndex() < sqlSegment.getStartIndex() ? alias.getStartIndex() : sqlSegment.getStartIndex();
+    }
+    
+    private int getStopIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
+        return null != alias && alias.getStopIndex() > sqlSegment.getStopIndex() ? alias.getStopIndex() : sqlSegment.getStopIndex();
     }
     
     @Override
@@ -1214,6 +1263,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.tableName()) {
             SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
+        if (null != ctx.expr()) {
+            ExpressionSegment exprSegment = (ExpressionSegment) visit(ctx.expr());
+            FunctionTableSegment result = new FunctionTableSegment(exprSegment.getStartIndex(), exprSegment.getStopIndex(), exprSegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));
             }

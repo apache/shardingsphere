@@ -31,7 +31,7 @@ public final class DefaultSQLFederationRuleConfigurationBuilder implements Defau
     
     @Override
     public SQLFederationRuleConfiguration build() {
-        return new SQLFederationRuleConfiguration(false, DEFAULT_EXECUTION_PLAN_CACHE_OPTION);
+        return new SQLFederationRuleConfiguration(false, false, DEFAULT_EXECUTION_PLAN_CACHE_OPTION);
     }
     
     @Override

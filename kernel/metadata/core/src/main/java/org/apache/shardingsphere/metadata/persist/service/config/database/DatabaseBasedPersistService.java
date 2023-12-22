@@ -72,8 +72,10 @@ public interface DatabaseBasedPersistService<T> {
      *
      * @param databaseName database name
      * @param configs configurations
+     * @return meta data versions
      */
-    default void delete(String databaseName, T configs) {
+    default Collection<MetaDataVersion> deleteConfig(String databaseName, T configs) {
+        return Collections.emptyList();
     }
     
     /**

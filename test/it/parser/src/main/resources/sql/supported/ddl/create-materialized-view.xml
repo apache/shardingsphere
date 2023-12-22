@@ -43,4 +43,93 @@
     FROM SH.SALES, SH.CUSTOMERS
     WHERE SH.CUSTOMERS.CUST_ID = SH.SALES.CUST_ID
     GROUP BY SH.SALES.PROD_ID, SH.CUSTOMERS.CUST_ID;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_tablespace_parallel_build_immediate" value="CREATE MATERIALIZED VIEW sales_by_month_by_state
+     TABLESPACE example
+     PARALLEL 4
+     BUILD IMMEDIATE
+     REFRESH COMPLETE
+     ENABLE QUERY REWRITE
+     AS SELECT t.calendar_month_desc, c.cust_state_province,
+        SUM(s.amount_sold) AS sum_sales
+        FROM times t, sales s, customers c
+        WHERE s.time_id = t.time_id AND s.cust_id = c.cust_id
+        GROUP BY t.calendar_month_desc, c.cust_state_province;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_pctfree_storage_parallel" value="CREATE MATERIALIZED VIEW cust_sales_mv
+    PCTFREE 0 TABLESPACE demo
+    STORAGE (INITIAL 8M)
+    PARALLEL
+    BUILD IMMEDIATE
+    REFRESH COMPLETE
+    ENABLE QUERY REWRITE AS
+    SELECT  c.cust_last_name, SUM(amount_sold) AS sum_amount_sold
+    FROM customers c, sales s WHERE s.cust_id = c.cust_id
+    GROUP BY c.cust_last_name;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_refresh_fast_for_update" value="CREATE MATERIALIZED VIEW oe.categories_objmv OF oe.category_typ
+    REFRESH FAST FOR UPDATE
+    AS SELECT * FROM oe.categories_tab@orc1.example.com;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_for_update" value="CREATE MATERIALIZED VIEW foreign_customers FOR UPDATE
+    AS SELECT * FROM sh.customers@remote cu
+    WHERE EXISTS
+      (SELECT * FROM sh.countries@remote co
+       WHERE co.country_id = cu.country_id);" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_refresh_force" value="CREATE MATERIALIZED VIEW detail_sales_mv
+    PARALLEL
+    BUILD IMMEDIATE
+    REFRESH FORCE AS
+    SELECT s.rowid 'sales_rid', c.cust_id, c.cust_last_name, s.amount_sold,
+       s.quantity_sold, s.time_id
+    FROM sales s, times t, customers c
+    WHERE s.cust_id = c.cust_id(+) AND s.time_id = t.time_id(+);" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_refresh_fast_for_update_as_with_recursive" value="CREATE MATERIALIZED VIEW hr.employees REFRESH FAST FOR UPDATE AS
+    SELECT * FROM hr.employees@orc1.example.com e
+      WHERE EXISTS
+        (SELECT * FROM hr.departments@orc1.example.com d
+         WHERE e.department_id = d.department_id
+         AND EXISTS
+           (SELECT * FROM hr.locations@orc1.example.com l
+            WHERE l.country_id = 'UK'
+            AND d.location_id = l.location_id));" db-types="Oracle" />
+    <sql-case id="create_materialized_view_scope_for" value="CREATE MATERIALIZED VIEW oe.customers_with_ref_mv
+    (SCOPE FOR (cust_address) IS oe.cust_address_objtab_mv)
+    AS SELECT * FROM oe.customers_with_ref@orc1.example.com;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_refresh_complete" value="CREATE MATERIALIZED VIEW mv_prod_time
+    REFRESH COMPLETE ON DEMAND AS
+    SELECT
+      (CASE
+         WHEN ((GROUPING(calendar_year)=0 )
+           AND (GROUPING(calendar_quarter_desc)=1 ))
+           THEN (TO_CHAR(calendar_year) || '_0')
+         WHEN ((GROUPING(calendar_quarter_desc)=0 )
+           AND (GROUPING(calendar_month_desc)=1 ))
+           THEN (TO_CHAR(calendar_quarter_desc) || '_1')
+         WHEN ((GROUPING(calendar_month_desc)=0 )
+           AND (GROUPING(t.time_id)=1 ))
+           THEN (TO_CHAR(calendar_month_desc) || '_2')
+         ELSE (TO_CHAR(t.time_id) || '_3')
+      END) Hierarchical_Time,
+      calendar_year year, calendar_quarter_desc quarter,
+      calendar_month_desc month, t.time_id day,
+      prod_category cat, prod_subcategory subcat, p.prod_id prod,
+      GROUPING_ID(prod_category, prod_subcategory, p.prod_id,
+        calendar_year, calendar_quarter_desc, calendar_month_desc,t.time_id) gid,
+      GROUPING_ID(prod_category, prod_subcategory, p.prod_id) gid_p,
+      GROUPING_ID(calendar_year, calendar_quarter_desc,
+        calendar_month_desc, t.time_id) gid_t,
+      SUM(amount_sold) s_sold, COUNT(amount_sold) c_sold, COUNT(*) cnt
+    FROM SALES s, TIMES t, PRODUCTS p
+    WHERE s.time_id = t.time_id AND
+      p.prod_name IN ('Bounce', 'Y Box') AND s.prod_id = p.prod_id
+    GROUP BY
+      ROLLUP(calendar_year, calendar_quarter_desc, calendar_month_desc, t.time_id),
+      ROLLUP(prod_category, prod_subcategory, p.prod_id);" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_pctfree_storage_build_deferred" value="CREATE MATERIALIZED VIEW product_sales_mv
+    PCTFREE 0 TABLESPACE demo
+    STORAGE (INITIAL 8M)
+    BUILD DEFERRED
+    REFRESH COMPLETE ON DEMAND
+    ENABLE QUERY REWRITE AS
+    SELECT p.prod_name, SUM(s.amount_sold) AS dollar_sales
+    FROM sales s, products p WHERE s.prod_id = p.prod_id
+    GROUP BY p.prod_name;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_refresh_fast_on_remand_as_select" value="CREATE MATERIALIZED VIEW unionall_inside_view_mv REFRESH FAST ON DEMAND AS SELECT * FROM view_with_unionall" db-types="Oracle" />
 </sql-cases>

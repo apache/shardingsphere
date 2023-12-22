@@ -20,13 +20,13 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.execute.AbstractPipelineLifecycleRunnable;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
-import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.common.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
@@ -116,11 +116,8 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     private void handleEvents(final List<AbstractBinlogEvent> events) {
         List<Record> dataRecords = new LinkedList<>();
         for (AbstractBinlogEvent each : events) {
-            if (!(each instanceof AbstractRowsEvent)) {
-                dataRecords.add(createPlaceholderRecord(each));
-                continue;
-            }
-            dataRecords.addAll(handleEvent(each));
+            List<? extends Record> records = handleEvent(each);
+            dataRecords.addAll(records);
         }
         if (dataRecords.isEmpty()) {
             return;
@@ -182,7 +179,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
             for (int j = 0; j < beforeValues.length; j++) {
                 Serializable oldValue = beforeValues[j];
                 Serializable newValue = afterValues[j];
-                boolean updated = !Objects.equals(newValue, oldValue);
+                boolean updated = !Objects.deepEquals(newValue, oldValue);
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j + 1);
                 dataRecord.addColumn(new Column(columnMetaData.getName(),
                         handleValue(columnMetaData, oldValue),

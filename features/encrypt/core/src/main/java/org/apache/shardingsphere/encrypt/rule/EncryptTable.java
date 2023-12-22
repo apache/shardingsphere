@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 
 import java.util.List;
 

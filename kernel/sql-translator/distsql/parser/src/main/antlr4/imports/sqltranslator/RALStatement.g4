@@ -17,8 +17,24 @@
 
 grammar RALStatement;
 
-import Keyword;
+import BaseRule;
 
 showSQLTranslatorRule
     : SHOW SQL_TRANSLATOR RULE
+    ;
+
+alterSQLTranslatorRule
+    : ALTER SQL_TRANSLATOR RULE LP_ sqlTranslatorRuleDefinition RP_
+    ;
+
+sqlTranslatorRuleDefinition
+    : algorithmDefinition (COMMA_ useOriginalSQLDefinition)?
+    ;
+
+useOriginalSQLDefinition
+    : USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED EQ_ useOriginalSQL
+    ;
+
+useOriginalSQL
+    : TRUE | FALSE
     ;

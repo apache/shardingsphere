@@ -17,16 +17,56 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlConsistencyCheckJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.swapper.YamlConsistencyCheckJobConfigurationSwapper;
 
 /**
  * Consistency check job type.
  */
-public final class ConsistencyCheckJobType implements JobType {
+public final class ConsistencyCheckJobType implements PipelineJobType {
     
     @Override
     public String getCode() {
         return "02";
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public YamlConsistencyCheckJobConfigurationSwapper getYamlJobConfigurationSwapper() {
+        return new YamlConsistencyCheckJobConfigurationSwapper();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public YamlConsistencyCheckJobItemProgressSwapper getYamlJobItemProgressSwapper() {
+        return new YamlConsistencyCheckJobItemProgressSwapper();
+    }
+    
+    @Override
+    public Class<ConsistencyCheckJob> getJobClass() {
+        return ConsistencyCheckJob.class;
+    }
+    
+    @Override
+    public boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
+        return true;
+    }
+    
+    @Override
+    public PipelineJobInfo getJobInfo(final String jobId) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig,
+                                                                      final TransmissionProcessContext processContext, final ConsistencyCheckJobItemProgressContext progressContext) {
+        return null;
     }
     
     @Override

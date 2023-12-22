@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineDataSourceSink;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.algorithm.FixtureTransmissionJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,7 +88,7 @@ class PipelineDataSourceSinkTest {
     @BeforeEach
     void setUp() throws SQLException {
         PipelineSink pipelineSink = new PipelineDataSourceSink(mockImporterConfiguration(), dataSourceManager);
-        importer = new SingleChannelConsumerImporter(channel, 100, 1, TimeUnit.SECONDS, pipelineSink, new FixtureInventoryIncrementalJobItemContext());
+        importer = new SingleChannelConsumerImporter(channel, 100, 1, TimeUnit.SECONDS, pipelineSink, new FixtureTransmissionJobItemContext());
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }
@@ -146,7 +146,7 @@ class PipelineDataSourceSinkTest {
     }
     
     private DataRecord getUpdatePrimaryKeyDataRecord() {
-        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, TABLE_NAME, new PlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, TABLE_NAME, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", 1, 2, true, true));
         result.addColumn(new Column("user", 0, 10, true, false));
         result.addColumn(new Column("status", null, "UPDATE", true, false));
@@ -156,7 +156,7 @@ class PipelineDataSourceSinkTest {
     private List<Record> mockRecords(final DataRecord dataRecord) {
         List<Record> result = new LinkedList<>();
         result.add(dataRecord);
-        result.add(new FinishedRecord(new FinishedPosition()));
+        result.add(new FinishedRecord(new IngestFinishedPosition()));
         return result;
     }
     
@@ -184,7 +184,7 @@ class PipelineDataSourceSinkTest {
             userOldValue = 10;
             statusOldValue = recordType;
         }
-        DataRecord result = new DataRecord(recordType, TABLE_NAME, new PlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(recordType, TABLE_NAME, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", idOldValue, idValue, false, true));
         result.addColumn(new Column("user", userOldValue, userValue, true, false));
         result.addColumn(new Column("status", statusOldValue, statusValue, true, false));

@@ -20,19 +20,19 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.cdc;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
+import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
 import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.RetryStreamingExceptionHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
-import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
@@ -98,8 +98,9 @@ class CDCE2EIT {
     void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new CDCJobType())) {
-            containerComposer.proxyExecuteWithLog("ALTER STREAMING RULE (READ(WORKER_THREAD=64,BATCH_SIZE=1000,SHARDING_SIZE=10000000,RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='10000')))),"
-                    + "STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000'))));", 0);
+            String alterStreamingRule = "ALTER STREAMING RULE (READ(WORKER_THREAD=20,BATCH_SIZE=1000,SHARDING_SIZE=10000000,RATE_LIMITER(TYPE(NAME='QPS',PROPERTIES('qps'='10000')))),"
+                    + "WRITE(WORKER_THREAD=20,BATCH_SIZE=1000, RATE_LIMITER(TYPE(NAME='TPS',PROPERTIES('tps'='10000')))),STREAM_CHANNEL(TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000'))))";
+            containerComposer.proxyExecuteWithLog(alterStreamingRule, 0);
             for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
                 containerComposer.registerStorageUnit(each);
             }

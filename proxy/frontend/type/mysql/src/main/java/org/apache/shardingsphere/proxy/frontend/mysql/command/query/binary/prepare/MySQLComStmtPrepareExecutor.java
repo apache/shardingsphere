@@ -35,6 +35,8 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -66,6 +68,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @RequiredArgsConstructor
 public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
+    private static final int MAX_PARAMETER_COUNT = 65535;
+    
     private final MySQLComStmtPreparePacket packet;
     
     private final ConnectionSession connectionSession;
@@ -75,7 +79,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         failedIfContainsMultiStatements();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(packet.getSQL(), true);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(packet.getSQL(), true);
         if (!MySQLComStmtPrepareChecker.isAllowedStatement(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
@@ -100,6 +105,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Collection<DatabasePacket> result = new LinkedList<>();
         Collection<Projection> projections = getProjections(sqlStatementContext);
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
+        ShardingSpherePreconditions.checkState(parameterCount <= MAX_PARAMETER_COUNT, TooManyPlaceholdersException::new);
         result.add(new MySQLComStmtPrepareOKPacket(statementId, projections.size(), parameterCount, 0));
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession);

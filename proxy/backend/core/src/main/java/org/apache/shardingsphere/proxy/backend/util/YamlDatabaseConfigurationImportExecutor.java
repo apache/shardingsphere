@@ -80,6 +80,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -252,7 +253,9 @@ public final class YamlDatabaseConfigurationImportExecutor {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         shardingRuleConfigImportChecker.check(database, shardingRuleConfig);
         allRuleConfigs.add(shardingRuleConfig);
-        database.getRuleMetaData().getRules().add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getStorageUnits().keySet(), instanceContext));
+        Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        database.getRuleMetaData().getRules().add(new ShardingRule(shardingRuleConfig, dataSources, instanceContext));
     }
     
     private void addReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig,

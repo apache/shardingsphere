@@ -36,12 +36,6 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         
         <dependency>
@@ -78,23 +72,11 @@
         <profile>
             <id>release.native</id>
             <properties>
-                <jacoco.skip>true</jacoco.skip>
-                <maven.javadoc.skip>true</maven.javadoc.skip>
-                <checkstyle.skip>true</checkstyle.skip>
-                <rat.skip>true</rat.skip>
-                <spotless.apply.skip>true</spotless.apply.skip>
+                <java.version>17</java.version>
             </properties>
             <build>
                 <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>${maven-compiler-plugin.version}</version>
-                        <configuration>
-                            <source>17</source>
-                            <target>17</target>
-                        </configuration>
-                    </plugin>
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
@@ -103,11 +85,12 @@
                         <configuration>
                             <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
                             <buildArgs>
-                                <arg>--report-unsupported-elements-at-runtime</arg>
                                 <arg>-J-Xmx7g</arg>
+                                <arg>-H:+AddAllCharsets</arg>
                             </buildArgs>
                             <metadataRepository>
                                 <enabled>true</enabled>
+                                <version>0.3.5</version>
                             </metadataRepository>
                         </configuration>
                         <executions>

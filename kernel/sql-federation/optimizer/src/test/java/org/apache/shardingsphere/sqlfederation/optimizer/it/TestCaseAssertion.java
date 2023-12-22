@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.it;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * JAXB definition of test case assertion.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
 public final class TestCaseAssertion {
     
-    @XmlAttribute(name = "expected-result")
+    @JacksonXmlProperty(localName = "expected-result", isAttribute = true)
     private String expectedResult;
 }

@@ -27,11 +27,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -74,6 +79,23 @@ class TableExtractorTest {
         assertThat(tableExtractor.getRewriteTables().size(), is(1));
         Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
         assertTableSegment(tableSegmentIterator.next(), 130, 132, "t_order");
+    }
+    
+    @Test
+    void assertExtractTablesFromSelectProjectsWithFunctionWithSubQuery() {
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "", "");
+        MySQLSelectStatement subQuerySegment = new MySQLSelectStatement();
+        subQuerySegment.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, subQuerySegment, "");
+        SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(subquerySegment);
+        functionSegment.getParameters().add(subqueryExpressionSegment);
+        ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "", functionSegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(expressionProjectionSegment);
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.setProjections(projectionsSegment);
+        tableExtractor.extractTablesFromSelect(selectStatement);
+        assertThat(tableExtractor.getRewriteTables().size(), is(1));
     }
     
     @Test
@@ -170,6 +192,26 @@ class TableExtractorTest {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         result.setFrom(tableSegment);
+        return result;
+    }
+    
+    @Test
+    void assertExtractTablesFromCombineWithSubQueryProjection() {
+        MySQLSelectStatement selectStatement = createSelectStatementWithSubQueryProjection("t_order");
+        selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatementWithSubQueryProjection("t_order"), CombineType.UNION, createSelectStatementWithSubQueryProjection("t_order_item")));
+        tableExtractor.extractTablesFromSelect(selectStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        Iterator<SimpleTableSegment> iterator = actual.iterator();
+        assertTableSegment(iterator.next(), 0, 0, "t_order");
+        assertTableSegment(iterator.next(), 0, 0, "t_order_item");
+    }
+    
+    private MySQLSelectStatement createSelectStatementWithSubQueryProjection(final String tableName) {
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createSelectStatement(tableName), ""), ""));
+        result.setProjections(projections);
         return result;
     }
     

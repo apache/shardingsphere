@@ -120,7 +120,7 @@ public final class ConfigurationContextManager {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
             SwitchingResource switchingResource = new NewResourceSwitchManager().unregisterStorageUnit(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
-                    storageUnitName);
+                    Collections.singletonList(storageUnitName));
             buildNewMetaDataContext(databaseName, switchingResource);
         } catch (final SQLException ex) {
             log.error("Alter database: {} register storage unit failed", databaseName, ex);
@@ -349,7 +349,6 @@ public final class ConfigurationContextManager {
         ShardingSphereDatabase changedDatabase = createChangedDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
                 metaDataContexts.get().getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), instanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.get().getMetaData().getDatabases());
-        changedDatabase.getSchemas().putAll(newShardingSphereSchemas(changedDatabase));
         result.put(databaseName.toLowerCase(), changedDatabase);
         return result;
     }

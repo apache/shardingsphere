@@ -18,17 +18,16 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.ingest.channel.EmptyAckCallback;
-import org.apache.shardingsphere.data.pipeline.common.ingest.channel.memory.SimpleMemoryPipelineChannel;
-import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
-import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
@@ -59,7 +58,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(PostgreSQLPositionInitializer.class)
+@StaticMockSettings(PostgreSQLIngestPositionManager.class)
 class PostgreSQLWALDumperTest {
     
     @Mock
@@ -79,7 +78,7 @@ class PostgreSQLWALDumperTest {
     
     private SimpleMemoryPipelineChannel channel;
     
-    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
     @BeforeEach
     void setUp() {
@@ -125,8 +124,8 @@ class PostgreSQLWALDumperTest {
             Plugins.getMemberAccessor().set(PostgreSQLWALDumper.class.getDeclaredField("logicalReplication"), walDumper, logicalReplication);
             when(logicalReplication.createConnection(dataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
-            when(PostgreSQLPositionInitializer.getUniqueSlotName(eq(pgConnection), anyString())).thenReturn("0101123456");
-            when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.getUniqueSlotName(pgConnection, ""), position.getLogSequenceNumber()))
+            when(PostgreSQLIngestPositionManager.getUniqueSlotName(eq(pgConnection), anyString())).thenReturn("0101123456");
+            when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLIngestPositionManager.getUniqueSlotName(pgConnection, ""), position.getLogSequenceNumber()))
                     .thenReturn(pgReplicationStream);
             ByteBuffer data = ByteBuffer.wrap("table public.t_order_0: DELETE: order_id[integer]:1".getBytes());
             when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new IngestException(""));

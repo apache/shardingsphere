@@ -56,14 +56,14 @@ class ShowShadowRuleExecutorTest {
         assertThat(row.getCell(3), is("source"));
         assertThat(row.getCell(4), is("shadow"));
         assertThat(row.getCell(5), is("REGEX_MATCH"));
-        assertThat(row.getCell(6), is("{}"));
+        assertThat(row.getCell(6), is(""));
         row = iterator.next();
         assertThat(row.getCell(1), is("t_order_item"));
         assertThat(row.getCell(2), is("shadow_rule"));
         assertThat(row.getCell(3), is("source"));
         assertThat(row.getCell(4), is("shadow"));
         assertThat(row.getCell(5), is("REGEX_MATCH"));
-        assertThat(row.getCell(6), is("{}"));
+        assertThat(row.getCell(6), is(""));
     }
     
     @Test

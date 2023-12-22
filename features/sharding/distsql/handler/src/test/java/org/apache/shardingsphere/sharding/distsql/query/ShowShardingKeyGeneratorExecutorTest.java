@@ -26,12 +26,13 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingKeyGeneratorExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -55,7 +56,7 @@ class ShowShardingKeyGeneratorExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("snowflake"));
         assertThat(row.getCell(2), is("SNOWFLAKE"));
-        assertThat(row.getCell(3), is("{}"));
+        assertThat(row.getCell(3), is("{\"key\":\"value\"}"));
     }
     
     @Test
@@ -72,7 +73,7 @@ class ShowShardingKeyGeneratorExecutorTest {
     
     private ShardingRuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
+        result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", PropertiesBuilder.build(new Property("key", "value"))));
         return result;
     }
 }

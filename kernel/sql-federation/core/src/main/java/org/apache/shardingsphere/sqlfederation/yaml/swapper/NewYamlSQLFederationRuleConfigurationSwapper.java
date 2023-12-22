@@ -46,6 +46,7 @@ public final class NewYamlSQLFederationRuleConfigurationSwapper implements NewYa
     private YamlSQLFederationRuleConfiguration swapToYamlConfiguration(final SQLFederationRuleConfiguration data) {
         YamlSQLFederationRuleConfiguration result = new YamlSQLFederationRuleConfiguration();
         result.setSqlFederationEnabled(data.isSqlFederationEnabled());
+        result.setAllQueryUseSQLFederation(data.isAllQueryUseSQLFederation());
         result.setExecutionPlanCache(executionPlanCacheConfigSwapper.swapToYamlConfiguration(data.getExecutionPlanCache()));
         return result;
     }
@@ -64,7 +65,7 @@ public final class NewYamlSQLFederationRuleConfigurationSwapper implements NewYa
     
     private SQLFederationRuleConfiguration swapToObject(final YamlSQLFederationRuleConfiguration yamlConfig) {
         CacheOption executionPlanCacheConfig = executionPlanCacheConfigSwapper.swapToObject(yamlConfig.getExecutionPlanCache());
-        return new SQLFederationRuleConfiguration(yamlConfig.isSqlFederationEnabled(), executionPlanCacheConfig);
+        return new SQLFederationRuleConfiguration(yamlConfig.isSqlFederationEnabled(), yamlConfig.isAllQueryUseSQLFederation(), executionPlanCacheConfig);
     }
     
     @Override

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -163,6 +164,28 @@ class MySQLComStmtPrepareExecutorTest {
         ByteBuf byteBuf = Unpooled.buffer(22, 22);
         packet.write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
         return byteBuf.getUnsignedShortLE(17);
+    }
+    
+    @Test
+    void assertPrepareInsertStatementWithTooManyPlaceholders() {
+        String sql = createTooManyPlaceholdersSQL();
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 2;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertThrows(TooManyPlaceholdersException.class, () -> new MySQLComStmtPrepareExecutor(packet, connectionSession).execute());
+    }
+    
+    private String createTooManyPlaceholdersSQL() {
+        StringBuilder builder = new StringBuilder("INSERT INTO USER (ID, NAME, AGE) VALUES (?, ?, ?)");
+        for (int index = 0; index < Short.MAX_VALUE; index++) {
+            builder.append(", (?, ?, ?)");
+        }
+        return builder.toString();
     }
     
     @Test

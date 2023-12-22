@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAudi
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShowUnusedShardingAuditorsExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -53,7 +55,7 @@ class ShowUnusedShardingAuditorsExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("fixture"));
         assertThat(row.getCell(2), is("FIXTURE"));
-        assertThat(row.getCell(3), is("{}"));
+        assertThat(row.getCell(3), is("{\"key\":\"value\"}"));
     }
     
     @Test
@@ -78,7 +80,7 @@ class ShowUnusedShardingAuditorsExecutorTest {
     private RuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
-        result.getAuditors().put("fixture", new AlgorithmConfiguration("FIXTURE", null));
+        result.getAuditors().put("fixture", new AlgorithmConfiguration("FIXTURE", PropertiesBuilder.build(new Property("key", "value"))));
         result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
         return result;
     }

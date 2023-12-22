@@ -49,7 +49,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     private static final AtomicInteger STANDALONE_DATABASE_ID = new AtomicInteger(1);
     
     @Override
-    public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
+    public DataSource create(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
         removeAuthorityRule(rootConfig);
         updateSingleRuleConfiguration(rootConfig);
@@ -60,8 +60,6 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
             enableRangeQueryForInline(yamlShardingRuleConfig.get());
             removeAuditStrategy(yamlShardingRuleConfig.get());
         }
-        rootConfig.setDatabaseName(rootConfig.getDatabaseName());
-        rootConfig.setSchemaName(rootConfig.getSchemaName());
         rootConfig.setMode(createStandaloneModeConfiguration());
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
     }

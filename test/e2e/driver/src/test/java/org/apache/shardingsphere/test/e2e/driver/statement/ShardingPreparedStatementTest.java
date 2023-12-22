@@ -71,6 +71,8 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     
     private static final String UPDATE_BATCH_SQL = "UPDATE t_order SET status=? WHERE status=?";
     
+    private static final String UPDATE_ORDER_ITEM_BATCH_SQL = "UPDATE t_order_item SET status=? WHERE status=?";
+    
     private static final String UPDATE_WITH_ERROR_COLUMN = "UPDATE t_order SET error_column=?";
     
     @Test
@@ -363,6 +365,64 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
             assertThat(generateKeyResultSet.getInt(1), is(1));
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getInt(1), is(2));
+        }
+    }
+    
+    @Test
+    void assertAddBatchWithMultiStatements() throws SQLException {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement insertStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL);
+                PreparedStatement updateStatement = connection.prepareStatement(UPDATE_ORDER_ITEM_BATCH_SQL);
+                PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
+            connection.createStatement().execute("DELETE FROM t_order_item");
+            insertStatement.setInt(1, 3101);
+            insertStatement.setInt(2, 11);
+            insertStatement.setInt(3, 11);
+            insertStatement.setString(4, "BATCH");
+            insertStatement.addBatch();
+            queryStatement.setInt(1, 1);
+            queryStatement.setInt(2, 1);
+            try (ResultSet resultSet = queryStatement.executeQuery()) {
+                assertFalse(resultSet.next());
+            }
+            updateStatement.setString(1, "INIT");
+            updateStatement.setString(2, "BATCH");
+            updateStatement.addBatch();
+            insertStatement.setInt(1, 3102);
+            insertStatement.setInt(2, 12);
+            insertStatement.setInt(3, 12);
+            insertStatement.setString(4, "BATCH");
+            insertStatement.addBatch();
+            updateStatement.setString(1, "BATCH");
+            updateStatement.setString(2, "INIT");
+            updateStatement.addBatch();
+            queryStatement.setInt(1, 2);
+            queryStatement.setInt(2, 2);
+            try (ResultSet resultSet = queryStatement.executeQuery()) {
+                assertFalse(resultSet.next());
+            }
+            insertStatement.setInt(1, 3111);
+            insertStatement.setInt(2, 21);
+            insertStatement.setInt(3, 21);
+            insertStatement.setString(4, "BATCH");
+            insertStatement.addBatch();
+            updateStatement.setString(1, "INIT");
+            updateStatement.setString(2, "BATCH");
+            updateStatement.addBatch();
+            insertStatement.setInt(1, 3112);
+            insertStatement.setInt(2, 22);
+            insertStatement.setInt(3, 22);
+            insertStatement.setString(4, "BATCH");
+            insertStatement.addBatch();
+            int[] insertResult = insertStatement.executeBatch();
+            for (int each : insertResult) {
+                assertThat(each, is(1));
+            }
+            int[] updateResult = updateStatement.executeBatch();
+            for (int each : updateResult) {
+                assertThat(each, is(4));
+            }
         }
     }
     

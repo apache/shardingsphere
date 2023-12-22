@@ -59,8 +59,8 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
-import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
+import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.apache.shardingsphere.timeservice.api.config.TimestampServiceRuleConfiguration;
@@ -164,8 +164,8 @@ public abstract class SQLRewriterIT {
     
     private Collection<ShardingSphereRule> createGlobalRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        result.add(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()));
-        result.add(new SQLFederationRule(new SQLFederationRuleConfiguration(false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
+        result.add(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
+        result.add(new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         result.add(new TimestampServiceRule(mock(TimestampServiceRuleConfiguration.class)));
         return result;
     }

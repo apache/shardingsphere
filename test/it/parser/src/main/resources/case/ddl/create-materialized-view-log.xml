@@ -26,5 +26,5 @@
     <create-materialized-view-log sql-case-id="create_materialized_view_log_with_multi_row_id_" />
     <create-materialized-view-log sql-case-id="create_materialized_view_log_with_row_id_sequence_including_new" />
     <create-materialized-view-log sql-case-id="create_materialized_view_log_with_row_id_multi_sequence" />
-
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with_pctfree_storage_purge_repeat" />
 </sql-parser-test-cases>

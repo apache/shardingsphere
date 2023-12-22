@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.GroupedDataRecord;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -165,7 +165,7 @@ class DataRecordMergerTest {
     }
     
     private DataRecord mockInsertDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new PlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", id, true, true));
         result.addColumn(new Column("user_id", userId, true, false));
         result.addColumn(new Column("total_price", totalPrice, true, false));
@@ -185,7 +185,7 @@ class DataRecordMergerTest {
     }
     
     private DataRecord mockUpdateDataRecord(final String tableName, final Integer oldId, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, tableName, new PlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, tableName, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", oldId, id, null != oldId, true));
         result.addColumn(new Column("user_id", userId, true, false));
         result.addColumn(new Column("total_price", totalPrice, true, false));
@@ -197,7 +197,7 @@ class DataRecordMergerTest {
     }
     
     private DataRecord mockDeleteDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(IngestDataChangeType.DELETE, tableName, new PlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(IngestDataChangeType.DELETE, tableName, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", id, null, true, true));
         result.addColumn(new Column("user_id", userId, null, true, false));
         result.addColumn(new Column("total_price", totalPrice, null, true, false));
