@@ -246,10 +246,6 @@ createRelationalTableClause
     : (LP_ relationalProperties RP_)? immutableTableClauses? blockchainTableClauses? collationClause? commitClause? physicalProperties? tableProperties?
     ;
 
-createMemOptimizeClause
-    : (MEMOPTIMIZE FOR READ)? (MEMOPTIMIZE FOR WRITE)? 
-    ;    
-
 createParentClause
     : (PARENT tableName)?
     ;
