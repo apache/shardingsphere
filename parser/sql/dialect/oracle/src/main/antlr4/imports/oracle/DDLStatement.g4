@@ -29,7 +29,7 @@ createView
     ;
 
 createTable
-    : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
+    : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause memOptimizeClause createParentClause
     ;
 
 createEdition
