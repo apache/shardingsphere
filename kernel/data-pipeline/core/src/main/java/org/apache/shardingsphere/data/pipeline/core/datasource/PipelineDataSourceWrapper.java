@@ -51,8 +51,8 @@ public final class PipelineDataSourceWrapper implements DataSource, AutoCloseabl
     
     @SneakyThrows(SQLException.class)
     public PipelineDataSourceWrapper(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
-        this(TypedSPILoader.getService(PipelineDataSourceCreator.class, pipelineDataSourceConfig.getType()).create(pipelineDataSourceConfig.getDataSourceConfiguration()),
-                pipelineDataSourceConfig.getDatabaseType());
+        dataSource = TypedSPILoader.getService(PipelineDataSourceCreator.class, pipelineDataSourceConfig.getType()).create(pipelineDataSourceConfig.getDataSourceConfiguration());
+        databaseType = pipelineDataSourceConfig.getDatabaseType();
     }
     
     /**
