@@ -74,7 +74,7 @@ The currently provided `SPI` interfaces with syntactic sugar functions are as fo
 
 ### Reserved word
 
-`SHOW`、`IMPLEMENTATIONS`、`OF`
+`SHOW`, `IMPLEMENTATIONS`, `OF`
 
 ### Related links
 
