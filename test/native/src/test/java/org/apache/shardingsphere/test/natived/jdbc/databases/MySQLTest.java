@@ -43,7 +43,7 @@ import java.util.Properties;
  * Unable to use `org.testcontainers:mysql:1.19.3` under GraalVM Native Image.
  * Background comes from <a href="https://github.com/testcontainers/testcontainers-java/issues/7954">testcontainers/testcontainers-java#7954</a>.
  */
-public class MySQLTest {
+class MySQLTest {
     
     private static final String USERNAME = "root";
     
