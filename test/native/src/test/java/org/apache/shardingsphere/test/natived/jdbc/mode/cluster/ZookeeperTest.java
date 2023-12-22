@@ -39,7 +39,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-public class ZookeeperTest {
+class ZookeeperTest {
     
     private TestShardingService testShardingService;
     
