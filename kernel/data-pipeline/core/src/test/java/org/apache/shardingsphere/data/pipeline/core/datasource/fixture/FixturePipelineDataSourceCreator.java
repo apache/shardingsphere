@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.yaml;
+package org.apache.shardingsphere.data.pipeline.core.datasource.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 
-/**
- * Pipeline data source configuration for YAML.
- */
-@Getter
-@Setter
-public final class YamlPipelineDataSourceConfiguration implements YamlConfiguration {
+import javax.sql.DataSource;
+
+public final class FixturePipelineDataSourceCreator implements PipelineDataSourceCreator {
     
-    private String type;
+    @Override
+    public DataSource create(final Object dataSourceConfig) {
+        return null;
+    }
     
-    private String parameter;
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

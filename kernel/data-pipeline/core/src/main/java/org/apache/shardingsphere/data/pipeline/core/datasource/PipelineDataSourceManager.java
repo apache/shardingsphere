@@ -48,9 +48,8 @@ public final class PipelineDataSourceManager implements AutoCloseable {
             if (null != result) {
                 if (!result.isClosed()) {
                     return result;
-                } else {
-                    log.warn("{} is already closed, create again", result);
                 }
+                log.warn("{} is already closed, create again.", result);
             }
             result = PipelineDataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, result);
@@ -67,7 +66,7 @@ public final class PipelineDataSourceManager implements AutoCloseable {
             try {
                 each.close();
             } catch (final SQLException ex) {
-                log.error("An exception occurred while closing the data source", ex);
+                log.error("An exception occurred while closing the data source.", ex);
             }
         }
         cachedDataSources.clear();
