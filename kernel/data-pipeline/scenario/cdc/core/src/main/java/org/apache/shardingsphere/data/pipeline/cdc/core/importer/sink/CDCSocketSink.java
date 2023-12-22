@@ -77,7 +77,7 @@ public final class CDCSocketSink implements PipelineSink {
     }
     
     @Override
-    public PipelineJobProgressUpdatedParameter write(final String ackId, final List<Record> records) {
+    public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
         if (records.isEmpty()) {
             return new PipelineJobProgressUpdatedParameter(0);
         }
