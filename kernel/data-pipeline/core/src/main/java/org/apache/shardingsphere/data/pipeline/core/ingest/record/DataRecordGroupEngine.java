@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.importer;
+package org.apache.shardingsphere.data.pipeline.core.ingest.record;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord.Key;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.GroupedDataRecord;
 
 import java.util.Collection;
 import java.util.Collections;
