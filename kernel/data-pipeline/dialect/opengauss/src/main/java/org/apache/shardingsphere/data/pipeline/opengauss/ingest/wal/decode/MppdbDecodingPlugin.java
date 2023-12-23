@@ -101,7 +101,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         String rowEventType = mppTableData.getOpType();
         IngestDataChangeType type;
         try {
-            type = IngestDataChangeType.valueOf(rowEventType);    
+            type = IngestDataChangeType.valueOf(rowEventType);
         } catch (final IllegalArgumentException ex) {
             throw new IngestException("Unknown rowEventType: " + rowEventType);
         }
