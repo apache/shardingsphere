@@ -38,6 +38,8 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 
+import java.util.Objects;
+
 /**
  * Command packet factory for MySQL.
  */
@@ -55,35 +57,37 @@ public final class MySQLCommandPacketFactory {
      */
     public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload,
                                                  final ConnectionSession connectionSession, final boolean sqlCommentParseEnabled) {
-        switch (commandPacketType) {
-            case COM_QUIT:
-                return new MySQLComQuitPacket();
-            case COM_INIT_DB:
-                return new MySQLComInitDbPacket(payload);
-            case COM_FIELD_LIST:
-                return new MySQLComFieldListPacket(payload);
-            case COM_QUERY:
-                return new MySQLComQueryPacket(payload, sqlCommentParseEnabled);
-            case COM_STMT_PREPARE:
-                return new MySQLComStmtPreparePacket(payload, sqlCommentParseEnabled);
-            case COM_STMT_EXECUTE:
-                MySQLServerPreparedStatement serverPreparedStatement =
-                        connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(payload.getByteBuf().getIntLE(payload.getByteBuf().readerIndex()));
-                return new MySQLComStmtExecutePacket(payload, serverPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount());
-            case COM_STMT_SEND_LONG_DATA:
-                return new MySQLComStmtSendLongDataPacket(payload);
-            case COM_STMT_RESET:
-                return new MySQLComStmtResetPacket(payload);
-            case COM_STMT_CLOSE:
-                return new MySQLComStmtClosePacket(payload);
-            case COM_SET_OPTION:
-                return new MySQLComSetOptionPacket(payload);
-            case COM_PING:
-                return new MySQLComPingPacket();
-            case COM_RESET_CONNECTION:
-                return new MySQLComResetConnectionPacket();
-            default:
-                return new MySQLUnsupportedCommandPacket(commandPacketType);
+        if (Objects.equals(commandPacketType,MySQLCommandPacketType.COM_QUERY)){
+            return new MySQLComQueryPacket(payload, sqlCommentParseEnabled);
+        }else {
+            switch (commandPacketType) {
+                case COM_QUIT:
+                    return new MySQLComQuitPacket();
+                case COM_INIT_DB:
+                    return new MySQLComInitDbPacket(payload);
+                case COM_FIELD_LIST:
+                    return new MySQLComFieldListPacket(payload);
+                case COM_STMT_PREPARE:
+                    return new MySQLComStmtPreparePacket(payload, sqlCommentParseEnabled);
+                case COM_STMT_EXECUTE:
+                    MySQLServerPreparedStatement serverPreparedStatement =
+                            connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(payload.getByteBuf().getIntLE(payload.getByteBuf().readerIndex()));
+                    return new MySQLComStmtExecutePacket(payload, serverPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount());
+                case COM_STMT_SEND_LONG_DATA:
+                    return new MySQLComStmtSendLongDataPacket(payload);
+                case COM_STMT_RESET:
+                    return new MySQLComStmtResetPacket(payload);
+                case COM_STMT_CLOSE:
+                    return new MySQLComStmtClosePacket(payload);
+                case COM_SET_OPTION:
+                    return new MySQLComSetOptionPacket(payload);
+                case COM_PING:
+                    return new MySQLComPingPacket();
+                case COM_RESET_CONNECTION:
+                    return new MySQLComResetConnectionPacket();
+                default:
+                    return new MySQLUnsupportedCommandPacket(commandPacketType);
+            }
         }
     }
 }
