@@ -22,9 +22,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,9 +47,9 @@ public final class DataRecord extends Record {
     
     private final List<Column> columns;
     
-    private final List<Object> uniqueKeyValue = new LinkedList<>();
+    private final Collection<Object> uniqueKeyValue = new LinkedList<>();
     
-    private final List<Object> oldUniqueKeyValues = new ArrayList<>();
+    private final Collection<Object> oldUniqueKeyValues = new LinkedList<>();
     
     private String actualTableName;
     
@@ -103,16 +105,7 @@ public final class DataRecord extends Record {
      * @return key
      */
     public Key getKey() {
-        return new Key(tableName, uniqueKeyValue);
-    }
-    
-    /**
-     * Get old key.
-     *
-     * @return key
-     */
-    public Key getOldKey() {
-        return new Key(tableName, oldUniqueKeyValues);
+        return IngestDataChangeType.DELETE.equals(type) ? new Key(tableName, oldUniqueKeyValues) : new Key(tableName, uniqueKeyValue);
     }
     
     @RequiredArgsConstructor
@@ -121,6 +114,6 @@ public final class DataRecord extends Record {
         
         private final String tableName;
         
-        private final List<Object> uniqueKeyValues;
+        private final Collection<Object> uniqueKeyValues;
     }
 }

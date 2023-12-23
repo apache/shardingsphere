@@ -50,7 +50,7 @@ public final class DataRecordGroupEngine {
         Map<String, Map<String, List<DataRecord>>> batchDataRecords = new LinkedHashMap<>();
         for (DataRecord each : records) {
             tableNames.add(each.getTableName());
-            if (duplicateKeys.getOrDefault(getKey(each), false)) {
+            if (duplicateKeys.getOrDefault(each.getKey(), false)) {
                 nonBatchRecords.computeIfAbsent(each.getTableName(), ignored -> new LinkedList<>()).add(each);
             } else {
                 batchDataRecords.computeIfAbsent(each.getTableName(), ignored -> new HashMap<>()).computeIfAbsent(each.getType(), ignored -> new LinkedList<>()).add(each);
@@ -63,14 +63,10 @@ public final class DataRecordGroupEngine {
     private Map<Key, Boolean> getDuplicateKeys(final Collection<DataRecord> records) {
         Map<Key, Boolean> result = new HashMap<>();
         for (DataRecord each : records) {
-            Key key = getKey(each);
+            Key key = each.getKey();
             result.put(key, result.containsKey(key));
         }
         return result;
-    }
-    
-    private Key getKey(final DataRecord record) {
-        return IngestDataChangeType.DELETE.equals(record.getType()) ? record.getOldKey() : record.getKey();
     }
     
     private GroupedDataRecord getGroupedDataRecord(final String tableName, final Map<String, List<DataRecord>> batchRecords, final List<DataRecord> nonBatchRecords) {
