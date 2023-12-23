@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.constant.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
@@ -98,7 +98,7 @@ class MultiplexMemoryPipelineChannelTest {
     private Record[] mockRecords() {
         Record[] result = new Record[100];
         for (int i = 1; i <= result.length; i++) {
-            result[i - 1] = random.nextBoolean() ? new DataRecord(IngestDataChangeType.INSERT, "t1", new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
+            result[i - 1] = random.nextBoolean() ? new DataRecord(PipelineSQLOperationType.INSERT, "t1", new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
         }
         return result;
     }

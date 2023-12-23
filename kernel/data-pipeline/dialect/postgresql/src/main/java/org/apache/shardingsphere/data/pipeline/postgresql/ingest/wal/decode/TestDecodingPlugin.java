@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.constant.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
@@ -68,9 +68,9 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         AbstractRowEvent result;
         String tableName = readTableName(data);
         String rowEventType = readRowEventType(data);
-        IngestDataChangeType type;
+        PipelineSQLOperationType type;
         try {
-            type = IngestDataChangeType.valueOf(rowEventType);
+            type = PipelineSQLOperationType.valueOf(rowEventType);
         } catch (final IllegalArgumentException ex) {
             throw new IngestException("Unknown rowEventType: " + rowEventType);
         }

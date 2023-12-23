@@ -28,7 +28,7 @@ public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm {
     /**
      * Intercept.
      *
-     * @param type job operation type
+     * @param type pipeline SQL operation type
      * @param data delta value for how much changed
      */
     void intercept(PipelineSQLOperationType type, Number data);

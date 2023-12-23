@@ -19,22 +19,22 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.constant.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineDataSourceSink;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.algorithm.FixtureTransmissionJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -95,19 +95,19 @@ class PipelineDataSourceSinkTest {
     
     @Test
     void assertWriteInsertDataRecord() throws SQLException {
-        DataRecord insertRecord = getDataRecord(IngestDataChangeType.INSERT);
+        DataRecord insertRecord = getDataRecord(PipelineSQLOperationType.INSERT);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(insertRecord));
         importer.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
-        verify(preparedStatement).setObject(3, IngestDataChangeType.INSERT);
+        verify(preparedStatement).setObject(3, PipelineSQLOperationType.INSERT);
         verify(preparedStatement).addBatch();
     }
     
     @Test
     void assertDeleteDataRecord() throws SQLException {
-        DataRecord deleteRecord = getDataRecord(IngestDataChangeType.DELETE);
+        DataRecord deleteRecord = getDataRecord(PipelineSQLOperationType.DELETE);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(deleteRecord));
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1});
@@ -119,12 +119,12 @@ class PipelineDataSourceSinkTest {
     
     @Test
     void assertUpdateDataRecord() throws SQLException {
-        DataRecord updateRecord = getDataRecord(IngestDataChangeType.UPDATE);
+        DataRecord updateRecord = getDataRecord(PipelineSQLOperationType.UPDATE);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(updateRecord));
         importer.run();
         verify(preparedStatement).setObject(1, 20);
-        verify(preparedStatement).setObject(2, IngestDataChangeType.UPDATE);
+        verify(preparedStatement).setObject(2, PipelineSQLOperationType.UPDATE);
         verify(preparedStatement).setObject(3, 1);
         verify(preparedStatement).setObject(4, 10);
         verify(preparedStatement).executeUpdate();
@@ -139,17 +139,17 @@ class PipelineDataSourceSinkTest {
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);
         inOrder.verify(preparedStatement).setObject(2, 10);
-        inOrder.verify(preparedStatement).setObject(3, IngestDataChangeType.UPDATE);
+        inOrder.verify(preparedStatement).setObject(3, PipelineSQLOperationType.UPDATE);
         inOrder.verify(preparedStatement).setObject(4, 1);
         inOrder.verify(preparedStatement).setObject(5, 0);
         inOrder.verify(preparedStatement).executeUpdate();
     }
     
     private DataRecord getUpdatePrimaryKeyDataRecord() {
-        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, TABLE_NAME, new IngestPlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.UPDATE, TABLE_NAME, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", 1, 2, true, true));
         result.addColumn(new Column("user", 0, 10, true, false));
-        result.addColumn(new Column("status", null, IngestDataChangeType.UPDATE, true, false));
+        result.addColumn(new Column("status", null, PipelineSQLOperationType.UPDATE, true, false));
         return result;
     }
     
@@ -160,31 +160,31 @@ class PipelineDataSourceSinkTest {
         return result;
     }
     
-    private DataRecord getDataRecord(final IngestDataChangeType recordType) {
+    private DataRecord getDataRecord(final PipelineSQLOperationType type) {
         Integer idOldValue = null;
         Integer userOldValue = null;
         Integer idValue = null;
         Integer userValue = null;
-        IngestDataChangeType statusOldValue = null;
-        IngestDataChangeType statusValue = null;
-        if (IngestDataChangeType.INSERT == recordType) {
+        PipelineSQLOperationType statusOldValue = null;
+        PipelineSQLOperationType statusValue = null;
+        if (PipelineSQLOperationType.INSERT == type) {
             idValue = 1;
             userValue = 10;
-            statusValue = recordType;
+            statusValue = type;
         }
-        if (IngestDataChangeType.UPDATE == recordType) {
+        if (PipelineSQLOperationType.UPDATE == type) {
             idOldValue = 1;
             idValue = idOldValue;
             userOldValue = 10;
             userValue = 20;
-            statusValue = recordType;
+            statusValue = type;
         }
-        if (IngestDataChangeType.DELETE == recordType) {
+        if (PipelineSQLOperationType.DELETE == type) {
             idOldValue = 1;
             userOldValue = 10;
-            statusOldValue = recordType;
+            statusOldValue = type;
         }
-        DataRecord result = new DataRecord(recordType, TABLE_NAME, new IngestPlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(type, TABLE_NAME, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", idOldValue, idValue, false, true));
         result.addColumn(new Column("user", userOldValue, userValue, true, false));
         result.addColumn(new Column("status", statusOldValue, statusValue, true, false));

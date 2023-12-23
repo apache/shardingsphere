@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.constant.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
@@ -131,7 +131,7 @@ class MySQLIncrementalDumperTest {
         List<Record> actual = getRecordsByWriteRowsEvent(createWriteRowsEvent());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
-        assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.INSERT));
+        assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.INSERT));
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
     }
     
@@ -153,7 +153,7 @@ class MySQLIncrementalDumperTest {
         List<Record> actual = getRecordsByUpdateRowsEvent(createUpdateRowsEvent());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
-        assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.UPDATE));
+        assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.UPDATE));
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
     }
     
@@ -176,7 +176,7 @@ class MySQLIncrementalDumperTest {
         List<Record> actual = getRecordsByDeleteRowsEvent(createDeleteRowsEvent());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
-        assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.DELETE));
+        assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.DELETE));
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
     }
     
