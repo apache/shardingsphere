@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
-import org.apache.shardingsphere.data.pipeline.core.importer.DataRecordMerger;
+import org.apache.shardingsphere.data.pipeline.core.importer.DataRecordGroupEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
@@ -55,8 +55,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class PipelineDataSourceSink implements PipelineSink {
     
-    private static final DataRecordMerger MERGER = new DataRecordMerger();
-    
     @Getter(AccessLevel.PROTECTED)
     private final ImporterConfiguration importerConfig;
     
@@ -65,6 +63,8 @@ public final class PipelineDataSourceSink implements PipelineSink {
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
     private final PipelineImportSQLBuilder importSQLBuilder;
+    
+    private final DataRecordGroupEngine groupEngine;
     
     private final AtomicReference<Statement> batchInsertStatement = new AtomicReference<>();
     
@@ -77,6 +77,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         this.dataSourceManager = dataSourceManager;
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
         importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType());
+        groupEngine = new DataRecordGroupEngine();
     }
     
     @Override
@@ -100,7 +101,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
                 insertRecordNumber++;
             }
         }
-        Collection<GroupedDataRecord> groupedDataRecords = MERGER.group(dataRecords);
+        Collection<GroupedDataRecord> groupedDataRecords = groupEngine.group(dataRecords);
         for (GroupedDataRecord each : groupedDataRecords) {
             flushInternal(dataSource, each.getBatchDeleteDataRecords());
             flushInternal(dataSource, each.getBatchInsertDataRecords());

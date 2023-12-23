@@ -115,8 +115,8 @@ public final class DataRecord extends Record {
         return new Key(tableName, oldUniqueKeyValues);
     }
     
-    @EqualsAndHashCode
     @RequiredArgsConstructor
+    @EqualsAndHashCode
     public static class Key {
         
         private final String tableName;
