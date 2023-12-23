@@ -87,20 +87,21 @@ class DataRecordGroupEngineTest {
         assertThat(actual.size(), is(1));
         GroupedDataRecord actualGroupedDataRecord = actual.iterator().next();
         assertThat(actualGroupedDataRecord.getBatchUpdateDataRecords().size(), is(2));
-        DataRecord actualFirstDataRecord = actualGroupedDataRecord.getBatchUpdateDataRecords().get(0);
-        assertThat(actualFirstDataRecord.getType(), is(PipelineSQLOperationType.UPDATE));
-        assertThat(actualFirstDataRecord.getTableName(), is("order"));
-        assertThat(actualFirstDataRecord.getColumn(0).getOldValue(), is(1));
-        assertThat(actualFirstDataRecord.getColumn(0).getValue(), is(2));
-        assertThat(actualFirstDataRecord.getColumn(1).getValue(), is(1));
-        assertThat(actualFirstDataRecord.getColumn(2).getValue(), is(1));
-        DataRecord actualSecondDataRecord = actualGroupedDataRecord.getBatchUpdateDataRecords().get(1);
-        assertThat(actualSecondDataRecord.getType(), is(PipelineSQLOperationType.UPDATE));
-        assertThat(actualSecondDataRecord.getTableName(), is("order"));
-        assertThat(actualSecondDataRecord.getColumn(0).getOldValue(), is(2));
-        assertThat(actualSecondDataRecord.getColumn(0).getValue(), is(3));
-        assertThat(actualSecondDataRecord.getColumn(1).getValue(), is(2));
-        assertThat(actualSecondDataRecord.getColumn(2).getValue(), is(2));
+        Iterator<DataRecord> batchUpdateDataRecords = actualGroupedDataRecord.getBatchUpdateDataRecords().iterator();
+        DataRecord actualDataRecord1 = batchUpdateDataRecords.next();
+        assertThat(actualDataRecord1.getType(), is(PipelineSQLOperationType.UPDATE));
+        assertThat(actualDataRecord1.getTableName(), is("order"));
+        assertThat(actualDataRecord1.getColumn(0).getOldValue(), is(1));
+        assertThat(actualDataRecord1.getColumn(0).getValue(), is(2));
+        assertThat(actualDataRecord1.getColumn(1).getValue(), is(1));
+        assertThat(actualDataRecord1.getColumn(2).getValue(), is(1));
+        DataRecord actualDataRecord2 = batchUpdateDataRecords.next();
+        assertThat(actualDataRecord2.getType(), is(PipelineSQLOperationType.UPDATE));
+        assertThat(actualDataRecord2.getTableName(), is("order"));
+        assertThat(actualDataRecord2.getColumn(0).getOldValue(), is(2));
+        assertThat(actualDataRecord2.getColumn(0).getValue(), is(3));
+        assertThat(actualDataRecord2.getColumn(1).getValue(), is(2));
+        assertThat(actualDataRecord2.getColumn(2).getValue(), is(2));
     }
     
     @Test
@@ -130,9 +131,9 @@ class DataRecordGroupEngineTest {
         assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
-    private void assertDataRecordsMatched(final List<DataRecord> actualRecords, final List<DataRecord> expectedRecords) {
+    private void assertDataRecordsMatched(final Collection<DataRecord> actualRecords, final List<DataRecord> expectedRecords) {
         for (int i = 0; i < actualRecords.size(); i++) {
-            assertThat(actualRecords.get(0), sameInstance(expectedRecords.get(0)));
+            assertThat(actualRecords.iterator().next(), sameInstance(expectedRecords.get(0)));
         }
     }
     
