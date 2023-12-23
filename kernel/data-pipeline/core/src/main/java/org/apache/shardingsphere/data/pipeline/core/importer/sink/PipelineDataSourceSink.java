@@ -92,7 +92,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         }
         int insertRecordNumber = 0;
         for (DataRecord each : dataRecords) {
-            if (IngestDataChangeType.INSERT.equals(each.getType())) {
+            if (IngestDataChangeType.INSERT == each.getType()) {
                 insertRecordNumber++;
             }
         }
@@ -136,19 +136,19 @@ public final class PipelineDataSourceSink implements PipelineSink {
                 connection.setAutoCommit(false);
             }
             switch (buffer.get(0).getType()) {
-                case IngestDataChangeType.INSERT:
+                case INSERT:
                     if (null != rateLimitAlgorithm) {
                         rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
                     }
                     executeBatchInsert(connection, buffer);
                     break;
-                case IngestDataChangeType.UPDATE:
+                case UPDATE:
                     if (null != rateLimitAlgorithm) {
                         rateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
                     }
                     executeUpdate(connection, buffer);
                     break;
-                case IngestDataChangeType.DELETE:
+                case DELETE:
                     if (null != rateLimitAlgorithm) {
                         rateLimitAlgorithm.intercept(JobOperationType.DELETE, 1);
                     }

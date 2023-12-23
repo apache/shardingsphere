@@ -68,14 +68,20 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         AbstractRowEvent result;
         String tableName = readTableName(data);
         String rowEventType = readRowEventType(data);
-        switch (rowEventType) {
-            case IngestDataChangeType.INSERT:
+        IngestDataChangeType type;
+        try {
+            type = IngestDataChangeType.valueOf(rowEventType);
+        } catch (final IllegalArgumentException ex) {
+            throw new IngestException("Unknown rowEventType: " + rowEventType);
+        }
+        switch (type) {
+            case INSERT:
                 result = readWriteRowEvent(data);
                 break;
-            case IngestDataChangeType.UPDATE:
+            case UPDATE:
                 result = readUpdateRowEvent(data);
                 break;
-            case IngestDataChangeType.DELETE:
+            case DELETE:
                 result = readDeleteRowEvent(data);
                 break;
             default:

@@ -57,7 +57,7 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
             pushRecord(firstRecord);
             return;
         }
-        long insertDataRecordsCount = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).filter(each -> IngestDataChangeType.INSERT.equals(each.getType())).count();
+        long insertDataRecordsCount = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).filter(each -> IngestDataChangeType.INSERT == each.getType()).count();
         if (insertDataRecordsCount == records.size()) {
             channels.get(Math.abs(firstRecord.hashCode() % channelNumber)).pushRecords(records);
             return;

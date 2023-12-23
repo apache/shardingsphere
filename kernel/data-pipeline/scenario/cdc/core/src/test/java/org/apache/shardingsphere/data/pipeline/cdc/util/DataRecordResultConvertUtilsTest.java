@@ -23,6 +23,7 @@ import com.google.protobuf.TimestampProto;
 import com.google.protobuf.TypeRegistry;
 import com.google.protobuf.WrappersProto;
 import com.google.protobuf.util.JsonFormat;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
@@ -54,7 +55,7 @@ class DataRecordResultConvertUtilsTest {
     
     @Test
     void assertConvertDataRecordToRecord() throws InvalidProtocolBufferException, SQLException {
-        DataRecord dataRecord = new DataRecord("INSERT", "t_order", new IntegerPrimaryKeyIngestPosition(0, 1), 2);
+        DataRecord dataRecord = new DataRecord(IngestDataChangeType.INSERT, "t_order", new IntegerPrimaryKeyIngestPosition(0, 1), 2);
         dataRecord.addColumn(new Column("order_id", BigInteger.ONE, false, true));
         dataRecord.addColumn(new Column("price", BigDecimal.valueOf(123), false, false));
         dataRecord.addColumn(new Column("user_id", Long.MAX_VALUE, false, false));
