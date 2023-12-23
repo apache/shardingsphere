@@ -101,7 +101,7 @@ class PipelineDataSourceSinkTest {
         importer.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
-        verify(preparedStatement).setObject(3, "INSERT");
+        verify(preparedStatement).setObject(3, IngestDataChangeType.INSERT);
         verify(preparedStatement).addBatch();
     }
     
@@ -124,7 +124,7 @@ class PipelineDataSourceSinkTest {
         when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(updateRecord));
         importer.run();
         verify(preparedStatement).setObject(1, 20);
-        verify(preparedStatement).setObject(2, "UPDATE");
+        verify(preparedStatement).setObject(2, IngestDataChangeType.UPDATE);
         verify(preparedStatement).setObject(3, 1);
         verify(preparedStatement).setObject(4, 10);
         verify(preparedStatement).executeUpdate();
@@ -139,7 +139,7 @@ class PipelineDataSourceSinkTest {
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);
         inOrder.verify(preparedStatement).setObject(2, 10);
-        inOrder.verify(preparedStatement).setObject(3, "UPDATE");
+        inOrder.verify(preparedStatement).setObject(3, IngestDataChangeType.UPDATE);
         inOrder.verify(preparedStatement).setObject(4, 1);
         inOrder.verify(preparedStatement).setObject(5, 0);
         inOrder.verify(preparedStatement).executeUpdate();
@@ -149,7 +149,7 @@ class PipelineDataSourceSinkTest {
         DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, TABLE_NAME, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", 1, 2, true, true));
         result.addColumn(new Column("user", 0, 10, true, false));
-        result.addColumn(new Column("status", null, "UPDATE", true, false));
+        result.addColumn(new Column("status", null, IngestDataChangeType.UPDATE, true, false));
         return result;
     }
     
