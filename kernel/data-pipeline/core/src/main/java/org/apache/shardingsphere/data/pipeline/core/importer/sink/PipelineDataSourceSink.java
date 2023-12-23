@@ -62,11 +62,11 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     private final DataRecordGroupEngine groupEngine;
     
-    private final AtomicReference<Statement> batchInsertStatement = new AtomicReference<>();
+    private final AtomicReference<Statement> batchInsertStatement;
     
-    private final AtomicReference<Statement> updateStatement = new AtomicReference<>();
+    private final AtomicReference<Statement> updateStatement;
     
-    private final AtomicReference<Statement> batchDeleteStatement = new AtomicReference<>();
+    private final AtomicReference<Statement> batchDeleteStatement;
     
     public PipelineDataSourceSink(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
@@ -74,6 +74,9 @@ public final class PipelineDataSourceSink implements PipelineSink {
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
         importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType());
         groupEngine = new DataRecordGroupEngine();
+        batchInsertStatement = new AtomicReference<>();
+        updateStatement = new AtomicReference<>();
+        batchDeleteStatement = new AtomicReference<>();
     }
     
     @Override
