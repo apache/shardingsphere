@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.record;
+package org.apache.shardingsphere.data.pipeline.core.ingest.record.group;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 
 import java.util.List;
 
