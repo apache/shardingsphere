@@ -21,17 +21,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.DataRecordGroupEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.DataRecordGroupEngine;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
@@ -92,7 +91,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         }
         int insertRecordNumber = 0;
         for (DataRecord each : dataRecords) {
-            if (IngestDataChangeType.INSERT == each.getType()) {
+            if (PipelineSQLOperationType.INSERT == each.getType()) {
                 insertRecordNumber++;
             }
         }
@@ -138,19 +137,19 @@ public final class PipelineDataSourceSink implements PipelineSink {
             switch (buffer.get(0).getType()) {
                 case INSERT:
                     if (null != rateLimitAlgorithm) {
-                        rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
+                        rateLimitAlgorithm.intercept(PipelineSQLOperationType.INSERT, 1);
                     }
                     executeBatchInsert(connection, buffer);
                     break;
                 case UPDATE:
                     if (null != rateLimitAlgorithm) {
-                        rateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
+                        rateLimitAlgorithm.intercept(PipelineSQLOperationType.UPDATE, 1);
                     }
                     executeUpdate(connection, buffer);
                     break;
                 case DELETE:
                     if (null != rateLimitAlgorithm) {
-                        rateLimitAlgorithm.intercept(JobOperationType.DELETE, 1);
+                        rateLimitAlgorithm.intercept(PipelineSQLOperationType.DELETE, 1);
                     }
                     executeBatchDelete(connection, buffer);
                     break;

@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.List;
 @ToString
 public final class DataRecord extends Record {
     
-    private final IngestDataChangeType type;
+    private final PipelineSQLOperationType type;
     
     private final String schemaName;
     
@@ -55,11 +55,11 @@ public final class DataRecord extends Record {
     
     private Long csn;
     
-    public DataRecord(final IngestDataChangeType type, final String tableName, final IngestPosition position, final int columnCount) {
+    public DataRecord(final PipelineSQLOperationType type, final String tableName, final IngestPosition position, final int columnCount) {
         this(type, null, tableName, position, columnCount);
     }
     
-    public DataRecord(final IngestDataChangeType type, final String schemaName, final String tableName, final IngestPosition position, final int columnCount) {
+    public DataRecord(final PipelineSQLOperationType type, final String schemaName, final String tableName, final IngestPosition position, final int columnCount) {
         super(position);
         this.type = type;
         this.schemaName = schemaName;
@@ -105,7 +105,7 @@ public final class DataRecord extends Record {
      * @return key
      */
     public Key getKey() {
-        return IngestDataChangeType.DELETE.equals(type) ? new Key(tableName, oldUniqueKeyValues) : new Key(tableName, uniqueKeyValue);
+        return PipelineSQLOperationType.DELETE == type ? new Key(tableName, oldUniqueKeyValues) : new Key(tableName, uniqueKeyValue);
     }
     
     @RequiredArgsConstructor

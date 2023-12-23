@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.record.group;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
@@ -88,14 +88,14 @@ class DataRecordGroupEngineTest {
         GroupedDataRecord actualGroupedDataRecord = actual.iterator().next();
         assertThat(actualGroupedDataRecord.getBatchUpdateDataRecords().size(), is(2));
         DataRecord actualFirstDataRecord = actualGroupedDataRecord.getBatchUpdateDataRecords().get(0);
-        assertThat(actualFirstDataRecord.getType(), is(IngestDataChangeType.UPDATE));
+        assertThat(actualFirstDataRecord.getType(), is(PipelineSQLOperationType.UPDATE));
         assertThat(actualFirstDataRecord.getTableName(), is("order"));
         assertThat(actualFirstDataRecord.getColumn(0).getOldValue(), is(1));
         assertThat(actualFirstDataRecord.getColumn(0).getValue(), is(2));
         assertThat(actualFirstDataRecord.getColumn(1).getValue(), is(1));
         assertThat(actualFirstDataRecord.getColumn(2).getValue(), is(1));
         DataRecord actualSecondDataRecord = actualGroupedDataRecord.getBatchUpdateDataRecords().get(1);
-        assertThat(actualSecondDataRecord.getType(), is(IngestDataChangeType.UPDATE));
+        assertThat(actualSecondDataRecord.getType(), is(PipelineSQLOperationType.UPDATE));
         assertThat(actualSecondDataRecord.getTableName(), is("order"));
         assertThat(actualSecondDataRecord.getColumn(0).getOldValue(), is(2));
         assertThat(actualSecondDataRecord.getColumn(0).getValue(), is(3));
@@ -167,7 +167,7 @@ class DataRecordGroupEngineTest {
     }
     
     private DataRecord mockInsertDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new IngestPlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, tableName, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", id, true, true));
         result.addColumn(new Column("user_id", userId, true, false));
         result.addColumn(new Column("total_price", totalPrice, true, false));
@@ -187,7 +187,7 @@ class DataRecordGroupEngineTest {
     }
     
     private DataRecord mockUpdateDataRecord(final String tableName, final Integer oldId, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(IngestDataChangeType.UPDATE, tableName, new IngestPlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.UPDATE, tableName, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", oldId, id, null != oldId, true));
         result.addColumn(new Column("user_id", userId, true, false));
         result.addColumn(new Column("total_price", totalPrice, true, false));
@@ -199,7 +199,7 @@ class DataRecordGroupEngineTest {
     }
     
     private DataRecord mockDeleteDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord result = new DataRecord(IngestDataChangeType.DELETE, tableName, new IngestPlaceholderPosition(), 3);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.DELETE, tableName, new IngestPlaceholderPosition(), 3);
         result.addColumn(new Column("id", id, null, true, true));
         result.addColumn(new Column("user_id", userId, null, true, false));
         result.addColumn(new Column("total_price", totalPrice, null, true, false));

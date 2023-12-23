@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
             pushRecord(firstRecord);
             return;
         }
-        long insertDataRecordsCount = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).filter(each -> IngestDataChangeType.INSERT == each.getType()).count();
+        long insertDataRecordsCount = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count();
         if (insertDataRecordsCount == records.size()) {
             channels.get(Math.abs(firstRecord.hashCode() % channelNumber)).pushRecords(records);
             return;

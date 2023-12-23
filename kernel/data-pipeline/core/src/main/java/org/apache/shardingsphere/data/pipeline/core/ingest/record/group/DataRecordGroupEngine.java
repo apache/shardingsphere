@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.record.group;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord.Key;
 
@@ -46,7 +46,7 @@ public final class DataRecordGroupEngine {
         Map<Key, Boolean> duplicateKeys = getDuplicateKeys(records);
         Collection<String> tableNames = new LinkedHashSet<>();
         Map<String, List<DataRecord>> nonBatchRecords = new LinkedHashMap<>();
-        Map<String, Map<IngestDataChangeType, List<DataRecord>>> batchDataRecords = new LinkedHashMap<>();
+        Map<String, Map<PipelineSQLOperationType, List<DataRecord>>> batchDataRecords = new LinkedHashMap<>();
         for (DataRecord each : records) {
             tableNames.add(each.getTableName());
             if (duplicateKeys.getOrDefault(each.getKey(), false)) {
@@ -68,8 +68,9 @@ public final class DataRecordGroupEngine {
         return result;
     }
     
-    private GroupedDataRecord getGroupedDataRecord(final String tableName, final Map<IngestDataChangeType, List<DataRecord>> batchRecords, final List<DataRecord> nonBatchRecords) {
-        return new GroupedDataRecord(tableName, batchRecords.getOrDefault(IngestDataChangeType.INSERT, Collections.emptyList()),
-                batchRecords.getOrDefault(IngestDataChangeType.UPDATE, Collections.emptyList()), batchRecords.getOrDefault(IngestDataChangeType.DELETE, Collections.emptyList()), nonBatchRecords);
+    private GroupedDataRecord getGroupedDataRecord(final String tableName, final Map<PipelineSQLOperationType, List<DataRecord>> batchRecords, final List<DataRecord> nonBatchRecords) {
+        return new GroupedDataRecord(tableName, batchRecords.getOrDefault(PipelineSQLOperationType.INSERT, Collections.emptyList()),
+                batchRecords.getOrDefault(PipelineSQLOperationType.UPDATE, Collections.emptyList()), batchRecords.getOrDefault(PipelineSQLOperationType.DELETE, Collections.emptyList()),
+                nonBatchRecords);
     }
 }

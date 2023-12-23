@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.DataChangeType;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.MetaData;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 
@@ -59,8 +59,8 @@ public final class DataRecordResultConvertUtils {
                 .setDataChangeType(getDataChangeType(dataRecord.getType())).build();
     }
     
-    private static DataChangeType getDataChangeType(final IngestDataChangeType dataChangeType) {
-        switch (dataChangeType) {
+    private static DataChangeType getDataChangeType(final PipelineSQLOperationType type) {
+        switch (type) {
             case INSERT:
                 return DataChangeType.INSERT;
             case UPDATE:

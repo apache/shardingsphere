@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseTimestampUtils;
@@ -99,9 +99,9 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         mppTableData = JsonUtils.fromJsonString(mppData, MppTableData.class);
         AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
-        IngestDataChangeType type;
+        PipelineSQLOperationType type;
         try {
-            type = IngestDataChangeType.valueOf(rowEventType);
+            type = PipelineSQLOperationType.valueOf(rowEventType);
         } catch (final IllegalArgumentException ex) {
             throw new IngestException("Unknown rowEventType: " + rowEventType);
         }

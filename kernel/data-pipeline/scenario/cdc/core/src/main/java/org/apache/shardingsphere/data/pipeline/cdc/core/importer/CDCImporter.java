@@ -35,7 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 
@@ -108,7 +108,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
                 continue;
             }
             if (null != rateLimitAlgorithm) {
-                rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
+                rateLimitAlgorithm.intercept(PipelineSQLOperationType.INSERT, 1);
             }
             String ackId = CDCAckId.build(importerId).marshal();
             ackCache.put(ackId, Collections.singletonList(Pair.of(channelProgressPair, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
@@ -119,7 +119,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     @SneakyThrows(InterruptedException.class)
     private void doWithSorting() {
         if (null != rateLimitAlgorithm) {
-            rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
+            rateLimitAlgorithm.intercept(PipelineSQLOperationType.INSERT, 1);
         }
         CSNRecords firstCsnRecords = null;
         List<CSNRecords> csnRecordsList = new LinkedList<>();

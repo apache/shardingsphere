@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest;
+package org.apache.shardingsphere.data.pipeline.core.constant;
 
 /**
- * Ingest data change type.
+ * Pipeline SQL operation type.
  */
-public enum IngestDataChangeType {
+public enum PipelineSQLOperationType {
     
-    INSERT, UPDATE, DELETE
+    INSERT, UPDATE, DELETE, SELECT
 }

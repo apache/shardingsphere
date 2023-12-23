@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
-import org.apache.shardingsphere.data.pipeline.core.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 /**
@@ -28,8 +28,8 @@ public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm {
     /**
      * Intercept.
      *
-     * @param type job operation type
+     * @param type pipeline SQL operation type
      * @param data delta value for how much changed
      */
-    void intercept(JobOperationType type, Number data);
+    void intercept(PipelineSQLOperationType type, Number data);
 }
