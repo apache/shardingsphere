@@ -99,14 +99,20 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         mppTableData = JsonUtils.fromJsonString(mppData, MppTableData.class);
         AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
-        switch (rowEventType) {
-            case IngestDataChangeType.INSERT:
+        IngestDataChangeType type;
+        try {
+            type = IngestDataChangeType.valueOf(rowEventType);    
+        } catch (final IllegalArgumentException ex) {
+            throw new IngestException("Unknown rowEventType: " + rowEventType);
+        }
+        switch (type) {
+            case INSERT:
                 result = readWriteRowEvent(mppTableData);
                 break;
-            case IngestDataChangeType.UPDATE:
+            case UPDATE:
                 result = readUpdateRowEvent(mppTableData);
                 break;
-            case IngestDataChangeType.DELETE:
+            case DELETE:
                 result = readDeleteRowEvent(mppTableData);
                 break;
             default:

@@ -39,7 +39,7 @@ import java.util.List;
 @ToString
 public final class DataRecord extends Record {
     
-    private final String type;
+    private final IngestDataChangeType type;
     
     private final String schemaName;
     
@@ -55,11 +55,11 @@ public final class DataRecord extends Record {
     
     private Long csn;
     
-    public DataRecord(final String type, final String tableName, final IngestPosition position, final int columnCount) {
+    public DataRecord(final IngestDataChangeType type, final String tableName, final IngestPosition position, final int columnCount) {
         this(type, null, tableName, position, columnCount);
     }
     
-    public DataRecord(final String type, final String schemaName, final String tableName, final IngestPosition position, final int columnCount) {
+    public DataRecord(final IngestDataChangeType type, final String schemaName, final String tableName, final IngestPosition position, final int columnCount) {
         super(position);
         this.type = type;
         this.schemaName = schemaName;

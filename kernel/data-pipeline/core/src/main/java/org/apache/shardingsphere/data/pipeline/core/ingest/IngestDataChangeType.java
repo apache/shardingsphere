@@ -17,27 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Ingest data change type.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class IngestDataChangeType {
+public enum IngestDataChangeType {
     
-    /**
-     * Insert flag.
-     */
-    public static final String INSERT = "INSERT";
-    
-    /**
-     * Update flag.
-     */
-    public static final String UPDATE = "UPDATE";
-    
-    /**
-     * Delete flag.
-     */
-    public static final String DELETE = "DELETE";
+    INSERT, UPDATE, DELETE
 }

@@ -214,12 +214,12 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
     }
     
-    private DataRecord createDataRecord(final String type, final AbstractRowsEvent rowsEvent, final int columnCount) {
+    private DataRecord createDataRecord(final IngestDataChangeType type, final AbstractRowsEvent rowsEvent, final int columnCount) {
         String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).toString();
         IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId());
         DataRecord result = new DataRecord(type, tableName, position, columnCount);
         result.setActualTableName(rowsEvent.getTableName());
-        result.setCommitTime(rowsEvent.getTimestamp() * 1000);
+        result.setCommitTime(rowsEvent.getTimestamp() * 1000L);
         return result;
     }
     
