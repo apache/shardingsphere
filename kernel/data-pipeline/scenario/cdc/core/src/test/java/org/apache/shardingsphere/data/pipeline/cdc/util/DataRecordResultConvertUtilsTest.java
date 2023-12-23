@@ -23,7 +23,7 @@ import com.google.protobuf.TimestampProto;
 import com.google.protobuf.TypeRegistry;
 import com.google.protobuf.WrappersProto;
 import com.google.protobuf.util.JsonFormat;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;

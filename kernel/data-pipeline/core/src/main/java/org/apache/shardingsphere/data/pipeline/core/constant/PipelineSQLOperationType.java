@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
+package org.apache.shardingsphere.data.pipeline.core.constant;
 
 /**
- * Job operation type.
+ * Pipeline SQL operation type.
  */
-public enum JobOperationType {
+public enum PipelineSQLOperationType {
     
     INSERT, UPDATE, DELETE, SELECT
 }

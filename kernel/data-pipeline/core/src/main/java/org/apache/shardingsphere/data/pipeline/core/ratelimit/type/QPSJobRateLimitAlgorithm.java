@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.ratelimit.type;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
-import org.apache.shardingsphere.data.pipeline.core.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ratelimit.JobRateLimitAlgorithmInitializationException;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -48,8 +48,8 @@ public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     }
     
     @Override
-    public void intercept(final JobOperationType type, final Number data) {
-        if (type != JobOperationType.SELECT) {
+    public void intercept(final PipelineSQLOperationType type, final Number data) {
+        if (type != PipelineSQLOperationType.SELECT) {
             return;
         }
         rateLimiter.acquire(null != data ? data.intValue() : 1);

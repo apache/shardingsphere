@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest;
+package org.apache.shardingsphere.data.pipeline.core.constant;
 
 /**
  * Ingest data change type.
