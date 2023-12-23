@@ -35,8 +35,8 @@ import java.util.Properties;
 /**
  * Session connection state listener.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class SessionConnectionListener implements ConnectionStateListener {
     
     private static final int RECONNECT_INTERVAL_SECONDS = 5;
