@@ -95,7 +95,7 @@ class PipelineDataSourceSinkTest {
     
     @Test
     void assertWriteInsertDataRecord() throws SQLException {
-        DataRecord insertRecord = getDataRecord("INSERT");
+        DataRecord insertRecord = getDataRecord(IngestDataChangeType.INSERT);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(insertRecord));
         importer.run();
@@ -107,7 +107,7 @@ class PipelineDataSourceSinkTest {
     
     @Test
     void assertDeleteDataRecord() throws SQLException {
-        DataRecord deleteRecord = getDataRecord("DELETE");
+        DataRecord deleteRecord = getDataRecord(IngestDataChangeType.DELETE);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(deleteRecord));
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1});
@@ -119,7 +119,7 @@ class PipelineDataSourceSinkTest {
     
     @Test
     void assertUpdateDataRecord() throws SQLException {
-        DataRecord updateRecord = getDataRecord("UPDATE");
+        DataRecord updateRecord = getDataRecord(IngestDataChangeType.UPDATE);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(updateRecord));
         importer.run();
@@ -160,26 +160,26 @@ class PipelineDataSourceSinkTest {
         return result;
     }
     
-    private DataRecord getDataRecord(final String recordType) {
+    private DataRecord getDataRecord(final IngestDataChangeType recordType) {
         Integer idOldValue = null;
         Integer userOldValue = null;
         Integer idValue = null;
         Integer userValue = null;
-        String statusOldValue = null;
-        String statusValue = null;
-        if ("INSERT".equals(recordType)) {
+        IngestDataChangeType statusOldValue = null;
+        IngestDataChangeType statusValue = null;
+        if (IngestDataChangeType.INSERT == recordType) {
             idValue = 1;
             userValue = 10;
             statusValue = recordType;
         }
-        if ("UPDATE".equals(recordType)) {
+        if (IngestDataChangeType.UPDATE == recordType) {
             idOldValue = 1;
             idValue = idOldValue;
             userOldValue = 10;
             userValue = 20;
             statusValue = recordType;
         }
-        if ("DELETE".equals(recordType)) {
+        if (IngestDataChangeType.DELETE == recordType) {
             idOldValue = 1;
             userOldValue = 10;
             statusOldValue = recordType;
