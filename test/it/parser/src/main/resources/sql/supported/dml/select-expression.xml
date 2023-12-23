@@ -136,4 +136,6 @@
     <sql-case id="select_set_masklen_function" value="SELECT set_masklen('192.168.1.0/24'::cidr, 16) AS RESULT;" db-types="openGauss" />
     <sql-case id="select_text_inet_function" value="SELECT text(inet '192.168.1.5') AS RESULT;" db-types="openGauss" />
     <sql-case id="select_trunc_function" value="SELECT trunc(macaddr '12:34:56:78:90:ab') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_test1col_from_temp_table" value="SELECT Test1Col = x FROM #t" db-types="SQLServer"/>
+    <sql-case id="select_test2col_from_temp_table" value="SELECT Test2Col = x FROM #t" db-types="SQLServer"/>
 </sql-cases>

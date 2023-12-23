@@ -3125,4 +3125,22 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_test1col_from_temp_table">
+        <projections start-index="7" stop-index="18">
+            <column-projection start-index="7" stop-index="18" name="x" alias="Test1Col" />
+        </projections>
+        <from>
+            <simple-table name="#t" start-index="25" stop-index="26" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_test2col_from_temp_table">
+        <projections start-index="7" stop-index="18">
+            <column-projection start-index="7" stop-index="18" name="x" alias="Test2Col" />
+        </projections>
+        <from>
+            <simple-table name="#t" start-index="25" stop-index="26" />
+        </from>
+    </select>
 </sql-parser-test-cases>

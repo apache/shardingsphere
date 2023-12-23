@@ -3005,4 +3005,40 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_into_mytemptable">
+        <table name="#MyTempTable" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="24" />
+        <values>
+            <value start-index="25" stop-index="28">
+                <assignment-value>
+                    <literal-expression value="1" start-index="33" stop-index="33" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_value_1_into_temporary_table">
+        <table name="#t" start-index="12" stop-index="13" />
+        <columns start-index="14" stop-index="14" />
+        <values>
+            <value start-index="17" stop-index="20">
+                <assignment-value>
+                    <literal-expression value="1" start-index="23" stop-index="23" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_value_2_into_temporary_table">
+        <table name="#t" start-index="12" stop-index="13" />
+        <columns start-index="14" stop-index="14" />
+        <values>
+            <value start-index="17" stop-index="20">
+                <assignment-value>
+                    <literal-expression value="2" start-index="23" stop-index="23" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
