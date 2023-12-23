@@ -155,7 +155,7 @@ public final class CDCBackendHandler {
         if (null == job) {
             return;
         }
-        if (job.getSink().identifierMatched(channelId)) {
+        if (((CDCSocketSink) job.getSink()).getChannel().id().equals(channelId)) {
             log.info("close CDC job, channel id: {}", channelId);
             PipelineJobRegistry.stop(jobId);
             jobAPI.disable(jobId);

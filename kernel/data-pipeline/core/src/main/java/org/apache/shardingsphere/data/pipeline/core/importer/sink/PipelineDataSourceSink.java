@@ -81,11 +81,6 @@ public final class PipelineDataSourceSink implements PipelineSink {
     }
     
     @Override
-    public boolean identifierMatched(final Object identifier) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
     public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
         return flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
     }
