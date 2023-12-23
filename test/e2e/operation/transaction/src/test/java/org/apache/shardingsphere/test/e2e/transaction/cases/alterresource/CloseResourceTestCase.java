@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.alterresource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
@@ -30,7 +29,6 @@ import java.sql.SQLException;
  * Integration test of close resource.
  */
 @TransactionTestCase(adapters = TransactionTestConstants.PROXY, scenario = "closeResource")
-@Slf4j
 public final class CloseResourceTestCase extends BaseTransactionTestCase {
     
     public CloseResourceTestCase(final TransactionTestCaseParameter testCaseParam) {

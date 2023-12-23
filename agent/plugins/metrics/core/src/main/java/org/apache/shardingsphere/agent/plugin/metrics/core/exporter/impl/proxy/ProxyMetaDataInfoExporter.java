@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -32,7 +31,6 @@ import java.util.Optional;
 /**
  * Proxy meta data information exporter.
  */
-@Slf4j
 public final class ProxyMetaDataInfoExporter implements MetricsExporter {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_meta_data_info",

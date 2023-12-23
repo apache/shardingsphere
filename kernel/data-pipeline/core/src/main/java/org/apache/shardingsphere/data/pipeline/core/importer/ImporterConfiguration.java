@@ -59,15 +59,6 @@ public final class ImporterConfiguration {
     private final int concurrency;
     
     /**
-     * Get logic table names.
-     *
-     * @return logic table names
-     */
-    public Collection<String> getLogicTableNames() {
-        return Collections.unmodifiableList(shardingColumnsMap.keySet().stream().map(CaseInsensitiveIdentifier::toString).collect(Collectors.toList()));
-    }
-    
-    /**
      * Get sharding columns.
      *
      * @param logicTableName logic table name
@@ -94,6 +85,7 @@ public final class ImporterConfiguration {
      * @return qualified tables
      */
     public Collection<CaseInsensitiveQualifiedTable> getQualifiedTables() {
-        return getLogicTableNames().stream().map(each -> new CaseInsensitiveQualifiedTable(tableAndSchemaNameMapper.getSchemaName(each), each)).collect(Collectors.toList());
+        return shardingColumnsMap.keySet().stream()
+                .map(CaseInsensitiveIdentifier::toString).map(each -> new CaseInsensitiveQualifiedTable(tableAndSchemaNameMapper.getSchemaName(each), each)).collect(Collectors.toList());
     }
 }

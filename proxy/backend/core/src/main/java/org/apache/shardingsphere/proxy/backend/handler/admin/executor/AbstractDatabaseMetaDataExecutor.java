@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -139,7 +138,6 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
      * Default database meta data executor, execute sql directly in the database to obtain the result source data.
      */
     @RequiredArgsConstructor
-    @Slf4j
     public static class DefaultDatabaseMetaDataExecutor extends AbstractDatabaseMetaDataExecutor {
         
         private final String sql;

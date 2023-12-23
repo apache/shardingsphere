@@ -41,8 +41,8 @@ import java.util.Objects;
 /**
  * Composed container, include governance container and database container.
  */
-@Slf4j
 @Getter
+@Slf4j
 public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final DatabaseType databaseType;
