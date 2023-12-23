@@ -70,11 +70,6 @@ public final class CDCSocketSink implements PipelineSink {
     }
     
     @Override
-    public boolean identifierMatched(final Object identifier) {
-        return channel.id().equals(identifier);
-    }
-    
-    @Override
     public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
         if (records.isEmpty()) {
             return new PipelineJobProgressUpdatedParameter(0);
