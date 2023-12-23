@@ -28,14 +28,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TableNamesMapperTest {
-
+    
     private TableNamesMapper tableNamesMapper;
-
+    
     @BeforeEach
     void setUp() {
         tableNamesMapper = new TableNamesMapper();
     }
-
+    
     @Test
     void assertContainsTable() {
         tableNamesMapper.put("foo_table");
@@ -43,7 +43,7 @@ class TableNamesMapperTest {
         assertTrue(tableNamesMapper.contains("foo_table"));
         assertTrue(tableNamesMapper.contains("foo_table_2"));
     }
-
+    
     @Test
     void assertGetTableNames() {
         tableNamesMapper.put("foo_table_1");
@@ -54,7 +54,7 @@ class TableNamesMapperTest {
         assertThat(iterator.next(), is("foo_table_1"));
         assertThat(iterator.next(), is("foo_table_2"));
     }
-
+    
     @Test
     void assertRemove() {
         tableNamesMapper.put("foo_table_1");
@@ -63,7 +63,7 @@ class TableNamesMapperTest {
         tableNamesMapper.remove("foo_table_1");
         assertThat(actualTables.size(), is(0));
     }
-
+    
     @Test
     void assertPut() {
         Collection<String> actualTables = tableNamesMapper.getTableNames();
