@@ -71,7 +71,7 @@ class MultiplexMemoryPipelineChannelTest {
         CountDownLatch countDownLatch = new CountDownLatch(recordCount);
         MultiplexMemoryPipelineChannel memoryChannel = new MultiplexMemoryPipelineChannel(CHANNEL_NUMBER, 10000, ackCallback);
         fetchWithMultiThreads(memoryChannel, countDownLatch);
-        memoryChannel.pushRecords(Arrays.asList(records));
+        memoryChannel.push(Arrays.asList(records));
         boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult, "await failed");
         memoryChannel.close();
@@ -86,7 +86,7 @@ class MultiplexMemoryPipelineChannelTest {
     private void fetch(final MultiplexMemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
         int maxLoopCount = 10;
         for (int j = 1; j <= maxLoopCount; j++) {
-            List<Record> records = memoryChannel.fetchRecords(100, 1, TimeUnit.SECONDS);
+            List<Record> records = memoryChannel.fetch(100, 1, TimeUnit.SECONDS);
             memoryChannel.ack(records);
             records.forEach(each -> countDownLatch.countDown());
             if (!records.isEmpty() && records.get(records.size() - 1) instanceof FinishedRecord) {

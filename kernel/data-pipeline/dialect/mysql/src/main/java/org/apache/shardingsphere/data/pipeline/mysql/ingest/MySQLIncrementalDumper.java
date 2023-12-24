@@ -122,7 +122,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
         if (dataRecords.isEmpty()) {
             return;
         }
-        channel.pushRecords(dataRecords);
+        channel.push(dataRecords);
     }
     
     private List<? extends Record> handleEvent(final AbstractBinlogEvent event) {

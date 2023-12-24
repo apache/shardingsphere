@@ -32,9 +32,9 @@ public interface PipelineChannel extends Closeable {
     /**
      * Push {@code DataRecord} into channel.
      *
-     * @param dataRecords data records
+     * @param records data records
      */
-    void pushRecords(List<Record> dataRecords);
+    void push(List<Record> records);
     
     /**
      * Fetch {@code Record} list from channel.
@@ -45,21 +45,21 @@ public interface PipelineChannel extends Closeable {
      * @param timeUnit time unit
      * @return records of transactions
      */
-    List<Record> fetchRecords(int batchSize, long timeout, TimeUnit timeUnit);
+    List<Record> fetch(int batchSize, long timeout, TimeUnit timeUnit);
     
     /**
      * Peek {@code Record} list from channel.
      *
      * @return records of a transaction
      */
-    List<Record> peekRecords();
+    List<Record> peek();
     
     /**
      * Poll {@code Record} list from channel.
      *
      * @return records of a transaction
      */
-    List<Record> pollRecords();
+    List<Record> poll();
     
     /**
      * Ack the last batch.
@@ -69,8 +69,6 @@ public interface PipelineChannel extends Closeable {
     // TODO Refactor ack param
     void ack(List<Record> records);
     
-    /**
-     * Close channel.
-     */
+    @Override
     void close();
 }

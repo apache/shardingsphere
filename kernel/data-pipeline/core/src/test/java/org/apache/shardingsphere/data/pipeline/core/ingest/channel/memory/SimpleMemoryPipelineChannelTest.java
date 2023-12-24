@@ -39,9 +39,9 @@ class SimpleMemoryPipelineChannelTest {
     void assertZeroQueueSizeWorks() {
         SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(0, new EmptyAckCallback());
         List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
-        Thread thread = new Thread(() -> channel.pushRecords(records));
+        Thread thread = new Thread(() -> channel.push(records));
         thread.start();
-        assertThat(channel.fetchRecords(1, 500, TimeUnit.MILLISECONDS), is(records));
+        assertThat(channel.fetch(1, 500, TimeUnit.MILLISECONDS), is(records));
         thread.join();
     }
     
@@ -49,11 +49,11 @@ class SimpleMemoryPipelineChannelTest {
     void assertFetchRecordsTimeoutCorrectly() {
         SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10, new EmptyAckCallback());
         long startMillis = System.currentTimeMillis();
-        channel.fetchRecords(1, 1, TimeUnit.MILLISECONDS);
+        channel.fetch(1, 1, TimeUnit.MILLISECONDS);
         long delta = System.currentTimeMillis() - startMillis;
         assertTrue(delta >= 1 && delta < 50, "Delta is not in [1,50) : " + delta);
         startMillis = System.currentTimeMillis();
-        channel.fetchRecords(1, 500, TimeUnit.MILLISECONDS);
+        channel.fetch(1, 500, TimeUnit.MILLISECONDS);
         delta = System.currentTimeMillis() - startMillis;
         assertTrue(delta >= 500 && delta < 750, "Delta is not in [500,750) : " + delta);
     }

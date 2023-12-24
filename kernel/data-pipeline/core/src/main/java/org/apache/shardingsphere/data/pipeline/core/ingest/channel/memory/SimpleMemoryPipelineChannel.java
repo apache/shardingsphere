@@ -46,13 +46,13 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
     @SneakyThrows(InterruptedException.class)
     @Override
-    public void pushRecords(final List<Record> records) {
+    public void push(final List<Record> records) {
         queue.put(records);
     }
     
     @SneakyThrows(InterruptedException.class)
     @Override
-    public List<Record> fetchRecords(final int batchSize, final long timeout, final TimeUnit timeUnit) {
+    public List<Record> fetch(final int batchSize, final long timeout, final TimeUnit timeUnit) {
         List<Record> result = new LinkedList<>();
         long startMillis = System.currentTimeMillis();
         long timeoutMillis = timeUnit.toMillis(timeout);
@@ -73,13 +73,13 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     }
     
     @Override
-    public List<Record> peekRecords() {
+    public List<Record> peek() {
         List<Record> result = queue.peek();
         return null == result ? Collections.emptyList() : result;
     }
     
     @Override
-    public List<Record> pollRecords() {
+    public List<Record> poll() {
         List<Record> result = queue.poll();
         return null == result ? Collections.emptyList() : result;
     }

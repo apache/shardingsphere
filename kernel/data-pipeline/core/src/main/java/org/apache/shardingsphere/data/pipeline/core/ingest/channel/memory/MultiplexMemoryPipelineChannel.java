@@ -51,7 +51,7 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     }
     
     @Override
-    public void pushRecords(final List<Record> records) {
+    public void push(final List<Record> records) {
         Record firstRecord = records.get(0);
         if (1 == records.size()) {
             pushRecord(firstRecord);
@@ -59,7 +59,7 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
         }
         long insertDataRecordsCount = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count();
         if (insertDataRecordsCount == records.size()) {
-            channels.get(Math.abs(firstRecord.hashCode() % channelNumber)).pushRecords(records);
+            channels.get(Math.abs(firstRecord.hashCode() % channelNumber)).push(records);
             return;
         }
         for (Record each : records) {
@@ -71,30 +71,30 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
         List<Record> records = Collections.singletonList(ingestedRecord);
         if (ingestedRecord instanceof FinishedRecord) {
             for (int i = 0; i < channelNumber; i++) {
-                channels.get(i).pushRecords(records);
+                channels.get(i).push(records);
             }
         } else if (DataRecord.class.equals(ingestedRecord.getClass())) {
-            channels.get(Math.abs(ingestedRecord.hashCode() % channelNumber)).pushRecords(records);
+            channels.get(Math.abs(ingestedRecord.hashCode() % channelNumber)).push(records);
         } else if (PlaceholderRecord.class.equals(ingestedRecord.getClass())) {
-            channels.get(0).pushRecords(records);
+            channels.get(0).push(records);
         } else {
             throw new UnsupportedOperationException("Unsupported record type: " + ingestedRecord.getClass().getName());
         }
     }
     
     @Override
-    public List<Record> fetchRecords(final int batchSize, final long timeout, final TimeUnit timeUnit) {
-        return findChannel().fetchRecords(batchSize, timeout, timeUnit);
+    public List<Record> fetch(final int batchSize, final long timeout, final TimeUnit timeUnit) {
+        return findChannel().fetch(batchSize, timeout, timeUnit);
     }
     
     @Override
-    public List<Record> peekRecords() {
-        return findChannel().peekRecords();
+    public List<Record> peek() {
+        return findChannel().peek();
     }
     
     @Override
-    public List<Record> pollRecords() {
-        return findChannel().pollRecords();
+    public List<Record> poll() {
+        return findChannel().poll();
     }
     
     @Override

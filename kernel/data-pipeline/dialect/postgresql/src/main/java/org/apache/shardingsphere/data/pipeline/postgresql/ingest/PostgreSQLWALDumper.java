@@ -148,7 +148,7 @@ public final class PostgreSQLWALDumper extends AbstractPipelineLifecycleRunnable
                 records.add(walEventConverter.convert(each));
             }
             records.add(walEventConverter.convert(event));
-            channel.pushRecords(records);
+            channel.push(records);
         }
     }
     
@@ -156,7 +156,7 @@ public final class PostgreSQLWALDumper extends AbstractPipelineLifecycleRunnable
         if (event instanceof BeginTXEvent) {
             return;
         }
-        channel.pushRecords(Collections.singletonList(walEventConverter.convert(event)));
+        channel.push(Collections.singletonList(walEventConverter.convert(event)));
     }
     
     @Override
