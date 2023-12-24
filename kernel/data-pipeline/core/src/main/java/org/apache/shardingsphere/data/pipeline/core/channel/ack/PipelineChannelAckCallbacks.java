@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Ack callback utilities.
+ * Pipeline channel ack callback utilities.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AckCallbacks {
+public final class PipelineChannelAckCallbacks {
     
     /**
      * Ack callback for inventory dump.

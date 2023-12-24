@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.channel.ack.EmptyAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.ack.EmptyPipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.channel.type.memory.SimpleMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
@@ -83,7 +83,7 @@ class PostgreSQLWALDumperTest {
     @BeforeEach
     void setUp() {
         position = new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
-        channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
+        channel = new SimpleMemoryPipelineChannel(10000, new EmptyPipelineChannelAckCallback());
         String jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL";
         String username = "root";
         String password = "root";

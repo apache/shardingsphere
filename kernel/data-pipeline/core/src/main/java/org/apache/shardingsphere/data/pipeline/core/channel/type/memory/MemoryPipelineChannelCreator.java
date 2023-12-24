@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.channel.type.memory;
 
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.core.channel.ack.AckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.ack.PipelineChannelAckCallback;
 
 import java.util.Properties;
 
@@ -40,7 +40,7 @@ public final class MemoryPipelineChannelCreator implements PipelineChannelCreato
     }
     
     @Override
-    public PipelineChannel newInstance(final int outputConcurrency, final int averageElementSize, final AckCallback ackCallback) {
+    public PipelineChannel newInstance(final int outputConcurrency, final int averageElementSize, final PipelineChannelAckCallback ackCallback) {
         return 1 == outputConcurrency
                 ? new SimpleMemoryPipelineChannel(blockQueueSize / averageElementSize, ackCallback)
                 : new MultiplexMemoryPipelineChannel(outputConcurrency, blockQueueSize, ackCallback);

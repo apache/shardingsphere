@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSour
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.channel.ack.EmptyAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.ack.EmptyPipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.channel.type.memory.SimpleMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
@@ -88,7 +88,7 @@ class MySQLIncrementalDumperTest {
         IncrementalDumperContext dumperContext = createDumperContext();
         initTableData(dumperContext);
         PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
-        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
+        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10000, new EmptyPipelineChannelAckCallback());
         incrementalDumper = new MySQLIncrementalDumper(dumperContext, new BinlogPosition("binlog-000001", 4L, 0L), channel, metaDataLoader);
         pipelineTableMetaData = new PipelineTableMetaData("t_order", mockOrderColumnsMetaDataMap(), Collections.emptyList());
         when(metaDataLoader.getTableMetaData(any(), any())).thenReturn(pipelineTableMetaData);

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.channel.type.memory;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.channel.ack.AckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.ack.PipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 
@@ -37,9 +37,9 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
     private final BlockingQueue<List<Record>> queue;
     
-    private final AckCallback ackCallback;
+    private final PipelineChannelAckCallback ackCallback;
     
-    public SimpleMemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
+    public SimpleMemoryPipelineChannel(final int blockQueueSize, final PipelineChannelAckCallback ackCallback) {
         queue = blockQueueSize < 1 ? new SynchronousQueue<>(true) : new ArrayBlockingQueue<>(blockQueueSize, true);
         this.ackCallback = ackCallback;
     }

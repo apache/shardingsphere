@@ -22,9 +22,9 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import java.util.List;
 
 /**
- * Record acknowledged callback.
+ * Pipeline channel acknowledged callback.
  */
-public interface AckCallback {
+public interface PipelineChannelAckCallback {
     
     /**
      * Call after record acknowledged.

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.channel.type.memory;
 
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.data.pipeline.core.channel.ack.AckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.ack.PipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
@@ -44,7 +44,7 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
     
-    public MultiplexMemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
+    public MultiplexMemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final PipelineChannelAckCallback ackCallback) {
         this.channelNumber = channelNumber;
         int handledQueueSize = blockQueueSize < 1 ? 5 : blockQueueSize;
         channels = IntStream.range(0, channelNumber).mapToObj(each -> new SimpleMemoryPipelineChannel(handledQueueSize, ackCallback)).collect(Collectors.toList());

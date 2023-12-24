@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Empty implementation of record acknowledged callback.
  */
-public final class EmptyAckCallback implements AckCallback {
+public final class EmptyPipelineChannelAckCallback implements PipelineChannelAckCallback {
     
     @Override
     public void onAck(final List<Record> records) {

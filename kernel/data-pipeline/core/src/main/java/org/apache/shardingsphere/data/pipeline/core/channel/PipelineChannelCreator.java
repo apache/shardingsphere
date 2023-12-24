@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.channel;
 
-import org.apache.shardingsphere.data.pipeline.core.channel.ack.AckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.ack.PipelineChannelAckCallback;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
@@ -33,5 +33,5 @@ public interface PipelineChannelCreator extends TypedSPI {
      * @param ackCallback ack callback
      * @return created instance
      */
-    PipelineChannel newInstance(int outputConcurrency, int averageElementSize, AckCallback ackCallback);
+    PipelineChannel newInstance(int outputConcurrency, int averageElementSize, PipelineChannelAckCallback ackCallback);
 }
