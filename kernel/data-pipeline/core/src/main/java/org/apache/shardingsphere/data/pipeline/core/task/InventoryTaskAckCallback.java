@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.channel;
+package org.apache.shardingsphere.data.pipeline.core.task;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Empty implementation of record acknowledged callback.
+ * Inventory task acknowledged callback.
  */
-public final class EmptyAckCallback implements AckCallback {
+@RequiredArgsConstructor
+public final class InventoryTaskAckCallback implements PipelineChannelAckCallback {
+    
+    private final AtomicReference<IngestPosition> position;
     
     @Override
     public void onAck(final List<Record> records) {
+        position.set(records.get(records.size() - 1).getPosition());
     }
 }

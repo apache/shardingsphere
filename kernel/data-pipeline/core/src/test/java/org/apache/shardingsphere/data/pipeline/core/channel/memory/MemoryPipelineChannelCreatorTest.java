@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.channel.memory;
 
-import org.apache.shardingsphere.data.pipeline.core.channel.AckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -46,11 +46,11 @@ class MemoryPipelineChannelCreatorTest {
     
     @Test
     void assertCreateSimpleMemoryPipelineChannel() {
-        assertThat(TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY").createPipelineChannel(1, 1, mock(AckCallback.class)), instanceOf(SimpleMemoryPipelineChannel.class));
+        assertThat(TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY").newInstance(1, 1, mock(PipelineChannelAckCallback.class)), instanceOf(SimpleMemoryPipelineChannel.class));
     }
     
     @Test
     void assertCreateMultiplexMemoryPipelineChannel() {
-        assertThat(TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY").createPipelineChannel(2, 1, mock(AckCallback.class)), instanceOf(MultiplexMemoryPipelineChannel.class));
+        assertThat(TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY").newInstance(2, 1, mock(PipelineChannelAckCallback.class)), instanceOf(MultiplexMemoryPipelineChannel.class));
     }
 }

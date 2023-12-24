@@ -15,42 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.channel;
+package org.apache.shardingsphere.data.pipeline.core.task;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Ack callback utilities.
+ * Incremental task acknowledged callback.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AckCallbacks {
+@RequiredArgsConstructor
+public final class IncrementalTaskAckCallback implements PipelineChannelAckCallback {
     
-    /**
-     * Ack callback for inventory dump.
-     *
-     * @param records record list
-     * @param position ingest position
-     */
-    public static void inventoryCallback(final List<Record> records, final AtomicReference<IngestPosition> position) {
-        Record lastRecord = records.get(records.size() - 1);
-        position.set(lastRecord.getPosition());
-    }
+    private final IncrementalTaskProgress progress;
     
-    /**
-     * Ack callback for incremental dump.
-     *
-     * @param records record list
-     * @param progress incremental task progress
-     */
-    public static void incrementalCallback(final List<Record> records, final IncrementalTaskProgress progress) {
+    @Override
+    public void onAck(final List<Record> records) {
         Record lastHandledRecord = records.get(records.size() - 1);
         if (!(lastHandledRecord.getPosition() instanceof IngestPlaceholderPosition)) {
             progress.setPosition(lastHandledRecord.getPosition());

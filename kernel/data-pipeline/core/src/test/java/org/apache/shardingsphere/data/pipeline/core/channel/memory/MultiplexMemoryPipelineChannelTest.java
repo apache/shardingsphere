@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.channel.memory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.channel.AckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
@@ -67,7 +67,7 @@ class MultiplexMemoryPipelineChannelTest {
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void execute(final AckCallback ackCallback, final int recordCount, final Record... records) {
+    private void execute(final PipelineChannelAckCallback ackCallback, final int recordCount, final Record... records) {
         CountDownLatch countDownLatch = new CountDownLatch(recordCount);
         MultiplexMemoryPipelineChannel memoryChannel = new MultiplexMemoryPipelineChannel(CHANNEL_NUMBER, 10000, ackCallback);
         fetchWithMultiThreads(memoryChannel, countDownLatch);
