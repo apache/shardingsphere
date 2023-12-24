@@ -74,22 +74,22 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     
     private final DataSource dataSource;
     
+    private final PipelineTableMetaDataLoader metaDataLoader;
+    
     private final PipelineInventoryDumpSQLBuilder inventoryDumpSQLBuilder;
     
     private final ColumnValueReaderEngine columnValueReaderEngine;
     
-    private final PipelineTableMetaDataLoader metaDataLoader;
-    
-    private final AtomicReference<Statement> dumpStatement = new AtomicReference<>();
+    private final AtomicReference<Statement> runningStatement = new AtomicReference<>();
     
     public InventoryDumper(final InventoryDumperContext dumperContext, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         this.dumperContext = dumperContext;
         this.channel = channel;
         this.dataSource = dataSource;
+        this.metaDataLoader = metaDataLoader;
         DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
         columnValueReaderEngine = new ColumnValueReaderEngine(databaseType);
-        this.metaDataLoader = metaDataLoader;
     }
     
     @Override
@@ -117,7 +117,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
             connection.setTransactionIsolation(dumperContext.getTransactionIsolation());
         }
         try (PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(databaseType, connection, buildInventoryDumpSQL())) {
-            dumpStatement.set(preparedStatement);
+            runningStatement.set(preparedStatement);
             if (!(databaseType instanceof MySQLDatabaseType)) {
                 preparedStatement.setFetchSize(batchSize);
             }
@@ -144,8 +144,9 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
                 }
                 dataRecords.add(new FinishedRecord(new IngestFinishedPosition()));
                 channel.pushRecords(dataRecords);
-                dumpStatement.set(null);
                 log.info("Inventory dump done, rowCount={}, dataSource={}, actualTable={}", rowCount, dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
+            } finally {
+                runningStatement.set(null);
             }
         }
     }
@@ -217,6 +218,6 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     
     @Override
     protected void doStop() {
-        PipelineJdbcUtils.cancelStatement(dumpStatement.get());
+        Optional.ofNullable(runningStatement.get()).ifPresent(PipelineJdbcUtils::cancelStatement);
     }
 }
