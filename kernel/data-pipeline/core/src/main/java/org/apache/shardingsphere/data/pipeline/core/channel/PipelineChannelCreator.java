@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.channel;
 
+import org.apache.shardingsphere.data.pipeline.core.channel.ack.AckCallback;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**

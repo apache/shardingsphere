@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.channel.memory;
+package org.apache.shardingsphere.data.pipeline.core.channel.type.memory;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.channel.EmptyAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.ack.EmptyAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;

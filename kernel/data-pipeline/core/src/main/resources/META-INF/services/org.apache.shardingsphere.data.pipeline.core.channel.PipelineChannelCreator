@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.channel.memory.MemoryPipelineChannelCreator
+org.apache.shardingsphere.data.pipeline.core.channel.type.memory.MemoryPipelineChannelCreator

@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.channel;
+package org.apache.shardingsphere.data.pipeline.core.channel.ack;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 
 import java.util.List;
 
 /**
- * Empty implementation of record acknowledged callback.
+ * Record acknowledged callback.
  */
-public final class EmptyAckCallback implements AckCallback {
+public interface AckCallback {
     
-    @Override
-    public void onAck(final List<Record> records) {
-    }
+    /**
+     * Call after record acknowledged.
+     *
+     * @param records acknowledged record list
+     */
+    void onAck(List<Record> records);
 }

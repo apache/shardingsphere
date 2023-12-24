@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.channel.memory;
+package org.apache.shardingsphere.data.pipeline.core.channel.type.memory;
 
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.core.channel.AckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.ack.AckCallback;
 
 import java.util.Properties;
 
