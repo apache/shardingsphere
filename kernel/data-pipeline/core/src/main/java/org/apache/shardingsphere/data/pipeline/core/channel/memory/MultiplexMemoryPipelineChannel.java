@@ -38,43 +38,43 @@ import java.util.stream.IntStream;
  */
 public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
-    private final int channelNumber;
+    private final int channelCount;
     
     private final List<PipelineChannel> channels;
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
     
-    public MultiplexMemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final PipelineChannelAckCallback ackCallback) {
-        this.channelNumber = channelNumber;
+    public MultiplexMemoryPipelineChannel(final int channelCount, final int blockQueueSize, final PipelineChannelAckCallback ackCallback) {
+        this.channelCount = channelCount;
         int handledQueueSize = blockQueueSize < 1 ? 5 : blockQueueSize;
-        channels = IntStream.range(0, channelNumber).mapToObj(each -> new SimpleMemoryPipelineChannel(handledQueueSize, ackCallback)).collect(Collectors.toList());
+        channels = IntStream.range(0, channelCount).mapToObj(each -> new SimpleMemoryPipelineChannel(handledQueueSize, ackCallback)).collect(Collectors.toList());
     }
     
     @Override
     public void push(final List<Record> records) {
         Record firstRecord = records.get(0);
         if (1 == records.size()) {
-            pushRecord(firstRecord);
+            push(firstRecord);
             return;
         }
         long insertDataRecordsCount = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count();
         if (insertDataRecordsCount == records.size()) {
-            channels.get(Math.abs(firstRecord.hashCode() % channelNumber)).push(records);
+            channels.get(Math.abs(firstRecord.hashCode() % channelCount)).push(records);
             return;
         }
         for (Record each : records) {
-            pushRecord(each);
+            push(each);
         }
     }
     
-    private void pushRecord(final Record ingestedRecord) {
+    private void push(final Record ingestedRecord) {
         List<Record> records = Collections.singletonList(ingestedRecord);
         if (ingestedRecord instanceof FinishedRecord) {
-            for (int i = 0; i < channelNumber; i++) {
+            for (int i = 0; i < channelCount; i++) {
                 channels.get(i).push(records);
             }
         } else if (DataRecord.class.equals(ingestedRecord.getClass())) {
-            channels.get(Math.abs(ingestedRecord.hashCode() % channelNumber)).push(records);
+            channels.get(Math.abs(ingestedRecord.hashCode() % channelCount)).push(records);
         } else if (PlaceholderRecord.class.equals(ingestedRecord.getClass())) {
             channels.get(0).push(records);
         } else {
