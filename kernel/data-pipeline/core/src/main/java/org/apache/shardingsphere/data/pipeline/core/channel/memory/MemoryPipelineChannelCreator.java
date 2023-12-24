@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.channel.AckCallback;
 import java.util.Properties;
 
 /**
- * Memory implementation of pipeline channel creator.
+ * Pipeline channel creator of memory.
  */
 public final class MemoryPipelineChannelCreator implements PipelineChannelCreator {
     
@@ -40,7 +40,7 @@ public final class MemoryPipelineChannelCreator implements PipelineChannelCreato
     }
     
     @Override
-    public PipelineChannel createPipelineChannel(final int outputConcurrency, final int averageElementSize, final AckCallback ackCallback) {
+    public PipelineChannel newInstance(final int outputConcurrency, final int averageElementSize, final AckCallback ackCallback) {
         return 1 == outputConcurrency
                 ? new SimpleMemoryPipelineChannel(blockQueueSize / averageElementSize, ackCallback)
                 : new MultiplexMemoryPipelineChannel(outputConcurrency, blockQueueSize, ackCallback);

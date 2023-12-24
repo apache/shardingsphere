@@ -25,12 +25,12 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 public interface PipelineChannelCreator extends TypedSPI {
     
     /**
-     * Create pipeline channel.
+     * Create new instance of pipeline channel.
      *
      * @param outputConcurrency output concurrency
      * @param averageElementSize average element size, affect the size of the queue
      * @param ackCallback ack callback
-     * @return {@link PipelineChannel}
+     * @return created instance
      */
-    PipelineChannel createPipelineChannel(int outputConcurrency, int averageElementSize, AckCallback ackCallback);
+    PipelineChannel newInstance(int outputConcurrency, int averageElementSize, AckCallback ackCallback);
 }

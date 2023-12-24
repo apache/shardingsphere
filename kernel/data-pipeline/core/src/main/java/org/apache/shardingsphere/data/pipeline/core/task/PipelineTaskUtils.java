@@ -72,7 +72,7 @@ public final class PipelineTaskUtils {
      * @return channel
      */
     public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int averageElementSize, final AtomicReference<IngestPosition> position) {
-        return pipelineChannelCreator.createPipelineChannel(1, averageElementSize, records -> AckCallbacks.inventoryCallback(records, position));
+        return pipelineChannelCreator.newInstance(1, averageElementSize, records -> AckCallbacks.inventoryCallback(records, position));
     }
     
     /**
@@ -84,6 +84,6 @@ public final class PipelineTaskUtils {
      * @return channel
      */
     public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
-        return pipelineChannelCreator.createPipelineChannel(concurrency, 5, records -> AckCallbacks.incrementalCallback(records, progress));
+        return pipelineChannelCreator.newInstance(concurrency, 5, records -> AckCallbacks.incrementalCallback(records, progress));
     }
 }
