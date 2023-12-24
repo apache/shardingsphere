@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -81,14 +80,7 @@ public final class PipelineCDCSocketSink implements PipelineSink {
         if (!channel.isActive()) {
             return new PipelineJobProgressUpdatedParameter(0);
         }
-        List<DataRecordResult.Record> resultRecords = new LinkedList<>();
-        for (Record each : records) {
-            if (!(each instanceof DataRecord)) {
-                continue;
-            }
-            DataRecord dataRecord = (DataRecord) each;
-            resultRecords.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableSchemaNameMap.get(dataRecord.getTableName()), dataRecord));
-        }
+        Collection<DataRecordResult.Record> resultRecords = getResultRecords(records);
         DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecord(resultRecords).setAckId(ackId).build();
         channel.writeAndFlush(CDCResponseUtils.succeed("", ResponseCase.DATA_RECORD_RESULT, dataRecordResult));
         return new PipelineJobProgressUpdatedParameter(resultRecords.size());
@@ -108,6 +100,17 @@ public final class PipelineCDCSocketSink implements PipelineSink {
         } finally {
             lock.unlock();
         }
+    }
+    
+    private Collection<DataRecordResult.Record> getResultRecords(final Collection<Record> records) {
+        Collection<DataRecordResult.Record> result = new LinkedList<>();
+        for (Record each : records) {
+            if (each instanceof DataRecord) {
+                DataRecord dataRecord = (DataRecord) each;
+                result.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableSchemaNameMap.get(dataRecord.getTableName()), dataRecord));
+            }
+        }
+        return result;
     }
     
     @Override
