@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.channel;
+package org.apache.shardingsphere.data.pipeline.core.channel;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+
+import java.util.List;
 
 /**
- * Pipeline channel creator.
+ * Record acknowledged callback.
  */
-public interface PipelineChannelCreator extends TypedSPI {
+public interface AckCallback {
     
     /**
-     * Create pipeline channel.
+     * Call after record acknowledged.
      *
-     * @param outputConcurrency output concurrency
-     * @param averageElementSize average element size, affect the size of the queue
-     * @param ackCallback ack callback
-     * @return {@link PipelineChannel}
+     * @param records acknowledged record list
      */
-    PipelineChannel createPipelineChannel(int outputConcurrency, int averageElementSize, AckCallback ackCallback);
+    void onAck(List<Record> records);
 }
