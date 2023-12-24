@@ -71,7 +71,7 @@ public final class PipelineTaskUtils {
      * @return channel
      */
     public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int averageElementSize, final AtomicReference<IngestPosition> position) {
-        return pipelineChannelCreator.newInstance(1, averageElementSize, records -> position.set(records.get(records.size() - 1).getPosition()));
+        return pipelineChannelCreator.newInstance(1, averageElementSize, new InventoryTaskAckCallback(position));
     }
     
     /**
