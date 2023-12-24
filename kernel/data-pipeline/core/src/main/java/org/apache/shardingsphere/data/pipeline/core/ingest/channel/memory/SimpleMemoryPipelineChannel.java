@@ -40,7 +40,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     private final AckCallback ackCallback;
     
     public SimpleMemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
-        this.queue = blockQueueSize < 1 ? new SynchronousQueue<>(true) : new ArrayBlockingQueue<>(blockQueueSize, true);
+        queue = blockQueueSize < 1 ? new SynchronousQueue<>(true) : new ArrayBlockingQueue<>(blockQueueSize, true);
         this.ackCallback = ackCallback;
     }
     
@@ -60,7 +60,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
         do {
             List<Record> records = queue.poll();
             if (null == records || records.isEmpty()) {
-                TimeUnit.MILLISECONDS.sleep(Math.min(100, timeoutMillis));
+                TimeUnit.MILLISECONDS.sleep(Math.min(100L, timeoutMillis));
             } else {
                 recordsCount += records.size();
                 result.addAll(records);
