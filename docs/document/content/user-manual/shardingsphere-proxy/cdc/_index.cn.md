@@ -5,4 +5,6 @@ weight = 9
 
 ## 简介
 
-用户可以通过 ShardingSphere 的 CDC 功能进行数据同步，也可用于 ETL，目前支持 openGauss、MySQL 和 PostgreSQL
+CDC（Change Data Capture）增量数据捕捉。CDC 可以监控 ShardingSphere-Proxy 的存储节点中的数据变化，捕捉到数据操作事件，过滤并提取有用信息，最终将这些变化数据发送到指定的目标上.
+
+CDC可以用于数据同步，数据备份和恢复等方面。通常情况下，目前支持 openGauss、MySQL 和 PostgreSQL.

@@ -30,17 +30,20 @@ ShardingSphere CDC 分为两个部分，一个是 CDC Server，另一个是 CDC 
 
 #### 1. 源码编译安装
 
-1. 准备代码环境，提前下载或者使用 Git clone，从 Github 下载 [ShardingSphere](https://github.com/apache/shardingsphere.git) 源码。
-2. 删除 kernel/global-clock/type/tso/core/pom.xml 中 shardingsphere-global-clock-tso-provider-redis 依赖的 `<scope>provided</scope>` 标签和 kernel/global-clock/type/tso/provider/redis/pom.xml 中 jedis
+1.1 准备代码环境，提前下载或者使用 Git clone，从 Github 下载 [ShardingSphere](https://github.com/apache/shardingsphere.git) 源码。
+
+1.2 删除 kernel/global-clock/type/tso/core/pom.xml 中 shardingsphere-global-clock-tso-provider-redis 依赖的 `<scope>provided</scope>` 标签和 kernel/global-clock/type/tso/provider/redis/pom.xml 中 jedis
    的 `<scope>provided</scope>` 标签
-3. 编译 ShardingSphere-Proxy，具体编译步骤请参考 [ShardingSphere 编译手册](https://github.com/apache/shardingsphere/wiki#build-apache-shardingsphere)。
+
+1.3 编译 ShardingSphere-Proxy，具体编译步骤请参考 [ShardingSphere 编译手册](https://github.com/apache/shardingsphere/wiki#build-apache-shardingsphere)。
 
 #### 2. 直接引入 GLT 依赖
 
 可以从 maven 仓库中引入
 
-1. [shardingsphere-global-clock-tso-provider-redis](https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-global-clock-tso-provider-redis)，下载和 ShardingSphere-Proxy 同名版本
-2. [jedis-4.3.1](https://repo1.maven.org/maven2/redis/clients/jedis/4.3.1/jedis-4.3.1.jar)
+2.1. [shardingsphere-global-clock-tso-provider-redis](https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-global-clock-tso-provider-redis)，下载和 ShardingSphere-Proxy 同名版本
+
+2.2. [jedis-4.3.1](https://repo1.maven.org/maven2/redis/clients/jedis/4.3.1/jedis-4.3.1.jar)
 
 ### CDC Server 使用手册
 
@@ -116,7 +119,7 @@ sh bin/start.sh
 
 确认启动成功。
 
-6. 按需配置迁移
+6. 按需配置 CDC 任务同步配置
 
 6.1. 查询配置。
 
@@ -162,10 +165,10 @@ STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
 ```sql
 ALTER STREAMING RULE (
 READ( -- 数据读取配置。如果不配置则部分参数默认生效。
-  WORKER_THREAD=20, -- 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。需要确保该值不低于分库的数量
-  BATCH_SIZE=1000, -- 一次查询操作返回的最大记录数。如果不配置则使用默认值。
-  SHARDING_SIZE=10000000, -- 存量数据分片大小。如果不配置则使用默认值。
-  RATE_LIMITER ( -- 限流算法。如果不配置则不限流。
+  WORKER_THREAD=20, -- 影响全量、增量任务，从源端摄取数据的线程池大小。不配置则使用默认值。需要确保该值不低于分库的数量
+  BATCH_SIZE=1000, -- 影响全量、增量任务，一次查询操作返回的最大记录数。如果一个事务中的数据量大于该值，增量情况下可能超过设定的值。
+  SHARDING_SIZE=10000000, -- 影响全量任务，存量数据分片大小。如果不配置则使用默认值。
+  RATE_LIMITER ( -- 影响全量、增量任务，限流算法。如果不配置则不限流。
   TYPE( -- 算法类型。可选项：QPS
   NAME='QPS',
   PROPERTIES( -- 算法属性
@@ -173,8 +176,8 @@ READ( -- 数据读取配置。如果不配置则部分参数默认生效。
   )))
 ),
 WRITE( -- 数据写入配置。如果不配置则部分参数默认生效。
-  WORKER_THREAD=20, -- 数据写入到目标端的线程池大小。如果不配置则使用默认值。
-  BATCH_SIZE=1000, -- 存量任务一次批量写入操作的最大记录数。如果不配置则使用默认值。
+  WORKER_THREAD=20, -- 影响全量、增量任务，数据写入到目标端的线程池大小。如果不配置则使用默认值。
+  BATCH_SIZE=1000, -- 影响全量、增量任务，存量任务一次批量写入操作的最大记录数。如果不配置则使用默认值。如果一个事务中的数据量大于该值，增量情况下可能超过设定的值。
   RATE_LIMITER ( -- 限流算法。如果不配置则不限流。
   TYPE( -- 算法类型。可选项：TPS
   NAME='TPS',
@@ -186,7 +189,7 @@ STREAM_CHANNEL ( -- 数据通道，连接生产者和消费者，用于 read 和
 TYPE( -- 算法类型。可选项：MEMORY
 NAME='MEMORY',
 PROPERTIES( -- 算法属性
-'block-queue-size'='2000' -- 属性：阻塞队列大小，堆内存比较小的时候需要调小该值。
+'block-queue-size'='2000' -- 属性：阻塞队列大小
 )))
 );
 ```
