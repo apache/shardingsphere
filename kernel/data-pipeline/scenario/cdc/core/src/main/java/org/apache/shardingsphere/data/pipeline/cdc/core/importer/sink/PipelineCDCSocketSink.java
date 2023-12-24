@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -43,9 +42,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * CDC socket sink.
+ * Pipeline CDC socket sink.
  */
-public final class CDCSocketSink implements PipelineSink {
+public final class PipelineCDCSocketSink implements PipelineSink {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 100L;
     
@@ -53,19 +52,20 @@ public final class CDCSocketSink implements PipelineSink {
     
     private final Condition condition = lock.newCondition();
     
-    private final ShardingSphereDatabase database;
-    
     @Getter
     private final Channel channel;
     
-    private final Map<String, String> tableNameSchemaMap = new HashMap<>();
+    private final ShardingSphereDatabase database;
     
-    public CDCSocketSink(final Channel channel, final ShardingSphereDatabase database, final Collection<String> schemaTableNames) {
+    private final Map<String, String> tableSchemaNameMap;
+    
+    public PipelineCDCSocketSink(final Channel channel, final ShardingSphereDatabase database, final Collection<String> schemaTableNames) {
         this.channel = channel;
         this.database = database;
+        tableSchemaNameMap = new HashMap<>(schemaTableNames.size(), 1F);
         schemaTableNames.stream().filter(each -> each.contains(".")).forEach(each -> {
             String[] split = each.split("\\.");
-            tableNameSchemaMap.put(split[1], split[0]);
+            tableSchemaNameMap.put(split[1], split[0]);
         });
     }
     
@@ -80,14 +80,7 @@ public final class CDCSocketSink implements PipelineSink {
         if (!channel.isActive()) {
             return new PipelineJobProgressUpdatedParameter(0);
         }
-        List<DataRecordResult.Record> resultRecords = new LinkedList<>();
-        for (Record each : records) {
-            if (!(each instanceof DataRecord)) {
-                continue;
-            }
-            DataRecord dataRecord = (DataRecord) each;
-            resultRecords.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
-        }
+        Collection<DataRecordResult.Record> resultRecords = getResultRecords(records);
         DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecord(resultRecords).setAckId(ackId).build();
         channel.writeAndFlush(CDCResponseUtils.succeed("", ResponseCase.DATA_RECORD_RESULT, dataRecordResult));
         return new PipelineJobProgressUpdatedParameter(resultRecords.size());
@@ -107,6 +100,17 @@ public final class CDCSocketSink implements PipelineSink {
         } finally {
             lock.unlock();
         }
+    }
+    
+    private Collection<DataRecordResult.Record> getResultRecords(final Collection<Record> records) {
+        Collection<DataRecordResult.Record> result = new LinkedList<>();
+        for (Record each : records) {
+            if (each instanceof DataRecord) {
+                DataRecord dataRecord = (DataRecord) each;
+                result.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableSchemaNameMap.get(dataRecord.getTableName()), dataRecord));
+            }
+        }
+        return result;
     }
     
     @Override

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCJobItemContext;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.CDCSocketSink;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineCDCSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCTasksRunner;
 import org.apache.shardingsphere.data.pipeline.cdc.engine.CDCJobRunnerCleaner;
@@ -166,8 +166,8 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
             log.error("onFailure, {} task execute failed.", identifier, throwable);
             String jobId = jobItemContext.getJobId();
             PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, jobItemContext.getShardingItem(), throwable);
-            if (jobItemContext.getSink() instanceof CDCSocketSink) {
-                CDCSocketSink cdcSink = (CDCSocketSink) jobItemContext.getSink();
+            if (jobItemContext.getSink() instanceof PipelineCDCSocketSink) {
+                PipelineCDCSocketSink cdcSink = (PipelineCDCSocketSink) jobItemContext.getSink();
                 cdcSink.getChannel().writeAndFlush(CDCResponseUtils.failed("", "", throwable.getMessage()));
             }
             PipelineJobRegistry.stop(jobId);
