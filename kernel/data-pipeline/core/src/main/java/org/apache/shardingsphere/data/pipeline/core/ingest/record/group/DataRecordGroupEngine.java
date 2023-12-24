@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord.Key
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -52,7 +53,8 @@ public final class DataRecordGroupEngine {
             if (duplicateKeys.getOrDefault(each.getKey(), false)) {
                 nonBatchRecords.computeIfAbsent(each.getTableName(), ignored -> new LinkedList<>()).add(each);
             } else {
-                batchDataRecords.computeIfAbsent(each.getTableName(), ignored -> new HashMap<>()).computeIfAbsent(each.getType(), ignored -> new LinkedList<>()).add(each);
+                batchDataRecords.computeIfAbsent(
+                        each.getTableName(), ignored -> new EnumMap<>(PipelineSQLOperationType.class)).computeIfAbsent(each.getType(), ignored -> new LinkedList<>()).add(each);
             }
         }
         return tableNames.stream().map(each -> getGroupedDataRecord(
