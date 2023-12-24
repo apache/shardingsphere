@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.channel.type.memory;
+package org.apache.shardingsphere.data.pipeline.core.channel.memory;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.channel.ack.PipelineChannelAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.channel.ack;
+package org.apache.shardingsphere.data.pipeline.core.channel;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 

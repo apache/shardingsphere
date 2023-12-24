@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.channel.ack.PipelineChannelAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 
