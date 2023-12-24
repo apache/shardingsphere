@@ -60,20 +60,14 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     private final DataRecordGroupEngine groupEngine;
     
-    private final AtomicReference<PreparedStatement> runningBatchInsertStatement;
-    
-    private final AtomicReference<PreparedStatement> runningUpdateStatement;
-    
-    private final AtomicReference<PreparedStatement> runningBatchDeleteStatement;
+    private final AtomicReference<PreparedStatement> runningStatement;
     
     public PipelineDataSourceSink(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         dataSource = dataSourceManager.getDataSource(importerConfig.getDataSourceConfig());
         importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType());
         groupEngine = new DataRecordGroupEngine();
-        runningBatchInsertStatement = new AtomicReference<>();
-        runningUpdateStatement = new AtomicReference<>();
-        runningBatchDeleteStatement = new AtomicReference<>();
+        runningStatement = new AtomicReference<>();
     }
     
     @Override
@@ -154,7 +148,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         DataRecord dataRecord = dataRecords.iterator().next();
         String sql = importSQLBuilder.buildInsertSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            runningBatchInsertStatement.set(preparedStatement);
+            runningStatement.set(preparedStatement);
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
                 for (int i = 0; i < each.getColumnCount(); i++) {
@@ -164,7 +158,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
             }
             preparedStatement.executeBatch();
         } finally {
-            runningBatchInsertStatement.set(null);
+            runningStatement.set(null);
         }
     }
     
@@ -180,7 +174,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         List<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
         String sql = importSQLBuilder.buildUpdateSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord, conditionColumns);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            runningUpdateStatement.set(preparedStatement);
+            runningStatement.set(preparedStatement);
             for (int i = 0; i < setColumns.size(); i++) {
                 preparedStatement.setObject(i + 1, setColumns.get(i).getValue());
             }
@@ -199,7 +193,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
                 log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, sql, setColumns, conditionColumns);
             }
         } finally {
-            runningUpdateStatement.set(null);
+            runningStatement.set(null);
         }
     }
     
@@ -208,7 +202,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         String sql = importSQLBuilder.buildDeleteSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord,
                 RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName())));
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            runningBatchDeleteStatement.set(preparedStatement);
+            runningStatement.set(preparedStatement);
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
                 List<Column> conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(dataRecord.getTableName()));
@@ -223,14 +217,12 @@ public final class PipelineDataSourceSink implements PipelineSink {
             }
             preparedStatement.executeBatch();
         } finally {
-            runningBatchDeleteStatement.set(null);
+            runningStatement.set(null);
         }
     }
     
     @Override
     public void close() {
-        PipelineJdbcUtils.cancelStatement(runningBatchInsertStatement.get());
-        PipelineJdbcUtils.cancelStatement(runningUpdateStatement.get());
-        PipelineJdbcUtils.cancelStatement(runningBatchDeleteStatement.get());
+        Optional.ofNullable(runningStatement.get()).ifPresent(PipelineJdbcUtils::cancelStatement);
     }
 }
