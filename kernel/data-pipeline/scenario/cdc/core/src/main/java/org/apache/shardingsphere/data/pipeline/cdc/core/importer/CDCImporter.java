@@ -96,7 +96,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     private void doWithoutSorting() {
         for (final CDCChannelProgressPair channelProgressPair : originalChannelProgressPairs) {
             PipelineChannel channel = channelProgressPair.getChannel();
-            List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
+            List<Record> records = channel.fetch(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
             if (records.isEmpty()) {
                 continue;
             }
@@ -180,7 +180,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     private void prepareWhenQueueIsEmpty(final List<CDCChannelProgressPair> channelProgressPairs) {
         for (CDCChannelProgressPair each : channelProgressPairs) {
             PipelineChannel channel = each.getChannel();
-            List<Record> records = channel.pollRecords();
+            List<Record> records = channel.poll();
             if (records.isEmpty()) {
                 continue;
             }
@@ -204,18 +204,18 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     private void prepareWhenQueueIsNotEmpty(final List<CDCChannelProgressPair> channelProgressPairs, final long oldestCSN) {
         for (CDCChannelProgressPair each : channelProgressPairs) {
             PipelineChannel channel = each.getChannel();
-            List<Record> records = channel.peekRecords();
+            List<Record> records = channel.peek();
             if (records.isEmpty()) {
                 continue;
             }
             if (0 == getDataRecordsCount(records)) {
-                records = channel.pollRecords();
+                records = channel.poll();
                 channel.ack(records);
                 continue;
             }
             long csn = findFirstDataRecord(records).getCsn();
             if (csn <= oldestCSN) {
-                records = channel.pollRecords();
+                records = channel.poll();
                 csnRecordsQueue.add(new CSNRecords(csn, each, records));
             }
         }

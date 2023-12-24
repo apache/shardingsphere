@@ -129,7 +129,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
                 List<Record> dataRecords = new LinkedList<>();
                 while (resultSet.next()) {
                     if (dataRecords.size() >= batchSize) {
-                        channel.pushRecords(dataRecords);
+                        channel.push(dataRecords);
                         dataRecords = new LinkedList<>();
                     }
                     dataRecords.add(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
@@ -143,7 +143,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
                     }
                 }
                 dataRecords.add(new FinishedRecord(new IngestFinishedPosition()));
-                channel.pushRecords(dataRecords);
+                channel.push(dataRecords);
                 log.info("Inventory dump done, rowCount={}, dataSource={}, actualTable={}", rowCount, dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName());
             } finally {
                 runningStatement.set(null);

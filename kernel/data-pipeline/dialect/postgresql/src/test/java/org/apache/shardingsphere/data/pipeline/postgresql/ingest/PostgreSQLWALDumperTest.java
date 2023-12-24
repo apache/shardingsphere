@@ -133,6 +133,6 @@ class PostgreSQLWALDumperTest {
             walDumper.start();
         } catch (final IngestException ignored) {
         }
-        assertThat(channel.fetchRecords(100, 0, TimeUnit.SECONDS).size(), is(1));
+        assertThat(channel.fetch(100, 0, TimeUnit.SECONDS).size(), is(1));
     }
 }

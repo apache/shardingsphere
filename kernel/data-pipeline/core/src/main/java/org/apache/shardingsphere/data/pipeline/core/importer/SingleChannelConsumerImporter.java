@@ -53,7 +53,7 @@ public final class SingleChannelConsumerImporter extends AbstractPipelineLifecyc
     @Override
     protected void runBlocking() {
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
+            List<Record> records = channel.fetch(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
             if (records.isEmpty()) {
                 continue;
             }
