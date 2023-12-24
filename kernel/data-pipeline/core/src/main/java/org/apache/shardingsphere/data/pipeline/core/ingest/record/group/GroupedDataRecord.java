@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 
-import java.util.List;
+import java.util.Collection;
 
 @RequiredArgsConstructor
 @Getter
@@ -29,11 +29,11 @@ public final class GroupedDataRecord {
     
     private final String tableName;
     
-    private final List<DataRecord> batchInsertDataRecords;
+    private final Collection<DataRecord> batchInsertDataRecords;
     
-    private final List<DataRecord> batchUpdateDataRecords;
+    private final Collection<DataRecord> batchUpdateDataRecords;
     
-    private final List<DataRecord> batchDeleteDataRecords;
+    private final Collection<DataRecord> batchDeleteDataRecords;
     
-    private final List<DataRecord> nonBatchRecords;
+    private final Collection<DataRecord> nonBatchRecords;
 }
