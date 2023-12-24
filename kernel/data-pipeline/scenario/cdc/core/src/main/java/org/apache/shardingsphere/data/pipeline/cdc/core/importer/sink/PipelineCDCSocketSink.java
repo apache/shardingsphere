@@ -43,9 +43,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * CDC socket sink.
+ * Pipeline CDC socket sink.
  */
-public final class CDCSocketSink implements PipelineSink {
+public final class PipelineCDCSocketSink implements PipelineSink {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 100L;
     
@@ -53,19 +53,20 @@ public final class CDCSocketSink implements PipelineSink {
     
     private final Condition condition = lock.newCondition();
     
-    private final ShardingSphereDatabase database;
-    
     @Getter
     private final Channel channel;
     
-    private final Map<String, String> tableNameSchemaMap = new HashMap<>();
+    private final ShardingSphereDatabase database;
     
-    public CDCSocketSink(final Channel channel, final ShardingSphereDatabase database, final Collection<String> schemaTableNames) {
+    private final Map<String, String> tableSchemaNameMap;
+    
+    public PipelineCDCSocketSink(final Channel channel, final ShardingSphereDatabase database, final Collection<String> schemaTableNames) {
         this.channel = channel;
         this.database = database;
+        tableSchemaNameMap = new HashMap<>(schemaTableNames.size(), 1F);
         schemaTableNames.stream().filter(each -> each.contains(".")).forEach(each -> {
             String[] split = each.split("\\.");
-            tableNameSchemaMap.put(split[1], split[0]);
+            tableSchemaNameMap.put(split[1], split[0]);
         });
     }
     
@@ -86,7 +87,7 @@ public final class CDCSocketSink implements PipelineSink {
                 continue;
             }
             DataRecord dataRecord = (DataRecord) each;
-            resultRecords.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
+            resultRecords.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableSchemaNameMap.get(dataRecord.getTableName()), dataRecord));
         }
         DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecord(resultRecords).setAckId(ackId).build();
         channel.writeAndFlush(CDCResponseUtils.succeed("", ResponseCase.DATA_RECORD_RESULT, dataRecordResult));
