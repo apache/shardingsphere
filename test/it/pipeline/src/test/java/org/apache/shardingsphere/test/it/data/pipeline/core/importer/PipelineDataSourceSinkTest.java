@@ -21,11 +21,10 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfigurati
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
-import org.apache.shardingsphere.data.pipeline.core.importer.sink.type.PipelineDataSourceSink;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
+import org.apache.shardingsphere.data.pipeline.core.importer.sink.type.PipelineDataSourceSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
@@ -56,7 +55,9 @@ import java.util.concurrent.TimeUnit;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,17 +66,11 @@ class PipelineDataSourceSinkTest {
     
     private static final String TABLE_NAME = "test_table";
     
-    @Mock
-    private PipelineDataSourceManager dataSourceManager;
-    
     private final PipelineDataSourceConfiguration dataSourceConfig = new StandardPipelineDataSourceConfiguration(
             "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root", "root", "root");
     
     @Mock
     private PipelineChannel channel;
-    
-    @Mock
-    private PipelineDataSourceWrapper dataSource;
     
     @Mock
     private Connection connection;
@@ -87,10 +82,19 @@ class PipelineDataSourceSinkTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        PipelineSink pipelineSink = new PipelineDataSourceSink(mockImporterConfiguration(), dataSourceManager);
+        PipelineSink pipelineSink = new PipelineDataSourceSink(mockImporterConfiguration(), mockPipelineDataSourceManager());
         importer = new SingleChannelConsumerImporter(channel, 100, 1, TimeUnit.SECONDS, pipelineSink, new FixtureTransmissionJobItemContext());
-        when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
-        when(dataSource.getConnection()).thenReturn(connection);
+    }
+    
+    private ImporterConfiguration mockImporterConfiguration() {
+        Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap = Collections.singletonMap(new CaseInsensitiveIdentifier("test_table"), Collections.singleton("user"));
+        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, new TableAndSchemaNameMapper(Collections.emptyMap()), 1000, null, 3, 3);
+    }
+    
+    private PipelineDataSourceManager mockPipelineDataSourceManager() throws SQLException {
+        PipelineDataSourceManager result = mock(PipelineDataSourceManager.class, RETURNS_DEEP_STUBS);
+        when(result.getDataSource(dataSourceConfig).getConnection()).thenReturn(connection);
+        return result;
     }
     
     @Test
@@ -189,10 +193,5 @@ class PipelineDataSourceSinkTest {
         result.addColumn(new Column("user", userOldValue, userValue, true, false));
         result.addColumn(new Column("status", statusOldValue, statusValue, true, false));
         return result;
-    }
-    
-    private ImporterConfiguration mockImporterConfiguration() {
-        Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap = Collections.singletonMap(new CaseInsensitiveIdentifier("test_table"), Collections.singleton("user"));
-        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, new TableAndSchemaNameMapper(Collections.emptyMap()), 1000, null, 3, 3);
     }
 }
