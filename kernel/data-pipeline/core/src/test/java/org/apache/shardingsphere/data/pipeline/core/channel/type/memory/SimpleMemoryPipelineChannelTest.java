@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.channel.type.memory;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.channel.ack.EmptyPipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
@@ -37,7 +36,9 @@ class SimpleMemoryPipelineChannelTest {
     @SneakyThrows(InterruptedException.class)
     @Test
     void assertZeroQueueSizeWorks() {
-        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(0, new EmptyPipelineChannelAckCallback());
+        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(0, records -> {
+            
+        });
         List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
         Thread thread = new Thread(() -> channel.push(records));
         thread.start();
@@ -47,7 +48,9 @@ class SimpleMemoryPipelineChannelTest {
     
     @Test
     void assertFetchRecordsTimeoutCorrectly() {
-        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10, new EmptyPipelineChannelAckCallback());
+        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10, records -> {
+            
+        });
         long startMillis = System.currentTimeMillis();
         channel.fetch(1, 1, TimeUnit.MILLISECONDS);
         long delta = System.currentTimeMillis() - startMillis;
