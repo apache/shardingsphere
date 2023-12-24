@@ -54,7 +54,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     private final ImporterConfiguration importerConfig;
     
-    private final DataSource dataSource;
+    private final PipelineDataSourceManager dataSourceManager;
     
     private final PipelineImportSQLBuilder importSQLBuilder;
     
@@ -68,7 +68,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     public PipelineDataSourceSink(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
-        dataSource = dataSourceManager.getDataSource(importerConfig.getDataSourceConfig());
+        this.dataSourceManager = dataSourceManager;
         importSQLBuilder = new PipelineImportSQLBuilder(importerConfig.getDataSourceConfig().getDatabaseType());
         groupEngine = new DataRecordGroupEngine();
         runningBatchInsertStatement = new AtomicReference<>();
@@ -78,28 +78,29 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     @Override
     public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
+        DataSource dataSource = dataSourceManager.getDataSource(importerConfig.getDataSourceConfig());
         Collection<DataRecord> dataRecords = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
         if (dataRecords.isEmpty()) {
             return new PipelineJobProgressUpdatedParameter(0);
         }
         for (GroupedDataRecord each : groupEngine.group(dataRecords)) {
-            batchWrite(each.getBatchDeleteDataRecords());
-            batchWrite(each.getBatchInsertDataRecords());
-            batchWrite(each.getBatchUpdateDataRecords());
-            sequentialWrite(each.getNonBatchRecords());
+            batchWrite(dataSource, each.getBatchDeleteDataRecords());
+            batchWrite(dataSource, each.getBatchInsertDataRecords());
+            batchWrite(dataSource, each.getBatchUpdateDataRecords());
+            sequentialWrite(dataSource, each.getNonBatchRecords());
         }
         return new PipelineJobProgressUpdatedParameter((int) dataRecords.stream().filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count());
     }
     
     @SuppressWarnings("BusyWait")
     @SneakyThrows(InterruptedException.class)
-    private void batchWrite(final Collection<DataRecord> records) {
+    private void batchWrite(final DataSource dataSource, final Collection<DataRecord> records) {
         if (records.isEmpty()) {
             return;
         }
         for (int i = 0; !Thread.interrupted() && i <= importerConfig.getRetryTimes(); i++) {
             try {
-                doWrite(records);
+                doWrite(dataSource, records);
                 break;
             } catch (final SQLException ex) {
                 log.error("Flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
@@ -111,18 +112,18 @@ public final class PipelineDataSourceSink implements PipelineSink {
         }
     }
     
-    private void sequentialWrite(final Collection<DataRecord> records) {
+    private void sequentialWrite(final DataSource dataSource, final Collection<DataRecord> records) {
         // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
         try {
             for (DataRecord each : records) {
-                doWrite(Collections.singleton(each));
+                doWrite(dataSource, Collections.singleton(each));
             }
         } catch (final SQLException ex) {
             throw new PipelineImporterJobWriteException(ex);
         }
     }
     
-    private void doWrite(final Collection<DataRecord> records) throws SQLException {
+    private void doWrite(final DataSource dataSource, final Collection<DataRecord> records) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             boolean enableTransaction = records.size() > 1;
             if (enableTransaction) {
