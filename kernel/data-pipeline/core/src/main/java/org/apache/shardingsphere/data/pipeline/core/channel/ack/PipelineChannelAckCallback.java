@@ -27,9 +27,9 @@ import java.util.List;
 public interface PipelineChannelAckCallback {
     
     /**
-     * Call after record acknowledged.
+     * Call after records acknowledged.
      *
-     * @param records acknowledged record list
+     * @param records acknowledged records
      */
     void onAck(List<Record> records);
 }
