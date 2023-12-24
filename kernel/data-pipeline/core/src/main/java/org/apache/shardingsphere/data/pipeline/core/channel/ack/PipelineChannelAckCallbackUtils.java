@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Pipeline channel ack callback utilities.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PipelineChannelAckCallbacks {
+public final class PipelineChannelAckCallbackUtils {
     
     /**
      * Ack callback for inventory dump.
