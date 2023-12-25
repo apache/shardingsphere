@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
@@ -632,6 +633,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.charFunction()) {
             return visit(ctx.charFunction());
         }
+        if (null != ctx.trimFunction()) {
+            return visit(ctx.trimFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
     
@@ -656,6 +660,27 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         if (null != ctx.NUMBER_()) {
             result.getParameters().add(new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.NUMBER_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTrimFunction(SQLServerStatementParser.TrimFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
+        if (null != ctx.BOTH()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.BOTH().getSymbol().getStartIndex(), ctx.BOTH().getSymbol().getStopIndex(),
+                    new OtherLiteralValue(ctx.BOTH().getSymbol().getText()).getValue()));
+        }
+        if (null != ctx.TRAILING()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.TRAILING().getSymbol().getStartIndex(), ctx.TRAILING().getSymbol().getStopIndex(),
+                    new OtherLiteralValue(ctx.TRAILING().getSymbol().getText()).getValue()));
+        }
+        if (null != ctx.LEADING()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.LEADING().getSymbol().getStartIndex(), ctx.LEADING().getSymbol().getStopIndex(),
+                    new OtherLiteralValue(ctx.LEADING().getSymbol().getText()).getValue()));
+        }
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
         }
         return result;
     }

@@ -306,7 +306,7 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction | convertFunction
+    : castFunction  | charFunction | convertFunction | trimFunction
     ;
 
 castFunction
@@ -315,6 +315,11 @@ castFunction
 
 convertFunction
     : CONVERT LP_ dataType COMMA_ expr (COMMA_ NUMBER_)? RP_
+    ;
+
+trimFunction
+    : TRIM LP_ ((LEADING | BOTH | TRAILING) expr? FROM)? expr RP_
+    | TRIM LP_ (expr FROM)? expr RP_
     ;
 
 charFunction
