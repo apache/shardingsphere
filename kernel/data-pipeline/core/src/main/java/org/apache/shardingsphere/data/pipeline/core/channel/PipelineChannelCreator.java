@@ -27,9 +27,9 @@ public interface PipelineChannelCreator extends TypedSPI {
     /**
      * Create new instance of pipeline channel.
      *
-     * @param averageElementSize average element size, affect the size of the queue
+     * @param importerBatchSize importer batch size
      * @param ackCallback ack callback
      * @return created instance
      */
-    PipelineChannel newInstance(int averageElementSize, PipelineChannelAckCallback ackCallback);
+    PipelineChannel newInstance(int importerBatchSize, PipelineChannelAckCallback ackCallback);
 }

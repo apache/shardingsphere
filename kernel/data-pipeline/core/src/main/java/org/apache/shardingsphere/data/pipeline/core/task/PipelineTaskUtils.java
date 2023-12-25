@@ -64,24 +64,24 @@ public final class PipelineTaskUtils {
     }
     
     /**
-     * Create channel for inventory task.
+     * Create pipeline channel for inventory task.
      *
-     * @param pipelineChannelCreator channel creator
-     * @param averageElementSize average element size
+     * @param pipelineChannelCreator pipeline channel creator
+     * @param importerBatchSize importer batch size
      * @param position ingest position
-     * @return channel
+     * @return created pipeline channel
      */
-    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int averageElementSize, final AtomicReference<IngestPosition> position) {
-        return pipelineChannelCreator.newInstance(averageElementSize, new InventoryTaskAckCallback(position));
+    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int importerBatchSize, final AtomicReference<IngestPosition> position) {
+        return pipelineChannelCreator.newInstance(importerBatchSize, new InventoryTaskAckCallback(position));
     }
     
     /**
-     * Create incremental channel.
+     * Create pipeline channel for incremental task.
      *
      * @param concurrency output concurrency
-     * @param pipelineChannelCreator channel creator
+     * @param pipelineChannelCreator pipeline channel creator
      * @param progress incremental task progress
-     * @return channel
+     * @return created pipeline channel
      */
     public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
         PipelineChannel channel = pipelineChannelCreator.newInstance(5, new IncrementalTaskAckCallback(progress));
