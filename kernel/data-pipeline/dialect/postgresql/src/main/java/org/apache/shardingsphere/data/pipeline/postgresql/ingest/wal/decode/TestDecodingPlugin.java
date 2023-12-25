@@ -65,7 +65,6 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private AbstractRowEvent readTableEvent(final ByteBuffer data) {
-        AbstractRowEvent result;
         String tableName = readTableName(data);
         String rowEventType = readRowEventType(data);
         PipelineSQLOperationType type;
@@ -74,6 +73,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         } catch (final IllegalArgumentException ex) {
             throw new IngestException("Unknown rowEventType: " + rowEventType);
         }
+        AbstractRowEvent result;
         switch (type) {
             case INSERT:
                 result = readWriteRowEvent(data);

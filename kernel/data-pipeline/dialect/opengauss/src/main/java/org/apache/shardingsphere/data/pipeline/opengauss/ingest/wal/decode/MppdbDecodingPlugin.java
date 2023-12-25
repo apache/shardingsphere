@@ -97,7 +97,6 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     private AbstractRowEvent readTableEvent(final String mppData) {
         MppTableData mppTableData;
         mppTableData = JsonUtils.fromJsonString(mppData, MppTableData.class);
-        AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
         PipelineSQLOperationType type;
         try {
@@ -105,6 +104,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         } catch (final IllegalArgumentException ex) {
             throw new IngestException("Unknown rowEventType: " + rowEventType);
         }
+        AbstractRowEvent result;
         switch (type) {
             case INSERT:
                 result = readWriteRowEvent(mppTableData);
