@@ -107,8 +107,8 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration",
   "allDeclaredFields":true,
-  "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getEncryptorName","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"setEncryptorName","parameterTypes":["java.lang.String"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setEncryptorName","parameterTypes":["java.lang.String"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -122,8 +122,8 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration",
   "allDeclaredFields":true,
-  "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getAssistedQuery","parameterTypes":[] }, {"name":"getCipher","parameterTypes":[] }, {"name":"getLikeQuery","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"setAssistedQuery","parameterTypes":["org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration"] }, {"name":"setCipher","parameterTypes":["org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration"] }]
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAssistedQuery","parameterTypes":["org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration"] }, {"name":"setCipher","parameterTypes":["org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -275,8 +275,8 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn",
   "allDeclaredFields":true,
-  "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getDataType","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"isCaseSensitive","parameterTypes":[] }, {"name":"isGenerated","parameterTypes":[] }, {"name":"isNullable","parameterTypes":[] }, {"name":"isPrimaryKey","parameterTypes":[] }, {"name":"isUnsigned","parameterTypes":[] }, {"name":"isVisible","parameterTypes":[] }, {"name":"setCaseSensitive","parameterTypes":["boolean"] }, {"name":"setDataType","parameterTypes":["int"] }, {"name":"setGenerated","parameterTypes":["boolean"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setNullable","parameterTypes":["boolean"] }, {"name":"setPrimaryKey","parameterTypes":["boolean"] }, {"name":"setUnsigned","parameterTypes":["boolean"] }, {"name":"setVisible","parameterTypes":["boolean"] }]
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setCaseSensitive","parameterTypes":["boolean"] }, {"name":"setDataType","parameterTypes":["int"] }, {"name":"setGenerated","parameterTypes":["boolean"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setPrimaryKey","parameterTypes":["boolean"] }, {"name":"setUnsigned","parameterTypes":["boolean"] }, {"name":"setVisible","parameterTypes":["boolean"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.schema.NewTableMetaDataPersistService"},
@@ -285,19 +285,11 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setCaseSensitive","parameterTypes":["boolean"] }, {"name":"setDataType","parameterTypes":["int"] }, {"name":"setGenerated","parameterTypes":["boolean"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setNullable","parameterTypes":["boolean"] }, {"name":"setPrimaryKey","parameterTypes":["boolean"] }, {"name":"setUnsigned","parameterTypes":["boolean"] }, {"name":"setVisible","parameterTypes":["boolean"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnBeanInfo"},
-  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnBeanInfo"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnCustomizer"},
-  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnCustomizer"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
   "allDeclaredFields":true,
-  "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getColumns","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"isUnique","parameterTypes":[] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setUnique","parameterTypes":["boolean"] }]
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.schema.NewTableMetaDataPersistService"},
@@ -306,14 +298,15 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setUnique","parameterTypes":["boolean"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexBeanInfo"},
-  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexBeanInfo"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
   "allDeclaredFields":true,
+  "allPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setColumns","parameterTypes":["java.util.Map"] }, {"name":"setIndexes","parameterTypes":["java.util.Map"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.database.NewDatabaseMetaDataPersistService"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.schema.NewTableMetaDataPersistService"},
@@ -321,6 +314,16 @@
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getColumns","parameterTypes":[] }, {"name":"getConstraints","parameterTypes":[] }, {"name":"getIndexes","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"setColumns","parameterTypes":["java.util.Map"] }, {"name":"setIndexes","parameterTypes":["java.util.Map"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.context.ConfigurationContextManager"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
+  "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.NewMetaDataContextsFactory"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
+  "queryAllPublicMethods":true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.schema.NewTableMetaDataPersistService"},
@@ -407,8 +410,8 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfiguration",
   "allDeclaredFields":true,
-  "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getLogicColumn","parameterTypes":[] }, {"name":"getMaskAlgorithm","parameterTypes":[] }, {"name":"setMaskAlgorithm","parameterTypes":["java.lang.String"] }]
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setMaskAlgorithm","parameterTypes":["java.lang.String"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -472,8 +475,12 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.CacheEvictedSubscriber",
-  "queryAllDeclaredMethods":true,
   "methods":[{"name":"onGovernanceEvent","parameterTypes":["org.apache.shardingsphere.infra.rule.event.GovernanceEvent"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.CacheEvictedSubscriber"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.CacheEvictedSubscriber",
+  "queryAllDeclaredMethods":true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.DatabaseChangedSubscriber"},
@@ -483,8 +490,12 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
   "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.NewResourceMetaDataChangedSubscriber",
-  "queryAllDeclaredMethods":true,
   "methods":[{"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.schema.table.AlterTableEvent"] }, {"name":"renew","parameterTypes":["org.apache.shardingsphere.mode.event.schema.table.DropTableEvent"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.NewResourceMetaDataChangedSubscriber"},
+  "name":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.NewResourceMetaDataChangedSubscriber",
+  "queryAllDeclaredMethods":true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.NewStateChangedSubscriber"},
@@ -498,6 +509,11 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessSubscriber"},
+  "name":"org.apache.shardingsphere.mode.process.ProcessSubscriber",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneProcessSubscriber"},
   "name":"org.apache.shardingsphere.mode.process.ProcessSubscriber",
   "queryAllDeclaredMethods":true
 },
@@ -533,8 +549,8 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration",
   "allDeclaredFields":true,
-  "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getInitialCapacity","parameterTypes":[] }, {"name":"getMaximumSize","parameterTypes":[] }, {"name":"setInitialCapacity","parameterTypes":["int"] }, {"name":"setMaximumSize","parameterTypes":["long"] }]
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setInitialCapacity","parameterTypes":["int"] }, {"name":"setMaximumSize","parameterTypes":["long"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -550,6 +566,10 @@
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setParseTreeCache","parameterTypes":["org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"] }, {"name":"setSqlCommentParseEnabled","parameterTypes":["boolean"] }, {"name":"setSqlStatementCache","parameterTypes":["org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
+  "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.swapper.NewYamlSQLParserRuleConfigurationSwapper"},
@@ -586,6 +606,10 @@
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDataSources","parameterTypes":["java.util.Map"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
+  "name":"org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -637,6 +661,10 @@
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDataSources","parameterTypes":["java.util.Map"] }, {"name":"setDefaultShadowAlgorithmName","parameterTypes":["java.lang.String"] }, {"name":"setShadowAlgorithms","parameterTypes":["java.util.Map"] }, {"name":"setTables","parameterTypes":["java.util.Map"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
+  "name":"org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -787,8 +815,8 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration",
   "allDeclaredFields":true,
-  "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getColumn","parameterTypes":[] }, {"name":"getKeyGeneratorName","parameterTypes":[] }, {"name":"setColumn","parameterTypes":["java.lang.String"] }, {"name":"setKeyGeneratorName","parameterTypes":["java.lang.String"] }]
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setColumn","parameterTypes":["java.lang.String"] }, {"name":"setKeyGeneratorName","parameterTypes":["java.lang.String"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -823,8 +851,8 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration",
   "allDeclaredFields":true,
-  "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getShardingAlgorithmName","parameterTypes":[] }, {"name":"getShardingColumn","parameterTypes":[] }, {"name":"setShardingAlgorithmName","parameterTypes":["java.lang.String"] }, {"name":"setShardingColumn","parameterTypes":["java.lang.String"] }]
+  "allPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setShardingAlgorithmName","parameterTypes":["java.lang.String"] }, {"name":"setShardingColumn","parameterTypes":["java.lang.String"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -836,8 +864,16 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
+  "name":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.NewClusterContextManagerBuilder"},
   "name":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration",
-  "queryAllPublicMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.single.yaml.config.swapper.NewYamlSingleRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getDefaultDataSource","parameterTypes":[] }, {"name":"getTables","parameterTypes":[] }]
 },
