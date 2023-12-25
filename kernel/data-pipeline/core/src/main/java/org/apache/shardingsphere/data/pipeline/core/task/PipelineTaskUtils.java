@@ -66,25 +66,25 @@ public final class PipelineTaskUtils {
     /**
      * Create pipeline channel for inventory task.
      *
-     * @param pipelineChannelCreator pipeline channel creator
+     * @param channelCreator pipeline channel creator
      * @param importerBatchSize importer batch size
      * @param position ingest position
      * @return created pipeline channel
      */
-    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int importerBatchSize, final AtomicReference<IngestPosition> position) {
-        return pipelineChannelCreator.newInstance(importerBatchSize, new InventoryTaskAckCallback(position));
+    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator channelCreator, final int importerBatchSize, final AtomicReference<IngestPosition> position) {
+        return channelCreator.newInstance(importerBatchSize, new InventoryTaskAckCallback(position));
     }
     
     /**
      * Create pipeline channel for incremental task.
      *
      * @param concurrency output concurrency
-     * @param pipelineChannelCreator pipeline channel creator
+     * @param channelCreator pipeline channel creator
      * @param progress incremental task progress
      * @return created pipeline channel
      */
-    public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
-        PipelineChannel channel = pipelineChannelCreator.newInstance(5, new IncrementalTaskAckCallback(progress));
+    public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator channelCreator, final IncrementalTaskProgress progress) {
+        PipelineChannel channel = channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress));
         return 1 == concurrency ? channel : new MultiplexPipelineChannel(channel, concurrency);
     }
 }
