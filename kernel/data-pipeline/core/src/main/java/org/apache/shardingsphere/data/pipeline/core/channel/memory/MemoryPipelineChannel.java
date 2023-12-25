@@ -31,15 +31,15 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Simple memory pipeline channel.
+ * Memory pipeline channel.
  */
-public final class SimpleMemoryPipelineChannel implements PipelineChannel {
+public final class MemoryPipelineChannel implements PipelineChannel {
     
     private final BlockingQueue<List<Record>> queue;
     
     private final PipelineChannelAckCallback ackCallback;
     
-    public SimpleMemoryPipelineChannel(final int blockQueueSize, final PipelineChannelAckCallback ackCallback) {
+    public MemoryPipelineChannel(final int blockQueueSize, final PipelineChannelAckCallback ackCallback) {
         queue = blockQueueSize < 1 ? new SynchronousQueue<>(true) : new ArrayBlockingQueue<>(blockQueueSize, true);
         this.ackCallback = ackCallback;
     }

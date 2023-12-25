@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.channel.MultiplexPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
@@ -71,7 +72,7 @@ public final class PipelineTaskUtils {
      * @return channel
      */
     public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int averageElementSize, final AtomicReference<IngestPosition> position) {
-        return pipelineChannelCreator.newInstance(1, averageElementSize, new InventoryTaskAckCallback(position));
+        return pipelineChannelCreator.newInstance(averageElementSize, new InventoryTaskAckCallback(position));
     }
     
     /**
@@ -83,6 +84,7 @@ public final class PipelineTaskUtils {
      * @return channel
      */
     public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
-        return pipelineChannelCreator.newInstance(concurrency, 5, new IncrementalTaskAckCallback(progress));
+        PipelineChannel channel = pipelineChannelCreator.newInstance(5, new IncrementalTaskAckCallback(progress));
+        return 1 == concurrency ? channel : new MultiplexPipelineChannel(channel, concurrency);
     }
 }

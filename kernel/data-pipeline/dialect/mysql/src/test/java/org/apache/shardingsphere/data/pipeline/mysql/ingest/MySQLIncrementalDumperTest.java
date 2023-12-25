@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.channel.memory.SimpleMemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.channel.memory.MemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
@@ -87,7 +87,7 @@ class MySQLIncrementalDumperTest {
         IncrementalDumperContext dumperContext = createDumperContext();
         initTableData(dumperContext);
         PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
-        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10000, records -> {
+        MemoryPipelineChannel channel = new MemoryPipelineChannel(10000, records -> {
             
         });
         incrementalDumper = new MySQLIncrementalDumper(dumperContext, new BinlogPosition("binlog-000001", 4L, 0L), channel, metaDataLoader);

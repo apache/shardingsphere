@@ -31,12 +31,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SimpleMemoryPipelineChannelTest {
+class MemoryPipelineChannelTest {
     
     @SneakyThrows(InterruptedException.class)
     @Test
     void assertZeroQueueSizeWorks() {
-        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(0, records -> {
+        MemoryPipelineChannel channel = new MemoryPipelineChannel(0, records -> {
             
         });
         List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
@@ -48,7 +48,7 @@ class SimpleMemoryPipelineChannelTest {
     
     @Test
     void assertFetchRecordsTimeoutCorrectly() {
-        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10, records -> {
+        MemoryPipelineChannel channel = new MemoryPipelineChannel(10, records -> {
             
         });
         long startMillis = System.currentTimeMillis();

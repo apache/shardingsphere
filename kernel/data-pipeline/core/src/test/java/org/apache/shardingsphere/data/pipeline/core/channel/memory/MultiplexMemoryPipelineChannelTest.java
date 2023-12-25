@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.channel.memory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.core.channel.MultiplexPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -69,20 +70,21 @@ class MultiplexMemoryPipelineChannelTest {
     @SneakyThrows(InterruptedException.class)
     private void execute(final PipelineChannelAckCallback ackCallback, final int recordCount, final Record... records) {
         CountDownLatch countDownLatch = new CountDownLatch(recordCount);
-        MultiplexMemoryPipelineChannel memoryChannel = new MultiplexMemoryPipelineChannel(CHANNEL_NUMBER, 10000, ackCallback);
+        MemoryPipelineChannel memoryPipelineChannel = new MemoryPipelineChannel(10000, ackCallback);
+        MultiplexPipelineChannel memoryChannel = new MultiplexPipelineChannel(memoryPipelineChannel, CHANNEL_NUMBER);
         fetchWithMultiThreads(memoryChannel, countDownLatch);
         memoryChannel.push(Arrays.asList(records));
         boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult, "await failed");
     }
     
-    private void fetchWithMultiThreads(final MultiplexMemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
+    private void fetchWithMultiThreads(final MultiplexPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
         for (int i = 0; i < CHANNEL_NUMBER; i++) {
             new Thread(() -> fetch(memoryChannel, countDownLatch)).start();
         }
     }
     
-    private void fetch(final MultiplexMemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
+    private void fetch(final MultiplexPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
         int maxLoopCount = 10;
         for (int j = 1; j <= maxLoopCount; j++) {
             List<Record> records = memoryChannel.fetch(100, 1, TimeUnit.SECONDS);
