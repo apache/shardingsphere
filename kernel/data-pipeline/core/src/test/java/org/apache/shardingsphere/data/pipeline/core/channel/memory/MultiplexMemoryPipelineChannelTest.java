@@ -74,7 +74,6 @@ class MultiplexMemoryPipelineChannelTest {
         memoryChannel.push(Arrays.asList(records));
         boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult, "await failed");
-        memoryChannel.close();
     }
     
     private void fetchWithMultiThreads(final MultiplexMemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {

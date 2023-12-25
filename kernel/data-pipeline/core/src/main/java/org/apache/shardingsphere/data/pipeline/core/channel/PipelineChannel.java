@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.channel;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 
-import java.io.Closeable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * Pipeline channel.
  * <p>It supports multiple push threads and one fetch thread.</p>
  */
-public interface PipelineChannel extends Closeable {
+public interface PipelineChannel {
     
     /**
      * Push {@code DataRecord} into channel.
@@ -68,7 +67,4 @@ public interface PipelineChannel extends Closeable {
      */
     // TODO Refactor ack param
     void ack(List<Record> records);
-    
-    @Override
-    void close();
 }
