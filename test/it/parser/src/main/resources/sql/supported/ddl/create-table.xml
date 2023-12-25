@@ -298,4 +298,5 @@
     (PARTITION p1 VALUES LESS THAN (1000),
     PARTITION p2 VALUES LESS THAN (2500),
     PARTITION p3 VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
+    <sql-case id="create_table_with_queue" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) USAGE QUEUE" db-types="Oracle" />
 </sql-cases>

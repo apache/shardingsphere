@@ -2312,4 +2312,14 @@
             <column name="credit_limit" start-index="177" stop-index="188" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_queue">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="19" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

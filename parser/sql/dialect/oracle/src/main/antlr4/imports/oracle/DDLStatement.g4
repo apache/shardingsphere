@@ -29,7 +29,7 @@ createView
     ;
 
 createTable
-    : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause memOptimizeClause createParentClause
+    : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause memOptimizeClause createParentClause createQueueClause
     ;
 
 createEdition
@@ -254,6 +254,10 @@ createObjectTableClause
     : OF objectName objectTableSubstitution? 
     (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     oidClause? oidIndexClause? physicalProperties? tableProperties?
+    ;
+
+createQueueClause
+    : (USAGE QUEUE)?
     ;
 
 relationalProperties
