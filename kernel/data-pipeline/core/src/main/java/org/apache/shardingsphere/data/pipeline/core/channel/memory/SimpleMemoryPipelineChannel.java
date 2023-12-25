@@ -88,9 +88,4 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     public void ack(final List<Record> records) {
         ackCallback.onAck(records);
     }
-    
-    @Override
-    public void close() {
-        queue.clear();
-    }
 }

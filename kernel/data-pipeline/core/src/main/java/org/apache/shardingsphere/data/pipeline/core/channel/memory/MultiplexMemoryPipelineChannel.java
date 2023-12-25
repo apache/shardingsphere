@@ -126,11 +126,4 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
             }
         }
     }
-    
-    @Override
-    public void close() {
-        for (PipelineChannel each : channels) {
-            each.close();
-        }
-    }
 }
