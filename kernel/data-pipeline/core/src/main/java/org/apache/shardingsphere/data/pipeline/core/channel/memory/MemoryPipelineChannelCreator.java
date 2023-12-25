@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.channel.memory;
 
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 
 import java.util.Properties;
 
@@ -32,18 +32,17 @@ public final class MemoryPipelineChannelCreator implements PipelineChannelCreato
     
     private static final String BLOCK_QUEUE_SIZE_DEFAULT_VALUE = "2000";
     
-    private int blockQueueSize;
+    private int queueSize;
     
     @Override
     public void init(final Properties props) {
-        blockQueueSize = Integer.parseInt(props.getProperty(BLOCK_QUEUE_SIZE_KEY, BLOCK_QUEUE_SIZE_DEFAULT_VALUE));
+        queueSize = Integer.parseInt(props.getProperty(BLOCK_QUEUE_SIZE_KEY, BLOCK_QUEUE_SIZE_DEFAULT_VALUE));
     }
     
     @Override
-    public PipelineChannel newInstance(final int outputConcurrency, final int averageElementSize, final PipelineChannelAckCallback ackCallback) {
-        return 1 == outputConcurrency
-                ? new SimpleMemoryPipelineChannel(blockQueueSize / averageElementSize, ackCallback)
-                : new MultiplexMemoryPipelineChannel(outputConcurrency, blockQueueSize, ackCallback);
+    public PipelineChannel newInstance(final int importerBatchSize, final PipelineChannelAckCallback ackCallback) {
+        int queueSize = this.queueSize / importerBatchSize;
+        return new MemoryPipelineChannel(0 == queueSize ? 1 : queueSize, ackCallback);
     }
     
     @Override

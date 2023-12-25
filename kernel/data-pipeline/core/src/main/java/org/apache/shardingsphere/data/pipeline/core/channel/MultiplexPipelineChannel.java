@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.channel.memory;
+package org.apache.shardingsphere.data.pipeline.core.channel;
 
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
@@ -34,9 +32,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Multiplex memory pipeline channel.
+ * Multiplex pipeline channel.
  */
-public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
+public final class MultiplexPipelineChannel implements PipelineChannel {
     
     private final int channelCount;
     
@@ -44,10 +42,9 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
     
-    public MultiplexMemoryPipelineChannel(final int channelCount, final int blockQueueSize, final PipelineChannelAckCallback ackCallback) {
+    public MultiplexPipelineChannel(final int channelCount, final PipelineChannelCreator channelCreator, final int importerBatchSize, final PipelineChannelAckCallback ackCallback) {
         this.channelCount = channelCount;
-        int handledQueueSize = blockQueueSize < 1 ? 5 : blockQueueSize;
-        channels = IntStream.range(0, channelCount).mapToObj(each -> new SimpleMemoryPipelineChannel(handledQueueSize, ackCallback)).collect(Collectors.toList());
+        channels = IntStream.range(0, channelCount).mapToObj(each -> channelCreator.newInstance(importerBatchSize, ackCallback)).collect(Collectors.toList());
     }
     
     @Override

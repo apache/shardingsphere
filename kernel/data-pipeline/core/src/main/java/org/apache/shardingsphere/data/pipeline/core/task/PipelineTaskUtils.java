@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.channel.MultiplexPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
@@ -63,26 +64,28 @@ public final class PipelineTaskUtils {
     }
     
     /**
-     * Create channel for inventory task.
+     * Create pipeline channel for inventory task.
      *
-     * @param pipelineChannelCreator channel creator
-     * @param averageElementSize average element size
+     * @param channelCreator pipeline channel creator
+     * @param importerBatchSize importer batch size
      * @param position ingest position
-     * @return channel
+     * @return created pipeline channel
      */
-    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int averageElementSize, final AtomicReference<IngestPosition> position) {
-        return pipelineChannelCreator.newInstance(1, averageElementSize, new InventoryTaskAckCallback(position));
+    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator channelCreator, final int importerBatchSize, final AtomicReference<IngestPosition> position) {
+        return channelCreator.newInstance(importerBatchSize, new InventoryTaskAckCallback(position));
     }
     
     /**
-     * Create incremental channel.
+     * Create pipeline channel for incremental task.
      *
      * @param concurrency output concurrency
-     * @param pipelineChannelCreator channel creator
+     * @param channelCreator pipeline channel creator
      * @param progress incremental task progress
-     * @return channel
+     * @return created pipeline channel
      */
-    public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
-        return pipelineChannelCreator.newInstance(concurrency, 5, new IncrementalTaskAckCallback(progress));
+    public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator channelCreator, final IncrementalTaskProgress progress) {
+        return 1 == concurrency
+                ? channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress))
+                : new MultiplexPipelineChannel(concurrency, channelCreator, 5, new IncrementalTaskAckCallback(progress));
     }
 }
