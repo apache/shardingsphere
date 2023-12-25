@@ -31,10 +31,12 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRec
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -62,6 +64,18 @@ class MultiplexMemoryPipelineChannelTest {
         }, countDataRecord(records), records);
     }
     
+    private Record[] mockRecords() {
+        Record[] result = new Record[100];
+        for (int i = 1; i <= result.length; i++) {
+            result[i - 1] = random.nextBoolean() ? new DataRecord(PipelineSQLOperationType.INSERT, "t1", new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
+        }
+        return result;
+    }
+    
+    private int countDataRecord(final Record[] records) {
+        return (int) Arrays.stream(records).filter(each -> each instanceof DataRecord).count();
+    }
+    
     @Test
     void assertBroadcastFinishedRecord() {
         execute(records -> assertThat(records.size(), is(1)), 2, new FinishedRecord(new IngestPlaceholderPosition()));
@@ -70,12 +84,13 @@ class MultiplexMemoryPipelineChannelTest {
     @SneakyThrows(InterruptedException.class)
     private void execute(final PipelineChannelAckCallback ackCallback, final int recordCount, final Record... records) {
         CountDownLatch countDownLatch = new CountDownLatch(recordCount);
-        MemoryPipelineChannel memoryPipelineChannel = new MemoryPipelineChannel(10000, ackCallback);
-        MultiplexPipelineChannel memoryChannel = new MultiplexPipelineChannel(memoryPipelineChannel, CHANNEL_NUMBER);
-        fetchWithMultiThreads(memoryChannel, countDownLatch);
-        memoryChannel.push(Arrays.asList(records));
+        MemoryPipelineChannel memoryChannel = new MemoryPipelineChannel(10000, ackCallback);
+        MultiplexPipelineChannel channel = new MultiplexPipelineChannel(memoryChannel, CHANNEL_NUMBER);
+        fetchWithMultiThreads(channel, countDownLatch);
+        channel.push(Arrays.asList(records));
         boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult, "await failed");
+        clearChannel(memoryChannel);
     }
     
     private void fetchWithMultiThreads(final MultiplexPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
@@ -96,16 +111,13 @@ class MultiplexMemoryPipelineChannelTest {
         }
     }
     
-    private Record[] mockRecords() {
-        Record[] result = new Record[100];
-        for (int i = 1; i <= result.length; i++) {
-            result[i - 1] = random.nextBoolean() ? new DataRecord(PipelineSQLOperationType.INSERT, "t1", new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
-        }
-        return result;
-    }
-    
-    private int countDataRecord(final Record[] records) {
-        return (int) Arrays.stream(records).filter(each -> each instanceof DataRecord).count();
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void clearChannel(final MemoryPipelineChannel memoryChannel) {
+        Field field = MemoryPipelineChannel.class.getDeclaredField("queue");
+        field.setAccessible(true);
+        BlockingQueue<?> queue = (BlockingQueue<?>) field.get(memoryChannel);
+        queue.clear();
+        field.setAccessible(false);
     }
     
     @RequiredArgsConstructor
