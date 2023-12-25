@@ -42,9 +42,9 @@ public final class MultiplexPipelineChannel implements PipelineChannel {
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
     
-    public MultiplexPipelineChannel(final PipelineChannel channel, final int channelCount) {
+    public MultiplexPipelineChannel(final int channelCount, final PipelineChannelCreator channelCreator, final int importerBatchSize, final PipelineChannelAckCallback ackCallback) {
         this.channelCount = channelCount;
-        channels = IntStream.range(0, channelCount).mapToObj(each -> channel).collect(Collectors.toList());
+        channels = IntStream.range(0, channelCount).mapToObj(each -> channelCreator.newInstance(importerBatchSize, ackCallback)).collect(Collectors.toList());
     }
     
     @Override

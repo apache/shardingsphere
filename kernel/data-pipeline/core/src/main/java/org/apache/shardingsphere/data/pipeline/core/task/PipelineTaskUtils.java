@@ -84,7 +84,8 @@ public final class PipelineTaskUtils {
      * @return created pipeline channel
      */
     public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator channelCreator, final IncrementalTaskProgress progress) {
-        PipelineChannel channel = channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress));
-        return 1 == concurrency ? channel : new MultiplexPipelineChannel(channel, concurrency);
+        return 1 == concurrency
+                ? channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress))
+                : new MultiplexPipelineChannel(concurrency, channelCreator, 5, new IncrementalTaskAckCallback(progress));
     }
 }

@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.channel.MultiplexPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
@@ -29,14 +30,13 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -84,13 +84,11 @@ class MultiplexMemoryPipelineChannelTest {
     @SneakyThrows(InterruptedException.class)
     private void execute(final PipelineChannelAckCallback ackCallback, final int recordCount, final Record... records) {
         CountDownLatch countDownLatch = new CountDownLatch(recordCount);
-        MemoryPipelineChannel memoryChannel = new MemoryPipelineChannel(10000, ackCallback);
-        MultiplexPipelineChannel channel = new MultiplexPipelineChannel(memoryChannel, CHANNEL_NUMBER);
+        MultiplexPipelineChannel channel = new MultiplexPipelineChannel(CHANNEL_NUMBER, TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY"), 10000, ackCallback);
         fetchWithMultiThreads(channel, countDownLatch);
         channel.push(Arrays.asList(records));
         boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult, "await failed");
-        clearChannel(memoryChannel);
     }
     
     private void fetchWithMultiThreads(final MultiplexPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
@@ -109,15 +107,6 @@ class MultiplexMemoryPipelineChannelTest {
                 break;
             }
         }
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void clearChannel(final MemoryPipelineChannel memoryChannel) {
-        Field field = MemoryPipelineChannel.class.getDeclaredField("queue");
-        field.setAccessible(true);
-        BlockingQueue<?> queue = (BlockingQueue<?>) field.get(memoryChannel);
-        queue.clear();
-        field.setAccessible(false);
     }
     
     @RequiredArgsConstructor
