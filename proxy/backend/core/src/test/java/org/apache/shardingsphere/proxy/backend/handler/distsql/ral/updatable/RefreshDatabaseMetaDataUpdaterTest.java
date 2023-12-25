@@ -28,8 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
-import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -43,7 +41,7 @@ class RefreshDatabaseMetaDataUpdaterTest {
     private ConnectionSession connectionSession;
     
     @Test
-    void assertExecuteWithNoDatabase() throws SQLException {
+    void assertExecuteWithNoDatabase() {
         RefreshDatabaseMetaDataUpdater updater = new RefreshDatabaseMetaDataUpdater();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThrows(UnknownDatabaseException.class, () -> updater.executeUpdate(connectionSession, new RefreshDatabaseMetaDataStatement("foo", true)));
