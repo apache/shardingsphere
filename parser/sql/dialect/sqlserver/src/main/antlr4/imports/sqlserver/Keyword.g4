@@ -692,3 +692,15 @@ WITHOUT
     : W I T H O U T
     ;
 
+LEADING
+    : L E A D I N G
+    ;
+
+BOTH
+    : B O T H
+    ;
+
+TRAILING
+    : T R A I L I N G
+    ;
+
