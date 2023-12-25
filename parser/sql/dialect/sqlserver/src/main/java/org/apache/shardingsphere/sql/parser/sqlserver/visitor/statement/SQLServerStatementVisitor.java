@@ -663,7 +663,28 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-    
+
+    @Override
+    public ASTNode visitTrimFunction(SQLServerStatementParser.TrimFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
+        if (null != ctx.BOTH()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.BOTH().getSymbol().getStartIndex(), ctx.BOTH().getSymbol().getStopIndex(),
+                    new OtherLiteralValue(ctx.BOTH().getSymbol().getText()).getValue()));
+        }
+        if (null != ctx.TRAILING()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.TRAILING().getSymbol().getStartIndex(), ctx.TRAILING().getSymbol().getStopIndex(),
+                    new OtherLiteralValue(ctx.TRAILING().getSymbol().getText()).getValue()));
+        }
+        if (null != ctx.LEADING()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.LEADING().getSymbol().getStartIndex(), ctx.LEADING().getSymbol().getStopIndex(),
+                    new OtherLiteralValue(ctx.LEADING().getSymbol().getText()).getValue()));
+        }
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+
     @Override
     public ASTNode visitTrimFunction(SQLServerStatementParser.TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
