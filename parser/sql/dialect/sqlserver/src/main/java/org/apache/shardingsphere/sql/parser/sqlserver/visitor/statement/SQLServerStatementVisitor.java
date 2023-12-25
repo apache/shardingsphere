@@ -663,7 +663,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitTrimFunction(SQLServerStatementParser.TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
