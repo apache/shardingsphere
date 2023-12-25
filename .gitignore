@@ -55,3 +55,4 @@ gen/
 public/
 .hugo_build.lock
 *.html-e
+docs/blog/resources/_gen

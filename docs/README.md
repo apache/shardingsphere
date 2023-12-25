@@ -15,6 +15,7 @@ Follow the steps below to deploy ShardingSphere website,
 ### Note:
 
 1. If you modify `docs/build.sh`, please test it locally.
+2. You need to install `Hugo` on your local device in advance. Refer to https://gohugo.io/installation/ .
 
 ## HOW to insert a video of Bilibili or YouTube?
 
