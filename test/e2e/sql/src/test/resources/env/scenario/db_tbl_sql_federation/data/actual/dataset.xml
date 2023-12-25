@@ -75,19 +75,6 @@
         <column name="continent_name" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="sql_federation_ds_0.t_single_table">
-        <column name="single_id" type="numeric" />
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="sql_federation_ds_${0..9}.t_broadcast_table">
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <row data-node="sql_federation_ds_0.t_single_table" values="1, 1000, init" />
-    <row data-node="sql_federation_ds_0.t_single_table" values="2, 1101, init" />
-    <row data-node="sql_federation_ds_0.t_single_table" values="3, 1202, init" />
-    <row data-node="sql_federation_ds_0.t_single_table" values="4, 1303, init" />
     <row data-node="sql_federation_ds_0.t_order_0" values="1000, 10, init, 1, test, 2017-08-08" />
     <row data-node="sql_federation_ds_0.t_order_1" values="1001, 10, init, 2, test, 2017-08-08" />
     <row data-node="sql_federation_ds_0.t_order_2" values="1002, 10, init, 3, test, 2017-08-08" />
@@ -628,14 +615,4 @@
     <row data-node="sql_federation_ds_8.t_country" values="86, china, asia, 2017-08-08" />
     <row data-node="sql_federation_ds_9.t_country" values="1, usa, north america, 2017-08-08" />
     <row data-node="sql_federation_ds_9.t_country" values="86, china, asia, 2017-08-08" />
-    <row data-node="sql_federation_ds_0.t_broadcast_table" values="1, init" />
-    <row data-node="sql_federation_ds_1.t_broadcast_table" values="1, init" />
-    <row data-node="sql_federation_ds_2.t_broadcast_table" values="1, init" />
-    <row data-node="sql_federation_ds_3.t_broadcast_table" values="1, init" />
-    <row data-node="sql_federation_ds_4.t_broadcast_table" values="1, init" />
-    <row data-node="sql_federation_ds_5.t_broadcast_table" values="1, init" />
-    <row data-node="sql_federation_ds_6.t_broadcast_table" values="1, init" />
-    <row data-node="sql_federation_ds_7.t_broadcast_table" values="1, init" />
-    <row data-node="sql_federation_ds_8.t_broadcast_table" values="1, init" />
-    <row data-node="sql_federation_ds_9.t_broadcast_table" values="1, init" />
 </dataset>

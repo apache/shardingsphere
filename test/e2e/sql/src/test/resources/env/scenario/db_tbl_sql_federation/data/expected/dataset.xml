@@ -75,10 +75,6 @@
         <column name="continent_name" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="sql_federation.t_broadcast_table">
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <row data-node="sql_federation.t_order" values="1000, 10, init, 1, test, 2017-08-08" />
     <row data-node="sql_federation.t_order" values="1001, 10, init, 2, test, 2017-08-08" />
     <row data-node="sql_federation.t_order" values="1002, 10, init, 3, test, 2017-08-08" />
@@ -475,5 +471,4 @@
     <row data-node="sql_federation.t_product_category" values="14, car, 13, 2, 2017-08-08" />
     <row data-node="sql_federation.t_country" values="1, usa, north america, 2017-08-08" />
     <row data-node="sql_federation.t_country" values="86, china, asia, 2017-08-08" />
-    <row data-node="sql_federation.t_broadcast_table" values="1, init" />
 </dataset>

@@ -48,18 +48,8 @@ rules:
         auditorNames:
           - auditor_constant
         allowHintDisable: true
-    t_order_details:
-      actualDataNodes: sql_federation_ds_${0..9}.t_order_details_${0..9}
-      databaseStrategy:
-        standard:
-          shardingColumn: user_id
-          shardingAlgorithmName: it_standard_fixture
-      tableStrategy:
-        standard:
-          shardingColumn: order_id
-          shardingAlgorithmName: it_standard_fixture
   bindingTables:
-    - ref_0:t_order,t_order_item,t_order_details
+    - ref_0:t_order,t_order_item
 
   shardingAlgorithms:
     it_standard_fixture:
@@ -75,8 +65,6 @@ rules:
 
 - !BROADCAST
   tables:
-    - t_broadcast_table
-    - t_broadcast_table_for_ddl
     - t_country
     - t_product_category
 
