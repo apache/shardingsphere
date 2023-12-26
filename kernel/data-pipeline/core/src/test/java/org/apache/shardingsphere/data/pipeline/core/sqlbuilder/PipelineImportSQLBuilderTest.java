@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
@@ -65,7 +65,7 @@ class PipelineImportSQLBuilderTest {
     }
     
     private DataRecord mockDataRecord(final String tableName, final int extraColumnCount) {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, tableName, new IngestPlaceholderPosition(), 4);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, tableName, new IngestPlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, true));
         result.addColumn(new Column("sc", "", false, false));
         for (int i = 1; i <= extraColumnCount; i++) {
@@ -89,7 +89,7 @@ class PipelineImportSQLBuilderTest {
     }
     
     private DataRecord mockDataRecordWithoutUniqueKey() {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, "t_order", new IngestPlaceholderPosition(), 4);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "t_order", new IngestPlaceholderPosition(), 4);
         result.addColumn(new Column("id", "", false, false));
         result.addColumn(new Column("name", "", true, false));
         return result;

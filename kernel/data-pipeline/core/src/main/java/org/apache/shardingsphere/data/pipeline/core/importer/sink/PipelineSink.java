@@ -21,20 +21,12 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
 
 import java.io.Closeable;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Pipeline sink.
  */
 public interface PipelineSink extends Closeable {
-    
-    /**
-     * Identifier matched or not.
-     *
-     * @param identifier sink identifier
-     * @return true if matched, otherwise false
-     */
-    boolean identifierMatched(Object identifier);
     
     /**
      * Write data.
@@ -43,5 +35,5 @@ public interface PipelineSink extends Closeable {
      * @param records records
      * @return job progress updated parameter
      */
-    PipelineJobProgressUpdatedParameter write(String ackId, List<Record> records);
+    PipelineJobProgressUpdatedParameter write(String ackId, Collection<Record> records);
 }

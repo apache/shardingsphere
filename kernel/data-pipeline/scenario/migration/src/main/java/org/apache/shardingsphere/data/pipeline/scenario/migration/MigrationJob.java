@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
@@ -52,7 +51,6 @@ import java.util.stream.Collectors;
 /**
  * Migration job.
  */
-@Slf4j
 public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJobConfiguration, MigrationJobItemContext, TransmissionJobItemProgress> {
     
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();

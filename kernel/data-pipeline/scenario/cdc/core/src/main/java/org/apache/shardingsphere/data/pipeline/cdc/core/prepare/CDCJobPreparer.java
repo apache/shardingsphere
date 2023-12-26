@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessC
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;

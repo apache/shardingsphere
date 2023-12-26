@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.channel.memory.MemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
@@ -76,14 +75,16 @@ class PostgreSQLWALDumperTest {
     
     private PostgreSQLWALDumper walDumper;
     
-    private SimpleMemoryPipelineChannel channel;
+    private MemoryPipelineChannel channel;
     
     private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
     @BeforeEach
     void setUp() {
         position = new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
-        channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
+        channel = new MemoryPipelineChannel(10000, records -> {
+            
+        });
         String jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL";
         String username = "root";
         String password = "root";
@@ -133,6 +134,6 @@ class PostgreSQLWALDumperTest {
             walDumper.start();
         } catch (final IngestException ignored) {
         }
-        assertThat(channel.fetchRecords(100, 0, TimeUnit.SECONDS).size(), is(1));
+        assertThat(channel.fetch(100, 0, TimeUnit.SECONDS).size(), is(1));
     }
 }

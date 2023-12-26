@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterManager;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.CDCSocketSink;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineCDCSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCServerException;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.NotFindStreamDataSourceTableException;
@@ -136,7 +136,7 @@ public final class CDCBackendHandler {
         ShardingSpherePreconditions.checkNotNull(cdcJobConfig, () -> new PipelineJobNotFoundException(jobId));
         PipelineJobRegistry.stop(jobId);
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
-        jobAPI.start(jobId, new CDCSocketSink(channel, database, cdcJobConfig.getSchemaTableNames()));
+        jobAPI.start(jobId, new PipelineCDCSocketSink(channel, database, cdcJobConfig.getSchemaTableNames()));
         connectionContext.setJobId(jobId);
     }
     
@@ -155,7 +155,7 @@ public final class CDCBackendHandler {
         if (null == job) {
             return;
         }
-        if (job.getSink().identifierMatched(channelId)) {
+        if (((PipelineCDCSocketSink) job.getSink()).getChannel().id().equals(channelId)) {
             log.info("close CDC job, channel id: {}", channelId);
             PipelineJobRegistry.stop(jobId);
             jobAPI.disable(jobId);

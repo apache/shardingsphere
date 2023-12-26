@@ -32,7 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Ingest position manager for PostgreSQ.
+ * Ingest position manager for PostgreSQL.
  */
 @Slf4j
 public final class PostgreSQLIngestPositionManager implements DialectIngestPositionManager {

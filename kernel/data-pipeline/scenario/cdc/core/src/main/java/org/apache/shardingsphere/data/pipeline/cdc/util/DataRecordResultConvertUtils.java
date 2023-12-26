@@ -21,14 +21,14 @@ import com.google.common.base.Strings;
 import com.google.protobuf.Any;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.DataChangeType;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.MetaData;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -55,15 +55,20 @@ public final class DataRecordResultConvertUtils {
             after.add(TableColumn.newBuilder().setName(column.getName()).setValue(Any.pack(ColumnValueConvertUtils.convertToProtobufMessage(column.getValue()))).build());
         }
         MetaData metaData = MetaData.newBuilder().setDatabase(database).setSchema(Strings.nullToEmpty(schema)).setTable(dataRecord.getTableName()).build();
-        DataChangeType dataChangeType = DataChangeType.UNKNOWN;
-        if (IngestDataChangeType.INSERT.equals(dataRecord.getType())) {
-            dataChangeType = DataChangeType.INSERT;
-        } else if (IngestDataChangeType.UPDATE.equals(dataRecord.getType())) {
-            dataChangeType = DataChangeType.UPDATE;
-        } else if (IngestDataChangeType.DELETE.equals(dataRecord.getType())) {
-            dataChangeType = DataChangeType.DELETE;
-        }
         return DataRecordResult.Record.newBuilder().setMetaData(metaData).addAllBefore(before).addAllAfter(after).setTransactionCommitMillis(dataRecord.getCommitTime())
-                .setDataChangeType(dataChangeType).build();
+                .setDataChangeType(getDataChangeType(dataRecord.getType())).build();
+    }
+    
+    private static DataChangeType getDataChangeType(final PipelineSQLOperationType type) {
+        switch (type) {
+            case INSERT:
+                return DataChangeType.INSERT;
+            case UPDATE:
+                return DataChangeType.UPDATE;
+            case DELETE:
+                return DataChangeType.DELETE;
+            default:
+                return DataChangeType.UNKNOWN;
+        }
     }
 }

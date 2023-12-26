@@ -51,7 +51,7 @@ public final class PipelineDataSourceManager implements AutoCloseable {
                 }
                 log.warn("{} is already closed, create again.", result);
             }
-            result = PipelineDataSourceFactory.newInstance(dataSourceConfig);
+            result = new PipelineDataSourceWrapper(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, result);
             return result;
         }
