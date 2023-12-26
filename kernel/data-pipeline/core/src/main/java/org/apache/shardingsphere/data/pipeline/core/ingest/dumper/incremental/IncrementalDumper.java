@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental;
+
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 
 /**
  * Incremental dumper.

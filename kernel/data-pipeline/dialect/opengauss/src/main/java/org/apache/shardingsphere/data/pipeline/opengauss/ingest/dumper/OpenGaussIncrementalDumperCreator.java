@@ -19,11 +19,11 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.dumper;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWALDumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DialectIncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
 
 /**
  * OpenGauss incremental dumper creator.

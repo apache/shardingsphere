@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DialectColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.column.DialectColumnValueReader;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
