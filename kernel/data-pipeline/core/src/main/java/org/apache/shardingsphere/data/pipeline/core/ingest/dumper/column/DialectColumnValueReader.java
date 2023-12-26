@@ -15,29 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.column;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.Optional;
+
 /**
- * Dialect incremental dumper creator.
+ * Dialect column value reader.
  */
 @SingletonSPI
-public interface DialectIncrementalDumperCreator extends DatabaseTypedSPI {
+public interface DialectColumnValueReader extends DatabaseTypedSPI {
     
     /**
-     * Create incremental dumper.
+     * Read dialect column value.
      *
-     * @param context incremental dumper context
-     * @param position position
-     * @param channel channel
-     * @param metaDataLoader meta data loader
-     * @return incremental dumper
+     * @param resultSet result set
+     * @param resultSetMetaData result set meta data
+     * @param columnIndex column index
+     * @return column value
+     * @throws SQLException SQL exception
      */
-    IncrementalDumper createIncrementalDumper(IncrementalDumperContext context, IngestPosition position, PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
+    Optional<Object> read(ResultSet resultSet, ResultSetMetaData resultSetMetaData, int columnIndex) throws SQLException;
 }

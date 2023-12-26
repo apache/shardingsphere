@@ -15,23 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.ActualAndLogicTableNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
- * Incremental dumper context.
+ * Dumper common context.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class IncrementalDumperContext {
+@Setter
+@ToString(exclude = {"dataSourceConfig", "tableAndSchemaNameMapper"})
+public final class DumperCommonContext {
     
-    private final DumperCommonContext commonContext;
+    private final String dataSourceName;
     
-    private final String jobId;
+    private final PipelineDataSourceConfiguration dataSourceConfig;
     
-    private final boolean decodeWithTX;
+    private final ActualAndLogicTableNameMapper tableNameMapper;
+    
+    private final TableAndSchemaNameMapper tableAndSchemaNameMapper;
+    
+    private IngestPosition position;
 }
