@@ -61,9 +61,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     
     private final int batchSize;
     
-    private final long timeout;
-    
-    private final TimeUnit timeUnit;
+    private final long timeoutMillis;
     
     private final PipelineSink sink;
     
@@ -96,7 +94,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     private void doWithoutSorting() {
         for (final CDCChannelProgressPair channelProgressPair : originalChannelProgressPairs) {
             PipelineChannel channel = channelProgressPair.getChannel();
-            List<Record> records = channel.fetch(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
+            List<Record> records = channel.fetch(batchSize, timeoutMillis).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
             if (records.isEmpty()) {
                 continue;
             }
@@ -139,7 +137,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
             }
         }
         if (csnRecordsList.isEmpty()) {
-            timeUnit.sleep(timeout);
+            TimeUnit.MILLISECONDS.sleep(timeoutMillis);
             return;
         }
         // TODO Combine small transactions into a large transaction, to improve transformation performance.
