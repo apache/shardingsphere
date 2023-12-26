@@ -192,11 +192,16 @@ class ShowDatabasesExecutorTest {
     
     private AuthorityRule mockAuthorityRule() {
         AuthorityRule result = mock(AuthorityRule.class);
-        ShardingSpherePrivileges privileges = mock(ShardingSpherePrivileges.class);
-        when(privileges.hasPrivileges(anyString())).thenReturn(true);
-        when(privileges.hasPrivileges(anyCollection())).thenReturn(true);
-        when(privileges.hasPrivileges(anyCollection())).thenReturn(true);
+        ShardingSpherePrivileges privileges = mockPrivileges();
         when(result.findPrivileges(new Grantee("root", ""))).thenReturn(Optional.of(privileges));
+        return result;
+    }
+    
+    private ShardingSpherePrivileges mockPrivileges() {
+        ShardingSpherePrivileges result = mock(ShardingSpherePrivileges.class);
+        when(result.hasPrivileges(anyString())).thenReturn(true);
+        when(result.hasPrivileges(anyCollection())).thenReturn(true);
+        when(result.hasPrivileges(anyCollection())).thenReturn(true);
         return result;
     }
     
