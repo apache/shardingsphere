@@ -31,10 +31,10 @@ import java.util.Optional;
  */
 public final class ColumnValueReaderEngine {
     
-    private final DialectColumnValueReader dialectColumnValueReader;
+    private final DialectColumnValueReader columnReader;
     
     public ColumnValueReaderEngine(final DatabaseType databaseType) {
-        dialectColumnValueReader = DatabaseTypedSPILoader.findService(DialectColumnValueReader.class, databaseType).orElse(null);
+        columnReader = DatabaseTypedSPILoader.findService(DialectColumnValueReader.class, databaseType).orElse(null);
     }
     
     /**
@@ -53,7 +53,7 @@ public final class ColumnValueReaderEngine {
     }
     
     private Optional<Object> readDialectValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return null == dialectColumnValueReader ? Optional.empty() : dialectColumnValueReader.read(resultSet, metaData, columnIndex);
+        return null == columnReader ? Optional.empty() : columnReader.read(resultSet, metaData, columnIndex);
     }
     
     private static Object readStandardValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
