@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.Parameter
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 /**
@@ -31,7 +32,7 @@ import java.util.LinkedList;
 @Getter
 public abstract class AbstractSQLStatement implements SQLStatement {
     
-    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedHashSet<>();
     
     private final Collection<Integer> uniqueParameterIndexes = new HashSet<>();
     
@@ -41,7 +42,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     @Override
     public int getParameterCount() {
-        return uniqueParameterIndexes.size();
+        return parameterMarkerSegments.size();
     }
     
     /**
@@ -50,9 +51,6 @@ public abstract class AbstractSQLStatement implements SQLStatement {
      * @param parameterMarkerSegments parameter marker segment collection
      */
     public void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> parameterMarkerSegments) {
-        for (ParameterMarkerSegment each : parameterMarkerSegments) {
-            this.parameterMarkerSegments.add(each);
-            uniqueParameterIndexes.add(each.getParameterIndex());
-        }
+        this.parameterMarkerSegments.addAll(parameterMarkerSegments);
     }
 }
