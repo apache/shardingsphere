@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.registry;
+package org.apache.shardingsphere.authority.provider.simple.registry;
 
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPermittedPrivileges;
+import org.apache.shardingsphere.authority.provider.simple.privilege.AllPermittedPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.util.Optional;
