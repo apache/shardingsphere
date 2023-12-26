@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 /**
  * CDC connection context.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class CDCConnectionContext {
     
     private final ShardingSphereUser currentUser;

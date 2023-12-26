@@ -24,7 +24,6 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * Database permitted privileges.
@@ -34,7 +33,7 @@ public final class DatabasePermittedPrivileges implements ShardingSpherePrivileg
     
     private static final String KEY_SUPER = "*";
     
-    private final Set<String> databases;
+    private final Collection<String> databases;
     
     @Override
     public boolean hasPrivileges(final String database) {

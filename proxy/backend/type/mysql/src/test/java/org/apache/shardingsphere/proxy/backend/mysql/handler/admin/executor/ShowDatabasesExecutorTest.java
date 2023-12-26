@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
-import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPermittedPrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -190,7 +190,7 @@ class ShowDatabasesExecutorTest {
     
     private AuthorityRule mockAuthorityRule() {
         AuthorityRule result = mock(AuthorityRule.class);
-        when(result.findPrivileges(new Grantee("root", ""))).thenReturn(Optional.of(new AllPrivilegesPermittedShardingSpherePrivileges()));
+        when(result.findPrivileges(new Grantee("root", ""))).thenReturn(Optional.of(new AllPermittedPrivileges()));
         return result;
     }
     
