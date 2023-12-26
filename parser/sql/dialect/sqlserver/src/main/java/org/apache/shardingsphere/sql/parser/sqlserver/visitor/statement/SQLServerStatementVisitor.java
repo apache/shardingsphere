@@ -854,8 +854,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
         if (null != ctx.top()) {
-            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
-            projections.add(new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber, null));
+            projections.add((ProjectionSegment) visit(ctx.top()));
         }
         for (UnqualifiedShorthandContext each : ctx.unqualifiedShorthand()) {
             projections.add(new ShorthandProjectionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex()));
@@ -1154,11 +1153,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         int stopIndex = ctx.topNum().getStop().getStopIndex();
         ASTNode topNum = visit(ctx.topNum());
         if (topNum instanceof NumberLiteralValue) {
-            return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
+            NumberLiteralRowNumberValueSegment rowNumberSegment = new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
+            return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), rowNumberSegment, null != ctx.alias() ? ctx.alias().getText() : null);
         }
-        ParameterMarkerSegment result = new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
-        parameterMarkerSegments.add(result);
-        return result;
+        ParameterMarkerSegment parameterSegment = new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
+        parameterMarkerSegments.add(parameterSegment);
+        return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (RowNumberValueSegment) parameterSegment, null != ctx.alias() ? ctx.alias().getText() : null);
     }
     
     @Override
