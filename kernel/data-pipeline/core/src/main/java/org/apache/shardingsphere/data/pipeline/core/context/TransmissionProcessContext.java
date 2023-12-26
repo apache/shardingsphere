@@ -20,12 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.context;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineLazyInitializer;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -45,9 +44,6 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
     @Getter
     private final JobRateLimitAlgorithm writeRateLimitAlgorithm;
     
-    @Getter
-    private final PipelineChannelCreator pipelineChannelCreator;
-    
     private final PipelineLazyInitializer<ExecuteEngine> inventoryDumperExecuteEngineLazyInitializer;
     
     private final PipelineLazyInitializer<ExecuteEngine> inventoryImporterExecuteEngineLazyInitializer;
@@ -62,8 +58,6 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
         PipelineWriteConfiguration writeConfig = processConfig.getWrite();
         AlgorithmConfiguration writeRateLimiter = writeConfig.getRateLimiter();
         writeRateLimitAlgorithm = null == writeRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, writeRateLimiter.getType(), writeRateLimiter.getProps());
-        AlgorithmConfiguration streamChannel = processConfig.getStreamChannel();
-        pipelineChannelCreator = TypedSPILoader.getService(PipelineChannelCreator.class, streamChannel.getType(), streamChannel.getProps());
         inventoryDumperExecuteEngineLazyInitializer = new PipelineLazyInitializer<ExecuteEngine>() {
             
             @Override
