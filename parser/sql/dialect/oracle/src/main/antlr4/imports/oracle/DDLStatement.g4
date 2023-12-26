@@ -29,7 +29,7 @@ createView
     ;
 
 createTable
-    : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
+    : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause memOptimizeClause createParentClause createQueueClause
     ;
 
 createEdition
@@ -246,10 +246,6 @@ createRelationalTableClause
     : (LP_ relationalProperties RP_)? immutableTableClauses? blockchainTableClauses? collationClause? commitClause? physicalProperties? tableProperties?
     ;
 
-createMemOptimizeClause
-    : (MEMOPTIMIZE FOR READ)? (MEMOPTIMIZE FOR WRITE)? 
-    ;    
-
 createParentClause
     : (PARENT tableName)?
     ;
@@ -258,6 +254,10 @@ createObjectTableClause
     : OF objectName objectTableSubstitution? 
     (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     oidClause? oidIndexClause? physicalProperties? tableProperties?
+    ;
+
+createQueueClause
+    : (USAGE QUEUE)?
     ;
 
 relationalProperties

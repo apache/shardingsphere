@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 
-import org.apache.shardingsphere.data.pipeline.core.job.JobOperationType;
-import org.apache.shardingsphere.data.pipeline.core.spi.algorithm.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 
 public final class OutputJobRateLimitAlgorithmFixture implements JobRateLimitAlgorithm {
     
     @Override
-    public void intercept(final JobOperationType type, final Number data) {
+    public void intercept(final PipelineSQLOperationType type, final Number data) {
     }
     
     @Override

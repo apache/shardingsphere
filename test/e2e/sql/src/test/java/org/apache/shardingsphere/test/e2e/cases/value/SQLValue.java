@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.cases.value;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.math.BigDecimal;
@@ -33,7 +32,6 @@ import java.time.LocalTime;
 /**
  * SQL value.
  */
-@Slf4j
 public final class SQLValue {
     
     @Getter

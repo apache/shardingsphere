@@ -20,11 +20,10 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,7 +33,6 @@ import java.util.concurrent.CompletableFuture;
  * Incremental task.
  */
 @RequiredArgsConstructor
-@Slf4j
 @ToString(exclude = {"incrementalExecuteEngine", "dumper", "importers", "taskProgress"})
 public final class IncrementalTask implements PipelineTask {
     

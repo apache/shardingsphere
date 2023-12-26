@@ -25,8 +25,8 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 /**
  * Task execute callback.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class TaskExecuteCallback implements ExecuteCallback {
     
     private final PipelineTask task;

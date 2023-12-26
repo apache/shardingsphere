@@ -643,4 +643,66 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_outer_left_join_without_alias">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="LEFT">
+                <left>
+                    <simple-table name="t1" start-index="14" stop-index="15"/>
+                </left>
+                <right>
+                    <simple-table name="t2" start-index="27" stop-index="28"/>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="33" stop-index="45">
+                        <left>
+                            <column name="id" start-index="33" stop-index="37">
+                                <owner name="t1" start-index="33" stop-index="34"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="id" start-index="41" stop-index="45">
+                                <owner name="t2" start-index="41" stop-index="42"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_outer_full_join_without_alias">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="FULL">
+                <left>
+                    <simple-table name="t1" start-index="14" stop-index="15"/>
+                </left>
+                <right>
+                    <simple-table name="t2" start-index="27" stop-index="28"/>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="33" stop-index="45">
+                        <left>
+                            <column name="id" start-index="33" stop-index="37">
+                                <owner name="t1" start-index="33" stop-index="34"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="id" start-index="41" stop-index="45">
+                                <owner name="t2" start-index="41" stop-index="42"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

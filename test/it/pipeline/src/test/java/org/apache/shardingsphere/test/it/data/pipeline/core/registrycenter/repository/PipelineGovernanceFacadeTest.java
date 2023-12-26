@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.registrycenter.repository;
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
@@ -190,12 +190,12 @@ class PipelineGovernanceFacadeTest {
     
     private InventoryTask mockInventoryTask(final MigrationTaskConfiguration taskConfig) {
         InventoryDumperContext dumperContext = new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext());
-        dumperContext.getCommonContext().setPosition(new PlaceholderPosition());
+        dumperContext.getCommonContext().setPosition(new IngestPlaceholderPosition());
         dumperContext.setActualTableName("t_order");
         dumperContext.setLogicTableName("t_order");
         dumperContext.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
         dumperContext.setShardingItem(0);
         return new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(dumperContext), PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(),
-                mock(Dumper.class), mock(Importer.class), new AtomicReference<>(new PlaceholderPosition()));
+                mock(Dumper.class), mock(Importer.class), new AtomicReference<>(new IngestPlaceholderPosition()));
     }
 }

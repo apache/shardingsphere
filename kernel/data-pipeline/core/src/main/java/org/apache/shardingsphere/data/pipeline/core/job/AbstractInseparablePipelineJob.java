@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemConte
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
@@ -114,7 +114,7 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobItemCo
         for (T each : jobItemContexts) {
             updateJobItemStatus(each, jobType, JobStatus.EXECUTE_INVENTORY_TASK);
             for (PipelineTask task : ((TransmissionJobItemContext) each).getInventoryTasks()) {
-                if (task.getTaskProgress().getPosition() instanceof FinishedPosition) {
+                if (task.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
                     continue;
                 }
                 futures.addAll(task.start());
@@ -135,7 +135,7 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobItemCo
             }
             updateJobItemStatus(each, jobType, JobStatus.EXECUTE_INCREMENTAL_TASK);
             for (PipelineTask task : ((TransmissionJobItemContext) each).getIncrementalTasks()) {
-                if (task.getTaskProgress().getPosition() instanceof FinishedPosition) {
+                if (task.getTaskProgress().getPosition() instanceof IngestFinishedPosition) {
                     continue;
                 }
                 futures.addAll(task.start());

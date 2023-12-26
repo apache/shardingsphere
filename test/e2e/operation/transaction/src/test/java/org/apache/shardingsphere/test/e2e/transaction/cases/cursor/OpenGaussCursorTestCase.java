@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.cursor;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
@@ -39,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  * OpenGauss cursor transaction integration test.
  */
 @TransactionTestCase(dbTypes = TransactionTestConstants.OPENGAUSS, adapters = TransactionTestConstants.PROXY, scenario = "cursor")
-@Slf4j
 public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
     private final CursorSQLCommand cursorSQLCommand;

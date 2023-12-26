@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ratelimit.JobRateLimitAlgorithmInitializationException;
-import org.apache.shardingsphere.data.pipeline.core.job.JobOperationType;
-import org.apache.shardingsphere.data.pipeline.core.spi.algorithm.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.ratelimit.type.TPSJobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +55,6 @@ class TPSJobRateLimitAlgorithmTest {
     
     @Test
     void assertIntercept() {
-        assertDoesNotThrow(() -> tpsJobRateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1));
+        assertDoesNotThrow(() -> tpsJobRateLimitAlgorithm.intercept(PipelineSQLOperationType.UPDATE, 1));
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
@@ -41,7 +40,6 @@ import java.util.stream.Collectors;
  * Docker storage container.
  */
 @Getter
-@Slf4j
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
     private static final String READY_USER = "ready_user";

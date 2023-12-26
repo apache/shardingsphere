@@ -87,10 +87,9 @@ public final class PipelineJdbcUtils {
      */
     public static void cancelStatement(final Statement statement) throws SQLWrapperException {
         try {
-            if (null == statement || statement.isClosed()) {
-                return;
+            if (!statement.isClosed()) {
+                statement.cancel();
             }
-            statement.cancel();
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }

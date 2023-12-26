@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.job.type;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import java.util.Map;
  * Job code registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class JobCodeRegistry {
     
     private static final Map<String, PipelineJobType> JOB_CODE_AND_TYPE_MAP = new HashMap<>();
