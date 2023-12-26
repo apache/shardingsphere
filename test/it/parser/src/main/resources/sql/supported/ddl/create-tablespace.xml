@@ -108,4 +108,6 @@
     <sql-case id="create_tablespace_with_undo_tablespace_extent_uniform" value="CREATE UNDO TABLESPACE tablespaceName EXTENT MANAGEMENT LOCAL UNIFORM SIZE 5K" db-types="Oracle" />
     <sql-case id="create_tablespace_with_undo_tablespace_retention_guarantee" value="CREATE UNDO TABLESPACE tablespaceName RETENTION GUARANTEE" db-types="Oracle" />
     <sql-case id="create_tablespace_with_undo_tablespace_retention_noguarantee" value="CREATE UNDO TABLESPACE tablespaceName RETENTION NOGUARANTEE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_relative_location" value="CREATE TABLESPACE example2 RELATIVE LOCATION 'tablespace2/tablespace_2'" db-types="openGauss" />
+    ;
 </sql-cases>
