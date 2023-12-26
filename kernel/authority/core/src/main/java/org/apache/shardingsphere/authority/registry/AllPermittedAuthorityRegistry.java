@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.registry;
 
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPermittedPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.util.Optional;
@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 public final class AllPermittedAuthorityRegistry implements AuthorityRegistry {
     
-    private static final ShardingSpherePrivileges INSTANCE = new AllPrivilegesPermittedShardingSpherePrivileges();
+    private static final ShardingSpherePrivileges INSTANCE = new AllPermittedPrivileges();
     
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
