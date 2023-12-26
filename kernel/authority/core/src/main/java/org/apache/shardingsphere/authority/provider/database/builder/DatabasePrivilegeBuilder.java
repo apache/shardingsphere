@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Database privilege builder.
@@ -46,67 +46,51 @@ public final class DatabasePrivilegeBuilder {
      *
      * @param users users
      * @param props props
-     * @return privileges
+     * @return built privileges
      */
     public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users, final Properties props) {
-        String mappingProp = props.getProperty(DatabasePermittedAuthorityRegistryProvider.PROP_USER_DATABASE_MAPPINGS, "");
-        checkDatabases(mappingProp);
-        return buildPrivileges(users, mappingProp);
+        String userDatabaseMappings = props.getProperty(DatabasePermittedAuthorityRegistryProvider.PROP_USER_DATABASE_MAPPINGS, "");
+        checkDatabases(userDatabaseMappings);
+        return buildPrivileges(users, convertUserDatabases(userDatabaseMappings));
     }
     
-    /**
-     * Check databases.
-     *
-     * @param mappingProp user database mapping props
-     */
-    private static void checkDatabases(final String mappingProp) {
-        Preconditions.checkArgument(!"".equals(mappingProp), "user-database-mappings configuration `%s` can not be null", mappingProp);
-        Arrays.stream(mappingProp.split(",")).forEach(each -> Preconditions.checkArgument(each.contains("@") && each.contains("="),
+    private static void checkDatabases(final String userDatabaseMappings) {
+        Preconditions.checkArgument(!"".equals(userDatabaseMappings), "user-database-mappings configuration `%s` can not be null", userDatabaseMappings);
+        Arrays.stream(userDatabaseMappings.split(",")).forEach(each -> Preconditions.checkArgument(each.contains("@") && each.contains("="),
                 "user-database-mappings configuration `%s` is invalid, the configuration format should be like `username@hostname=database`", each));
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildPrivileges(final Collection<ShardingSphereUser> users, final String mappingProp) {
-        Map<ShardingSphereUser, Collection<String>> userDatabaseMappings = convertDatabases(mappingProp);
-        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>(users.size(), 1F);
-        users.forEach(each -> result.put(each, new DatabasePermittedPrivileges(new HashSet<>(getUserDatabases(each, userDatabaseMappings)))));
-        return result;
+    private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildPrivileges(final Collection<ShardingSphereUser> users,
+                                                                                     final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
+        return users.stream().collect(Collectors.toMap(each -> each, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
     }
     
-    /**
-     * Convert databases.
-     *
-     * @param mappingProp user database mapping props
-     * @return user database mapping map
-     */
-    private static Map<ShardingSphereUser, Collection<String>> convertDatabases(final String mappingProp) {
-        String[] mappings = mappingProp.split(",");
-        Map<ShardingSphereUser, Collection<String>> result = new HashMap<>(mappings.length, 1F);
-        Arrays.asList(mappings).forEach(each -> {
-            String[] userDatabasePair = each.trim().split("=");
-            String yamlUser = userDatabasePair[0];
-            String username = yamlUser.substring(0, yamlUser.indexOf('@'));
-            String hostname = yamlUser.substring(yamlUser.indexOf('@') + 1);
-            ShardingSphereUser shardingSphereUser = new ShardingSphereUser(username, "", hostname);
-            Collection<String> databases = result.getOrDefault(shardingSphereUser, new HashSet<>());
-            databases.add(userDatabasePair[1]);
-            result.putIfAbsent(shardingSphereUser, databases);
-        });
-        return result;
-    }
-    
-    private static Collection<String> getUserDatabases(final ShardingSphereUser shardingSphereUser, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
-        Set<String> result = new HashSet<>();
+    private static Collection<String> getUserDatabases(final ShardingSphereUser user, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
+        Collection<String> result = new HashSet<>();
         for (Entry<ShardingSphereUser, Collection<String>> entry : userDatabaseMappings.entrySet()) {
-            boolean isAnyOtherHost = checkAnyOtherHost(entry.getKey().getGrantee(), shardingSphereUser);
-            if (isAnyOtherHost || shardingSphereUser.equals(entry.getKey())) {
+            boolean isAnyOtherHost = checkAnyOtherHost(entry.getKey().getGrantee(), user);
+            if (isAnyOtherHost || user.equals(entry.getKey())) {
                 result.addAll(entry.getValue());
             }
         }
         return result;
     }
     
-    private static boolean checkAnyOtherHost(final Grantee grantee, final ShardingSphereUser shardingSphereUser) {
+    private static boolean checkAnyOtherHost(final Grantee grantee, final ShardingSphereUser user) {
         return ("%".equals(grantee.getHostname())
-                || grantee.getHostname().equals(shardingSphereUser.getGrantee().getHostname())) && grantee.getUsername().equals(shardingSphereUser.getGrantee().getUsername());
+                || grantee.getHostname().equals(user.getGrantee().getHostname())) && grantee.getUsername().equals(user.getGrantee().getUsername());
+    }
+    
+    private static Map<ShardingSphereUser, Collection<String>> convertUserDatabases(final String userDatabaseMappings) {
+        String[] mappings = userDatabaseMappings.split(",");
+        Map<ShardingSphereUser, Collection<String>> result = new HashMap<>(mappings.length, 1F);
+        for (String each : mappings) {
+            String[] userDatabasePair = each.trim().split("=");
+            ShardingSphereUser user = new ShardingSphereUser(userDatabasePair[0]);
+            Collection<String> databases = result.getOrDefault(user, new HashSet<>());
+            databases.add(userDatabasePair[1]);
+            result.putIfAbsent(user, databases);
+        }
+        return result;
     }
 }
