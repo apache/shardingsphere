@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.channel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Pipeline channel.
@@ -40,11 +39,10 @@ public interface PipelineChannel {
      * It might be blocked at most timeout seconds if available records count doesn't reach batch size.
      *
      * @param batchSize record batch size
-     * @param timeout timeout
-     * @param timeUnit time unit
+     * @param timeoutMillis timeout millis
      * @return records of transactions
      */
-    List<Record> fetch(int batchSize, long timeout, TimeUnit timeUnit);
+    List<Record> fetch(int batchSize, long timeoutMillis);
     
     /**
      * Peek {@code Record} list from channel.
