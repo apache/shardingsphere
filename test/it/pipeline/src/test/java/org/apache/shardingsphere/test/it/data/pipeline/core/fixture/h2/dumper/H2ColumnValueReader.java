@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.dumper;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.column.DialectColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.DialectColumnValueReader;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
