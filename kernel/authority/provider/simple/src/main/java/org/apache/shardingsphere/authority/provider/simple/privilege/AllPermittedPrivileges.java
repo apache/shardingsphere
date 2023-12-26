@@ -15,23 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple.model.privilege;
+package org.apache.shardingsphere.authority.provider.simple.privilege;
 
+import org.apache.shardingsphere.authority.model.AccessSubject;
+import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
-import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class AllPermittedPrivilegesTest {
+/**
+ * All permitted privileges.
+ */
+public final class AllPermittedPrivileges implements ShardingSpherePrivileges {
     
-    @Test
-    void assertFindPrivileges() {
-        ShardingSpherePrivileges actual = new AllPermittedPrivileges();
-        assertTrue(actual.hasPrivileges("testSchema"));
-        assertTrue(actual.hasPrivileges(Collections.emptyList()));
-        assertTrue(actual.hasPrivileges(new DatabaseAccessSubject("testSchema"), Collections.emptyList()));
+    @Override
+    public boolean hasPrivileges(final String database) {
+        return true;
+    }
+    
+    @Override
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return true;
+    }
+    
+    @Override
+    public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
+        return true;
     }
 }

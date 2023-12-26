@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -43,7 +44,7 @@ class DatabasePermittedAuthorityRegistryProviderTest {
         AuthorityRegistry actual = provider.build(Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
         Optional<ShardingSpherePrivileges> privileges = actual.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
-        assertTrue(privileges.get().hasPrivileges("test"));
-        assertTrue(privileges.get().hasPrivileges("db_dal_admin"));
+        Assertions.assertTrue(privileges.get().hasPrivileges("test"));
+        Assertions.assertTrue(privileges.get().hasPrivileges("db_dal_admin"));
     }
 }
