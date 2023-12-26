@@ -132,7 +132,7 @@ public final class InventoryTaskSplitter {
         }
         Collection<InventoryDumperContext> result = new LinkedList<>();
         TransmissionProcessContext jobProcessContext = jobItemContext.getJobProcessContext();
-        PipelineReadConfiguration readConfig = jobProcessContext.getPipelineProcessConfig().getRead();
+        PipelineReadConfiguration readConfig = jobProcessContext.getProcessConfig().getRead();
         int batchSize = readConfig.getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = jobProcessContext.getReadRateLimitAlgorithm();
         Collection<IngestPosition> inventoryPositions = getInventoryPositions(dumperContext, jobItemContext, dataSource);
@@ -188,7 +188,7 @@ public final class InventoryTaskSplitter {
         }
         Collection<IngestPosition> result = new LinkedList<>();
         Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dataSource, dumperContext);
-        int shardingSize = jobItemContext.getJobProcessContext().getPipelineProcessConfig().getRead().getShardingSize();
+        int shardingSize = jobItemContext.getJobProcessContext().getProcessConfig().getRead().getShardingSize();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
         long interval = (uniqueKeyValuesRange.getMaximum() - uniqueKeyValuesRange.getMinimum()) / splitCount;
         IntervalToRangeIterator rangeIterator = new IntervalToRangeIterator(uniqueKeyValuesRange.getMinimum(), uniqueKeyValuesRange.getMaximum(), interval);

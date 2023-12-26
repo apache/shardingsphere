@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 public final class TransmissionProcessContext implements PipelineProcessContext {
     
     @Getter
-    private final PipelineProcessConfiguration pipelineProcessConfig;
+    private final PipelineProcessConfiguration processConfig;
     
     @Getter
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
@@ -55,8 +55,7 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
     private final PipelineLazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
     
     public TransmissionProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
-        this.pipelineProcessConfig = processConfig;
+        this.processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
         PipelineReadConfiguration readConfig = processConfig.getRead();
         AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();
         readRateLimitAlgorithm = null == readRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, readRateLimiter.getType(), readRateLimiter.getProps());
