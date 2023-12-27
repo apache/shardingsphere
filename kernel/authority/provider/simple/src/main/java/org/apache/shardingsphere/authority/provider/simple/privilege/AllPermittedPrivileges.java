@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.authority.provider.simple.privilege;
 
-import org.apache.shardingsphere.authority.model.AccessSubject;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 
@@ -35,11 +34,6 @@ public final class AllPermittedPrivileges implements ShardingSpherePrivileges {
     
     @Override
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return true;
-    }
-    
-    @Override
-    public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
         return true;
     }
 }
