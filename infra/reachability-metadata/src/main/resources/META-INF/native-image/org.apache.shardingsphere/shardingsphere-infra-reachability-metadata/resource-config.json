@@ -1,7 +1,7 @@
 {
   "resources":{
   "includes":[{
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"},
     "pattern":".*META-INF/services/org\\.apache\\.shardingsphere\\..+"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"},
