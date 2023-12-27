@@ -53,6 +53,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -88,9 +89,10 @@ class MergeStatementBinderTest {
         assertThat(actual.getSource(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getTarget(), not(mergeStatement.getTarget()));
         assertThat(actual.getTarget(), instanceOf(SimpleTableSegment.class));
-        assertThat(actual.getUpdate(), not(mergeStatement.getUpdate()));
-        assertThat(actual.getUpdate().getSetAssignment().getAssignments().iterator().next().getValue(), instanceOf(ColumnSegment.class));
-        assertThat(((ColumnSegment) actual.getUpdate().getSetAssignment().getAssignments().iterator().next().getValue()).getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
+        assertTrue(actual.getUpdate().isPresent());
+        assertThat(actual.getUpdate().get(), not(mergeStatement.getUpdate()));
+        assertThat(actual.getUpdate().get().getSetAssignment().getAssignments().iterator().next().getValue(), instanceOf(ColumnSegment.class));
+        assertThat(((ColumnSegment) actual.getUpdate().get().getSetAssignment().getAssignments().iterator().next().getValue()).getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
     }
     
     private ShardingSphereMetaData createMetaData() {
@@ -163,10 +165,11 @@ class MergeStatementBinderTest {
                 new LiteralExpressionSegment(0, 0, 1), "=", "item_id = 1")));
         mergeStatement.setUpdate(updateStatement);
         MergeStatement actual = new MergeStatementBinder().bind(mergeStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
-        assertThat(actual.getUpdate(), instanceOf(OracleUpdateStatement.class));
-        assertThat(((OracleUpdateStatement) actual.getUpdate()).getDeleteWhere().getExpr(), instanceOf(BinaryOperationExpression.class));
-        assertThat(((BinaryOperationExpression) ((OracleUpdateStatement) actual.getUpdate()).getDeleteWhere().getExpr()).getLeft(), instanceOf(ColumnSegment.class));
-        assertThat(((ColumnSegment) ((BinaryOperationExpression) ((OracleUpdateStatement) actual.getUpdate()).getDeleteWhere().getExpr()).getLeft())
+        assertTrue(actual.getUpdate().isPresent());
+        assertThat(actual.getUpdate().get(), instanceOf(OracleUpdateStatement.class));
+        assertThat(((OracleUpdateStatement) actual.getUpdate().get()).getDeleteWhere().getExpr(), instanceOf(BinaryOperationExpression.class));
+        assertThat(((BinaryOperationExpression) ((OracleUpdateStatement) actual.getUpdate().get()).getDeleteWhere().getExpr()).getLeft(), instanceOf(ColumnSegment.class));
+        assertThat(((ColumnSegment) ((BinaryOperationExpression) ((OracleUpdateStatement) actual.getUpdate().get()).getDeleteWhere().getExpr()).getLeft())
                 .getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
     }
 }
