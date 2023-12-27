@@ -63,7 +63,7 @@ public final class DatabasePermittedAuthorityRegistryProvider implements Authori
     }
     
     private Map<ShardingSphereUser, DatabasePermittedPrivileges> buildPrivileges(final Collection<ShardingSphereUser> users,
-                                                                              final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
+                                                                                 final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
         return users.stream().collect(Collectors.toMap(each -> each, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
     }
     
