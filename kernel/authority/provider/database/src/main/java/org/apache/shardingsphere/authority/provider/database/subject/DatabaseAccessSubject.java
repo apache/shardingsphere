@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.database.model.subject;
+package org.apache.shardingsphere.authority.provider.database.subject;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
