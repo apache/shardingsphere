@@ -42,7 +42,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     @Override
     public int getParameterCount() {
-        return parameterMarkerSegments.size();
+        return uniqueParameterIndexes.size();
     }
     
     /**
@@ -51,6 +51,9 @@ public abstract class AbstractSQLStatement implements SQLStatement {
      * @param parameterMarkerSegments parameter marker segment collection
      */
     public void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> parameterMarkerSegments) {
-        this.parameterMarkerSegments.addAll(parameterMarkerSegments);
+        for (ParameterMarkerSegment each : parameterMarkerSegments) {
+            this.parameterMarkerSegments.add(each);
+            uniqueParameterIndexes.add(each.getParameterIndex());
+        }
     }
 }
