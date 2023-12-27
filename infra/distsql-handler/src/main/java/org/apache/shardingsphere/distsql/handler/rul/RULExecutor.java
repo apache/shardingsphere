@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.distsql.handler.rul;
 
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * RUL executor.
@@ -39,16 +37,6 @@ public interface RULExecutor<T extends RULStatement> extends TypedSPI {
      * @return column names
      */
     Collection<String> getColumnNames();
-    
-    /**
-     * Get query result rows.
-     *
-     * @param sqlStatement SQL statement
-     * @return query result rows
-     */
-    default Collection<LocalDataQueryResultRow> getRows(final T sqlStatement) {
-        return Collections.emptyList();
-    }
     
     @Override
     Class<T> getType();
