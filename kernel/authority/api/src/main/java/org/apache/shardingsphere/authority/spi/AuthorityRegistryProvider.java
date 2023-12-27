@@ -19,6 +19,7 @@ package org.apache.shardingsphere.authority.spi;
 
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
@@ -26,6 +27,7 @@ import java.util.Collection;
 /**
  * Authority registry provider.
  */
+@SingletonSPI
 public interface AuthorityRegistryProvider extends TypedSPI {
     
     /**
