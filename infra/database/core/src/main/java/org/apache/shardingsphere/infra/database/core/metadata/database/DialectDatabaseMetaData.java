@@ -65,7 +65,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return is reserved word or not
      */
     // TODO Reuse java.sql.DatabaseMetaData.getSQLKeywords
-    default boolean isReservedWord(String identifier) {
+    default boolean isReservedWord(final String identifier) {
         return false;
     }
     

@@ -44,7 +44,7 @@ public interface RuleDefinitionAlterUpdater<T extends SQLStatement, R extends Ru
      * @param toBeAlteredRuleConfig new rule configuration to be renewed
      * @return to be dropped rule configuration
      */
-    default R buildToBeDroppedRuleConfiguration(R currentRuleConfig, R toBeAlteredRuleConfig) {
+    default R buildToBeDroppedRuleConfiguration(final R currentRuleConfig, final R toBeAlteredRuleConfig) {
         return null;
     }
     
