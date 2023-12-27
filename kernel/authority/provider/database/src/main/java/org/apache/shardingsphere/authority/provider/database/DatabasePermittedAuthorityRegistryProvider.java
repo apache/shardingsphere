@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.database;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.authority.provider.database.model.privilege.DatabasePermittedPrivileges;
+import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.provider.database.registry.DatabasePermittedAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;

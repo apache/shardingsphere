@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.database.model.privilege;
+package org.apache.shardingsphere.authority.provider.database.privilege;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AccessSubject;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
+import org.apache.shardingsphere.authority.provider.database.subject.DatabaseAccessSubject;
 
 import java.util.Collection;
 

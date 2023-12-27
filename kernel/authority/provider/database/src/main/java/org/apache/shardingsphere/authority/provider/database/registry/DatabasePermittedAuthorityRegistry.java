@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.provider.database.registry;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.model.privilege.DatabasePermittedPrivileges;
+import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
