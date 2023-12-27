@@ -58,6 +58,7 @@ class AuthorityRuleTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         users.add(new ShardingSphereUser("root", "root", "localhost"));
         users.add(new ShardingSphereUser("admin", "123456", "localhost"));
-        return new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("FIXTURE", new Properties()), null));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("FIXTURE", new Properties()), null);
+        return new AuthorityRule(ruleConfig);
     }
 }
