@@ -39,7 +39,7 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      * @param sqlStatement SQL statement
      * @return to be dropped rule configuration
      */
-    default R buildToBeDroppedRuleConfiguration(R currentRuleConfig, T sqlStatement) {
+    default R buildToBeDroppedRuleConfiguration(final R currentRuleConfig, final T sqlStatement) {
         return null;
     }
     
@@ -50,7 +50,7 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      * @param sqlStatement SQL statement
      * @return to be altered rule configuration
      */
-    default R buildToBeAlteredRuleConfiguration(R currentRuleConfig, T sqlStatement) {
+    default R buildToBeAlteredRuleConfiguration(final R currentRuleConfig, final T sqlStatement) {
         return null;
     }
     
@@ -70,7 +70,7 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      * @param currentRuleConfig current rule configuration 
      * @return configuration exists or does not exist
      */
-    default boolean isExistRuleConfig(R currentRuleConfig) {
+    default boolean isExistRuleConfig(final R currentRuleConfig) {
         return null != currentRuleConfig;
     }
     
@@ -81,7 +81,7 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      * @param currentRuleConfig current rule configuration
      * @return dropped data exists or does not exist
      */
-    default boolean hasAnyOneToBeDropped(T sqlStatement, R currentRuleConfig) {
+    default boolean hasAnyOneToBeDropped(final T sqlStatement, final R currentRuleConfig) {
         return true;
     }
     
@@ -92,7 +92,7 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      * @param toBeDroppedRules collection
      * @return identical data
      */
-    default Collection<String> getIdenticalData(Collection<String> currentRules, Collection<String> toBeDroppedRules) {
+    default Collection<String> getIdenticalData(final Collection<String> currentRules, final Collection<String> toBeDroppedRules) {
         return currentRules.stream().filter(each -> toBeDroppedRules.stream().anyMatch(each::equalsIgnoreCase)).collect(Collectors.toSet());
     }
 }
