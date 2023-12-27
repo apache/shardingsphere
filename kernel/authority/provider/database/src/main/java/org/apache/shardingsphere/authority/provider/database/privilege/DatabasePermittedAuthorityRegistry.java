@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.database.registry;
+package org.apache.shardingsphere.authority.provider.database.privilege;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.authority.provider.simple;
 
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.authority.provider.simple.registry.AllPermittedAuthorityRegistry;
+import org.apache.shardingsphere.authority.provider.simple.privilege.AllPermittedAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
