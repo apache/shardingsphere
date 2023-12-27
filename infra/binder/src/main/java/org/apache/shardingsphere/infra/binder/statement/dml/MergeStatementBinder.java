@@ -57,7 +57,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Merge statement binder.
@@ -90,10 +89,10 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
             expression.getParameterMarkerSegments().addAll(sqlStatement.getExpression().getParameterMarkerSegments());
             result.setExpression(expression);
         }
-        result.setInsert(Optional.ofNullable(sqlStatement.getInsert()).map(optional -> bindMergeInsert(optional,
-                (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, targetTableBinderContexts, sourceTableBinderContexts)).orElse(null));
-        result.setUpdate(Optional.ofNullable(sqlStatement.getUpdate()).map(optional -> bindMergeUpdate(optional,
-                (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, targetTableBinderContexts, sourceTableBinderContexts)).orElse(null));
+        sqlStatement.getInsert().ifPresent(
+                optional -> result.setInsert(bindMergeInsert(optional, (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, targetTableBinderContexts, sourceTableBinderContexts)));
+        sqlStatement.getUpdate().ifPresent(
+                optional -> result.setUpdate(bindMergeUpdate(optional, (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, targetTableBinderContexts, sourceTableBinderContexts)));
         addParameterMarkerSegments(sqlStatement, result);
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
@@ -101,8 +100,8 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
     
     private void addParameterMarkerSegments(final MergeStatement mergeStatement, final MergeStatement originalSQLStatement) {
         mergeStatement.addParameterMarkerSegments(originalSQLStatement.getParameterMarkerSegments());
-        mergeStatement.addParameterMarkerSegments(mergeStatement.getInsert().getParameterMarkerSegments());
-        mergeStatement.addParameterMarkerSegments(mergeStatement.getUpdate().getParameterMarkerSegments());
+        mergeStatement.getInsert().ifPresent(optional -> mergeStatement.addParameterMarkerSegments(optional.getParameterMarkerSegments()));
+        mergeStatement.getUpdate().ifPresent(optional -> mergeStatement.addParameterMarkerSegments(optional.getParameterMarkerSegments()));
     }
     
     @SneakyThrows
