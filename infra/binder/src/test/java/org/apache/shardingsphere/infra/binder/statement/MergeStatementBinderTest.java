@@ -92,7 +92,8 @@ class MergeStatementBinderTest {
         assertTrue(actual.getUpdate().isPresent());
         assertThat(actual.getUpdate().get(), not(mergeStatement.getUpdate()));
         assertThat(actual.getUpdate().get().getSetAssignment().getAssignments().iterator().next().getValue(), instanceOf(ColumnSegment.class));
-        assertThat(((ColumnSegment) actual.getUpdate().get().getSetAssignment().getAssignments().iterator().next().getValue()).getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnSegment) actual.getUpdate().get().getSetAssignment().getAssignments().iterator().next().getValue()).getColumnBoundedInfo().getOriginalTable().getValue(),
+                is("t_order_item"));
     }
     
     private ShardingSphereMetaData createMetaData() {
