@@ -19,9 +19,8 @@ package org.apache.shardingsphere.authority.provider.database;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.model.privilege.DatabasePermittedPrivileges;
-import org.apache.shardingsphere.authority.provider.database.registry.UserPrivilegeMapAuthorityRegistry;
+import org.apache.shardingsphere.authority.provider.database.registry.DatabasePermittedAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -54,7 +53,7 @@ public final class DatabasePermittedAuthorityRegistryProvider implements Authori
     public AuthorityRegistry build(final Collection<ShardingSphereUser> users) {
         String userDatabaseMappings = props.getProperty(DatabasePermittedAuthorityRegistryProvider.PROP_USER_DATABASE_MAPPINGS, "");
         checkDatabases(userDatabaseMappings);
-        return new UserPrivilegeMapAuthorityRegistry(buildPrivileges(users, convertUserDatabases(userDatabaseMappings)));
+        return new DatabasePermittedAuthorityRegistry(buildPrivileges(users, convertUserDatabases(userDatabaseMappings)));
     }
     
     private void checkDatabases(final String userDatabaseMappings) {
@@ -63,7 +62,7 @@ public final class DatabasePermittedAuthorityRegistryProvider implements Authori
                 "user-database-mappings configuration `%s` is invalid, the configuration format should be like `username@hostname=database`", each));
     }
     
-    private Map<ShardingSphereUser, ShardingSpherePrivileges> buildPrivileges(final Collection<ShardingSphereUser> users,
+    private Map<ShardingSphereUser, DatabasePermittedPrivileges> buildPrivileges(final Collection<ShardingSphereUser> users,
                                                                               final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
         return users.stream().collect(Collectors.toMap(each -> each, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
     }
