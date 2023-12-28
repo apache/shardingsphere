@@ -44,4 +44,9 @@ public final class AllPermittedAuthorityRegistryProvider implements AuthorityReg
     public Collection<Object> getTypeAliases() {
         return Collections.singleton("ALL_PRIVILEGES_PERMITTED");
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
