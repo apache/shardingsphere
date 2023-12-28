@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.consul.lock;
 
-import com.ecwid.consul.v1.ConsulClient;
+import com.orbitz.consul.Consul;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
@@ -25,11 +25,11 @@ import org.apache.shardingsphere.mode.repository.cluster.lock.creator.Distribute
 /**
  * Consul distributed lock creator.
  */
-public final class ConsulDistributedLockCreator implements DistributedLockCreator<ConsulClient, ConsulProperties> {
+public final class ConsulDistributedLockCreator implements DistributedLockCreator<Consul, ConsulProperties> {
     
     @Override
-    public DistributedLock create(final String lockKey, final ConsulClient client, final ConsulProperties props) {
-        return new ConsulDistributedLock(lockKey, client, props);
+    public DistributedLock create(final String lockKey, final Consul consulClient, final ConsulProperties props) {
+        return new ConsulDistributedLock(lockKey, consulClient);
     }
     
     @Override

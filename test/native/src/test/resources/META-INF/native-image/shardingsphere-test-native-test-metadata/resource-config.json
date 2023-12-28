@@ -36,6 +36,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.mode.cluster.ZookeeperTest"},
     "pattern":"\\Qtest-native/yaml/mode/cluster/zookeeper.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.mode.cluster.ConsulTest"},
+    "pattern":"\\Qtest-native/yaml/mode/cluster/consul.yaml\\E"
   }]},
   "bundles":[]
 }
