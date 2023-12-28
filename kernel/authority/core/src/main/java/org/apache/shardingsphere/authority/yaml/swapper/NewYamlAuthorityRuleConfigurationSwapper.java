@@ -19,7 +19,6 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
-import org.apache.shardingsphere.authority.converter.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -43,6 +42,8 @@ import java.util.stream.Collectors;
  */
 public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGlobalRuleConfigurationSwapper<AuthorityRuleConfiguration> {
     
+    private final YamlUserSwapper userSwapper = new YamlUserSwapper();
+    
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
     @Override
@@ -53,7 +54,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGl
     private YamlAuthorityRuleConfiguration swapToYamlConfiguration(final AuthorityRuleConfiguration data) {
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
         result.setPrivilege(algorithmSwapper.swapToYamlConfiguration(data.getAuthorityProvider()));
-        result.setUsers(YamlUsersConfigurationConverter.convertToYamlUserConfiguration(data.getUsers()));
+        result.setUsers(data.getUsers().stream().map(userSwapper::swapToYamlConfiguration).collect(Collectors.toList()));
         result.setDefaultAuthenticator(data.getDefaultAuthenticator());
         data.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         return result;
@@ -72,7 +73,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGl
     }
     
     private AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
-        Collection<ShardingSphereUser> users = YamlUsersConfigurationConverter.convertToShardingSphereUser(yamlConfig.getUsers());
+        Collection<ShardingSphereUser> users = yamlConfig.getUsers().stream().map(userSwapper::swapToObject).collect(Collectors.toList());
         AlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getPrivilege());
         if (null == provider) {
             provider = new DefaultAuthorityRuleConfigurationBuilder().build().getAuthorityProvider();
