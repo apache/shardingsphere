@@ -152,7 +152,7 @@ class ShardingRouteCacheableCheckerTest {
     
     private SQLStatement parse(final String sql) {
         CacheOption cacheOption = new CacheOption(0, 0);
-        return new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), cacheOption, cacheOption, false).parse(sql, false);
+        return new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), cacheOption, cacheOption).parse(sql, false);
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

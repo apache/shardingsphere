@@ -36,14 +36,13 @@ public final class ShowSQLParserRuleExecutor implements MetaDataRequiredQueryabl
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowSQLParserRuleStatement sqlStatement) {
         SQLParserRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(String.valueOf(ruleConfig.isSqlCommentParseEnabled()),
-                null != ruleConfig.getParseTreeCache() ? ruleConfig.getParseTreeCache().toString() : "",
+        return Collections.singleton(new LocalDataQueryResultRow(null != ruleConfig.getParseTreeCache() ? ruleConfig.getParseTreeCache().toString() : "",
                 null != ruleConfig.getSqlStatementCache() ? ruleConfig.getSqlStatementCache().toString() : ""));
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("sql_comment_parse_enabled", "parse_tree_cache", "sql_statement_cache");
+        return Arrays.asList("parse_tree_cache", "sql_statement_cache");
     }
     
     @Override

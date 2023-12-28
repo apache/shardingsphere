@@ -105,7 +105,7 @@ class PostgreSQLComDescribeExecutorTest {
     private static final String TABLE_NAME = "t_order";
     
     private static final SQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine(
-            TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+            TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
     
     @Mock
     private PortalContext portalContext;
