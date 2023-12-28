@@ -1,53 +1,53 @@
 +++
-title = "Manual"
+title = "User Manual"
 weight = 2
 +++
 
-## CDC 功能介绍
+## Introduction to CDC Function
 
-CDC will only synchronize data, it will not synchronize table structures, and currently does not support the synchronization of DDL statements.
+CDC only synchronizes data, it does not synchronize table structures, and currently does not support the synchronization of DDL statements.
 
-### CDC 协议介绍
+### Introduction to CDC Protocol
 
 The CDC protocol uses Protobuf, and the corresponding Protobuf types are mapped based on the types in Java.
 
 Here, taking openGauss as an example, the mapping relationship between the data types of the CDC protocol and the database types is as follows.
 
-| openGauss type                           | Java data type     | protobuf type corresponding to CDC | Remarks                                                                                                       |
-|------------------------------------------|--------------------|------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| tinyint,smallint,integer                 | Integer            | int32                              |                                                                                                               |
-| bigint                                   | Long               | int64                              |                                                                                                               |
-| numeric                                  | BigDecimal         | string                             |                                                                                                               |
-| real,float4                              | Float              | float                              |                                                                                                               |
-| binary_double,double precision           | Double             | double                             |                                                                                                               |
-| boolean                                  | Boolean            | bool                               |                                                                                                               |
-| char,varchar,text,clob                   | String             | string                             |                                                                                                               |
-| blob,bytea,raw                           | byte[]             | bytes                              |                                                                                                               |
-| date,timestamp,timestamptz,smalldatetime | java.sql.Timestamp | Timestamp                          | The Timestamp type of protobuf only contains seconds and nanoseconds, so it has nothing to do with time zones |
-| time,timetz                              | java.sql.Time      | int64                              | Represents the number of nanoseconds in the day, regardless of time zone                                      |
-| interval,reltime,abstime                 | String             | string                             |                                                                                                               |
-| point,lseg,box,path,polygon,circle       | String             | string                             |                                                                                                               |
-| cidr,inet,macaddr                        | String             | string                             |                                                                                                               |
-| tsvector                                 | String             | string                             |                                                                                                               |
-| tsquery                                  | String             | String                             |                                                                                                               |
-| uuid                                     | String             | string                             |                                                                                                               |
-| json,jsonb                               | String             | string                             |                                                                                                               |
-| hll                                      | String             | string                             |                                                                                                               |
-| int4range,daterange,tsrange,tstzrange    | String             | string                             |                                                                                                               |
-| hash16,hash32                            | String             | string                             |                                                                                                               |
-| bit,bit varying                          | String             | string                             | bit(1) returns Boolean type                                                                                   |
+| openGauss type                           | Java data type     | CDC corresponding protobuf type | Remarks                                                                                                       |
+|------------------------------------------|--------------------|---------------------------------|---------------------------------------------------------------------------------------------------------------|
+| tinyint, smallint, integer               | Integer            | int32                           |                                                                                                               |
+| bigint                                   | Long               | int64                           |                                                                                                               |
+| numeric                                  | BigDecimal         | string                          |                                                                                                               |
+| real, float4                             | Float              | float                           |                                                                                                               |
+| binary_double, double precision          | Double             | double                          |                                                                                                               |
+| boolean                                  | Boolean            | bool                            |                                                                                                               |
+| char, varchar, text, clob                | String             | string                          |                                                                                                               |
+| blob, bytea, raw                         | byte[]             | bytes                           |                                                                                                               |
+| date, timestamp, timestamptz, smalldatetime | java.sql.Timestamp | Timestamp                       | The Timestamp type of protobuf only contains seconds and nanoseconds, so it is irrelevant to the time zone |
+| time, timetz                             | java.sql.Time       | int64                           | Represents the number of nanoseconds of the day, irrelevant to the time zone                                  |
+| interval, reltime, abstime               | String             | string                          |                                                                                                               |
+| point, lseg, box, path, polygon, circle  | String             | string                          |                                                                                                               |
+| cidr, inet, macaddr                      | String             | string                          |                                                                                                               |
+| tsvector                                 | String             | string                          |                                                                                                               |
+| tsquery                                  | String             | String                          |                                                                                                               |
+| uuid                                     | String             | string                          |                                                                                                               |
+| json, jsonb                              | String             | string                          |                                                                                                               |
+| hll                                      | String             | string                          |                                                                                                               |
+| int4range, daterange, tsrange, tstzrange | String             | string                          |                                                                                                               |
+| hash16, hash32                           | String             | string                          |                                                                                                               |
+| bit, bit varying                         | String             | string                          | Returns Boolean type when bit(1)                                                                              |
 
 ## openGauss User Manual
 
-### 环境要求
+### Environmental Requirements
 
-支持的 openGauss 版本：2.x ~ 3.x。
+Supported openGauss versions: 2.x ~ 3.x.
 
-### 权限要求
+### Permission Requirements
 
-1. 调整源端 WAL 配置。
+1. Adjust the source end WAL configuration.
 
-`postgresql.conf` 示例配置：
+Example configuration for `postgresql.conf`:
 ```
 wal_level = logical
 max_wal_senders = 10
@@ -56,29 +56,29 @@ wal_sender_timeout = 0
 max_connections = 600
 ```
 
-详情请参见 [Write Ahead Log](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) 和 [Replication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html)。
+For details, please refer to [Write Ahead Log](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) and [Replication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html).
 
-2. 赋予源端 openGauss 账号 replication 权限。
+2. Grant replication permission to the source end openGauss account.
 
-`pg_hba.conf` 示例配置：
+Example configuration for `pg_hba.conf`:
 
 ```
 host replication repl_acct 0.0.0.0/0 md5
-# 0.0.0.0/0 表示允许任意 IP 地址访问，可以根据实际情况调整成 CDC Server 的 IP 地址
+# 0.0.0.0/0 means allowing access from any IP address, which can be adjusted to the IP address of the CDC Server according to the actual situation
 ```
 
-详情请参见 [Configuring Client Access Authentication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
+For details, please refer to [Configuring Client Access Authentication](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) and [Example: Logic Replication Code](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html).
 
-3. 赋予 openGauss 账号 DDL DML 权限。
+3. Grant DDL DML permissions to the openGauss account.
 
-如果使用非超级管理员账号，要求该账号在用到的数据库上，具备 CREATE 和 CONNECT 的权限。
+If a non-super administrator account is used, it is required that this account has CREATE and CONNECT permissions on the database used.
 
-示例：
+Example:
 ```sql
 GRANT CREATE, CONNECT ON DATABASE source_ds TO cdc_user;
 ```
 
-还需要账号对迁移的表和 schema 具备访问权限，以 test schema 下的 t_order 表为例。
+The account also needs to have access permissions to the table and schema to be migrated, taking the t_order table under the test schema as an example.
 
 ```sql
 \c source_ds
@@ -87,21 +87,21 @@ GRANT USAGE ON SCHEMA test TO GROUP cdc_user;
 GRANT SELECT ON TABLE test.t_order TO cdc_user;
 ```
 
-openGauss 有 OWNER 的概念，如果是数据库，SCHEMA，表的 OWNER，则可以省略对应的授权步骤。
+openGauss has the concept of OWNER. If it is the OWNER of the database, SCHEMA, or table, the corresponding authorization steps can be omitted.
 
-openGauss 不允许普通账户在 public schema 下操作。所以如果迁移的表在 public schema 下，需要额外授权。
+openGauss does not allow ordinary accounts to operate under the public schema. So if the table to be migrated is under the public schema, additional authorization is needed.
 
 ```sql
 GRANT ALL PRIVILEGES TO cdc_user;
 ```
 
-详情请参见 [openGauss GRANT](https://docs.opengauss.org/zh/docs/2.0.1/docs/Developerguide/GRANT.html)
+For details, please refer to [openGauss GRANT](https://docs.opengauss.org/zh/docs/2.0.1/docs/Developerguide/GRANT.html)
 
-### 完整流程示例
+### Complete Process Example
 
-#### 前提条件
+#### Prerequisites
 
-1. 准备好 CDC 源端的库、表、数据。
+1. Prepare the library, table, and data of the CDC source end.
 
 ```sql
 DROP DATABASE IF EXISTS ds_0;
@@ -111,16 +111,16 @@ DROP DATABASE IF EXISTS ds_1;
 CREATE DATABASE ds_1;
 ```
 
-#### 配置 CDC Server
+#### Configure CDC Server
 
-1. 创建逻辑库。
+1. Create a logical library.
 
 ```sql
 CREATE DATABASE sharding_db;
 
 \c sharding_db
 ```
-2. 注册存储单元。
+2. Register storage unit.
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (
@@ -136,7 +136,7 @@ REGISTER STORAGE UNIT ds_0 (
 );
 ```
 
-3. 创建分片规则。
+3. Create sharding rules.
 
 ```sql
 CREATE SHARDING TABLE RULE t_order(
@@ -147,9 +147,9 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
-4. 创建表和初始化数据
+4. Create tables and initialize data
 
-在 proxy 执行建表语句。
+Execute the create table statement in the proxy.
 
 ```sql
 CREATE TABLE t_order (id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
@@ -157,11 +157,11 @@ CREATE TABLE t_order (id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) 
 INSERT INTO t_order (id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'ok3');
 ```
 
-#### 启动 CDC Client
+#### Start CDC Client
 
-目前 CDC Client 只提供了 Java API，用户需要自行实现数据的消费逻辑。
+Currently, the CDC Client only provides a Java API, and users need to implement the data consumption logic themselves.
 
-下面是一个简单的启动 CDC Client 的示例。
+Below is a simple example of starting the CDC Client.
 
 ```java
 import lombok.SneakyThrows;
@@ -177,59 +177,59 @@ import java.util.Collections;
 
 @Slf4j
 public final class Bootstrap {
-    
+
     @SneakyThrows(InterruptedException.class)
     public static void main(final String[] args) {
         String address = "127.0.0.1";
-        // 构造 CDCClient，传入 CDCClientConfiguration，CDCClientConfiguration 中包含了 CDC Server 的地址和端口，以及超时时间
+        // Construct CDCClient, pass in CDCClientConfiguration, CDCClientConfiguration contains the address and port of the CDC Server, as well as the timeout time
         try (CDCClient cdcClient = new CDCClient(new CDCClientConfiguration(address, 33071, 10000))) {
-            // 先调用 connect 连接到 CDC Server，需要传入 1. 数据的消费处理逻辑 2. 消费时候的异常处理逻辑 3. 服务端错误的异常处理逻辑
+            // First call connect to the CDC Server, you need to pass in 1. Data consumption processing logic 2. Exception handling logic during consumption 3. Server error exception handling logic
             cdcClient.connect(records -> log.info("records: {}", records), new RetryStreamingExceptionHandler(cdcClient, 5, 5000),
                     (ctx, result) -> log.error("Server error: {}", result.getErrorMessage()));
             cdcClient.login(new CDCLoginParameter("root", "root"));
-            // 开始 CDC 数据同步，返回的 streamingId 是这次 CDC 任务的唯一标识，CDC Server 生成唯一标识的依据是 订阅的数据库名称 + 订阅的表 + 是否是全量同步
+            // Start CDC data synchronization, the returned streamingId is the unique identifier of this CDC task, the basis for the CDC Server to generate a unique identifier is the name of the subscribed database + the subscribed table + whether it is full synchronization
             String streamingId = cdcClient.startStreaming(new StartStreamingParameter("sharding_db", Collections.singleton(SchemaTable.newBuilder().setTable("t_order").build()), true));
             log.info("Streaming id={}", streamingId);
-            // 防止 main 主线程退出
+            // Prevent the main thread from exiting
             cdcClient.await();
         }
     }
 }
 ```
 
-主要有4个步骤
-1. 构造 CDCClient，传入 CDCClientConfiguration
-2. 调用 CDCClient.connect，这一步是和 CDC Server 建立连接
-3. 调用 CDCClient.login，使用 server.yaml 中配置好的用户名和密码登录
-4. 调用 CDCClient.startStreaming，开启订阅，需要保证订阅的库和表在 ShardingSphere-Proxy 存在，否则会报错。
+There are mainly 4 steps
+1. Construct CDCClient, pass in CDCClientConfiguration
+2. Call CDCClient.connect(), this step is to establish a connection with the CDC Server
+3. Call CDCClient.login(), log in with the username and password configured in server.yaml
+4. Call CDCClient.startStreaming(), start subscribing, you need to ensure that the subscribed library and table exist in ShardingSphere-Proxy, otherwise an error will be reported.
 
-> CDCClient.await 是阻塞主线程，非必需的步骤，用其他方式也可以，只要保证 CDC 线程一直在工作就行。
+> CDCClient.await is to block the main thread, it is not a necessary step, other methods can also be used, as long as the CDC thread is always working.
 
-如果需要更复杂数据消费的实现，例如写入到数据库，可以参考 [DataSourceRecordConsumer](https://github.com/apache/shardingsphere/blob/master/test/e2e/operation/pipeline/src/test/java/org/apache/shardingsphere/test/e2e/data/pipeline/cases/cdc/DataSourceRecordConsumer.java)
+If you need more complex data consumption implementation, such as writing to the database, you can refer to [DataSourceRecordConsumer](https://github.com/apache/shardingsphere/blob/master/test/e2e/operation/pipeline/src/test/java/org/apache/shardingsphere/test/e2e/data/pipeline/cases/cdc/DataSourceRecordConsumer.java)
 
-#### 查看 CDC 任务运行情况
+#### View the Running Status of the CDC Task
 
-CDC 任务的启动和停止目前只能通过 CDC Client 控制，可以通过在 proxy 中执行 DistSQL 查看 CDC 任务状态
+The start and stop of the CDC task can only be controlled by the CDC Client. You can view the status of the CDC task by executing DistSQL in the proxy
 
-1. 查看 CDC 任务列表
+1. View the CDC task list
 
 SHOW STREAMING LIST;
 
-运行结果
+Running result
 
 ```
 sharding_db=> SHOW STREAMING LIST;
-                     id                     |  database   | tables  | job_item_count | active |     create_time     | stop_time 
+                     id                     |  database   | tables  | job_item_count | active |     create_time     | stop_time
 --------------------------------------------+-------------+---------+----------------+--------+---------------------+-----------
- j0302p0000702a83116fcee83f70419ca5e2993791 | sharding_db | t_order | 1              | true   | 2023-10-27 22:01:27 | 
+ j0302p0000702a83116fcee83f70419ca5e2993791 | sharding_db | t_order | 1              | true   | 2023-10-27 22:01:27 |
 (1 row)
 ```
 
-2. 查看 CDC 任务详情
+2. View the details of the CDC task
 
 SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
 
-运行结果
+Running result
 
 ```
 sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
@@ -240,22 +240,30 @@ sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
 (2 rows)
 ```
 
-3. 删除 CDC 任务
+3. Drop CDC task
 
 DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;
 
-只有当 CDC 任务没有订阅的时候才可以删除，此时也会删除 openGauss 物理库上的 replication slots
+The CDC task can only be deleted when there are no subscriptions. At this time, the replication slots on the openGauss physical library will also be deleted.
 
 ```
 sharding_db=> DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;
 SUCCESS
 ```
 
-# 注意事项
+# Precautions
 
-## 关于数据增量推送的说明
+## Explanation of incremental data push
 
-1. CDC 增量推送目前是按照事务维度的，物理库的事务不会被拆分，所以如果一个事务中有多个表的数据变更，那么这些数据变更会被一起推送。
-如果要支持 XA 事务（目前只支持 openGauss），则 openGauss 和 Proxy 都需要 GLT 模块。
-2. 在存在超大事务的情况下，目前的处理逻辑可能会导致 CDC 所在的进程 OOM，后续可能会强制截断。
-3. 满足推送的条件是满足了一定大小的数据量或者到了一定的时间间隔（目前是 300ms），在处理 XA 事务时，收到的多个分库增量事件超过了 300ms，可能会导致 XA 事务被拆开推送。
+1. The CDC incremental push is currently transactional, and the transactions of the physical library will not be split. Therefore, if there are data changes in multiple tables in a transaction, these data changes will be pushed together.
+If you want to support XA transactions (currently only supports openGauss), both openGauss and Proxy need the GLT module.
+2. The conditions for push are met when a certain amount of data is met or a certain time interval is reached (currently 300ms). When processing XA transactions, if the received multiple sub-library incremental events exceed 300ms, it may cause the XA transaction to be split and pushed.
+
+## Handling of large transactions
+
+Currently, large transactions are fully parsed, which may cause the CDC Server process to OOM. In the future, forced truncation may be considered.
+
+## Recommended configuration
+
+1. If there is a requirement for flow control, it is recommended to configure only one side for reading and writing, and the other side will automatically be affected by the flow control.
+2. The configuration of the CDC task needs to be adjusted according to the actual situation, and it is not that the more threads, the better. For example, when the heap memory is relatively small, you need to reduce the value of the blocking queue to avoid insufficient heap memory.

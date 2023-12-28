@@ -3,6 +3,6 @@ title = "CDC"
 weight = 9
 +++
 
-## 简介
+CDC (Change Data Capture) captures incremental data changes. CDC can monitor data changes in the storage nodes of ShardingSphere-Proxy, capture data operation events, filter and extract useful information, and finally send these changed data to a specified target.
 
-Users can synchronize data through ShardingSphere's CDC feature, which can also be used for ETL and currently supports openGauss, MySQL and PostgreSQL.
+CDC can be used for data synchronization, data backup and recovery, etc. Under normal circumstances, it currently supports openGauss, MySQL, and PostgreSQL.
