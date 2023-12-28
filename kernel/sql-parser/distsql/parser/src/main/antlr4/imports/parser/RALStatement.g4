@@ -39,10 +39,6 @@ sqlStatementCacheDefinition
     : SQL_STATEMENT_CACHE LP_ cacheOption RP_
     ;
 
-sqlCommentParseEnabled
-    : TRUE | FALSE
-    ;
-
 cacheOption
     : (INITIAL_CAPACITY EQ_ initialCapacity)? (COMMA_? MAXIMUM_SIZE EQ_ maximumSize)?
     ;
