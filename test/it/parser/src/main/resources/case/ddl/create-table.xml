@@ -2322,4 +2322,19 @@
             <column name="status" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_relational_and_physical_properties">
+        <table name="TEST_BASIC2" start-delimiter="&quot;" end-delimiter="&quot;" start-index="13" stop-index="36">
+            <owner name="C##TPCC2" start-delimiter="&quot;" end-delimiter="&quot;" start-index="13" stop-index="22" />
+        </table>
+        <column-definition type="NUMBER" start-index="43" stop-index="59">
+            <column name="BS_COL01"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="66" stop-index="82">
+            <column name="BS_COL02"/>
+        </column-definition>
+        <constraint-definition start-index="89" stop-index="406">
+            <primary-key-column name="BS_COL01" start-delimiter="&quot;" end-delimiter="&quot;" start-index="102" stop-index="111" />
+        </constraint-definition>
+    </create-table>
 </sql-parser-test-cases>
