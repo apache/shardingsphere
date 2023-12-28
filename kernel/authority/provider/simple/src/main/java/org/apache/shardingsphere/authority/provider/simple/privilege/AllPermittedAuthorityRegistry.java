@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.database.registry;
+package org.apache.shardingsphere.authority.provider.simple.privilege;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
- * User privilege map authority registry.
+ * All permitted authority registry.
  */
-@RequiredArgsConstructor
-public final class UserPrivilegeMapAuthorityRegistry implements AuthorityRegistry {
+public final class AllPermittedAuthorityRegistry implements AuthorityRegistry {
     
-    private final Map<ShardingSphereUser, ? extends ShardingSpherePrivileges> userPrivilegeMap;
+    private static final ShardingSpherePrivileges INSTANCE = new AllPermittedPrivileges();
     
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
+        return Optional.of(INSTANCE);
     }
 }

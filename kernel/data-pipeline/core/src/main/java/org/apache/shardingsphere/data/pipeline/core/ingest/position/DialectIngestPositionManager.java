@@ -54,6 +54,6 @@ public interface DialectIngestPositionManager extends DatabaseTypedSPI {
      * @param slotNameSuffix slot name suffix
      * @throws SQLException SQL exception
      */
-    default void destroy(DataSource dataSource, final String slotNameSuffix) throws SQLException {
+    default void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
     }
 }

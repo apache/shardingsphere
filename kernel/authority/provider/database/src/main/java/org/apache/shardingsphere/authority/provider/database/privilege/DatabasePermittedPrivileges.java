@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple.registry;
+package org.apache.shardingsphere.authority.provider.database.privilege;
 
-import org.apache.shardingsphere.authority.model.AuthorityRegistry;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.simple.privilege.AllPermittedPrivileges;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
- * All permitted authority registry.
+ * Database permitted privileges.
  */
-public final class AllPermittedAuthorityRegistry implements AuthorityRegistry {
+@RequiredArgsConstructor
+public final class DatabasePermittedPrivileges implements ShardingSpherePrivileges {
     
-    private static final ShardingSpherePrivileges INSTANCE = new AllPermittedPrivileges();
+    private static final String KEY_SUPER = "*";
+    
+    private final Collection<String> databases;
     
     @Override
-    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return Optional.of(INSTANCE);
+    public boolean hasPrivileges(final String database) {
+        return databases.contains(KEY_SUPER) || databases.contains(database);
+    }
+    
+    @Override
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return true;
     }
 }
