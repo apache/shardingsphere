@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.it;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Getter;
@@ -32,5 +33,6 @@ import java.util.LinkedList;
 public final class TestCases {
     
     @JacksonXmlProperty(localName = "test-case")
+    @JacksonXmlElementWrapper(useWrapping = false)
     private final Collection<TestCase> testCases = new LinkedList<>();
 }
