@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -38,7 +37,7 @@ public final class AuthorityRuleConfiguration implements GlobalRuleConfiguration
     
     private final AlgorithmConfiguration authorityProvider;
     
-    private final String defaultAuthenticator;
+    private final Map<String, AlgorithmConfiguration> authenticators;
     
-    private final Map<String, AlgorithmConfiguration> authenticators = new LinkedHashMap<>();
+    private final String defaultAuthenticator;
 }

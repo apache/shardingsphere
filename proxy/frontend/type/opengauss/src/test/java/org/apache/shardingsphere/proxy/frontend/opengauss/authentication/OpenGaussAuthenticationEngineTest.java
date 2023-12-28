@@ -81,7 +81,8 @@ class OpenGaussAuthenticationEngineTest {
     }
     
     private RuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singleton(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
+                Collections.singleton(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null);
         return new RuleMetaData(Collections.singleton(new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class))));
     }
     
