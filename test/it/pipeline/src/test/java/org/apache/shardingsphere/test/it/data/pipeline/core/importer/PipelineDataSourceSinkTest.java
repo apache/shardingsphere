@@ -19,14 +19,14 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.type.PipelineDataSourceSink;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
@@ -50,7 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -83,7 +82,7 @@ class PipelineDataSourceSinkTest {
     @BeforeEach
     void setUp() throws SQLException {
         PipelineSink pipelineSink = new PipelineDataSourceSink(mockImporterConfiguration(), mockPipelineDataSourceManager());
-        importer = new SingleChannelConsumerImporter(channel, 100, 1, TimeUnit.SECONDS, pipelineSink, new FixtureTransmissionJobItemContext());
+        importer = new SingleChannelConsumerImporter(channel, 100, 1000L, pipelineSink, new FixtureTransmissionJobItemContext());
     }
     
     private ImporterConfiguration mockImporterConfiguration() {
@@ -101,7 +100,7 @@ class PipelineDataSourceSinkTest {
     void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord(PipelineSQLOperationType.INSERT);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetch(anyInt(), anyLong(), any())).thenReturn(mockRecords(insertRecord));
+        when(channel.fetch(anyInt(), anyLong())).thenReturn(mockRecords(insertRecord));
         importer.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
@@ -113,7 +112,7 @@ class PipelineDataSourceSinkTest {
     void assertDeleteDataRecord() throws SQLException {
         DataRecord deleteRecord = getDataRecord(PipelineSQLOperationType.DELETE);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetch(anyInt(), anyLong(), any())).thenReturn(mockRecords(deleteRecord));
+        when(channel.fetch(anyInt(), anyLong())).thenReturn(mockRecords(deleteRecord));
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1});
         importer.run();
         verify(preparedStatement).setObject(1, 1);
@@ -125,7 +124,7 @@ class PipelineDataSourceSinkTest {
     void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord(PipelineSQLOperationType.UPDATE);
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetch(anyInt(), anyLong(), any())).thenReturn(mockRecords(updateRecord));
+        when(channel.fetch(anyInt(), anyLong())).thenReturn(mockRecords(updateRecord));
         importer.run();
         verify(preparedStatement).setObject(1, 20);
         verify(preparedStatement).setObject(2, PipelineSQLOperationType.UPDATE);
@@ -138,7 +137,7 @@ class PipelineDataSourceSinkTest {
     void assertUpdatePrimaryKeyDataRecord() throws SQLException {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetch(anyInt(), anyLong(), any())).thenReturn(mockRecords(updateRecord));
+        when(channel.fetch(anyInt(), anyLong())).thenReturn(mockRecords(updateRecord));
         importer.run();
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);

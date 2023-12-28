@@ -46,7 +46,7 @@ public interface QueryableRALExecutor<T extends QueryableRALStatement> extends T
      * @param sqlStatement SQL statement
      * @return query result rows
      */
-    default Collection<LocalDataQueryResultRow> getRows(T sqlStatement) {
+    default Collection<LocalDataQueryResultRow> getRows(final T sqlStatement) {
         return Collections.emptyList();
     }
     

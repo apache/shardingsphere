@@ -76,7 +76,6 @@ rules:
   defaultShadowAlgorithmName: sql-hint-algorithm
 
 sqlParser:
-  sqlCommentParseEnabled: true
   sqlStatementCache:
     initialCapacity: 128
     maximumSize: 1024

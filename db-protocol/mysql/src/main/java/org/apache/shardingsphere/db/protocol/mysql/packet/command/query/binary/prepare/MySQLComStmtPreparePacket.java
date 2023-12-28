@@ -37,11 +37,11 @@ public final class MySQLComStmtPreparePacket extends MySQLCommandPacket implemen
     @Getter
     private final HintValueContext hintValueContext;
     
-    public MySQLComStmtPreparePacket(final MySQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
+    public MySQLComStmtPreparePacket(final MySQLPacketPayload payload) {
         super(MySQLCommandPacketType.COM_STMT_PREPARE);
         String originSQL = payload.readStringEOF();
-        hintValueContext = sqlCommentParseEnabled ? new HintValueContext() : SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
-        sql = sqlCommentParseEnabled ? originSQL : SQLHintUtils.removeHint(originSQL);
+        hintValueContext = SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        sql = SQLHintUtils.removeHint(originSQL);
     }
     
     @Override

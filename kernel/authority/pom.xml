@@ -30,6 +30,7 @@
     <modules>
         <module>api</module>
         <module>core</module>
+        <module>provider</module>
         <module>distsql</module>
     </modules>
 </project>

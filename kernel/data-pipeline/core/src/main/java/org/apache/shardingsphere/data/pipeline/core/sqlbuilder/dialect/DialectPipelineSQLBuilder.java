@@ -36,7 +36,7 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * @param schemaName schema name
      * @return built SQL
      */
-    default Optional<String> buildCreateSchemaSQL(String schemaName) {
+    default Optional<String> buildCreateSchemaSQL(final String schemaName) {
         return Optional.empty();
     }
     
@@ -46,7 +46,7 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * @param dataRecord data record
      * @return built SQL clause
      */
-    default Optional<String> buildInsertOnDuplicateClause(DataRecord dataRecord) {
+    default Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
         return Optional.empty();
     }
     
@@ -64,7 +64,7 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * @param qualifiedTableName qualified table name
      * @return built SQL
      */
-    default Optional<String> buildEstimatedCountSQL(String qualifiedTableName) {
+    default Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
         return Optional.empty();
     }
     
@@ -75,7 +75,7 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
      * @param columnName column name
      * @return built SQL
      */
-    default Optional<String> buildCRC32SQL(String qualifiedTableName, final String columnName) {
+    default Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
         return Optional.empty();
     }
     

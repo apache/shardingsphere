@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -80,8 +79,8 @@ public final class MultiplexPipelineChannel implements PipelineChannel {
     }
     
     @Override
-    public List<Record> fetch(final int batchSize, final long timeout, final TimeUnit timeUnit) {
-        return findChannel().fetch(batchSize, timeout, timeUnit);
+    public List<Record> fetch(final int batchSize, final long timeoutMills) {
+        return findChannel().fetch(batchSize, timeoutMills);
     }
     
     @Override

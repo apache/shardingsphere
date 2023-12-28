@@ -853,6 +853,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
+        if (null != ctx.top()) {
+            projections.add((ProjectionSegment) visit(ctx.top()));
+        }
         for (UnqualifiedShorthandContext each : ctx.unqualifiedShorthand()) {
             projections.add(new ShorthandProjectionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex()));
         }
@@ -1135,10 +1138,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return result;
         }
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
-        if (null != ctx.top()) {
-            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
-            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber, null == alias ? null : alias.getIdentifier().getValue());
-        }
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
             ColumnProjectionSegment result = new ColumnProjectionSegment(column);
@@ -1154,11 +1153,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         int stopIndex = ctx.topNum().getStop().getStopIndex();
         ASTNode topNum = visit(ctx.topNum());
         if (topNum instanceof NumberLiteralValue) {
-            return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
+            NumberLiteralRowNumberValueSegment rowNumberSegment = new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
+            return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), rowNumberSegment, null != ctx.alias() ? ctx.alias().getText() : null);
         }
-        ParameterMarkerSegment result = new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
-        parameterMarkerSegments.add(result);
-        return result;
+        ParameterMarkerSegment parameterSegment = new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
+        parameterMarkerSegments.add(parameterSegment);
+        return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (RowNumberValueSegment) parameterSegment, null != ctx.alias() ? ctx.alias().getText() : null);
     }
     
     @Override

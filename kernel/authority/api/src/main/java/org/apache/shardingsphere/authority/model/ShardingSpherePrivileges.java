@@ -39,13 +39,4 @@ public interface ShardingSpherePrivileges {
      * @return has privileges or not
      */
     boolean hasPrivileges(Collection<PrivilegeType> privileges);
-    
-    /**
-     * Has privileges.
-     *
-     * @param accessSubject access subject
-     * @param privileges privileges
-     * @return has privileges or not
-     */
-    boolean hasPrivileges(AccessSubject accessSubject, Collection<PrivilegeType> privileges);
 }

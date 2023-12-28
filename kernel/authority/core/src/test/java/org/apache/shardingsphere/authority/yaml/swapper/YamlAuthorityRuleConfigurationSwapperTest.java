@@ -38,7 +38,7 @@ class YamlAuthorityRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("type", new Properties()), null);
+        AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("type", new Properties()), Collections.emptyMap(), null);
         YamlAuthorityRuleConfiguration actual = swapper.swapToYamlConfiguration(authorityRuleConfig);
         assertTrue(actual.getUsers().isEmpty());
         assertNotNull(actual.getPrivilege());

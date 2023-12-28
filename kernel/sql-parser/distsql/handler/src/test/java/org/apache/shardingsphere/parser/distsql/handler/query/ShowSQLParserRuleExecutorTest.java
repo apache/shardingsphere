@@ -49,25 +49,23 @@ class ShowSQLParserRuleExecutorTest {
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("true"));
-        assertThat(row.getCell(2), is("initialCapacity: 128, maximumSize: 1024"));
-        assertThat(row.getCell(3), is("initialCapacity: 2000, maximumSize: 65535"));
+        assertThat(row.getCell(1), is("initialCapacity: 128, maximumSize: 1024"));
+        assertThat(row.getCell(2), is("initialCapacity: 2000, maximumSize: 65535"));
     }
     
     @Test
     void assertGetColumnNames() {
         ShowSQLParserRuleExecutor executor = new ShowSQLParserRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
+        assertThat(columns.size(), is(2));
         Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("sql_comment_parse_enabled"));
         assertThat(iterator.next(), is("parse_tree_cache"));
         assertThat(iterator.next(), is("sql_statement_cache"));
     }
     
     private ShardingSphereMetaData mockMetaData() {
         SQLParserRule sqlParserRule = mock(SQLParserRule.class);
-        when(sqlParserRule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(true, new CacheOption(128, 1024), new CacheOption(2000, 65535)));
+        when(sqlParserRule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(new CacheOption(128, 1024), new CacheOption(2000, 65535)));
         return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class),
                 new RuleMetaData(Collections.singleton(sqlParserRule)), new ConfigurationProperties(new Properties()));
     }

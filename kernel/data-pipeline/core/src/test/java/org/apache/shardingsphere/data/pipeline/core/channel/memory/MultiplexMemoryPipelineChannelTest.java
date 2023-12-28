@@ -100,7 +100,7 @@ class MultiplexMemoryPipelineChannelTest {
     private void fetch(final MultiplexPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
         int maxLoopCount = 10;
         for (int j = 1; j <= maxLoopCount; j++) {
-            List<Record> records = memoryChannel.fetch(100, 1, TimeUnit.SECONDS);
+            List<Record> records = memoryChannel.fetch(100, 1000L);
             memoryChannel.ack(records);
             records.forEach(each -> countDownLatch.countDown());
             if (!records.isEmpty() && records.get(records.size() - 1) instanceof FinishedRecord) {

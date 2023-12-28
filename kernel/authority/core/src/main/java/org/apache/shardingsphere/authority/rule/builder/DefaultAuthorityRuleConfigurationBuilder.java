@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
@@ -34,7 +35,7 @@ public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultGl
     
     @Override
     public AuthorityRuleConfiguration build() {
-        return new AuthorityRuleConfiguration(createDefaultUsers(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
+        return new AuthorityRuleConfiguration(createDefaultUsers(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), new LinkedHashMap<>(), null);
     }
     
     private Collection<ShardingSphereUser> createDefaultUsers() {

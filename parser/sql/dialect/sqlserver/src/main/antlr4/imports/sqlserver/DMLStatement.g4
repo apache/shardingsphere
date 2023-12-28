@@ -89,16 +89,16 @@ duplicateSpecification
     ;
 
 projections
-    : (unqualifiedShorthand | projection) (COMMA_ (unqualifiedShorthand | projection))*
+    : (unqualifiedShorthand | projection | top (unqualifiedShorthand | projection)?) (COMMA_ (unqualifiedShorthand | projection))*
     ;
 
 projection
-    : (alias EQ_)? (top | columnName | expr) | qualifiedShorthand
-    | (top | columnName | expr) (AS? alias)? | qualifiedShorthand
+    : (alias EQ_)? (columnName | expr) | qualifiedShorthand
+    | (columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
 top
-    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_)?
+    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ (AS? alias)?)?
     ;
 
 topNum

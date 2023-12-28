@@ -38,7 +38,7 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     @Test
     void assertFindColumnsOfParameterMarkersForInsertStatement() {
         String sql = "insert into user (id, name, age) values (1, ?, ?), (?, 'bar', ?)";
-        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new CacheOption(0, 0), new CacheOption(0, 0), false).parse(sql, false);
+        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new CacheOption(0, 0), new CacheOption(0, 0)).parse(sql, false);
         ShardingSphereSchema schema = prepareSchema();
         List<ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatement, schema);
         assertThat(actual.get(0), is(schema.getTable("user").getColumn("name")));

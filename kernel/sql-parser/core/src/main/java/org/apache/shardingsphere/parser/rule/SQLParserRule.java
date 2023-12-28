@@ -34,8 +34,6 @@ public final class SQLParserRule implements GlobalRule {
     
     private final SQLParserRuleConfiguration configuration;
     
-    private final boolean sqlCommentParseEnabled;
-    
     private final CacheOption sqlStatementCache;
     
     private final CacheOption parseTreeCache;
@@ -44,7 +42,6 @@ public final class SQLParserRule implements GlobalRule {
     
     public SQLParserRule(final SQLParserRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        sqlCommentParseEnabled = ruleConfig.isSqlCommentParseEnabled();
         sqlStatementCache = ruleConfig.getSqlStatementCache();
         parseTreeCache = ruleConfig.getParseTreeCache();
         engineType = "Standard";
@@ -58,7 +55,7 @@ public final class SQLParserRule implements GlobalRule {
      */
     public SQLParserEngine getSQLParserEngine(final DatabaseType databaseType) {
         return "Standard".equals(engineType)
-                ? new ShardingSphereSQLParserEngine(databaseType.getTrunkDatabaseType().orElse(databaseType), sqlStatementCache, parseTreeCache, sqlCommentParseEnabled)
+                ? new ShardingSphereSQLParserEngine(databaseType.getTrunkDatabaseType().orElse(databaseType), sqlStatementCache, parseTreeCache)
                 : new SimpleSQLParserEngine();
     }
 }

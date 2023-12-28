@@ -22,10 +22,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.channel.MultiplexPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -66,24 +68,25 @@ public final class PipelineTaskUtils {
     /**
      * Create pipeline channel for inventory task.
      *
-     * @param channelCreator pipeline channel creator
+     * @param channelConfig pipeline channel configuration
      * @param importerBatchSize importer batch size
      * @param position ingest position
      * @return created pipeline channel
      */
-    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator channelCreator, final int importerBatchSize, final AtomicReference<IngestPosition> position) {
-        return channelCreator.newInstance(importerBatchSize, new InventoryTaskAckCallback(position));
+    public static PipelineChannel createInventoryChannel(final AlgorithmConfiguration channelConfig, final int importerBatchSize, final AtomicReference<IngestPosition> position) {
+        return TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps()).newInstance(importerBatchSize, new InventoryTaskAckCallback(position));
     }
     
     /**
      * Create pipeline channel for incremental task.
      *
      * @param concurrency output concurrency
-     * @param channelCreator pipeline channel creator
+     * @param channelConfig pipeline channel configuration
      * @param progress incremental task progress
      * @return created pipeline channel
      */
-    public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator channelCreator, final IncrementalTaskProgress progress) {
+    public static PipelineChannel createIncrementalChannel(final int concurrency, final AlgorithmConfiguration channelConfig, final IncrementalTaskProgress progress) {
+        PipelineChannelCreator channelCreator = TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps());
         return 1 == concurrency
                 ? channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress))
                 : new MultiplexPipelineChannel(concurrency, channelCreator, 5, new IncrementalTaskAckCallback(progress));

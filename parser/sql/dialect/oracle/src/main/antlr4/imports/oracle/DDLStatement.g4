@@ -20,8 +20,7 @@ grammar DDLStatement;
 import DMLStatement, DCLStatement;
 
 createView
-    : CREATE (OR REPLACE)? (NO? FORCE)? (EDITIONING | EDITIONABLE EDITIONING? | NONEDITIONABLE)? VIEW viewName
-    ( SHARING EQ_ (METADATA | DATA | EXTENDED DATA | NONE))?
+    : CREATE (OR REPLACE)? (NO? FORCE)? (EDITIONING | EDITIONABLE EDITIONING? | NONEDITIONABLE)? VIEW viewName createSharingClause
     ( LP_ ((alias (VISIBLE | INVISIBLE)? inlineConstraint* | outOfLineConstraint) (COMMA_ (alias (VISIBLE | INVISIBLE)? inlineConstraint* | outOfLineConstraint))*) RP_
     | objectViewClause | xmlTypeViewClause)?
     ( DEFAULT COLLATION collationName)? (BEQUEATH (CURRENT_USER | DEFINER))? AS select subqueryRestrictionClause?
@@ -143,7 +142,7 @@ dropTrigger
     ;
  
 dropIndex
-    : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
+    : DROP INDEX indexName ONLINE? FORCE? invalidationSpecification?
     ;
 
 dropView
@@ -351,7 +350,7 @@ exceptionsClause
     ;
 
 usingIndexClause
-    : USING INDEX (indexName | createIndexClause)?
+    : USING INDEX (indexName | createIndexClause | indexAttributes)?
     ;
 
 createIndexClause
@@ -423,19 +422,19 @@ localPartitionedIndex
     ;
 
 onRangePartitionedTable
-    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)?) RP_
+    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification?) RP_
     ;
 
 onListPartitionedTable
-    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)?) RP_
+    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification?) RP_
     ;
 
 onHashPartitionedTable
-    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_ | LP_ PARTITION partitionName? (TABLESPACE tablespaceName)? indexCompression? (USABLE | UNUSABLE)? RP_)
+    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_ | LP_ PARTITION partitionName? (TABLESPACE tablespaceName)? indexCompression? usableSpecification? RP_)
     ;
 
 onCompPartitionedTable
-    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_)? LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)? indexSubpartitionClause RP_
+    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_)? LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification? indexSubpartitionClause RP_
     ;
 
 domainIndexClause
@@ -570,7 +569,7 @@ alterDefinitionClause
     | columnClauses
     | moveTableClause
     | constraintClauses
-    | alterTablePartitioning ((DEFERRED| IMMEDIATE) INVALIDATION)?
+    | alterTablePartitioning invalidationSpecification?
     | alterExternalTable)?
     ;
 
@@ -751,12 +750,12 @@ alterIndexInformationClause
     | physicalAttributesClause
     | loggingClause
     | partialIndexClause)+
-    | rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
+    | rebuildClause invalidationSpecification?
     | parallelClause
     | PARAMETERS LP_ odciParameters RP_
     | COMPILE
     | (ENABLE | DISABLE)
-    | UNUSABLE ONLINE? ((DEFERRED | IMMEDIATE) | INVALIDATION)?
+    | UNUSABLE ONLINE? invalidationSpecification?
     | (VISIBLE | INVISIBLE)
     | renameIndexClause
     | COALESCE CLEANUP? ONLY? parallelClause?
@@ -811,7 +810,7 @@ splitIndexPartition
     ;
 
 indexPartitionDescription
-    : PARTITION (partitionName ((segmentAttributesClause | indexCompression)+ | PARAMETERS LP_ odciParameters RP_)? (USABLE | UNUSABLE)?)?
+    : PARTITION (partitionName ((segmentAttributesClause | indexCompression)+ | PARAMETERS LP_ odciParameters RP_)? usableSpecification?)?
     ;
 
 coalesceIndexPartition
@@ -905,11 +904,12 @@ deferredSegmentCreation
 segmentAttributesClause
     : ( physicalAttributesClause
     | (TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName)
+    | tableCompression
     | loggingClause)+
     ;
 
 physicalAttributesClause
-    : (PCTFREE INTEGER_ | PCTUSED INTEGER_ | INITRANS INTEGER_ | storageClause)+
+    : (PCTFREE INTEGER_ | PCTUSED INTEGER_ | INITRANS INTEGER_ | MAXTRANS INTEGER_ | COMPUTE STATISTICS | storageClause)+
     ;
 
 loggingClause

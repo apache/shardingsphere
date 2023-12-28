@@ -29,8 +29,6 @@ import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 @Getter
 public final class AlterSQLParserRuleStatement extends UpdatableGlobalRuleRALStatement {
     
-    private final Boolean sqlCommentParseEnabled;
-    
     private final CacheOptionSegment parseTreeCache;
     
     private final CacheOptionSegment sqlStatementCache;
