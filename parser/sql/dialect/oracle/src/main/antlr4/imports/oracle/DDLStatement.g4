@@ -350,7 +350,7 @@ exceptionsClause
     ;
 
 usingIndexClause
-    : USING INDEX (indexName | createIndexClause)?
+    : USING INDEX (indexName | createIndexClause | indexAttributes)?
     ;
 
 createIndexClause
@@ -904,11 +904,12 @@ deferredSegmentCreation
 segmentAttributesClause
     : ( physicalAttributesClause
     | (TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName)
+    | tableCompression
     | loggingClause)+
     ;
 
 physicalAttributesClause
-    : (PCTFREE INTEGER_ | PCTUSED INTEGER_ | INITRANS INTEGER_ | storageClause)+
+    : (PCTFREE INTEGER_ | PCTUSED INTEGER_ | INITRANS INTEGER_ | MAXTRANS INTEGER_ | COMPUTE STATISTICS | storageClause)+
     ;
 
 loggingClause
