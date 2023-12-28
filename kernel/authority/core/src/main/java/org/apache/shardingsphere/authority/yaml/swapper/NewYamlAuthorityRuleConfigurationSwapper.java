@@ -32,7 +32,10 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlGlobalRul
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * TODO Rename YamlAuthorityRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -52,9 +55,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGl
         result.setPrivilege(algorithmSwapper.swapToYamlConfiguration(data.getAuthorityProvider()));
         result.setUsers(YamlUsersConfigurationConverter.convertToYamlUserConfiguration(data.getUsers()));
         result.setDefaultAuthenticator(data.getDefaultAuthenticator());
-        if (!data.getAuthenticators().isEmpty()) {
-            data.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
-        }
+        data.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         return result;
     }
     
@@ -76,9 +77,9 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGl
         if (null == provider) {
             provider = new DefaultAuthorityRuleConfigurationBuilder().build().getAuthorityProvider();
         }
-        AuthorityRuleConfiguration result = new AuthorityRuleConfiguration(users, provider, yamlConfig.getDefaultAuthenticator());
-        yamlConfig.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToObject(value)));
-        return result;
+        Map<String, AlgorithmConfiguration> authenticators = yamlConfig.getAuthenticators().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> algorithmSwapper.swapToObject(entry.getValue())));
+        return new AuthorityRuleConfiguration(users, provider, authenticators, yamlConfig.getDefaultAuthenticator());
     }
     
     @Override

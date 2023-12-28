@@ -75,6 +75,6 @@ class ShowAuthorityRuleExecutorTest {
     
     private AuthorityRuleConfiguration createAuthorityRuleConfiguration() {
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
-        return new AuthorityRuleConfiguration(Collections.singleton(root), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
+        return new AuthorityRuleConfiguration(Collections.singleton(root), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null);
     }
 }

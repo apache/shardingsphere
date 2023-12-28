@@ -38,7 +38,7 @@ class NewYamlAuthorityRuleConfigurationSwapperTest {
     @Test
     void assertSwapToDataNodes() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
-        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null));
+        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null));
         assertThat(actual.iterator().next().getKey(), is("authority"));
     }
 }
