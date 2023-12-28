@@ -126,7 +126,7 @@ public final class MySQLClient {
      */
     public synchronized boolean execute(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, true);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         return waitExpectedResponse(MySQLOKPacket.class).isPresent();
@@ -141,7 +141,7 @@ public final class MySQLClient {
      */
     public synchronized int executeUpdate(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         Optional<MySQLOKPacket> packet = waitExpectedResponse(MySQLOKPacket.class);
@@ -160,7 +160,7 @@ public final class MySQLClient {
      */
     public synchronized InternalResultSet executeQuery(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         Optional<InternalResultSet> result = waitExpectedResponse(InternalResultSet.class);

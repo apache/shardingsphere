@@ -32,8 +32,8 @@ public final class SQLStatementCacheLoader implements CacheLoader<String, SQLSta
     
     private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
-    public SQLStatementCacheLoader(final DatabaseType databaseType, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption, isParseComment);
+    public SQLStatementCacheLoader(final DatabaseType databaseType, final CacheOption parseTreeCacheOption) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption);
     }
     
     @ParametersAreNonnullByDefault
