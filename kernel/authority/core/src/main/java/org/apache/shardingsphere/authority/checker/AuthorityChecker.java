@@ -22,12 +22,11 @@ import org.apache.shardingsphere.authority.exception.UnauthorizedOperationExcept
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -64,7 +63,6 @@ public final class AuthorityChecker {
         ShardingSpherePreconditions.checkState(null == databaseName || privileges.filter(optional -> optional.hasPrivileges(databaseName)).isPresent(),
                 () -> new UnknownDatabaseException(databaseName));
         PrivilegeType privilegeType = PrivilegeTypeMapper.getPrivilegeType(sqlStatement);
-        ShardingSpherePreconditions.checkState(privileges.isPresent() && privileges.get().hasPrivileges(Collections.singleton(privilegeType)),
-                () -> new UnauthorizedOperationException(null == privilegeType ? "" : privilegeType.name()));
+        ShardingSpherePreconditions.checkState(privileges.isPresent(), () -> new UnauthorizedOperationException(null == privilegeType ? "" : privilegeType.name()));
     }
 }
