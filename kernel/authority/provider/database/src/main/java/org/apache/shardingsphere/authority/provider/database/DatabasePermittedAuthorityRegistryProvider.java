@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 public final class DatabasePermittedAuthorityRegistryProvider implements AuthorityRegistryProvider {
     
-    public static final String USER_DATABASE_MAPPINGS_KEY = "user-database-mappings";
+    private static final String USER_DATABASE_MAPPINGS_KEY = "user-database-mappings";
     
     private String userDatabaseMappings;
     
