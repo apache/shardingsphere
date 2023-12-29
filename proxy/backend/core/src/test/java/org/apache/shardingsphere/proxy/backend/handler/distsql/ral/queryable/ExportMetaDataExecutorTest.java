@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportMetaDataStatement;
@@ -59,9 +58,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 
 import javax.sql.DataSource;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -70,7 +66,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -84,11 +79,15 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class ExportMetaDataExecutorTest {
     
-    private static final String METADATA_VALUE_EXPECTED_FOR_UNIX = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7ImVtcHR5X21ldGFkYXRhIjoiZGF0YWJhc2VOYW1lOiBudWxsXG5kYXRhU291cmNlczpcbn"
+    private static final String EXPECTED_METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7ImVtcHR5X21ldGFkYXRhIjoiZGF0YWJhc2VOYW1lOiBudWxsXG5kYXRhU291cmNlczpcbn"
             + "J1bGVzOlxuIn0sInByb3BzIjoiIiwicnVsZXMiOiJydWxlczpcbi0gIUdMT0JBTF9DTE9DS1xuICBlbmFibGVkOiBmYWxzZVxuICBwcm92aWRlcjogbG9jYWxcbiAgdHlwZTogVFNPXG4ifX0=";
     
-    private static final String METADATA_VALUE_EXPECTED_FOR_WIN = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7ImVtcHR5X21ldGFkYXRhIjoiZGF0YWJhc2VOYW1lOiBudWxsXHJcbmRhdGFTb3VyY2VzO"
-            + "lxyXG5ydWxlczpcclxuIn0sInByb3BzIjoiIiwicnVsZXMiOiJydWxlczpcclxuLSAhR0xPQkFMX0NMT0NLXHJcbiAgZW5hYmxlZDogZmFsc2VcclxuICBwcm92aWRlcjogbG9jYWxcclxuICB0eXBlOiBUU09cclxuIn19";
+    private static final String EXPECTED_EXPORT_METADATA_CONFIGURATION = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7Im5vcm1hbF9kYiI6ImRhdGFiYXNlTmFtZTogbm9ybWFsX2RiXG5kYXRhU291cm"
+            + "NlczpcbiAgZHNfMDpcbiAgICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOm9wZW5nYXVzczovLzEyNy4wLjAuMTo1NDMyL2RlbW9fZHNfMFxuICAgIHVzZXJuYW1lOiByb290XG4gICAgbWluUG9vb"
+            + "FNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiAgZHNfMTpcbiAgICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOm9wZW5nYXVzczovLzEyNy4wLjAuMTo1NDMyL2RlbW9fZHNfMVxuICAgIHVzZ"
+            + "XJuYW1lOiByb290XG4gICAgbWluUG9vbFNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiJ9LCJwcm9wcyI6InByb3BzOlxuICBzcWwtc2hvdzogdHJ1ZVxuIiwicnVsZXMiOiJydWxlczpcbi0g"
+            + "IUFVVEhPUklUWVxuICBwcml2aWxlZ2U6XG4gICAgdHlwZTogQUxMX1BFUk1JVFRFRFxuICB1c2VyczpcbiAgLSBhdXRoZW50aWNhdGlvbk1ldGhvZE5hbWU6ICcnXG4gICAgcGFzc3dvcmQ6IHJvb3Rc"
+            + "biAgICB1c2VyOiByb290QCVcbi0gIUdMT0JBTF9DTE9DS1xuICBlbmFibGVkOiBmYWxzZVxuICBwcm92aWRlcjogbG9jYWxcbiAgdHlwZTogVFNPXG4ifX0=";
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -120,11 +119,7 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-            assertThat(row.getCell(3), is(METADATA_VALUE_EXPECTED_FOR_WIN));
-        } else {
-            assertThat(row.getCell(3), is(METADATA_VALUE_EXPECTED_FOR_UNIX));
-        }
+        assertThat(row.getCell(3), is(EXPECTED_METADATA_VALUE));
     }
     
     private ContextManager mockEmptyContextManager() {
@@ -151,7 +146,7 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), new ExportMetaDataStatement(null));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(3).toString(), is(loadExpectedRow()));
+        assertThat(row.getCell(3).toString(), is(EXPECTED_EXPORT_METADATA_CONFIGURATION));
     }
     
     private Map<String, StorageUnit> createStorageUnits() {
@@ -196,25 +191,5 @@ class ExportMetaDataExecutorTest {
         result.setMaxPoolSize(50);
         result.setMinPoolSize(1);
         return result;
-    }
-    
-    @SneakyThrows(IOException.class)
-    private String loadExpectedRow() {
-        StringBuilder result = new StringBuilder();
-        String fileName;
-        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-            fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration_for_win.data")).getFile();
-        } else {
-            fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration_for_unix.data")).getFile();
-        }
-        try (
-                FileReader fileReader = new FileReader(fileName);
-                BufferedReader reader = new BufferedReader(fileReader)) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                result.append(line);
-            }
-        }
-        return result.toString();
     }
 }
