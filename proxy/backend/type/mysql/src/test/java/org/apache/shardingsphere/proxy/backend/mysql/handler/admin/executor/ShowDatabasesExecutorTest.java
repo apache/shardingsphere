@@ -57,7 +57,6 @@ import java.util.stream.IntStream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -200,8 +199,6 @@ class ShowDatabasesExecutorTest {
     private ShardingSpherePrivileges mockPrivileges() {
         ShardingSpherePrivileges result = mock(ShardingSpherePrivileges.class);
         when(result.hasPrivileges(anyString())).thenReturn(true);
-        when(result.hasPrivileges(anyCollection())).thenReturn(true);
-        when(result.hasPrivileges(anyCollection())).thenReturn(true);
         return result;
     }
     

@@ -81,7 +81,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -189,8 +188,6 @@ class MySQLAuthenticationEngineTest {
     private ShardingSpherePrivileges mockPrivileges() {
         ShardingSpherePrivileges result = mock(ShardingSpherePrivileges.class);
         when(result.hasPrivileges(anyString())).thenReturn(true);
-        when(result.hasPrivileges(anyCollection())).thenReturn(true);
-        when(result.hasPrivileges(anyCollection())).thenReturn(true);
         return result;
     }
     
