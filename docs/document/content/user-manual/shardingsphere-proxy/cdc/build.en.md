@@ -14,7 +14,7 @@ Users can introduce the CDC Client into their own projects to implement data con
 - Pure JAVA development, JDK recommended 1.8 or above.
 - CDC Server requires SharingSphere-Proxy to use cluster mode, currently supports ZooKeeper as the registry center.
 - CDC only synchronizes data, does not synchronize table structure, and currently does not support DDL statement synchronization.
-- CDC incremental task will not split transaction data of the physical database. If you want to enable XA transaction compatibility, both openGauss and ShardingSphere-Proxy need the GLT module.
+- CDC incremental task will not split transaction data of the database shards. If you want to enable XA transaction compatibility, both openGauss and ShardingSphere-Proxy need the GLT module.
 
 ## CDC Server Deployment Steps
 
@@ -95,14 +95,13 @@ props:
 
 2. Introduce JDBC driver.
 
-Proxy already includes PostgreSQL JDBC driver.
+Proxy already includes PostgreSQL, openGauss JDBC driver.
 
 If the backend connects to the following databases, please download the corresponding JDBC driver jar package and put it in the `${shardingsphere-proxy}/ext-lib` directory.
 
 | Database   | JDBC Driver                                                                                                                         |
 |-----------|---------------------------------------------------------------------------------------------------------------------------------|
 | MySQL     | [mysql-connector-java-8.0.31.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.31/)                            |
-| openGauss | [opengauss-jdbc-3.1.1-og.jar](https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.1.1-og/opengauss-jdbc-3.1.1-og.jar) |
 
 4. Start ShardingSphere-Proxy:
 
@@ -164,7 +163,7 @@ Configuration item description:
 ```sql
 ALTER STREAMING RULE (
 READ( -- Data reading configuration. If not configured, some parameters will take effect by default.
-  WORKER_THREAD=20, -- Affects full and incremental tasks, the size of the thread pool for fetching data from the source end. If not configured, the default value will be used. It needs to ensure that this value is not lower than the number of physical database
+  WORKER_THREAD=20, -- Affects full and incremental tasks, the size of the thread pool for fetching data from the source end. If not configured, the default value will be used. It needs to ensure that this value is not lower than the number of database shards
   BATCH_SIZE=1000, -- Affects full and incremental tasks, the maximum number of records returned by a query operation. If the amount of data in a transaction is greater than this value, the incremental situation may exceed the set value.
   SHARDING_SIZE=10000000, -- Affects full tasks, the size of stock data sharding. If not configured, the default value will be used.
   RATE_LIMITER ( -- Affects full and incremental tasks, rate limiting algorithm. If not configured, no rate limiting.
@@ -211,13 +210,13 @@ If necessary, users can also implement a CDC Client themselves to consume data a
 
 `org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient` is the entry class of the CDC Client. Users can interact with the CDC Server through this class. The main new methods are as follows.
 
-| Method Name                                                                                                                 | Return Value                          | Description                                                                                                                                                                                                     |
-|-----------------------------------------------------------------------------------------------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler | void                                  | Connect with the server, when connecting, you need to specify <br/>1. Data consumption processing function <br/>2. Exception handling logic during consumption <br/>3. Server error exception handling function |
-| login(CDCLoginParameter parameter)                                                                                          | void                                  | CDC login, parameters <br/>username: username <br/>password: password                                                                                                                                           |
-| startStreaming(StartStreamingParameter parameter)                                                                           | streamId (CDC task unique identifier) | Start CDC subscription, StartStreamingParameter parameters <br/> database: logical library name <br/> schemaTables: subscribed table name <br/> full: whether to subscribe to full data                         |
-| restartStreaming(String streamingId)                                                                                        | void                                  | Restart subscription                                                                                                                                                                                            |
-| stopStreaming(String streamingId)                                                                                           | void                                  | Stop subscription                                                                                                                                                                                               |
-| dropStreaming(String streamingId)                                                                                           | void                                  | Delete subscription                                                                                                                                                                                             |
-| await()                                                                                                                     | void                                  | Block the CDC thread and wait for the channel to close                                                                                                                                                          |
-| close()                                                                                                                     | void                                  | Close the channel, the process ends                                                                                                                                                                             |
+| Method Name                                                                                                                 | Return Value | Description                                                                                                                                                                                                     |
+|-----------------------------------------------------------------------------------------------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler | void         | Connect with the server, when connecting, you need to specify <br/>1. Data consumption processing function <br/>2. Exception handling logic during consumption <br/>3. Server error exception handling function |
+| login(CDCLoginParameter parameter)                                                                                          | void         | CDC login, parameters <br/>username: username <br/>password: password                                                                                                                                           |
+| startStreaming(StartStreamingParameter parameter)                                                                           | streamingId  | Start CDC subscription, StartStreamingParameter parameters <br/> database: logical database name <br/> schemaTables: subscribed table name <br/> full: whether to subscribe to full data                        |
+| restartStreaming(String streamingId)                                                                                        | void         | Restart subscription                                                                                                                                                                                            |
+| stopStreaming(String streamingId)                                                                                           | void         | Stop subscription                                                                                                                                                                                               |
+| dropStreaming(String streamingId)                                                                                           | void         | Delete subscription                                                                                                                                                                                             |
+| await()                                                                                                                     | void         | Block the CDC thread and wait for the channel to close                                                                                                                                                          |
+| close()                                                                                                                     | void         | Close the channel, the process ends                                                                                                                                                                             |

@@ -14,7 +14,7 @@ ShardingSphere CDC 分为两个部分，一个是 CDC Server，另一个是 CDC 
 - 纯 JAVA 开发，JDK 建议 1.8 或以上版本。
 - CDC Server 要求 SharingSphere-Proxy 使用集群模式，目前支持 ZooKeeper 作为注册中心。
 - CDC 只同步数据，不会同步表结构，目前也不支持 DDL 的语句同步。
-- CDC 增量阶段会按照事务的维度输出数据， 如果要开启 XA 事务的兼容，则 openGauss 和 ShardingSphere-Proxy 都需要 GLT 模块
+- CDC 增量阶段会按照分库事务的维度输出数据， 如果要开启 XA 事务的兼容，则 openGauss 和 ShardingSphere-Proxy 都需要 GLT 模块
 
 ## CDC Server 部署步骤
 
@@ -89,7 +89,7 @@ authority:
 props:
   system-log-level: INFO
   check-table-metadata-enabled: false
-  proxy-default-port: 3307 # Proxy default port.
+  proxy-default-port: 3307 # Proxy default port
   cdc-server-port: 33071 # CDC Server 端口，必须配置
   proxy-frontend-database-protocol-type: openGauss # 和后端数据库的类型一致
 ```
@@ -164,7 +164,7 @@ STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
 ```sql
 ALTER STREAMING RULE (
 READ( -- 数据读取配置。如果不配置则部分参数默认生效。
-  WORKER_THREAD=20, -- 影响全量、增量任务，从源端摄取数据的线程池大小。不配置则使用默认值。需要确保该值不低于物理库的数量
+  WORKER_THREAD=20, -- 影响全量、增量任务，从源端摄取数据的线程池大小。不配置则使用默认值。需要确保该值不低于分库的数量
   BATCH_SIZE=1000, -- 影响全量、增量任务，一次查询操作返回的最大记录数。如果一个事务中的数据量大于该值，增量情况下可能超过设定的值。
   SHARDING_SIZE=10000000, -- 影响全量任务，存量数据分片大小。如果不配置则使用默认值。
   RATE_LIMITER ( -- 影响全量、增量任务，限流算法。如果不配置则不限流。
@@ -211,13 +211,13 @@ CDC Client 不需要额外部署，只需要通过 maven 引入 CDC Client 的�
 
 `org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient` 是 CDC Client 的入口类，用户可以通过该类和 CDC Server 进行交互。主要的和新方法如下。
 
-| 方法名                                                                                                                         | 返回值                      | 说明                                                                                                     |
-|-----------------------------------------------------------------------------------------------------------------------------|--------------------------|--------------------------------------------------------------------------------------------------------|
-| connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler | void                     | 和服务端进行连接，连接的时候需要指定 <br/>1. 数据的消费处理逻辑 <br/>2. 消费时候的异常处理逻辑 <br/>3. 服务端错误的异常处理逻辑                          |
-| login(CDCLoginParameter parameter)                                                                                          | void                     | CDC登陆，参数 <br/>username：用户名 <br/>password：密码                                                            |
-| startStreaming(StartStreamingParameter parameter)                                                                           | streamingId （CDC 任务唯一标识） | 开启 CDC 订阅， StartStreamingParameter 参数 <br/> database：逻辑库名称 <br/> schemaTables：订阅的表名 <br/> full：是否订阅全量数据 |
-| restartStreaming(String streamingId)                                                                                        | void                     | 重启订阅                                                                                                   |
-| stopStreaming(String streamingId)                                                                                           | void                     | 停止订阅                                                                                                   |
-| dropStreaming(String streamingId)                                                                                           | void                     | 删除订阅                                                                                                   |
-| await()                                                                                                                     | void                     | 阻塞 CDC 线程，等待 channel 关闭                                                                                |
-| close()                                                                                                                     | void                     | 关闭 channel，流程结束                                                                                        |
+| 方法名                                                                                                                         | 返回值         | 说明                                                                                                      |
+|-----------------------------------------------------------------------------------------------------------------------------|-------------|---------------------------------------------------------------------------------------------------------|
+| connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler | void        | 和服务端进行连接，连接的时候需要指定 <br/>1. 数据的消费处理逻辑 <br/>2. 消费时候的异常处理逻辑 <br/>3. 服务端错误的异常处理逻辑                           |
+| login(CDCLoginParameter parameter)                                                                                          | void        | CDC登陆，参数 <br/>username：用户名 <br/>password：密码                                                             |
+| startStreaming(StartStreamingParameter parameter)                                                                           | streamingId | 开启 CDC 订阅， StartStreamingParameter 参数 <br/> database：逻辑库名称 <br/> schemaTables：订阅的表名 <br/> full：是否订阅全量数据 |
+| restartStreaming(String streamingId)                                                                                        | void        | 重启订阅                                                                                                    |
+| stopStreaming(String streamingId)                                                                                           | void        | 停止订阅                                                                                                    |
+| dropStreaming(String streamingId)                                                                                           | void        | 删除订阅                                                                                                    |
+| await()                                                                                                                     | void        | 阻塞 CDC 线程，等待 channel 关闭                                                                                 |
+| close()                                                                                                                     | void        | 关闭 channel，流程结束                                                                                         |

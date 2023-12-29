@@ -101,7 +101,7 @@ For details, please refer to [openGauss GRANT](https://docs.opengauss.org/zh/doc
 
 #### Prerequisites
 
-1. Prepare the library, table, and data of the CDC source end.
+1. Prepare the database, table, and data of the CDC source end.
 
 ```sql
 DROP DATABASE IF EXISTS ds_0;
@@ -113,7 +113,7 @@ CREATE DATABASE ds_1;
 
 #### Configure CDC Server
 
-1. Create a logical library.
+1. Create a logical database.
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -141,9 +141,9 @@ REGISTER STORAGE UNIT ds_0 (
 ```sql
 CREATE SHARDING TABLE RULE t_order(
 STORAGE_UNITS(ds_0,ds_1),
-SHARDING_COLUMN=id,
+SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="2")),
-KEY_GENERATE_STRATEGY(COLUMN=id,TYPE(NAME="snowflake"))
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
@@ -152,9 +152,7 @@ KEY_GENERATE_STRATEGY(COLUMN=id,TYPE(NAME="snowflake"))
 Execute the creation table statement in the proxy.
 
 ```sql
-CREATE TABLE t_order (id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-
-INSERT INTO t_order (id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'ok3');
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 ```
 
 #### Start CDC Client
@@ -201,7 +199,7 @@ There are mainly 4 steps
 1. Construct CDCClient, pass in CDCClientConfiguration
 2. Call CDCClient.connect(), this step is to establish a connection with the CDC Server
 3. Call CDCClient.login(), log in with the username and password configured in server.yaml
-4. Call CDCClient.startStreaming(), start subscribing, you need to ensure that the subscribed library and table exist in ShardingSphere-Proxy, otherwise an error will be reported
+4. Call CDCClient.startStreaming(), start subscribing, you need to ensure that the subscribed database and table exist in ShardingSphere-Proxy, otherwise an error will be reported
 
 > CDCClient.await is to block the main thread, it is not a necessary step, other methods can also be used, as long as the CDC thread is always working.
 
@@ -212,14 +210,16 @@ If you need more complex data consumption implementation, such as writing to the
 When write data through a proxy, the CDC Client is notified of the data change.
 
 ```
-INSERT INTO t_order (id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'ok3');
+INSERT INTO t_order (order_id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'ok3');
+UPDATE t_order SET status='updated' WHERE order_id = 1;
+DELETE FROM t_order WHERE order_id = 2;
 ```
 
 Bootstrap will output a similar log.
 
 ```
   records: [before {
-  name: "id"
+  name: "order_id"
   value {
     type_url: "type.googleapis.com/google.protobuf.Empty"
   }
@@ -254,8 +254,8 @@ Running result
 sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
  item | data_source |          status          | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | confirmed_position | current_position | error_message
 ------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+--------------------+------------------+---------------
- 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | false  | 1                       | 100                           | 115                      | 5/597E43D0         | 5/597E4810       |
- 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | false  | 2                       | 100                           | 115                      | 5/597E4450         | 5/597E4810       |
+ 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | false  | 2                       | 100                           | 115                      | 5/597E43D0         | 5/597E4810       |
+ 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | false  | 3                       | 100                           | 115                      | 5/597E4450         | 5/597E4810       |
 (2 rows)
 ```
 

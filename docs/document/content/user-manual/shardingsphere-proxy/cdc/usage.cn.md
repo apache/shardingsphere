@@ -141,9 +141,9 @@ REGISTER STORAGE UNIT ds_0 (
 ```sql
 CREATE SHARDING TABLE RULE t_order(
 STORAGE_UNITS(ds_0,ds_1),
-SHARDING_COLUMN=id,
+SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="2")),
-KEY_GENERATE_STRATEGY(COLUMN=id,TYPE(NAME="snowflake"))
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
@@ -152,7 +152,7 @@ KEY_GENERATE_STRATEGY(COLUMN=id,TYPE(NAME="snowflake"))
 在 proxy 执行建表语句。
 
 ```sql
-CREATE TABLE t_order (id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 ```
 
 #### 启动 CDC Client
@@ -210,14 +210,16 @@ public final class Bootstrap {
 通过 proxy 写入数据，此时 CDC Client 会收到数据变更的通知。
 
 ```
-INSERT INTO t_order (id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'ok3');
+INSERT INTO t_order (order_id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'ok3');
+UPDATE t_order SET status='updated' WHERE order_id = 1;
+DELETE FROM t_order WHERE order_id = 2;
 ```
 
 Bootstrap 会输出类似的日志
 
 ```
   records: [before {
-  name: "id"
+  name: "order_id"
   value {
     type_url: "type.googleapis.com/google.protobuf.Empty"
   }
@@ -252,8 +254,8 @@ SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
 sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
  item | data_source |          status          | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | confirmed_position | current_position | error_message
 ------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+--------------------+------------------+---------------
- 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | false  | 1                       | 100                           | 115                      | 5/597E43D0         | 5/597E4810       |
- 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | false  | 2                       | 100                           | 115                      | 5/597E4450         | 5/597E4810       |
+ 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | false  | 2                       | 100                           | 115                      | 5/597E43D0         | 5/597E4810       |
+ 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | false  | 3                       | 100                           | 115                      | 5/597E4450         | 5/597E4810       |
 (2 rows)
 ```
 
