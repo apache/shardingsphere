@@ -24,7 +24,7 @@ ShardingSphere CDC 分为两个部分，一个是 CDC Server，另一个是 CDC 
 
 ### 配置 GLT 模块（可选）
 
-官网发布的二进制包默认不包含 GLT 模块，不保证跨库事务完整性，如果使用的是包含 GLT 功能的 openGauss 数据库，则可以额外引入 GLT 模块，保证跨库事务的完整性。
+官网发布的二进制包默认不包含 GLT 模块，如果使用的是包含 GLT 功能的 openGauss 数据库，则可以额外引入 GLT 模块，保证 XA 事务的完整性。
 
 目前有两种方式引入 GLT 模块，并且需要在 server.yaml 中也进行相应的配置。
 
@@ -73,7 +73,7 @@ authority:
   privilege:
     type: ALL_PERMITTED
 
-# 使用 GLT 的时候也需要开启分布式事务
+# 使用 GLT 的时候也需要开启分布式事务，目前 GLT 只有 openGauss 数据库支持
 #transaction:
 #  defaultType: XA
 #  providerType: Atomikos
@@ -91,19 +91,18 @@ props:
   check-table-metadata-enabled: false
   proxy-default-port: 3307 # Proxy default port.
   cdc-server-port: 33071 # CDC Server 端口，必须配置
-  #proxy-frontend-database-protocol-type: openGauss # 和后端数据库的类型一致
+  proxy-frontend-database-protocol-type: openGauss # 和后端数据库的类型一致
 ```
 
 2. 引入 JDBC 驱动。
 
-proxy 已包含 PostgreSQL JDBC 驱动。
+proxy 已包含 PostgreSQL、openGauss JDBC 驱动。
 
 如果后端连接以下数据库，请下载相应 JDBC 驱动 jar 包，并将其放入 `${shardingsphere-proxy}/ext-lib` 目录。
 
 | 数据库       | JDBC 驱动                                                                                                                         |
 |-----------|---------------------------------------------------------------------------------------------------------------------------------|
 | MySQL     | [mysql-connector-java-8.0.31.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.31/)                            |
-| openGauss | [opengauss-jdbc-3.1.1-og.jar](https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.1.1-og/opengauss-jdbc-3.1.1-og.jar) |
 
 4. 启动 ShardingSphere-Proxy：
 
@@ -165,7 +164,7 @@ STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
 ```sql
 ALTER STREAMING RULE (
 READ( -- 数据读取配置。如果不配置则部分参数默认生效。
-  WORKER_THREAD=20, -- 影响全量、增量任务，从源端摄取数据的线程池大小。不配置则使用默认值。需要确保该值不低于分库的数量
+  WORKER_THREAD=20, -- 影响全量、增量任务，从源端摄取数据的线程池大小。不配置则使用默认值。需要确保该值不低于物理库的数量
   BATCH_SIZE=1000, -- 影响全量、增量任务，一次查询操作返回的最大记录数。如果一个事务中的数据量大于该值，增量情况下可能超过设定的值。
   SHARDING_SIZE=10000000, -- 影响全量任务，存量数据分片大小。如果不配置则使用默认值。
   RATE_LIMITER ( -- 影响全量、增量任务，限流算法。如果不配置则不限流。
@@ -212,13 +211,13 @@ CDC Client 不需要额外部署，只需要通过 maven 引入 CDC Client 的�
 
 `org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient` 是 CDC Client 的入口类，用户可以通过该类和 CDC Server 进行交互。主要的和新方法如下。
 
-| 方法名                                                                                                                         | 返回值                                | 说明                                                                                                      |
-|-----------------------------------------------------------------------------------------------------------------------------|------------------------------------|---------------------------------------------------------------------------------------------------------|
-| connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler | void                               | 和服务端进行连接，连接的时候需要指定 <br/>1. 数据的消费处理逻辑 <br/>2. 消费时候的异常处理逻辑 <br/>3. 服务端错误的异常处理逻辑                           |
-| login(CDCLoginParameter parameter)                                                                                          | void                               | CDC登陆，参数 <br/>username：用户名 <br/>password：密码                                                             |
-| startStreaming(StartStreamingParameter parameter)                                                                           | String （CDC 任务唯一标识，用于后续操作） | 开启 CDC 订阅, StartStreamingParameter 参数 <br/> database：逻辑库名称 <br/> schemaTables：订阅的表名 <br/> full：是否订阅全量数据 |
-| restartStreaming(String streamingId)                                                                                        | void                               | 重启订阅                                                                                                    |
-| stopStreaming(String streamingId)                                                                                           | void                               | 停止订阅                                                                                                    |
-| dropStreaming(String streamingId)                                                                                           | void                               | 删除订阅                                                                                                    |
-| await()                                                                                                                     | void                               | 阻塞 CDC 线程，等待 channel 关闭                                                                                 |
-| close()                                                                                                                     | void                               | 关闭 channel，流程结束。                                                                                        |
+| 方法名                                                                                                                         | 返回值                      | 说明                                                                                                     |
+|-----------------------------------------------------------------------------------------------------------------------------|--------------------------|--------------------------------------------------------------------------------------------------------|
+| connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler | void                     | 和服务端进行连接，连接的时候需要指定 <br/>1. 数据的消费处理逻辑 <br/>2. 消费时候的异常处理逻辑 <br/>3. 服务端错误的异常处理逻辑                          |
+| login(CDCLoginParameter parameter)                                                                                          | void                     | CDC登陆，参数 <br/>username：用户名 <br/>password：密码                                                            |
+| startStreaming(StartStreamingParameter parameter)                                                                           | streamingId （CDC 任务唯一标识） | 开启 CDC 订阅， StartStreamingParameter 参数 <br/> database：逻辑库名称 <br/> schemaTables：订阅的表名 <br/> full：是否订阅全量数据 |
+| restartStreaming(String streamingId)                                                                                        | void                     | 重启订阅                                                                                                   |
+| stopStreaming(String streamingId)                                                                                           | void                     | 停止订阅                                                                                                   |
+| dropStreaming(String streamingId)                                                                                           | void                     | 删除订阅                                                                                                   |
+| await()                                                                                                                     | void                     | 阻塞 CDC 线程，等待 channel 关闭                                                                                |
+| close()                                                                                                                     | void                     | 关闭 channel，流程结束                                                                                        |

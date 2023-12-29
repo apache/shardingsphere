@@ -78,7 +78,7 @@ host replication repl_acct 0.0.0.0/0 md5
 GRANT CREATE, CONNECT ON DATABASE source_ds TO cdc_user;
 ```
 
-还需要账号对迁移的表和 schema 具备访问权限，以 test schema 下的 t_order 表为例。
+还需要账号对订阅的表和 schema 具备访问权限，以 test schema 下的 t_order 表为例。
 
 ```sql
 \c source_ds
@@ -141,20 +141,18 @@ REGISTER STORAGE UNIT ds_0 (
 ```sql
 CREATE SHARDING TABLE RULE t_order(
 STORAGE_UNITS(ds_0,ds_1),
-SHARDING_COLUMN=order_id,
+SHARDING_COLUMN=id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="2")),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
+KEY_GENERATE_STRATEGY(COLUMN=id,TYPE(NAME="snowflake"))
 );
 ```
 
-4. 创建表和初始化数据
+4. 创建表
 
 在 proxy 执行建表语句。
 
 ```sql
 CREATE TABLE t_order (id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-
-INSERT INTO t_order (id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'ok3');
 ```
 
 #### 启动 CDC Client
@@ -207,6 +205,25 @@ public final class Bootstrap {
 
 如果需要更复杂数据消费的实现，例如写入到数据库，可以参考 [DataSourceRecordConsumer](https://github.com/apache/shardingsphere/blob/master/test/e2e/operation/pipeline/src/test/java/org/apache/shardingsphere/test/e2e/data/pipeline/cases/cdc/DataSourceRecordConsumer.java)
 
+#### 写入数据
+
+通过 proxy 写入数据，此时 CDC Client 会收到数据变更的通知。
+
+```
+INSERT INTO t_order (id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'ok3');
+```
+
+Bootstrap 会输出类似的日志
+
+```
+  records: [before {
+  name: "id"
+  value {
+    type_url: "type.googleapis.com/google.protobuf.Empty"
+  }
+  ......
+```
+
 #### 查看 CDC 任务运行情况
 
 CDC 任务的启动和停止目前只能通过 CDC Client 控制，可以通过在 proxy 中执行 DistSQL 查看 CDC 任务状态
@@ -233,10 +250,10 @@ SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
 
 ```
 sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
- item | data_source |          status          | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message
-------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------
- 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | true   | 1                       | 100                           | 101                      |
- 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | true   | 2                       | 100                           | 100                      |
+ item | data_source |          status          | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | confirmed_position | current_position | error_message
+------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+--------------------+------------------+---------------
+ 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | false  | 1                       | 100                           | 115                      | 5/597E43D0         | 5/597E4810       |
+ 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | false  | 2                       | 100                           | 115                      | 5/597E4450         | 5/597E4810       |
 (2 rows)
 ```
 
@@ -265,5 +282,4 @@ SUCCESS
 
 ## 建议的配置
 
-1. 如果有限流的要求，读写推荐只配置一侧，另一侧会自动受到限流的影响。
-2. CDC 的任务配置需要根据实际情况调整，不是线程数越多越好。例如堆内存比较小的时候需要调小阻塞队列的值，以免堆内存不够用。
+CDC 的性能目前没有一个固定的值，可以关注配置中读/写的 batchSize，以及内存队列的大小，根据实际情况进行调优。

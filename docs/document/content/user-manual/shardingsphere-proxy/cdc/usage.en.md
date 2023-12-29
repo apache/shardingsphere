@@ -78,7 +78,7 @@ Example:
 GRANT CREATE, CONNECT ON DATABASE source_ds TO cdc_user;
 ```
 
-The account also needs to have access permissions to the table and schema to be migrated, taking the t_order table under the test schema as an example.
+The account also needs to have access permissions to the table and schema to be subscribed, taking the t_order table under the test schema as an example.
 
 ```sql
 \c source_ds
@@ -141,15 +141,15 @@ REGISTER STORAGE UNIT ds_0 (
 ```sql
 CREATE SHARDING TABLE RULE t_order(
 STORAGE_UNITS(ds_0,ds_1),
-SHARDING_COLUMN=order_id,
+SHARDING_COLUMN=id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="2")),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
+KEY_GENERATE_STRATEGY(COLUMN=id,TYPE(NAME="snowflake"))
 );
 ```
 
-4. Create tables and initialize data
+4. Create tables
 
-Execute the create table statement in the proxy.
+Execute the creation table statement in the proxy.
 
 ```sql
 CREATE TABLE t_order (id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
@@ -159,7 +159,7 @@ INSERT INTO t_order (id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'o
 
 #### Start CDC Client
 
-Currently, the CDC Client only provides a Java API, and users need to implement the data consumption logic themselves.
+Currently, the CDC Client only provides a Java API, and users need to implement the data consumption themselves.
 
 Below is a simple example of starting the CDC Client.
 
@@ -201,11 +201,30 @@ There are mainly 4 steps
 1. Construct CDCClient, pass in CDCClientConfiguration
 2. Call CDCClient.connect(), this step is to establish a connection with the CDC Server
 3. Call CDCClient.login(), log in with the username and password configured in server.yaml
-4. Call CDCClient.startStreaming(), start subscribing, you need to ensure that the subscribed library and table exist in ShardingSphere-Proxy, otherwise an error will be reported.
+4. Call CDCClient.startStreaming(), start subscribing, you need to ensure that the subscribed library and table exist in ShardingSphere-Proxy, otherwise an error will be reported
 
 > CDCClient.await is to block the main thread, it is not a necessary step, other methods can also be used, as long as the CDC thread is always working.
 
 If you need more complex data consumption implementation, such as writing to the database, you can refer to [DataSourceRecordConsumer](https://github.com/apache/shardingsphere/blob/master/test/e2e/operation/pipeline/src/test/java/org/apache/shardingsphere/test/e2e/data/pipeline/cases/cdc/DataSourceRecordConsumer.java)
+
+#### Write Data
+
+When write data through a proxy, the CDC Client is notified of the data change.
+
+```
+INSERT INTO t_order (id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'ok3');
+```
+
+Bootstrap will output a similar log.
+
+```
+  records: [before {
+  name: "id"
+  value {
+    type_url: "type.googleapis.com/google.protobuf.Empty"
+  }
+  ......
+```
 
 #### View the Running Status of the CDC Task
 
@@ -233,10 +252,10 @@ Running result
 
 ```
 sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
- item | data_source |          status          | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message
-------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------
- 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | true   | 1                       | 100                           | 101                      |
- 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | true   | 2                       | 100                           | 100                      |
+ item | data_source |          status          | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | confirmed_position | current_position | error_message
+------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+--------------------+------------------+---------------
+ 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | false  | 1                       | 100                           | 115                      | 5/597E43D0         | 5/597E4810       |
+ 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | false  | 2                       | 100                           | 115                      | 5/597E4450         | 5/597E4810       |
 (2 rows)
 ```
 
@@ -244,7 +263,7 @@ sharding_db=> SHOW STREAMING STATUS j0302p0000702a83116fcee83f70419ca5e2993791;
 
 DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;
 
-The CDC task can only be deleted when there are no subscriptions. At this time, the replication slots on the openGauss physical library will also be deleted.
+The CDC task can only be deleted when there are no subscriptions. At this time, the replication slots on the openGauss physical database will also be deleted.
 
 ```
 sharding_db=> DROP STREAMING j0302p0000702a83116fcee83f70419ca5e2993791;
@@ -255,9 +274,9 @@ SUCCESS
 
 ## Explanation of incremental data push
 
-1. The CDC incremental push is currently transactional, and the transactions of the physical library will not be split. Therefore, if there are data changes in multiple tables in a transaction, these data changes will be pushed together.
+1. The CDC incremental push is currently transactional, and the transactions of the physical database will not be split. Therefore, if there are data changes in multiple tables in a transaction, these data changes will be pushed together.
 If you want to support XA transactions (currently only supports openGauss), both openGauss and Proxy need the GLT module.
-2. The conditions for push are met when a certain amount of data is met or a certain time interval is reached (currently 300ms). When processing XA transactions, if the received multiple sub-library incremental events exceed 300ms, it may cause the XA transaction to be split and pushed.
+2. The conditions for push are met when a certain amount of data is met or a certain time interval is reached (currently 300ms). When processing XA transactions, if the received multiple physical database incremental events exceed 300ms, it may cause the XA transaction to be split and pushed.
 
 ## Handling of large transactions
 
@@ -265,5 +284,4 @@ Currently, large transactions are fully parsed, which may cause the CDC Server p
 
 ## Recommended configuration
 
-1. If there is a requirement for flow control, it is recommended to configure only one side for reading and writing, and the other side will automatically be affected by the flow control.
-2. The configuration of the CDC task needs to be adjusted according to the actual situation, and it is not that the more threads, the better. For example, when the heap memory is relatively small, you need to reduce the value of the blocking queue to avoid insufficient heap memory.
+There is no fixed value for the performance of CDC, you can focus on the batchSize of read/write in the configuration, and the size of the memory queue, and tune it according to the actual situation.
