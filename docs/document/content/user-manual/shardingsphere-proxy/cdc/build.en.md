@@ -87,7 +87,6 @@ authority:
 
 props:
   system-log-level: INFO
-  check-table-metadata-enabled: false
   proxy-default-port: 3307 # Proxy default port.
   cdc-server-port: 33071 # CDC Server port, must be configured
   proxy-frontend-database-protocol-type: openGauss # Consistent with the type of backend database
@@ -95,13 +94,13 @@ props:
 
 2. Introduce JDBC driver.
 
-Proxy already includes PostgreSQL, openGauss JDBC driver.
+Proxy has included JDBC driver of PostgreSQL and openGauss.
 
-If the backend connects to the following databases, please download the corresponding JDBC driver jar package and put it in the `${shardingsphere-proxy}/ext-lib` directory.
+If the backend is connected to the following databases, download the corresponding JDBC driver jar package and put it into the `${shardingsphere-proxy}/ext-lib` directory.
 
-| Database   | JDBC Driver                                                                                                                         |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------|
-| MySQL     | [mysql-connector-java-8.0.31.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.31/)                            |
+| Database | JDBC Driver                                                                                          |
+|----------|------------------------------------------------------------------------------------------------------|
+| MySQL    | [mysql-connector-java-8.0.31.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.31/) |
 
 4. Start ShardingSphere-Proxy:
 
@@ -109,15 +108,15 @@ If the backend connects to the following databases, please download the correspo
 sh bin/start.sh
 ```
 
-5. View the proxy log `logs/stdout.log`, and see in the log:
+5. View the proxy log `logs/stdout.log`. If you see the following statements:
 
 ```
 [INFO ] [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy Cluster mode started successfully
 ```
 
-Confirm successful startup.
+The startup will have been successful.
 
-6. Configure CDC task synchronization configuration as needed
+6. Configure CDC on demand.
 
 6.1. Query configuration.
 
@@ -135,11 +134,11 @@ The default configuration is as follows:
 +--------------------------------------------------------------+--------------------------------------+-------------------------------------------------------+
 ```
 
-6.2. Modify configuration (optional).
+6.2. Alter configuration (optional).
 
-Because the streaming rule has a default value, no creation is required, only the ALTER statement is provided.
+Since the streaming rule has default values, there is no need to create it, only the `ALTER` statement is provided.
 
-Complete configuration DistSQL example:
+A completely configured DistSQL is as follows.
 
 ```sql
 ALTER STREAMING RULE (
@@ -162,32 +161,32 @@ Configuration item description:
 
 ```sql
 ALTER STREAMING RULE (
-READ( -- Data reading configuration. If not configured, some parameters will take effect by default.
-  WORKER_THREAD=20, -- Affects full and incremental tasks, the size of the thread pool for fetching data from the source end. If not configured, the default value will be used. It needs to ensure that this value is not lower than the number of database shards
-  BATCH_SIZE=1000, -- Affects full and incremental tasks, the maximum number of records returned by a query operation. If the amount of data in a transaction is greater than this value, the incremental situation may exceed the set value.
-  SHARDING_SIZE=10000000, -- Affects full tasks, the size of stock data sharding. If not configured, the default value will be used.
-  RATE_LIMITER ( -- Affects full and incremental tasks, rate limiting algorithm. If not configured, no rate limiting.
-  TYPE( -- Algorithm type. Optional: QPS
+READ( -- Data reading configuration. If it is not configured, part of the parameters will take effect by default.
+  WORKER_THREAD=20, -- Affects full and incremental tasks, obtain the thread pool size of all the data from the source side. If it is not configured, the default value is used. It needs to ensure that this value is not lower than the number of database shards.
+  BATCH_SIZE=1000, -- Affects full and incremental tasks, the maximum number of records returned by a query operation. If it is not configured, the default value is used. If the amount of data in a transaction is greater than this value, the incremental situation may exceed the set value.
+  SHARDING_SIZE=10000000, -- Affects full tasks, sharding size of all the data. If it is not configured, the default value is used.
+  RATE_LIMITER ( -- Affects full and incremental tasks, traffic limit algorithm. If it is not configured, traffic is not limited.
+  TYPE( -- Algorithm type. Option: QPS
   NAME='QPS',
-  PROPERTIES( -- Algorithm properties
+  PROPERTIES( -- Algorithm property
   'qps'='500'
   )))
 ),
-WRITE( -- Data writing configuration. If not configured, some parameters will take effect by default.
-  WORKER_THREAD=20, -- Affects full and incremental tasks, the size of the thread pool for writing data to the target end. If not configured, the default value will be used.
-  BATCH_SIZE=1000, -- Affects full and incremental tasks, the maximum number of records for a batch write operation in a stock task. If not configured, the default value will be used. If the amount of data in a transaction is greater than this value, the incremental situation may exceed the set value.
-  RATE_LIMITER ( -- Rate limiting algorithm. If not configured, no rate limiting.
-  TYPE( -- Algorithm type. Optional: TPS
+WRITE( -- Data writing configuration. If it is not configured, part of the parameters will take effect by default.
+  WORKER_THREAD=20, -- Affects full and incremental tasks, the size of the thread pool on which data is written into the target side. If it is not configured, the default value is used.
+  BATCH_SIZE=1000, -- Affects full and incremental tasks, the maximum number of records for a batch write operation. If it is not configured, the default value is used. If the amount of data in a transaction is greater than this value, the incremental situation may exceed the set value.
+  RATE_LIMITER ( -- Traffic limit algorithm. If it is not configured, traffic is not limited.
+  TYPE( -- Algorithm type. Option: TPS
   NAME='TPS',
-  PROPERTIES( -- Algorithm properties
+  PROPERTIES( -- Algorithm property.
   'tps'='2000'
   )))
 ),
-STREAM_CHANNEL ( -- Data channel, connecting producers and consumers, used for read and write links. If not configured, the MEMORY type is used by default.
-TYPE( -- Algorithm type. Optional: MEMORY
+STREAM_CHANNEL ( -- Data channel. It connects producers and consumers, used for reading and writing procedures. If it is not configured, the MEMORY type is used by default.
+TYPE( -- Algorithm type. Option: MEMORY
 NAME='MEMORY',
-PROPERTIES( -- Algorithm properties
-'block-queue-size'='2000' -- Property: Blocking queue size
+PROPERTIES( -- Algorithm property
+'block-queue-size'='2000' -- Property: blocking queue size.
 )))
 );
 ```
@@ -210,13 +209,13 @@ If necessary, users can also implement a CDC Client themselves to consume data a
 
 `org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient` is the entry class of the CDC Client. Users can interact with the CDC Server through this class. The main new methods are as follows.
 
-| Method Name                                                                                                                 | Return Value | Description                                                                                                                                                                                                     |
-|-----------------------------------------------------------------------------------------------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Method Name                                                                                                                 | Return Value | Description                                                                                                                                                                                                    |
+|-----------------------------------------------------------------------------------------------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler | void         | Connect with the server, when connecting, you need to specify <br/>1. Data consumption processing function <br/>2. Exception handling logic during consumption <br/>3. Server error exception handling function |
-| login(CDCLoginParameter parameter)                                                                                          | void         | CDC login, parameters <br/>username: username <br/>password: password                                                                                                                                           |
-| startStreaming(StartStreamingParameter parameter)                                                                           | streamingId  | Start CDC subscription, StartStreamingParameter parameters <br/> database: logical database name <br/> schemaTables: subscribed table name <br/> full: whether to subscribe to full data                        |
-| restartStreaming(String streamingId)                                                                                        | void         | Restart subscription                                                                                                                                                                                            |
-| stopStreaming(String streamingId)                                                                                           | void         | Stop subscription                                                                                                                                                                                               |
-| dropStreaming(String streamingId)                                                                                           | void         | Delete subscription                                                                                                                                                                                             |
-| await()                                                                                                                     | void         | Block the CDC thread and wait for the channel to close                                                                                                                                                          |
-| close()                                                                                                                     | void         | Close the channel, the process ends                                                                                                                                                                             |
+| login(CDCLoginParameter parameter)                                                                                          | void         | CDC login, parameters <br/>username: username <br/>password: password                                                                                                                                          |
+| startStreaming(StartStreamingParameter parameter)                                                                           | streamingId  | Start CDC subscription<br/> StartStreamingParameter parameters <br/> database: logical database name <br/> schemaTables: subscribed table name <br/> full: whether to subscribe to full data                   |
+| restartStreaming(String streamingId)                                                                                        | void         | Restart subscription                                                                                                                                                                                           |
+| stopStreaming(String streamingId)                                                                                           | void         | Stop subscription                                                                                                                                                                                              |
+| dropStreaming(String streamingId)                                                                                           | void         | Delete subscription                                                                                                                                                                                            |
+| await()                                                                                                                     | void         | Block the CDC thread and wait for the channel to close                                                                                                                                                         |
+| close()                                                                                                                     | void         | Close the channel, the process ends                                                                                                                                                                            |
