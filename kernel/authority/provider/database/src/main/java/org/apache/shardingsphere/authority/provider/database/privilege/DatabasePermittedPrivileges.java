@@ -19,7 +19,6 @@ package org.apache.shardingsphere.authority.provider.database.privilege;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.constant.AuthorityConstants;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 
 import java.util.Collection;
@@ -35,10 +34,5 @@ public final class DatabasePermittedPrivileges implements ShardingSpherePrivileg
     @Override
     public boolean hasPrivileges(final String database) {
         return databases.contains(AuthorityConstants.SUPER_PRIVILEGE) || databases.contains(database);
-    }
-    
-    @Override
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return true;
     }
 }

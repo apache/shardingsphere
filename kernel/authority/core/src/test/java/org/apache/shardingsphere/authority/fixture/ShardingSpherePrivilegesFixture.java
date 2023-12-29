@@ -17,20 +17,12 @@
 
 package org.apache.shardingsphere.authority.fixture;
 
-import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-
-import java.util.Collection;
 
 public final class ShardingSpherePrivilegesFixture implements ShardingSpherePrivileges {
     
     @Override
     public boolean hasPrivileges(final String database) {
-        return true;
-    }
-    
-    @Override
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
         return true;
     }
 }
