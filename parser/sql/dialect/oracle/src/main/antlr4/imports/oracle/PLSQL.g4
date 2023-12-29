@@ -64,10 +64,9 @@ plsqlFunctionSource
     | deterministicClause
     | parallelEnableClause
     | resultCacheClause
-    | aggregateClause
     | pipelinedClause
-    | sqlMacroClause)* 
-    (IS | AS) (callSpec | declareSection? body)
+    | sqlMacroClause)*
+    (aggregateClause | ((IS | AS) (callSpec | declareSection? body)))
     ;
     
 body
