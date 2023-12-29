@@ -1,5 +1,5 @@
 +++
-title = "User Manual"
+title = "Manual"
 weight = 2
 +++
 

@@ -87,7 +87,6 @@ authority:
 
 props:
   system-log-level: INFO
-  check-table-metadata-enabled: false
   proxy-default-port: 3307 # Proxy default port.
   cdc-server-port: 33071 # CDC Server port, must be configured
   proxy-frontend-database-protocol-type: openGauss # Consistent with the type of backend database
@@ -95,13 +94,13 @@ props:
 
 2. Introduce JDBC driver.
 
-Proxy already includes PostgreSQL, openGauss JDBC driver.
+Proxy has included JDBC driver of PostgreSQL and openGauss.
 
 If the backend connects to the following databases, please download the corresponding JDBC driver jar package and put it in the `${shardingsphere-proxy}/ext-lib` directory.
 
-| Database   | JDBC Driver                                                                                                                         |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------|
-| MySQL     | [mysql-connector-java-8.0.31.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.31/)                            |
+| Database | JDBC Driver                                                                                          |
+|----------|------------------------------------------------------------------------------------------------------|
+| MySQL    | [mysql-connector-java-8.0.31.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.31/) |
 
 4. Start ShardingSphere-Proxy:
 
@@ -210,13 +209,13 @@ If necessary, users can also implement a CDC Client themselves to consume data a
 
 `org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient` is the entry class of the CDC Client. Users can interact with the CDC Server through this class. The main new methods are as follows.
 
-| Method Name                                                                                                                 | Return Value | Description                                                                                                                                                                                                     |
-|-----------------------------------------------------------------------------------------------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Method Name                                                                                                                 | Return Value | Description                                                                                                                                                                                                    |
+|-----------------------------------------------------------------------------------------------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | connect(Consumer<List<Record>> dataConsumer, ExceptionHandler exceptionHandler, ServerErrorResultHandler errorResultHandler | void         | Connect with the server, when connecting, you need to specify <br/>1. Data consumption processing function <br/>2. Exception handling logic during consumption <br/>3. Server error exception handling function |
-| login(CDCLoginParameter parameter)                                                                                          | void         | CDC login, parameters <br/>username: username <br/>password: password                                                                                                                                           |
-| startStreaming(StartStreamingParameter parameter)                                                                           | streamingId  | Start CDC subscription, StartStreamingParameter parameters <br/> database: logical database name <br/> schemaTables: subscribed table name <br/> full: whether to subscribe to full data                        |
-| restartStreaming(String streamingId)                                                                                        | void         | Restart subscription                                                                                                                                                                                            |
-| stopStreaming(String streamingId)                                                                                           | void         | Stop subscription                                                                                                                                                                                               |
-| dropStreaming(String streamingId)                                                                                           | void         | Delete subscription                                                                                                                                                                                             |
-| await()                                                                                                                     | void         | Block the CDC thread and wait for the channel to close                                                                                                                                                          |
-| close()                                                                                                                     | void         | Close the channel, the process ends                                                                                                                                                                             |
+| login(CDCLoginParameter parameter)                                                                                          | void         | CDC login, parameters <br/>username: username <br/>password: password                                                                                                                                          |
+| startStreaming(StartStreamingParameter parameter)                                                                           | streamingId  | Start CDC subscription<br/> StartStreamingParameter parameters <br/> database: logical database name <br/> schemaTables: subscribed table name <br/> full: whether to subscribe to full data                   |
+| restartStreaming(String streamingId)                                                                                        | void         | Restart subscription                                                                                                                                                                                           |
+| stopStreaming(String streamingId)                                                                                           | void         | Stop subscription                                                                                                                                                                                              |
+| dropStreaming(String streamingId)                                                                                           | void         | Delete subscription                                                                                                                                                                                            |
+| await()                                                                                                                     | void         | Block the CDC thread and wait for the channel to close                                                                                                                                                         |
+| close()                                                                                                                     | void         | Close the channel, the process ends                                                                                                                                                                            |
