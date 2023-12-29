@@ -19,8 +19,8 @@ package org.apache.shardingsphere.authority.provider.database;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedAuthorityRegistry;
+import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -40,30 +40,28 @@ import java.util.stream.Collectors;
  */
 public final class DatabasePermittedAuthorityRegistryProvider implements AuthorityRegistryProvider {
     
-    public static final String PROP_USER_DATABASE_MAPPINGS = "user-database-mappings";
+    public static final String USER_DATABASE_MAPPINGS_KEY = "user-database-mappings";
     
-    private Properties props;
+    private String userDatabaseMappings;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
+        userDatabaseMappings = props.getProperty(DatabasePermittedAuthorityRegistryProvider.USER_DATABASE_MAPPINGS_KEY, "");
+        checkUserDatabaseMappings();
     }
     
-    @Override
-    public AuthorityRegistry build(final Collection<ShardingSphereUser> users) {
-        String userDatabaseMappings = props.getProperty(DatabasePermittedAuthorityRegistryProvider.PROP_USER_DATABASE_MAPPINGS, "");
-        checkDatabases(userDatabaseMappings);
-        return new DatabasePermittedAuthorityRegistry(buildPrivileges(users, convertUserDatabases(userDatabaseMappings)));
-    }
-    
-    private void checkDatabases(final String userDatabaseMappings) {
+    private void checkUserDatabaseMappings() {
         Preconditions.checkArgument(!"".equals(userDatabaseMappings), "user-database-mappings configuration `%s` can not be null", userDatabaseMappings);
         Arrays.stream(userDatabaseMappings.split(",")).forEach(each -> Preconditions.checkArgument(each.contains("@") && each.contains("="),
                 "user-database-mappings configuration `%s` is invalid, the configuration format should be like `username@hostname=database`", each));
     }
     
-    private Map<ShardingSphereUser, DatabasePermittedPrivileges> buildPrivileges(final Collection<ShardingSphereUser> users,
-                                                                                 final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
+    @Override
+    public AuthorityRegistry build(final Collection<ShardingSphereUser> users) {
+        return new DatabasePermittedAuthorityRegistry(buildPrivileges(users, convertUserDatabases()));
+    }
+    
+    private Map<ShardingSphereUser, DatabasePermittedPrivileges> buildPrivileges(final Collection<ShardingSphereUser> users, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
         return users.stream().collect(Collectors.toMap(each -> each, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
     }
     
@@ -79,11 +77,10 @@ public final class DatabasePermittedAuthorityRegistryProvider implements Authori
     }
     
     private boolean checkAnyOtherHost(final Grantee grantee, final ShardingSphereUser user) {
-        return ("%".equals(grantee.getHostname())
-                || grantee.getHostname().equals(user.getGrantee().getHostname())) && grantee.getUsername().equals(user.getGrantee().getUsername());
+        return ("%".equals(grantee.getHostname()) || grantee.getHostname().equals(user.getGrantee().getHostname())) && grantee.getUsername().equals(user.getGrantee().getUsername());
     }
     
-    private Map<ShardingSphereUser, Collection<String>> convertUserDatabases(final String userDatabaseMappings) {
+    private Map<ShardingSphereUser, Collection<String>> convertUserDatabases() {
         String[] mappings = userDatabaseMappings.split(",");
         Map<ShardingSphereUser, Collection<String>> result = new HashMap<>(mappings.length, 1F);
         for (String each : mappings) {
