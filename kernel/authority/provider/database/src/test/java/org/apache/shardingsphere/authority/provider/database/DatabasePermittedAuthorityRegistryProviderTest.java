@@ -39,7 +39,7 @@ class DatabasePermittedAuthorityRegistryProviderTest {
     @Test
     void assertBuild() {
         Properties props = PropertiesBuilder.build(
-                new Property(DatabasePermittedAuthorityRegistryProvider.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
+                new Property(DatabasePermittedAuthorityRegistryProvider.USER_DATABASE_MAPPINGS_KEY, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
         AuthorityRegistryProvider provider = TypedSPILoader.getService(AuthorityRegistryProvider.class, "DATABASE_PERMITTED", props);
         AuthorityRegistry actual = provider.build(Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
         Optional<ShardingSpherePrivileges> privileges = actual.findPrivileges(new Grantee("user1", "127.0.0.2"));

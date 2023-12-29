@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.authority.provider.database.privilege;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.constant.AuthorityConstants;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 
@@ -29,13 +30,11 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class DatabasePermittedPrivileges implements ShardingSpherePrivileges {
     
-    private static final String KEY_SUPER = "*";
-    
     private final Collection<String> databases;
     
     @Override
     public boolean hasPrivileges(final String database) {
-        return databases.contains(KEY_SUPER) || databases.contains(database);
+        return databases.contains(AuthorityConstants.SUPER_PRIVILEGE) || databases.contains(database);
     }
     
     @Override
