@@ -121,7 +121,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -708,7 +707,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitOptOnConflict(final OptOnConflictContext ctx) {
         SetClauseListContext setClauseListContext = ctx.setClauseList();
-        Collection<AssignmentSegment> assignments = ((SetAssignmentSegment) visit(setClauseListContext)).getAssignments();
+        Collection<ColumnAssignmentSegment> assignments = ((SetAssignmentSegment) visit(setClauseListContext)).getAssignments();
         return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
     }
     
@@ -818,13 +817,13 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
-    private Collection<AssignmentSegment> generateAssignmentSegments(final SetClauseListContext ctx) {
-        Collection<AssignmentSegment> result = new LinkedList<>();
+    private Collection<ColumnAssignmentSegment> generateAssignmentSegments(final SetClauseListContext ctx) {
+        Collection<ColumnAssignmentSegment> result = new LinkedList<>();
         if (null != ctx.setClauseList()) {
-            Collection<AssignmentSegment> tmpResult = generateAssignmentSegments(ctx.setClauseList());
+            Collection<ColumnAssignmentSegment> tmpResult = generateAssignmentSegments(ctx.setClauseList());
             result.addAll(tmpResult);
         }
-        AssignmentSegment assignmentSegment = (AssignmentSegment) visit(ctx.setClause());
+        ColumnAssignmentSegment assignmentSegment = (ColumnAssignmentSegment) visit(ctx.setClause());
         result.add(assignmentSegment);
         return result;
     }
@@ -868,7 +867,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitSetClauseList(final SetClauseListContext ctx) {
-        Collection<AssignmentSegment> assignments = generateAssignmentSegments(ctx);
+        Collection<ColumnAssignmentSegment> assignments = generateAssignmentSegments(ctx);
         return new SetAssignmentSegment(ctx.start.getStartIndex() - 4, ctx.stop.getStopIndex(), assignments);
     }
     

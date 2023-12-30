@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.binder.segment.where.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -163,13 +162,13 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
                                             final Map<String, TableSegmentBinderContext> targetTableBinderContexts, final Map<String, TableSegmentBinderContext> sourceTableBinderContexts) {
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setTable(tableSegment);
-        Collection<AssignmentSegment> assignments = new LinkedList<>();
+        Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
         SQLStatementBinderContext updateStatementBinderContext = new SQLStatementBinderContext(statementBinderContext.getMetaData(), statementBinderContext.getDefaultDatabaseName(),
                 statementBinderContext.getDatabaseType(), statementBinderContext.getVariableNames());
         updateStatementBinderContext.getExternalTableBinderContexts().putAll(statementBinderContext.getExternalTableBinderContexts());
         updateStatementBinderContext.getExternalTableBinderContexts().putAll(sourceTableBinderContexts);
         Map<ParameterMarkerSegment, ColumnSegmentBoundedInfo> parameterMarkerSegmentBoundedInfos = new LinkedHashMap<>();
-        for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
+        for (ColumnAssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             List<ColumnSegment> columnSegments = new ArrayList<>(each.getColumns().size());
             each.getColumns().forEach(column -> columnSegments.add(
                     ColumnSegmentBinder.bind(column, SegmentType.SET_ASSIGNMENT, updateStatementBinderContext, targetTableBinderContexts, Collections.emptyMap())));

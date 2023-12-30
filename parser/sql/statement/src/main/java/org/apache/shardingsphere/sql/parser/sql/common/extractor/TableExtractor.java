@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
@@ -242,7 +242,7 @@ public final class TableExtractor {
         }
     }
     
-    private void extractTablesFromAssignmentItems(final Collection<AssignmentSegment> assignmentItems) {
+    private void extractTablesFromAssignmentItems(final Collection<ColumnAssignmentSegment> assignmentItems) {
         assignmentItems.forEach(each -> extractTablesFromColumnSegments(each.getColumns()));
     }
     
