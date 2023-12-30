@@ -34,10 +34,10 @@ public final class AuthorityChecker {
     /**
      * Check database authority.
      * 
-     * @param databaseName database name
+     * @param database database name
      * @return authorized or not
      */
-    public boolean isAuthorized(final String databaseName) {
-        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
+    public boolean isAuthorized(final String database) {
+        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
     }
 }
