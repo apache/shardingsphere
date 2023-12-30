@@ -18,16 +18,8 @@
 package org.apache.shardingsphere.authority.checker;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.exception.UnauthorizedOperationException;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.Optional;
 
 /**
  * Authority checker.
@@ -47,22 +39,5 @@ public final class AuthorityChecker {
      */
     public boolean isAuthorized(final String databaseName) {
         return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
-    }
-    
-    /**
-     * Check privileges.
-     *
-     * @param databaseName database name
-     * @param sqlStatement SQL statement
-     */
-    public void checkPrivileges(final String databaseName, final SQLStatement sqlStatement) {
-        if (null == grantee) {
-            return;
-        }
-        Optional<ShardingSpherePrivileges> privileges = rule.findPrivileges(grantee);
-        ShardingSpherePreconditions.checkState(null == databaseName || privileges.filter(optional -> optional.hasPrivileges(databaseName)).isPresent(),
-                () -> new UnknownDatabaseException(databaseName));
-        PrivilegeType privilegeType = PrivilegeTypeMapper.getPrivilegeType(sqlStatement);
-        ShardingSpherePreconditions.checkState(privileges.isPresent(), () -> new UnauthorizedOperationException(null == privilegeType ? "" : privilegeType.name()));
     }
 }
