@@ -26,9 +26,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DefaultUser {
     
-    public static final String USER_NAME = "root";
+    public static final String USERNAME = "root";
     
-    public static final String USER_HOSTNAME = "%";
+    public static final String HOSTNAME = "%";
     
-    public static final String USER_PASSWORD = "root";
+    public static final String PASSWORD = "root";
 }
