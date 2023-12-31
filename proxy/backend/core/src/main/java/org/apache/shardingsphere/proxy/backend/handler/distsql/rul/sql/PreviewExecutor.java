@@ -125,7 +125,7 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         ((CursorDefinitionAware) toBePreviewedStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
     
-    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData, final ShardingSphereDatabase database, 
+    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData, final ShardingSphereDatabase database,
                                                                   final ConnectionSession connectionSession, final SQLFederationEngine federationEngine) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         // TODO move dialect MySQLInsertStatement into database type module @zhangliang
