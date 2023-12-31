@@ -57,7 +57,7 @@ createFunction
     ;
 
 createTrigger
-    : CREATE (OR REPLACE)? TRIGGER triggerName (BEFORE | AFTER | INSTEAD OF) dmlEventClause
+    : CREATE (OR REPLACE)? TRIGGER triggerName (BEFORE | AFTER | INSTEAD OF) dmlEventClause body?
     ;
 
 plsqlFunctionSource
@@ -92,6 +92,7 @@ statement
         | fetchStatement
         | ifStatment
         | returnStatement
+        | nullStatement
         ) SEMI_
     ;
 
@@ -119,6 +120,9 @@ returnStatement
     : RETURN expr
     ;
 
+nullStatement
+    : NULL
+    ;
 
 exceptionHandler
     : WHEN ((typeName (OR typeName)*)| OTHERS) THEN statement+
@@ -280,9 +284,37 @@ autonomousTransPragma
     ;
 
 dmlEventClause
-    : dmlEventElement (OR dmlEventElement)* ON viewName
+    : (dmlEventElement (OR dmlEventElement)* ON viewName)
+    | (nonDmlEventElement (OR nonDmlEventElement)* ON (DATABASE | (schemaName DOT_)? SCHEMA))
     ;
 
 dmlEventElement
     : (DELETE | INSERT | UPDATE) (OF LP_ columnName (COMMA_ columnName)* RP_)?
+    ;
+
+nonDmlEventElement
+    : ALTER
+    | ANALYZE
+    | ASSOCIATE STATISTICS
+    | AUDIT
+    | COMMENT
+    | CREATE
+    | DISASSOCIATE STATISTICS
+    | DROP
+    | GRANT
+    | NOAUDIT
+    | RENAME
+    | REVOKE
+    | TRUNCATE
+    | DDL
+    | STARTUP
+    | SHUTDOWN
+    | DB_ROLE_CHANGE
+    | LOGON
+    | LOGOFF
+    | SERVERERROR
+    | SUSPEND
+    | DATABASE
+    | SCHEMA
+    | FOLLOWS
     ;
