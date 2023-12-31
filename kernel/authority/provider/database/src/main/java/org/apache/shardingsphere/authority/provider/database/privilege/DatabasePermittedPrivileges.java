@@ -33,6 +33,6 @@ public final class DatabasePermittedPrivileges implements ShardingSpherePrivileg
     
     @Override
     public boolean hasPrivileges(final String database) {
-        return databases.contains(AuthorityConstants.SUPER_PRIVILEGE) || databases.contains(database);
+        return databases.contains(AuthorityConstants.PRIVILEGE_WILDCARD) || databases.contains(database);
     }
 }
