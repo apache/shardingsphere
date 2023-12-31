@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create trigger statement.
  */
-public final class OracleCreateTriggerStatement extends CreateTablespaceStatement implements OracleStatement {
+public final class OracleCreateTriggerStatement extends CreateTriggerStatement implements OracleStatement {
 }

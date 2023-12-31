@@ -77,14 +77,6 @@ dmlSubqueryClause
     : LP_ selectSubquery subqueryRestrictionClause? RP_
     ;
 
-dmlEventClause
-    : dmlEventElement (OR dmlEventElement)* ON viewName
-    ;
-
-dmlEventElement
-    : (DELETE | INSERT | UPDATE) (OF LP_ columnName (COMMA_ columnName)* RP_)?
-    ;
-
 subqueryRestrictionClause
     : WITH (READ ONLY | CHECK OPTION) (CONSTRAINT constraintName)?
     ;

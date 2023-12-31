@@ -43,10 +43,6 @@ createType
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE plsqlTypeSource
     ;
 
-createTrigger
-    : CREATE (OR REPLACE)? TRIGGER triggerName (BEFORE | AFTER | INSTEAD OF) dmlEventClause
-    ;
-
 plsqlTypeSource
     : typeName (objectBaseTypeDef | objectSubTypeDef)
     ;
