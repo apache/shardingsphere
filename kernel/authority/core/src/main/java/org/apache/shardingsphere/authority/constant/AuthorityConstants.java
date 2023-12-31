@@ -26,5 +26,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AuthorityConstants {
     
-    public static final String SUPER_PRIVILEGE = "*";
+    public static final String PRIVILEGE_WILDCARD = "*";
 }
