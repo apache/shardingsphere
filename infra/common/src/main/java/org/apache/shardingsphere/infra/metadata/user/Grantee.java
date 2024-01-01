@@ -46,15 +46,6 @@ public final class Grantee {
         toString = username + "@" + hostname;
     }
     
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj instanceof Grantee) {
-            Grantee grantee = (Grantee) obj;
-            return grantee.username.equalsIgnoreCase(username) && grantee.hostname.equalsIgnoreCase(hostname);
-        }
-        return false;
-    }
-    
     /**
      * Check if the grantee is acceptable.
      *
@@ -67,6 +58,15 @@ public final class Grantee {
     
     private boolean isPermittedHost(final Grantee grantee) {
         return isUnlimitedHost || grantee.hostname.equalsIgnoreCase(hostname);
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof Grantee) {
+            Grantee grantee = (Grantee) obj;
+            return grantee.username.equalsIgnoreCase(username) && grantee.hostname.equalsIgnoreCase(hostname);
+        }
+        return false;
     }
     
     @Override

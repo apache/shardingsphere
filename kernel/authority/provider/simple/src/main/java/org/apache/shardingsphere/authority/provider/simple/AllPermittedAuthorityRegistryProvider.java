@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.authority.provider.simple;
 
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.authority.provider.simple.privilege.AllPermittedAuthorityRegistry;
 import org.apache.shardingsphere.authority.provider.simple.privilege.AllPermittedPrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -34,7 +33,7 @@ public final class AllPermittedAuthorityRegistryProvider implements AuthorityReg
     
     @Override
     public AuthorityRegistry build(final Collection<ShardingSphereUser> users) {
-        return new AllPermittedAuthorityRegistry(users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new AllPermittedPrivileges())));
+        return new AuthorityRegistry(users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new AllPermittedPrivileges())));
     }
     
     @Override
