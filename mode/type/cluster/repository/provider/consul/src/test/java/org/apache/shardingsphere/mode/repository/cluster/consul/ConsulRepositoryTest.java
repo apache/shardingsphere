@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.consul;
 
+import com.ecwid.consul.transport.HttpResponse;
+import com.ecwid.consul.v1.ConsulRawClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import lombok.SneakyThrows;
+import org.apache.http.HttpStatus;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.awaitility.Awaitility;
@@ -47,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -82,6 +86,12 @@ class ConsulRepositoryTest {
     
     @Mock
     private List<GetValue> getValueList;
+    
+    @Mock
+    private ConsulRawClient consulRawClient;
+    
+    @Mock
+    private HttpResponse httpResponse;
     
     private long index = 123456L;
     
@@ -140,6 +150,9 @@ class ConsulRepositoryTest {
     
     @Test
     void assertPersistEphemeral() {
+        when(client.getRawClient()).thenReturn(consulRawClient);
+        when(consulRawClient.makeGetRequest(any(String.class))).thenReturn(httpResponse);
+        when(httpResponse.getStatusCode()).thenReturn(HttpStatus.SC_OK);
         repository.persistEphemeral("key1", "value1");
         verify(client).sessionCreate(any(NewSession.class), any(QueryParams.class));
         verify(client).setKVValue(any(String.class), any(String.class), any(PutParams.class));
@@ -204,5 +217,21 @@ class ConsulRepositoryTest {
     void assertPersist() {
         repository.persist("key1", "value1");
         verify(client).setKVValue(any(String.class), any(String.class));
+    }
+    
+    @Test
+    void assertNullResponse() {
+        when(response.getValue()).thenReturn(null);
+        final String key = "/key";
+        assertDoesNotThrow(() -> {
+            repository.getDirectly(key);
+            repository.getChildrenKeys(key);
+        });
+        when(responseGetValueList.getValue()).thenReturn(null);
+        assertDoesNotThrow(() -> {
+            repository.watch(key, event -> {
+            });
+            client.setKVValue(key, "value");
+        });
     }
 }
