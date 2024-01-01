@@ -21,14 +21,14 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.mockito.Answers;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 public final class PrivilegeProviderFixture implements PrivilegeProvider {
     
@@ -38,10 +38,9 @@ public final class PrivilegeProviderFixture implements PrivilegeProvider {
         return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> privileges));
     }
     
-    private static ShardingSpherePrivileges mockPrivileges() {
-        ShardingSpherePrivileges result = mock(ShardingSpherePrivileges.class);
-        when(result.hasPrivileges(any())).thenReturn(true);
-        return result;
+    private ShardingSpherePrivileges mockPrivileges() {
+        return mock(ShardingSpherePrivileges.class,
+                withSettings().defaultAnswer(invocation -> Boolean.TYPE == invocation.getMethod().getReturnType() ? true : Answers.RETURNS_DEFAULTS.answer(invocation)));
     }
     
     @Override
