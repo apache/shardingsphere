@@ -60,9 +60,9 @@ Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久�
 
 `Consul` 实现的 `serverLists` 属性受设计使然，仅可通过 HTTP 端点连接到单个 Consul Agent。
 `serverLists` 使用了宽松的 URL 匹配原则。
-1. 当 `serverLists` 为空时，将解析到 `http://localhost:8500` 的 Consul Agent 实例。
-2. 当 `serverLists` 为 `hostname` 时，将解析到 `http://hostname:8500` 的 Consul Agent 实例。
-3. 当 `serverLists` 为 `hostname:port` 时，将解析到 `http://hostname:port` 的 Consul Agent 实例。
+1. 当 `serverLists` 为空时，将解析到 `http://127.0.0.1:8500` 的 Consul Agent 实例。
+2. 当 `serverLists` 为 `hostName` 时，将解析到 `http://hostName:8500` 的 Consul Agent 实例。
+3. 当 `serverLists` 为 `hostName:port` 时，将解析到 `http://hostName:port` 的 Consul Agent 实例。
 4. 当 `serverLists` 为 `http://hostName:port` 时，将解析到 `http://hostName:port` 的 Consul Agent 实例。
 5. 当 `serverLists` 为 `https://hostName:port` 时，将解析到 `https://hostName:port` 的 Consul Agent 实例。
 
