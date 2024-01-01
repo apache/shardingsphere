@@ -53,7 +53,7 @@ class YamlAuthorityRuleConfigurationSwapperTest {
         authorityRuleConfig.setPrivilege(yamlAlgorithmConfig);
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
-        assertNotNull(actual.getAuthorityProvider());
+        assertNotNull(actual.getPrivilegeProvider());
     }
     
     @Test
@@ -62,7 +62,7 @@ class YamlAuthorityRuleConfigurationSwapperTest {
         authorityRuleConfig.setUsers(Collections.singletonList(getYamlUser()));
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
-        assertThat(actual.getAuthorityProvider().getType(), is("ALL_PERMITTED"));
+        assertThat(actual.getPrivilegeProvider().getType(), is("ALL_PERMITTED"));
     }
     
     private YamlUserConfiguration getYamlUser() {
