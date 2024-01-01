@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -56,10 +56,8 @@ class AuthorityRuleTest {
     }
     
     private AuthorityRule createAuthorityRule() {
-        Collection<ShardingSphereUser> users = new LinkedList<>();
-        users.add(new ShardingSphereUser("root", "root", "localhost"));
-        users.add(new ShardingSphereUser("admin", "123456", "localhost"));
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("FIXTURE", new Properties()), Collections.emptyMap(), null);
-        return new AuthorityRule(ruleConfig);
+        Collection<ShardingSphereUser> users = Arrays.asList(new ShardingSphereUser("root", "root", "localhost"), new ShardingSphereUser("admin", "123456", "localhost"));
+        AlgorithmConfiguration privilegeProvider = new AlgorithmConfiguration("FIXTURE", new Properties());
+        return new AuthorityRule(new AuthorityRuleConfiguration(users, privilegeProvider, Collections.emptyMap(), null));
     }
 }
