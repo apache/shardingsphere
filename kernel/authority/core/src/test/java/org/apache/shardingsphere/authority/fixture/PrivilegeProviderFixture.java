@@ -26,11 +26,22 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public final class PrivilegeProviderFixture implements PrivilegeProvider {
     
     @Override
     public Map<Grantee, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users) {
-        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new ShardingSpherePrivilegesFixture()));
+        ShardingSpherePrivileges privileges = mockPrivileges();
+        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> privileges));
+    }
+    
+    private static ShardingSpherePrivileges mockPrivileges() {
+        ShardingSpherePrivileges result = mock(ShardingSpherePrivileges.class);
+        when(result.hasPrivileges(any())).thenReturn(true);
+        return result;
     }
     
     @Override
