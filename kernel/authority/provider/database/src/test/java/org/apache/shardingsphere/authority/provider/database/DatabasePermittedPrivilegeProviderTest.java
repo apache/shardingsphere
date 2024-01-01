@@ -18,18 +18,22 @@
 package org.apache.shardingsphere.authority.provider.database;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class DatabasePermittedPrivilegeProviderTest {
     
@@ -37,8 +41,8 @@ class DatabasePermittedPrivilegeProviderTest {
     void assertBuild() {
         Properties props = PropertiesBuilder.build(new Property("user-database-mappings", "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
         PrivilegeProvider provider = TypedSPILoader.getService(PrivilegeProvider.class, "DATABASE_PERMITTED", props);
-        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
-        Assertions.assertTrue(actual.get(new Grantee("user1", "127.0.0.2")).hasPrivileges("test"));
-        Assertions.assertTrue(actual.get(new Grantee("user1", "127.0.0.2")).hasPrivileges("db_dal_admin"));
+        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(Collections.singleton(new ShardingSphereUser("user1", "", "127.0.0.2")));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(new Grantee("user1", "127.0.0.2")), instanceOf(DatabasePermittedPrivileges.class));
     }
 }

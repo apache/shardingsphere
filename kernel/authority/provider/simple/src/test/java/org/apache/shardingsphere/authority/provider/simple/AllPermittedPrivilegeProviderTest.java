@@ -36,8 +36,8 @@ class AllPermittedPrivilegeProviderTest {
     
     @Test
     void assertBuild() {
-        Map<Grantee, ShardingSpherePrivileges> privileges = TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PERMITTED").build(Collections.singleton(new ShardingSphereUser("root@%")));
-        assertThat(privileges.size(), is(1));
-        assertThat(privileges.get(new Grantee("root", "%")), instanceOf(AllPermittedPrivileges.class));
+        Map<Grantee, ShardingSpherePrivileges> actual = TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PERMITTED").build(Collections.singleton(new ShardingSphereUser("root@%")));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(new Grantee("root", "%")), instanceOf(AllPermittedPrivileges.class));
     }
 }
