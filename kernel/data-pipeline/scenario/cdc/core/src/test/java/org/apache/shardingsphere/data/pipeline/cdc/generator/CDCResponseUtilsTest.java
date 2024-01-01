@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.cdc.generator;
 
 import com.google.protobuf.Message;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.*;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.junit.jupiter.api.Test;
 
