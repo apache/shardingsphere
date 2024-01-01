@@ -36,6 +36,6 @@ public final class DatabasePermittedAuthorityRegistry implements AuthorityRegist
     
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return userPrivileges.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivileges::get);
+        return userPrivileges.keySet().stream().filter(each -> each.getGrantee().accept(grantee)).findFirst().map(userPrivileges::get);
     }
 }
