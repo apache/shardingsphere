@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
+import org.apache.shardingsphere.authority.rule.builder.DefaultUser;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -90,6 +92,7 @@ class ProxyBackendHandlerFactoryTest {
     
     @BeforeEach
     void setUp() {
+        when(connectionSession.getGrantee()).thenReturn(new Grantee(DefaultUser.USERNAME, "%"));
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         when(connectionSession.getDatabaseName()).thenReturn("db");
