@@ -17,21 +17,30 @@
 
 package org.apache.shardingsphere.authority.provider.simple.privilege;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
  * All permitted authority registry.
  */
+@RequiredArgsConstructor
 public final class AllPermittedAuthorityRegistry implements AuthorityRegistry {
     
-    private static final ShardingSpherePrivileges INSTANCE = new AllPermittedPrivileges();
+    private final Map<Grantee, AllPermittedPrivileges> granteePrivileges;
     
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return Optional.of(INSTANCE);
+        for (Entry<Grantee, AllPermittedPrivileges> entry : granteePrivileges.entrySet()) {
+            if (entry.getKey().equals(grantee)) {
+                return Optional.of(entry.getValue());
+            }
+        }
+        return Optional.empty();
     }
 }
