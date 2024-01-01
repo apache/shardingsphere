@@ -61,7 +61,7 @@ public final class AuthorityRule implements GlobalRule {
      * Find user.
      *
      * @param grantee grantee user
-     * @return user
+     * @return found user
      */
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
         return configuration.getUsers().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
