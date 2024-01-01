@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.database.privilege;
+package org.apache.shardingsphere.authority.provider.database;
 
 import org.apache.shardingsphere.authority.constant.AuthorityConstants;
 import org.junit.jupiter.api.Test;

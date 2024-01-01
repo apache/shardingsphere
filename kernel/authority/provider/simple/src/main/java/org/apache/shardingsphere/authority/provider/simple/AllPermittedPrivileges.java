@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.database.privilege;
+package org.apache.shardingsphere.authority.provider.simple;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.constant.AuthorityConstants;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 
-import java.util.Collection;
-
 /**
- * Database permitted privileges.
+ * All permitted privileges.
  */
-@RequiredArgsConstructor
-public final class DatabasePermittedPrivileges implements ShardingSpherePrivileges {
-    
-    private final Collection<String> databases;
+public final class AllPermittedPrivileges implements ShardingSpherePrivileges {
     
     @Override
     public boolean hasPrivileges(final String database) {
-        return databases.contains(AuthorityConstants.PRIVILEGE_WILDCARD) || databases.contains(database);
+        return true;
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple.privilege;
+package org.apache.shardingsphere.authority.provider.simple;
 
 import org.junit.jupiter.api.Test;
 
