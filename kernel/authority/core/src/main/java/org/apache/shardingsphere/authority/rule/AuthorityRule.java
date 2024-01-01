@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
+import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
@@ -41,7 +41,7 @@ public final class AuthorityRule implements GlobalRule {
     
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        AuthorityRegistryProvider provider = TypedSPILoader.getService(AuthorityRegistryProvider.class, ruleConfig.getAuthorityProvider().getType(), ruleConfig.getAuthorityProvider().getProps());
+        PrivilegeProvider provider = TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps());
         privileges = provider.build(ruleConfig.getUsers());
     }
     

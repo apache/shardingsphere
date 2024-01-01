@@ -53,7 +53,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGl
     
     private YamlAuthorityRuleConfiguration swapToYamlConfiguration(final AuthorityRuleConfiguration data) {
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
-        result.setPrivilege(algorithmSwapper.swapToYamlConfiguration(data.getAuthorityProvider()));
+        result.setPrivilege(algorithmSwapper.swapToYamlConfiguration(data.getPrivilegeProvider()));
         result.setUsers(data.getUsers().stream().map(userSwapper::swapToYamlConfiguration).collect(Collectors.toList()));
         result.setDefaultAuthenticator(data.getDefaultAuthenticator());
         data.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
@@ -76,7 +76,7 @@ public final class NewYamlAuthorityRuleConfigurationSwapper implements NewYamlGl
         Collection<ShardingSphereUser> users = yamlConfig.getUsers().stream().map(userSwapper::swapToObject).collect(Collectors.toList());
         AlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getPrivilege());
         if (null == provider) {
-            provider = new DefaultAuthorityRuleConfigurationBuilder().build().getAuthorityProvider();
+            provider = new DefaultAuthorityRuleConfigurationBuilder().build().getPrivilegeProvider();
         }
         Map<String, AlgorithmConfiguration> authenticators = yamlConfig.getAuthenticators().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> algorithmSwapper.swapToObject(entry.getValue())));

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.provider.database;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedPrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
+import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
@@ -35,9 +35,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Database permitted authority registry provider.
+ * Database permitted privilege provider.
  */
-public final class DatabasePermittedAuthorityRegistryProvider implements AuthorityRegistryProvider {
+public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvider {
     
     private static final String USER_DATABASE_MAPPINGS_KEY = "user-database-mappings";
     
@@ -45,7 +45,7 @@ public final class DatabasePermittedAuthorityRegistryProvider implements Authori
     
     @Override
     public void init(final Properties props) {
-        userDatabaseMappings = props.getProperty(DatabasePermittedAuthorityRegistryProvider.USER_DATABASE_MAPPINGS_KEY, "");
+        userDatabaseMappings = props.getProperty(DatabasePermittedPrivilegeProvider.USER_DATABASE_MAPPINGS_KEY, "");
         checkUserDatabaseMappings();
     }
     

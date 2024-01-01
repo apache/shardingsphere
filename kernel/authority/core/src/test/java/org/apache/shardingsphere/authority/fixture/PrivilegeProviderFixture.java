@@ -15,41 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple;
+package org.apache.shardingsphere.authority.fixture;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.simple.privilege.AllPermittedPrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
+import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * All permitted authority registry provider.
- */
-public final class AllPermittedAuthorityRegistryProvider implements AuthorityRegistryProvider {
+public final class PrivilegeProviderFixture implements PrivilegeProvider {
     
     @Override
     public Map<Grantee, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users) {
-        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new AllPermittedPrivileges()));
+        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new ShardingSpherePrivilegesFixture()));
     }
     
     @Override
     public String getType() {
-        return "ALL_PERMITTED";
-    }
-    
-    @Override
-    public Collection<Object> getTypeAliases() {
-        return Collections.singleton("ALL_PRIVILEGES_PERMITTED");
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "FIXTURE";
     }
 }

@@ -27,13 +27,13 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Authority registry provider.
+ * Privilege provider.
  */
 @SingletonSPI
-public interface AuthorityRegistryProvider extends TypedSPI {
+public interface PrivilegeProvider extends TypedSPI {
     
     /**
-     * Build authority registry.
+     * Build grantee and privileges map.
      *
      * @param users users
      * @return grantee and privileges map

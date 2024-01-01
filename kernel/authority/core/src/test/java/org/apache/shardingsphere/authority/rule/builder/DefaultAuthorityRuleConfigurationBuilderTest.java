@@ -28,7 +28,7 @@ class DefaultAuthorityRuleConfigurationBuilderTest {
     @Test
     void assertBuild() {
         AuthorityRuleConfiguration actual = new DefaultAuthorityRuleConfigurationBuilder().build();
-        assertThat(actual.getAuthorityProvider().getType(), is("ALL_PERMITTED"));
+        assertThat(actual.getPrivilegeProvider().getType(), is("ALL_PERMITTED"));
         assertThat(actual.getUsers().size(), is(1));
     }
 }

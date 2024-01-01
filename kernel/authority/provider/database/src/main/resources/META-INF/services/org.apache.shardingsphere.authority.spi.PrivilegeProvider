@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.authority.fixture.AuthorityRegistryProviderFixture
+org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegeProvider

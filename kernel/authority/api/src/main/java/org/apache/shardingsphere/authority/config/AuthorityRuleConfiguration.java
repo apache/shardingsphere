@@ -35,7 +35,7 @@ public final class AuthorityRuleConfiguration implements GlobalRuleConfiguration
     
     private final Collection<ShardingSphereUser> users;
     
-    private final AlgorithmConfiguration authorityProvider;
+    private final AlgorithmConfiguration privilegeProvider;
     
     private final Map<String, AlgorithmConfiguration> authenticators;
     
