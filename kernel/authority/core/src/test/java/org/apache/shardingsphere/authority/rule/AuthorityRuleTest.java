@@ -58,6 +58,7 @@ class AuthorityRuleTest {
     private AuthorityRule createAuthorityRule() {
         Collection<ShardingSphereUser> users = Arrays.asList(new ShardingSphereUser("root", "root", "localhost"), new ShardingSphereUser("admin", "123456", "localhost"));
         AlgorithmConfiguration privilegeProvider = new AlgorithmConfiguration("FIXTURE", new Properties());
-        return new AuthorityRule(new AuthorityRuleConfiguration(users, privilegeProvider, Collections.emptyMap(), null));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, privilegeProvider, Collections.emptyMap(), null);
+        return new AuthorityRule(ruleConfig);
     }
 }
