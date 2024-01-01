@@ -24,21 +24,34 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabasePermittedPrivilegeProviderTest {
     
     @Test
     void assertBuild() {
-        Properties props = PropertiesBuilder.build(new Property("user-database-mappings", "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
+        Properties props = PropertiesBuilder.build(new Property("user-database-mappings", "root@localhost=*, user1@127.0.0.1=sys_db, user1@=foo_db, user1@=bar_db, user2@=*"));
         PrivilegeProvider provider = TypedSPILoader.getService(PrivilegeProvider.class, "DATABASE_PERMITTED", props);
-        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
-        Assertions.assertTrue(actual.get(new Grantee("user1", "127.0.0.2")).hasPrivileges("test"));
-        Assertions.assertTrue(actual.get(new Grantee("user1", "127.0.0.2")).hasPrivileges("db_dal_admin"));
+        Map<Grantee, ShardingSpherePrivileges> actual = provider.build(Arrays.asList(
+                new ShardingSphereUser("root", "", "localhost"),
+                new ShardingSphereUser("user1", "", "127.0.0.1"),
+                new ShardingSphereUser("user1", "", "%"),
+                new ShardingSphereUser("user3", "", "%")));
+        assertThat(actual.size(), is(4));
+        assertTrue(actual.get(new Grantee("root", "localhost")).hasPrivileges("sys_db"));
+        assertTrue(actual.get(new Grantee("user1", "127.0.0.1")).hasPrivileges("sys_db"));
+        assertTrue(actual.get(new Grantee("user1", "127.0.0.1")).hasPrivileges("foo_db"));
+        assertTrue(actual.get(new Grantee("user1", "%")).hasPrivileges("bar_db"));
+        assertFalse(actual.get(new Grantee("user1", "%")).hasPrivileges("sys_db"));
+        assertFalse(actual.get(new Grantee("user3", "%")).hasPrivileges("sys_db"));
     }
 }
