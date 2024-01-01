@@ -98,7 +98,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason                            |
 |-----------|-------------|-----------------------------------|
-| 44000     | 16500       | Access denied for operation `%s`. |
 
 ### Cluster
 

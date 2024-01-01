@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Map;
 import java.util.Optional;
@@ -32,10 +31,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class DatabasePermittedAuthorityRegistry implements AuthorityRegistry {
     
-    private final Map<ShardingSphereUser, DatabasePermittedPrivileges> userPrivileges;
+    private final Map<Grantee, DatabasePermittedPrivileges> granteePrivileges;
     
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return userPrivileges.keySet().stream().filter(each -> each.getGrantee().accept(grantee)).findFirst().map(userPrivileges::get);
+        return granteePrivileges.keySet().stream().filter(each -> each.accept(grantee)).findFirst().map(granteePrivileges::get);
     }
 }

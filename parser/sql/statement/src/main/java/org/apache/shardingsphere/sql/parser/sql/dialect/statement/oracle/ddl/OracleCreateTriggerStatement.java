@@ -15,21 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.exception;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Unauthorized operation exception.
+ * Oracle create trigger statement.
  */
-public final class UnauthorizedOperationException extends KernelSQLException {
-    
-    private static final long serialVersionUID = -182093939317068572L;
-    
-    private static final int KERNEL_CODE = 6;
-    
-    public UnauthorizedOperationException(final String operation) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 500, "Access denied for operation `%s`.", operation);
-    }
+public final class OracleCreateTriggerStatement extends CreateTriggerStatement implements OracleStatement {
 }

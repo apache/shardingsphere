@@ -61,8 +61,8 @@ public final class DatabasePermittedAuthorityRegistryProvider implements Authori
         return new DatabasePermittedAuthorityRegistry(buildPrivileges(users, convertUserDatabases()));
     }
     
-    private Map<ShardingSphereUser, DatabasePermittedPrivileges> buildPrivileges(final Collection<ShardingSphereUser> users, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
-        return users.stream().collect(Collectors.toMap(each -> each, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
+    private Map<Grantee, DatabasePermittedPrivileges> buildPrivileges(final Collection<ShardingSphereUser> users, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
+        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
     }
     
     private Collection<String> getUserDatabases(final ShardingSphereUser user, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {

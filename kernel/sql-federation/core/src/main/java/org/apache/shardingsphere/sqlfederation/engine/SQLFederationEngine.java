@@ -114,8 +114,7 @@ public final class SQLFederationEngine implements AutoCloseable {
      * @return use SQL federation or not
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters,
-                          final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
+    public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
         // TODO BEGIN: move this logic to SQLFederationDecider implement class when we remove sql federation type
         if (isQuerySystemSchema(sqlStatementContext, database)) {
             return true;

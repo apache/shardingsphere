@@ -28,4 +28,5 @@
             SELECT EVENTDATA()" db-types="SQLServer" />
 
     <sql-case id="create_trigger_with_create_view" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create view v1 as select 1; END" db-types="MySQL" />
+    <sql-case id="create_trigger_with_dml_event_clause" value="CREATE TRIGGER scott.emp_permit_changes BEFORE DELETE OR INSERT OR UPDATE ON scott.emp" db-types="Oracle" />
 </sql-cases>
