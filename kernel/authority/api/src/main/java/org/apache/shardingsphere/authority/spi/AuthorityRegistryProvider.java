@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.authority.spi;
 
-import org.apache.shardingsphere.authority.model.AuthorityRegistry;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Authority registry provider.
@@ -34,7 +36,7 @@ public interface AuthorityRegistryProvider extends TypedSPI {
      * Build authority registry.
      *
      * @param users users
-     * @return built authority registry
+     * @return grantee and privileges map
      */
-    AuthorityRegistry build(Collection<ShardingSphereUser> users);
+    Map<Grantee, ShardingSpherePrivileges> build(Collection<ShardingSphereUser> users);
 }

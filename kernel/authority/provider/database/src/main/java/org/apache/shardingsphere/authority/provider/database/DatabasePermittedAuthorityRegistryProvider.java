@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.authority.provider.database;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
@@ -57,8 +56,8 @@ public final class DatabasePermittedAuthorityRegistryProvider implements Authori
     }
     
     @Override
-    public AuthorityRegistry build(final Collection<ShardingSphereUser> users) {
-        return new AuthorityRegistry(buildPrivileges(users, convertUserDatabases()));
+    public Map<Grantee, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users) {
+        return buildPrivileges(users, convertUserDatabases());
     }
     
     private Map<Grantee, ShardingSpherePrivileges> buildPrivileges(final Collection<ShardingSphereUser> users, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {

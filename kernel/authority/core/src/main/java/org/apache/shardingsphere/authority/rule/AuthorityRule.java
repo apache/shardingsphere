@@ -19,7 +19,6 @@ package org.apache.shardingsphere.authority.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -37,12 +37,12 @@ public final class AuthorityRule implements GlobalRule {
     @Getter
     private final AuthorityRuleConfiguration configuration;
     
-    private final AuthorityRegistry authorityRegistry;
+    private final Map<Grantee, ShardingSpherePrivileges> privileges;
     
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         AuthorityRegistryProvider provider = TypedSPILoader.getService(AuthorityRegistryProvider.class, ruleConfig.getAuthorityProvider().getType(), ruleConfig.getAuthorityProvider().getProps());
-        authorityRegistry = provider.build(ruleConfig.getUsers());
+        privileges = provider.build(ruleConfig.getUsers());
     }
     
     /**
@@ -74,6 +74,6 @@ public final class AuthorityRule implements GlobalRule {
      * @return found privileges
      */
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return authorityRegistry.findPrivileges(grantee);
+        return privileges.keySet().stream().filter(each -> each.accept(grantee)).findFirst().map(privileges::get);
     }
 }

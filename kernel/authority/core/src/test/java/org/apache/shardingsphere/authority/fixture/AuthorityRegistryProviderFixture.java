@@ -17,24 +17,20 @@
 
 package org.apache.shardingsphere.authority.fixture;
 
-import org.apache.shardingsphere.authority.model.AuthorityRegistry;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class AuthorityRegistryProviderFixture implements AuthorityRegistryProvider {
     
     @Override
-    public AuthorityRegistry build(final Collection<ShardingSphereUser> users) {
-        AuthorityRegistry result = mock(AuthorityRegistry.class);
-        when(result.findPrivileges(any())).thenReturn(Optional.of(new ShardingSpherePrivilegesFixture()));
-        return result;
+    public Map<Grantee, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users) {
+        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new ShardingSpherePrivilegesFixture()));
     }
     
     @Override
