@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.authority.model;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Authority registry.
  */
-public interface AuthorityRegistry {
+@RequiredArgsConstructor
+public final class AuthorityRegistry {
+    
+    private final Map<Grantee, ShardingSpherePrivileges> granteePrivileges;
     
     /**
      * Find privileges.
@@ -32,5 +37,7 @@ public interface AuthorityRegistry {
      * @param grantee grantee
      * @return found privileges
      */
-    Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
+    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
+        return granteePrivileges.keySet().stream().filter(each -> each.accept(grantee)).findFirst().map(granteePrivileges::get);
+    }
 }
