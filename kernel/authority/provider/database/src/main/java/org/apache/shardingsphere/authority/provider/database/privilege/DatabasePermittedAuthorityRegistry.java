@@ -23,7 +23,6 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -36,11 +35,6 @@ public final class DatabasePermittedAuthorityRegistry implements AuthorityRegist
     
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        for (Entry<Grantee, DatabasePermittedPrivileges> entry : granteePrivileges.entrySet()) {
-            if (entry.getKey().equals(grantee)) {
-                return Optional.of(entry.getValue());
-            }
-        }
-        return Optional.empty();
+        return granteePrivileges.keySet().stream().filter(each -> each.accept(grantee)).findFirst().map(granteePrivileges::get);
     }
 }
