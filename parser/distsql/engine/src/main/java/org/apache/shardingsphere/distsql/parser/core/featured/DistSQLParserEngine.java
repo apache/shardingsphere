@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Featured DistSQL statement parser engine.
+ * DistSQL parser engine.
  */
-public final class FeaturedDistSQLStatementParserEngine {
+public final class DistSQLParserEngine {
     
     /**
      * Parse SQL.
