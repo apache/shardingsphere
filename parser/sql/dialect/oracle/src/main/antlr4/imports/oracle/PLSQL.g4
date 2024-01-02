@@ -57,7 +57,7 @@ createFunction
     ;
 
 createTrigger
-    : CREATE (OR REPLACE)? TRIGGER triggerName (BEFORE | AFTER | INSTEAD OF) dmlEventClause body?
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TRIGGER plsqlTriggerSource
     ;
 
 plsqlFunctionSource
@@ -283,16 +283,29 @@ autonomousTransPragma
     : PRAGMA AUTONOMOUS_TRANSACTION SEMI_
     ;
 
+plsqlTriggerSource
+    : (schemaName DOT_)? triggerName sharingClause? defaultCollationClause? (simpleDmlTrigger | systemTrigger)
+    ;
+
+simpleDmlTrigger
+    : (BEFORE | AFTER) dmlEventClause
+    ;
+
 dmlEventClause
-    : (dmlEventElement (OR dmlEventElement)* ON viewName)
-    | (nonDmlEventElement (OR nonDmlEventElement)* ON (DATABASE | (schemaName DOT_)? SCHEMA))
+    : dmlEventTrigger (OR dmlEventTrigger)* ON viewName
     ;
 
-dmlEventElement
-    : (DELETE | INSERT | UPDATE) (OF LP_ columnName (COMMA_ columnName)* RP_)?
+dmlEventTrigger
+    : DELETE
+    | INSERT
+    | UPDATE (OF columnName (COMMA_ columnName)*)?
     ;
 
-nonDmlEventElement
+systemTrigger
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEventTrigger (OR ddlEventTrigger)*) ON (PLUGGABLE? DATABASE) body
+    ;
+
+ddlEventTrigger
     : ALTER
     | ANALYZE
     | ASSOCIATE STATISTICS
