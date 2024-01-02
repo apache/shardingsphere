@@ -851,7 +851,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
-        Collection<ProjectionSegment> projections = new LinkedList<>();
+        List<ProjectionSegment> projections = new LinkedList<>();
         if (null != ctx.top()) {
             projections.add((ProjectionSegment) visit(ctx.top()));
         }
@@ -862,6 +862,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             projections.add((ProjectionSegment) visit(each));
         }
         ProjectionsSegment result = new ProjectionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        projections.sort(Comparator.comparingInt(ProjectionSegment::getStartIndex));
         result.getProjections().addAll(projections);
         return result;
     }
