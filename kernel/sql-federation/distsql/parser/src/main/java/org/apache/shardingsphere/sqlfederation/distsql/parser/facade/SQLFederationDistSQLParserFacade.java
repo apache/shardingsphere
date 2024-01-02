@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for SQL federation DistSQL statement.
+ * SQL federation DistSQL parser facade.
  */
 public final class SQLFederationDistSQLParserFacade implements DistSQLParserFacade {
     

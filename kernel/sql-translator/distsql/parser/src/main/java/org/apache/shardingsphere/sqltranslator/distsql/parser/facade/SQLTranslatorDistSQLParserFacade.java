@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sqltranslator.distsql.parser.core.SQLTranslator
 import org.apache.shardingsphere.sqltranslator.distsql.parser.core.SQLTranslatorDistSQLStatementVisitor;
 
 /**
- * SQL parser facade for SQL translator DistSQL statement.
+ * SQL translator DistSQL parser facade.
  */
 public final class SQLTranslatorDistSQLParserFacade implements DistSQLParserFacade {
     

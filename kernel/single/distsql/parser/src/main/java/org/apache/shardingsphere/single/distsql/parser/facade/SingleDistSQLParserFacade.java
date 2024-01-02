@@ -27,7 +27,7 @@ import org.apache.shardingsphere.single.distsql.parser.core.SingleDistSQLParser;
 import org.apache.shardingsphere.single.distsql.parser.core.SingleDistSQLStatementVisitor;
 
 /**
- * SQL parser facade for single DistSQL statement.
+ * Single DistSQL parser facade.
  */
 public final class SingleDistSQLParserFacade implements DistSQLParserFacade {
     

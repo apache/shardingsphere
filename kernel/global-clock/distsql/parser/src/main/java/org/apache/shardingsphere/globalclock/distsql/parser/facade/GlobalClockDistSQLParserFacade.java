@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for global clock DistSQL statement.
+ * Global clock DistSQL parser facade.
  */
 public final class GlobalClockDistSQLParserFacade implements DistSQLParserFacade {
     
