@@ -133,28 +133,7 @@ services:
   及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的
   https://github.com/oracle/graal/issues/5648 。
 
-- 对于使用 `ShardingSphere Agent` 等 APM Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
+- 对于使用 `ShardingSphere Agent` 等 Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
   Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065 。
 
-- 以下部分采用 `Apache SkyWalking Java Agent` 作为示例，可用于跟踪 GraalVM 社区的对应 issue。
-
-1. 下载 https://archive.apache.org/dist/skywalking/java-agent/8.16.0/apache-skywalking-java-agent-8.16.0.tgz ，
-   并解压到 ShardingSphere Git Source 的 `distribution/proxy-native`。
-
-2. 修改 `distribution/proxy-native/pom.xml` 的 `native profile`，
-   为 `org.graalvm.buildtools:native-maven-plugin` 的 `configuration` 添加如下的 `jvmArgs`。
-
-```xml
-
-<jvmArgs>
-    <arg>-Dskywalking.agent.service_name="your service name"</arg>
-    <arg>-Dskywalking.collector.backend_service="your skywalking oap ip and port"</arg>
-    <arg>-javaagent:./skywalking-agent/skywalking-agent.jar</arg>
-</jvmArgs>
-```
-
-3. 通过命令行构建 GraalVM Native Image。
-
-```bash
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
-```
+- 若用户期望在 ShardingSphere Proxy Native 下使用 OpenTelemetry Java Agent，则需要关注 https://github.com/oracle/graal/pull/8077 涉及的变动。

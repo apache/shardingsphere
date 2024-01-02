@@ -151,23 +151,4 @@ services:
 - The following sections use the `Apache SkyWalking Java Agent` as an example, which can be used to track corresponding
   issues from the GraalVM community.
 
-1. Download https://archive.apache.org/dist/skywalking/java-agent/8.16.0/apache-skywalking-java-agent-8.16.0.tgz and `untar` it
-   to `distribution/proxy-native` in ShardingSphere Git Source.
-
-2. Modify the `native profile` of `distribution/proxy-native/pom.xml`,
-   Add the following `jvmArgs` to the `configuration` of `org.graalvm.buildtools:native-maven-plugin`.
-
-```xml
-
-<jvmArgs>
-    <arg>-Dskywalking.agent.service_name="your service name"</arg>
-    <arg>-Dskywalking.collector.backend_service="your skywalking oap ip and port"</arg>
-    <arg>-javaagent:./skywalking-agent/skywalking-agent.jar</arg>
-</jvmArgs>
-```
-
-3. Build the GraalVM Native Image from the command line.
-
-```bash
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
-```
+- If users expect to use OpenTelemetry Java Agent under ShardingSphere Proxy Native, they need to pay attention to the changes involved in https://github.com/oracle/graal/pull/8077 .
