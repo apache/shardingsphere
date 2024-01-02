@@ -3039,7 +3039,6 @@
                 </binary-operation-expression>
             </parameter>
         </exec>
-
     </insert>
 
 </sql-parser-test-cases>
