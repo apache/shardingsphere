@@ -87,6 +87,3 @@ rules:
   tables:
     - t_broadcast_table
     - t_broadcast_table_for_ddl
-  
-- !SQL_PARSER
-  sqlCommentParseEnabled: true

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
  * Cluster status service.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class ClusterStatusService {
     
     private final ClusterPersistRepository repository;

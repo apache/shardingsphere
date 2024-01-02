@@ -27,11 +27,11 @@ import java.util.Optional;
 /**
  * Database type of MariaDB in testcontainers-java.
  */
-public final class TcMariaDBDatabaseType extends AbstractTestcontainersDatabaseType {
+public final class TcMariaDBDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:tc:mariadb:");
+        return Collections.singleton("jdbc:tc:mariadb:");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class TcMariaDBDatabaseType extends AbstractTestcontainersDatabaseT
     
     @Override
     public String getType() {
-        return "TestContainersMariaDB";
+        return "TC-MariaDB";
     }
 }

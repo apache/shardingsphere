@@ -79,7 +79,7 @@ import static org.mockito.Mockito.when;
 class OpenGaussComBatchBindExecutorTest {
     
     private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine(
-            TypedSPILoader.getService(DatabaseType.class, "openGauss"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+            TypedSPILoader.getService(DatabaseType.class, "openGauss"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
     
     @Test
     void assertExecute() throws SQLException {

@@ -60,8 +60,6 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
             enableRangeQueryForInline(yamlShardingRuleConfig.get());
             removeAuditStrategy(yamlShardingRuleConfig.get());
         }
-        rootConfig.setDatabaseName(rootConfig.getDatabaseName());
-        rootConfig.setSchemaName(rootConfig.getSchemaName());
         rootConfig.setMode(createStandaloneModeConfiguration());
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
     }

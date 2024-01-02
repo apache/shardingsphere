@@ -30,6 +30,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ShardingTest"},
     "pattern":"\\Qtest-native/yaml/features/sharding.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.mode.cluster.ZookeeperTest"},
+    "pattern":"\\Qtest-native/yaml/mode/cluster/zookeeper.yaml\\E"
   }]},
   "bundles":[]
 }

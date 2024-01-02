@@ -55,6 +55,17 @@ class ShowAuthorityRuleExecutorTest {
         assertThat(row.getCell(3), is(""));
     }
     
+    private ShardingSphereMetaData mockMetaData() {
+        AuthorityRule authorityRule = mock(AuthorityRule.class);
+        when(authorityRule.getConfiguration()).thenReturn(createAuthorityRuleConfiguration());
+        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties()));
+    }
+    
+    private AuthorityRuleConfiguration createAuthorityRuleConfiguration() {
+        ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
+        return new AuthorityRuleConfiguration(Collections.singleton(root), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null);
+    }
+    
     @Test
     void assertGetColumnNames() {
         ShowAuthorityRuleExecutor executor = new ShowAuthorityRuleExecutor();
@@ -64,17 +75,5 @@ class ShowAuthorityRuleExecutorTest {
         assertThat(iterator.next(), is("users"));
         assertThat(iterator.next(), is("provider"));
         assertThat(iterator.next(), is("props"));
-    }
-    
-    private ShardingSphereMetaData mockMetaData() {
-        AuthorityRule authorityRule = mock(AuthorityRule.class);
-        when(authorityRule.getConfiguration()).thenReturn(createAuthorityRuleConfiguration());
-        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class),
-                new RuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties()));
-    }
-    
-    private AuthorityRuleConfiguration createAuthorityRuleConfiguration() {
-        ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
-        return new AuthorityRuleConfiguration(Collections.singleton(root), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
     }
 }

@@ -38,7 +38,7 @@ class YamlAuthorityRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("type", new Properties()), null);
+        AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("type", new Properties()), Collections.emptyMap(), null);
         YamlAuthorityRuleConfiguration actual = swapper.swapToYamlConfiguration(authorityRuleConfig);
         assertTrue(actual.getUsers().isEmpty());
         assertNotNull(actual.getPrivilege());
@@ -53,7 +53,7 @@ class YamlAuthorityRuleConfigurationSwapperTest {
         authorityRuleConfig.setPrivilege(yamlAlgorithmConfig);
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
-        assertNotNull(actual.getAuthorityProvider());
+        assertNotNull(actual.getPrivilegeProvider());
     }
     
     @Test
@@ -62,7 +62,7 @@ class YamlAuthorityRuleConfigurationSwapperTest {
         authorityRuleConfig.setUsers(Collections.singletonList(getYamlUser()));
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
-        assertThat(actual.getAuthorityProvider().getType(), is("ALL_PERMITTED"));
+        assertThat(actual.getPrivilegeProvider().getType(), is("ALL_PERMITTED"));
     }
     
     private YamlUserConfiguration getYamlUser() {

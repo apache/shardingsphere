@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.D
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -68,7 +68,7 @@ public final class PipelineJobDataSourcePreparer {
             return;
         }
         String defaultSchema = dialectDatabaseMetaData.getDefaultSchema().orElse(null);
-        PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(targetDatabaseType);
+        PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>();
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             String targetSchemaName = each.getTargetName().getSchemaName().toString();
@@ -104,6 +104,7 @@ public final class PipelineJobDataSourcePreparer {
      * @throws SQLException SQL exception
      */
     public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
+        final long startTimeMillis = System.currentTimeMillis();
         PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
@@ -113,6 +114,7 @@ public final class PipelineJobDataSourcePreparer {
                 }
             }
         }
+        log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     private void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

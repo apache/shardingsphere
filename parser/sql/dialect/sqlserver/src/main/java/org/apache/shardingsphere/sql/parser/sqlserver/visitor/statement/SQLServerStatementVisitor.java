@@ -46,10 +46,10 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Con
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableAsSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseSetContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DelimitedIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
@@ -116,7 +116,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -167,13 +166,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.keyword.KeywordValue;
@@ -853,6 +852,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
+        if (null != ctx.top()) {
+            projections.add((ProjectionSegment) visit(ctx.top()));
+        }
         for (UnqualifiedShorthandContext each : ctx.unqualifiedShorthand()) {
             projections.add(new ShorthandProjectionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex()));
         }
@@ -1036,9 +1038,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
-        Collection<AssignmentSegment> assignments = new LinkedList<>();
+        Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
         for (AssignmentContext each : ctx.assignment()) {
-            assignments.add((AssignmentSegment) visit(each));
+            assignments.add((ColumnAssignmentSegment) visit(each));
         }
         return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
     }
@@ -1058,7 +1060,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(column);
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
-        AssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
+        ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
         result.getColumns().add(column);
         return result;
     }
@@ -1135,10 +1137,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return result;
         }
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
-        if (null != ctx.top()) {
-            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
-            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber, null == alias ? null : alias.getIdentifier().getValue());
-        }
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
             ColumnProjectionSegment result = new ColumnProjectionSegment(column);
@@ -1154,11 +1152,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         int stopIndex = ctx.topNum().getStop().getStopIndex();
         ASTNode topNum = visit(ctx.topNum());
         if (topNum instanceof NumberLiteralValue) {
-            return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
+            NumberLiteralRowNumberValueSegment rowNumberSegment = new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
+            return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), rowNumberSegment, null != ctx.alias() ? ctx.alias().getText() : null);
         }
-        ParameterMarkerSegment result = new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
-        parameterMarkerSegments.add(result);
-        return result;
+        ParameterMarkerSegment parameterSegment = new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
+        parameterMarkerSegments.add(parameterSegment);
+        return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (RowNumberValueSegment) parameterSegment, null != ctx.alias() ? ctx.alias().getText() : null);
     }
     
     @Override

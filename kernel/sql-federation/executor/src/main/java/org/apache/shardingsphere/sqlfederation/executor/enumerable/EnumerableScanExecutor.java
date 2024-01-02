@@ -269,8 +269,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final ScanExecutorContext sqlString, final DatabaseType databaseType, final boolean useCache) {
         String sql = sqlString.getSql().replace(System.lineSeparator(), " ");
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType,
-                optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
-                optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, useCache);
+                optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache()).parse(sql, useCache);
         List<Object> params = getParameters(sqlString.getParamIndexes());
         HintValueContext hintValueContext = new HintValueContext();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getDatabaseName(), hintValueContext).bind(sqlStatement, params);

@@ -96,22 +96,6 @@
   "name":"groovy.lang.groovydoc.Groovydoc"
 },
 {
-  "condition":{"typeReachable":"org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"},
-  "name":"groovy.runtime.metaclass.CustomMetaClassCreationHandle"
-},
-{
-  "condition":{"typeReachable":"groovy.lang.Binding"},
-  "name":"groovy.runtime.metaclass.groovy.lang.BindingMetaClass"
-},
-{
-  "condition":{"typeReachable":"org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"},
-  "name":"groovy.runtime.metaclass.groovy.lang.ExpandoMetaClassMetaClass"
-},
-{
-  "condition":{"typeReachable":"groovy.lang.GroovyShell"},
-  "name":"groovy.runtime.metaclass.groovy.lang.GroovyShellMetaClass"
-},
-{
   "condition":{"typeReachable":"org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"},
   "name":"groovy.util.BufferedIterator"
 },

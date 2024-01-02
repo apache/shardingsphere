@@ -27,11 +27,11 @@ import java.util.Optional;
 /**
  * Database type of MSSQL Server in testcontainers-java.
  */
-public final class TcSQLServerDatabaseType extends AbstractTestcontainersDatabaseType {
+public final class TcSQLServerDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:tc:sqlserver:");
+        return Collections.singleton("jdbc:tc:sqlserver:");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class TcSQLServerDatabaseType extends AbstractTestcontainersDatabas
     
     @Override
     public String getType() {
-        return "TestContainersSQLServer";
+        return "TC-SQLServer";
     }
 }

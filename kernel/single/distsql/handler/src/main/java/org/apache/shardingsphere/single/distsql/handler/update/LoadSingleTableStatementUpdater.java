@@ -138,7 +138,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
         }
     }
     
-    private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
+    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
                 .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }

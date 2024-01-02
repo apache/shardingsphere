@@ -19,9 +19,13 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -32,18 +36,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
- * Pipeline data source wrapper is for abstract standard jdbc and sharding jdbc.
+ * Pipeline data source wrapper.
  */
 @RequiredArgsConstructor
-@Getter
 @Slf4j
 public final class PipelineDataSourceWrapper implements DataSource, AutoCloseable {
     
     private final DataSource dataSource;
     
+    @Getter
     private final DatabaseType databaseType;
     
     private final AtomicBoolean closed = new AtomicBoolean(false);
+    
+    @SneakyThrows(SQLException.class)
+    public PipelineDataSourceWrapper(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
+        dataSource = TypedSPILoader.getService(PipelineDataSourceCreator.class, pipelineDataSourceConfig.getType()).create(pipelineDataSourceConfig.getDataSourceConfiguration());
+        databaseType = pipelineDataSourceConfig.getDatabaseType();
+    }
     
     /**
      * Whether underlying data source is closed or not.

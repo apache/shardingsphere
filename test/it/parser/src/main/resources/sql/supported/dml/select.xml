@@ -236,4 +236,8 @@
     <sql-case id="select_with_count_temp_table" value="SELECT COUNT(*) AS [Number of rows] FROM #Test" db-types="SQLServer"/>
     <sql-case id="select_with_bracket_alias" value="SELECT obj1.name AS [XEvent-name], col2.name AS [XEvent-column], obj1.description AS [Descr-name], col2.description AS [Descr-column] FROM sys.dm_xe_objects AS obj1 INNER JOIN sys.dm_xe_object_columns AS col2 ON col2.object_name = obj1.name ORDER BY obj1.name, col2.name" db-types="SQLServer"/>
     <sql-case id="select_with_cross_apply" value="SELECT query = a.text, start_time, percent_complete, eta = dateadd(second,estimated_completion_time/1000, getdate()) FROM sys.dm_exec_requests r CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) a WHERE r.command = 'RESTORE DATABASE'" db-types="SQLServer"/>
+    <sql-case id="select_with_top_restrict1" value="SELECT TOP 10 * FROM TableName" db-types="SQLServer"/>
+    <sql-case id="select_with_top_restrict2" value="SELECT TOP 10 columnName FROM TableName;" db-types="SQLServer"/>
+    <sql-case id="select_with_top_restrict3" value="SELECT TOP 10 alias1.columnName from TableName alias1" db-types="SQLServer"/>
+    <sql-case id="select_with_top_with_ties" value="SELECT TOP 10 WITH TIES alias1.columnName from TableName alias1" db-types="SQLServer"/>
 </sql-cases>

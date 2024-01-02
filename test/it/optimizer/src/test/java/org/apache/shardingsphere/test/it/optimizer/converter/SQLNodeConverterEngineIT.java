@@ -84,7 +84,7 @@ class SQLNodeConverterEngineIT {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        return new SQLStatementVisitorEngine(databaseType, true).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
+        return new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

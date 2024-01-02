@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPositionFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlJobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
@@ -55,13 +55,13 @@ public final class YamlJobItemInventoryTasksProgressSwapper {
     
     private String[] getFinished(final JobItemInventoryTasksProgress progress) {
         return progress.getProgresses().entrySet().stream()
-                .filter(entry -> entry.getValue().getPosition() instanceof FinishedPosition)
+                .filter(entry -> entry.getValue().getPosition() instanceof IngestFinishedPosition)
                 .map(Entry::getKey).toArray(String[]::new);
     }
     
     private Map<String, String> getUnfinished(final JobItemInventoryTasksProgress progress) {
         return progress.getProgresses().entrySet().stream()
-                .filter(entry -> !(entry.getValue().getPosition() instanceof FinishedPosition))
+                .filter(entry -> !(entry.getValue().getPosition() instanceof IngestFinishedPosition))
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition().toString()));
     }
     
@@ -76,13 +76,13 @@ public final class YamlJobItemInventoryTasksProgressSwapper {
             return new JobItemInventoryTasksProgress(Collections.emptyMap());
         }
         Map<String, InventoryTaskProgress> taskProgressMap = new LinkedHashMap<>();
-        taskProgressMap.putAll(Arrays.stream(yamlProgress.getFinished()).collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgress(new FinishedPosition()))));
+        taskProgressMap.putAll(Arrays.stream(yamlProgress.getFinished()).collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgress(new IngestFinishedPosition()))));
         taskProgressMap.putAll(yamlProgress.getUnfinished().entrySet().stream().collect(Collectors.toMap(Entry::getKey, getInventoryTaskProgressFunction())));
         return new JobItemInventoryTasksProgress(taskProgressMap);
     }
     
     private Function<Entry<String, String>, InventoryTaskProgress> getInventoryTaskProgressFunction() {
         return entry -> new InventoryTaskProgress(
-                Strings.isNullOrEmpty(entry.getValue()) ? new PlaceholderPosition() : PrimaryKeyPositionFactory.newInstance(entry.getValue()));
+                Strings.isNullOrEmpty(entry.getValue()) ? new IngestPlaceholderPosition() : PrimaryKeyIngestPositionFactory.newInstance(entry.getValue()));
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.createtable;
 
-import org.apache.shardingsphere.data.pipeline.core.spi.sql.CreateTableSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -86,8 +86,8 @@ class CreateTableSQLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (CreateTableSQLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                Collection<String> actualDDLs = DatabaseTypedSPILoader.getService(
-                        CreateTableSQLGenerator.class, testParam.getDatabaseType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
+                DialectPipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, testParam.getDatabaseType());
+                Collection<String> actualDDLs = sqlBuilder.buildCreateTableSQLs(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
                 assertSQL(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }

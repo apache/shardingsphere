@@ -225,7 +225,6 @@ The text of each license is the standard Apache 2.0 license.
     calcite-core 1.35.0: https://calcite.apache.org, Apache 2.0
     calcite-linq4j 1.35.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.16.0: https://github.com/apache/commons-codec, Apache 2.0
-    commons-collections4 4.4: https://github.com/apache/commons-collections, Apache 2.0
     commons-dbcp2 2.6.0: https://commons.apache.org/proper/commons-dbcp, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
     commons-io 2.11.0: https://github.com/apache/commons-io, Apache 2.0
@@ -304,8 +303,8 @@ The text of each license is the standard Apache 2.0 license.
     snakeyaml 2.2: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
     transmittable-thread-local 2.14.2: https://github.com/alibaba/transmittable-thread-local, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
-    zookeeper 3.9.0: https://github.com/apache/zookeeper, Apache 2.0
-    zookeeper-jute 3.9.0: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper 3.9.1: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper-jute 3.9.1: https://github.com/apache/zookeeper, Apache 2.0
     java-util 2.4.0: https://github.com/jdereg/java-util, Apache 2.0
 
 ========================================================================

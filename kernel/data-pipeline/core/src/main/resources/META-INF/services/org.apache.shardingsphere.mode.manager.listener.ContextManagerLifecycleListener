@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.data.pipeline.core.listener.PipelineContextManagerLifecycleListener
-org.apache.shardingsphere.data.pipeline.core.listener.ShardingSphereStatisticsContextManagerLifecycleListener

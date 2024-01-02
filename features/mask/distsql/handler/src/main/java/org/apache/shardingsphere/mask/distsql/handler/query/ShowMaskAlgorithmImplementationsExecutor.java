@@ -37,6 +37,7 @@ public final class ShowMaskAlgorithmImplementationsExecutor implements Queryable
         return Arrays.asList("name", "type", "class_path");
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMaskAlgorithmImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();

@@ -39,6 +39,8 @@
     <sql-case id="create_table_with_sharing_none" value="CREATE TABLE t_log SHARING = NONE (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
     <sql-case id="create_table_with_optimize_read" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR READ" db-types="Oracle" />
     <sql-case id="create_table_with_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
+    <sql-case id="create_table_without_optimize_read" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) NO MEMOPTIMIZE FOR READ" db-types="Oracle" />
+    <sql-case id="create_table_without_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) NO MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
     <sql-case id="create_table_with_parent" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) PARENT t_log_parent" db-types="Oracle" />
     <sql-case id="create_object_table" value="CREATE TABLE t_log OF t_log_type" db-types="Oracle" />
     <sql-case id="create_table_with_char_varing" value="CREATE TABLE t_log(id char varying (20))" db-types="Oracle" />
@@ -296,4 +298,21 @@
     (PARTITION p1 VALUES LESS THAN (1000),
     PARTITION p2 VALUES LESS THAN (2500),
     PARTITION p3 VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
+    <sql-case id="create_table_with_queue" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) USAGE QUEUE" db-types="Oracle" />
+    <sql-case id="create_table_with_relational_and_physical_properties" value="CREATE TABLE &quot;C##TPCC2&quot;.&quot;TEST_BASIC2&quot;
+    (&quot;BS_COL01&quot; NUMBER,
+    &quot;BS_COL02&quot; NUMBER,
+    PRIMARY KEY (&quot;BS_COL01&quot;)
+    USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS
+    STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TPCCTAB&quot; ENABLE
+    ) SEGMENT CREATION IMMEDIATE
+    PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255
+    NOCOMPRESS LOGGING
+    STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TPCCTAB&quot;" db-types="Oracle" />
 </sql-cases>

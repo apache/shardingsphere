@@ -89,7 +89,7 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
         findUnusedAlgorithms(currentRuleConfig).forEach(each -> currentRuleConfig.getMaskAlgorithms().remove(each));
     }
     
-    private static Collection<String> findUnusedAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
+    private Collection<String> findUnusedAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm)
                 .collect(Collectors.toSet());
         return currentRuleConfig.getMaskAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());

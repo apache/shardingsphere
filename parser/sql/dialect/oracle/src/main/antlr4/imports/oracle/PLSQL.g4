@@ -56,6 +56,10 @@ createFunction
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
     ;
 
+createTrigger
+    : CREATE (OR REPLACE)? TRIGGER triggerName (BEFORE | AFTER | INSTEAD OF) dmlEventClause
+    ;
+
 plsqlFunctionSource
     : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
     sharingClause? (invokerRightsClause
@@ -64,10 +68,9 @@ plsqlFunctionSource
     | deterministicClause
     | parallelEnableClause
     | resultCacheClause
-    | aggregateClause
     | pipelinedClause
-    | sqlMacroClause)* 
-    (IS | AS) (callSpec | declareSection? body)
+    | sqlMacroClause)*
+    (aggregateClause | ((IS | AS) (callSpec | declareSection? body)))
     ;
     
 body
@@ -274,4 +277,12 @@ pragma
 
 autonomousTransPragma
     : PRAGMA AUTONOMOUS_TRANSACTION SEMI_
+    ;
+
+dmlEventClause
+    : dmlEventElement (OR dmlEventElement)* ON viewName
+    ;
+
+dmlEventElement
+    : (DELETE | INSERT | UPDATE) (OF LP_ columnName (COMMA_ columnName)* RP_)?
     ;

@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.checker;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,11 +40,11 @@ public final class DataSourceCheckEngine {
     
     private final DialectDataSourceChecker checker;
     
-    private final PipelineCommonSQLBuilder sqlBuilder;
+    private final PipelinePrepareSQLBuilder sqlBuilder;
     
     public DataSourceCheckEngine(final DatabaseType databaseType) {
         checker = DatabaseTypedSPILoader.findService(DialectDataSourceChecker.class, databaseType).orElse(null);
-        sqlBuilder = new PipelineCommonSQLBuilder(databaseType);
+        sqlBuilder = new PipelinePrepareSQLBuilder(databaseType);
     }
     
     /**
@@ -51,7 +53,7 @@ public final class DataSourceCheckEngine {
      * @param dataSources data sources
      * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
      */
-    public void checkConnection(final Collection<? extends DataSource> dataSources) {
+    public void checkConnection(final Collection<DataSource> dataSources) {
         try {
             for (DataSource each : dataSources) {
                 each.getConnection().close();
@@ -62,22 +64,35 @@ public final class DataSourceCheckEngine {
     }
     
     /**
-     * Check table is empty.
-     *
-     * @param dataSources data sources
-     * @param tableAndSchemaNameMapper mapping
-     * @param logicTableNames logic table names
-     * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
+     * Check source data source.
+     * 
+     * @param dataSources to be checked source data source
      */
-    // TODO rename to common usage name
-    // TODO Merge schemaName and tableNames
-    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
+    public void checkSourceDataSources(final Collection<DataSource> dataSources) {
+        checkConnection(dataSources);
+        if (null == checker) {
+            return;
+        }
+        dataSources.forEach(checker::checkPrivilege);
+        dataSources.forEach(checker::checkVariable);
+    }
+    
+    /**
+     * Check target data sources.
+     *
+     * @param dataSources to be checked target data sources
+     * @param importerConfig importer configuration
+     */
+    public void checkTargetDataSources(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
+        checkConnection(dataSources);
+        checkEmptyTable(dataSources, importerConfig);
+    }
+    
+    private void checkEmptyTable(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
         try {
             for (DataSource each : dataSources) {
-                for (String tableName : logicTableNames) {
-                    if (!checkEmpty(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName)) {
-                        throw new PrepareJobWithTargetTableNotEmptyException(tableName);
-                    }
+                for (CaseInsensitiveQualifiedTable qualifiedTable : importerConfig.getQualifiedTables()) {
+                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName().toString()));
                 }
             }
         } catch (final SQLException ex) {
@@ -85,41 +100,21 @@ public final class DataSourceCheckEngine {
         }
     }
     
-    private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
-        String sql = sqlBuilder.buildCheckEmptySQL(schemaName, tableName);
+    /**
+     * Check whether empty table.
+     *
+     * @param dataSource data source
+     * @param qualifiedTable qualified table
+     * @return empty or not
+     * @throws SQLException if there's database operation failure
+     */
+    public boolean checkEmptyTable(final DataSource dataSource, final CaseInsensitiveQualifiedTable qualifiedTable) throws SQLException {
+        String sql = sqlBuilder.buildCheckEmptyTableSQL(qualifiedTable.getSchemaName().toString(), qualifiedTable.getTableName().toString());
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             return !resultSet.next();
-        }
-    }
-    
-    /**
-     * Check user privileges.
-     *
-     * @param dataSources data sources
-     */
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        if (null == checker) {
-            return;
-        }
-        for (DataSource each : dataSources) {
-            checker.checkPrivilege(each);
-        }
-    }
-    
-    /**
-     * Check data source variables.
-     *
-     * @param dataSources data sources
-     */
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
-        if (null == checker) {
-            return;
-        }
-        for (DataSource each : dataSources) {
-            checker.checkVariable(each);
         }
     }
 }

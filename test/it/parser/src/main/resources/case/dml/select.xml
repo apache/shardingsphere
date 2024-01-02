@@ -7819,4 +7819,56 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_top_restrict1">
+        <from>
+            <simple-table name="TableName" start-index="21" stop-index="29"/>
+        </from>
+        <projections start-index="7" stop-index="14">
+            <top-projection start-index="7" stop-index="12">
+                <top-value value="10" start-index="11" stop-index="12" />
+            </top-projection>
+            <shorthand-projection stop-index="14" start-index="14"/>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_top_restrict2">
+        <from>
+            <simple-table name="TableName" start-index="30" stop-index="38"/>
+        </from>
+        <projections start-index="7" stop-index="23">
+            <top-projection start-index="7" stop-index="12">
+                <top-value value="10" start-index="11" stop-index="12"/>
+            </top-projection>
+            <column-projection name="columnName" start-index="14" stop-index="23"/>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_top_restrict3">
+        <from>
+            <simple-table name="TableName" start-index="37" stop-index="52" alias="alias1"/>
+        </from>
+        <projections start-index="7" stop-index="30">
+            <top-projection start-index="7" stop-index="12">
+                <top-value value="10" start-index="11" stop-index="12"/>
+            </top-projection>
+            <column-projection name="columnName" start-index="14" stop-index="30">
+                <owner name="alias1" start-index="14" stop-index="19"/>
+            </column-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_top_with_ties">
+        <from>
+            <simple-table name="TableName" start-index="47" stop-index="62" alias="alias1"/>
+        </from>
+        <projections start-index="7" stop-index="40">
+            <top-projection start-index="7" stop-index="22">
+                <top-value value="10" start-index="11" stop-index="12"/>
+            </top-projection>
+            <column-projection name="columnName" start-index="24" stop-index="40">
+                <owner name="alias1" start-index="24" stop-index="29"/>
+            </column-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

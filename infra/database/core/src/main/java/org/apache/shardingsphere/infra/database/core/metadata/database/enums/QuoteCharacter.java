@@ -47,7 +47,7 @@ public enum QuoteCharacter {
     
     static {
         for (QuoteCharacter each : values()) {
-            if (each.equals(NONE)) {
+            if (NONE == each) {
                 continue;
             }
             BY_FIRST_CHAR.put(each.startDelimiter.charAt(0), each);

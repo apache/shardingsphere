@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
@@ -46,7 +45,6 @@ import java.util.List;
 /**
  * Composed container, include governance container and database container.
  */
-@Slf4j
 public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final DatabaseType databaseType;

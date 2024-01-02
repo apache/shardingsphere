@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -31,7 +30,6 @@ import java.util.Map;
 /**
  * ShardingSphere transaction manager engine.
  */
-@Slf4j
 public final class ShardingSphereTransactionManagerEngine {
     
     private final TransactionType transactionType;

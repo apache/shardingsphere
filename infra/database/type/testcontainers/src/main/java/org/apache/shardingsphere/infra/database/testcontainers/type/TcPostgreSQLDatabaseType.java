@@ -27,11 +27,11 @@ import java.util.Optional;
 /**
  * Database type of PostgreSQL in testcontainers-java.
  */
-public final class TcPostgreSQLDatabaseType extends AbstractTestcontainersDatabaseType {
+public final class TcPostgreSQLDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:tc:postgresql:");
+        return Collections.singleton("jdbc:tc:postgresql:");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class TcPostgreSQLDatabaseType extends AbstractTestcontainersDataba
     
     @Override
     public String getType() {
-        return "TestContainersPostgreSQL";
+        return "TC-PostgreSQL";
     }
 }

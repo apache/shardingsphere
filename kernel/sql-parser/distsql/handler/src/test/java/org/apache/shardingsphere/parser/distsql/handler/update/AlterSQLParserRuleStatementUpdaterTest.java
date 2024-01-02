@@ -25,16 +25,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AlterSQLParserRuleStatementUpdaterTest {
     
     @Test
     void assertExecute() {
         AlterSQLParserRuleStatementUpdater updater = new AlterSQLParserRuleStatementUpdater();
-        AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(true, new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
+        AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
         SQLParserRuleConfiguration actual = updater.buildAlteredRuleConfiguration(getSQLParserRuleConfiguration(), sqlStatement);
-        assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));

@@ -37,14 +37,15 @@ public final class ShowSQLFederationRuleExecutor implements MetaDataRequiredQuer
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowSQLFederationRuleStatement sqlStatement) {
         SQLFederationRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).getConfiguration();
         String sqlFederationEnabled = String.valueOf(ruleConfig.isSqlFederationEnabled());
+        String allQueryUseSQLFederation = String.valueOf(ruleConfig.isAllQueryUseSQLFederation());
         String executionPlanCache = null != ruleConfig.getExecutionPlanCache() ? ruleConfig.getExecutionPlanCache().toString() : "";
-        LocalDataQueryResultRow row = new LocalDataQueryResultRow(sqlFederationEnabled, executionPlanCache);
+        LocalDataQueryResultRow row = new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
         return Collections.singleton(row);
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("sql_federation_enabled", "execution_plan_cache");
+        return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache");
     }
     
     @Override

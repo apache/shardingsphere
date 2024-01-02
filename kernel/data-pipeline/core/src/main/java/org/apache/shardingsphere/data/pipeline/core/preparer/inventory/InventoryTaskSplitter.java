@@ -20,32 +20,32 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.inventory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Range;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.type.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.type.StringPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.type.UnsupportedKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.util.IntervalToRangeIterator;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
-import org.apache.shardingsphere.data.pipeline.core.spi.algorithm.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.util.IntervalToRangeIterator;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,7 +56,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -84,9 +83,9 @@ public final class InventoryTaskSplitter {
         TransmissionProcessContext processContext = jobItemContext.getJobProcessContext();
         for (InventoryDumperContext each : splitInventoryDumperContext(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
-            PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getPipelineChannelCreator(), importerConfig.getBatchSize(), position);
+            PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getProcessConfig().getStreamChannel(), importerConfig.getBatchSize(), position);
             Dumper dumper = new InventoryDumper(each, channel, sourceDataSource, jobItemContext.getSourceMetaDataLoader());
-            Importer importer = new SingleChannelConsumerImporter(channel, importerConfig.getBatchSize(), 3, TimeUnit.SECONDS, jobItemContext.getSink(), jobItemContext);
+            Importer importer = new SingleChannelConsumerImporter(channel, importerConfig.getBatchSize(), 3000L, jobItemContext.getSink(), jobItemContext);
             result.add(new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
                     processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));
         }
@@ -115,7 +114,7 @@ public final class InventoryTaskSplitter {
             // use original table name, for metadata loader, since some database table name case-sensitive
             inventoryDumperContext.setActualTableName(key.toString());
             inventoryDumperContext.setLogicTableName(value.toString());
-            inventoryDumperContext.getCommonContext().setPosition(new PlaceholderPosition());
+            inventoryDumperContext.getCommonContext().setPosition(new IngestPlaceholderPosition());
             inventoryDumperContext.setInsertColumnNames(dumperContext.getInsertColumnNames());
             inventoryDumperContext.setUniqueKeyColumns(dumperContext.getUniqueKeyColumns());
             result.add(inventoryDumperContext);
@@ -133,7 +132,7 @@ public final class InventoryTaskSplitter {
         }
         Collection<InventoryDumperContext> result = new LinkedList<>();
         TransmissionProcessContext jobProcessContext = jobItemContext.getJobProcessContext();
-        PipelineReadConfiguration readConfig = jobProcessContext.getPipelineProcessConfig().getRead();
+        PipelineReadConfiguration readConfig = jobProcessContext.getProcessConfig().getRead();
         int batchSize = readConfig.getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = jobProcessContext.getReadRateLimitAlgorithm();
         Collection<IngestPosition> inventoryPositions = getInventoryPositions(dumperContext, jobItemContext, dataSource);
@@ -166,7 +165,7 @@ public final class InventoryTaskSplitter {
         long tableRecordsCount = InventoryRecordsCountCalculator.getTableRecordsCount(dumperContext, dataSource);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         if (!dumperContext.hasUniqueKey()) {
-            return Collections.singleton(new UnsupportedKeyPosition());
+            return Collections.singleton(new UnsupportedKeyIngestPosition());
         }
         List<PipelineColumnMetaData> uniqueKeyColumns = dumperContext.getUniqueKeyColumns();
         if (1 == uniqueKeyColumns.size()) {
@@ -176,33 +175,33 @@ public final class InventoryTaskSplitter {
             }
             if (PipelineJdbcUtils.isStringColumn(firstColumnDataType)) {
                 // TODO Support string unique key table splitting. Ascii characters ordering are different in different versions of databases.
-                return Collections.singleton(new StringPrimaryKeyPosition(null, null));
+                return Collections.singleton(new StringPrimaryKeyIngestPosition(null, null));
             }
         }
-        return Collections.singleton(new UnsupportedKeyPosition());
+        return Collections.singleton(new UnsupportedKeyIngestPosition());
     }
     
     private Collection<IngestPosition> getPositionByIntegerUniqueKeyRange(final InventoryDumperContext dumperContext, final long tableRecordsCount,
                                                                           final TransmissionJobItemContext jobItemContext, final PipelineDataSourceWrapper dataSource) {
         if (0 == tableRecordsCount) {
-            return Collections.singletonList(new IntegerPrimaryKeyPosition(0, 0));
+            return Collections.singletonList(new IntegerPrimaryKeyIngestPosition(0, 0));
         }
         Collection<IngestPosition> result = new LinkedList<>();
         Range<Long> uniqueKeyValuesRange = getUniqueKeyValuesRange(jobItemContext, dataSource, dumperContext);
-        int shardingSize = jobItemContext.getJobProcessContext().getPipelineProcessConfig().getRead().getShardingSize();
+        int shardingSize = jobItemContext.getJobProcessContext().getProcessConfig().getRead().getShardingSize();
         long splitCount = tableRecordsCount / shardingSize + (tableRecordsCount % shardingSize > 0 ? 1 : 0);
         long interval = (uniqueKeyValuesRange.getMaximum() - uniqueKeyValuesRange.getMinimum()) / splitCount;
         IntervalToRangeIterator rangeIterator = new IntervalToRangeIterator(uniqueKeyValuesRange.getMinimum(), uniqueKeyValuesRange.getMaximum(), interval);
         while (rangeIterator.hasNext()) {
             Range<Long> range = rangeIterator.next();
-            result.add(new IntegerPrimaryKeyPosition(range.getMinimum(), range.getMaximum()));
+            result.add(new IntegerPrimaryKeyIngestPosition(range.getMinimum(), range.getMaximum()));
         }
         return result;
     }
     
     private Range<Long> getUniqueKeyValuesRange(final TransmissionJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperContext dumperContext) {
         String uniqueKey = dumperContext.getUniqueKeyColumns().get(0).getName();
-        PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(jobItemContext.getJobConfig().getSourceDatabaseType());
+        PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(jobItemContext.getJobConfig().getSourceDatabaseType());
         String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(
                 dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName()), dumperContext.getActualTableName(), uniqueKey);
         try (

@@ -89,7 +89,7 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
         findUnusedEncryptors(currentRuleConfig).forEach(each -> currentRuleConfig.getEncryptors().remove(each));
     }
     
-    private static Collection<String> findUnusedEncryptors(final EncryptRuleConfiguration currentRuleConfig) {
+    private Collection<String> findUnusedEncryptors(final EncryptRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedEncryptors = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(optional -> optional.getCipher().getEncryptorName())
                 .collect(Collectors.toSet());
         inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream())

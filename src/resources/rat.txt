@@ -60,7 +60,3 @@
 **/_helpers.tpl
 
 # test files
-
-**/export-metadata-configuration_for_unix.data
-**/export-metadata-configuration_for_win.data
-

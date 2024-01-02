@@ -39,8 +39,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Transaction deadlock test case.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
+@Slf4j
 public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
     
     private final CyclicBarrier barrier = new CyclicBarrier(2);
