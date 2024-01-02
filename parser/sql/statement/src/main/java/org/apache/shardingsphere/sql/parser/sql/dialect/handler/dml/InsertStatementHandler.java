@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHand
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableConditionalIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertType;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
@@ -293,6 +294,29 @@ public final class InsertStatementHandler implements SQLStatementHandler {
     public static void setWhereSegment(final InsertStatement insertStatement, final WhereSegment whereSegment) {
         if (insertStatement instanceof OracleInsertStatement) {
             ((OracleInsertStatement) insertStatement).setWhere(whereSegment);
+        }
+    }
+
+    /**
+     * get execute segment.
+     * @param insertStatement insert statement
+     * @return execute segment
+     */
+    public static Optional<ExecSegment> getExecSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof SQLServerInsertStatement) {
+            return ((SQLServerInsertStatement) insertStatement).getExecSegment();
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * set execute segment.
+     * @param insertStatement insert statement
+     * @param execSegment execute segment
+     */
+    public static void setExecSegment(final InsertStatement insertStatement, final ExecSegment execSegment) {
+        if (insertStatement instanceof SQLServerInsertStatement) {
+            ((SQLServerInsertStatement) insertStatement).setExecSegment(execSegment);
         }
     }
 }

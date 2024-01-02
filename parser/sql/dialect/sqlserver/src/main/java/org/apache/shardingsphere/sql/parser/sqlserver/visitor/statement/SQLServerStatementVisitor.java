@@ -1225,11 +1225,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     private int getStartIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
         return null != alias && alias.getStartIndex() < sqlSegment.getStartIndex() ? alias.getStartIndex() : sqlSegment.getStartIndex();
     }
-
+    
     private int getStopIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
         return null != alias && alias.getStopIndex() > sqlSegment.getStopIndex() ? alias.getStopIndex() : sqlSegment.getStopIndex();
     }
-
+    
     @Override
     public ASTNode visitFromClause(final FromClauseContext ctx) {
         return visit(ctx.tableReferences());

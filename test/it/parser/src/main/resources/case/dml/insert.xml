@@ -3005,4 +3005,41 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_with_exec">
+        <table name="iris_rx_data" start-index="12" stop-index="23" />
+        <columns start-index="25" stop-index="98">
+            <column name="Sepal.Length" start-delimiter="&quot;" end-delimiter="&quot;" start-index="26" stop-index="39"/>
+            <column name="Sepal.Width" start-delimiter="&quot;" end-delimiter="&quot;" start-index="42" stop-index="54"/>
+            <column name="Petal.Length" start-delimiter="&quot;" end-delimiter="&quot;" start-index="57" stop-index="70"/>
+            <column name="Petal.Width" start-delimiter="&quot;" end-delimiter="&quot;" start-index="73" stop-index="85"/>
+            <column name="Species" start-delimiter="&quot;" end-delimiter="&quot;" start-index="89" stop-index="97"/>
+        </columns>
+        <exec name="sp_execute_external_script" start-index="100" stop-index="183">
+            <parameter>
+                <binary-operation-expression start-index="135" stop-index="150">
+                    <left>
+                        <column start-index="135" stop-index="143" name="@language" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="R" start-index="147" stop-index="150" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="154" stop-index="183">
+                    <left>
+                        <column start-index="154" stop-index="160" name="@script" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="iris_data &lt;- iris" start-index="164" stop-index="183" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+        </exec>
+
+    </insert>
+
 </sql-parser-test-cases>

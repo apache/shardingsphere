@@ -695,7 +695,3 @@ WITHOUT
 APPLY
     : A P P L Y
     ;
-
-STRING_SPLIT
-    : S T R I N G UL_ S P L I T
-    ;

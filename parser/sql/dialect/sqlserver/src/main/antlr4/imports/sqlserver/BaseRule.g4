@@ -524,7 +524,3 @@ entityType
 ifExists
     : IF EXISTS
     ;
-
-tableValuedFunction
-    : STRING_SPLIT LP_  columnName COMMA_ stringLiterals  (COMMA_ (bitValueLiterals|numberLiterals|nullValueLiterals))? RP_
-    ;
