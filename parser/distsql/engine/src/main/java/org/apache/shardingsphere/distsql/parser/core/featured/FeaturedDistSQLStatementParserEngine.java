@@ -22,7 +22,6 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -39,17 +38,13 @@ public final class FeaturedDistSQLStatementParserEngine {
      *
      * @param sql SQL to be parsed
      * @return SQL statement
+     * @throws SQLParsingException SQL parsing exception
      */
     public SQLStatement parse(final String sql) {
-        FeaturedDistSQLParseASTNode featuredDistSQLParseASTNode = parseToASTNode(sql);
-        return getSQLStatement(sql, featuredDistSQLParseASTNode.getFeatureType(), featuredDistSQLParseASTNode.getParseASTNode());
-    }
-    
-    private FeaturedDistSQLParseASTNode parseToASTNode(final String sql) {
         for (DistSQLParserFacade each : ShardingSphereServiceLoader.getServiceInstances(DistSQLParserFacade.class)) {
             try {
-                ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
-                return new FeaturedDistSQLParseASTNode(each.getType(), parseASTNode);
+                ParseASTNode astNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
+                return getSQLStatement(sql, each, astNode);
             } catch (final ParseCancellationException | SQLParsingException ignored) {
             }
         }
@@ -58,11 +53,11 @@ public final class FeaturedDistSQLStatementParserEngine {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
-    private SQLStatement getSQLStatement(final String sql, final String featureType, final ParseASTNode parseASTNode) {
+    private SQLStatement getSQLStatement(final String sql, final DistSQLParserFacade facade, final ParseASTNode parseASTNode) {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException(sql);
         }
-        SQLVisitor visitor = TypedSPILoader.getService(DistSQLParserFacade.class, featureType).getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLVisitor visitor = facade.getVisitorClass().getDeclaredConstructor().newInstance();
         return (SQLStatement) visitor.visit(parseASTNode.getRootNode());
     }
 }
