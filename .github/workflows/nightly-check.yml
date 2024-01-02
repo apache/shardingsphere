@@ -102,7 +102,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Aggregate checkstyle report
         run: |
-          export MAVEN_OPTS='-Xmx4g -Xms512m'
+          export MAVEN_OPTS='-Xmx6g -Xms512m'
           ./mvnw clean verify checkstyle:checkstyle-aggregate
       - name: Upload checkstyle report to SonarCloud
         env:
@@ -166,7 +166,9 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Install Project
-        run: ./mvnw clean install -DskipTests
+        run: |
+          export MAVEN_OPTS='-Xmx6g -Xms512m'
+          ./mvnw clean install -DskipTests
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
