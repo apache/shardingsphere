@@ -1,17 +1,5 @@
 [
 {
-  "condition":{"typeReachable":"org.apache.calcite.plan.RelOptCluster"},
-  "name":"[B"
-},
-{
-  "condition":{"typeReachable":"org.apache.calcite.plan.RelOptCluster"},
-  "name":"[Ljava.lang.String;"
-},
-{
-  "condition":{"typeReachable":"org.apache.calcite.plan.RelOptCluster"},
-  "name":"[Lsun.security.pkcs.SignerInfo;"
-},
-{
   "condition":{"typeReachable":"org.apache.calcite.linq4j.tree.Types"},
   "name":"java.lang.Boolean",
   "fields":[{"name":"FALSE"}, {"name":"TRUE"}]

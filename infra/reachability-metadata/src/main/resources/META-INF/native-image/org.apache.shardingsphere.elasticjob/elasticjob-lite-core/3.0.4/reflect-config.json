@@ -1,30 +1,5 @@
 [
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.elasticjob.executor.ElasticJobExecutor"},
-  "name":"java.util.Properties",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.elasticjob.lite.internal.failover.FailoverListenerManager"},
-  "name":"java.util.Properties",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.elasticjob.lite.internal.reconcile.ReconcileService"},
-  "name":"java.util.Properties",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.elasticjob.lite.internal.sharding.ShardingListenerManager$ListenServersChangedJobListener"},
-  "name":"java.util.Properties",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.elasticjob.lite.internal.sharding.ShardingListenerManager$ShardingTotalCountChangedJobListener"},
-  "name":"java.util.Properties",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.elasticjob.lite.internal.instance.InstanceNode"},
   "name":"org.apache.shardingsphere.elasticjob.infra.handler.sharding.JobInstance",
   "allDeclaredFields":true,
