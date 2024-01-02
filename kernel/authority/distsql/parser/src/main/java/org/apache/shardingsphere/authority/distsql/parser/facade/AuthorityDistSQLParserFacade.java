@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for authority DistSQL statement.
+ * Authority DistSQL parser facade.
  */
 public final class AuthorityDistSQLParserFacade implements DistSQLParserFacade {
     

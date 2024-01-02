@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for readwrite-splitting DistSQL statement.
+ * Readwrite-splitting DistSQL parser facade.
  */
 public final class ReadwriteSplittingDistSQLParserFacade implements DistSQLParserFacade {
     
