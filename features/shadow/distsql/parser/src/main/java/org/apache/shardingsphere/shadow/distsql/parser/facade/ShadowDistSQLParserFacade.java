@@ -45,9 +45,4 @@ public final class ShadowDistSQLParserFacade implements DistSQLParserFacade {
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return ShadowDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "shadow";
-    }
 }

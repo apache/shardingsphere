@@ -45,9 +45,4 @@ public final class BroadcastDistSQLParserFacade implements DistSQLParserFacade {
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return BroadcastDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "broadcast";
-    }
 }

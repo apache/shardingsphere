@@ -45,9 +45,4 @@ public final class MigrationDistSQLParserFacade implements DistSQLParserFacade {
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return MigrationDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "migration";
-    }
 }

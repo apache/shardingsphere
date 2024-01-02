@@ -45,9 +45,4 @@ public final class ReadwriteSplittingDistSQLParserFacade implements DistSQLParse
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return ReadwriteSplittingDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "readwrite-splitting";
-    }
 }

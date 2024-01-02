@@ -45,9 +45,4 @@ public final class EncryptDistSQLParserFacade implements DistSQLParserFacade {
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return EncryptDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "encrypt";
-    }
 }

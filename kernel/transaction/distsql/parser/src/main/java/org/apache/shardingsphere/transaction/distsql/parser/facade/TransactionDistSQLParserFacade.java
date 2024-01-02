@@ -45,9 +45,4 @@ public final class TransactionDistSQLParserFacade implements DistSQLParserFacade
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return TransactionDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "transaction";
-    }
 }

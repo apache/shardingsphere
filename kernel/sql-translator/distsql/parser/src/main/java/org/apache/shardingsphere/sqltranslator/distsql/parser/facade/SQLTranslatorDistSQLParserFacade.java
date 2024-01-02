@@ -45,9 +45,4 @@ public final class SQLTranslatorDistSQLParserFacade implements DistSQLParserFaca
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return SQLTranslatorDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "sql_translator";
-    }
 }

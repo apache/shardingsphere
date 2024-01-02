@@ -45,9 +45,4 @@ public final class SingleDistSQLParserFacade implements DistSQLParserFacade {
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return SingleDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "single";
-    }
 }
