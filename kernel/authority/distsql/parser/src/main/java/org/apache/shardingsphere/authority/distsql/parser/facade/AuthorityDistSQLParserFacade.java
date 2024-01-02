@@ -15,29 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql92.parser;
+package org.apache.shardingsphere.authority.distsql.parser.facade;
 
+import org.apache.shardingsphere.authority.distsql.parser.core.AuthorityDistSQLLexer;
+import org.apache.shardingsphere.authority.distsql.parser.core.AuthorityDistSQLParser;
+import org.apache.shardingsphere.authority.distsql.parser.core.AuthorityDistSQLStatementVisitor;
+import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for SQL92.
+ * SQL parser facade for authority DistSQL statement.
  */
-public final class SQL92ParserFacade implements DialectSQLParserFacade {
+public final class AuthorityDistSQLParserFacade implements DistSQLParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return SQL92Lexer.class;
+        return AuthorityDistSQLLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return SQL92Parser.class;
+        return AuthorityDistSQLParser.class;
     }
     
     @Override
-    public String getDatabaseType() {
-        return "SQL92";
+    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
+        return AuthorityDistSQLStatementVisitor.class;
+    }
+    
+    @Override
+    public String getType() {
+        return "authority";
     }
 }

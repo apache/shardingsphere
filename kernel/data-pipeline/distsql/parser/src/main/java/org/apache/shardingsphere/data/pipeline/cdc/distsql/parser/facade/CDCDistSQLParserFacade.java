@@ -15,29 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql92.parser;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.facade;
 
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.core.CDCDistSQLLexer;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.core.CDCDistSQLParser;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.core.CDCDistSQLStatementVisitor;
+import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for SQL92.
+ * SQL parser facade for CDC DistSQL statement.
  */
-public final class SQL92ParserFacade implements DialectSQLParserFacade {
+public final class CDCDistSQLParserFacade implements DistSQLParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return SQL92Lexer.class;
+        return CDCDistSQLLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return SQL92Parser.class;
+        return CDCDistSQLParser.class;
     }
     
     @Override
-    public String getDatabaseType() {
-        return "SQL92";
+    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
+        return CDCDistSQLStatementVisitor.class;
+    }
+    
+    @Override
+    public String getType() {
+        return "CDC";
     }
 }
