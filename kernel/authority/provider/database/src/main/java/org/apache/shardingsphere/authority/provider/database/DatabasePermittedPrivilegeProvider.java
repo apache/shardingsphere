@@ -19,7 +19,6 @@ package org.apache.shardingsphere.authority.provider.database;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
