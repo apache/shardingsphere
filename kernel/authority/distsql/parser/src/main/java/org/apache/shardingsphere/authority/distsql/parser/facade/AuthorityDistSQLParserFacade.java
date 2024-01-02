@@ -45,9 +45,4 @@ public final class AuthorityDistSQLParserFacade implements DistSQLParserFacade {
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return AuthorityDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "authority";
-    }
 }

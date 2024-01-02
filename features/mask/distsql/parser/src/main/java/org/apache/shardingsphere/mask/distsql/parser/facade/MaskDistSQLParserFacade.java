@@ -45,9 +45,4 @@ public final class MaskDistSQLParserFacade implements DistSQLParserFacade {
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return MaskDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "mask";
-    }
 }

@@ -45,9 +45,4 @@ public final class GlobalClockDistSQLParserFacade implements DistSQLParserFacade
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return GlobalClockDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "global_clock";
-    }
 }

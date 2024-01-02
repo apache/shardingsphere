@@ -45,9 +45,4 @@ public final class SQLFederationDistSQLParserFacade implements DistSQLParserFaca
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return SQLFederationDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "sql_federation";
-    }
 }

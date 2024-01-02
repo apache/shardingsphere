@@ -45,9 +45,4 @@ public final class ShardingDistSQLParserFacade implements DistSQLParserFacade {
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return ShardingDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "sharding";
-    }
 }

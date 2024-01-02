@@ -45,9 +45,4 @@ public final class CDCDistSQLParserFacade implements DistSQLParserFacade {
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return CDCDistSQLStatementVisitor.class;
     }
-    
-    @Override
-    public String getType() {
-        return "CDC";
-    }
 }

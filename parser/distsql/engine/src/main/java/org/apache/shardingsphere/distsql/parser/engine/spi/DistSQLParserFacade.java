@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.parser.engine.spi;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
  * DistSQL parser facade.
  */
 @SingletonSPI
-public interface DistSQLParserFacade extends TypedSPI {
+public interface DistSQLParserFacade {
     
     /**
      * Get SQL lexer class type.
@@ -50,7 +49,4 @@ public interface DistSQLParserFacade extends TypedSPI {
      * @return visitor class
      */
     Class<? extends SQLVisitor<ASTNode>> getVisitorClass();
-    
-    @Override
-    String getType();
 }
