@@ -9,7 +9,7 @@ chapter = true
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.sql.parser.spi.SQLDialectParserFacade`](https://github.com/apache/shardingsphere/blob/master/parser/sql/spi/src/main/java/org/apache/shardingsphere/sql/parser/spi/SQLDialectParserFacade.java)
+[`org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade`](https://github.com/apache/shardingsphere/blob/master/parser/sql/spi/src/main/java/org/apache/shardingsphere/sql/parser/spi/SQLDialectParserFacade.java)
 
 ### Definition
 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.core.featured;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.distsql.parser.engine.spi.DistSQLParserFacade;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -46,7 +46,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     }
     
     private FeaturedDistSQLParseASTNode parseToASTNode(final String sql) {
-        for (FeaturedDistSQLStatementParserFacade each : ShardingSphereServiceLoader.getServiceInstances(FeaturedDistSQLStatementParserFacade.class)) {
+        for (DistSQLParserFacade each : ShardingSphereServiceLoader.getServiceInstances(DistSQLParserFacade.class)) {
             try {
                 ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
                 return new FeaturedDistSQLParseASTNode(each.getType(), parseASTNode);
@@ -62,7 +62,7 @@ public final class FeaturedDistSQLStatementParserEngine {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException(sql);
         }
-        SQLVisitor visitor = TypedSPILoader.getService(FeaturedDistSQLStatementParserFacade.class, featureType).getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLVisitor visitor = TypedSPILoader.getService(DistSQLParserFacade.class, featureType).getVisitorClass().getDeclaredConstructor().newInstance();
         return (SQLStatement) visitor.visit(parseASTNode.getRootNode());
     }
 }

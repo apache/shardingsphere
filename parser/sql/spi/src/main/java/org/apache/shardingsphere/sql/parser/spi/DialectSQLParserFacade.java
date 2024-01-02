@@ -15,29 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql92.parser;
+package org.apache.shardingsphere.sql.parser.spi;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
 
 /**
- * SQL parser facade for SQL92.
+ * Dialect SQL parser facade.
  */
-public final class SQL92ParserFacade implements DialectSQLParserFacade {
+@SingletonSPI
+public interface DialectSQLParserFacade extends DatabaseTypedSPI {
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return SQL92Lexer.class;
-    }
+    /**
+     * Get SQL lexer class type.
+     *
+     * @return SQL lexer class type
+     */
+    Class<? extends SQLLexer> getLexerClass();
     
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return SQL92Parser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "SQL92";
-    }
+    /**
+     * Get SQL parser class type.
+     *
+     * @return SQL parser class type
+     */
+    Class<? extends SQLParser> getParserClass();
 }
