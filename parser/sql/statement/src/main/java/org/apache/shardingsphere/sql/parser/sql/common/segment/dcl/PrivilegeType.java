@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dcl;
 
 /**
- * Privilege type enum.
+ * Privilege type.
  */
-public enum PrivilegeTypeEnum {
+public enum PrivilegeType {
     
     SELECT,
     
