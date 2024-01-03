@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.env.runtime.scenario.database;
 
 import com.google.common.base.Splitter;
-import com.sphereex.dbplusengine.SphereEx;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,7 +31,6 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,17 +79,5 @@ public final class DatabaseEnvironmentManager {
         try (FileReader reader = new FileReader(databasesFile)) {
             return (DatabaseNameEnvironment) JAXBContext.newInstance(DatabaseNameEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
-    }
-    
-    /**
-     * Judge whether heterogeneous database or not.
-     * 
-     * @param scenario scenario
-     * @param defaultDatabaseType default database type
-     * @return whether heterogeneous database or not
-     */
-    @SphereEx
-    public static boolean isHeterogeneousDatabase(final String scenario, final DatabaseType defaultDatabaseType) {
-        return new HashSet<>(getDatabaseTypes(scenario, defaultDatabaseType).values()).size() > 1;
     }
 }
