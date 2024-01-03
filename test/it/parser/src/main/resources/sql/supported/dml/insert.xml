@@ -109,4 +109,5 @@
     <sql-case id="insert_with_batch_nchar" value="INSERT INTO TestSchema.Employees (Name, Location) VALUES (N'Jared',  N'Australia'), (N'Nikita', N'India'), (N'Tom', N'Germany')" db-types="SQLServer"/>
     <sql-case id="insert_with_data_base_name" value="INSERT INTO AdventureWorks2022.dbo.VariableTest(Col1) VALUES('$(tablename)')" db-types="SQLServer"/>
     <sql-case id="insert_with_exec" value="INSERT INTO iris_rx_data (&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;Petal.Length&quot;, &quot;Petal.Width&quot; , &quot;Species&quot;) EXECUTE sp_execute_external_script @language = N'R' , @script = N'iris_data &lt;- iris'" db-types="SQLServer"/>
+    <sql-case id="insert_with_db_schema_name" value="INSERT INTO ContosoWarehouse.dbo.Affiliation SELECT * FROM My_Lakehouse.dbo.Affiliation" db-types="SQLServer"/>
 </sql-cases>

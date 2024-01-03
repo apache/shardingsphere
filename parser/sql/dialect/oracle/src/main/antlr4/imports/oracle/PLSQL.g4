@@ -57,7 +57,7 @@ createFunction
     ;
 
 createTrigger
-    : CREATE (OR REPLACE)? TRIGGER triggerName (BEFORE | AFTER | INSTEAD OF) dmlEventClause
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TRIGGER plsqlTriggerSource
     ;
 
 plsqlFunctionSource
@@ -92,6 +92,7 @@ statement
         | fetchStatement
         | ifStatment
         | returnStatement
+        | nullStatement
         ) SEMI_
     ;
 
@@ -119,6 +120,9 @@ returnStatement
     : RETURN expr
     ;
 
+nullStatement
+    : NULL
+    ;
 
 exceptionHandler
     : WHEN ((typeName (OR typeName)*)| OTHERS) THEN statement+
@@ -279,10 +283,49 @@ autonomousTransPragma
     : PRAGMA AUTONOMOUS_TRANSACTION SEMI_
     ;
 
-dmlEventClause
-    : dmlEventElement (OR dmlEventElement)* ON viewName
+plsqlTriggerSource
+    : (schemaName DOT_)? triggerName sharingClause? defaultCollationClause? (simpleDmlTrigger | systemTrigger)
     ;
 
-dmlEventElement
-    : (DELETE | INSERT | UPDATE) (OF LP_ columnName (COMMA_ columnName)* RP_)?
+simpleDmlTrigger
+    : (BEFORE | AFTER) dmlEventClause
+    ;
+
+dmlEventClause
+    : dmlEventTrigger (OR dmlEventTrigger)* ON viewName
+    ;
+
+dmlEventTrigger
+    : DELETE | INSERT | UPDATE (OF columnName (COMMA_ columnName)*)?
+    ;
+
+systemTrigger
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEventTrigger (OR ddlEventTrigger)*) ON (PLUGGABLE? DATABASE) body
+    ;
+
+ddlEventTrigger
+    : ALTER
+    | ANALYZE
+    | ASSOCIATE STATISTICS
+    | AUDIT
+    | COMMENT
+    | CREATE
+    | DISASSOCIATE STATISTICS
+    | DROP
+    | GRANT
+    | NOAUDIT
+    | RENAME
+    | REVOKE
+    | TRUNCATE
+    | DDL
+    | STARTUP
+    | SHUTDOWN
+    | DB_ROLE_CHANGE
+    | LOGON
+    | LOGOFF
+    | SERVERERROR
+    | SUSPEND
+    | DATABASE
+    | SCHEMA
+    | FOLLOWS
     ;
