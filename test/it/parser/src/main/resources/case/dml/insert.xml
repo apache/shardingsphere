@@ -3005,4 +3005,25 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_with_db_schema_name">
+        <table name="Affiliation" start-index="12" stop-index="43">
+            <owner name="dbo" start-index="29" stop-index="31">
+                <owner name="ContosoWarehouse" start-index="12" stop-index="27"/>
+            </owner>
+        </table>
+        <columns start-index="44" stop-index="44"/>
+        <select>
+            <projections start-index="52" stop-index="52">
+                <shorthand-projection start-index="52" stop-index="52"/>
+            </projections>
+            <from>
+                <simple-table name="Affiliation" start-index="59" stop-index="86">
+                    <owner name="dbo" start-index="72" stop-index="74">
+                        <owner name="My_Lakehouse" start-index="59" stop-index="70"/>
+                    </owner>
+                </simple-table>
+            </from>
+        </select>
+    </insert>
 </sql-parser-test-cases>
