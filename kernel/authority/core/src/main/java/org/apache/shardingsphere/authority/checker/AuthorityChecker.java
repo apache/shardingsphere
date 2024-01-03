@@ -41,12 +41,12 @@ public final class AuthorityChecker {
      */
     public boolean isAuthorized(final ACLObject aclObject) {
         if (aclObject instanceof DatabaseACLObject) {
-            return isAuthorized(((DatabaseACLObject) aclObject).getDatabase());
+            return isAuthorized((DatabaseACLObject) aclObject);
         }
         return true;
     }
     
-    private boolean isAuthorized(final String database) {
-        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
+    private boolean isAuthorized(final DatabaseACLObject aclObject) {
+        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(aclObject.getDatabase())).orElse(false);
     }
 }
