@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.authority.checker;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.model.ACLObject;
+import org.apache.shardingsphere.authority.obj.DatabaseACLObject;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
@@ -32,12 +34,19 @@ public final class AuthorityChecker {
     private final Grantee grantee;
     
     /**
-     * Check database authority.
+     * Check authority.
      * 
-     * @param database database name
+     * @param aclObject acl object
      * @return authorized or not
      */
-    public boolean isAuthorized(final String database) {
+    public boolean isAuthorized(final ACLObject aclObject) {
+        if (aclObject instanceof DatabaseACLObject) {
+            return isAuthorized(((DatabaseACLObject) aclObject).getDatabase());
+        }
+        return true;
+    }
+    
+    private boolean isAuthorized(final String database) {
         return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
     }
 }

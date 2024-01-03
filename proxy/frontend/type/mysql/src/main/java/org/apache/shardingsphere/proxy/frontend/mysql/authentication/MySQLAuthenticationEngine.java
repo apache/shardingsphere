@@ -23,6 +23,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.epoll.EpollDomainSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
+import org.apache.shardingsphere.authority.obj.DatabaseACLObject;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
@@ -158,7 +159,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     }
     
     private boolean authorizeDatabase(final AuthorityRule rule, final Grantee grantee, final String databaseName) {
-        return null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName);
+        return null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(new DatabaseACLObject(databaseName));
     }
     
     private String getHostAddress(final ChannelHandlerContext context) {

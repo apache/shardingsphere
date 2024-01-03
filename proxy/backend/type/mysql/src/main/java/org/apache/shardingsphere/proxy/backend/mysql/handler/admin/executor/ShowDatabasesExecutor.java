@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
+import org.apache.shardingsphere.authority.obj.DatabaseACLObject;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -59,7 +60,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getGrantee());
         return ProxyContext.getInstance().getAllDatabaseNames().stream().sorted()
-                .filter(each -> checkLikePattern(each) && authorityChecker.isAuthorized(each)).map(LocalDataQueryResultRow::new).collect(Collectors.toList());
+                .filter(each -> checkLikePattern(each) && authorityChecker.isAuthorized(new DatabaseACLObject(each))).map(LocalDataQueryResultRow::new).collect(Collectors.toList());
     }
     
     private boolean checkLikePattern(final String databaseName) {
