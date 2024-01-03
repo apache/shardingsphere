@@ -24,4 +24,5 @@
 <!--    <create-trigger sql-case-id="create_trigger_after_update" />-->
     <create-trigger sql-case-id="create_trigger_with_create_view" />
     <create-trigger sql-case-id="create_trigger_with_dml_event_clause" />
+    <create-trigger sql-case-id="create_trigger_with_body" />
 </sql-parser-test-cases>
