@@ -92,24 +92,24 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     }
     
     private void doWithoutSorting() {
-        for (final CDCChannelProgressPair channelProgressPair : originalChannelProgressPairs) {
-            PipelineChannel channel = channelProgressPair.getChannel();
-            List<Record> records = channel.fetch(batchSize, timeoutMillis).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
+        for (CDCChannelProgressPair each : originalChannelProgressPairs) {
+            PipelineChannel channel = each.getChannel();
+            List<Record> records = channel.fetch(batchSize, timeoutMillis).stream().filter(record -> !(record instanceof PlaceholderRecord)).collect(Collectors.toList());
             if (records.isEmpty()) {
                 continue;
             }
             Record lastRecord = records.get(records.size() - 1);
             if (lastRecord instanceof FinishedRecord && records.stream().noneMatch(DataRecord.class::isInstance)) {
                 channel.ack(records);
-                channelProgressPair.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
-                originalChannelProgressPairs.remove(channelProgressPair);
+                each.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
+                originalChannelProgressPairs.remove(each);
                 continue;
             }
             if (null != rateLimitAlgorithm) {
                 rateLimitAlgorithm.intercept(PipelineSQLOperationType.INSERT, 1);
             }
             String ackId = CDCAckId.build(importerId).marshal();
-            ackCache.put(ackId, Collections.singletonList(Pair.of(channelProgressPair, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
+            ackCache.put(ackId, Collections.singletonList(Pair.of(each, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
             sink.write(ackId, records);
         }
     }

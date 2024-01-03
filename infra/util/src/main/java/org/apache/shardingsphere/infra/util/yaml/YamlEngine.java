@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.util.yaml.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.DumperOptions.LineBreak;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.representer.Representer;
 
@@ -106,7 +105,7 @@ public final class YamlEngine {
      */
     public static String marshal(final Object value) {
         DumperOptions dumperOptions = new DumperOptions();
-        dumperOptions.setLineBreak(LineBreak.UNIX);
+        dumperOptions.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
         if (value instanceof Collection) {
             return new Yaml(new ShardingSphereYamlRepresenter(dumperOptions), dumperOptions).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
         }
