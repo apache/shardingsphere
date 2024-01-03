@@ -7858,4 +7858,123 @@
             </column-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_object_id_function">
+        <projections start-index="7" stop-index="134">
+            <expression-projection text="OBJECT_NAME(object_id)" start-index="7" stop-index="55" alias="referencing_object_name">
+                <expr>
+                    <function function-name="OBJECT_NAME" text="OBJECT_NAME(object_id)" start-index="7" stop-index="28">
+                        <parameter>
+                            <column name="object_id" start-index="19" stop-index="27"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="57" stop-index="132" text="COALESCE(COL_NAME(object_id, column_id), '(n/a)')" alias="referencing_column_name">
+                <expr>
+                    <function function-name="COALESCE" text="COALESCE(COL_NAME(object_id, column_id), '(n/a)')" start-index="57" stop-index="105">
+                        <parameter>
+                            <function function-name="COL_NAME" text="COL_NAME(object_id, column_id)" start-index="66" stop-index="95">
+                                <parameter>
+                                    <column name="object_id" start-index="75" stop-index="83"/>
+                                </parameter>
+                                <parameter>
+                                    <column name="column_id" start-index="86" stop-index="94"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="(n/a)" start-index="98" stop-index="104"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <shorthand-projection start-index="134" stop-index="134"/>
+        </projections>
+        <from start-index="145" stop-index="160">
+            <simple-table name="sql_dependencies" start-index="141" stop-index="160">
+                <owner name="sys" start-index="141" stop-index="143"/>
+            </simple-table>
+        </from>
+        <where start-index="162" stop-index="226">
+            <expr>
+                <binary-operation-expression start-index="168" stop-index="226">
+                    <left>
+                        <column name="referenced_major_id" start-index="168" stop-index="186"/>
+                    </left>
+                    <right>
+                        <function function-name="OBJECT_ID" text="OBJECT_ID('&lt;schema_name.table_name&gt;')" start-index="190" stop-index="226">
+                            <parameter>
+                                <literal-expression value="&lt;schema_name.table_name&gt;" start-index="200" stop-index="225"/>
+                            </parameter>
+                        </function>
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <expression-item expression="OBJECT_NAME(object_id)" start-index="237" stop-index="258">
+                <expr>
+                    <function function-name="OBJECT_NAME" text="OBJECT_NAME(object_id)" start-index="237" stop-index="258">
+                        <parameter>
+                            <column name="object_id" start-index="249" stop-index="257"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-item>
+            <expression-item expression="COL_NAME(object_id, column_id)" start-index="261" stop-index="290">
+                <expr>
+                    <function function-name="COL_NAME" text="COL_NAME(object_id, column_id)" start-index="261" stop-index="290">
+                        <parameter>
+                            <column name="object_id" start-index="270" stop-index="278"/>
+                        </parameter>
+                        <parameter>
+                            <column name="column_id" start-index="281" stop-index="289"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_from_sys_views">
+        <from start-index="201" stop-index="210">
+            <simple-table name="views" start-index="202" stop-index="210">
+                <owner name="sys" start-index="202" stop-index="204"/>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="195">
+            <column-projection name="name" start-index="7" stop-index="23" alias="view_name"/>
+            <expression-projection text="SCHEMA_NAME(schema_id)" start-index="25" stop-index="61" alias="schema_name">
+                <function function-name="SCHEMA_NAME" text="SCHEMA_NAME(schema_id)" start-index="25" stop-index="46">
+                    <parameter>
+                        <column name="schema_id" start-index="37" stop-index="45"/>
+                    </parameter>
+                </function>
+            </expression-projection>
+            <expression-projection text="OBJECTPROPERTYEX(object_id,'IsIndexed')" start-index="63" stop-index="114" alias="IsIndexed">
+                <function function-name="OBJECTPROPERTYEX" text="OBJECTPROPERTYEX(object_id,'IsIndexed')" start-index="63" stop-index="101">
+                    <parameter>
+                        <column name="object_id" start-index="80" stop-index="88"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="IsIndexed" start-index="90" stop-index="100"/>
+                    </parameter>
+                </function>
+            </expression-projection>
+            <expression-projection text="OBJECTPROPERTYEX(object_id,'IsIndexable')" start-index="116" stop-index="171" alias="IsIndexable">
+                <function function-name="OBJECTPROPERTYEX" text="OBJECTPROPERTYEX(object_id,'IsIndexable')" start-index="116" stop-index="156">
+                    <parameter>
+                        <column name="object_id" start-index="133" stop-index="141"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="IsIndexable" start-index="143" stop-index="155"/>
+                    </parameter>
+                </function>
+            </expression-projection>
+            <column-projection name="create_date" start-index="173" stop-index="183"/>
+            <column-projection name="modify_date" start-index="185" stop-index="195"/>
+        </projections>
+    </select>
 </sql-parser-test-cases>
