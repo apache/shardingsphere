@@ -87,7 +87,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticP
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TlsOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UsernameContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ACLTypeEnum;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
@@ -143,17 +142,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
             result.getUsers().add((UserSegment) visit(each));
         }
         if (null != ctx.aclType()) {
-            switch (ctx.aclType().getText().toLowerCase()) {
-                case "function":
-                    result.setAclType(ACLTypeEnum.FUNCTION);
-                    break;
-                case "procedure":
-                    result.setAclType(ACLTypeEnum.PROCEDURE);
-                    break;
-                default:
-                    result.setAclType(ACLTypeEnum.TABLE);
-                    break;
-            }
+            result.setAclObject(ctx.aclType().getText().toUpperCase());
         }
         return result;
     }
