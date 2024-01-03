@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import lombok.Getter;
@@ -32,13 +33,13 @@ import java.util.List;
  */
 @Getter
 public class SQLServerUpdateStatisticsStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
-
+    
     @Setter
     private List<IndexSegment> index;
-
+    
     @Setter
     private SimpleTableSegment table;
-
+    
     @Setter
     private StatisticsStrategySegment strategy;
 }

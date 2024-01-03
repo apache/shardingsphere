@@ -14,13 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment;
 
-public enum StatisticsDimensionEnum {
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-    ALL,
-
-    COLUMNS,
-
-    INDEX
+@Getter
+@Setter
+@NoArgsConstructor
+public class StatisticsOptionSegment implements SQLSegment {
+    
+    private int startIndex;
+    
+    private int stopIndex;
+    
+    private StatisticsDimension statisticsDimension;
+    
+    private String maxDegreeOfParallelism;
+    
+    private boolean noRecompute;
+    
+    private boolean incremental;
+    
+    private boolean autoDrop;
+    
+    public StatisticsOptionSegment(final int startIndex, final int stopIndex) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+    }
 }

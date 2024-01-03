@@ -107,6 +107,11 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Upd
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateStatisticsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StatisticsWithClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StatisticsOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StatisticsOptionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SampleOptionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -182,10 +187,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherL
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerUpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.SampleOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.SampleStrategy;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.ScanUnit;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsDimension;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsStrategySegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -1337,5 +1349,100 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitUpdateStatistics(final UpdateStatisticsContext ctx) {
+        SQLServerUpdateStatisticsStatement result = new SQLServerUpdateStatisticsStatement();
+        if (null != ctx.tableName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        }
+        if (null != ctx.indexName()) {
+            List<IndexSegment> indexSegments = new LinkedList<>();
+            for (IndexNameContext indexNameContext : ctx.indexName()) {
+                indexSegments.add((IndexSegment) visit(indexNameContext));
+            }
+            result.setIndex(indexSegments);
+        }
+        if (null != ctx.statisticsWithClause()) {
+            result.setStrategy((StatisticsStrategySegment) visit(ctx.statisticsWithClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitStatisticsWithClause(final StatisticsWithClauseContext ctx) {
+        StatisticsStrategySegment segment = new StatisticsStrategySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.sampleOption()) {
+            segment.setSampleOption((SampleOptionSegment) visit(ctx.sampleOption()));
+        }
+        if (null != ctx.statisticsOptions()) {
+            segment.setStatisticsOptions((StatisticsOptionSegment) visit(ctx.statisticsOptions()));
+        }
+        return segment;
+    }
+    
+    @Override
+    public ASTNode visitStatisticsOption(final StatisticsOptionContext ctx) {
+        return super.visitStatisticsOption(ctx);
+    }
+    
+    @Override
+    public ASTNode visitSampleOption(final SampleOptionContext ctx) {
+        SampleOptionSegment segment = new SampleOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.FULLSCAN()) {
+            segment.setStrategy(SampleStrategy.FULLSCAN);
+        } else if (null != ctx.SAMPLE()) {
+            segment.setStrategy(SampleStrategy.SAMPLE);
+            if (null != ctx.NUMBER_()) {
+                List<TerminalNode> number = ctx.NUMBER_();
+                segment.setSampleNumber(number.get(0).getText());
+            }
+            if (null != ctx.PERCENT()) {
+                segment.setScanUnit(ScanUnit.PERCENT);
+            } else if (null != ctx.ROWS()) {
+                segment.setScanUnit(ScanUnit.ROWS);
+            }
+        } else if (null != ctx.RESAMPLE()) {
+            segment.setStrategy(SampleStrategy.RESAMPLE);
+            if (null != ctx.NUMBER_()) {
+                List<String> partitions = new LinkedList<>();
+                for (TerminalNode terminalNode : ctx.NUMBER_()) {
+                    partitions.add(terminalNode.getText());
+                }
+                segment.setPartitions(partitions);
+            }
+        }
+        if (null != ctx.PERSIST_SAMPLE_PERCENT()) {
+            segment.setPersistSamplePercent(null != ctx.ON());
+        }
+        return segment;
+    }
+    
+    @Override
+    public ASTNode visitStatisticsOptions(final StatisticsOptionsContext ctx) {
+        StatisticsOptionSegment optionSegment = new StatisticsOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (StatisticsOptionContext option : ctx.statisticsOption()) {
+            if (null != option.ALL()) {
+                optionSegment.setStatisticsDimension(StatisticsDimension.ALL);
+            } else if (null != option.COLUMNS()) {
+                optionSegment.setStatisticsDimension(StatisticsDimension.COLUMNS);
+            } else if (null != option.INDEX()) {
+                optionSegment.setStatisticsDimension(StatisticsDimension.INDEX);
+            }
+            if (null != option.NORECOMPUTE()) {
+                optionSegment.setNoRecompute(true);
+            }
+            if (null != option.INCREMENTAL()) {
+                optionSegment.setIncremental(null != option.ON());
+            }
+            if (null != option.MAXDOP()) {
+                optionSegment.setMaxDegreeOfParallelism(option.NUMBER_().getText());
+            }
+            if (null != option.AUTO_DROP()) {
+                optionSegment.setAutoDrop(null != option.ON());
+            }
+        }
+        return optionSegment;
     }
 }

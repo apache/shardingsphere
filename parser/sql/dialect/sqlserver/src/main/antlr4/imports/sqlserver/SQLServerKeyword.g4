@@ -1914,3 +1914,31 @@ XMLNAMESPACES
 APPLY
     : A P P L Y
     ;
+
+STATISTICS
+    : S T A T I S T I C S
+    ;
+
+FULLSCAN
+    : F U L L S C A N
+    ;
+
+SAMPLE
+    : S A M P L E
+    ;
+
+RESAMPLE
+    : R E S A M P L E
+    ;
+
+NORECOMPUTE
+    : N O R E C O M P U T E
+    ;
+
+AUTO_DROP
+    : A U T O UL_ D R O P
+    ;
+
+PERSIST_SAMPLE_PERCENT
+    : P E R S I S T UL_ S A M P L E UL_ P E R C E N T
+    ;

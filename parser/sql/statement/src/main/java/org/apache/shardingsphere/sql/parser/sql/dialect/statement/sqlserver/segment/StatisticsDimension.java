@@ -17,26 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-
-@Getter
-@Setter
-@NoArgsConstructor
-public class StatisticsStrategySegment implements SQLSegment {
+public enum StatisticsDimension {
     
-    private int startIndex;
+    ALL,
     
-    private int stopIndex;
+    COLUMNS,
     
-    private SampleOptionSegment sampleOption;
-    
-    private StatisticsOptionSegment statisticsOptions;
-    
-    public StatisticsStrategySegment(final int startIndex, final int stopIndex) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-    }
+    INDEX
 }

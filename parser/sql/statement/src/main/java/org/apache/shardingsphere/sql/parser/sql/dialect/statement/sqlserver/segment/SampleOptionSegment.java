@@ -14,9 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
@@ -24,19 +26,25 @@ import java.util.Collection;
 
 @Getter
 @Setter
-public class SampleStrategySegment implements SQLSegment {
-
+@NoArgsConstructor
+public class SampleOptionSegment implements SQLSegment {
+    
     private int startIndex;
-
+    
     private int stopIndex;
-
-    private int sampleNumbers;
-
+    
     private boolean persistSamplePercent;
-
-    private String name;
-
-    private ScanDimensionEnum dimension;
-
-    private Collection<Integer> partitions;
+    
+    private String sampleNumber;
+    
+    private SampleStrategy strategy;
+    
+    private ScanUnit scanUnit;
+    
+    private Collection<String> partitions;
+    
+    public SampleOptionSegment(final int startIndex, final int stopIndex) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+    }
 }
