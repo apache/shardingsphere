@@ -296,9 +296,7 @@ dmlEventClause
     ;
 
 dmlEventTrigger
-    : DELETE
-    | INSERT
-    | UPDATE (OF columnName (COMMA_ columnName)*)?
+    : DELETE | INSERT | UPDATE (OF columnName (COMMA_ columnName)*)?
     ;
 
 systemTrigger
