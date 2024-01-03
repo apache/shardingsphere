@@ -93,6 +93,7 @@ statement
         | ifStatment
         | returnStatement
         | nullStatement
+        | executeImmediateStatement
         ) SEMI_
     ;
 
@@ -300,7 +301,7 @@ dmlEventTrigger
     ;
 
 systemTrigger
-    : (BEFORE | AFTER | INSTEAD OF) (ddlEventTrigger (OR ddlEventTrigger)*) ON (PLUGGABLE? DATABASE) body
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEventTrigger (OR ddlEventTrigger)* | databaseEventTrigger (OR databaseEventTrigger)*) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA) body
     ;
 
 ddlEventTrigger
@@ -328,4 +329,21 @@ ddlEventTrigger
     | DATABASE
     | SCHEMA
     | FOLLOWS
+    ;
+
+databaseEventTrigger
+    : AFTER STARTUP
+    | BEFORE SHUTDOWN
+    | AFTER DB_ROLE_CHANGE
+    | AFTER SERVERERROR
+    | AFTER LOGON
+    | BEFORE LOGOFF
+    | AFTER SUSPEND
+    | AFTER CLONE
+    | BEFORE UNPLUG
+    | (BEFORE | AFTER) SET CONTAINER
+    ;
+
+executeImmediateStatement
+    : EXECUTE IMMEDIATE stringLiterals
     ;
