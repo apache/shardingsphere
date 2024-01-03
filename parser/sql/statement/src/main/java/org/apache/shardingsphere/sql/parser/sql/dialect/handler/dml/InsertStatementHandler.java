@@ -296,7 +296,7 @@ public final class InsertStatementHandler implements SQLStatementHandler {
             ((OracleInsertStatement) insertStatement).setWhere(whereSegment);
         }
     }
-
+    
     /**
      * get execute segment.
      * @param insertStatement insert statement
@@ -308,7 +308,7 @@ public final class InsertStatementHandler implements SQLStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * set execute segment.
      * @param insertStatement insert statement
