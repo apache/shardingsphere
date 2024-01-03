@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.SslHandler;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
-import org.apache.shardingsphere.authority.obj.DatabaseACLObject;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
@@ -42,16 +41,16 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authent
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.InvalidPasswordException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.PrivilegeNotGrantedException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.UnknownUsernameException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.protocol.ProtocolViolationException;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset.PostgreSQLCharacterSets;
@@ -140,8 +139,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
         Authenticator authenticator = new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user.get());
         ShardingSpherePreconditions.checkState(login(authenticator, user.get(), digest), () -> new InvalidPasswordException(username));
-        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(new DatabaseACLObject(databaseName)),
-                () -> new PrivilegeNotGrantedException(username, databaseName));
+        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
     }
     
     private boolean login(final Authenticator authenticator, final ShardingSphereUser user, final String digest) {
