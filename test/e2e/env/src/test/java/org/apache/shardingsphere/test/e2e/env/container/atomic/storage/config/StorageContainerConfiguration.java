@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -38,14 +38,14 @@ public class StorageContainerConfiguration {
     
     private final Map<String, String> mountedResources;
     
-    private final Collection<String> databaseNames;
+    private final Map<String, DatabaseType> databaseTypes;
     
-    private final Collection<String> expectedDatabaseNames;
+    private final Map<String, DatabaseType> expectedDatabaseTypes;
     
     public StorageContainerConfiguration(final String containerCommand, final Map<String, String> containerEnvironments, final Map<String, String> mountedResources,
-                                         final Collection<String> databaseNames, final Collection<String> expectedDatabaseNames) {
-        this.databaseNames = databaseNames;
-        this.expectedDatabaseNames = expectedDatabaseNames;
+                                         final Map<String, DatabaseType> databaseTypes, final Map<String, DatabaseType> expectedDatabaseTypes) {
+        this.databaseTypes = databaseTypes;
+        this.expectedDatabaseTypes = expectedDatabaseTypes;
         this.scenario = null;
         this.containerCommand = containerCommand;
         this.containerEnvironments = containerEnvironments;

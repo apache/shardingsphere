@@ -84,6 +84,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Refere
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollupCubeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectFromClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectIntoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectJoinOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectJoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectListContext;
@@ -153,6 +154,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvai
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.CollectionTableSegment;
@@ -191,6 +193,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.Ora
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -212,6 +215,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        result.getVariableNames().addAll(getVariableNames());
         return result;
     }
     
@@ -319,6 +323,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                     getOriginalText(ctx.selectSubquery()));
             result.setInsertSelect(subquerySegment);
         }
+        result.getVariableNames().addAll(getVariableNames());
         return result;
     }
     
@@ -343,15 +348,27 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         result.setInsertSelect(new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.selectSubquery()),
                 getOriginalText(ctx.selectSubquery())));
+        result.getVariableNames().addAll(getVariableNames());
         return result;
     }
     
     private Collection<InsertStatement> createInsertIntoSegments(final List<MultiTableElementContext> ctx) {
         Collection<InsertStatement> result = new LinkedList<>();
+        Collection<ParameterMarkerSegment> addedSegments = new HashSet<>();
         for (MultiTableElementContext each : ctx) {
-            result.add((OracleInsertStatement) visit(each));
+            OracleInsertStatement oracleInsertStatement = (OracleInsertStatement) visit(each);
+            addParameterMarkerSegments(addedSegments, oracleInsertStatement);
+            result.add(oracleInsertStatement);
         }
         return result;
+    }
+    
+    private void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> addedSegments, final OracleInsertStatement oracleInsertStatement) {
+        for (ParameterMarkerSegment parameterMarkerSegment : popAllStatementParameterMarkerSegments()) {
+            if (addedSegments.add(parameterMarkerSegment)) {
+                oracleInsertStatement.addParameterMarkerSegments(Collections.singletonList(parameterMarkerSegment));
+            }
+        }
     }
     
     @Override
@@ -393,6 +410,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        result.getVariableNames().addAll(getVariableNames());
         return result;
     }
     
@@ -410,6 +428,32 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
+    public OracleSelectStatement visitSelectIntoStatement(final SelectIntoStatementContext ctx) {
+        OracleSelectStatement result = new OracleSelectStatement();
+        result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
+        // TODO Visit selectIntoClause, bulkCollectIntoClause
+        result.setFrom((TableSegment) visit(ctx.fromClauseList()));
+        if (null != ctx.whereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.groupByClause()) {
+            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+        }
+        // TODO Visit hierarchicalQueryClause
+        if (null != ctx.modelClause()) {
+            result.setModelSegment((ModelSegment) visit(ctx.modelClause()));
+        }
+        // TODO Visit windowClause
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        // TODO Visit rowLimitingClause
+        result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        result.getVariableNames().addAll(getVariableNames());
+        return result;
+    }
+    
+    @Override
     public ASTNode visitMultiTableElement(final MultiTableElementContext ctx) {
         OracleInsertStatement result = (OracleInsertStatement) visit(ctx.insertIntoClause());
         if (null != ctx.insertValuesClause()) {
@@ -423,6 +467,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitSelect(final SelectContext ctx) {
         OracleSelectStatement result = (OracleSelectStatement) visit(ctx.selectSubquery());
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        result.getVariableNames().addAll(getVariableNames());
         if (null != ctx.forUpdateClause()) {
             result.setLock((LockSegment) visit(ctx.forUpdateClause()));
         }
@@ -555,6 +600,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        result.getVariableNames().addAll(getVariableNames());
         return result;
     }
     

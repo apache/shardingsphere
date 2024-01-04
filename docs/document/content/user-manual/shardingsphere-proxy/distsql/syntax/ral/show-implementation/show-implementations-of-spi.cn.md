@@ -65,10 +65,10 @@ SHOW IMPLEMENTATIONS OF 'org.apache.shardingsphere.sharding.spi.ShardingAlgorith
 
 - 查询 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` 接口实现：[SHOW SHARDING ALGORITHM IMPLEMENTATIONS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/sharding/show-sharding-algorithm-implementations)
 - 查询 `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` 接口实现：[SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/readwrite-splitting/show-read-query-load-balance-algorithm-implementations)
-- 查询 `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm` 接口实现：[SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/show-encrypt-algorithm-implementations)
+- 查询 `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm` 接口实现：[SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/encrypt/show-encrypt-algorithm-implementations)
 - 查询 `org.apache.shardingsphere.mask.spi.MaskAlgorithm` 接口实现：[SHOW MASK ALGORITHM IMPLEMENTATIONS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/mask/show-mask-algorithm-implementations)
 - 查询 `org.apache.shardingsphere.shadow.spi.ShadowAlgorithm` 接口实现：[SHOW SHADOW ALGORITHM IMPLEMENTATIONS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/shadow/show-shadow-algorithm-implementations)
-- 查询 `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` 接口实现：[SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/sharding/show-key-generate-algorithm-implementations)
+- 查询 `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` 接口实现：[SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/show-key-generate-algorithm-implementations)
 
 ### 保留字
 

@@ -33,7 +33,7 @@ public final class AuthorityChecker {
     
     /**
      * Check database authority.
-     * 
+     *
      * @param database database name
      * @return authorized or not
      */

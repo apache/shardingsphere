@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -28,7 +29,9 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * OpenGauss container.
@@ -60,12 +63,14 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getDatabaseNames();
+        return storageContainerConfig.getDatabaseTypes().entrySet().stream()
+                .filter(entry -> entry.getValue() instanceof OpenGaussDatabaseType).map(Map.Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
     protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseNames();
+        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream()
+                .filter(entry -> entry.getValue() instanceof OpenGaussDatabaseType).map(Map.Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
