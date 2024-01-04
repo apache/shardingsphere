@@ -1632,10 +1632,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         return result;
     }
     
-     @Override
-     public ASTNode visitPlsqlBlock(final PlsqlBlockContext ctx) {
+    @Override
+    public ASTNode visitPlsqlBlock(final PlsqlBlockContext ctx) {
         return new OraclePLSQLBlockStatement();
-     }
+    }
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
