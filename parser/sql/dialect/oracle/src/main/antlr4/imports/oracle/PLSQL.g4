@@ -301,10 +301,10 @@ dmlEventTrigger
     ;
 
 systemTrigger
-    : (BEFORE | AFTER | INSTEAD OF) (ddlEventTrigger (OR ddlEventTrigger)* | databaseEventTrigger (OR databaseEventTrigger)*) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA) body
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)*) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA) body
     ;
 
-ddlEventTrigger
+ddlEvent
     : ALTER
     | ANALYZE
     | ASSOCIATE STATISTICS
@@ -331,7 +331,7 @@ ddlEventTrigger
     | FOLLOWS
     ;
 
-databaseEventTrigger
+databaseEvent
     : AFTER STARTUP
     | BEFORE SHUTDOWN
     | AFTER DB_ROLE_CHANGE
