@@ -107,7 +107,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
         if (1 == csnRecordsList.size()) {
             processCSNRecords(csnRecordsList.get(0), ackId);
         } else {
-            processCSNRecordsList(csnRecordsList, ackId);    
+            processCSNRecordsList(csnRecordsList, ackId);
         }
     }
     
