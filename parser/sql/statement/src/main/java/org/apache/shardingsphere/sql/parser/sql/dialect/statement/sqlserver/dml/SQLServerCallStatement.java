@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 import java.util.List;
 
 /**
- * MySQL call statement.
+ * SQLServer call statement.
  */
 @AllArgsConstructor
 @NoArgsConstructor

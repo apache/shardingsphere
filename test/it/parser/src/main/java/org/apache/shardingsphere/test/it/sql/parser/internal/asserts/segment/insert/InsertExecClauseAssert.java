@@ -33,13 +33,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * insert execute clause assert.
+ * Insert execute clause assert.
  **/
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InsertExecClauseAssert {
     
     /**
      *  Assert actual execute segment is correct with expected execute clause.
+     *
      * @param assertContext assert context
      * @param actual actual execute segment
      * @param expected expected execute clause
@@ -52,7 +53,6 @@ public class InsertExecClauseAssert {
             assertTrue(actual.getProcedureName().getOwner().isPresent(), assertContext.getText("Actual owner should exist."));
             OwnerAssert.assertIs(assertContext, actual.getProcedureName().getOwner().get(), expected.getOwner());
         }
-        
         if (null == expected.getParameters()) {
             assertThat(assertContext.getText("exec procedure parameters  assertion error: "), actual.getExpressionSegments().size(), CoreMatchers.is(expected.getParameters().size()));
         } else {

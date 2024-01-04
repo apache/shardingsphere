@@ -28,11 +28,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- *  execute segment.
+ *  Execute segment.
  */
 @RequiredArgsConstructor
 @Getter
-public class ExecSegment implements SQLSegment {
+public final class ExecSegment implements SQLSegment {
     
     private final int startIndex;
     

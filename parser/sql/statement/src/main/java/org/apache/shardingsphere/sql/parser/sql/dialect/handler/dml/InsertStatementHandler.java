@@ -298,7 +298,7 @@ public final class InsertStatementHandler implements SQLStatementHandler {
     }
     
     /**
-     * get execute segment.
+     * Get execute segment.
      * @param insertStatement insert statement
      * @return execute segment
      */
@@ -310,7 +310,7 @@ public final class InsertStatementHandler implements SQLStatementHandler {
     }
     
     /**
-     * set execute segment.
+     * Set execute segment.
      * @param insertStatement insert statement
      * @param execSegment execute segment
      */

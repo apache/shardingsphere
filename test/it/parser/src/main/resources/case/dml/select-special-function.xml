@@ -592,7 +592,6 @@
         </from>
     </select>
 
-
     <select sql-case-id="select_string_split_function">
         <from>
             <join-table join-type="CROSS">
@@ -630,5 +629,4 @@
             <expression-item expression="COUNT(*)" order-direction="DESC"  start-index="147" stop-index="154"/>
         </order-by>
     </select>
-
 </sql-parser-test-cases>
