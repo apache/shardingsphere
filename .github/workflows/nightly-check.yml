@@ -24,6 +24,7 @@ on:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+  CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"finalize": ["-J-Xmx4096"]}}'
 
 jobs:
   global-environment:
@@ -167,7 +168,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Install Project
         run: |
-          export MAVEN_OPTS='-Xmx6g -Xms512m'
+          export MAVEN_OPTS='-Xmx4g -Xms1g'
           ./mvnw clean install -DskipTests
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
