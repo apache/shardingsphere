@@ -90,6 +90,7 @@ statement
         | gotoStatement
         | ifStatement
         | nullStatement
+        | executeImmediateStatement
         | openStatement
         | openForStatement
         | pipeRowStatement
@@ -581,10 +582,10 @@ dmlEventElement
     ;
 
 systemTrigger
-    : (BEFORE | AFTER | INSTEAD OF) (ddlEventTrigger (OR ddlEventTrigger)*) ON (PLUGGABLE? DATABASE) body
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)*) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA) body
     ;
 
-ddlEventTrigger
+ddlEvent
     : ALTER
     | ANALYZE
     | ASSOCIATE STATISTICS
@@ -609,4 +610,21 @@ ddlEventTrigger
     | DATABASE
     | SCHEMA
     | FOLLOWS
+    ;
+
+databaseEvent
+    : AFTER STARTUP
+    | BEFORE SHUTDOWN
+    | AFTER DB_ROLE_CHANGE
+    | AFTER SERVERERROR
+    | AFTER LOGON
+    | BEFORE LOGOFF
+    | AFTER SUSPEND
+    | AFTER CLONE
+    | BEFORE UNPLUG
+    | (BEFORE | AFTER) SET CONTAINER
+    ;
+
+executeImmediateStatement
+    : EXECUTE IMMEDIATE stringLiterals
     ;

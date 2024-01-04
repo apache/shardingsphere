@@ -38,4 +38,11 @@
           NULL;
         END IF;
         END;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_execute_immediate_statement" value="CREATE TRIGGER adg_logon_sync_trigger
+        AFTER LOGON ON user.schema
+            begin
+                if (SYS_CONTEXT('USERENV', 'DATABASE_ROLE')  IN ('PHYSICAL STANDBY')) then
+                  execute immediate 'alter session sync with primary';
+            end if;
+        end;" db-types="Oracle" />
 </sql-cases>
