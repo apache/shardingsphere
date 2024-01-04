@@ -101,7 +101,7 @@ statement
         | sqlStatementInPlsql
         | procedureCall
         | whileLoopStatement
-        ) SEMI_
+        )
     ;
 
 assignStatement
