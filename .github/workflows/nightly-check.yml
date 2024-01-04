@@ -24,7 +24,6 @@ on:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
-  CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"finalize": ["-J-Xmx4096"]}}'
 
 jobs:
   global-environment:
@@ -174,6 +173,8 @@ jobs:
         uses: github/codeql-action/analyze@v2
         with:
           category: "/language:java"
+          minimum-size: 1GB
+          maximum-size: 5GB
 
   check-stale:
     if: github.repository == 'apache/shardingsphere'
