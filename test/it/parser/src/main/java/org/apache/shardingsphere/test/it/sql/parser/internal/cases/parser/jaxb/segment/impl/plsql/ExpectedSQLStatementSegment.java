@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.checker;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Authority checker.
+ * Expected SQL statement segment.
  */
-@RequiredArgsConstructor
-public final class AuthorityChecker {
+@Getter
+@Setter
+public final class ExpectedSQLStatementSegment extends AbstractExpectedSQLSegment {
     
-    private final AuthorityRule rule;
-    
-    private final Grantee grantee;
-    
-    /**
-     * Check database authority.
-     *
-     * @param database database name
-     * @return authorized or not
-     */
-    public boolean isAuthorized(final String database) {
-        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
-    }
+    @XmlAttribute(name = "statement-class-simple-name")
+    private String statementClassSimpleName;
 }

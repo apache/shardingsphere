@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.plsql;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,11 +31,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Create function statement test case.
+ * Oracle create function test case.
  */
 @Getter
 @Setter
-public final class CreateFunctionStatementTestCase extends SQLParserTestCase {
+public final class CreateFunctionTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "function-name")
     private ExpectedRoutineName functionName;

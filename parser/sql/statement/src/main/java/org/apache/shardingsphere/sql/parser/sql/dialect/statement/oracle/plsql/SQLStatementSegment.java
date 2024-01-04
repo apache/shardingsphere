@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.checker;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Authority checker.
+ * SQL statement segment.
  */
 @RequiredArgsConstructor
-public final class AuthorityChecker {
+@Getter
+public final class SQLStatementSegment implements SQLSegment {
     
-    private final AuthorityRule rule;
+    private final int startIndex;
     
-    private final Grantee grantee;
+    private final int stopIndex;
     
-    /**
-     * Check database authority.
-     *
-     * @param database database name
-     * @return authorized or not
-     */
-    public boolean isAuthorized(final String database) {
-        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
-    }
+    private final SQLStatement sqlStatement;
 }

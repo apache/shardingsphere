@@ -15,29 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.checker;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import com.cedarsoftware.util.CaseInsensitiveMap;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
- * Authority checker.
+ * Sequence function.
  */
-@RequiredArgsConstructor
-public final class AuthorityChecker {
+public enum SequenceFunction {
     
-    private final AuthorityRule rule;
+    CURRVAL, NEXTVAL;
     
-    private final Grantee grantee;
+    private static final Map<String, SequenceFunction> SEQUENCE_FUNCTIONS = new CaseInsensitiveMap<>(2, 1F);
+    
+    static {
+        SEQUENCE_FUNCTIONS.put("CURRVAL", CURRVAL);
+        SEQUENCE_FUNCTIONS.put("NEXTVAL", NEXTVAL);
+    }
     
     /**
-     * Check database authority.
+     * Get sequence function value from text.
      *
-     * @param database database name
-     * @return authorized or not
+     * @param text text
+     * @return sequence function value
      */
-    public boolean isAuthorized(final String database) {
-        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
+    public static Optional<SequenceFunction> valueFrom(final String text) {
+        return Optional.ofNullable(SEQUENCE_FUNCTIONS.get(text));
     }
 }
