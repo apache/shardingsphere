@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StatisticsOptionSegment implements SQLSegment {
+public final class StatisticsOptionSegment implements SQLSegment {
     
     private int startIndex;
     

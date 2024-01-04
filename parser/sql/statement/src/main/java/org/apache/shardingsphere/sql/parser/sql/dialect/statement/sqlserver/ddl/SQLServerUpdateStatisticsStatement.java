@@ -32,10 +32,10 @@ import java.util.List;
  * SQLServer update statistics statement.
  */
 @Getter
-public class SQLServerUpdateStatisticsStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerUpdateStatisticsStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
     
     @Setter
-    private List<IndexSegment> index;
+    private List<IndexSegment> indexes;
     
     @Setter
     private SimpleTableSegment table;

@@ -15,36 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.statistics;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Collection;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public final class SampleOptionSegment implements SQLSegment {
+public final class ExpectedSampleOption extends AbstractExpectedSQLSegment {
     
-    private int startIndex;
+    @XmlAttribute
+    private String strategy;
     
-    private int stopIndex;
+    @XmlAttribute
+    private Collection<String> partitions;
     
-    private boolean persistSamplePercent;
-    
+    @XmlAttribute(name = "sample-number")
     private String sampleNumber;
     
-    private SampleStrategy strategy;
+    @XmlAttribute(name = "persist-sample-percent")
+    private boolean persistSamplePercent;
     
-    private ScanUnit scanUnit;
+    @XmlAttribute(name = "scan-unit")
+    private String scanUnit;
     
-    private List<String> partitions;
-    
-    public SampleOptionSegment(final int startIndex, final int stopIndex) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-    }
 }

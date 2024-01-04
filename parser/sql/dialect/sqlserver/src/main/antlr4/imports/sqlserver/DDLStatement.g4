@@ -161,7 +161,7 @@ sampleOption
     ;
 
 statisticsOptions
-    : (COMMA_? statisticsOption)*
+    : (COMMA_? statisticsOption)+
     ;
 
 statisticsOption

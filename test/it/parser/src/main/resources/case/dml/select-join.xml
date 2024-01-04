@@ -902,4 +902,185 @@
             </column-item>
         </order-by>
     </select>
+
+    <select sql-case-id="select_inner_join_from_sys_dm_xe_objects">
+        <projections start-index="7" stop-index="125">
+            <column-projection name="name" start-index="7" stop-index="30" alias="Package-Name">
+                <owner name="p" start-index="7" stop-index="7"/>
+            </column-projection>
+            <column-projection name="object_type" start-index="32" stop-index="44">
+                <owner name="o" start-index="32" stop-index="32"/>
+            </column-projection>
+            <column-projection name="name" start-index="46" stop-index="68" alias="Object-Name">
+                <owner name="o" start-index="46" stop-index="46"/>
+            </column-projection>
+            <column-projection name="description" start-index="70" stop-index="100" alias="Object-Descr">
+                <owner name="o" start-index="70" stop-index="70"/>
+            </column-projection>
+            <column-projection name="guid" start-index="102" stop-index="125" alias="Package-Guid">
+                <owner name="p" start-index="102" stop-index="102"/>
+            </column-projection>
+        </projections>
+        <from start-index="132" stop-index="215">
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="dm_xe_packages" start-index="132" stop-index="154" alias="p">
+                        <owner name="sys" start-index="132" stop-index="134"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="dm_xe_objects" start-index="167" stop-index="188" alias="o">
+                        <owner name="sys" start-index="167" stop-index="169"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="193" stop-index="215">
+                        <left>
+                            <column name="guid" start-index="193" stop-index="198">
+                                <owner name="p" start-index="193" stop-index="193"/>
+                            </column>
+                        </left>
+                        <right>
+                            <column name="package_guid" start-index="202" stop-index="215">
+                                <owner name="o" start-index="202" stop-index="202"/>
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <where start-index="217" stop-index="289">
+            <expr>
+                <binary-operation-expression start-index="223" stop-index="289">
+                    <left>
+                        <binary-operation-expression start-index="223" stop-index="265">
+                            <left>
+                                <binary-operation-expression start-index="223" stop-index="245">
+                                    <left>
+                                        <column name="object_type" start-index="223" stop-index="235">
+                                            <owner name="o" start-index="223" stop-index="223"/>
+                                        </column>
+                                    </left>
+                                    <right>
+                                        <literal-expression value="event" start-index="239" stop-index="245"/>
+                                    </right>
+                                    <operator>=</operator>
+                                </binary-operation-expression>
+                            </left>
+                            <right>
+                                <binary-operation-expression start-index="251" stop-index="265">
+                                    <left>
+                                        <column name="name" start-index="251" stop-index="256">
+                                            <owner name="p" start-index="251" stop-index="251"/>
+                                        </column>
+                                    </left>
+                                    <right>
+                                        <list-expression start-index="263" stop-index="265">
+                                            <items>
+                                                <literal-expression value="%" start-index="263" stop-index="265"/>
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                    <operator>LIKE</operator>
+                                </binary-operation-expression>
+                            </right>
+                            <operator>AND</operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <binary-operation-expression start-index="271" stop-index="289">
+                            <left>
+                                <column name="name" start-index="271" stop-index="276">
+                                    <owner name="o" start-index="271" stop-index="271"/>
+                                </column>
+                            </left>
+                            <right>
+                                <list-expression start-index="283" stop-index="289">
+                                    <items>
+                                        <literal-expression value="%sql%" start-index="283" stop-index="289"/>
+                                    </items>
+                                </list-expression>
+                            </right>
+                            <operator>LIKE</operator>
+                        </binary-operation-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="name" start-index="300" stop-index="305">
+                <owner name="p" start-index="300" stop-index="300"/>
+            </column-item>
+            <column-item name="object_type" start-index="308" stop-index="320">
+                <owner name="o" start-index="308" stop-index="308"/>
+            </column-item>
+            <column-item name="name" start-index="323" stop-index="328">
+                <owner name="o" start-index="323" stop-index="323"/>
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_cross_apply_join_string_split">
+        <projections start-index="7" stop-index="28">
+            <column-projection name="ProductId" start-index="7" stop-index="15"/>
+            <column-projection name="Name" start-index="18" stop-index="21"/>
+            <column-projection name="value" start-index="24" stop-index="28"/>
+        </projections>
+        <from start-index="35" stop-index="77">
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="Product" start-index="35" stop-index="41"/>
+                </left>
+                <right>
+                    <function-table start-index="55" stop-index="77">
+                        <table-function function-name="STRING_SPLIT" text="STRING_SPLIT(Tags, ',')"/>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_cross_apply_join_string_split_with_group_by">
+        <projections start-index="7" stop-index="52">
+            <column-projection name="value" start-index="7" stop-index="18" alias="tag"/>
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="21" stop-index="28" alias="number_of_articles"/>
+        </projections>
+        <from start-index="59" stop-index="101">
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="Product" start-index="59" stop-index="65"/>
+                </left>
+                <right>
+                    <function-table start-index="55" stop-index="77">
+                        <table-function function-name="STRING_SPLIT" text="STRING_SPLIT(Tags, ',')"/>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <group-by>
+            <column-item name="value" start-index="112" stop-index="116"/>
+        </group-by>
+        <having start-index="118" stop-index="136">
+            <expr>
+                <binary-operation-expression start-index="125" stop-index="136">
+                    <left>
+                        <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="125" stop-index="132"/>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression start-index="136" stop-index="136" value="2" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <expression-item expression="COUNT(*)" start-index="147" stop-index="154" order-direction="DESC">
+                <expr>
+                    <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="147" stop-index="154"/>
+                </expr>
+            </expression-item>
+        </order-by>
+    </select>
 </sql-parser-test-cases>

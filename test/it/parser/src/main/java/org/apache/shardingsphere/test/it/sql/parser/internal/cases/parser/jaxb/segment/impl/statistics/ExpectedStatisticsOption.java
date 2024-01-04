@@ -15,36 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.statistics;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public final class SampleOptionSegment implements SQLSegment {
+public final class ExpectedStatisticsOption extends AbstractExpectedSQLSegment {
     
-    private int startIndex;
+    @XmlAttribute
+    private boolean incremental;
     
-    private int stopIndex;
+    @XmlAttribute(name = "statistics-dimension")
+    private String statisticsDimension;
     
-    private boolean persistSamplePercent;
+    @XmlAttribute(name = "max-degree-of-parallelism")
+    private String maxDegreeOfParallelism;
     
-    private String sampleNumber;
+    @XmlAttribute(name = "no-recompute")
+    private boolean noRecompute;
     
-    private SampleStrategy strategy;
-    
-    private ScanUnit scanUnit;
-    
-    private List<String> partitions;
-    
-    public SampleOptionSegment(final int startIndex, final int stopIndex) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-    }
+    @XmlAttribute(name = "auto-drop")
+    private boolean autoDrop;
 }
