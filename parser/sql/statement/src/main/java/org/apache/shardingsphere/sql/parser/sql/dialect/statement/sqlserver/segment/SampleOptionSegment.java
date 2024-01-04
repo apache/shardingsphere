@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
