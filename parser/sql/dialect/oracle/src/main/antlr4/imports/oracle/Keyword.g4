@@ -839,3 +839,71 @@ AUTONOMOUS_TRANSACTION
 WM_CONCAT
     : W M UL_ C O N C A T
     ;
+
+DECLARE
+    : D E C L A R E
+    ;
+    
+BULK
+    : B U L K
+    ;
+
+COLLECT
+    : C O L L E C T
+    ;    
+
+INSERTING
+    : I N S E R T I N G
+    ;
+    
+UPDATING
+    : U P D A T I N G
+    ;
+    
+DELETING
+    : D E L E T I N G
+    ;
+    
+ROWCOUNT
+    : R O W C O U N T
+    ;
+    
+BULK_ROWCOUNT
+    : B U L K UL_ R O W C O U N T
+    ;
+    
+RAISE
+    : R A I S E
+    ;
+    
+WHILE
+    : W H I L E
+    ;
+    
+GOTO
+    : G O T O
+    ;
+    
+MUTABLE
+    : M U T A B L E
+    ;
+    
+IMMUTABLE
+    : I M M U T A B L E
+    ;
+    
+INDICES
+    : I N D I C E S
+    ;
+    
+PAIRS
+    : P A I R S
+    ;
+    
+PIPE
+    : P I P E
+    ;
+    
+FORALL
+    : F O R A L L
+    ;

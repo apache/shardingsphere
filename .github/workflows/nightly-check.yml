@@ -167,12 +167,14 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Install Project
         run: |
-          export MAVEN_OPTS='-Xmx6g -Xms512m'
+          export MAVEN_OPTS='-Xmx4g -Xms1g'
           ./mvnw clean install -DskipTests
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
           category: "/language:java"
+          minimum-size: 1GB
+          maximum-size: 5GB
 
   check-stale:
     if: github.repository == 'apache/shardingsphere'
