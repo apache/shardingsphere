@@ -321,7 +321,7 @@ public final class ConfigurationContextManager {
      * @throws SQLException SQL exception
      */
     public MetaDataContexts createMetaDataContextsWhenRuleChanged(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
-                                                   final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+                                                                  final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         return newMetaDataContexts(new ShardingSphereMetaData(createChangedDatabases(databaseName, internalLoadMetaData, switchingResource, ruleConfigs),
                 metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), metaDataContexts.get().getMetaData().getGlobalRuleMetaData(),
                 metaDataContexts.get().getMetaData().getProps()));
