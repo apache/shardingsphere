@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected procedure name.
+ * Expected execute clause.
  */
 @Getter
 @Setter

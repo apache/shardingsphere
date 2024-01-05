@@ -41,5 +41,5 @@ public final class ExecSegment implements SQLSegment {
     @Setter
     private FunctionNameSegment procedureName;
     
-    private Collection<ExpressionSegment> expressionSegments = new LinkedList<>();
+    private final Collection<ExpressionSegment> expressionSegments = new LinkedList<>();
 }
