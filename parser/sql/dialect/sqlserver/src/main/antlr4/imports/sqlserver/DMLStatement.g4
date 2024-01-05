@@ -20,7 +20,7 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
+    : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause | insertExecClause)
     ;
 
 insertDefaultValue
@@ -33,6 +33,14 @@ insertValuesClause
 
 insertSelectClause
     : columnNames? outputClause? select
+    ;
+
+insertExecClause
+    : columnNames? exec
+    ;
+
+exec
+    : (EXEC | EXECUTE) procedureName (expr (COMMA_ expr)*)?
     ;
 
 update

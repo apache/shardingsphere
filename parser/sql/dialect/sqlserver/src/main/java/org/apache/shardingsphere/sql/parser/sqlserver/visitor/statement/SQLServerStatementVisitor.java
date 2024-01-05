@@ -107,6 +107,9 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Upd
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertExecClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExecContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProcedureNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -115,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -181,6 +185,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
@@ -914,6 +919,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result = (SQLServerInsertStatement) visit(ctx.insertDefaultValue());
         } else if (null != ctx.insertValuesClause()) {
             result = (SQLServerInsertStatement) visit(ctx.insertValuesClause());
+        } else if (null != ctx.insertExecClause()) {
+            result = (SQLServerInsertStatement) visit(ctx.insertExecClause());
         } else {
             result = (SQLServerInsertStatement) visit(ctx.insertSelectClause());
         }
@@ -931,6 +938,39 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         if (null != ctx.outputClause()) {
             result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertExecClause(final InsertExecClauseContext ctx) {
+        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
+        result.setExecSegment((ExecSegment) visit(ctx.exec()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitExec(final ExecContext ctx) {
+        ExecSegment result = new ExecSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.procedureName()) {
+            result.setProcedureName((FunctionNameSegment) visitProcedureName(ctx.procedureName()));
+        }
+        if (null != ctx.expr()) {
+            Collection<ExpressionSegment> items = new LinkedList<>();
+            for (ExprContext each : ctx.expr()) {
+                items.add((ExpressionSegment) visit(each));
+            }
+            result.getExpressionSegments().addAll(items);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitProcedureName(final ProcedureNameContext ctx) {
+        FunctionNameSegment result = new FunctionNameSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), (IdentifierValue) visit(ctx.name()));
+        if (null != ctx.owner()) {
+            result.setOwner(new OwnerSegment(ctx.owner().start.getStartIndex(), ctx.owner().stop.getStopIndex(), (IdentifierValue) visit(ctx.owner())));
         }
         return result;
     }
