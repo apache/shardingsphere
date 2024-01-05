@@ -152,7 +152,7 @@ public final class ConfigurationContextManager {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
-            MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, null, ruleConfigs);
+            MetaDataContexts reloadMetaDataContexts = createMetaDataContextsWhenRuleChanged(databaseName, false, null, ruleConfigs);
             alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
             metaDataContexts.set(reloadMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
@@ -308,6 +308,23 @@ public final class ConfigurationContextManager {
         result.addAll(metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class));
         result.addAll(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class));
         return result;
+    }
+    
+    /**
+     * Create meta data contexts when rule configuration changed.
+     *
+     * @param databaseName database name
+     * @param internalLoadMetaData internal load meta data
+     * @param switchingResource switching resource
+     * @param ruleConfigs rule configs
+     * @return MetaDataContexts meta data contexts
+     * @throws SQLException SQL exception
+     */
+    public MetaDataContexts createMetaDataContextsWhenRuleChanged(final String databaseName, final boolean internalLoadMetaData, final SwitchingResource switchingResource,
+                                                   final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        return newMetaDataContexts(new ShardingSphereMetaData(createChangedDatabases(databaseName, internalLoadMetaData, switchingResource, ruleConfigs),
+                metaDataContexts.get().getMetaData().getGlobalResourceMetaData(), metaDataContexts.get().getMetaData().getGlobalRuleMetaData(),
+                metaDataContexts.get().getMetaData().getProps()));
     }
     
     /**
