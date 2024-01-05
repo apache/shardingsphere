@@ -74,4 +74,8 @@
     <sql-case id="explain_for_select_with_unique_partition_by" value="EXPLAIN PLAN FOR SELECT country, prod, year, sales FROM sales_view WHERE country IN ('Italy', 'Japan') MODEL UNIQUE DIMENSION PARTITION BY (country) DIMENSION BY (prod, year)
     MEASURES (sale sales) RULES UPSERT (sales['Bounce', 2003] = AVG(sales)[ANY, 2002] * 1.24, sales[prod &lt;&gt; 'Bounce', 2003] = sales['Bounce', 2003] * 0.25)" db-types="Oracle" />
     <sql-case id="explain_with_select_comment" value="/*FORCE_IMCI_NODES*/ explain select /*+ SET_VAR(cost_threshold_for_imci=0) */ * from t_order" db-types="MySQL" />
+    <sql-case id="explain_for_select_with_group_by" value="EXPLAIN PLAN FOR SELECT t.calendar_month_desc, SUM(s.amount_sold) FROM  sales s, times t WHERE s.time_id = t.time_id GROUP BY t.calendar_month_desc" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_function" value="EXPLAIN PLAN FOR SELECT SUM(amount_sold) FROM sales WHERE TO_CHAR(time_id,'yyyy') = '2000'" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_function_and_function" value="EXPLAIN PLAN FOR SELECT SUM(quantity_sold) FROM sales WHERE time_id = TO_TIMESTAMP('1-jan-2000', 'dd-mon-yyyy')" db-types="Oracle" />
+    <sql-case id="explain_for_select" value="EXPLAIN PLAN FOR SELECT * FROM sh.customers WHERE cust_city='Los Angeles' AND cust_state_province='CA'" db-types="Oracle" />
 </sql-cases>
