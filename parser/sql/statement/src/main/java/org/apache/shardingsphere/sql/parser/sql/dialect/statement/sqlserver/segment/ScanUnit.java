@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment;
 
+/**
+ * Update statistics scan unit enum.
+ */
 public enum ScanUnit {
     
     ROWS,

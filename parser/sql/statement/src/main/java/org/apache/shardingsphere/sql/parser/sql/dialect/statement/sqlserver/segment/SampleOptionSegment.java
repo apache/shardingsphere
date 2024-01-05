@@ -24,6 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 import java.util.List;
 
+/**
+ * Update statistics sample option segment.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

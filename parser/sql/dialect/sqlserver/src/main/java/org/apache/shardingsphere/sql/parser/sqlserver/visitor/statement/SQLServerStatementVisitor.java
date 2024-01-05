@@ -1372,14 +1372,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitStatisticsWithClause(final StatisticsWithClauseContext ctx) {
-        StatisticsStrategySegment segment = new StatisticsStrategySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        StatisticsStrategySegment result = new StatisticsStrategySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.sampleOption()) {
-            segment.setSampleOption((SampleOptionSegment) visit(ctx.sampleOption()));
+            result.setSampleOption((SampleOptionSegment) visit(ctx.sampleOption()));
         }
         if (null != ctx.statisticsOptions()) {
-            segment.setStatisticsOptions((StatisticsOptionSegment) visit(ctx.statisticsOptions()));
+            result.setStatisticsOptions((StatisticsOptionSegment) visit(ctx.statisticsOptions()));
         }
-        return segment;
+        return result;
     }
     
     @Override
@@ -1389,60 +1389,60 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSampleOption(final SampleOptionContext ctx) {
-        SampleOptionSegment segment = new SampleOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        SampleOptionSegment result = new SampleOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.FULLSCAN()) {
-            segment.setStrategy(SampleStrategy.FULLSCAN);
+            result.setStrategy(SampleStrategy.FULLSCAN);
         } else if (null != ctx.SAMPLE()) {
-            segment.setStrategy(SampleStrategy.SAMPLE);
+            result.setStrategy(SampleStrategy.SAMPLE);
             if (null != ctx.NUMBER_()) {
                 List<TerminalNode> number = ctx.NUMBER_();
-                segment.setSampleNumber(number.get(0).getText());
+                result.setSampleNumber(number.get(0).getText());
             }
             if (null != ctx.PERCENT()) {
-                segment.setScanUnit(ScanUnit.PERCENT);
+                result.setScanUnit(ScanUnit.PERCENT);
             } else if (null != ctx.ROWS()) {
-                segment.setScanUnit(ScanUnit.ROWS);
+                result.setScanUnit(ScanUnit.ROWS);
             }
         } else if (null != ctx.RESAMPLE()) {
-            segment.setStrategy(SampleStrategy.RESAMPLE);
+            result.setStrategy(SampleStrategy.RESAMPLE);
             if (null != ctx.NUMBER_()) {
                 List<String> partitions = new LinkedList<>();
                 for (TerminalNode terminalNode : ctx.NUMBER_()) {
                     partitions.add(terminalNode.getText());
                 }
-                segment.setPartitions(partitions);
+                result.setPartitions(partitions);
             }
         }
         if (null != ctx.PERSIST_SAMPLE_PERCENT()) {
-            segment.setPersistSamplePercent(null != ctx.ON());
+            result.setPersistSamplePercent(null != ctx.ON());
         }
-        return segment;
+        return result;
     }
     
     @Override
     public ASTNode visitStatisticsOptions(final StatisticsOptionsContext ctx) {
-        StatisticsOptionSegment optionSegment = new StatisticsOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        StatisticsOptionSegment result = new StatisticsOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         for (StatisticsOptionContext option : ctx.statisticsOption()) {
             if (null != option.ALL()) {
-                optionSegment.setStatisticsDimension(StatisticsDimension.ALL);
+                result.setStatisticsDimension(StatisticsDimension.ALL);
             } else if (null != option.COLUMNS()) {
-                optionSegment.setStatisticsDimension(StatisticsDimension.COLUMNS);
+                result.setStatisticsDimension(StatisticsDimension.COLUMNS);
             } else if (null != option.INDEX()) {
-                optionSegment.setStatisticsDimension(StatisticsDimension.INDEX);
+                result.setStatisticsDimension(StatisticsDimension.INDEX);
             }
             if (null != option.NORECOMPUTE()) {
-                optionSegment.setNoRecompute(true);
+                result.setNoRecompute(true);
             }
             if (null != option.INCREMENTAL()) {
-                optionSegment.setIncremental(null != option.ON());
+                result.setIncremental(null != option.ON());
             }
             if (null != option.MAXDOP()) {
-                optionSegment.setMaxDegreeOfParallelism(option.NUMBER_().getText());
+                result.setMaxDegreeOfParallelism(option.NUMBER_().getText());
             }
             if (null != option.AUTO_DROP()) {
-                optionSegment.setAutoDrop(null != option.ON());
+                result.setAutoDrop(null != option.ON());
             }
         }
-        return optionSegment;
+        return result;
     }
 }

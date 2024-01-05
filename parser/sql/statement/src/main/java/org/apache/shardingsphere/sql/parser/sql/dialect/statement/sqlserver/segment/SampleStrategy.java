@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment;
 
+/**
+ * Update statistics sample strategy enum.
+ */
 public enum SampleStrategy {
     
     FULLSCAN,

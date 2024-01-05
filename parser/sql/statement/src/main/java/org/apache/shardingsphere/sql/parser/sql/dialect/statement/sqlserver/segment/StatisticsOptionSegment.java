@@ -22,6 +22,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
+/**
+ * Update statistics option segment.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
