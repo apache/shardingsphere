@@ -167,8 +167,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Install Project
         run: |
-          export MAVEN_OPTS='-Xmx4g -Xms1g'
-          ./mvnw clean install -DskipTests
+          ./mvnw clean install -DskipTests -B -ntp -T1C
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
