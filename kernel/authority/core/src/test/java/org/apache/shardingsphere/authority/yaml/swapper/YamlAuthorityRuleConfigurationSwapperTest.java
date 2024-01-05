@@ -30,6 +30,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlAuthorityRuleConfigurationSwapperTest {
@@ -38,22 +39,27 @@ class YamlAuthorityRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("type", new Properties()), Collections.emptyMap(), null);
+        AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()),
+                Collections.singletonMap("md5", createAlgorithmConfiguration()), "scram_sha256");
         YamlAuthorityRuleConfiguration actual = swapper.swapToYamlConfiguration(authorityRuleConfig);
         assertTrue(actual.getUsers().isEmpty());
         assertNotNull(actual.getPrivilege());
+        assertThat(actual.getDefaultAuthenticator(), is("scram_sha256"));
+        assertThat(actual.getAuthenticators().size(), is(1));
     }
     
     @Test
     void assertSwapToObject() {
         YamlAuthorityRuleConfiguration authorityRuleConfig = new YamlAuthorityRuleConfiguration();
         authorityRuleConfig.setUsers(Collections.singletonList(getYamlUser()));
-        YamlAlgorithmConfiguration yamlAlgorithmConfig = new YamlAlgorithmConfiguration();
-        yamlAlgorithmConfig.setType("type");
-        authorityRuleConfig.setPrivilege(yamlAlgorithmConfig);
+        authorityRuleConfig.setPrivilege(createYamlAlgorithmConfiguration());
+        authorityRuleConfig.setDefaultAuthenticator("scram_sha256");
+        authorityRuleConfig.setAuthenticators(Collections.singletonMap("md5", createYamlAlgorithmConfiguration()));
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
         assertNotNull(actual.getPrivilegeProvider());
+        assertThat(actual.getDefaultAuthenticator(), is("scram_sha256"));
+        assertThat(actual.getAuthenticators().size(), is(1));
     }
     
     @Test
@@ -63,12 +69,25 @@ class YamlAuthorityRuleConfigurationSwapperTest {
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
         assertThat(actual.getPrivilegeProvider().getType(), is("ALL_PERMITTED"));
+        assertThat(actual.getUsers().size(), is(1));
+        assertNull(actual.getDefaultAuthenticator());
+        assertTrue(actual.getAuthenticators().isEmpty());
     }
     
     private YamlUserConfiguration getYamlUser() {
         YamlUserConfiguration result = new YamlUserConfiguration();
         result.setUser("root@localhost");
         result.setPassword("password");
+        return result;
+    }
+    
+    private AlgorithmConfiguration createAlgorithmConfiguration() {
+        return new AlgorithmConfiguration("MD5", new Properties());
+    }
+    
+    private YamlAlgorithmConfiguration createYamlAlgorithmConfiguration() {
+        YamlAlgorithmConfiguration result = new YamlAlgorithmConfiguration();
+        result.setType("MD5");
         return result;
     }
 }

@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -38,7 +39,21 @@ class NewYamlAuthorityRuleConfigurationSwapperTest {
     @Test
     void assertSwapToDataNodes() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
-        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null));
-        assertThat(actual.iterator().next().getKey(), is("authority"));
+        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()),
+                Collections.singletonMap("md5", new AlgorithmConfiguration("MD5", createProperties())), "scram_sha256"));
+        YamlDataNode yamlDataNode = actual.iterator().next();
+        assertThat(yamlDataNode.getKey(), is("authority"));
+        assertThat(yamlDataNode.getValue(), containsString("user: root@localhost"));
+        assertThat(yamlDataNode.getValue(), containsString("password: ''"));
+        assertThat(yamlDataNode.getValue(), containsString("type: ALL_PERMITTED"));
+        assertThat(yamlDataNode.getValue(), containsString("defaultAuthenticator: scram_sha256"));
+        assertThat(yamlDataNode.getValue(), containsString("type: MD5"));
+        assertThat(yamlDataNode.getValue(), containsString("proxy-frontend-database-protocol-type: openGauss"));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("proxy-frontend-database-protocol-type", "openGauss");
+        return result;
     }
 }
