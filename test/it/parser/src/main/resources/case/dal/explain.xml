@@ -1214,4 +1214,53 @@
             </where>
         </select>
     </describe>
+
+    <describe sql-case-id="explain_for_select_emp_range" >
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="emp_range" start-index="31" stop-index="39"/>
+            </from>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_emp_comp" >
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="emp_comp" start-index="31" stop-index="38"/>
+            </from>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_with_comments">
+        <select>
+            <projections start-index="44" stop-index="59">
+                <column-projection name="deptno" start-index="44" stop-index="49"/>
+                <aggregation-projection type="AVG" expression="avg(sal)" start-index="52" stop-index="59"/>
+            </projections>
+            <from>
+                <simple-table name="emp" start-index="66" stop-index="68"/>
+            </from>
+            <group-by>
+                <column-item name="deptno" start-index="79" stop-index="84"/>
+            </group-by>
+        </select>
+        <comment text="/*+ result_cache */" start-index="24" stop-index="42"/>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_job_history" >
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="v_emp_job_history" start-index="31" stop-index="47"/>
+            </from>
+        </select>
+    </describe>
 </sql-parser-test-cases>
