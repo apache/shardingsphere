@@ -22,5 +22,5 @@
     <sql-case id="flashback_database_to_restore_point" value="FLASHBACK DATABASE sample TO RESTORE POINT good_data" db-types="Oracle" />
     <sql-case id="flashback_database_to_before_resetlogs" value="FLASHBACK DATABASE TO BEFORE RESETLOGS" db-types="Oracle" />
     <sql-case id="flashback_database_to_restore_point_string" value="FLASHBACK DATABASE TO RESTORE POINT 'before_upgrade';" db-types="Oracle" />
-    <sql-case id="flashback_only_database_to_scn" value="FLASHBACK DATABASE TO SCN 202381;" />
+    <sql-case id="flashback_only_database_to_scn" value="FLASHBACK DATABASE TO SCN 202381;" db-types="Oracle" />
 </sql-cases>
