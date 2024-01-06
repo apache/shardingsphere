@@ -43,4 +43,12 @@ class MemoryPipelineChannelTest {
         assertThat(channel.fetch(1, 5L), is(records));
         thread.join();
     }
+    
+    @Test
+    void assertFetchWithZeroTimeout() {
+        MemoryPipelineChannel channel = new MemoryPipelineChannel(100, new InventoryTaskAckCallback(new AtomicReference<>()));
+        List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
+        channel.push(records);
+        assertThat(channel.fetch(10, 0L), is(records));
+    }
 }
