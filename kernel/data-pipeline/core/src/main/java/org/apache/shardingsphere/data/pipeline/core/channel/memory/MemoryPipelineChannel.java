@@ -53,21 +53,20 @@ public final class MemoryPipelineChannel implements PipelineChannel {
     @SneakyThrows(InterruptedException.class)
     @Override
     public List<Record> fetch(final int batchSize, final long timeoutMillis) {
-        List<Record> result = new LinkedList<>();
         long startMillis = System.currentTimeMillis();
         int recordsCount = 0;
-        do {
-            List<Record> records = queue.poll();
+        List<Record> records = queue.take();
+        recordsCount += records.size();
+        List<Record> result = new LinkedList<>(records);
+        while (recordsCount < batchSize && System.currentTimeMillis() - startMillis < timeoutMillis) {
+            records = queue.poll();
             if (null == records || records.isEmpty()) {
-                TimeUnit.MILLISECONDS.sleep(Math.min(100L, timeoutMillis));
+                TimeUnit.MILLISECONDS.sleep(Math.min(100L, Math.max(0, timeoutMillis - (System.currentTimeMillis() - startMillis))));
             } else {
                 recordsCount += records.size();
                 result.addAll(records);
             }
-            if (recordsCount >= batchSize) {
-                break;
-            }
-        } while (System.currentTimeMillis() - startMillis < timeoutMillis);
+        }
         return result;
     }
     

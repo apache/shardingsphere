@@ -207,16 +207,16 @@ public final class MigrationJobPreparer {
                 importerConfig.getConcurrency(), jobItemContext.getJobProcessContext().getProcessConfig().getStreamChannel(), taskProgress);
         Dumper dumper = DatabaseTypedSPILoader.getService(DialectIncrementalDumperCreator.class, dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType())
                 .createIncrementalDumper(dumperContext, dumperContext.getCommonContext().getPosition(), channel, sourceMetaDataLoader);
-        Collection<Importer> importers = createImporters(importerConfig, jobItemContext.getSink(), channel, jobItemContext);
+        Collection<Importer> importers = createIncrementalImporters(importerConfig, jobItemContext.getSink(), channel, jobItemContext);
         PipelineTask incrementalTask = new IncrementalTask(dumperContext.getCommonContext().getDataSourceName(), incrementalExecuteEngine, dumper, importers, taskProgress);
         jobItemContext.getIncrementalTasks().add(incrementalTask);
     }
     
-    private Collection<Importer> createImporters(final ImporterConfiguration importerConfig, final PipelineSink sink, final PipelineChannel channel,
-                                                 final PipelineJobProgressListener jobProgressListener) {
+    private Collection<Importer> createIncrementalImporters(final ImporterConfiguration importerConfig, final PipelineSink sink, final PipelineChannel channel,
+                                                            final PipelineJobProgressListener jobProgressListener) {
         Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < importerConfig.getConcurrency(); i++) {
-            result.add(new SingleChannelConsumerImporter(channel, importerConfig.getBatchSize(), 3000L, sink, jobProgressListener));
+            result.add(new SingleChannelConsumerImporter(channel, 1, 5L, sink, jobProgressListener));
         }
         return result;
     }

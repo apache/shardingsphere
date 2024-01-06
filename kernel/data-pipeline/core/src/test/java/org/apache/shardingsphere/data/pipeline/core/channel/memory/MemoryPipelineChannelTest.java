@@ -40,7 +40,7 @@ class MemoryPipelineChannelTest {
         List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
         Thread thread = new Thread(() -> channel.push(records));
         thread.start();
-        assertThat(channel.fetch(1, 500L), is(records));
+        assertThat(channel.fetch(1, 5L), is(records));
         thread.join();
     }
 }
