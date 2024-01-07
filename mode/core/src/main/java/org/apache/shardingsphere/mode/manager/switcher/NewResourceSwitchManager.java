@@ -105,23 +105,35 @@ public final class NewResourceSwitchManager {
      * Unregister storage unit.
      *
      * @param resourceMetaData resource meta data
-     * @param storageUnitName storage unit name
+     * @param storageUnitNames storage unit names
      * @return created switching resource
      */
-    public SwitchingResource unregisterStorageUnit(final ResourceMetaData resourceMetaData, final String storageUnitName) {
+    public SwitchingResource unregisterStorageUnit(final ResourceMetaData resourceMetaData, final Collection<String> storageUnitNames) {
         Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
-        mergedDataSourcePoolPropertiesMap.keySet().removeIf(each -> each.equals(storageUnitName));
-        resourceMetaData.getStorageUnits().remove(storageUnitName);
-        return new SwitchingResource(Collections.emptyMap(),
-                getToBeRemovedStaleDataSource(resourceMetaData, storageUnitName), Collections.singleton(storageUnitName), mergedDataSourcePoolPropertiesMap);
+        SwitchingResource result = new SwitchingResource(Collections.emptyMap(),
+                getToBeRemovedStaleDataSource(resourceMetaData, storageUnitNames), storageUnitNames, mergedDataSourcePoolPropertiesMap);
+        removeToBeRemovedStorageUnitNames(resourceMetaData, mergedDataSourcePoolPropertiesMap, storageUnitNames);
+        return result;
     }
     
-    private Map<StorageNode, DataSource> getToBeRemovedStaleDataSource(final ResourceMetaData resourceMetaData, final String storageUnitName) {
-        if (!resourceMetaData.getStorageUnits().containsKey(storageUnitName)) {
-            return Collections.emptyMap();
+    private Map<StorageNode, DataSource> getToBeRemovedStaleDataSource(final ResourceMetaData resourceMetaData, final Collection<String> storageUnitNames) {
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>();
+        for (String each : storageUnitNames) {
+            if (!resourceMetaData.getStorageUnits().containsKey(each)) {
+                return Collections.emptyMap();
+            }
+            StorageNode storageNode = resourceMetaData.getStorageUnits().get(each).getStorageNode();
+            result.put(storageNode, resourceMetaData.getDataSources().get(storageNode));
         }
-        StorageNode storageNode = resourceMetaData.getStorageUnits().get(storageUnitName).getStorageNode();
-        return Collections.singletonMap(storageNode, resourceMetaData.getDataSources().get(storageNode));
+        return result;
+    }
+    
+    private void removeToBeRemovedStorageUnitNames(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap,
+                                                   final Collection<String> storageUnitNames) {
+        for (String each : storageUnitNames) {
+            dataSourcePoolPropsMap.remove(each);
+            resourceMetaData.getStorageUnits().remove(each);
+        }
     }
 }

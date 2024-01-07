@@ -150,3 +150,7 @@ SQL_HINT
 NOT
     : N O T
     ;
+
+IMPLEMENTATIONS
+    : I M P L E M E N T A T I O N S
+    ;

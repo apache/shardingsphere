@@ -60,10 +60,14 @@ public final class NewDataSourceUnitPersistService implements DatabaseBasedPersi
     }
     
     @Override
-    public void delete(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
+    public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : dataSourceConfigs.entrySet()) {
-            repository.delete(NewDatabaseMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey()));
+            String delKey = NewDatabaseMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey());
+            repository.delete(delKey);
+            result.add(new MetaDataVersion(delKey));
         }
+        return result;
     }
     
     @Override
@@ -77,8 +81,7 @@ public final class NewDataSourceUnitPersistService implements DatabaseBasedPersi
             if (Strings.isNullOrEmpty(getDataSourceActiveVersion(databaseName, entry.getKey()))) {
                 repository.persist(NewDatabaseMetaDataNode.getDataSourceUnitActiveVersionNode(databaseName, entry.getKey()), DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey()),
-                    getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
+            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getDataSourceUnitNode(databaseName, entry.getKey()), getDataSourceActiveVersion(databaseName, entry.getKey()), nextActiveVersion));
         }
         return result;
     }

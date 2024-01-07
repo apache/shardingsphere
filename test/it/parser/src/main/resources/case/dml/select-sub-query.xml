@@ -656,4 +656,50 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_exist_string_split_subquery">
+        <projections start-index="7" stop-index="27">
+            <column-projection name="ProductId" start-index="7" stop-index="15" />
+            <column-projection name="Name" start-index="18" stop-index="21" />
+            <column-projection name="Tags" start-index="24" stop-index="27" />
+        </projections>
+        <from start-index="34" stop-index="40">
+            <simple-table name="Product" start-index="34" stop-index="40"/>
+        </from>
+        <where start-index="42" stop-index="129">
+            <expr>
+                    <subquery start-index="48" stop-index="129">
+                        <select>
+                            <projections start-index="63" stop-index="63">
+                                <shorthand-projection start-index="63" stop-index="63" />
+                            </projections>
+                            <from start-index="70" stop-index="92">
+                                <function-table>
+                                    <table-function function-name="STRING_SPLIT" text="STRING_SPLIT(Tags, ',')"/>
+                                </function-table>
+                            </from>
+                            <where start-index="94" stop-index="128">
+                                <expr>
+                                    <in-expression start-index="100" stop-index="128">
+                                        <left>
+                                            <column name="value" start-index="100" stop-index="104" />
+                                        </left>
+                                        <right>
+                                            <list-expression start-index="109" stop-index="128">
+                                                <items>
+                                                    <literal-expression value="clothing" start-index="110" stop-index="119"/>
+                                                </items>
+                                                <items>
+                                                    <literal-expression value="road" start-index="122" stop-index="127"/>
+                                                </items>
+                                            </list-expression>
+                                        </right>
+                                    </in-expression>
+                                </expr>
+                            </where>
+                        </select>
+                    </subquery>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

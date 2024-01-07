@@ -48,6 +48,8 @@ intervalUnit
 
 stringLiterals
     : STRING_
+    | NCHAR_TEXT
+    | UCHAR_TEXT
     ;
 
 numberLiterals
@@ -85,8 +87,7 @@ unreservedWord
 
 unreservedWord1
     : TRUNCATE | FUNCTION | PROCEDURE | CASE | WHEN | CAST | TRIM | SUBSTRING
-    | NATURAL | JOIN | FULL | INNER | OUTER | LEFT | RIGHT
-    | CROSS | USING | IF | TRUE | FALSE | LIMIT | OFFSET
+    | USING | IF | TRUE | FALSE | LIMIT | OFFSET
     | COMMIT | ROLLBACK | SAVEPOINT
     | ARRAY | INTERVAL | TIME | TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | YEAR
     | QUARTER | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND
@@ -116,7 +117,7 @@ unreservedWord1
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
     | LENGTH | SINGLE_C | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
     | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
-    | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
+    | WHEN | CAST | TRIM | SUBSTRING | JOIN
     | USING | FALSE | SAVEPOINT | BODY | CHARACTER | ARRAY | TIME | TIMEOUT | TIMESTAMP | LOCALTIME
     | DAY | ENABLE | DISABLE | CALL | INSTANCE | CLOSE | NEXT | NAME | NUMERIC
     | TRIGGERS | GLOBAL_NAME | BINARY | MOD | XOR | UNKNOWN | ALWAYS | CASCADE | GENERATED | PRIVILEGES
@@ -1022,10 +1023,6 @@ ignoredIdentifiers
 
 matchNone
     : 'Default does not match anything'
-    ;
-
-hashSubpartitionQuantity
-    : NUMBER
     ;
 
 odciParameters
@@ -2046,18 +2043,18 @@ xmlSerializeFunction
     ;
 
 xmlTableFunction
-    : XMLTABLE LP_ (xmlNameSpacesClause COMMA_)? STRING_ xmlTableOptions RP_
+    : XMLTABLE LP_ (xmlNamespacesClause COMMA_)? STRING_ xmlTableOptions RP_
     ;
 
 xmlIsSchemaValidFunction
     : (owner DOT_)* name DOT_ ISSCHEMAVALID LP_ expr (COMMA_ expr)* RP_ 
     ;
 
-xmlNameSpacesClause
-    : XMLNAMESPACES LP_ (defaultString COMMA_)? (xmlNameSpaceStringAsIdentifier | defaultString) (COMMA_ (xmlNameSpaceStringAsIdentifier | defaultString))* RP_
+xmlNamespacesClause
+    : XMLNAMESPACES LP_ (defaultString COMMA_)? (xmlNamespaceStringAsIdentifier | defaultString) (COMMA_ (xmlNamespaceStringAsIdentifier | defaultString))* RP_
     ;
 
-xmlNameSpaceStringAsIdentifier
+xmlNamespaceStringAsIdentifier
     : STRING_ AS identifier
     ;
 
@@ -2120,5 +2117,9 @@ credentialName
     ;
 
 agentDblink
+    : STRING_
+    ;
+
+xPathsList
     : STRING_
     ;

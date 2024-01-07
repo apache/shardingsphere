@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.readonly;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
@@ -33,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  * MySQL set read only transaction integration test.
  */
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
-@Slf4j
 public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     
     public MySQLSetReadOnlyTestCase(final TransactionTestCaseParameter testCaseParam) {

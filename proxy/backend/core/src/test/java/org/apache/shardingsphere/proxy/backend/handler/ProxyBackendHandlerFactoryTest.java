@@ -19,15 +19,17 @@ package org.apache.shardingsphere.proxy.backend.handler;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
+import org.apache.shardingsphere.authority.rule.builder.DefaultUser;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -90,6 +92,7 @@ class ProxyBackendHandlerFactoryTest {
     
     @BeforeEach
     void setUp() {
+        when(connectionSession.getGrantee()).thenReturn(new Grantee(DefaultUser.USERNAME, "%"));
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         when(connectionSession.getDatabaseName()).thenReturn("db");
@@ -194,14 +197,32 @@ class ProxyBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertUnsupportedNonQueryDistSQLInTransaction() {
+    void assertNewInstanceWithUnsupportedDCLSQLStatement() {
+        String sql = "CREATE USER 'foo'@'%' IDENTIFIED BY 'bar';";
+        assertThrows(UnsupportedSQLOperationException.class, () -> ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext()));
+    }
+    
+    @Test
+    void assertNewInstanceWithUnsupportedDALSQLStatement() {
+        assertThrows(UnsupportedSQLOperationException.class, () -> ProxyBackendHandlerFactory.newInstance(databaseType, "FLUSH PRIVILEGES;", connectionSession, new HintValueContext()));
+        assertThrows(UnsupportedSQLOperationException.class, () -> ProxyBackendHandlerFactory.newInstance(databaseType, "SHOW CREATE USER foo;", connectionSession, new HintValueContext()));
+    }
+    
+    @Test
+    void assertNewInstanceWithUnsupportedDDLSQLStatement() {
+        String sql = "RENAME TABLE foo TO bar;";
+        assertThrows(UnsupportedSQLOperationException.class, () -> ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext()));
+    }
+    
+    @Test
+    void assertNewInstanceWithUnsupportedNonQueryDistSQLInTransaction() {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS(ms_group_0,ms_group_1), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')));";
         assertThrows(UnsupportedSQLOperationException.class, () -> ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext()));
     }
     
     @Test
-    void assertUnsupportedQueryableRALStatementInTransaction() throws SQLException {
+    void assertNewInstanceWithQueryableRALStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SHOW TRANSACTION RULE;";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
@@ -209,7 +230,7 @@ class ProxyBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertUnsupportedRQLStatementInTransaction() throws SQLException {
+    void assertNewInstanceWithRQLStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
@@ -217,7 +238,7 @@ class ProxyBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertDistSQLRULStatementInTransaction() throws SQLException {
+    void assertNewInstanceWithRULStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());

@@ -600,7 +600,7 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 
 ### 6. 官网首页增加发布版本文档入口
 更新 `shardingsphere-doc` 仓库下 index.html、index_zh.html、learning.html、legacy.html、legacy_zh.html 几处文件中的版本号为当前版本。[参考提交](https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430)
-更新 `shardingsphere` 仓库下的 [language.html](docs/document/themes/hugo-theme-learn/layouts/partials/language.html)，增加当前版本号用于页面导航。[参考提交](https://github.com/apache/shardingsphere/pull/29017/files)
+更新 `shardingsphere` 仓库下的 language.html(docs/document/themes/hugo-theme-learn/layouts/partials/language.html)，增加当前版本号用于页面导航。[参考提交](https://github.com/apache/shardingsphere/pull/29017/files)
 
 ### 7. 更新示例版本
 

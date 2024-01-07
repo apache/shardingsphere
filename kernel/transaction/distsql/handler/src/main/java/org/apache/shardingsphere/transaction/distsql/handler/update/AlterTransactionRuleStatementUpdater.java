@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Alter transaction rule statement handler.
+ * Alter transaction rule statement updater.
  */
 public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRALUpdater<AlterTransactionRuleStatement, TransactionRuleConfiguration> {
     

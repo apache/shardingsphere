@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
-import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -57,6 +57,7 @@ import java.util.stream.IntStream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -190,7 +191,14 @@ class ShowDatabasesExecutorTest {
     
     private AuthorityRule mockAuthorityRule() {
         AuthorityRule result = mock(AuthorityRule.class);
-        when(result.findPrivileges(new Grantee("root", ""))).thenReturn(Optional.of(new AllPrivilegesPermittedShardingSpherePrivileges()));
+        ShardingSpherePrivileges privileges = mockPrivileges();
+        when(result.findPrivileges(new Grantee("root", ""))).thenReturn(Optional.of(privileges));
+        return result;
+    }
+    
+    private ShardingSpherePrivileges mockPrivileges() {
+        ShardingSpherePrivileges result = mock(ShardingSpherePrivileges.class);
+        when(result.hasPrivileges(anyString())).thenReturn(true);
         return result;
     }
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.ddl;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;

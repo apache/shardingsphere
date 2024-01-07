@@ -29,7 +29,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatem
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableConditionalIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertType;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertExecClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertColumnsClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertValuesClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.MultiTableConditionalIntoClauseAssert;
@@ -77,6 +79,7 @@ public final class InsertStatementAssert {
         assertMultiTableInsertIntoClause(assertContext, actual, expected);
         assertMultiTableConditionalIntoClause(assertContext, actual, expected);
         assertReturningClause(assertContext, actual, expected);
+        assertInsertExecClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
@@ -193,6 +196,16 @@ public final class InsertStatementAssert {
         } else {
             assertTrue(returningSegment.isPresent(), assertContext.getText("Actual returning segment should exist."));
             ReturningClauseAssert.assertIs(assertContext, returningSegment.get(), expected.getReturningClause());
+        }
+    }
+    
+    private static void assertInsertExecClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<ExecSegment> execSegment = InsertStatementHandler.getExecSegment(actual);
+        if (null == expected.getExecClause()) {
+            assertFalse(execSegment.isPresent(), assertContext.getText("Actual exec segment should not exist."));
+        } else {
+            assertTrue(execSegment.isPresent(), assertContext.getText("Actual exec segment should exist."));
+            InsertExecClauseAssert.assertIs(assertContext, execSegment.get(), expected.getExecClause());
         }
     }
 }

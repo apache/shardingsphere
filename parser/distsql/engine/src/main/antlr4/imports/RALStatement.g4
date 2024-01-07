@@ -48,7 +48,7 @@ showComputeNodes
     ;
 
 refreshDatabaseMetadata
-    : REFRESH DATABASE METADATA databaseName? FROM GOVERNANCE CENTER
+    : FORCE? REFRESH DATABASE METADATA databaseName?
     ;
 
 refreshTableMetadata
@@ -113,6 +113,14 @@ lockCluster
 
 unlockCluster
     : UNLOCK CLUSTER
+    ;
+
+showServiceProviderImplementations
+    : SHOW IMPLEMENTATIONS OF serviceProviderInterface
+    ;
+
+showKeyGenerateAlgorithmImplementations
+    : SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS
     ;
 
 transmissionRule
@@ -201,4 +209,8 @@ showLike
 
 likePattern
     : STRING_
+    ;
+
+serviceProviderInterface
+    : IDENTIFIER_ | STRING_
     ;

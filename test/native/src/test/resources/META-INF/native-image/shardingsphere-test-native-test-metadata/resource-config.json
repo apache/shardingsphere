@@ -1,21 +1,41 @@
 {
   "resources":{
   "includes":[{
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MSSQLServerTest"},
+    "pattern":"\\Qcontainer-license-acceptance.txt\\E"
+  }, {
+    "condition":{"typeReachable":"ch.qos.logback.core.util.Loader"},
+    "pattern":"\\Qlogback-test.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MSSQLServerTest"},
+    "pattern":"\\Qtest-native/yaml/databases/mssqlserver.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MySQLTest"},
+    "pattern":"\\Qtest-native/yaml/databases/mysql.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.OpenGaussTest"},
+    "pattern":"\\Qtest-native/yaml/databases/opengauss.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.PostgresTest"},
+    "pattern":"\\Qtest-native/yaml/databases/postgresql.yaml\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest"},
-    "pattern":"\\Qyaml/encrypt.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/features/encrypt.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.MaskTest"},
-    "pattern":"\\Qyaml/mask.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/features/mask.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ReadWriteSplittingTest"},
-    "pattern":"\\Qyaml/readwrite-splitting.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/features/readwrite-splitting.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ShadowTest"},
-    "pattern":"\\Qyaml/shadow.yaml\\E"
+    "pattern":"\\Qtest-native/yaml/features/shadow.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ShardingTest"},
-    "pattern":"\\Qyaml/sharding.yaml\\E"
-  }
-  ]},
+    "pattern":"\\Qtest-native/yaml/features/sharding.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.mode.cluster.ZookeeperTest"},
+    "pattern":"\\Qtest-native/yaml/mode/cluster/zookeeper.yaml\\E"
+  }]},
   "bundles":[]
 }

@@ -17,7 +17,6 @@ SQL 是使用者与数据库交流的标准语言。 SQL 解析引擎负责将 S
 
 | *名称*                       | *数据类型*      | *说明*         |
 |----------------------------|-------------|--------------|
-| sqlCommentParseEnabled (?) | boolean     | 是否解析 SQL 注释  |
 | parseTreeCache (?)         | CacheOption | 解析语法树本地缓存配置  |
 | sqlStatementCache (?)      | CacheOption | SQL 语句本地缓存配置 |
 
@@ -44,7 +43,7 @@ SQL 是使用者与数据库交流的标准语言。 SQL 解析引擎负责将 S
 CacheOption cacheOption = new CacheOption(128, 1024L);
 SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
 ParseASTNode parseASTNode = parserEngine.parse("SELECT t.id, t.name, t.age FROM table1 AS t ORDER BY t.id DESC;", false);
-SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("MySQL", false);
+SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("MySQL");
 MySQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
 System.out.println(sqlStatement.toString());
 ```

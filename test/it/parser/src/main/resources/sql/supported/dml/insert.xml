@@ -103,4 +103,11 @@
     <sql-case id="insert_with_national_character_set" value="INSERT INTO customers VALUES (1000, TO_NCHAR('John Smith'),N'500 Oracle Parkway',sysdate);" db-types="Oracle" />
     <sql-case id="insert_with_oracle_datetime_type" value="INSERT INTO t_order (create_date, create_timestamp, create_interval_year, create_interval_day) VALUES (TO_DATE('2009', 'YYYY'), TO_DATE('2009', 'YYYY'), (TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) year to MONTH, (TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) DAY TO SECOND);" db-types="Oracle" />
     <sql-case id="insert_all_into" value="INSERT ALL INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (1,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (2,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (3,'2','3','4','5') SELECT 1 FROM DUAL" db-types="Oracle" />
+    <sql-case id="insert_with_nchar_1" value="INSERT INTO dbo.T1 VALUES (1, N'Natalia')" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_2" value="INSERT INTO dbo.T1 VALUES (2, N'Mark')" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_3" value="INSERT INTO dbo.T1 VALUES (3, N'Randolph')" db-types="SQLServer"/>
+    <sql-case id="insert_with_batch_nchar" value="INSERT INTO TestSchema.Employees (Name, Location) VALUES (N'Jared',  N'Australia'), (N'Nikita', N'India'), (N'Tom', N'Germany')" db-types="SQLServer"/>
+    <sql-case id="insert_with_data_base_name" value="INSERT INTO AdventureWorks2022.dbo.VariableTest(Col1) VALUES('$(tablename)')" db-types="SQLServer"/>
+    <sql-case id="insert_with_exec" value="INSERT INTO iris_rx_data (&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;Petal.Length&quot;, &quot;Petal.Width&quot; , &quot;Species&quot;) EXECUTE sp_execute_external_script @language = N'R' , @script = N'iris_data &lt;- iris'" db-types="SQLServer"/>
+    <sql-case id="insert_with_db_schema_name" value="INSERT INTO ContosoWarehouse.dbo.Affiliation SELECT * FROM My_Lakehouse.dbo.Affiliation" db-types="SQLServer"/>
 </sql-cases>

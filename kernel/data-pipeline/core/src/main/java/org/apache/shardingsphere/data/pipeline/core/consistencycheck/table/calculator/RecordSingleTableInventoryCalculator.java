@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.query.JDBCStreamQueryBuilder;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.ColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.ColumnValueReaderEngine;
+import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
@@ -47,7 +46,6 @@ import java.util.Optional;
  * Record single table inventory calculator.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class RecordSingleTableInventoryCalculator extends AbstractStreamingSingleTableInventoryCalculator {
     
     private final int chunkSize;

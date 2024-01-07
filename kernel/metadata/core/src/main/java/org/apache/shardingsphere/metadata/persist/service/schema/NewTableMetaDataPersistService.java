@@ -73,8 +73,7 @@ public final class NewTableMetaDataPersistService implements SchemaMetaDataPersi
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, tableName))) {
                 repository.persist(NewDatabaseMetaDataNode.getTableActiveVersionNode(databaseName, schemaName, tableName), DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getTableNode(databaseName, schemaName, tableName),
-                    getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
+            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getTableNode(databaseName, schemaName, tableName), getActiveVersion(databaseName, schemaName, tableName), nextActiveVersion));
         }
         return result;
     }

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.test.natived.jdbc.features;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.test.natived.FileTestUtils;
-import org.apache.shardingsphere.test.natived.jdbc.features.entity.Address;
-import org.apache.shardingsphere.test.natived.jdbc.features.entity.Order;
-import org.apache.shardingsphere.test.natived.jdbc.features.entity.OrderItem;
-import org.apache.shardingsphere.test.natived.jdbc.features.repository.AddressRepository;
-import org.apache.shardingsphere.test.natived.jdbc.features.repository.OrderItemRepository;
-import org.apache.shardingsphere.test.natived.jdbc.features.repository.OrderRepository;
+import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
+import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Address;
+import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Order;
+import org.apache.shardingsphere.test.natived.jdbc.commons.entity.OrderItem;
+import org.apache.shardingsphere.test.natived.jdbc.commons.repository.AddressRepository;
+import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderItemRepository;
+import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -50,7 +50,7 @@ class ShadowTest {
     
     @Test
     void assertShadowInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/shadow.yaml"));
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/features/shadow.yaml"));
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
@@ -60,8 +60,8 @@ class ShadowTest {
     }
     
     private void initEnvironment() throws SQLException {
-        orderRepository.createTableIfNotExists();
-        orderItemRepository.createTableIfNotExists();
+        orderRepository.createTableIfNotExistsInMySQL();
+        orderItemRepository.createTableIfNotExistsInMySQL();
         addressRepository.createTableIfNotExists();
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();

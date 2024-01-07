@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.arguments;
 
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -32,7 +31,6 @@ import java.util.stream.Collectors;
 /**
  * Bootstrap arguments.
  */
-@Slf4j
 @RequiredArgsConstructor
 public final class BootstrapArguments {
     

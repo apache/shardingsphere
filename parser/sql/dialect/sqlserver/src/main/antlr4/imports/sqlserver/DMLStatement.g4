@@ -20,7 +20,7 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
+    : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause | insertExecClause)
     ;
 
 insertDefaultValue
@@ -33,6 +33,14 @@ insertValuesClause
 
 insertSelectClause
     : columnNames? outputClause? select
+    ;
+
+insertExecClause
+    : columnNames? exec
+    ;
+
+exec
+    : (EXEC | EXECUTE) procedureName (expr (COMMA_ expr)*)?
     ;
 
 update
@@ -89,15 +97,18 @@ duplicateSpecification
     ;
 
 projections
-    : (unqualifiedShorthand | projection) (COMMA_ projection)*
+    : (projection | top projection?) (COMMA_ projection)*
     ;
 
 projection
-    : (top | columnName | expr) (AS? alias)? | qualifiedShorthand
+    : qualifiedShorthand
+    | unqualifiedShorthand
+    | (alias EQ_)? (columnName | expr)
+    | (columnName | expr) (AS? alias)?
     ;
 
 top
-    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_)?
+    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ (AS? alias)?)?
     ;
 
 topNum
@@ -125,12 +136,13 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : tableName (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias) ? | LP_ tableReferences RP_
     ;
 
 joinedTable
     : NATURAL? ((INNER | CROSS)? JOIN) tableFactor joinSpecification?
     | NATURAL? (LEFT | RIGHT | FULL) OUTER? JOIN tableFactor joinSpecification?
+    | (CROSS | OUTER) APPLY tableFactor joinSpecification?
     ;
 
 joinSpecification

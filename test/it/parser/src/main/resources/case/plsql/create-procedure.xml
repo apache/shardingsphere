@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-procedure sql-case-id="pl_sql_create_procedure">
+        <procedure-name name="test_procedure" />
+        <sql-statements>
+            <sql-statement start-index="167" stop-index="192" statement-class-simple-name="OracleSavepointStatement" />
+            <sql-statement start-index="210" stop-index="274" statement-class-simple-name="OracleSelectStatement" />
+            <sql-statement start-index="1205" stop-index="1210" statement-class-simple-name="OracleCommitStatement" />
+            <sql-statement start-index="1251" stop-index="1293" statement-class-simple-name="OracleRollbackStatement" />
+            <sql-statement start-index="1408" stop-index="1450" statement-class-simple-name="OracleRollbackStatement" />
+        </sql-statements>
+        <procedure-calls>
+            <procedure-call name="DBMS_OUTPUT.PUT_LINE" />
+            <procedure-call name="DBMS_OUTPUT.PUT_LINE" />
+        </procedure-calls>
+    </create-procedure>
+</sql-parser-test-cases>

@@ -21,13 +21,42 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
 
 /**
- * Unsupported storage type exception.
+ * Unsupported storage type exception. When this exception is thrown, it means that the relevant jdbcUrl lacks the corresponding {@link DatabaseType} SPI implementation.
+ * Assume that there is a jdbcUrl of `jdbc:vertica://node01.example.com:5433/dbname`, but there is no corresponding implementation of DatabaseType SPI.
+ * User can temporarily create the class and implement {@link DatabaseType#getJdbcUrlPrefixes()} and {@link DatabaseType#getTrunkDatabaseType()}
+ * to require the corresponding jdbcUrl use the SQL92 dialect.
+ * // CHECKSTYLE:OFF
+ * <pre class="code">
+ * public final class VerticaDatabaseType implements DatabaseType {
+ * <p/>
+ *     &#064;Override
+ *     public Collection<String> getJdbcUrlPrefixes() {
+ *         return Collections.singleton("jdbc:vertica:");
+ *     }
+ * <p/>
+ *     &#064;Override
+ *     public Optional<DatabaseType> getTrunkDatabaseType() {
+ *         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+ *     }
+ * <p/>
+ *     &#064;Override
+ *     public String getType() {
+ *         return "Vertica";
+ *     }
+ * }
+ * </pre>
+ * // CHECKSTYLE:ON
+ * To fully support the corresponding database dialect, user need to refer to `org.apache.shardingsphere:shardingsphere-infra-database-mysql` module to implement additional SPIs.
+ *
+ * @see org.apache.shardingsphere.infra.database.core.type.DatabaseType
  */
 public final class UnsupportedStorageTypeException extends ConnectionSQLException {
     
     private static final long serialVersionUID = 8981789100727786183L;
     
     public UnsupportedStorageTypeException(final String url) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 40, "Unsupported storage type of URL `%s`.", url);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 40,
+                "Unsupported storage type of URL `%s`. Add corresponding SPI implementation of `%s` to enable handling. Through reference SQL State: %s. Through reference Vendor Code: %s.",
+                url, DatabaseType.class.getName(), XOpenSQLState.FEATURE_NOT_SUPPORTED.getValue(), 40);
     }
 }

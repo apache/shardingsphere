@@ -23,6 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+import java.util.Optional;
+
 /**
  * Merge statement.
  */
@@ -39,4 +41,22 @@ public abstract class MergeStatement extends AbstractSQLStatement implements DML
     private UpdateStatement update;
     
     private InsertStatement insert;
+    
+    /**
+     * Get update statement.
+     * 
+     * @return update statement
+     */
+    public Optional<UpdateStatement> getUpdate() {
+        return Optional.ofNullable(update);
+    }
+    
+    /**
+     * Get insert statement.
+     *
+     * @return insert statement
+     */
+    public Optional<InsertStatement> getInsert() {
+        return Optional.ofNullable(insert);
+    }
 }

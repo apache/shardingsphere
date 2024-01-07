@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
-import org.apache.shardingsphere.data.pipeline.common.execute.PipelineLifecycleRunnable;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineLifecycleRunnable;
 
 /**
  * Importer.

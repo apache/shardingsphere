@@ -158,5 +158,6 @@ execute
     | createLibrary
     | switch
     | createProfile
+    | createTrigger
     ) SEMI_?
     ;

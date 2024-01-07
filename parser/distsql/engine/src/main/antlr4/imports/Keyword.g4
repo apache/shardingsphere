@@ -51,6 +51,10 @@ SHOW
     : S H O W
     ;
 
+FOR
+    : F O R
+    ;
+
 FROM
     : F R O M
     ;
@@ -167,7 +171,7 @@ FALSE
     : F A L S E
     ;
 
-IF  
+IF
     : I F
     ;
 
@@ -345,4 +349,28 @@ LOCK_STRATEGY
 
 BROADCAST
     : B R O A D C A S T
+    ;
+
+IMPLEMENTATIONS
+    : I M P L E M E N T A T I O N S
+    ;
+
+OF
+    : O F
+    ;
+
+KEY
+    : K E Y
+    ;
+
+GENERATE
+    : G E N E R A T E
+    ;
+
+ALGORITHM
+    : A L G O R I T H M
+    ;
+
+FORCE
+    : F O R C E
     ;

@@ -17,7 +17,7 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="REFRESH DATABASE METADATA FROM GOVERNANCE CENTER" db-types="MySQL">
+    <test-case sql="REFRESH DATABASE METADATA" db-types="MySQL">
         <assertion expected-data-file="show_sharding_table_rule.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES" />
         </assertion>

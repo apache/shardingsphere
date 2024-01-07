@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.yaml.swapper;
 
-import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,6 +30,6 @@ class NewYamlSQLTranslatorRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new SQLTranslatorRuleConfiguration()).iterator().next().getKey(), is("sql_translator"));
+        assertThat(swapper.swapToDataNodes(new DefaultSQLTranslatorRuleConfigurationBuilder().build()).iterator().next().getKey(), is("sql_translator"));
     }
 }

@@ -33,7 +33,7 @@ public final class DefaultSQLParserRuleConfigurationBuilder implements DefaultGl
     
     @Override
     public SQLParserRuleConfiguration build() {
-        return new SQLParserRuleConfiguration(false, PARSE_TREE_CACHE_OPTION, SQL_STATEMENT_CACHE_OPTION);
+        return new SQLParserRuleConfiguration(PARSE_TREE_CACHE_OPTION, SQL_STATEMENT_CACHE_OPTION);
     }
     
     @Override

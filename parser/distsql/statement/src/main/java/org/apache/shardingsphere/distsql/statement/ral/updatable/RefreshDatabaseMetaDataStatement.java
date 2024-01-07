@@ -32,6 +32,8 @@ public final class RefreshDatabaseMetaDataStatement extends UpdatableRALStatemen
     
     private final String databaseName;
     
+    private final boolean force;
+    
     /**
      * Get database name.
      *
