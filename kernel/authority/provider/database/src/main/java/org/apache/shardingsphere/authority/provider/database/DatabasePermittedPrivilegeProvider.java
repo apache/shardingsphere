@@ -56,26 +56,8 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
     
     @Override
     public Map<Grantee, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users) {
-        return buildPrivileges(users, convertUserDatabases());
-    }
-    
-    private Map<Grantee, ShardingSpherePrivileges> buildPrivileges(final Collection<ShardingSphereUser> users, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
+        Map<ShardingSphereUser, Collection<String>> userDatabaseMappings = convertUserDatabases();
         return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
-    }
-    
-    private Collection<String> getUserDatabases(final ShardingSphereUser user, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
-        Collection<String> result = new HashSet<>();
-        for (Entry<ShardingSphereUser, Collection<String>> entry : userDatabaseMappings.entrySet()) {
-            boolean isAnyOtherHost = checkAnyOtherHost(entry.getKey().getGrantee(), user);
-            if (isAnyOtherHost || user.equals(entry.getKey())) {
-                result.addAll(entry.getValue());
-            }
-        }
-        return result;
-    }
-    
-    private boolean checkAnyOtherHost(final Grantee grantee, final ShardingSphereUser user) {
-        return ("%".equals(grantee.getHostname()) || grantee.getHostname().equals(user.getGrantee().getHostname())) && grantee.getUsername().equals(user.getGrantee().getUsername());
     }
     
     private Map<ShardingSphereUser, Collection<String>> convertUserDatabases() {
@@ -87,6 +69,17 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
             Collection<String> databases = result.getOrDefault(user, new HashSet<>());
             databases.add(userDatabasePair[1]);
             result.putIfAbsent(user, databases);
+        }
+        return result;
+    }
+    
+    private Collection<String> getUserDatabases(final ShardingSphereUser user, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
+        Collection<String> result = new HashSet<>();
+        for (Entry<ShardingSphereUser, Collection<String>> entry : userDatabaseMappings.entrySet()) {
+            boolean isAnyOtherHost = entry.getKey().getGrantee().accept(user.getGrantee());
+            if (isAnyOtherHost || user.equals(entry.getKey())) {
+                result.addAll(entry.getValue());
+            }
         }
         return result;
     }

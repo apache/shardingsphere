@@ -26,6 +26,10 @@ import lombok.Getter;
  */
 public final class Grantee {
     
+    private static final String DELIMITER = "@";
+    
+    private static final String HOST_WILDCARD = "%";
+    
     @Getter
     private final String username;
     
@@ -40,10 +44,14 @@ public final class Grantee {
     
     public Grantee(final String username, final String hostname) {
         this.username = username;
-        this.hostname = Strings.isNullOrEmpty(hostname) ? "%" : hostname;
-        isUnlimitedHost = "%".equals(this.hostname);
+        this.hostname = Strings.isNullOrEmpty(hostname) ? HOST_WILDCARD : hostname;
+        isUnlimitedHost = HOST_WILDCARD.equals(this.hostname);
         hashCode = Objects.hashCode(username.toUpperCase(), this.hostname.toUpperCase());
-        toString = username + "@" + hostname;
+        toString = username + DELIMITER + hostname;
+    }
+    
+    public Grantee(final String username) {
+        this(username, HOST_WILDCARD);
     }
     
     /**
