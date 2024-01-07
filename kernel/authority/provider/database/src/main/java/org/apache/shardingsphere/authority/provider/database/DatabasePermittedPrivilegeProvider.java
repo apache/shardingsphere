@@ -66,16 +66,12 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
     private Collection<String> getUserDatabases(final ShardingSphereUser user, final Map<ShardingSphereUser, Collection<String>> userDatabaseMappings) {
         Collection<String> result = new HashSet<>();
         for (Entry<ShardingSphereUser, Collection<String>> entry : userDatabaseMappings.entrySet()) {
-            boolean isAnyOtherHost = checkAnyOtherHost(entry.getKey().getGrantee(), user);
+            boolean isAnyOtherHost = entry.getKey().getGrantee().accept(user.getGrantee());
             if (isAnyOtherHost || user.equals(entry.getKey())) {
                 result.addAll(entry.getValue());
             }
         }
         return result;
-    }
-    
-    private boolean checkAnyOtherHost(final Grantee grantee, final ShardingSphereUser user) {
-        return ("%".equals(grantee.getHostname()) || grantee.getHostname().equals(user.getGrantee().getHostname())) && grantee.getUsername().equals(user.getGrantee().getUsername());
     }
     
     private Map<ShardingSphereUser, Collection<String>> convertUserDatabases() {
