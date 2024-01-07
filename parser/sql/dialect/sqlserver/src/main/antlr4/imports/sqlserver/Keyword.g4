@@ -83,6 +83,10 @@ COLUMN
     : C O L U M N
     ;
 
+COLUMNS
+    : C O L U M N S
+    ;
+
 INDEX
     : I N D E X
     ;
@@ -225,6 +229,10 @@ AS
 
 ON
     : O N
+    ;
+
+OFF
+    : O F F
     ;
 
 IF
