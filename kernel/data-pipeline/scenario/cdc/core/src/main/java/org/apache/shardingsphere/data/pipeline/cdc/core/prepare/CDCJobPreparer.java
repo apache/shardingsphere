@@ -146,7 +146,7 @@ public final class CDCJobPreparer {
                 .createIncrementalDumper(dumperContext, dumperContext.getCommonContext().getPosition(), channel, jobItemContext.getSourceMetaDataLoader());
         boolean needSorting = jobItemContext.getJobConfig().isDecodeWithTX();
         Importer importer = importerUsed.get() ? null
-                : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 300L, jobItemContext.getSink(), needSorting, importerConfig.getRateLimitAlgorithm());
+                : new CDCImporter(channelProgressPairs, 1, 300L, jobItemContext.getSink(), needSorting, importerConfig.getRateLimitAlgorithm());
         PipelineTask incrementalTask = new CDCIncrementalTask(
                 dumperContext.getCommonContext().getDataSourceName(), jobItemContext.getJobProcessContext().getIncrementalExecuteEngine(), dumper, importer, taskProgress);
         jobItemContext.getIncrementalTasks().add(incrementalTask);

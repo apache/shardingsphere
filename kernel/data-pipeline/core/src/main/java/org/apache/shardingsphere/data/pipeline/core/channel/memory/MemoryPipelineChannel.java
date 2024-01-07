@@ -57,17 +57,13 @@ public final class MemoryPipelineChannel implements PipelineChannel {
         long startMillis = System.currentTimeMillis();
         int recordsCount = 0;
         do {
-            List<Record> records = queue.poll();
+            List<Record> records = queue.poll(Math.max(0, timeoutMillis - (System.currentTimeMillis() - startMillis)), TimeUnit.MILLISECONDS);
             if (null == records || records.isEmpty()) {
-                TimeUnit.MILLISECONDS.sleep(Math.min(100L, timeoutMillis));
-            } else {
-                recordsCount += records.size();
-                result.addAll(records);
+                continue;
             }
-            if (recordsCount >= batchSize) {
-                break;
-            }
-        } while (System.currentTimeMillis() - startMillis < timeoutMillis);
+            recordsCount += records.size();
+            result.addAll(records);
+        } while (recordsCount < batchSize && System.currentTimeMillis() - startMillis < timeoutMillis);
         return result;
     }
     
