@@ -50,10 +50,6 @@ public final class Grantee {
         toString = username + DELIMITER + hostname;
     }
     
-    public Grantee(final String username) {
-        this(username, HOST_WILDCARD);
-    }
-    
     /**
      * Check if the grantee is acceptable.
      *
