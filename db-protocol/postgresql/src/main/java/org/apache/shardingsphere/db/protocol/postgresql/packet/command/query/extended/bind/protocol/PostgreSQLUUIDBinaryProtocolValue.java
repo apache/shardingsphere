@@ -22,7 +22,10 @@ import org.postgresql.util.ByteConverter;
 
 import java.util.UUID;
 
-public class PostgreSQLUUIDBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
+/**
+ * Binary protocol value for UUID for PostgreSQL.
+ */
+public final class PostgreSQLUUIDBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
     public int getColumnLength(final Object value) {
@@ -42,5 +45,4 @@ public class PostgreSQLUUIDBinaryProtocolValue implements PostgreSQLBinaryProtoc
         payload.writeInt8(uuid.getMostSignificantBits());
         payload.writeInt8(uuid.getLeastSignificantBits());
     }
-    
 }

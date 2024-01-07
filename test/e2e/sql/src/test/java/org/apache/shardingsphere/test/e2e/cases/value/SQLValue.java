@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 /**
  * SQL value.
@@ -98,6 +99,8 @@ public final class SQLValue {
                 return Timestamp.valueOf(LocalDateTime.parse(value, timestampFormatter));
             case "bytes":
                 return value.getBytes(StandardCharsets.UTF_8);
+            case "UUID":
+                return UUID.fromString(value);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
         }
@@ -119,6 +122,9 @@ public final class SQLValue {
         }
         if (value instanceof byte[]) {
             return formatString(new String((byte[]) value, StandardCharsets.UTF_8));
+        }
+        if (value instanceof UUID) {
+            return formatString(((UUID) value).toString());
         }
         return value.toString();
     }

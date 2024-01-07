@@ -43,7 +43,6 @@ class PostgreSQLUUIDBinaryProtocolValueTest {
         ByteBuffer buffer = ByteBuffer.wrap(expected);
         buffer.putLong(randomUUID.getMostSignificantBits());
         buffer.putLong(randomUUID.getLeastSignificantBits());
-        
         ByteBuf byteBuf = Unpooled.wrappedBuffer(expected);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         assertThat(new PostgreSQLUUIDBinaryProtocolValue().read(payload, 16), is(randomUUID));
@@ -56,10 +55,8 @@ class PostgreSQLUUIDBinaryProtocolValueTest {
         ByteBuffer buffer = ByteBuffer.wrap(expected);
         buffer.putLong(randomUUID.getMostSignificantBits());
         buffer.putLong(randomUUID.getLeastSignificantBits());
-        
         ByteBuf byteBuf = Unpooled.wrappedBuffer(expected);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf.writerIndex(0), StandardCharsets.UTF_8);
-        
         PostgreSQLUUIDBinaryProtocolValue actual = new PostgreSQLUUIDBinaryProtocolValue();
         actual.write(payload, randomUUID);
         assertThat(actual.read(payload, 16), is(randomUUID));
