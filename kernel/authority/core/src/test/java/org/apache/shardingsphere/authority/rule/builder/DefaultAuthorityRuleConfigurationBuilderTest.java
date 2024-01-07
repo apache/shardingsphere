@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultAuthorityRuleConfigurationBuilderTest {
     
@@ -30,5 +32,7 @@ class DefaultAuthorityRuleConfigurationBuilderTest {
         AuthorityRuleConfiguration actual = new DefaultAuthorityRuleConfigurationBuilder().build();
         assertThat(actual.getPrivilegeProvider().getType(), is("ALL_PERMITTED"));
         assertThat(actual.getUsers().size(), is(1));
+        assertNull(actual.getDefaultAuthenticator());
+        assertTrue(actual.getAuthenticators().isEmpty());
     }
 }

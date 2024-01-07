@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.enums;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+
+import java.util.List;
 
 /**
- * Join type enum.
+ * SQLServer call statement.
  */
-public enum JoinType {
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+public final class SQLServerCallStatement extends CallStatement implements SQLServerStatement {
     
-    INNER, FULL, CROSS, LEFT, RIGHT, COMMA, APPLY
+    private String procedureName;
+    
+    private List<ExpressionSegment> parameters;
 }

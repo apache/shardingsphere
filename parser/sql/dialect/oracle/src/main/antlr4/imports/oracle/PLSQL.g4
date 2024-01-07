@@ -90,7 +90,6 @@ statement
         | gotoStatement
         | ifStatement
         | nullStatement
-        | executeImmediateStatement
         | openStatement
         | openForStatement
         | pipeRowStatement
@@ -119,7 +118,7 @@ assignStatementTarget
     ;
 
 placeholder
-    : COLON_ hostVariable=name (COLON_ indicatorVariable=name)?
+    : COLON_ hostVariable=name (DOT_ columnName)? (COLON_ indicatorVariable=name)?
     ;
 
 // TODO PL/SQL grammar more than expr
@@ -570,7 +569,7 @@ plsqlTriggerSource
     ;
 
 simpleDmlTrigger
-    : (BEFORE | AFTER) dmlEventClause
+    : (BEFORE | AFTER) dmlEventClause (FOR EACH ROW)? triggerBody
     ;
 
 dmlEventClause
@@ -582,7 +581,7 @@ dmlEventElement
     ;
 
 systemTrigger
-    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)*) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA) body
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)*) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA) triggerBody
     ;
 
 ddlEvent
@@ -625,6 +624,6 @@ databaseEvent
     | (BEFORE | AFTER) SET CONTAINER
     ;
 
-executeImmediateStatement
-    : EXECUTE IMMEDIATE stringLiterals
+triggerBody
+    : plsqlBlock
     ;

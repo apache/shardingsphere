@@ -28,7 +28,7 @@
             SELECT EVENTDATA()" db-types="SQLServer" />
 
     <sql-case id="create_trigger_with_create_view" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create view v1 as select 1; END" db-types="MySQL" />
-    <sql-case id="create_trigger_with_dml_event_clause" value="CREATE TRIGGER scott.emp_permit_changes BEFORE DELETE OR INSERT OR UPDATE ON scott.emp" db-types="Oracle" />
+    <sql-case id="create_trigger_with_dml_event_clause" value="CREATE TRIGGER scott.emp_permit_changes BEFORE DELETE OR INSERT OR UPDATE ON scott.emp BEGIN IF (IS_SERVERERROR (1017)) THEN NULL; ELSE NULL; END IF; END;" db-types="Oracle" />
     <sql-case id="create_trigger_with_body" value="CREATE TRIGGER log_errors
         AFTER SERVERERROR ON DATABASE
         BEGIN
@@ -45,4 +45,9 @@
                   execute immediate 'alter session sync with primary';
             end if;
         end;" db-types="Oracle" />
+    <sql-case id="create_trigger_with_assignment_statement" value="CREATE TRIGGER Contacts_BI
+            BEFORE INSERT ON Contacts FOR EACH ROW
+        BEGIN
+            :NEW.ID := Contacts_Seq.NEXTVAL;
+        END;" db-types="Oracle" />
 </sql-cases>

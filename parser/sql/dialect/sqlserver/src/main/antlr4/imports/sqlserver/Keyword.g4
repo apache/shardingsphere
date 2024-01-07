@@ -700,3 +700,6 @@ WITHOUT
     : W I T H O U T
     ;
 
+APPLY
+    : A P P L Y
+    ;
