@@ -85,6 +85,21 @@ class MySQLMultiStatementsHandlerTest {
         assertThat(actualHeader.getSqlStatement(), is(expectedStatement));
     }
     
+    @Test
+    void assertExecuteWithSpecifiedDatabaseName() throws SQLException {
+        String sql = "update foo_db.t set v=v+1 where id=1;update foo_db.t set v=v+1 where id=2;update foo_db.t set v=v+1 where id=3";
+        ConnectionSession connectionSession = mockConnectionSession();
+        MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+        UpdateResponseHeader actualHeader = (UpdateResponseHeader) actual;
+        assertThat(actualHeader.getUpdateCount(), is(3L));
+        assertThat(actualHeader.getLastInsertId(), is(0L));
+        assertThat(actualHeader.getSqlStatement(), is(expectedStatement));
+    }
+    
     private ConnectionSession mockConnectionSession() throws SQLException {
         ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseName()).thenReturn("foo_db");
