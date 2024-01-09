@@ -71,10 +71,10 @@ public final class AbsolutePathURLProvider implements ShardingSphereURLProvider 
         Matcher matcher = variablePattern.matcher(line);
         StringBuffer modifiedLine = new StringBuffer();
         while (matcher.find()) {
-            Properties systemProperties = System.getProperties();
             String variable = matcher.group(1);
-            String value = systemProperties.getProperty(variable, "");
-            if (value.isEmpty()) {
+            String env = variable.split(":")[0];
+            String value = System.getenv(env);
+            if (value == null || value.isEmpty()) {
                 value = variable.split(":")[1];
             }
             matcher.appendReplacement(modifiedLine, value);
