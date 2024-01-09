@@ -77,7 +77,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
     }
     
     private BroadcastRuleConfiguration createBroadcastRuleConfiguration() {
-        return new BroadcastRuleConfiguration(Collections.singletonList("t_address"));;
+        return new BroadcastRuleConfiguration(Collections.singletonList("t_address"));
     }
 }
 ```
