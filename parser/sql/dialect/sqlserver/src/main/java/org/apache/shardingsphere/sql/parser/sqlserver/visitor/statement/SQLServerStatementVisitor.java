@@ -670,7 +670,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         if (null != ctx.NUMBER_()) {
-            result.getParameters().add(new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.NUMBER_().getText()));
+            result.getParameters().add(new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(), ctx.NUMBER_().getText()));
         }
         return result;
     }

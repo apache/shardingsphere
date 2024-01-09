@@ -7990,4 +7990,40 @@
             <column-projection name="modify_date" start-index="185" stop-index="195"/>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_substring_function">
+        <projections start-index="7" stop-index="36">
+            <column-projection name="ProductID" start-index="7" stop-index="15"/>
+            <column-projection name="Name" start-index="18" stop-index="21"/>
+            <column-projection name="ProductNumber" start-index="24" stop-index="36"/>
+        </projections>
+        <from start-index="43" stop-index="64">
+            <simple-table name="Product" start-index="43" stop-index="64" start-delimiter="[" end-delimiter="]">
+                <owner name="Production" start-index="43" stop-index="54" start-delimiter="[" end-delimiter="]"/>
+            </simple-table>
+        </from>
+        <where start-index="66" stop-index="110">
+            <expr>
+                <binary-operation-expression start-index="72" stop-index="110">
+                    <left>
+                        <function function-name="SUBSTRING" text="SUBSTRING(ProductNumber, 0, 4)"  start-index="72" stop-index="101">
+                            <parameter>
+                                <column name="ProductNumber" start-index="82" stop-index="94"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="0" start-index="97" stop-index="97"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="4" start-index="100" stop-index="100"/>
+                            </parameter>
+                        </function>
+                    </left>
+                    <right>
+                        <literal-expression value="HN-" start-index="106" stop-index="110"/>
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

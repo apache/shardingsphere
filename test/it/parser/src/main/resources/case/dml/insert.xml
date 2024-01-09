@@ -3061,4 +3061,16 @@
             </parameter>
         </exec>
     </insert>
+
+    <insert sql-case-id="insert_into_temp_table">
+        <table name="#NonExistentTable" start-index="12" stop-index="28"/>
+        <columns start-index="29" stop-index="29"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="10" start-index="38" stop-index="39"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
