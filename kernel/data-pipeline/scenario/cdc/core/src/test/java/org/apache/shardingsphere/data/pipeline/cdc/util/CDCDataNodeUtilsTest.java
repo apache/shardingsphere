@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,5 +62,8 @@ class CDCDataNodeUtilsTest {
         assertTrue(actual.containsKey("t_order"));
         assertTrue(actual.containsKey("t_order_item"));
         assertTrue(actual.containsKey("t_address"));
+        assertThat(actual.get("t_order").get(0).getDataSourceName(), is("ds_0"));
+        assertThat(actual.get("t_order_item").get(0).getDataSourceName(), is("single"));
+        assertThat(actual.get("t_address").get(0).getDataSourceName(), is("broadcast"));
     }
 }
