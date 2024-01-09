@@ -1,6 +1,6 @@
 +++
 title = "SQL Parser"
-weight = 7
+weight = 8
 +++
 
 ## Background
