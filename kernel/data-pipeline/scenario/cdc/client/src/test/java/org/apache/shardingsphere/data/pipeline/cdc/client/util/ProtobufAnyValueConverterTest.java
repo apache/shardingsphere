@@ -22,6 +22,7 @@ import com.google.protobuf.BoolValue;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.BytesValue;
 import com.google.protobuf.DoubleValue;
+import com.google.protobuf.Empty;
 import com.google.protobuf.FloatValue;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.Int64Value;
@@ -31,6 +32,7 @@ import com.google.protobuf.NullValue;
 import com.google.protobuf.StringValue;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Struct.Builder;
+import com.google.protobuf.UInt64Value;
 import com.google.protobuf.Value;
 import com.google.protobuf.util.JsonFormat;
 import org.junit.jupiter.api.Test;
@@ -40,6 +42,7 @@ import java.time.OffsetDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProtobufAnyValueConverterTest {
@@ -63,6 +66,10 @@ class ProtobufAnyValueConverterTest {
         assertTrue((Boolean) actual);
         actual = ProtobufAnyValueConverter.convertToObject(Any.pack(BytesValue.of(ByteString.copyFrom(new byte[]{1, 2, 3}))));
         assertThat(actual, is(new byte[]{1, 2, 3}));
+        actual = ProtobufAnyValueConverter.convertToObject(Any.pack(UInt64Value.of(101010L)));
+        assertThat(actual, is(101010L));
+        actual = ProtobufAnyValueConverter.convertToObject(Any.pack(Empty.getDefaultInstance()));
+        assertNull(actual);
         actual = Struct.newBuilder().putFields("str", Value.newBuilder().setStringValue("ABC defg").build())
                 .putFields("null", Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build())
                 .putFields("number", Value.newBuilder().setNumberValue(123.45D).build())
