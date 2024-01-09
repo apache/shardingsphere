@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration.SinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.config.YamlCDCJobConfiguration.YamlSinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,7 +37,7 @@ class YamlCDCJobConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
-        yamlJobConfig.setJobId("j51017f973ac82cb1edea4f5238a258c25e89");
+        yamlJobConfig.setJobId("j0302p00007a8bf46da145dc155ba25c710b550220");
         yamlJobConfig.setDatabaseName("test_db");
         yamlJobConfig.setSchemaTableNames(Arrays.asList("test.t_order", "t_order_item"));
         yamlJobConfig.setFull(true);
@@ -43,9 +46,20 @@ class YamlCDCJobConfigurationSwapperTest {
         sinkConfig.setSinkType(CDCSinkType.SOCKET.name());
         yamlJobConfig.setSinkConfig(sinkConfig);
         CDCJobConfiguration actual = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
-        assertThat(actual.getJobId(), is("j51017f973ac82cb1edea4f5238a258c25e89"));
+        assertThat(actual.getJobId(), is("j0302p00007a8bf46da145dc155ba25c710b550220"));
         assertThat(actual.getDatabaseName(), is("test_db"));
         assertThat(actual.getSchemaTableNames(), is(Arrays.asList("test.t_order", "t_order_item")));
+        assertTrue(actual.isFull());
+    }
+    
+    @Test
+    void assertSwapToYamlConfig() {
+        CDCJobConfiguration jobConfig = new CDCJobConfiguration("j0302p00007a8bf46da145dc155ba25c710b550220", "test_db", Arrays.asList("t_order", "t_order_item"), true, new MySQLDatabaseType(),
+                null, null, null, true, new SinkConfiguration(CDCSinkType.SOCKET, new Properties()), 1, 1);
+        YamlCDCJobConfiguration actual = new YamlCDCJobConfigurationSwapper().swapToYamlConfiguration(jobConfig);
+        assertThat(actual.getJobId(), is("j0302p00007a8bf46da145dc155ba25c710b550220"));
+        assertThat(actual.getDatabaseName(), is("test_db"));
+        assertThat(actual.getSchemaTableNames(), is(Arrays.asList("t_order", "t_order_item")));
         assertTrue(actual.isFull());
     }
 }
