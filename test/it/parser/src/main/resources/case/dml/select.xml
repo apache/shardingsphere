@@ -3885,7 +3885,7 @@
                             <function function-name="GETDATE" text="GETDATE()" start-index="25" stop-index="33" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="0" start-index="7" stop-index="37" />
+                            <literal-expression value="0" start-index="36" stop-index="36" />
                         </parameter>
                     </function>
                 </expr>
@@ -3929,7 +3929,7 @@
                             <literal-expression value="Name" start-index="26" stop-index="31" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="0" start-index="7" stop-index="35" />
+                            <literal-expression value="0" start-index="34" stop-index="34" />
                         </parameter>
                     </function>
                 </expr>
@@ -3966,7 +3966,7 @@
                             <literal-expression value="&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;" start-index="20" stop-index="61" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="1" start-index="7" stop-index="65" />
+                            <literal-expression value="1" start-index="64" stop-index="64" />
                         </parameter>
                     </function>
                 </expr>
@@ -4000,7 +4000,7 @@
                             <function function-name="GETDATE" text="GETDATE()" start-index="109" stop-index="117" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="126" start-index="87" stop-index="123" />
+                            <literal-expression value="126" start-index="120" stop-index="122" />
                         </parameter>
                     </function>
                 </expr>
@@ -4037,7 +4037,7 @@
                             <literal-expression value="2006-04-25T15:50:59.997" start-index="129" stop-index="153" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="126" start-index="111" stop-index="159" />
+                            <literal-expression value="126" start-index="156" stop-index="158" />
                         </parameter>
                     </function>
                 </expr>
@@ -4057,7 +4057,7 @@
                             <common-expression literal-text="0x4E616d65" start-index="24" stop-index="33" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="0" start-index="7" stop-index="37" />
+                            <literal-expression value="0" start-index="36" stop-index="36" />
                         </parameter>
                     </function>
                 </expr>
@@ -4077,7 +4077,7 @@
                             <common-expression literal-text="0x4E616d65" start-index="24" stop-index="33" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="1" start-index="7" stop-index="37" />
+                            <literal-expression value="1" start-index="36" stop-index="36" />
                         </parameter>
                     </function>
                 </expr>
@@ -4097,7 +4097,7 @@
                             <literal-expression value="0x4E616D65" start-index="26" stop-index="37" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="1" start-index="7" stop-index="41" />
+                            <literal-expression value="1" start-index="40" stop-index="40" />
                         </parameter>
                     </function>
                 </expr>
