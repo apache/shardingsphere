@@ -82,20 +82,6 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
 }
 ```
 
-```yaml
-rules:
-- !SHARDING
-  tables:
-  shardingAlgorithms:
-  # ...
-  shardingCache:
-    allowedMaxSqlLength: 512 # Allow cached SQL length limit
-    routeCache:
-      initialCapacity: 65536 # Initial capacity
-      maximumSize: 262144 # Maximum capacity
-      softValues: true # Whether to use soft references
-```
-
 ## Related References
 
 - [Core Feature: Data Sharding](/en/features/sharding/)

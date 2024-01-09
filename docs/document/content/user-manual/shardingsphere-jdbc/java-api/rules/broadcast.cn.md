@@ -3,7 +3,7 @@ title = "广播表"
 weight = 2
 +++
 
-广播表 YAML 配置方式具有非凡的可读性，通过 YAML 格式，能够快速地理解广播表配置，ShardingSphere 会根据 YAML 配置，自动完成 ShardingSphereDataSource 对象的创建，减少用户不必要的编码工作。
+广播表 Java API 规则配置允许用户直接通过编写 Java 代码的方式，完成 ShardingSphereDataSource 对象的创建，Java API 的配置方式非常灵活，不需要依赖额外的 jar 包就能够集成各种类型的业务系统。
 
 ## 参数解释
 
