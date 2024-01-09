@@ -1363,6 +1363,7 @@ namespace
 
 restorePoint
     : identifier
+    | stringLiterals
     ;
 
 scnValue
