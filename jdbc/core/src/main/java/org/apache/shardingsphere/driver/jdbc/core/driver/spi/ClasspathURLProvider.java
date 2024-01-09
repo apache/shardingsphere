@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Classpath URL provider.
@@ -53,6 +56,7 @@ public final class ClasspathURLProvider implements ShardingSphereURLProvider {
             String line;
             while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#")) {
+                    line = replaceVariables(line);
                     builder.append(line).append('\n');
                 }
             }
@@ -67,5 +71,22 @@ public final class ClasspathURLProvider implements ShardingSphereURLProvider {
             return result;
         }
         throw new IllegalArgumentException(String.format("Can not find configuration file `%s`.", resource));
+    }
+
+    private String replaceVariables(String line) {
+        Pattern variablePattern = Pattern.compile("\\$\\{(.+?)\\}");
+        Matcher matcher = variablePattern.matcher(line);
+        StringBuffer modifiedLine = new StringBuffer();
+        while (matcher.find()) {
+            String variable = matcher.group(1);
+            String env = variable.split(":")[0];
+            String value = System.getenv(env);
+            if (value == null || value.isEmpty()) {
+                value = variable.split(":")[1];
+            }
+            matcher.appendReplacement(modifiedLine, value);
+            return modifiedLine.toString();
+        }
+        return line;
     }
 }
