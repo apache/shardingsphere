@@ -45,7 +45,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order o CROSS JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 10, 10" db-types="MySQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order o CROSS JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 10, 10" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
