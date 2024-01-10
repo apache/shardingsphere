@@ -148,6 +148,7 @@ class MySQLAuthenticationEngineTest {
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channel.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)).thenReturn(mock(Attribute.class));
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(payload.readInt1()).thenReturn(1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
@@ -321,6 +322,7 @@ class MySQLAuthenticationEngineTest {
         when(result.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(result.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(result.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).thenReturn(mock(Attribute.class));
+        when(result.attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)).thenReturn(mock(Attribute.class));
         return result;
     }
     

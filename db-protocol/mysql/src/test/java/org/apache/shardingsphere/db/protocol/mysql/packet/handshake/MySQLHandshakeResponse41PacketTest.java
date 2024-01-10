@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,6 +52,24 @@ class MySQLHandshakeResponse41PacketTest {
         assertThat(actual.getAuthResponse(), is(new byte[]{1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue()));
         assertThat(actual.getDatabase(), is("sharding_db"));
+        assertNull(actual.getAuthPluginName());
+        verify(payload).skipReserved(23);
+    }
+    
+    @Test
+    void assertNewWithPayloadWithClientMultiStatements() {
+        when(payload.readInt1()).thenReturn(MySQLConstants.DEFAULT_CHARSET.getId());
+        when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_MULTI_STATEMENTS.getValue(), 1000);
+        when(payload.readStringNul()).thenReturn("root", "sharding_db");
+        when(payload.readStringNulByBytes()).thenReturn(new byte[]{1});
+        MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
+        assertThat(actual.getMultiStatementsOption(), is(MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON));
+        assertThat(actual.getMaxPacketSize(), is(1000));
+        assertThat(actual.getCharacterSet(), is(MySQLConstants.DEFAULT_CHARSET.getId()));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getAuthResponse(), is(new byte[]{1}));
+        assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_MULTI_STATEMENTS.getValue()));
+        assertNull(actual.getDatabase());
         assertNull(actual.getAuthPluginName());
         verify(payload).skipReserved(23);
     }

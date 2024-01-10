@@ -66,4 +66,10 @@
     <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
         <assertion parameters="0:int, 4:int, 5:int" expected-data-file="shadow_delete_order_by_user_id.xml" />
     </test-case>
+
+    <test-case 
+            sql="DELETE FROM t_order WHERE order_id = 1000 AND user_id = 10;DELETE FROM t_order WHERE order_id = 1001 AND user_id = 11;DELETE FROM t_order WHERE user_id &lt; 29;" db-types="MySQL" 
+               scenario-types="db" sql-case-types="LITERAL">
+        <assertion expected-data-file="delete_with_multiple.xml" />
+    </test-case>
 </integration-test-cases>

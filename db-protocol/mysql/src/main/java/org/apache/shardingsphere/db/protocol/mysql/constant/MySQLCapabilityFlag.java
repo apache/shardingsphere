@@ -97,7 +97,7 @@ public enum MySQLCapabilityFlag {
      * @return handshake capability flags upper bit
      */
     public static int calculateHandshakeCapabilityFlagsUpper() {
-        return calculateCapabilityFlags(CLIENT_PLUGIN_AUTH) >> 16;
+        return calculateCapabilityFlags(CLIENT_MULTI_STATEMENTS, CLIENT_PLUGIN_AUTH) >> 16;
     }
     
     /**
