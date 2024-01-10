@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Aggregat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
@@ -85,6 +86,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedSubquery;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xmlquery.ExpectedXmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import java.util.Iterator;
@@ -564,6 +566,25 @@ public final class ExpressionAssert {
     }
     
     /**
+     * Assert xml query and exists function segment.
+     *
+     * @param assertContext assert context
+     * @param actual actual xml query and exists function segment
+     * @param expected expected xml query and exists function segment
+     */
+    private static void assertXmlQueryAndExistsFunctionSegment(final SQLCaseAssertContext assertContext, final XmlQueryAndExistsFunctionSegment actual,
+                                                               final ExpectedXmlQueryAndExistsFunctionSegment expected) {
+        assertThat(assertContext.getText("function name assertion error"), actual.getFunctionName(), is(expected.getFunctionName()));
+        assertThat(assertContext.getText("xquery string assertion error"), actual.getXQueryString(), is(expected.getXQueryString()));
+        assertThat(assertContext.getText("parameter size assertion error: "), actual.getParameters().size(), is(expected.getParameters().size()));
+        Iterator<ExpectedExpression> expectedIterator = expected.getParameters().iterator();
+        Iterator<ExpressionSegment> actualIterator = actual.getParameters().iterator();
+        while (expectedIterator.hasNext()) {
+            ExpressionAssert.assertExpression(assertContext, actualIterator.next(), expectedIterator.next());
+        }
+    }
+    
+    /**
      * Assert expression by actual expression segment class type.
      *
      * @param assertContext assert context
@@ -632,6 +653,8 @@ public final class ExpressionAssert {
             assertRowExpression(assertContext, (RowExpression) actual, expected.getRowExpression());
         } else if (actual instanceof UnaryOperationExpression) {
             assertUnaryOperationExpression(assertContext, (UnaryOperationExpression) actual, expected.getUnaryOperationExpression());
+        } else if (actual instanceof XmlQueryAndExistsFunctionSegment) {
+            assertXmlQueryAndExistsFunctionSegment(assertContext, (XmlQueryAndExistsFunctionSegment) actual, expected.getExpectedXmlQueryAndExistsFunctionSegment());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

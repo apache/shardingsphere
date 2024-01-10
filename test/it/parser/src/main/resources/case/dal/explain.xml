@@ -1263,4 +1263,122 @@
             </from>
         </select>
     </describe>
+
+    <describe sql-case-id="explain_for_select_emp_comp_where">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24" />
+            </projections>
+            <from>
+                <simple-table name="emp_comp" start-index="31" stop-index="38" />
+            </from>
+            <where start-index="40" stop-index="63">
+                <expr>
+                    <binary-operation-expression start-index="46" stop-index="63">
+                        <left>
+                            <column name="department_id" start-index="46" stop-index="58" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="20" start-index="62" stop-index="63" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_emp_range_where">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24" />
+            </projections>
+            <from>
+                <simple-table name="emp_range" start-index="31" stop-index="39" />
+            </from>
+            <where start-index="41" stop-index="93" >
+                <expr>
+                    <binary-operation-expression start-index="47" stop-index="93">
+                        <left>
+                            <column name="hire_date" start-index="47" stop-index="55"/>
+                        </left>
+                        <operator>&lt;</operator>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('1-JAN-1992','DD-MON-YYYY')" start-index="59" stop-index="93" >
+                                <parameter>
+                                    <literal-expression value="'1-JAN-1992'" start-index="67" stop-index="78" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'DD-MON-YYYY'" start-index="80" stop-index="92"/>
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_where_and_function">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24" />
+            </projections>
+            <from>
+                <simple-table name="emp_range" start-index="31" stop-index="39" />
+            </from>
+            <where start-index="41" stop-index="94" >
+                <expr>
+                    <binary-operation-expression start-index="47" stop-index="94">
+                        <left>
+                            <column name="hire_date" start-index="47" stop-index="55"/>
+                        </left>
+                        <operator>>=</operator>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('1-JAN-1996','DD-MON-YYYY')" start-index="60" stop-index="94" >
+                                <parameter>
+                                    <literal-expression value="'1-JAN-1996'" start-index="68" stop-index="79" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'DD-MON-YYYY'" start-index="81" stop-index="93"/>
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_xml_query">
+        <select>
+            <projections start-index="24" stop-index="107">
+                <expression-projection text="XMLQUERY('/PurchaseOrder/LineItems/LineItem')" start-index="24" stop-index="107" />
+            </projections>
+            <from>
+                <simple-table name="po_clob" start-index="114" stop-index="120" />
+            </from>
+            <where start-index="122" stop-index="303">
+                <expr>
+                    <binary-operation-expression start-index="128" stop-index="303">
+                        <left>
+                            <xmlquery-projection function-name="XMLExists" xquerystring="'/PurchaseOrder/LineItems/LineItem [ora:contains(Description, &quot;Picnic&quot;) > 0]'" start-index="128" stop-index="236">
+                                <parameter>
+                                    <column name="OBJECT_VALUE" start-index="224" stop-index="235"/>
+                                </parameter>
+                            </xmlquery-projection>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <xmlquery-projection function-name="XMLExists" xquerystring="'/PurchaseOrder[User=&quot;SBELL&quot;]'" start-index="242" stop-index="303">
+                                <parameter>
+                                    <column name="OBJECT_VALUE" start-index="291" stop-index="302"/>
+                                </parameter>
+                            </xmlquery-projection>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
 </sql-parser-test-cases>
