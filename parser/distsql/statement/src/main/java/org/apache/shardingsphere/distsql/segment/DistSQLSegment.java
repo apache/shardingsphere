@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.distsql.segment;
+package org.apache.shardingsphere.distsql.segment;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
- * Traffic rule segment.
+ * DistSQL segment.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TrafficRuleSegment implements DistSQLSegment {
-    
-    private final String name;
-    
-    private final Collection<String> labels;
-    
-    private final AlgorithmSegment algorithm;
-    
-    private final AlgorithmSegment loadBalancer;
+public interface DistSQLSegment extends ASTNode {
 }

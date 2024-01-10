@@ -19,14 +19,13 @@ package org.apache.shardingsphere.distsql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * Read or Write configuration segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadOrWriteSegment implements ASTNode {
+public final class ReadOrWriteSegment implements DistSQLSegment {
     
     private final Integer workerThread;
     

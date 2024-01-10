@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.segment.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableReferenceRuleSegment implements ASTNode {
+public final class TableReferenceRuleSegment implements DistSQLSegment {
     
     private final String name;
     
@@ -38,7 +38,7 @@ public final class TableReferenceRuleSegment implements ASTNode {
     
     /**
      * Get table names.
-     * 
+     *
      * @return table names
      */
     public Collection<String> getTableNames() {
