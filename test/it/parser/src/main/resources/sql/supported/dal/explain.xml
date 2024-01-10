@@ -82,4 +82,8 @@
     <sql-case id="explain_for_select_emp_comp" value="EXPLAIN PLAN FOR SELECT * FROM emp_comp;" db-types="Oracle"/>
     <sql-case id="explain_for_select_with_comments" value="EXPLAIN PLAN FOR select /*+ result_cache */ deptno, avg(sal) from emp group by deptno;" db-types="Oracle"/>
     <sql-case id="explain_for_select_job_history" value="EXPLAIN PLAN FOR SELECT * FROM v_emp_job_history;" db-types="Oracle" />
+    <sql-case id="explain_for_select_emp_comp_where" value="EXPLAIN PLAN FOR SELECT * FROM emp_comp WHERE department_id = 20;" db-types="Oracle" />
+    <sql-case id="explain_for_select_emp_range_where" value="EXPLAIN PLAN FOR SELECT * FROM emp_range WHERE hire_date &lt; TO_DATE('1-JAN-1992','DD-MON-YYYY');" db-types="Oracle" />
+    <sql-case id="explain_for_select_where_and_function" value="EXPLAIN PLAN FOR SELECT * FROM emp_range WHERE hire_date >= TO_DATE('1-JAN-1996','DD-MON-YYYY');" db-types="Oracle" />
+    <sql-case id="explain_for_select_xml_query" value="EXPLAIN PLAN FOR SELECT XMLQuery('/PurchaseOrder/LineItems/LineItem' PASSING OBJECT_VALUE RETURNING CONTENT) FROM po_clob WHERE XMLExists('/PurchaseOrder/LineItems/LineItem [ora:contains(Description, &quot;Picnic&quot;) &gt; 0]' PASSING OBJECT_VALUE) AND XMLExists('/PurchaseOrder[User=&quot;SBELL&quot;]' PASSING OBJECT_VALUE);" db-types="Oracle" />
 </sql-cases>
