@@ -66,12 +66,10 @@ public final class SubqueryExtractUtils {
         extractSubquerySegmentsFromProjections(result, selectStatement.getProjections());
         extractSubquerySegmentsFromTableSegment(result, selectStatement.getFrom());
         if (selectStatement.getWhere().isPresent()) {
-            extractSubquerySegmentsFromExpression(result, selectStatement.getWhere().get().getExpr(), SubqueryType.PREDICATE_SUBQUERY);
+            extractSubquerySegmentsFromWhere(result, selectStatement.getWhere().get().getExpr());
         }
         if (selectStatement.getCombine().isPresent()) {
-            CombineSegment combineSegment = selectStatement.getCombine().get();
-            extractSubquerySegments(result, combineSegment.getLeft());
-            extractSubquerySegments(result, combineSegment.getRight());
+            extractSubquerySegmentsFromCombine(result, selectStatement.getCombine().get());
         }
     }
     
@@ -120,6 +118,10 @@ public final class SubqueryExtractUtils {
         extractSubquerySegments(result, subquery.getSelect());
     }
     
+    private static void extractSubquerySegmentsFromWhere(final List<SubquerySegment> result, final ExpressionSegment expressionSegment) {
+        extractSubquerySegmentsFromExpression(result, expressionSegment, SubqueryType.PREDICATE_SUBQUERY);
+    }
+    
     private static void extractSubquerySegmentsFromExpression(final List<SubquerySegment> result, final ExpressionSegment expressionSegment, final SubqueryType subqueryType) {
         if (expressionSegment instanceof SubqueryExpressionSegment) {
             SubquerySegment subquery = ((SubqueryExpressionSegment) expressionSegment).getSubquery();
@@ -156,5 +158,10 @@ public final class SubqueryExtractUtils {
         if (expressionSegment instanceof FunctionSegment) {
             ((FunctionSegment) expressionSegment).getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType));
         }
+    }
+    
+    private static void extractSubquerySegmentsFromCombine(final List<SubquerySegment> result, final CombineSegment combineSegment) {
+        extractSubquerySegments(result, combineSegment.getLeft());
+        extractSubquerySegments(result, combineSegment.getRight());
     }
 }
