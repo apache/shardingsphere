@@ -3073,4 +3073,34 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_into_temp_table_with_null_value">
+        <columns start-index="28" stop-index="28"/>
+        <table name="#SampleTempTable" start-index="12" stop-index="27"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="10" start-index="37" stop-index="38"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="41" stop-index="44"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_temp_table_with_all_null_value">
+        <columns start-index="28" stop-index="28"/>
+        <table name="#SampleTempTable" start-index="12" stop-index="27"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="37" stop-index="40"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="43" stop-index="46"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
