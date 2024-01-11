@@ -3073,4 +3073,84 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_with_exec_mtcars">
+        <table name="MTCars" start-index="12" stop-index="21">
+            <owner name="dbo" start-index="12" stop-index="14"/>
+        </table>
+        <columns start-index="22" stop-index="22" />
+        <exec name="sp_execute_external_script" start-index="23" stop-index="156">
+            <parameter>
+                <binary-operation-expression start-index="55" stop-index="70">
+                    <left>
+                        <column name="@language" start-index="55" stop-index="63" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="R" start-index="67" stop-index="70" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="73" stop-index="101">
+                    <left>
+                        <column name="@script" start-index="73" stop-index="79" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="MTCars &lt;- mtcars" start-index="83" stop-index="101" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="105" stop-index="123">
+                    <left>
+                        <column name="@input_data_1" start-index="105" stop-index="117" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="" start-index="121" stop-index="123" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="126" stop-index="156">
+                    <left>
+                        <column name="@output_data_1_name" start-index="126" stop-index="144" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="MTCars" start-index="148" stop-index="156" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+        </exec>
+    </insert>
+
+    <insert sql-case-id="insert_with_exec_model">
+        <table name="GLM_models" start-index="12" stop-index="21" />
+        <columns start-index="22" stop-index="28">
+            <column name="model" start-index="23" stop-index="27" />
+        </columns>
+        <exec name="generate_GLM" start-index="30" stop-index="46" />
+    </insert>
+
+    <insert sql-case-id="insert_with_table_hint">
+        <table name="cci_target" start-index="12" stop-index="21" />
+        <columns start-index="37" stop-index="37"/>
+        <table-hints start-index="23" stop-index="36">
+            <table-hint value="TABLOCK" start-index="29" stop-index="35" />
+        </table-hints>
+        <select>
+            <projections start-index="45" stop-index="56">
+                <top-projection start-index="45" stop-index="54">
+                    <top-value value="300000" start-index="49" stop-index="54" />
+                </top-projection>
+                <shorthand-projection start-index="56" stop-index="56" />
+            </projections>
+            <from>
+                <simple-table name="staging" start-index="63" stop-index="69" />
+            </from>
+        </select>
+    </insert>
 </sql-parser-test-cases>
