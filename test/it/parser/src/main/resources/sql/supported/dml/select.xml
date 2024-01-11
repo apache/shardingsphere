@@ -243,5 +243,7 @@
     <sql-case id="select_with_object_id_function" value="SELECT OBJECT_NAME(object_id) AS referencing_object_name,COALESCE(COL_NAME(object_id, column_id), '(n/a)') AS referencing_column_name,* FROM sys.sql_dependencies WHERE referenced_major_id = OBJECT_ID('&lt;schema_name.table_name&gt;') ORDER BY OBJECT_NAME(object_id), COL_NAME(object_id, column_id)" db-types="SQLServer"/>
     <sql-case id="select_from_sys_views" value="SELECT name AS view_name,SCHEMA_NAME(schema_id) AS schema_name,OBJECTPROPERTYEX(object_id,'IsIndexed') AS IsIndexed,OBJECTPROPERTYEX(object_id,'IsIndexable') AS IsIndexable,create_date,modify_date FROM sys.views" db-types="SQLServer"/>
     <sql-case id="select_with_substring_function" value="SELECT ProductID, Name, ProductNumber FROM [Production].[Product] WHERE SUBSTRING(ProductNumber, 0, 4) =  'HN-'" db-types="SQLServer"/>
+    <sql-case id="select_with_not_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS NOT DISTINCT FROM NULL" db-types="SQLServer"/>
+    <sql-case id="select_with_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS DISTINCT FROM 17;" db-types="SQLServer"/>
     <sql-case id="select_with_database_files" value="SELECT name, size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0 AS AvailableSpaceInMB FROM sys.database_files" db-types="SQLServer"/>
 </sql-cases>

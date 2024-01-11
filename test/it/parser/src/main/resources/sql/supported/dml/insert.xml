@@ -111,6 +111,8 @@
     <sql-case id="insert_with_exec" value="INSERT INTO iris_rx_data (&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;Petal.Length&quot;, &quot;Petal.Width&quot; , &quot;Species&quot;) EXECUTE sp_execute_external_script @language = N'R' , @script = N'iris_data &lt;- iris'" db-types="SQLServer"/>
     <sql-case id="insert_with_db_schema_name" value="INSERT INTO ContosoWarehouse.dbo.Affiliation SELECT * FROM My_Lakehouse.dbo.Affiliation" db-types="SQLServer"/>
     <sql-case id="insert_into_temp_table" value="INSERT INTO #NonExistentTable values (10)" db-types="SQLServer"/>
+    <sql-case id="insert_into_temp_table_with_null_value" value="INSERT INTO #SampleTempTable VALUES (10, null)" db-types="SQLServer"/>
+    <sql-case id="insert_into_temp_table_with_all_null_value" value="INSERT INTO #SampleTempTable VALUES (null, null)" db-types="SQLServer"/>
     <sql-case id="insert_with_exec_mtcars" value="INSERT INTO dbo.MTCars EXEC sp_execute_external_script @language = N'R', @script = N'MTCars &lt;- mtcars' , @input_data_1 = N'', @output_data_1_name = N'MTCars'" db-types="SQLServer"/>
     <sql-case id="insert_with_exec_model" value="INSERT INTO GLM_models(model) EXEC generate_GLM" db-types="SQLServer"/>
     <sql-case id="insert_with_table_hint" value="INSERT INTO cci_target WITH (TABLOCK) SELECT TOP 300000 * FROM staging" db-types="SQLServer"/>

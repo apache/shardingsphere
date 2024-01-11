@@ -223,6 +223,7 @@ primaryKey
 expr
     : expr andOperator expr
     | expr orOperator expr
+    | expr distinctFrom expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
@@ -234,6 +235,10 @@ andOperator
 
 orOperator
     : OR | OR_
+    ;
+
+distinctFrom
+    : IS NOT? DISTINCT FROM
     ;
 
 notOperator

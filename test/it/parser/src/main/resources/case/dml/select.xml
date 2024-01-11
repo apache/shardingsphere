@@ -8027,6 +8027,50 @@
         </where>
     </select>
 
+    <select sql-case-id="select_with_not_distinct_from">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="29">
+            <simple-table name="#SampleTempTable" start-index="14" stop-index="29"/>
+        </from>
+        <where start-index="31" stop-index="64">
+            <expr>
+                <binary-operation-expression start-index="37" stop-index="64">
+                    <left>
+                        <column name="id" start-index="37" stop-index="38"/>
+                    </left>
+                    <right>
+                        <literal-expression start-index="61" stop-index="64" value="null"/>
+                    </right>
+                    <operator>ISNOTDISTINCTFROM</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_distinct_from">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="29">
+            <simple-table name="#SampleTempTable" start-index="14" stop-index="29"/>
+        </from>
+        <where start-index="31" stop-index="58">
+            <expr>
+                <binary-operation-expression start-index="37" stop-index="58">
+                    <left>
+                        <column name="id" start-index="37" stop-index="38"/>
+                    </left>
+                    <right>
+                        <literal-expression value="17" start-index="57" stop-index="58"/>
+                    </right>
+                    <operator>ISDISTINCTFROM</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_with_database_files">
         <from start-index="108" stop-index="125">
             <simple-table name="database_files" start-index="108" stop-index="125">
