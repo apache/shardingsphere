@@ -29,7 +29,7 @@ import java.util.List;
  **/
 @Getter
 @Setter
-public class ExpectedWithTableHintClause extends AbstractExpectedSQLSegment {
+public final class ExpectedWithTableHintClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "table-hint")
     private final List<ExpectedTableHint> tableHint = new LinkedList<>();

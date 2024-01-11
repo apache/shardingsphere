@@ -76,5 +76,4 @@ public final class SQLServerInsertStatement extends InsertStatement implements S
     public Optional<WithTableHintSegment> getWithTableHintSegment() {
         return Optional.ofNullable(withTableHintSegment);
     }
-    
 }

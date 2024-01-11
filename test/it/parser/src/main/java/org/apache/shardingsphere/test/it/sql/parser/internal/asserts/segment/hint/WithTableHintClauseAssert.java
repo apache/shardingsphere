@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * With table hint clause assert.
  **/
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class WithTableHintClauseAssert {
+public final class WithTableHintClauseAssert {
     
     /**
      * Assert actual with table hint segment is correct with expected table hint clause.

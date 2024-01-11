@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  **/
 @Getter
 @Setter
-public class ExpectedTableHint extends AbstractExpectedSQLSegment {
+public final class ExpectedTableHint extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
     private String value;
