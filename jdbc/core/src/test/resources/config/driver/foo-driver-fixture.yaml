@@ -22,7 +22,7 @@ dataSources:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:foo_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
-    username: sa
+    username: ${DATASOURCE_USERNAME:sa}
     password:
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
