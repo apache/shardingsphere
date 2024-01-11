@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 import java.util.Collection;
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShadowRuleSegment implements ASTNode {
+public final class ShadowRuleSegment implements DistSQLSegment {
     
     private final String ruleName;
     
