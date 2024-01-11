@@ -85,7 +85,7 @@ public final class SubqueryExtractUtils {
                 subquery.setSubqueryType(SubqueryType.PROJECTION_SUBQUERY);
                 result.add(subquery);
                 extractSubquerySegments(result, subquery.getSelect());
-            }  else if (each instanceof ExpressionProjectionSegment) {
+            } else if (each instanceof ExpressionProjectionSegment) {
                 extractSubquerySegmentsFromExpression(result, ((ExpressionProjectionSegment) each).getExpr(), SubqueryType.PROJECTION_SUBQUERY);
             }
         }
