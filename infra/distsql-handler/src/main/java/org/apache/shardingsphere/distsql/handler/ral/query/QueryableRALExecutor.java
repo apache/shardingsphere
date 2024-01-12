@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.handler.ral.query;
 
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -44,9 +45,10 @@ public interface QueryableRALExecutor<T extends QueryableRALStatement> extends T
      * Get query result rows.
      *
      * @param sqlStatement SQL statement
+     * @param metaData ShardingSphere meta data
      * @return query result rows
      */
-    default Collection<LocalDataQueryResultRow> getRows(final T sqlStatement) {
+    default Collection<LocalDataQueryResultRow> getRows(final T sqlStatement, final ShardingSphereMetaData metaData) {
         return Collections.emptyList();
     }
     

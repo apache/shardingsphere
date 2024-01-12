@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -82,24 +82,18 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
         if (executor instanceof InstanceContextRequiredQueryableRALExecutor) {
             return getMergedResultByInstanceContextRequiredExecutor((InstanceContextRequiredQueryableRALExecutor<T>) executor);
         }
-        if (executor instanceof MetaDataRequiredQueryableRALExecutor) {
-            return getMergedResultByMetaDataRequiredExecutor((MetaDataRequiredQueryableRALExecutor<T>) executor);
-        }
         if (executor instanceof DatabaseRequiredQueryableRALExecutor) {
             return getMergedResultByDatabaseRequiredExecutor((DatabaseRequiredQueryableRALExecutor<T>) executor);
         }
         if (executor instanceof ConnectionSessionRequiredQueryableRALExecutor) {
             return getMergedResultByConnectionSessionRequiredExecutor((ConnectionSessionRequiredQueryableRALExecutor<T>) executor);
         }
-        return createMergedResult(executor.getRows(sqlStatement));
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+        return createMergedResult(executor.getRows(sqlStatement, contextManager.getMetaDataContexts().getMetaData()));
     }
     
     private MergedResult getMergedResultByInstanceContextRequiredExecutor(final InstanceContextRequiredQueryableRALExecutor<T> executor) {
         return createMergedResult(executor.getRows(ProxyContext.getInstance().getContextManager().getInstanceContext(), sqlStatement));
-    }
-    
-    private MergedResult getMergedResultByMetaDataRequiredExecutor(final MetaDataRequiredQueryableRALExecutor<T> executor) {
-        return createMergedResult(executor.getRows(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), sqlStatement));
     }
     
     private MergedResult getMergedResultByDatabaseRequiredExecutor(final DatabaseRequiredQueryableRALExecutor<T> executor) {

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreami
 import org.apache.shardingsphere.data.pipeline.distsql.ShowTransmissionRuleQueryResult;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
 
@@ -37,7 +38,7 @@ public final class ShowStreamingRuleExecutor implements QueryableRALExecutor<Sho
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
         return queryResult.getRows();
     }
     

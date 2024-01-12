@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.globalclock.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
+import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 
 import java.util.Arrays;
@@ -32,10 +32,10 @@ import java.util.Collections;
 /**
  * Show global clock rule executor.
  */
-public final class ShowGlobalClockRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowGlobalClockRuleStatement> {
+public final class ShowGlobalClockRuleExecutor implements QueryableRALExecutor<ShowGlobalClockRuleStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowGlobalClockRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
         GlobalClockRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(GlobalClockRule.class).getConfiguration();
         return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(),
                 String.valueOf(ruleConfig.isEnabled()), PropertiesConverter.convert(ruleConfig.getProps())));
