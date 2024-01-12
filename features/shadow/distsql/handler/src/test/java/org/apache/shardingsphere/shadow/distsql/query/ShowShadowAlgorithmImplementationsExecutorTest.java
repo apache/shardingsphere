@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.query;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.distsql.handler.query.ShowShadowAlgorithmImplementationsExecutor;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmImplementationsStatement;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class ShowShadowAlgorithmImplementationsExecutorTest {
     @Test
     void assertGetRowData() {
         QueryableRALExecutor<ShowShadowAlgorithmImplementationsStatement> executor = new ShowShadowAlgorithmImplementationsExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShadowAlgorithmImplementationsStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShadowAlgorithmImplementationsStatement.class), mock(ShardingSphereMetaData.class));
         assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
