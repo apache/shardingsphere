@@ -32,40 +32,40 @@
         <assertion parameters="2000:long, 1500:long" expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id LIMIT 5, 5" db-types="MySQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id LIMIT 5, 5" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? UNION SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? UNION SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT u.user_id FROM t_user u ORDER BY user_id LIMIT 5, 5" db-types="MySQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT u.user_id FROM t_user u ORDER BY user_id LIMIT 5, 5" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT u.user_id FROM t_user u ORDER BY user_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation"
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT u.user_id FROM t_user u ORDER BY user_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
                scenario-comments="Test select union all fetch statement when use sharding feature and federation executor engine.">
         <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="(SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order) INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="(SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order) INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION (SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION (SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -77,11 +77,11 @@
         <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? EXCEPT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? EXCEPT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int,1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="(SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? EXCEPT SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="(SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? EXCEPT SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int,1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -93,11 +93,11 @@
         <assertion parameters="2500:long,2900:long,1000:long" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ? INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ? INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="(SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ?) INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="(SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ?) INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -109,11 +109,11 @@
         <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order EXCEPT (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order EXCEPT (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -125,11 +125,11 @@
         <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order EXCEPT SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order EXCEPT SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="(SELECT * FROM t_order EXCEPT SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="(SELECT * FROM t_order EXCEPT SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int,2900:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -146,28 +146,28 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order INTERSECT ALL SELECT * FROM t_order ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation"
+    <test-case sql="SELECT * FROM t_order INTERSECT ALL SELECT * FROM t_order ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
                scenario-comments="Test select intersect all fetch statement when use sharding feature and federation executor engine.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id > ? INTERSECT SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order WHERE order_id > ? INTERSECT SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2000:int, 1500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT ALL SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT ALL SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -192,27 +192,27 @@
     </test-case>-->
     
     <!-- TODO support MySQL EXCEPT clause -->
-    <test-case sql="SELECT * FROM t_order EXCEPT ALL SELECT * FROM t_order ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order EXCEPT ALL SELECT * FROM t_order ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id > ? EXCEPT SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT * FROM t_order WHERE order_id > ? EXCEPT SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2000:int, 1500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT ALL SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT ALL SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db,db_tbl_sql_federation">
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     

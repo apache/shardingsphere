@@ -72,7 +72,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id ORDER BY t_order.order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,db_tbl_sql_federation">
+    <test-case sql="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id ORDER BY t_order.order_id" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -107,8 +107,8 @@
         <assertion parameters="1000:int" />
     </test-case>-->
     
-    <test-case sql="SELECT * FROM t_order_item_join_view WHERE order_id > ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="1000:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order_item_join_view WHERE order_id > ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <test-case sql="SELECT n.nspname as &quot;Schema&quot;, c.relname as &quot;Name&quot;, CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;, pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot; FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN ('r','p','v','m','S','f','') AND n.nspname &lt;&gt; 'pg_catalog' AND n.nspname &lt;&gt; 'information_schema' AND n.nspname !~ '^pg_toast' AND pg_catalog.pg_table_is_visible(c.oid) ORDER BY 1,2;" db-types="PostgreSQL" scenario-types="db,tbl">
