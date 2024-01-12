@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
@@ -31,10 +31,10 @@ import java.util.Collections;
 /**
  * Show transaction rule executor.
  */
-public final class ShowTransactionRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowTransactionRuleStatement> {
+public final class ShowTransactionRuleExecutor implements QueryableRALExecutor<ShowTransactionRuleStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowTransactionRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowTransactionRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
         TransactionRule rule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         return Collections.singleton(new LocalDataQueryResultRow(rule.getDefaultType().name(), null != rule.getProviderType() ? rule.getProviderType() : "",
                 rule.getProps().isEmpty() ? "" : PropertiesConverter.convert(rule.getProps())));

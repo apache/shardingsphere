@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mask.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
@@ -39,7 +40,7 @@ public final class ShowMaskAlgorithmImplementationsExecutor implements Queryable
     
     @SuppressWarnings("rawtypes")
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMaskAlgorithmImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMaskAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<MaskAlgorithm> maskAlgorithms = ShardingSphereServiceLoader.getServiceInstances(MaskAlgorithm.class);
         for (MaskAlgorithm each : maskAlgorithms) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -38,7 +39,7 @@ public final class ShowShardingAlgorithmImplementationsExecutor implements Query
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingAlgorithmImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<ShardingAlgorithm> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ShardingAlgorithm.class);
         for (ShardingAlgorithm each : shardingAlgorithms) {

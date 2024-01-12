@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Arrays;
@@ -38,7 +39,7 @@ public final class ShowEncryptAlgorithmImplementationsExecutor implements Querya
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptAlgorithmImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<EncryptAlgorithm> encryptAlgorithms = ShardingSphereServiceLoader.getServiceInstances(EncryptAlgorithm.class);
         for (EncryptAlgorithm each : encryptAlgorithms) {

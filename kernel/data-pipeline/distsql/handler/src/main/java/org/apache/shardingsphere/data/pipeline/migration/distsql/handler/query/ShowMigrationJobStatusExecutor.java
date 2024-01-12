@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationStatusStatement;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 public final class ShowMigrationJobStatusExecutor implements QueryableRALExecutor<ShowMigrationStatusStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationStatusStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationStatusStatement sqlStatement, final ShardingSphereMetaData metaData) {
         Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(new MigrationJobType()).getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
         return jobItemInfos.stream().map(each -> getRow(each, currentTimeMillis)).collect(Collectors.toList());

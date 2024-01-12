@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadQueryLoadBalanceAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
@@ -38,7 +39,7 @@ public final class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor impl
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowReadQueryLoadBalanceAlgorithmImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowReadQueryLoadBalanceAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<ReadQueryLoadBalanceAlgorithm> loadBalanceAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ReadQueryLoadBalanceAlgorithm.class);
         for (ReadQueryLoadBalanceAlgorithm each : loadBalanceAlgorithms) {

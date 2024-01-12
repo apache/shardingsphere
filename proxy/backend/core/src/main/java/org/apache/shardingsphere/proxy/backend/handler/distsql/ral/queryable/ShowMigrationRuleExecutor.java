@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.distsql.ShowTransmissionRuleQuery
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
 
@@ -37,7 +38,7 @@ public final class ShowMigrationRuleExecutor implements QueryableRALExecutor<Sho
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
         return queryResult.getRows();
     }
     
