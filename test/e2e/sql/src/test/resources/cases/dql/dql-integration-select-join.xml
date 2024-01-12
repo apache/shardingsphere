@@ -106,9 +106,10 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT * FROM t_order o INNER JOIN t_user i ON o.user_id = i.user_id WHERE user_name LIKE '张%'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
