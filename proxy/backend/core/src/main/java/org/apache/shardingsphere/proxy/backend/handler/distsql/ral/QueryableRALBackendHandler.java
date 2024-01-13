@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
@@ -82,13 +82,13 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
         if (executor instanceof InstanceContextRequiredQueryableRALExecutor) {
             return getMergedResultByInstanceContextRequiredExecutor((InstanceContextRequiredQueryableRALExecutor<T>) executor);
         }
-        if (executor instanceof DatabaseRequiredQueryableRALExecutor) {
-            return getMergedResultByDatabaseRequiredExecutor((DatabaseRequiredQueryableRALExecutor<T>) executor);
-        }
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         if (executor instanceof ConnectionSessionRequiredQueryableRALExecutor) {
             return getMergedResultByConnectionSessionRequiredExecutor((ConnectionSessionRequiredQueryableRALExecutor<T>) executor);
         }
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+        if (executor instanceof DatabaseAwareQueryableRALExecutor) {
+            setCurrentDatabase((DatabaseAwareQueryableRALExecutor<T>) executor);
+        }
         return createMergedResult(executor.getRows(sqlStatement, contextManager.getMetaDataContexts().getMetaData()));
     }
     
@@ -96,10 +96,10 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
         return createMergedResult(executor.getRows(ProxyContext.getInstance().getContextManager().getInstanceContext(), sqlStatement));
     }
     
-    private MergedResult getMergedResultByDatabaseRequiredExecutor(final DatabaseRequiredQueryableRALExecutor<T> executor) {
+    private void setCurrentDatabase(final DatabaseAwareQueryableRALExecutor<T> executor) {
         String databaseName = getDatabaseName(connectionSession, sqlStatement);
         checkDatabaseName(databaseName);
-        return createMergedResult(executor.getRows(ProxyContext.getInstance().getDatabase(databaseName), sqlStatement));
+        executor.setCurrentDatabase(ProxyContext.getInstance().getDatabase(databaseName));
     }
     
     private MergedResult getMergedResultByConnectionSessionRequiredExecutor(final ConnectionSessionRequiredQueryableRALExecutor<T> executor) {
