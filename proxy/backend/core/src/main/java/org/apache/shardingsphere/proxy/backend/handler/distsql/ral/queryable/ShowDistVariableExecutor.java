@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionAwareQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.Arrays;
@@ -41,7 +42,10 @@ import java.util.Properties;
 /**
  * Show dist variable executor.
  */
-public final class ShowDistVariableExecutor implements ConnectionSessionRequiredQueryableRALExecutor<ShowDistVariableStatement> {
+@Setter
+public final class ShowDistVariableExecutor implements ConnectionSessionAwareQueryableRALExecutor<ShowDistVariableStatement> {
+    
+    private ConnectionSession connectionSession;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -49,7 +53,7 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ShowDistVariableStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariableStatement sqlStatement, final ShardingSphereMetaData metaData) {
         return buildSpecifiedRow(metaData, connectionSession, sqlStatement.getName());
     }
     

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Strings;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -30,13 +30,14 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionAwareQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 
@@ -55,7 +56,10 @@ import java.util.stream.Collectors;
 /**
  * Show status from readwrite-splitting rules executor.
  */
-public final class ShowStatusFromReadwriteSplittingRulesExecutor implements ConnectionSessionRequiredQueryableRALExecutor<ShowStatusFromReadwriteSplittingRulesStatement> {
+@Setter
+public final class ShowStatusFromReadwriteSplittingRulesExecutor implements ConnectionSessionAwareQueryableRALExecutor<ShowStatusFromReadwriteSplittingRulesStatement> {
+    
+    private ConnectionSession connectionSession;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -63,8 +67,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession,
-                                                       final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement, final ShardingSphereMetaData metaData) {
         String databaseName = getDatabaseName(connectionSession, sqlStatement);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         Collection<String> allReadResources = getAllReadResources(database, sqlStatement.getGroupName());

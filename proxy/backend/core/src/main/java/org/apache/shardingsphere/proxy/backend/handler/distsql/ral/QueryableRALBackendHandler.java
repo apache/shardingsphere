@@ -21,15 +21,12 @@ import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseAwareQueryabl
 import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionAwareQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -78,30 +75,16 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
     }
     
     private MergedResult getMergedResult(final QueryableRALExecutor<T> executor) {
-        if (executor instanceof ConnectionSessionRequiredQueryableRALExecutor) {
-            return getMergedResultByConnectionSessionRequiredExecutor((ConnectionSessionRequiredQueryableRALExecutor<T>) executor);
-        }
         if (executor instanceof InstanceContextAwareQueryableRALExecutor) {
-            setInstanceContext((InstanceContextAwareQueryableRALExecutor<T>) executor);
+            ((InstanceContextAwareQueryableRALExecutor<T>) executor).setInstanceContext(ProxyContext.getInstance().getContextManager().getInstanceContext());
         }
         if (executor instanceof DatabaseAwareQueryableRALExecutor) {
-            setCurrentDatabase((DatabaseAwareQueryableRALExecutor<T>) executor);
+            ((DatabaseAwareQueryableRALExecutor<T>) executor).setCurrentDatabase(ProxyContext.getInstance().getDatabase(getDatabaseName(connectionSession, sqlStatement)));
+        }
+        if (executor instanceof ConnectionSessionAwareQueryableRALExecutor) {
+            ((ConnectionSessionAwareQueryableRALExecutor<T>) executor).setConnectionSession(connectionSession);
         }
         return createMergedResult(executor.getRows(sqlStatement, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()));
-    }
-    
-    private void setInstanceContext(final InstanceContextAwareQueryableRALExecutor<T> executor) {
-        executor.setInstanceContext(ProxyContext.getInstance().getContextManager().getInstanceContext());
-    }
-    
-    private void setCurrentDatabase(final DatabaseAwareQueryableRALExecutor<T> executor) {
-        String databaseName = getDatabaseName(connectionSession, sqlStatement);
-        checkDatabaseName(databaseName);
-        executor.setCurrentDatabase(ProxyContext.getInstance().getDatabase(databaseName));
-    }
-    
-    private MergedResult getMergedResultByConnectionSessionRequiredExecutor(final ConnectionSessionRequiredQueryableRALExecutor<T> executor) {
-        return createMergedResult(executor.getRows(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), connectionSession, sqlStatement));
     }
     
     private List<QueryHeader> createQueryHeader(final Collection<String> columnNames) {
@@ -115,11 +98,6 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
     private String getDatabaseName(final ConnectionSession connectionSession, final T sqlStatement) {
         Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
         return databaseSegment.isPresent() ? databaseSegment.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
-    }
-    
-    private void checkDatabaseName(final String databaseName) {
-        ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
     }
     
     @Override
