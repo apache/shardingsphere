@@ -41,16 +41,16 @@ public final class WithTableHintClauseAssert {
      * Assert actual with table hint segment is correct with expected table hint clause.
      *
      * @param assertContext assert context
-     * @param actual        actual with table hint segment
-     * @param expected      expected with table hint clause
+     * @param actual actual with table hint segment
+     * @param expected expected with table hint clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WithTableHintSegment actual, final ExpectedWithTableHintClause expected) {
         if (null == expected.getTableHint()) {
             assertThat(assertContext.getText("with table hint clause  assertion error: "), actual.getTableHintLimitedSegments().size(), CoreMatchers.is(expected.getTableHint().size()));
         } else {
             int count = 0;
-            for (TableHintLimitedSegment tableHintLimitedSegment : actual.getTableHintLimitedSegments()) {
-                assertTableHint(assertContext, tableHintLimitedSegment, expected.getTableHint().get(count));
+            for (TableHintLimitedSegment each : actual.getTableHintLimitedSegments()) {
+                assertTableHint(assertContext, each, expected.getTableHint().get(count));
                 count++;
             }
         }
@@ -61,8 +61,8 @@ public final class WithTableHintClauseAssert {
      * Assert table hint.
      *
      * @param assertContext assert context
-     * @param actual        actual table hint segment
-     * @param expected      expected table hint
+     * @param actual actual table hint segment
+     * @param expected expected table hint
      */
     public static void assertTableHint(final SQLCaseAssertContext assertContext, final TableHintLimitedSegment actual, final ExpectedTableHint expected) {
         if (null == expected) {

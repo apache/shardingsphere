@@ -955,15 +955,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitWithTableHint(final WithTableHintContext ctx) {
-        WithTableHintSegment withTableHintSegment = new WithTableHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        WithTableHintSegment result = new WithTableHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.tableHintLimited()) {
             Collection<TableHintLimitedSegment> tableHintLimitedSegments = new LinkedList<>();
-            for (TableHintLimitedContext tableHintLimitedContext : ctx.tableHintLimited()) {
-                tableHintLimitedSegments.add((TableHintLimitedSegment) visit(tableHintLimitedContext));
+            for (TableHintLimitedContext each : ctx.tableHintLimited()) {
+                tableHintLimitedSegments.add((TableHintLimitedSegment) visit(each));
             }
-            withTableHintSegment.getTableHintLimitedSegments().addAll(tableHintLimitedSegments);
+            result.getTableHintLimitedSegments().addAll(tableHintLimitedSegments);
         }
-        return withTableHintSegment;
+        return result;
     }
     
     @Override
