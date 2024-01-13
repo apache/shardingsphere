@@ -63,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ide
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertDefaultValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinSpecificationContext;
@@ -115,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Sam
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertExecClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExecContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProcedureNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintLimitedContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -180,6 +182,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.TableHintLimitedSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -203,7 +207,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segm
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsDimension;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsStrategySegment;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -942,8 +945,31 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.withClause()) {
             result.setWithSegment((WithSegment) visit(ctx.withClause()));
         }
+        if (null != ctx.withTableHint()) {
+            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
+        }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWithTableHint(final WithTableHintContext ctx) {
+        WithTableHintSegment result = new WithTableHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.tableHintLimited()) {
+            Collection<TableHintLimitedSegment> tableHintLimitedSegments = new LinkedList<>();
+            for (TableHintLimitedContext each : ctx.tableHintLimited()) {
+                tableHintLimitedSegments.add((TableHintLimitedSegment) visit(each));
+            }
+            result.getTableHintLimitedSegments().addAll(tableHintLimitedSegments);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTableHintLimited(final TableHintLimitedContext ctx) {
+        TableHintLimitedSegment result = new TableHintLimitedSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setValue(ctx.getText());
         return result;
     }
     
