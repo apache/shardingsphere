@@ -1452,11 +1452,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     @Override
-    public ASTNode visitStatisticsOption(final StatisticsOptionContext ctx) {
-        return super.visitStatisticsOption(ctx);
-    }
-    
-    @Override
     public ASTNode visitSampleOption(final SampleOptionContext ctx) {
         SampleOptionSegment result = new SampleOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.FULLSCAN()) {
