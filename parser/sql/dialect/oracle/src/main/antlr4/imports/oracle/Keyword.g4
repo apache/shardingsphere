@@ -20,7 +20,7 @@ lexer grammar Keyword;
 import Alphabet, Number;
 
 WS
-    : [ \t\r\n] + ->skip
+    : [ \t\r\n\u3000] + ->skip
     ;
 
 SELECT

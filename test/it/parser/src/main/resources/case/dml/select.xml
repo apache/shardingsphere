@@ -6185,7 +6185,18 @@
             <simple-table name="DUAL" start-index="19" stop-index="22" />
         </from>
     </select>
-    
+
+    <select sql-case-id="select_with_chinese_whitespace">
+        <projections start-index="7" stop-index="12" >
+            <expression-projection text="1" start-index="7" stop-index="7" />
+            <expression-projection text="2" start-index="10" stop-index="10" />
+            <expression-projection text="3" start-index="12" stop-index="12" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="19" stop-index="22" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_keyword_system" parameters="0">
         <from>
             <simple-table name="vtx_project" start-index="14" stop-index="24" />
