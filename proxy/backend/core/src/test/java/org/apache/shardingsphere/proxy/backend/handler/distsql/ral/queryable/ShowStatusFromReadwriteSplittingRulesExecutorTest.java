@@ -71,11 +71,9 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     @Test
     void assertGetRowsWithEmptyResult() {
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getName()).thenReturn("readwrite_db");
-        executor.setCurrentDatabase(database);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        executor.setCurrentDatabase(mockMetaData().getDatabase("readwrite_db"));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(
                 new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null), mockMetaData());
         assertTrue(actual.isEmpty());
