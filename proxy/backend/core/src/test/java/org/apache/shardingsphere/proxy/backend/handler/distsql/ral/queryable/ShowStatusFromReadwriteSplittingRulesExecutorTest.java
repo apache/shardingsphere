@@ -27,12 +27,11 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -59,8 +58,6 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     
-    private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-    
     @Test
     void assertGetColumns() {
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
@@ -73,13 +70,14 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     
     @Test
     void assertGetRowsWithEmptyResult() {
-        when(connectionSession.getDatabaseName()).thenReturn("readwrite_db");
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("readwrite_db");
+        executor.setCurrentDatabase(database);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("readwrite_db")).thenReturn(true);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockMetaData(), connectionSession,
-                new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(
+                new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null), mockMetaData());
         assertTrue(actual.isEmpty());
     }
     
