@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedRe
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.ral.query.ConnectionSizeAwareQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -81,8 +81,8 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
         if (executor instanceof DatabaseAwareQueryableRALExecutor) {
             ((DatabaseAwareQueryableRALExecutor<T>) executor).setCurrentDatabase(ProxyContext.getInstance().getDatabase(getDatabaseName(connectionSession, sqlStatement)));
         }
-        if (executor instanceof ConnectionSessionAwareQueryableRALExecutor) {
-            ((ConnectionSessionAwareQueryableRALExecutor<T>) executor).setConnectionSession(connectionSession);
+        if (executor instanceof ConnectionSizeAwareQueryableRALExecutor) {
+            ((ConnectionSizeAwareQueryableRALExecutor<T>) executor).setConnectionSize(connectionSession.getDatabaseConnectionManager().getConnectionSize());
         }
         return createMergedResult(executor.getRows(sqlStatement, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()));
     }

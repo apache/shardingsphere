@@ -28,8 +28,7 @@ import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionAwareQueryableRALExecutor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.distsql.handler.ral.query.ConnectionSizeAwareQueryableRALExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Arrays;
@@ -44,9 +43,9 @@ import java.util.stream.Collectors;
  * Show dist variables executor.
  */
 @Setter
-public final class ShowDistVariablesExecutor implements ConnectionSessionAwareQueryableRALExecutor<ShowDistVariablesStatement> {
+public final class ShowDistVariablesExecutor implements ConnectionSizeAwareQueryableRALExecutor<ShowDistVariablesStatement> {
     
-    private ConnectionSession connectionSession;
+    private int connectionSize;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -61,7 +60,7 @@ public final class ShowDistVariablesExecutor implements ConnectionSessionAwareQu
         result.addAll(TemporaryConfigurationPropertyKey.getKeyNames().stream()
                 .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), getStringResult(metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(each)))))
                 .collect(Collectors.toList()));
-        result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), connectionSession.getDatabaseConnectionManager().getConnectionSize()));
+        result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), connectionSize));
         addLoggingPropsRows(metaData, result);
         if (sqlStatement.getLikePattern().isPresent()) {
             String pattern = SQLUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());

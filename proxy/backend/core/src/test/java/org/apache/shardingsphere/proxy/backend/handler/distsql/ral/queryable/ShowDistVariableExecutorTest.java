@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigura
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -42,8 +41,6 @@ class ShowDistVariableExecutorTest {
     
     private final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
     
-    private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-    
     @Test
     void assertGetColumns() {
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
@@ -56,9 +53,8 @@ class ShowDistVariableExecutorTest {
     
     @Test
     void assertShowCachedConnections() {
-        when(connectionSession.getDatabaseConnectionManager().getConnectionSize()).thenReturn(1);
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        executor.setConnectionSession(connectionSession);
+        executor.setConnectionSize(1);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("CACHED_CONNECTIONS"), metaData);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
@@ -70,7 +66,6 @@ class ShowDistVariableExecutorTest {
     void assertShowPropsVariable() {
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("sql-show", Boolean.TRUE.toString()))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        executor.setConnectionSession(connectionSession);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("SQL_SHOW"), metaData);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
@@ -82,7 +77,6 @@ class ShowDistVariableExecutorTest {
     void assertShowPropsVariableForTypedSPI() {
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("proxy-frontend-database-protocol-type", "MySQL"))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        executor.setConnectionSession(connectionSession);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE"), metaData);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
@@ -94,7 +88,6 @@ class ShowDistVariableExecutorTest {
     void assertShowTemporaryPropsVariable() {
         when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        executor.setConnectionSession(connectionSession);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("PROXY_META_DATA_COLLECTOR_ENABLED"), metaData);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
@@ -105,7 +98,6 @@ class ShowDistVariableExecutorTest {
     @Test
     void assertExecuteWithInvalidVariableName() {
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        executor.setConnectionSession(connectionSession);
         assertThrows(UnsupportedVariableException.class, () -> executor.getRows(new ShowDistVariableStatement("wrong_name"), metaData));
     }
 }

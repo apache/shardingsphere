@@ -30,8 +30,7 @@ import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionAwareQueryableRALExecutor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.distsql.handler.ral.query.ConnectionSizeAwareQueryableRALExecutor;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,9 +42,9 @@ import java.util.Properties;
  * Show dist variable executor.
  */
 @Setter
-public final class ShowDistVariableExecutor implements ConnectionSessionAwareQueryableRALExecutor<ShowDistVariableStatement> {
+public final class ShowDistVariableExecutor implements ConnectionSizeAwareQueryableRALExecutor<ShowDistVariableStatement> {
     
-    private ConnectionSession connectionSession;
+    private int connectionSize;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -54,17 +53,17 @@ public final class ShowDistVariableExecutor implements ConnectionSessionAwareQue
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariableStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        return buildSpecifiedRow(metaData, connectionSession, sqlStatement.getName());
+        return buildSpecifiedRow(metaData, sqlStatement.getName());
     }
     
-    private Collection<LocalDataQueryResultRow> buildSpecifiedRow(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final String variableName) {
+    private Collection<LocalDataQueryResultRow> buildSpecifiedRow(final ShardingSphereMetaData metaData, final String variableName) {
         if (isConfigurationKey(variableName)) {
             return Collections.singleton(new LocalDataQueryResultRow(variableName.toLowerCase(), getConfigurationValue(metaData, variableName)));
         }
         if (isTemporaryConfigurationKey(variableName)) {
             return Collections.singleton(new LocalDataQueryResultRow(variableName.toLowerCase(), getTemporaryConfigurationValue(metaData, variableName)));
         }
-        return Collections.singleton(new LocalDataQueryResultRow(variableName.toLowerCase(), getSpecialValue(connectionSession, variableName)));
+        return Collections.singleton(new LocalDataQueryResultRow(variableName.toLowerCase(), getConnectionSize(variableName)));
     }
     
     private boolean isConfigurationKey(final String variableName) {
@@ -102,9 +101,9 @@ public final class ShowDistVariableExecutor implements ConnectionSessionAwareQue
         return metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(variableName)).toString();
     }
     
-    private String getSpecialValue(final ConnectionSession connectionSession, final String variableName) {
+    private String getConnectionSize(final String variableName) {
         ShardingSpherePreconditions.checkState(VariableEnum.CACHED_CONNECTIONS == VariableEnum.getValueOf(variableName), () -> new UnsupportedVariableException(variableName));
-        return String.valueOf(connectionSession.getDatabaseConnectionManager().getConnectionSize());
+        return String.valueOf(connectionSize);
     }
     
     private String getStringResult(final Object value) {
