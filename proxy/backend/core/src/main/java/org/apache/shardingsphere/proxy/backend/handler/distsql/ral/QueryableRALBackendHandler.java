@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseAwareQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -79,21 +78,20 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
     }
     
     private MergedResult getMergedResult(final QueryableRALExecutor<T> executor) {
-        if (executor instanceof InstanceContextRequiredQueryableRALExecutor) {
-            return getMergedResultByInstanceContextRequiredExecutor((InstanceContextRequiredQueryableRALExecutor<T>) executor);
-        }
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         if (executor instanceof ConnectionSessionRequiredQueryableRALExecutor) {
             return getMergedResultByConnectionSessionRequiredExecutor((ConnectionSessionRequiredQueryableRALExecutor<T>) executor);
+        }
+        if (executor instanceof InstanceContextAwareQueryableRALExecutor) {
+            setInstanceContext((InstanceContextAwareQueryableRALExecutor<T>) executor);
         }
         if (executor instanceof DatabaseAwareQueryableRALExecutor) {
             setCurrentDatabase((DatabaseAwareQueryableRALExecutor<T>) executor);
         }
-        return createMergedResult(executor.getRows(sqlStatement, contextManager.getMetaDataContexts().getMetaData()));
+        return createMergedResult(executor.getRows(sqlStatement, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()));
     }
     
-    private MergedResult getMergedResultByInstanceContextRequiredExecutor(final InstanceContextRequiredQueryableRALExecutor<T> executor) {
-        return createMergedResult(executor.getRows(ProxyContext.getInstance().getContextManager().getInstanceContext(), sqlStatement));
+    private void setInstanceContext(final InstanceContextAwareQueryableRALExecutor<T> executor) {
+        executor.setInstanceContext(ProxyContext.getInstance().getContextManager().getInstanceContext());
     }
     
     private void setCurrentDatabase(final DatabaseAwareQueryableRALExecutor<T> executor) {
