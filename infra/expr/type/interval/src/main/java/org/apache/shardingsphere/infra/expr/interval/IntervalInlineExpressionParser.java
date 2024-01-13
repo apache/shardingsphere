@@ -30,7 +30,6 @@ import java.time.YearMonth;
 import java.time.chrono.Chronology;
 import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
@@ -139,11 +138,7 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
     }
     
     private TemporalAccessor getDateTime(final String dateTimeValue) {
-        try {
-            return dateTimeFormatterForSuffixPattern.parse(dateTimeValue);
-        } catch (final DateTimeParseException dateTimeParseException) {
-            throw new RuntimeException(dateTimeParseException);
-        }
+        return dateTimeFormatterForSuffixPattern.parse(dateTimeValue);
     }
     
     private DateTimeFormatter getSuffixPattern(final Map<String, String> props) {

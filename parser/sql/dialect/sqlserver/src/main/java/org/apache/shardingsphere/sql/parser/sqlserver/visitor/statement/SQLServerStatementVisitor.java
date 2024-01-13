@@ -1400,7 +1400,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         }
-        if (null != ctx.indexName() && ctx.indexName().size() > 0) {
+        if (null != ctx.indexName() && !ctx.indexName().isEmpty()) {
             List<IndexSegment> indexSegments = new LinkedList<>();
             for (IndexNameContext indexNameContext : ctx.indexName()) {
                 indexSegments.add((IndexSegment) visit(indexNameContext));
