@@ -1406,10 +1406,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCollectionVariableDecl(final CollectionVariableDeclContext ctx) {
-        CollectionValue<VariableSegment> result = new CollectionValue<>();
         if (null == ctx.variableName()) {
             return super.visitCollectionVariableDecl(ctx);
         }
+        CollectionValue<VariableSegment> result = new CollectionValue<>();
         for (VariableNameContext each : ctx.variableName()) {
             getVariableSegment(each).ifPresent(optional -> result.getValue().add(optional));
         }
