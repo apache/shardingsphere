@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.distsql.handler.query;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -35,7 +36,7 @@ class ShowEncryptAlgorithmImplementationsExecutorTest {
     @Test
     void assertGetRowData() {
         QueryableRALExecutor<ShowEncryptAlgorithmImplementationsStatement> executor = new ShowEncryptAlgorithmImplementationsExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowEncryptAlgorithmImplementationsStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowEncryptAlgorithmImplementationsStatement.class), mock(ShardingSphereMetaData.class));
         assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

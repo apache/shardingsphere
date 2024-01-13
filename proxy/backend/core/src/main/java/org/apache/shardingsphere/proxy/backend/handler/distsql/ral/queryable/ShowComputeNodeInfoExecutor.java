@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +34,10 @@ import java.util.Collections;
 /**
  * Show compute node info executor.
  */
-public final class ShowComputeNodeInfoExecutor implements InstanceContextRequiredQueryableRALExecutor<ShowComputeNodeInfoStatement> {
+@Setter
+public final class ShowComputeNodeInfoExecutor implements InstanceContextAwareQueryableRALExecutor<ShowComputeNodeInfoStatement> {
+    
+    private InstanceContext instanceContext;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -40,7 +45,7 @@ public final class ShowComputeNodeInfoExecutor implements InstanceContextRequire
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final InstanceContext instanceContext, final ShowComputeNodeInfoStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodeInfoStatement sqlStatement, final ShardingSphereMetaData metaData) {
         ComputeNodeInstance instance = instanceContext.getInstance();
         InstanceMetaData instanceMetaData = instance.getMetaData();
         String modeType = instanceContext.getModeConfiguration().getType();

@@ -29,5 +29,9 @@ CREATE TABLE sql_federation.t_product (product_id INT PRIMARY KEY, product_name 
 CREATE TABLE sql_federation.t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE sql_federation.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE sql_federation.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
+CREATE VIEW sql_federation.t_order_item_join_view AS SELECT o.order_id, o.user_id, i.item_id FROM sql_federation.t_order o INNER JOIN sql_federation.t_order_item i ON o.order_id = i.order_id ORDER BY o.order_id, i.item_id;
+CREATE VIEW sql_federation.t_order_subquery_view AS SELECT * FROM sql_federation.t_order o WHERE o.order_id IN (SELECT i.order_id FROM sql_federation.t_order_item i INNER JOIN sql_federation.t_product p ON i.product_id = p.product_id WHERE p.product_id = 10);
+CREATE VIEW sql_federation.t_order_aggregation_view AS SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM sql_federation.t_order o INNER JOIN sql_federation.t_order_item i ON o.order_id = i.order_id INNER JOIN sql_federation.t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) > 10000 ORDER BY max_price;
+CREATE VIEW sql_federation.t_order_union_view AS SELECT * FROM sql_federation.t_order WHERE order_id > 2000 UNION SELECT * FROM sql_federation.t_order WHERE order_id > 1500;
 
 CREATE INDEX order_index_t_order ON sql_federation.t_order (order_id);

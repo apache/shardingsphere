@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadQueryLoadBalanceAlgorithmImplementationsStatement;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +36,7 @@ class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutorTest {
     @Test
     void assertGetRowData() {
         QueryableRALExecutor<ShowReadQueryLoadBalanceAlgorithmImplementationsStatement> executor = new ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowReadQueryLoadBalanceAlgorithmImplementationsStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowReadQueryLoadBalanceAlgorithmImplementationsStatement.class), mock(ShardingSphereMetaData.class));
         assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

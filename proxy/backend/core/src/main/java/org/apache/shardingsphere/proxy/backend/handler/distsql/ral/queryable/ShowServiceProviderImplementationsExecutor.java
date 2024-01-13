@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowServiceProviderImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
@@ -39,7 +40,7 @@ public final class ShowServiceProviderImplementationsExecutor implements Queryab
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowServiceProviderImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowServiceProviderImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Object each : ShardingSphereServiceLoader.getServiceInstances(getServiceProviderImplementationClass(sqlStatement))) {
             TypedSPI implementation = (TypedSPI) each;

@@ -47,7 +47,7 @@ public final class Grantee {
         this.hostname = Strings.isNullOrEmpty(hostname) ? HOST_WILDCARD : hostname;
         isUnlimitedHost = HOST_WILDCARD.equals(this.hostname);
         hashCode = Objects.hashCode(username.toUpperCase(), this.hostname.toUpperCase());
-        toString = username + DELIMITER + hostname;
+        toString = username + DELIMITER + this.hostname;
     }
     
     /**

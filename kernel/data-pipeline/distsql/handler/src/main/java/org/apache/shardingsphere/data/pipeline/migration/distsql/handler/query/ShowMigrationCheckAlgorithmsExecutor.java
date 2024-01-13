@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.ral.query.algorithm.AlgorithmMetaDataQueryResultRows;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
 
@@ -33,7 +34,7 @@ public final class ShowMigrationCheckAlgorithmsExecutor implements QueryableRALE
     private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(TableDataConsistencyChecker.class);
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckAlgorithmsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckAlgorithmsStatement sqlStatement, final ShardingSphereMetaData metaData) {
         return algorithmMetaDataQueryResultRows.getRows();
     }
     

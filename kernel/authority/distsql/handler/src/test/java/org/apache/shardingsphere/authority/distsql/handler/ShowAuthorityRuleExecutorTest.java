@@ -46,7 +46,7 @@ class ShowAuthorityRuleExecutorTest {
     void assertExecute() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowAuthorityRuleExecutor executor = new ShowAuthorityRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowAuthorityRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowAuthorityRuleStatement.class), metaData);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

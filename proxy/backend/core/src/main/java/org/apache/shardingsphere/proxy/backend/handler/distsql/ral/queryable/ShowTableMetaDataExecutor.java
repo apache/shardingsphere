@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseRequiredQueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -36,7 +38,10 @@ import java.util.stream.Collectors;
 /**
  * Show table meta data executor.
  */
-public final class ShowTableMetaDataExecutor implements DatabaseRequiredQueryableRALExecutor<ShowTableMetaDataStatement> {
+@Setter
+public final class ShowTableMetaDataExecutor implements DatabaseAwareQueryableRALExecutor<ShowTableMetaDataStatement> {
+    
+    private ShardingSphereDatabase currentDatabase;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -44,11 +49,11 @@ public final class ShowTableMetaDataExecutor implements DatabaseRequiredQueryabl
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowTableMetaDataStatement sqlStatement) {
-        String defaultSchema = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
-        ShardingSphereSchema schema = database.getSchema(defaultSchema);
+    public Collection<LocalDataQueryResultRow> getRows(final ShowTableMetaDataStatement sqlStatement, final ShardingSphereMetaData metaData) {
+        String defaultSchema = new DatabaseTypeRegistry(currentDatabase.getProtocolType()).getDefaultSchemaName(currentDatabase.getName());
+        ShardingSphereSchema schema = currentDatabase.getSchema(defaultSchema);
         return sqlStatement.getTableNames().stream().filter(each -> schema.getAllTableNames().contains(each.toLowerCase()))
-                .map(each -> buildTableRows(database.getName(), schema, each.toLowerCase())).flatMap(Collection::stream).collect(Collectors.toList());
+                .map(each -> buildTableRows(currentDatabase.getName(), schema, each.toLowerCase())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {

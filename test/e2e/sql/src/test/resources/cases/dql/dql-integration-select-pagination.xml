@@ -17,20 +17,20 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="SELECT * FROM t_order_item_join_view LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_item_join_view LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_aggregation_view LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_aggregation_view LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_item_join_view FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+    <test-case sql="SELECT * FROM t_order_item_join_view FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
                scenario-comments="Test select ... from join view fetch statement when use sharding feature and federation executor engine.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_aggregation_view FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+    <test-case sql="SELECT * FROM t_order_aggregation_view FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation"
                scenario-comments="Test select ... from aggregation view fetch statement when use sharding feature and federation executor engine.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
