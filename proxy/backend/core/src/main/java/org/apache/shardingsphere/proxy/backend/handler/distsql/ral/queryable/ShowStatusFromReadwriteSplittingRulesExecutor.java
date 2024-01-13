@@ -20,9 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import com.google.common.base.Strings;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseAwareQueryableRALExecutor;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -38,7 +35,6 @@ import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 
 import java.util.Arrays;
