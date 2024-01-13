@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.util.Arrays;
@@ -31,7 +33,10 @@ import java.util.Collections;
 /**
  * Show compute node mode executor.
  */
-public final class ShowComputeNodeModeExecutor implements InstanceContextRequiredQueryableRALExecutor<ShowComputeNodeModeStatement> {
+@Setter
+public final class ShowComputeNodeModeExecutor implements InstanceContextAwareQueryableRALExecutor<ShowComputeNodeModeStatement> {
+    
+    private InstanceContext instanceContext;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -39,7 +44,7 @@ public final class ShowComputeNodeModeExecutor implements InstanceContextRequire
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final InstanceContext instanceContext, final ShowComputeNodeModeStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodeModeStatement sqlStatement, final ShardingSphereMetaData metaData) {
         PersistRepositoryConfiguration repositoryConfig = instanceContext.getModeConfiguration().getRepository();
         String modeType = instanceContext.getModeConfiguration().getType();
         String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();

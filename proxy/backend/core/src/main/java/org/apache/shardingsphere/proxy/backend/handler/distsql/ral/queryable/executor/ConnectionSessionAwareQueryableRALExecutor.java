@@ -19,26 +19,19 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ex
 
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import java.util.Collection;
-
 /**
- * Connection session required queryable RAL executor.
+ * Connection session aware queryable RAL executor.
  * 
  * @param <T> type of SQL statement
  */
-public interface ConnectionSessionRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
+public interface ConnectionSessionAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
-     * Get query result rows.
+     * Set connection session.
      *
-     * @param metaData ShardingSphere meta data
-     * @param connectionSession connectionSession connection session
-     * @param sqlStatement SQL statement
-     * @return query result rows
+     * @param connectionSession connection session
      */
-    Collection<LocalDataQueryResultRow> getRows(ShardingSphereMetaData metaData, ConnectionSession connectionSession, T sqlStatement);
+    void setConnectionSession(ConnectionSession connectionSession);
 }

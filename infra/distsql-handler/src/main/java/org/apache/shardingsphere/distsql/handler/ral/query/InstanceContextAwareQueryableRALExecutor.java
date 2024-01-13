@@ -18,24 +18,19 @@
 package org.apache.shardingsphere.distsql.handler.ral.query;
 
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 
 /**
- * Database required queryable RAL executor.
+ * Instance context aware queryable RAL executor.
  * 
  * @param <T> type of queryable RAL statement
  */
-public interface DatabaseRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
+public interface InstanceContextAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
-     * Get query result rows.
+     * Set Instance context.
      *
-     * @param database ShardingSphere database
-     * @param sqlStatement SQL statement
-     * @return query result rows
+     * @param instanceContext instance context
      */
-    Collection<LocalDataQueryResultRow> getRows(ShardingSphereDatabase database, T sqlStatement);
+    void setInstanceContext(InstanceContext instanceContext);
 }

@@ -58,7 +58,8 @@ class ShowDistVariableExecutorTest {
     void assertShowCachedConnections() {
         when(connectionSession.getDatabaseConnectionManager().getConnectionSize()).thenReturn(1);
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("CACHED_CONNECTIONS"));
+        executor.setConnectionSession(connectionSession);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("CACHED_CONNECTIONS"), metaData);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("cached_connections"));
@@ -69,7 +70,8 @@ class ShowDistVariableExecutorTest {
     void assertShowPropsVariable() {
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("sql-show", Boolean.TRUE.toString()))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("SQL_SHOW"));
+        executor.setConnectionSession(connectionSession);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("SQL_SHOW"), metaData);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("sql_show"));
@@ -80,7 +82,8 @@ class ShowDistVariableExecutorTest {
     void assertShowPropsVariableForTypedSPI() {
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("proxy-frontend-database-protocol-type", "MySQL"))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE"));
+        executor.setConnectionSession(connectionSession);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE"), metaData);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("proxy_frontend_database_protocol_type"));
@@ -91,7 +94,8 @@ class ShowDistVariableExecutorTest {
     void assertShowTemporaryPropsVariable() {
         when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("PROXY_META_DATA_COLLECTOR_ENABLED"));
+        executor.setConnectionSession(connectionSession);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("PROXY_META_DATA_COLLECTOR_ENABLED"), metaData);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("proxy_meta_data_collector_enabled"));
@@ -100,6 +104,8 @@ class ShowDistVariableExecutorTest {
     
     @Test
     void assertExecuteWithInvalidVariableName() {
-        assertThrows(UnsupportedVariableException.class, () -> new ShowDistVariableExecutor().getRows(metaData, connectionSession, new ShowDistVariableStatement("wrong_name")));
+        ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
+        executor.setConnectionSession(connectionSession);
+        assertThrows(UnsupportedVariableException.class, () -> executor.getRows(new ShowDistVariableStatement("wrong_name"), metaData));
     }
 }

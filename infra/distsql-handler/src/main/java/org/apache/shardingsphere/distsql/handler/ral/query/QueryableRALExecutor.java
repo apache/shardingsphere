@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Queryable RAL executor.
@@ -48,9 +47,7 @@ public interface QueryableRALExecutor<T extends QueryableRALStatement> extends T
      * @param metaData ShardingSphere meta data
      * @return query result rows
      */
-    default Collection<LocalDataQueryResultRow> getRows(final T sqlStatement, final ShardingSphereMetaData metaData) {
-        return Collections.emptyList();
-    }
+    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ShardingSphereMetaData metaData);
     
     @Override
     Class<T> getType();
