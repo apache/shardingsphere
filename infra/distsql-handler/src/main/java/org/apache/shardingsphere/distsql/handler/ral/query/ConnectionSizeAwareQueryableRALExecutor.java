@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor;
+package org.apache.shardingsphere.distsql.handler.ral.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
- * Connection session aware queryable RAL executor.
+ * Connection size aware queryable RAL executor.
  * 
  * @param <T> type of SQL statement
  */
-public interface ConnectionSessionAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
+public interface ConnectionSizeAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
-     * Set connection session.
+     * Set connection size.
      *
-     * @param connectionSession connection session
+     * @param connectionSize connection size
      */
-    void setConnectionSession(ConnectionSession connectionSession);
+    void setConnectionSize(int connectionSize);
 }
