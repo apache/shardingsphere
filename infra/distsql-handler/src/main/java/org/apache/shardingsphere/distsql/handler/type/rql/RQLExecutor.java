@@ -15,28 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.rul;
+package org.apache.shardingsphere.distsql.handler.type.rql;
 
-import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 
 /**
- * RUL executor.
- *
- * @param <T> type of RUL statement
+ * RQL executor.
+ * 
+ * @param <T> type of RQL statement
  */
 @SingletonSPI
-public interface RULExecutor<T extends RULStatement> extends TypedSPI {
+public interface RQLExecutor<T extends RQLStatement> extends TypedSPI {
     
     /**
      * Get column names.
-     *
+     * 
      * @return column names
      */
     Collection<String> getColumnNames();
+    
+    /**
+     * Get query result rows.
+     * 
+     * @param database database
+     * @param sqlStatement SQL statement
+     * @return query result rows
+     */
+    Collection<LocalDataQueryResultRow> getRows(ShardingSphereDatabase database, T sqlStatement);
     
     @Override
     Class<T> getType();

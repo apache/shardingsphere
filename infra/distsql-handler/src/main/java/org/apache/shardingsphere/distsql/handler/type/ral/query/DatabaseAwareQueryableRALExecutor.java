@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.query;
+package org.apache.shardingsphere.distsql.handler.type.ral.query;
 
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * Instance context aware queryable RAL executor.
+ * Database Aware queryable RAL executor.
  * 
  * @param <T> type of queryable RAL statement
  */
-public interface InstanceContextAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
+public interface DatabaseAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
-     * Set Instance context.
-     *
-     * @param instanceContext instance context
+     * Set current database.
+     * 
+     * @param currentDatabase current database
      */
-    void setInstanceContext(InstanceContext instanceContext);
+    void setCurrentDatabase(ShardingSphereDatabase currentDatabase);
 }

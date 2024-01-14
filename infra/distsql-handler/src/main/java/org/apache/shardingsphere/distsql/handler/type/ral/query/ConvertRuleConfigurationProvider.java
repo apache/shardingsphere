@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.query;
+package org.apache.shardingsphere.distsql.handler.type.ral.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.constant.DistSQLScriptConstants;
+import org.apache.shardingsphere.distsql.handler.type.ral.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
