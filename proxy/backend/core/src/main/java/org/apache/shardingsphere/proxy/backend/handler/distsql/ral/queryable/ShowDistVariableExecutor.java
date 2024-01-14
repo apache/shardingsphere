@@ -98,7 +98,7 @@ public final class ShowDistVariableExecutor implements ConnectionSizeAwareQuerya
     }
     
     private String getTemporaryConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
-        return metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(variableName)).toString();
+        return getStringResult(metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(variableName)).toString());
     }
     
     private String getConnectionSize(final String variableName) {
