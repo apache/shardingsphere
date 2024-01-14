@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.type.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

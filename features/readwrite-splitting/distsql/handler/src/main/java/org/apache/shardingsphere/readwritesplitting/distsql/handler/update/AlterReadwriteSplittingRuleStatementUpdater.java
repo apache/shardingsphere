@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.distsql.handler.type.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;

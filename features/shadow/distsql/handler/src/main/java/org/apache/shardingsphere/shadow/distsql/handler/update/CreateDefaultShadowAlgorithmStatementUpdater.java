@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.DuplicateAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.type.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
