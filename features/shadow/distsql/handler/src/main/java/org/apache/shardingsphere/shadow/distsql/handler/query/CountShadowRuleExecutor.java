@@ -17,37 +17,26 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.distsql.statement.CountShadowRuleStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.Collections;
 
 /**
  * Count shadow rule executor.
  */
-public final class CountShadowRuleExecutor implements RQLExecutor<CountShadowRuleStatement> {
+public final class CountShadowRuleExecutor extends CountRQLExecutor<CountShadowRuleStatement, ShadowRule> {
     
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("rule_name", "database", "count");
+    public CountShadowRuleExecutor() {
+        super(ShadowRule.class);
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountShadowRuleStatement sqlStatement) {
-        Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
-        return result;
-    }
-    
-    private void fillRows(final Collection<LocalDataQueryResultRow> result, final ShadowRule rule, final String databaseName) {
-        result.add(new LocalDataQueryResultRow("shadow", databaseName, rule.getDataSourceMapper().size()));
+    protected Collection<LocalDataQueryResultRow> generateRows(final ShadowRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("shadow", databaseName, rule.getDataSourceMapper().size()));
     }
     
     @Override

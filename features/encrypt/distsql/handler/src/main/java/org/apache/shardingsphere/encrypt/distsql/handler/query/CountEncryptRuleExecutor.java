@@ -17,37 +17,26 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
 import org.apache.shardingsphere.encrypt.distsql.statement.CountEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.Collections;
 
 /**
  * Count encrypt rule executor.
  */
-public final class CountEncryptRuleExecutor implements RQLExecutor<CountEncryptRuleStatement> {
+public final class CountEncryptRuleExecutor extends CountRQLExecutor<CountEncryptRuleStatement, EncryptRule> {
     
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("rule_name", "database", "count");
+    public CountEncryptRuleExecutor() {
+        super(EncryptRule.class);
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountEncryptRuleStatement sqlStatement) {
-        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
-        return result;
-    }
-    
-    private void fillRows(final Collection<LocalDataQueryResultRow> result, final EncryptRule rule, final String databaseName) {
-        result.add(new LocalDataQueryResultRow("encrypt", databaseName, rule.getLogicTableMapper().getTableNames().size()));
+    protected Collection<LocalDataQueryResultRow> generateRows(final EncryptRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("encrypt", databaseName, rule.getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

@@ -17,37 +17,26 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.CountReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.Collections;
 
 /**
  * Count readwrite-splitting rule executor.
  */
-public final class CountReadwriteSplittingRuleExecutor implements RQLExecutor<CountReadwriteSplittingRuleStatement> {
+public final class CountReadwriteSplittingRuleExecutor extends CountRQLExecutor<CountReadwriteSplittingRuleStatement, ReadwriteSplittingRule> {
     
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("rule_name", "database", "count");
+    public CountReadwriteSplittingRuleExecutor() {
+        super(ReadwriteSplittingRule.class);
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
-        return result;
-    }
-    
-    private void fillRows(final Collection<LocalDataQueryResultRow> result, final ReadwriteSplittingRule rule, final String databaseName) {
-        result.add(new LocalDataQueryResultRow("readwrite_splitting", databaseName, rule.getDataSourceMapper().size()));
+    protected Collection<LocalDataQueryResultRow> generateRows(final ReadwriteSplittingRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("readwrite_splitting", databaseName, rule.getDataSourceMapper().size()));
     }
     
     @Override

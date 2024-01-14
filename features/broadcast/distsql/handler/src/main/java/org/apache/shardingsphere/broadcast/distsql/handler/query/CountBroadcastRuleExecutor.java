@@ -19,31 +19,24 @@ package org.apache.shardingsphere.broadcast.distsql.handler.query;
 
 import org.apache.shardingsphere.broadcast.distsql.statement.CountBroadcastRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.Collections;
 
 /**
  * Count broadcast rule executor.
  */
-public final class CountBroadcastRuleExecutor implements RQLExecutor<CountBroadcastRuleStatement> {
+public final class CountBroadcastRuleExecutor extends CountRQLExecutor<CountBroadcastRuleStatement, BroadcastRule> {
     
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("rule_name", "database", "count");
+    public CountBroadcastRuleExecutor() {
+        super(BroadcastRule.class);
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountBroadcastRuleStatement sqlStatement) {
-        Optional<BroadcastRule> rule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> result.add(new LocalDataQueryResultRow("broadcast_table", database.getName(), optional.getConfiguration().getTables().size())));
-        return result;
+    protected Collection<LocalDataQueryResultRow> generateRows(final BroadcastRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("broadcast_table", databaseName, rule.getConfiguration().getTables().size()));
     }
     
     @Override
