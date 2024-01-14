@@ -694,7 +694,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         calculateParameterCount(ctx.expr());
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public final ASTNode visitOpenJsonFunction(final OpenJsonFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENJSON().getText(), getOriginalText(ctx));
@@ -703,7 +703,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
