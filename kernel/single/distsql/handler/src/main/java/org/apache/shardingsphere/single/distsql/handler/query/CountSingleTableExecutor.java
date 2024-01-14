@@ -17,30 +17,26 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.distsql.statement.rql.CountSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
  * Count single table executor.
  */
-public final class CountSingleTableExecutor implements RQLExecutor<CountSingleTableStatement> {
+public final class CountSingleTableExecutor extends CountRQLExecutor<CountSingleTableStatement, SingleRule> {
     
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("database", "count");
+    public CountSingleTableExecutor() {
+        super(SingleRule.class);
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountSingleTableStatement sqlStatement) {
-        SingleRule rule = database.getRuleMetaData().getSingleRule(SingleRule.class);
-        return Collections.singleton(new LocalDataQueryResultRow(database.getName(), rule.getLogicTableMapper().getTableNames().size()));
+    protected Collection<LocalDataQueryResultRow> generateRows(final SingleRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("single", databaseName, rule.getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

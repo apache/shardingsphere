@@ -17,37 +17,26 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.distsql.statement.CountMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.Collections;
 
 /**
  * Count mask rule executor.
  */
-public final class CountMaskRuleExecutor implements RQLExecutor<CountMaskRuleStatement> {
+public final class CountMaskRuleExecutor extends CountRQLExecutor<CountMaskRuleStatement, MaskRule> {
     
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("rule_name", "database", "count");
+    public CountMaskRuleExecutor() {
+        super(MaskRule.class);
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountMaskRuleStatement sqlStatement) {
-        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
-        return result;
-    }
-    
-    private void fillRows(final Collection<LocalDataQueryResultRow> result, final MaskRule rule, final String databaseName) {
-        result.add(new LocalDataQueryResultRow("mask", databaseName, rule.getLogicTableMapper().getTableNames().size()));
+    protected Collection<LocalDataQueryResultRow> generateRows(final MaskRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("mask", databaseName, rule.getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

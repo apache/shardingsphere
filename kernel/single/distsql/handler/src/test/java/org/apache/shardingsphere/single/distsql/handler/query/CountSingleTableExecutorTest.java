@@ -43,15 +43,17 @@ class CountSingleTableExecutorTest {
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("db_1"));
-        assertThat(row.getCell(2), is(2));
+        assertThat(row.getCell(1), is("single"));
+        assertThat(row.getCell(2), is("db_1"));
+        assertThat(row.getCell(3), is(2));
     }
     
     @Test
     void assertGetColumnNames() {
         Collection<String> columns = new CountSingleTableExecutor().getColumnNames();
-        assertThat(columns.size(), is(2));
+        assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("rule_name"));
         assertThat(iterator.next(), is("database"));
         assertThat(iterator.next(), is("count"));
     }
