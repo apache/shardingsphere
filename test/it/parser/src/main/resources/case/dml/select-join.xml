@@ -1368,4 +1368,107 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_cross_apply_join_with_open_json_function">
+        <projections start-index="7" stop-index="339">
+            <column-projection name="reason" start-index="7" stop-index="12"/>
+            <column-projection name="score" start-index="15" stop-index="19"/>
+            <expression-projection text="JSON_VALUE(details, '$.implementationDetails.script')" start-index="22" stop-index="83" alias="script">
+                <expr>
+                    <function text="JSON_VALUE(details, '$.implementationDetails.script')" function-name="JSON_VALUE" start-index="31" stop-index="83">
+                        <parameter>
+                            <column name="details" start-index="42" stop-index="48"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.implementationDetails.script" start-index="51" stop-index="82"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <shorthand-projection name="*" start-index="86" stop-index="103">
+                <owner name="planForceDetails" start-index="86" stop-index="101"/>
+            </shorthand-projection>
+            <expression-projection start-index="106" stop-index="255" text="regressedPlanExecutionCount + recommendedPlanExecutionCount) * (regressedPlanCpuTimeAverage - recommendedPlanCpuTimeAverage)/100000" alias="estimated_gain">
+                <expr>
+                    <binary-operation-expression start-index="123" stop-index="255">
+                        <left>
+                            <binary-operation-expression start-index="123" stop-index="247">
+                                <operator>*</operator>
+                                <left>
+                                    <binary-operation-expression start-index="124" stop-index="182">
+                                        <left>
+                                            <column name="regressedPlanExecutionCount" start-index="124" stop-index="150"/>
+                                        </left>
+                                        <right>
+                                            <column name="recommendedPlanExecutionCount" start-index="154" stop-index="182"/>
+                                        </right>
+                                        <operator>+</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="188" stop-index="246">
+                                        <left>
+                                            <column name="regressedPlanCpuTimeAverage" start-index="188" stop-index="214"/>
+                                        </left>
+                                        <right>
+                                            <column name="recommendedPlanCpuTimeAverage" start-index="218" stop-index="246"/>
+                                        </right>
+                                        <operator>-</operator>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <literal-expression value="1000000" start-index="249" stop-index="255"/>
+                        </right>
+                        <operator>/</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="IIF(regressedPlanErrorCount > recommendedPlanErrorCount, 'YES','NO')" start-index="258" stop-index="339" alias="error_prone">
+                <expr>
+                    <function text="IIF(regressedPlanErrorCount > recommendedPlanErrorCount, 'YES','NO')" start-index="272" stop-index="339" function-name="IIF">
+                        <parameter>
+                            <binary-operation-expression start-index="276" stop-index="326">
+                                <left>
+                                    <column name="regressedPlanErrorCount" start-index="276" stop-index="298"/>
+                                </left>
+                                <right>
+                                    <column name="recommendedPlanErrorCount" start-index="302" stop-index="326"/>
+                                </right>
+                                <operator>&gt;</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="YES" start-index="329" stop-index="333"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="NO" start-index="335" stop-index="338"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="346" stop-index="770">
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="dm_db_tuning_recommendations" start-index="346" stop-index="377">
+                        <owner name="sys" start-index="346" stop-index="348"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table start-index="391" stop-index="750" table-alias="planForceDetails">
+                        <table-function function-name="OPENJSON" text="OPENJSON (Details, '$.planForceDetails') WITH ([query_id] int '$.queryId', regressedPlanId int '$.regressedPlanId', recommendedPlanId int '$.recommendedPlanId', regressedPlanErrorCount int, recommendedPlanErrorCount int, regressedPlanExecutionCount int, regressedPlanCpuTimeAverage float, recommendedPlanExecutionCount int, recommendedPlanCpuTimeAverage float)">
+                            <parameter>
+                                <column name="Details" start-index="401" stop-index="407"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="$.planForceDetails" start-index="410" stop-index="429"/>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

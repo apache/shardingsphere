@@ -116,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Sam
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertExecClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExecContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProcedureNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenJsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintLimitedContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
@@ -207,6 +208,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segm
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsDimension;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.StatisticsStrategySegment;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -569,6 +571,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
+        if (null != ctx.LP_() && 1 == ctx.expr().size()) {
+            return visit(ctx.expr(0));
+        }
         return visitRemainSimpleExpr(ctx);
     }
     
@@ -653,6 +658,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.charFunction()) {
             return visit(ctx.charFunction());
         }
+        if (null != ctx.openJsonFunction()) {
+            return visit(ctx.openJsonFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
     
@@ -686,7 +694,16 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         calculateParameterCount(ctx.expr());
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
     }
-    
+
+    @Override
+    public final ASTNode visitOpenJsonFunction(final OpenJsonFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENJSON().getText(), getOriginalText(ctx));
+        for (ExprContext exprContext : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(exprContext));
+        }
+        return result;
+    }
+
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
