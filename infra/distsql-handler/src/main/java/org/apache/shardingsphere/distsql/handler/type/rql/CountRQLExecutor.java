@@ -37,7 +37,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class CountRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> implements RQLExecutor<T> {
     
-    private final Class<R> ruleClass; 
+    private final Class<R> ruleClass;
     
     @Override
     public final Collection<String> getColumnNames() {
