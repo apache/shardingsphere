@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.distsql.handler.type.rql.count;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.show.CountRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -33,17 +32,16 @@ import java.util.Optional;
 /**
  * Count RQL executor.
  */
-@RequiredArgsConstructor
-public abstract class CountRQLExecutor implements RQLExecutor<CountRuleStatement> {
+public final class CountRQLExecutor implements RQLExecutor<CountRuleStatement> {
     
     @Override
-    public final Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames() {
         return Arrays.asList("rule_name", "database", "count");
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public final Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountRuleStatement sqlStatement) {
         CountResultRowBuilder rowBuilder = TypedSPILoader.getService(CountResultRowBuilder.class, sqlStatement.getType());
         Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(rowBuilder.getRuleClass());
         return rule.isPresent() ? rowBuilder.generateRows(rule.get(), database.getName()) : Collections.emptyList();
