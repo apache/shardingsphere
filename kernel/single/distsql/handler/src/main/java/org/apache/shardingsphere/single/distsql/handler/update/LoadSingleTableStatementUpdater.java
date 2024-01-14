@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
