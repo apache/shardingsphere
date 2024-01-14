@@ -15,22 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.query;
+package org.apache.shardingsphere.distsql.handler.type.ral.update;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.sql.SQLException;
 
 /**
- * Database Aware queryable RAL executor.
+ * RAL updater.
  * 
- * @param <T> type of queryable RAL statement
+ * @param <T> type of updatable RAL statement
  */
-public interface DatabaseAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
+@SingletonSPI
+public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
     
     /**
-     * Set current database.
-     * 
-     * @param currentDatabase current database
+     * Execute update.
+     *
+     * @param databaseName database name
+     * @param sqlStatement updatable RAL statement
+     * @throws SQLException SQL exception
      */
-    void setCurrentDatabase(ShardingSphereDatabase currentDatabase);
+    default void executeUpdate(final String databaseName, final T sqlStatement) throws SQLException {
+    }
+    
+    @Override
+    Class<T> getType();
 }

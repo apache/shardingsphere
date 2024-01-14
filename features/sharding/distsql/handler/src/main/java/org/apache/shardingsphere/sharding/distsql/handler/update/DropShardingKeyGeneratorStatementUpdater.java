@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.distsql.handler.type.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;

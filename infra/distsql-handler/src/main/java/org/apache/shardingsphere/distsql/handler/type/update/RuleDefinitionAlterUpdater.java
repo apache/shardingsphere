@@ -15,47 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.update;
+package org.apache.shardingsphere.distsql.handler.type.update;
 
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableGlobalRuleRALStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * RAL updater for global rule.
- * 
+ * Alter rule rule definition updater.
+ *
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-@SingletonSPI
-public interface GlobalRuleRALUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface RuleDefinitionAlterUpdater<T extends SQLStatement, R extends RuleConfiguration> extends RuleDefinitionUpdater<T, R> {
     
     /**
-     * Check SQL statement.
+     * Build to be altered rule configuration.
+     *
+     * @param sqlStatement SQL statement
+     * @return to be altered rule configuration
+     */
+    R buildToBeAlteredRuleConfiguration(T sqlStatement);
+    
+    /**
+     * TODO Remove temporary default implementation
+     * Build to be dropped rule configuration.
      *
      * @param currentRuleConfig current rule configuration
-     * @param sqlStatement SQL statement
+     * @param toBeAlteredRuleConfig new rule configuration to be renewed
+     * @return to be dropped rule configuration
      */
-    void checkSQLStatement(R currentRuleConfig, T sqlStatement);
+    default R buildToBeDroppedRuleConfiguration(final R currentRuleConfig, final R toBeAlteredRuleConfig) {
+        return null;
+    }
     
     /**
-     * Build altered rule configuration.
+     * Update current rule configuration.
      *
-     * @param currentRuleConfig current rule configuration
-     * @param sqlStatement SQL statement
-     * @return built altered rule configuration
+     * @param currentRuleConfig current rule configuration to be updated
+     * @param toBeAlteredRuleConfig to be altered rule configuration
      */
-    RuleConfiguration buildAlteredRuleConfiguration(R currentRuleConfig, T sqlStatement);
-    
-    /**
-     * Get rule configuration class.
-     *
-     * @return rule configuration class
-     */
-    Class<R> getRuleConfigurationClass();
-    
-    @Override
-    Class<? extends UpdatableGlobalRuleRALStatement> getType();
+    void updateCurrentRuleConfiguration(R currentRuleConfig, R toBeAlteredRuleConfig);
 }

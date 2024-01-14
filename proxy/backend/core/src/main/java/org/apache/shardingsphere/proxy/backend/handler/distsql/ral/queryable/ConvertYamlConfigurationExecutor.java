@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.handler.ral.constant.DistSQLScriptConstants;
-import org.apache.shardingsphere.distsql.handler.ral.query.ConvertRuleConfigurationProvider;
-import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.constant.DistSQLScriptConstants;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.distsql.handler.ral.query.ConnectionSizeAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Arrays;

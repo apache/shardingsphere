@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.constant;
+package org.apache.shardingsphere.distsql.handler.type.ral.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

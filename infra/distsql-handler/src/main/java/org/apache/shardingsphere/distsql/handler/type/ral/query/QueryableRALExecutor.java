@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.rql;
+package org.apache.shardingsphere.distsql.handler.type.ral.query;
 
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 
 /**
- * RQL executor.
+ * Queryable RAL executor.
  * 
- * @param <T> type of RQL statement
+ * @param <T> type of queryable RAL statement
  */
 @SingletonSPI
-public interface RQLExecutor<T extends RQLStatement> extends TypedSPI {
+public interface QueryableRALExecutor<T extends QueryableRALStatement> extends TypedSPI {
     
     /**
      * Get column names.
@@ -42,12 +42,12 @@ public interface RQLExecutor<T extends RQLStatement> extends TypedSPI {
     
     /**
      * Get query result rows.
-     * 
-     * @param database database
+     *
      * @param sqlStatement SQL statement
+     * @param metaData ShardingSphere meta data
      * @return query result rows
      */
-    Collection<LocalDataQueryResultRow> getRows(ShardingSphereDatabase database, T sqlStatement);
+    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ShardingSphereMetaData metaData);
     
     @Override
     Class<T> getType();

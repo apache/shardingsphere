@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.update;
+package org.apache.shardingsphere.distsql.handler.type.ral.query;
 
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
 /**
- * RAL updater.
+ * Connection size aware queryable RAL executor.
  * 
- * @param <T> type of updatable RAL statement
+ * @param <T> type of SQL statement
  */
-@SingletonSPI
-public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
+public interface ConnectionSizeAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
-     * Execute update.
+     * Set connection size.
      *
-     * @param databaseName database name
-     * @param sqlStatement updatable RAL statement
-     * @throws SQLException SQL exception
+     * @param connectionSize connection size
      */
-    default void executeUpdate(final String databaseName, final T sqlStatement) throws SQLException {
-    }
-    
-    @Override
-    Class<T> getType();
+    void setConnectionSize(int connectionSize);
 }

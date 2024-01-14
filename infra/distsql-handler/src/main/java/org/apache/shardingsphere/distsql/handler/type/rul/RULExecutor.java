@@ -15,39 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.query;
+package org.apache.shardingsphere.distsql.handler.type.rul;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 
 /**
- * Queryable RAL executor.
- * 
- * @param <T> type of queryable RAL statement
+ * RUL executor.
+ *
+ * @param <T> type of RUL statement
  */
 @SingletonSPI
-public interface QueryableRALExecutor<T extends QueryableRALStatement> extends TypedSPI {
+public interface RULExecutor<T extends RULStatement> extends TypedSPI {
     
     /**
      * Get column names.
-     * 
+     *
      * @return column names
      */
     Collection<String> getColumnNames();
-    
-    /**
-     * Get query result rows.
-     *
-     * @param sqlStatement SQL statement
-     * @param metaData ShardingSphere meta data
-     * @return query result rows
-     */
-    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ShardingSphereMetaData metaData);
     
     @Override
     Class<T> getType();
