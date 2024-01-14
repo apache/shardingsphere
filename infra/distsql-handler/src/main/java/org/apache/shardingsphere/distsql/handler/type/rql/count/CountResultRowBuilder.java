@@ -15,32 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.handler.query;
+package org.apache.shardingsphere.distsql.handler.type.rql.count;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
-import org.apache.shardingsphere.encrypt.distsql.statement.CountEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * Count encrypt rule executor.
+ * Count result row builder.
+ * 
+ * @param <T> type of ShardingSphere rule
  */
-public final class CountEncryptRuleExecutor extends CountRQLExecutor<CountEncryptRuleStatement, EncryptRule> {
+@SingletonSPI
+public interface CountResultRowBuilder<T extends ShardingSphereRule> extends TypedSPI {
     
-    public CountEncryptRuleExecutor() {
-        super(EncryptRule.class);
-    }
+    /**
+     * Generate rows.
+     * 
+     * @param rule rule
+     * @param databaseName database name
+     * @return generated rows
+     */
+    Collection<LocalDataQueryResultRow> generateRows(T rule, String databaseName);
+    
+    /**
+     * Get rule class.
+     * 
+     * @return rule class
+     */
+    Class<T> getRuleClass();
     
     @Override
-    protected Collection<LocalDataQueryResultRow> generateRows(final EncryptRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("encrypt", databaseName, rule.getLogicTableMapper().getTableNames().size()));
-    }
-    
-    @Override
-    public Class<CountEncryptRuleStatement> getType() {
-        return CountEncryptRuleStatement.class;
-    }
+    String getType();
 }

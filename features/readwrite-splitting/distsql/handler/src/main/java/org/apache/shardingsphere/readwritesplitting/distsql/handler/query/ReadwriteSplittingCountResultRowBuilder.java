@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.distsql.handler.query;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.broadcast.distsql.statement.CountBroadcastRuleStatement;
-import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.count.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Count broadcast rule executor.
+ * Readwrite-splitting count result row builder.
  */
-public final class CountBroadcastRuleExecutor extends CountRQLExecutor<CountBroadcastRuleStatement, BroadcastRule> {
+public final class ReadwriteSplittingCountResultRowBuilder implements CountResultRowBuilder<ReadwriteSplittingRule> {
     
-    public CountBroadcastRuleExecutor() {
-        super(BroadcastRule.class);
+    @Override
+    public Collection<LocalDataQueryResultRow> generateRows(final ReadwriteSplittingRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("readwrite_splitting", databaseName, rule.getDataSourceMapper().size()));
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> generateRows(final BroadcastRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("broadcast_table", databaseName, rule.getConfiguration().getTables().size()));
+    public Class<ReadwriteSplittingRule> getRuleClass() {
+        return ReadwriteSplittingRule.class;
     }
     
     @Override
-    public Class<CountBroadcastRuleStatement> getType() {
-        return CountBroadcastRuleStatement.class;
+    public String getType() {
+        return "READWRITE_SPLITTING";
     }
 }

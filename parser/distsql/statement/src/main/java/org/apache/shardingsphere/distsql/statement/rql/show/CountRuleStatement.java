@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.statement;
+package org.apache.shardingsphere.distsql.statement.rql.show;
 
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Count readwrite-splitting rule statement.
+ * Count rule statement.
  */
-public final class CountReadwriteSplittingRuleStatement extends ShowRulesStatement {
+@Getter
+public final class CountRuleStatement extends ShowRulesStatement {
     
-    public CountReadwriteSplittingRuleStatement(final DatabaseSegment database) {
+    private final String type;
+    
+    public CountRuleStatement(final DatabaseSegment database, final String type) {
         super(database);
+        this.type = type;
     }
 }

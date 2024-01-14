@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.distsql.handler.query;
+package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.count.CountResultRowBuilder;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.mask.distsql.statement.CountMaskRuleStatement;
-import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Count mask rule executor.
+ * Encrypt count result row builder.
  */
-public final class CountMaskRuleExecutor extends CountRQLExecutor<CountMaskRuleStatement, MaskRule> {
+public final class EncryptCountResultRowBuilder implements CountResultRowBuilder<EncryptRule> {
     
-    public CountMaskRuleExecutor() {
-        super(MaskRule.class);
+    @Override
+    public Collection<LocalDataQueryResultRow> generateRows(final EncryptRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("encrypt", databaseName, rule.getLogicTableMapper().getTableNames().size()));
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> generateRows(final MaskRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("mask", databaseName, rule.getLogicTableMapper().getTableNames().size()));
+    public Class<EncryptRule> getRuleClass() {
+        return EncryptRule.class;
     }
     
     @Override
-    public Class<CountMaskRuleStatement> getType() {
-        return CountMaskRuleStatement.class;
+    public String getType() {
+        return "ENCRYPT";
     }
 }

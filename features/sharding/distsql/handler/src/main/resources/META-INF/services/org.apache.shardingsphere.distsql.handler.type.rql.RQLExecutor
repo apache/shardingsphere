@@ -27,5 +27,4 @@ org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableNodesE
 org.apache.shardingsphere.sharding.distsql.handler.query.ShowUnusedShardingAlgorithmsExecutor
 org.apache.shardingsphere.sharding.distsql.handler.query.ShowUnusedShardingKeyGeneratorExecutor
 org.apache.shardingsphere.sharding.distsql.handler.query.ShowUnusedShardingAuditorsExecutor
-org.apache.shardingsphere.sharding.distsql.handler.query.CountShardingRuleExecutor
 org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableReferenceRuleExecutor

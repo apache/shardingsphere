@@ -15,42 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rql;
+package org.apache.shardingsphere.distsql.handler.type.rql.count;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.statement.rql.show.CountRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Count RQL executor.
- * 
- * @param <T> type of RQL statement
- * @param <R> type of ShardingSphere rule
  */
 @RequiredArgsConstructor
-public abstract class CountRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> implements RQLExecutor<T> {
-    
-    private final Class<R> ruleClass;
+public abstract class CountRQLExecutor implements RQLExecutor<CountRuleStatement> {
     
     @Override
     public final Collection<String> getColumnNames() {
         return Arrays.asList("rule_name", "database", "count");
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public final Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final T sqlStatement) {
-        Optional<R> rule = database.getRuleMetaData().findSingleRule(ruleClass);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> result.addAll(generateRows(optional, database.getName())));
-        return result;
+    public final Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountRuleStatement sqlStatement) {
+        CountResultRowBuilder rowBuilder = TypedSPILoader.getService(CountResultRowBuilder.class, sqlStatement.getType());
+        Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(rowBuilder.getRuleClass());
+        return rule.isPresent() ? rowBuilder.generateRows(rule.get(), database.getName()) : Collections.emptyList();
     }
     
-    protected abstract Collection<LocalDataQueryResultRow> generateRows(R rule, String databaseName);
+    @Override
+    public Class<CountRuleStatement> getType() {
+        return CountRuleStatement.class;
+    }
 }

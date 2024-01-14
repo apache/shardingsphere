@@ -15,6 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.single.distsql.handler.query.ShowSingleTableExecutor
-org.apache.shardingsphere.single.distsql.handler.query.ShowDefaultSingleTableStorageUnitExecutor
-org.apache.shardingsphere.single.distsql.handler.query.ShowUnloadedSingleTableExecutor
+org.apache.shardingsphere.broadcast.distsql.handler.query.BroadcastCountResultRowBuilder

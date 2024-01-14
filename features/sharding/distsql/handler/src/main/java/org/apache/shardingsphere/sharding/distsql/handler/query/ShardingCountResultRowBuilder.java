@@ -17,32 +17,32 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.count.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.statement.CountShardingRuleStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Count sharding rule executor.
+ * Sharding count result row builder.
  */
-public final class CountShardingRuleExecutor extends CountRQLExecutor<CountShardingRuleStatement, ShardingRule> {
-    
-    public CountShardingRuleExecutor() {
-        super(ShardingRule.class);
-    }
+public final class ShardingCountResultRowBuilder implements CountResultRowBuilder<ShardingRule> {
     
     @Override
-    protected Collection<LocalDataQueryResultRow> generateRows(final ShardingRule rule, final String databaseName) {
+    public Collection<LocalDataQueryResultRow> generateRows(final ShardingRule rule, final String databaseName) {
         return Arrays.asList(new LocalDataQueryResultRow("sharding_table", databaseName, rule.getTableRules().size()),
                 new LocalDataQueryResultRow("sharding_table_reference", databaseName, ((ShardingRuleConfiguration) rule.getConfiguration()).getBindingTableGroups().size()));
     }
     
     @Override
-    public Class<CountShardingRuleStatement> getType() {
-        return CountShardingRuleStatement.class;
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
+    }
+    
+    @Override
+    public String getType() {
+        return "SHARDING";
     }
 }
