@@ -29,7 +29,7 @@ public final class ConsistencyCheckJobConfigurationChangedProcessor implements J
     
     @Override
     public PipelineJob createJob(final ConsistencyCheckJobConfiguration jobConfig) {
-        return new ConsistencyCheckJob();
+        return new ConsistencyCheckJob(jobConfig.getJobId());
     }
     
     @Override

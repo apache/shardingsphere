@@ -52,8 +52,10 @@ public final class IncrementalTask implements PipelineTask {
     public Collection<CompletableFuture<?>> start() {
         taskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         Collection<CompletableFuture<?>> result = new LinkedList<>();
-        result.add(incrementalExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
-        importers.forEach(each -> result.add(incrementalExecuteEngine.submit(each, new TaskExecuteCallback(this))));
+        synchronized (incrementalExecuteEngine) {
+            result.add(incrementalExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
+            importers.forEach(each -> result.add(incrementalExecuteEngine.submit(each, new TaskExecuteCallback(this))));
+        }
         return result;
     }
     
