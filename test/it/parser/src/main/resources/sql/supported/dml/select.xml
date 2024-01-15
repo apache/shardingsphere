@@ -40,6 +40,7 @@
     <sql-case id="select_global_default_key_buffer_size" value="SELECT @@global.default.`key_buffer_size`" db-types="MySQL" />
     <sql-case id="select_with_exist_in" value="SELECT (+0 IN(0b111111111111111111111111111111111111111111111111111,rpad(1.0,2048,1),32767.1))" db-types="MySQL" />
     <sql-case id="select_constant_without_table" value="SELECT 1 as a" db-types="MySQL, PostgreSQL,openGauss, SQLServer" />
+    <sql-case id="select_with_zone_word" value="SELECT 1 as zone" db-types="MySQL" />
     <sql-case id="select_with_operator_ilike" value="SELECT id from t_order where name !~ '^pg_toast'" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_binary_operation_of_aggregation_expr" value="SELECT (count(*)+1) as a" db-types="MySQL" />
     <sql-case id="select_with_schema_func" value="SELECT schema(), database()" db-types="MySQL" />

@@ -522,6 +522,7 @@ identifierKeywordsUnambiguous
     | XML
     | YEAR
     | YEAR_MONTH
+    | ZONE
     ;
     
 identifierKeywordsAmbiguous1RolesAndLabels

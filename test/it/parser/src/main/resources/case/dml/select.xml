@@ -647,6 +647,16 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_with_zone_word" >
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="1" alias="zone" start-index="7" stop-index="15">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_operator_ilike" >
         <projections start-index="7" stop-index="8">
             <column-projection name="id" start-index="7" stop-index="8" />
