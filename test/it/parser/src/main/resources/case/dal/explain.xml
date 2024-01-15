@@ -1263,4 +1263,167 @@
             </from>
         </select>
     </describe>
+
+    <describe sql-case-id="explain1">
+        <select>
+            <projections start-index="24" stop-index="53">
+                <aggregation-projection type="SUM" alias="total_revenue" expression="SUM(amount_sold)" start-index="24" stop-index="39"/>
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="60" stop-index="64"/>
+            </from>
+            <where start-index="66" stop-index="114">
+                <expr>
+                    <between-expression start-index="72" stop-index="114">
+                        <left>
+                            <column name="time_id" start-index="72" stop-index="78"/>
+                        </left>
+                        <between-expr>
+                            <literal-expression value="01-JAN-00" start-index="88" stop-index="98"/>
+                        </between-expr>
+                        <and-expr>
+                            <literal-expression value="31-DEC-00" start-index="104" stop-index="114"/>
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain2">
+        <select>
+            <projections start-index="24" stop-index="49">
+                <column-projection name="cust_last_name" start-index="24" stop-index="39">
+                    <owner name="c" start-index="24" stop-index="24"/>
+                </column-projection>
+                <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="42" stop-index="49"/>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <simple-table name="sales" alias="s" start-index="56" stop-index="62"/>
+                    </left>
+                    <right>
+                        <simple-table name="customers" alias="c" start-index="65" stop-index="75"/>
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="77" stop-index="205">
+                <expr>
+                    <binary-operation-expression start-index="83" stop-index="205">
+                        <left>
+                            <binary-operation-expression start-index="83" stop-index="103">
+                                <left>
+                                    <column name="cust_id" start-index="83" stop-index="91">
+                                        <owner name="s" start-index="83" stop-index="83"/>
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="cust_id" start-index="95" stop-index="103">
+                                        <owner name="c" start-index="95" stop-index="95"/>
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <between-expression start-index="109" stop-index="205">
+                                <left>
+                                    <column name="time_id" start-index="109" stop-index="117">
+                                        <owner name="s" start-index="109" stop-index="109"/>
+                                    </column>
+                                </left>
+                                <between-expr>
+                                    <function function-name="TO_DATE" text="TO_DATE('01-JUL-1999', 'DD-MON-YYYY')" start-index="127" stop-index="163">
+                                        <parameter>
+                                            <literal-expression value="'01-JUL-1999'" start-index="135" stop-index="147"/>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="'DD-MON-YYYY'" start-index="150" stop-index="162"/>
+                                        </parameter>
+                                    </function>
+                                </between-expr>
+                                <and-expr>
+                                    <function function-name="TO_DATE" text="TO_DATE('01-OCT-1999', 'DD-MON-YYYY')" start-index="169" stop-index="205">
+                                        <parameter>
+                                            <literal-expression value="'01-OCT-1999'" start-index="177" stop-index="189"/>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="'DD-MON-YYYY'" start-index="192" stop-index="204"/>
+                                        </parameter>
+                                    </function>
+                                </and-expr>
+                            </between-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="cust_last_name" start-index="216" stop-index="231">
+                    <owner name="c" start-index="216" stop-index="216"/>
+                </column-item>
+            </group-by>
+            <having start-index="233" stop-index="253">
+                <expr>
+                    <binary-operation-expression start-index="240" stop-index="253">
+                        <left>
+                            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="240" stop-index="247"/>
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="100" start-index="251" stop-index="253"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </having>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain3">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="sales" alias="s" start-index="31" stop-index="37"/>
+            </from>
+            <where start-index="39" stop-index="72">
+                <expr>
+                    <column name="time_id" start-index="45" stop-index="51"/>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain4">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="31" stop-index="35"/>
+            </from>
+            <where start-index="37" stop-index="89">
+                <expr>
+                    <binary-operation-expression start-index="43" stop-index="89">
+                        <left>
+                            <column name="time_id" start-index="43" stop-index="49"/>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <function function-name="to_date" text="to_date('01-jan-2001', 'dd-mon-yyyy')" start-index="53" stop-index="89">
+                                <parameter>
+                                    <literal-expression value="'01-jan-2001'" start-index="61" stop-index="73"/>
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'dd-mon-yyyy'" start-index="76" stop-index="88"/>
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
 </sql-parser-test-cases>

@@ -21,7 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+
+import java.util.Collection;
 
 /**
  * Where segment.
@@ -36,4 +39,13 @@ public final class WhereSegment implements SQLSegment {
     private final int stopIndex;
     
     private final ExpressionSegment expr;
+
+    Collection<ColumnSegment> pivotInColumns;
+
+    public WhereSegment(int startIndex, int stopIndex, ExpressionSegment expr, Collection<ColumnSegment> pivotInColumns) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.expr = expr;
+        this.pivotInColumns = pivotInColumns;
+    }
 }

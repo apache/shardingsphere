@@ -527,7 +527,7 @@ pivotInClause
     ;
 
 pivotInClauseExpr
-    : (expr | exprList) (AS? alias)?
+    : (COLON_)? (expr | exprList) (AS? alias)?
     ;
 
 unpivotClause
@@ -595,7 +595,7 @@ inlineAnalyticView
     ;
 
 whereClause
-    : WHERE expr
+    : WHERE expr pivotInClause?
     ;
 
 hierarchicalQueryClause
