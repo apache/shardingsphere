@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mask.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -86,7 +85,7 @@ class ShowMaskRuleExecutorTest {
         return result;
     }
     
-    private RuleConfiguration getRuleConfiguration() {
+    private MaskRuleConfiguration getRuleConfiguration() {
         MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("user_id", "t_mask_user_id_md5");
         MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("t_mask", Collections.singleton(maskColumnRuleConfig));
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
