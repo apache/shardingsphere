@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.handler.query;
+package org.apache.shardingsphere.broadcast.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.distsql.handler.type.rql.count.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.shadow.distsql.statement.CountShadowRuleStatement;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Count shadow rule executor.
+ * Broadcast count result row builder.
  */
-public final class CountShadowRuleExecutor extends CountRQLExecutor<CountShadowRuleStatement, ShadowRule> {
+public final class BroadcastCountResultRowBuilder implements CountResultRowBuilder<BroadcastRule> {
     
-    public CountShadowRuleExecutor() {
-        super(ShadowRule.class);
+    @Override
+    public Collection<LocalDataQueryResultRow> generateRows(final BroadcastRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("broadcast_table", databaseName, rule.getConfiguration().getTables().size()));
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> generateRows(final ShadowRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("shadow", databaseName, rule.getDataSourceMapper().size()));
+    public Class<BroadcastRule> getRuleClass() {
+        return BroadcastRule.class;
     }
     
     @Override
-    public Class<CountShadowRuleStatement> getType() {
-        return CountShadowRuleStatement.class;
+    public String getType() {
+        return "BROADCAST";
     }
 }

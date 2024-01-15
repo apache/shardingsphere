@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
+package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.count.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.readwritesplitting.distsql.statement.CountReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Count readwrite-splitting rule executor.
+ * Mask count result row builder.
  */
-public final class CountReadwriteSplittingRuleExecutor extends CountRQLExecutor<CountReadwriteSplittingRuleStatement, ReadwriteSplittingRule> {
+public final class MaskCountResultRowBuilder implements CountResultRowBuilder<MaskRule> {
     
-    public CountReadwriteSplittingRuleExecutor() {
-        super(ReadwriteSplittingRule.class);
+    @Override
+    public Collection<LocalDataQueryResultRow> generateRows(final MaskRule rule, final String databaseName) {
+        return Collections.singleton(new LocalDataQueryResultRow("mask", databaseName, rule.getLogicTableMapper().getTableNames().size()));
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> generateRows(final ReadwriteSplittingRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("readwrite_splitting", databaseName, rule.getDataSourceMapper().size()));
+    public Class<MaskRule> getRuleClass() {
+        return MaskRule.class;
     }
     
     @Override
-    public Class<CountReadwriteSplittingRuleStatement> getType() {
-        return CountReadwriteSplittingRuleStatement.class;
+    public String getType() {
+        return "MASK";
     }
 }

@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.CountRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.count.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.single.distsql.statement.rql.CountSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Count single table executor.
+ * Single count result row builder.
  */
-public final class CountSingleTableExecutor extends CountRQLExecutor<CountSingleTableStatement, SingleRule> {
-    
-    public CountSingleTableExecutor() {
-        super(SingleRule.class);
-    }
+public final class SingleCountResultRowBuilder implements CountResultRowBuilder<SingleRule> {
     
     @Override
-    protected Collection<LocalDataQueryResultRow> generateRows(final SingleRule rule, final String databaseName) {
+    public Collection<LocalDataQueryResultRow> generateRows(final SingleRule rule, final String databaseName) {
         return Collections.singleton(new LocalDataQueryResultRow("single", databaseName, rule.getLogicTableMapper().getTableNames().size()));
     }
     
     @Override
-    public Class<CountSingleTableStatement> getType() {
-        return CountSingleTableStatement.class;
+    public Class<SingleRule> getRuleClass() {
+        return SingleRule.class;
+    }
+    
+    @Override
+    public String getType() {
+        return "SINGLE";
     }
 }
