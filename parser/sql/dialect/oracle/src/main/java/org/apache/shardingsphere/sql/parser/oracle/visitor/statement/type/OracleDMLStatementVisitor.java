@@ -1172,16 +1172,6 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         ASTNode segment = visit(ctx.expr());
-        if (null != ctx.pivotInClause()) {
-            Collection<ColumnSegment> pivotInColumns = new LinkedList<>();
-            ctx.pivotInClause().pivotInClauseExpr().forEach(each -> {
-                ExpressionSegment expr = (ExpressionSegment) visit(each.expr());
-                String columnName = null != each.alias() && null != each.alias().identifier() ? each.alias().identifier().IDENTIFIER_().getText() : expr.getText();
-                ColumnSegment columnSegment = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(columnName));
-                pivotInColumns.add(columnSegment);
-            });
-            return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment, pivotInColumns);
-        }
         return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment);
     }
     

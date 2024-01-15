@@ -1382,7 +1382,7 @@
         </select>
     </describe>
 
-    <describe sql-case-id="explain1">
+    <describe sql-case-id="explain_for_select_where_between">
         <select>
             <projections start-index="24" stop-index="53">
                 <aggregation-projection type="SUM" alias="total_revenue" expression="SUM(amount_sold)" start-index="24" stop-index="39"/>
@@ -1408,7 +1408,7 @@
         </select>
     </describe>
 
-    <describe sql-case-id="explain2">
+    <describe sql-case-id="explain_for_select_where_between_groupby_having">
         <select>
             <projections start-index="24" stop-index="49">
                 <column-projection name="cust_last_name" start-index="24" stop-index="39">
@@ -1498,7 +1498,7 @@
         </select>
     </describe>
 
-    <describe sql-case-id="explain3">
+    <describe sql-case-id="explain_for_select_alias_where_colon">
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24"/>
@@ -1514,7 +1514,7 @@
         </select>
     </describe>
 
-    <describe sql-case-id="explain4">
+    <describe sql-case-id="explain_for_select_where_todate_function">
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24"/>
@@ -1545,7 +1545,7 @@
         </select>
     </describe>
 
-    <describe sql-case-id="explain5">
+    <describe sql-case-id="explain_for_select_where_colon">
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24"/>

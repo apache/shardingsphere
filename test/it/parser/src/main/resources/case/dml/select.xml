@@ -8174,4 +8174,17 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_from_dbms_table">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <collection-table>
+                <column name="display" start-index="20" stop-index="37">
+                    <owner name="dbms_xplan" start-index="20" stop-index="29"/>
+                </column>
+            </collection-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

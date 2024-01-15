@@ -82,13 +82,13 @@
     <sql-case id="explain_for_select_emp_comp" value="EXPLAIN PLAN FOR SELECT * FROM emp_comp;" db-types="Oracle"/>
     <sql-case id="explain_for_select_with_comments" value="EXPLAIN PLAN FOR select /*+ result_cache */ deptno, avg(sal) from emp group by deptno;" db-types="Oracle"/>
     <sql-case id="explain_for_select_job_history" value="EXPLAIN PLAN FOR SELECT * FROM v_emp_job_history;" db-types="Oracle" />
-    <sql-case id="explain1" value="EXPLAIN PLAN FOR SELECT SUM(amount_sold) total_revenue FROM sales WHERE time_id BETWEEN '01-JAN-00' AND '31-DEC-00';" db-types="Oracle"/>
-    <sql-case id="explain2" value="EXPLAIN PLAN FOR SELECT c.cust_last_name, COUNT(*) FROM sales s, customers c WHERE s.cust_id = c.cust_id AND s.time_id BETWEEN TO_DATE('01-JUL-1999', 'DD-MON-YYYY') AND TO_DATE('01-OCT-1999', 'DD-MON-YYYY') GROUP BY c.cust_last_name HAVING COUNT(*) > 100;" db-types="Oracle"/>
-    <sql-case id="explain3" value="explain plan for select * from sales s where time_id in ( :a, :b, :c, :d);" db-types="Oracle"/>
-    <sql-case id="explain4" value="explain plan for select * from sales where time_id = to_date('01-jan-2001', 'dd-mon-yyyy');" db-types="Oracle"/>
-    <sql-case id="explain5" value="explain plan for select * from sales where time_id in (:a, :b, :c, :d);" db-types="Oracle"/>
     <sql-case id="explain_for_select_emp_comp_where" value="EXPLAIN PLAN FOR SELECT * FROM emp_comp WHERE department_id = 20;" db-types="Oracle" />
     <sql-case id="explain_for_select_emp_range_where" value="EXPLAIN PLAN FOR SELECT * FROM emp_range WHERE hire_date &lt; TO_DATE('1-JAN-1992','DD-MON-YYYY');" db-types="Oracle" />
     <sql-case id="explain_for_select_where_and_function" value="EXPLAIN PLAN FOR SELECT * FROM emp_range WHERE hire_date >= TO_DATE('1-JAN-1996','DD-MON-YYYY');" db-types="Oracle" />
     <sql-case id="explain_for_select_xml_query" value="EXPLAIN PLAN FOR SELECT XMLQuery('/PurchaseOrder/LineItems/LineItem' PASSING OBJECT_VALUE RETURNING CONTENT) FROM po_clob WHERE XMLExists('/PurchaseOrder/LineItems/LineItem [ora:contains(Description, &quot;Picnic&quot;) &gt; 0]' PASSING OBJECT_VALUE) AND XMLExists('/PurchaseOrder[User=&quot;SBELL&quot;]' PASSING OBJECT_VALUE);" db-types="Oracle" />
+    <sql-case id="explain_for_select_where_between" value="EXPLAIN PLAN FOR SELECT SUM(amount_sold) total_revenue FROM sales WHERE time_id BETWEEN '01-JAN-00' AND '31-DEC-00';" db-types="Oracle"/>
+    <sql-case id="explain_for_select_where_between_groupby_having" value="EXPLAIN PLAN FOR SELECT c.cust_last_name, COUNT(*) FROM sales s, customers c WHERE s.cust_id = c.cust_id AND s.time_id BETWEEN TO_DATE('01-JUL-1999', 'DD-MON-YYYY') AND TO_DATE('01-OCT-1999', 'DD-MON-YYYY') GROUP BY c.cust_last_name HAVING COUNT(*) > 100;" db-types="Oracle"/>
+    <sql-case id="explain_for_select_alias_where_colon" value="explain plan for select * from sales s where time_id in ( :a, :b, :c, :d);" db-types="Oracle"/>
+    <sql-case id="explain_for_select_where_todate_function" value="explain plan for select * from sales where time_id = to_date('01-jan-2001', 'dd-mon-yyyy');" db-types="Oracle"/>
+    <sql-case id="explain_for_select_where_colon" value="explain plan for select * from sales where time_id in (:a, :b, :c, :d);" db-types="Oracle"/>
 </sql-cases>
