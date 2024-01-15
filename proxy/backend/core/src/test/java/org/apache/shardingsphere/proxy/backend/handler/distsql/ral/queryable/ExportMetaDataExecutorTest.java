@@ -129,7 +129,7 @@ class ExportMetaDataExecutorTest {
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportMetaDataStatement sqlStatement = new ExportMetaDataStatement(null);
-        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
+        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(sqlStatement, contextManager.getMetaDataContexts().getMetaData());
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertMetaData(row.getCell(3), EXPECTED_EMPTY_METADATA_VALUE);
@@ -156,7 +156,7 @@ class ExportMetaDataExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("normal_db"));
         when(ProxyContext.getInstance().getDatabase("normal_db")).thenReturn(database);
-        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), new ExportMetaDataStatement(null));
+        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(new ExportMetaDataStatement(null), contextManager.getMetaDataContexts().getMetaData());
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertMetaData(row.getCell(3), EXPECTED_NOT_EMPTY_METADATA_VALUE);

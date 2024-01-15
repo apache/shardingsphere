@@ -30,7 +30,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.Mul
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertExecClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertColumnsClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertValuesClauseAssert;
@@ -80,6 +82,7 @@ public final class InsertStatementAssert {
         assertMultiTableConditionalIntoClause(assertContext, actual, expected);
         assertReturningClause(assertContext, actual, expected);
         assertInsertExecClause(assertContext, actual, expected);
+        assertWithTableHintClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
@@ -206,6 +209,16 @@ public final class InsertStatementAssert {
         } else {
             assertTrue(execSegment.isPresent(), assertContext.getText("Actual exec segment should exist."));
             InsertExecClauseAssert.assertIs(assertContext, execSegment.get(), expected.getExecClause());
+        }
+    }
+    
+    private static void assertWithTableHintClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        Optional<WithTableHintSegment> withTableHintSegment = InsertStatementHandler.getWithTableHintSegment(actual);
+        if (null == expected.getExpectedWithTableHintClause()) {
+            assertFalse(withTableHintSegment.isPresent(), assertContext.getText("Actual with table hint should not exist."));
+        } else {
+            assertTrue(withTableHintSegment.isPresent(), assertContext.getText("Actual with table hint segment should exist."));
+            WithTableHintClauseAssert.assertIs(assertContext, withTableHintSegment.get(), expected.getExpectedWithTableHintClause());
         }
     }
 }

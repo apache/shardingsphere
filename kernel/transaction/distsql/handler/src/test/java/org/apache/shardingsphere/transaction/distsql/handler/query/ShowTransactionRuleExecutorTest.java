@@ -49,7 +49,7 @@ class ShowTransactionRuleExecutorTest {
         RuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.XA.name(), "Atomikos",
                 PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class), ruleMetaData, new ConfigurationProperties(new Properties()));
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTransactionRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowTransactionRuleStatement.class), metaData);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -65,7 +65,7 @@ class ShowTransactionRuleExecutorTest {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
         RuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.LOCAL.name(), null, new Properties());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class), ruleMetaData, new ConfigurationProperties(new Properties()));
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTransactionRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowTransactionRuleStatement.class), metaData);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

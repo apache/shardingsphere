@@ -32,14 +32,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class CDCResponseUtilsTest {
     
     @Test
-    public void assertSucceedWhenResponseNotSet() {
+    void assertSucceedWhenResponseNotSet() {
         CDCResponse actualResponse = CDCResponseUtils.succeed("request_id_1");
         assertThat(actualResponse.getStatus(), is(CDCResponse.Status.SUCCEED));
         assertThat(actualResponse.getRequestId(), is("request_id_1"));
     }
     
     @Test
-    public void assertSucceedWhenResponseCaseServerGreetingResult() {
+    void assertSucceedWhenResponseCaseServerGreetingResult() {
         Message msg = ServerGreetingResult.newBuilder().build();
         CDCResponse actualResponse = CDCResponseUtils.succeed("request_id_1", CDCResponse.ResponseCase.SERVER_GREETING_RESULT, msg);
         assertThat(actualResponse.getStatus(), is(CDCResponse.Status.SUCCEED));
@@ -48,7 +48,7 @@ class CDCResponseUtilsTest {
     }
     
     @Test
-    public void assertSucceedWhenResponseCaseDataRecordResult() {
+    void assertSucceedWhenResponseCaseDataRecordResult() {
         Message msg = DataRecordResult.newBuilder().build();
         CDCResponse actualResponse = CDCResponseUtils.succeed("request_id_1", CDCResponse.ResponseCase.DATA_RECORD_RESULT, msg);
         assertThat(actualResponse.getStatus(), is(CDCResponse.Status.SUCCEED));
@@ -57,7 +57,7 @@ class CDCResponseUtilsTest {
     }
     
     @Test
-    public void assertSucceedWhenResponseCaseStreamDataResult() {
+    void assertSucceedWhenResponseCaseStreamDataResult() {
         Message msg = StreamDataResult.newBuilder().build();
         CDCResponse actualResponse = CDCResponseUtils.succeed("request_id_1", CDCResponse.ResponseCase.STREAM_DATA_RESULT, msg);
         assertThat(actualResponse.getStatus(), is(CDCResponse.Status.SUCCEED));
@@ -66,7 +66,7 @@ class CDCResponseUtilsTest {
     }
     
     @Test
-    public void assertFailed() {
+    void assertFailed() {
         CDCResponse actualResponse = CDCResponseUtils.failed("request_id_1", XOpenSQLState.GENERAL_ERROR.getValue(), "Error");
         assertThat(actualResponse.getStatus(), is(CDCResponse.Status.FAILED));
         assertThat(actualResponse.getRequestId(), is("request_id_1"));

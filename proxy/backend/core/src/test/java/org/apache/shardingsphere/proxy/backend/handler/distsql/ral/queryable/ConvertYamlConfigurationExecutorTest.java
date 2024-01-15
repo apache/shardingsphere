@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -37,6 +38,7 @@ import java.util.Objects;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 class ConvertYamlConfigurationExecutorTest {
     
@@ -84,7 +86,7 @@ class ConvertYamlConfigurationExecutorTest {
     private void assertExecute(final String configFilePath, final String expectedFilePath) {
         ConvertYamlConfigurationExecutor executor = new ConvertYamlConfigurationExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(
-                new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()));
+                new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()), mock(ShardingSphereMetaData.class));
         assertRowData(actual, expectedFilePath);
     }
     

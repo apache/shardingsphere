@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import lombok.SneakyThrows;
 import org.apache.groovy.util.Maps;
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;

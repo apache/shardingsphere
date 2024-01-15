@@ -726,4 +726,102 @@
             <expression-item expression="CASE WHEN order_id > 0 AND order_id &lt;= 10 THEN '(0,10]' WHEN order_id > 10 THEN '(10,+∞)' ELSE '' END" start-index="149" stop-index="249" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_with_event_group_by_with_having_order_by">
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="syscolumns" alias="c" start-index="66" stop-index="85">
+                        <owner name="sys" start-index="66" stop-index="68" />
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="sysobjects" alias="o" start-index="92" stop-index="111">
+                        <owner name="sys" start-index="92" stop-index="94" />
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression text="o.id = c.id" start-index="116" stop-index="126">
+                        <left>
+                            <column name="id" start-index="116" stop-index="119">
+                                <owner name="o" start-index="116" stop-index="116" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="id" start-index="123" stop-index="126">
+                                <owner name="c" start-index="123" stop-index="123" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="59">
+            <column-projection name="name" start-index="7" stop-index="12">
+                <owner name="c" start-index="7" stop-index="7" />
+            </column-projection>
+            <aggregation-projection expression="Count(*)" type="COUNT" alias="Count-Per-Column-Repeated-Name" start-index="15" stop-index="22" />
+        </projections>
+        <where start-index="128" stop-index="171">
+            <expr>
+                <binary-operation-expression text="o.type = 'V' AND c.name like '%event%'" start-index="134" stop-index="171">
+                    <left>
+                        <binary-operation-expression text="o.type = 'V'" start-index="134" stop-index="145">
+                            <left>
+                                <column name="type" start-index="134" stop-index="139">
+                                    <owner name="o" start-index="134" stop-index="134" />
+                                </column>
+                            </left>
+                            <right>
+                                <literal-expression value="V" start-index="143" stop-index="145" />
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <binary-operation-expression text="c.name like '%event%'" start-index="151" stop-index="171">
+                            <left>
+                                <column name="name" start-index="151" stop-index="156">
+                                    <owner name="c" start-index="151" stop-index="151"/>
+                                </column>
+                            </left>
+                            <right>
+                                <list-expression start-index="163" stop-index="171">
+                                    <items>
+                                        <literal-expression value="%event%" start-index="163" stop-index="171"/>
+                                    </items>
+                                </list-expression>
+                            </right>
+                            <operator>LIKE</operator>
+                        </binary-operation-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by>
+            <column-item name="name" order-direction="ASC" start-index="182" stop-index="187">
+                <owner name="c" start-index="182" stop-index="182" />
+            </column-item>
+        </group-by>
+        <having start-index="189" stop-index="208">
+            <expr>
+                <binary-operation-expression text="Count(*) >= 3" start-index="196" stop-index="208">
+                    <left>
+                        <aggregation-projection expression="Count(*)" type="COUNT" start-index="196" stop-index="203" />
+                    </left>
+                    <right>
+                        <literal-expression value="3" start-index="208" stop-index="208" />
+                    </right>
+                    <operator>&gt;=</operator>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <column-item name="name" order-direction="ASC" start-index="219" stop-index="224">
+                <owner name="c" start-index="219" stop-index="219" />
+            </column-item>
+        </order-by>
+    </select>
 </sql-parser-test-cases>

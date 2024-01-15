@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
