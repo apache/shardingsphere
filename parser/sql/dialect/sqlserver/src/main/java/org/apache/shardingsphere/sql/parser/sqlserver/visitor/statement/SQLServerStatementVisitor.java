@@ -698,8 +698,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public final ASTNode visitOpenJsonFunction(final OpenJsonFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENJSON().getText(), getOriginalText(ctx));
-        for (ExprContext exprContext : ctx.expr()) {
-            result.getParameters().add((ExpressionSegment) visit(exprContext));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
         }
         return result;
     }
