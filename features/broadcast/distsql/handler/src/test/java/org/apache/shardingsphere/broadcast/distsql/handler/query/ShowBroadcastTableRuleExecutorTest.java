@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,8 +52,9 @@ class ShowBroadcastTableRuleExecutorTest {
     }
     
     @Test
-    void assertGetRowDataWithoutMaskRule() {
+    void assertGetRowDataWithoutBroadcastRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findSingleRule(BroadcastRule.class)).thenReturn(Optional.empty());
         Collection<LocalDataQueryResultRow> actual = new ShowBroadcastTableRuleExecutor().getRows(database, mock(ShowBroadcastTableRulesStatement.class));
         assertTrue(actual.isEmpty());
     }
