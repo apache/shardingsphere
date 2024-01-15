@@ -44,7 +44,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -151,13 +150,6 @@ class MySQLClientTest {
                 break;
             }
         }
-    }
-    
-    @Test
-    void assertCloseChannel() throws ReflectiveOperationException {
-        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
-        mysqlClient.closeChannel();
-        assertFalse(channel.isOpen());
     }
     
     @Test

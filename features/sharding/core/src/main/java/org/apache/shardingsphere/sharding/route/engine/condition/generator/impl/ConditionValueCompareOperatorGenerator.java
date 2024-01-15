@@ -65,10 +65,10 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         }
         ExpressionSegment valueExpression = predicate.getLeft() instanceof ColumnSegment ? predicate.getRight() : predicate.getLeft();
         ConditionValue conditionValue = new ConditionValue(valueExpression, params);
-        Optional<Comparable<?>> value = conditionValue.getValue();
         if (conditionValue.isNull()) {
             return generate(null, column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
         }
+        Optional<Comparable<?>> value = conditionValue.getValue();
         if (value.isPresent()) {
             return generate(value.get(), column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
         }

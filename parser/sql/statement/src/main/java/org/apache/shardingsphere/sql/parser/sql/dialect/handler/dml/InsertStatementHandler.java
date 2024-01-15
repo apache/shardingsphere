@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.Mul
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
@@ -320,5 +321,18 @@ public final class InsertStatementHandler implements SQLStatementHandler {
         if (insertStatement instanceof SQLServerInsertStatement) {
             ((SQLServerInsertStatement) insertStatement).setExecSegment(execSegment);
         }
+    }
+    
+    /**
+     * Get with table hint segment.
+     *
+     * @param insertStatement insert statement
+     * @return with table hint segment
+     */
+    public static Optional<WithTableHintSegment> getWithTableHintSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof SQLServerInsertStatement) {
+            return ((SQLServerInsertStatement) insertStatement).getWithTableHintSegment();
+        }
+        return Optional.empty();
     }
 }

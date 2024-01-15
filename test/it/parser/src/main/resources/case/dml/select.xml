@@ -2867,6 +2867,18 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_distinct_with_brackets" >
+        <from>
+            <simple-table name="t_order_item" start-index="31" stop-index="42" />
+        </from>
+        <projections start-index="16" stop-index="24" distinct-row="true">
+            <column-projection name="item_id" start-index="17" stop-index="23">
+                <parentheses left = "true" start-index = "16" stop-index = "16" />
+                <parentheses left = "false" start-index = "24" stop-index = "24" />
+            </column-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_unique_with_single_column_without_order_by" >
         <from>
             <simple-table name="t_order_item" start-index="27" stop-index="38" />
@@ -3885,7 +3897,7 @@
                             <function function-name="GETDATE" text="GETDATE()" start-index="25" stop-index="33" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="0" start-index="7" stop-index="37" />
+                            <literal-expression value="0" start-index="36" stop-index="36" />
                         </parameter>
                     </function>
                 </expr>
@@ -3929,7 +3941,7 @@
                             <literal-expression value="Name" start-index="26" stop-index="31" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="0" start-index="7" stop-index="35" />
+                            <literal-expression value="0" start-index="34" stop-index="34" />
                         </parameter>
                     </function>
                 </expr>
@@ -3966,7 +3978,7 @@
                             <literal-expression value="&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;" start-index="20" stop-index="61" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="1" start-index="7" stop-index="65" />
+                            <literal-expression value="1" start-index="64" stop-index="64" />
                         </parameter>
                     </function>
                 </expr>
@@ -4000,7 +4012,7 @@
                             <function function-name="GETDATE" text="GETDATE()" start-index="109" stop-index="117" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="126" start-index="87" stop-index="123" />
+                            <literal-expression value="126" start-index="120" stop-index="122" />
                         </parameter>
                     </function>
                 </expr>
@@ -4037,7 +4049,7 @@
                             <literal-expression value="2006-04-25T15:50:59.997" start-index="129" stop-index="153" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="126" start-index="111" stop-index="159" />
+                            <literal-expression value="126" start-index="156" stop-index="158" />
                         </parameter>
                     </function>
                 </expr>
@@ -4057,7 +4069,7 @@
                             <common-expression literal-text="0x4E616d65" start-index="24" stop-index="33" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="0" start-index="7" stop-index="37" />
+                            <literal-expression value="0" start-index="36" stop-index="36" />
                         </parameter>
                     </function>
                 </expr>
@@ -4077,7 +4089,7 @@
                             <common-expression literal-text="0x4E616d65" start-index="24" stop-index="33" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="1" start-index="7" stop-index="37" />
+                            <literal-expression value="1" start-index="36" stop-index="36" />
                         </parameter>
                     </function>
                 </expr>
@@ -4097,7 +4109,7 @@
                             <literal-expression value="0x4E616D65" start-index="26" stop-index="37" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="1" start-index="7" stop-index="41" />
+                            <literal-expression value="1" start-index="40" stop-index="40" />
                         </parameter>
                     </function>
                 </expr>
@@ -6185,7 +6197,18 @@
             <simple-table name="DUAL" start-index="19" stop-index="22" />
         </from>
     </select>
-    
+
+    <select sql-case-id="select_with_chinese_whitespace">
+        <projections start-index="7" stop-index="12" >
+            <expression-projection text="1" start-index="7" stop-index="7" />
+            <expression-projection text="2" start-index="10" stop-index="10" />
+            <expression-projection text="3" start-index="12" stop-index="12" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="19" stop-index="22" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_keyword_system" parameters="0">
         <from>
             <simple-table name="vtx_project" start-index="14" stop-index="24" />
@@ -7989,5 +8012,166 @@
             <column-projection name="create_date" start-index="173" stop-index="183"/>
             <column-projection name="modify_date" start-index="185" stop-index="195"/>
         </projections>
+    </select>
+
+    <select sql-case-id="select_with_substring_function">
+        <projections start-index="7" stop-index="36">
+            <column-projection name="ProductID" start-index="7" stop-index="15"/>
+            <column-projection name="Name" start-index="18" stop-index="21"/>
+            <column-projection name="ProductNumber" start-index="24" stop-index="36"/>
+        </projections>
+        <from start-index="43" stop-index="64">
+            <simple-table name="Product" start-index="43" stop-index="64" start-delimiter="[" end-delimiter="]">
+                <owner name="Production" start-index="43" stop-index="54" start-delimiter="[" end-delimiter="]"/>
+            </simple-table>
+        </from>
+        <where start-index="66" stop-index="110">
+            <expr>
+                <binary-operation-expression start-index="72" stop-index="110">
+                    <left>
+                        <function function-name="SUBSTRING" text="SUBSTRING(ProductNumber, 0, 4)"  start-index="72" stop-index="101">
+                            <parameter>
+                                <column name="ProductNumber" start-index="82" stop-index="94"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="0" start-index="97" stop-index="97"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="4" start-index="100" stop-index="100"/>
+                            </parameter>
+                        </function>
+                    </left>
+                    <right>
+                        <literal-expression value="HN-" start-index="106" stop-index="110"/>
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_not_distinct_from">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="29">
+            <simple-table name="#SampleTempTable" start-index="14" stop-index="29"/>
+        </from>
+        <where start-index="31" stop-index="64">
+            <expr>
+                <binary-operation-expression start-index="37" stop-index="64">
+                    <left>
+                        <column name="id" start-index="37" stop-index="38"/>
+                    </left>
+                    <right>
+                        <literal-expression start-index="61" stop-index="64" value="null"/>
+                    </right>
+                    <operator>ISNOTDISTINCTFROM</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_distinct_from">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="29">
+            <simple-table name="#SampleTempTable" start-index="14" stop-index="29"/>
+        </from>
+        <where start-index="31" stop-index="58">
+            <expr>
+                <binary-operation-expression start-index="37" stop-index="58">
+                    <left>
+                        <column name="id" start-index="37" stop-index="38"/>
+                    </left>
+                    <right>
+                        <literal-expression value="17" start-index="57" stop-index="58"/>
+                    </right>
+                    <operator>ISDISTINCTFROM</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_database_files">
+        <from start-index="108" stop-index="125">
+            <simple-table name="database_files" start-index="108" stop-index="125">
+                <owner name="sys" start-index="108" stop-index="110"/>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="101">
+            <column-projection name="name" start-index="7" stop-index="10" />
+            <expression-projection text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0" alias="AvailableSpaceInMB" start-index="13" stop-index="101">
+                <expr>
+                    <binary-operation-expression text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0" start-index="13" stop-index="79">
+                        <left>
+                            <binary-operation-expression text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="13" stop-index="71">
+                                <left>
+                                    <column name="size" start-index="13" stop-index="16" />
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <binary-operation-expression text="128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="20" stop-index="71">
+                                        <left>
+                                            <literal-expression value="128.0" start-index="20" stop-index="24" />
+                                        </left>
+                                        <operator>-</operator>
+                                        <right>
+                                            <function function-name="CAST" text="CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="28" stop-index="71">
+                                                <parameter>
+                                                    <data-type value="INT" start-index="68" stop-index="70"/>
+                                                </parameter>
+                                            </function>
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <literal-expression value="128.0" start-index="75" stop-index="79" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_contains_function">
+        <projections start-index="7" stop-index="16">
+            <column-projection name="product_id" start-index="7" stop-index="16"/>
+        </projections>
+        <from start-index="23" stop-index="30">
+            <simple-table name="products" start-index="23" stop-index="30"/>
+        </from>
+        <where start-index="32" stop-index="157">
+            <expr>
+                <binary-operation-expression start-index="38" stop-index="157">
+                    <left>
+                        <function text="CONTAINS(product_description, '&quot;Snap Happy 100EZ&quot; OR FORMSOF(THESAURUS,&quot;Snap Happy&quot;) OR &quot;100EZ&quot;')" function-name="CONTAINS" start-index="38" stop-index="134">
+                            <parameter>
+                                <column name="product_description" start-index="47" stop-index="65"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="&quot;Snap Happy 100EZ&quot; OR FORMSOF(THESAURUS,&quot;Snap Happy&quot;) OR &quot;100EZ&quot;" start-index="68" stop-index="133"/>
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="140" stop-index="157">
+                            <left>
+                                <column name="product_cost" start-index="140" stop-index="151"/>
+                            </left>
+                            <right>
+                                <literal-expression value="200" start-index="155" stop-index="157"/>
+                            </right>
+                            <operator>&lt;</operator>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 </sql-parser-test-cases>

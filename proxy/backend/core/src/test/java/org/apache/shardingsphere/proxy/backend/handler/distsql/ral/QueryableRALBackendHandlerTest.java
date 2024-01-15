@@ -61,9 +61,8 @@ class QueryableRALBackendHandlerTest {
     
     @Test
     void assertExecuteWithNoDatabase() {
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getDatabaseName()).thenReturn(null);
-        assertThrows(NoDatabaseSelectedException.class, () -> new QueryableRALBackendHandler<>(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute());
+        when(ProxyContext.getInstance().getDatabase(null)).thenThrow(NoDatabaseSelectedException.class);
+        assertThrows(NoDatabaseSelectedException.class, () -> new QueryableRALBackendHandler<>(mock(ExportDatabaseConfigurationStatement.class), mock(ConnectionSession.class)).execute());
     }
     
     @Test
@@ -72,6 +71,7 @@ class QueryableRALBackendHandlerTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), metaData);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("unknown");
+        when(ProxyContext.getInstance().getDatabase("unknown")).thenThrow(UnknownDatabaseException.class);
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(UnknownDatabaseException.class, () -> new QueryableRALBackendHandler<>(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute());
@@ -88,7 +88,6 @@ class QueryableRALBackendHandlerTest {
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_db")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
-        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         assertDoesNotThrow(() -> new QueryableRALBackendHandler<>(createSqlStatement(), mock(ConnectionSession.class)).execute());
     }

@@ -120,7 +120,7 @@ unreservedWord
     | DATA_RETENTION | TEMPORAL_HISTORY_RETENTION | EDITION | MIXED_PAGE_ALLOCATION | DISABLED | ALLOWED | HADR | MULTI_USER | RESTRICTED_USER | SINGLE_USER | OFFLINE | EMERGENCY | SUSPEND | DATE_CORRELATION_OPTIMIZATION
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
-    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS
+    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH
     ;
 
 databaseName
@@ -221,11 +221,12 @@ primaryKey
 
 // TODO comb expr
 expr
-    : expr andOperator expr
+    : booleanPrimary
+    | expr andOperator expr
     | expr orOperator expr
+    | expr distinctFrom expr
     | notOperator expr
     | LP_ expr RP_
-    | booleanPrimary
     ;
 
 andOperator
@@ -234,6 +235,10 @@ andOperator
 
 orOperator
     : OR | OR_
+    ;
+
+distinctFrom
+    : IS NOT? DISTINCT FROM
     ;
 
 notOperator
@@ -306,7 +311,7 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction | convertFunction
+    : castFunction  | charFunction | convertFunction | openJsonFunction
     ;
 
 castFunction
@@ -319,6 +324,18 @@ convertFunction
 
 charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
+    ;
+
+openJsonFunction
+    : OPENJSON LP_ expr (COMMA_ expr)? RP_ openJsonWithclause?
+    ;
+
+openJsonWithclause
+    : WITH LP_  jsonColumnDefinition (COMMA_ jsonColumnDefinition)* RP_
+    ;
+
+jsonColumnDefinition
+    : columnName dataType expr? (AS JSON)?
     ;
 
 regularFunction
@@ -523,4 +540,26 @@ entityType
 
 ifExists
     : IF EXISTS
+    ;
+
+tableHintLimited
+    : KEEPIDENTITY
+    | KEEPDEFAULTS
+    | HOLDLOCK
+    | IGNORE_CONSTRAINTS
+    | IGNORE_TRIGGERS
+    | NOLOCK
+    | NOWAIT
+    | PAGLOCK
+    | READCOMMITTED
+    | READCOMMITTEDLOCK
+    | READPAST
+    | REPEATABLEREAD
+    | ROWLOCK
+    | SERIALIZABLE
+    | SNAPSHOT
+    | TABLOCK
+    | TABLOCKX
+    | UPDLOCK
+    | XLOCK
     ;

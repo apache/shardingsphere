@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
@@ -32,10 +32,10 @@ import java.util.Collections;
 /**
  * Show SQL translator rule executor.
  */
-public final class ShowSQLTranslatorRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowSQLTranslatorRuleStatement> {
+public final class ShowSQLTranslatorRuleExecutor implements QueryableRALExecutor<ShowSQLTranslatorRuleStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowSQLTranslatorRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLTranslatorRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
         SQLTranslatorRule rule = metaData.getGlobalRuleMetaData().getSingleRule(SQLTranslatorRule.class);
         return buildData(rule.getConfiguration());
     }

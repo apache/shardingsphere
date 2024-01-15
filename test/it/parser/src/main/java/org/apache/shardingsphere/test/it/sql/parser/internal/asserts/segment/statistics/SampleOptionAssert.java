@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.statistics;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.SampleOptionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
@@ -30,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * Sample option assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SampleOptionAssert {
     
     /**

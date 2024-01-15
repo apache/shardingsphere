@@ -196,6 +196,7 @@
     <sql-case id="select_constant_with_nested_type_cast" value="SELECT CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" db-types="PostgreSQL,openGauss"  />
     <sql-case id="select_projection_with_parameter" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Oracle"  />
     <sql-case id="select_with_chinese_comma" value="SELECT 1， 2，3 FROM DUAL" db-types="Oracle"  />
+    <sql-case id="select_with_chinese_whitespace" value="SELECT 1， 2，3 FROM　DUAL" db-types="Oracle"  />
     <sql-case id="select_with_keyword_system" value="SELECT * FROM vtx_project WHERE system = ?" />
     <sql-case id="select_with_keyword_groups_and_rank" value="SELECT t.groups, t.rank FROM t_order t" db-types="MySQL" />
     <sql-case id="select_with_format_function" value="SELECT wi.code.format(null,'PURE_IDENTITY') as PURE_IDENTITY FROM warehouse_info wi;" db-types="Oracle" />
@@ -242,4 +243,9 @@
     <sql-case id="select_with_top_with_ties" value="SELECT TOP 10 WITH TIES alias1.columnName from TableName alias1" db-types="SQLServer"/>
     <sql-case id="select_with_object_id_function" value="SELECT OBJECT_NAME(object_id) AS referencing_object_name,COALESCE(COL_NAME(object_id, column_id), '(n/a)') AS referencing_column_name,* FROM sys.sql_dependencies WHERE referenced_major_id = OBJECT_ID('&lt;schema_name.table_name&gt;') ORDER BY OBJECT_NAME(object_id), COL_NAME(object_id, column_id)" db-types="SQLServer"/>
     <sql-case id="select_from_sys_views" value="SELECT name AS view_name,SCHEMA_NAME(schema_id) AS schema_name,OBJECTPROPERTYEX(object_id,'IsIndexed') AS IsIndexed,OBJECTPROPERTYEX(object_id,'IsIndexable') AS IsIndexable,create_date,modify_date FROM sys.views" db-types="SQLServer"/>
+    <sql-case id="select_with_substring_function" value="SELECT ProductID, Name, ProductNumber FROM [Production].[Product] WHERE SUBSTRING(ProductNumber, 0, 4) =  'HN-'" db-types="SQLServer"/>
+    <sql-case id="select_with_not_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS NOT DISTINCT FROM NULL" db-types="SQLServer"/>
+    <sql-case id="select_with_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS DISTINCT FROM 17;" db-types="SQLServer"/>
+    <sql-case id="select_with_database_files" value="SELECT name, size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0 AS AvailableSpaceInMB FROM sys.database_files" db-types="SQLServer"/>
+    <sql-case id="select_with_contains_function" value="SELECT product_id FROM products WHERE CONTAINS(product_description, '&quot;Snap Happy 100EZ&quot; OR FORMSOF(THESAURUS,&quot;Snap Happy&quot;) OR &quot;100EZ&quot;') AND product_cost &lt; 200" db-types="SQLServer"/>
 </sql-cases>

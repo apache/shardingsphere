@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskAlgorithmImplementationsStatement;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +36,7 @@ class ShowMaskAlgorithmImplementationsExecutorTest {
     @Test
     void assertGetRowData() {
         QueryableRALExecutor<ShowMaskAlgorithmImplementationsStatement> executor = new ShowMaskAlgorithmImplementationsExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowMaskAlgorithmImplementationsStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowMaskAlgorithmImplementationsStatement.class), mock(ShardingSphereMetaData.class));
         assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

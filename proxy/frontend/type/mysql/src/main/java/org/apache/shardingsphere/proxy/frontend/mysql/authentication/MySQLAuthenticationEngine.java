@@ -119,9 +119,10 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             }
             throw new HandshakeException();
         }
-        String database = handshakeResponsePacket.getDatabase();
         authResponse = handshakeResponsePacket.getAuthResponse();
+        setMultiStatementsOption(context, handshakeResponsePacket);
         setCharacterSet(context, handshakeResponsePacket);
+        String database = handshakeResponsePacket.getDatabase();
         if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().databaseExists(database)) {
             throw new UnknownDatabaseException(database);
         }
@@ -135,6 +136,10 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             return AuthenticationResultBuilder.continued(username, hostname, database);
         }
         return AuthenticationResultBuilder.finished(username, hostname, database);
+    }
+    
+    private void setMultiStatementsOption(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {
+        context.channel().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).set(handshakeResponsePacket.getMultiStatementsOption());
     }
     
     private void setCharacterSet(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {

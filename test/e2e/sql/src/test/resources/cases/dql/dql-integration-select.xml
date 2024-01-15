@@ -162,24 +162,24 @@
     <!--        <assertion parameters="0:int" expected-data-source-name="shadow_dataset" />-->
     <!--    </test-case>-->
     
-    <test-case sql="SELECT * FROM t_order_item_join_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_item_join_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_subquery_view WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="1201:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order_subquery_view WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="1201:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_aggregation_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_aggregation_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_aggregation_view WHERE max_price = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_aggregation_view WHERE max_price = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="8200:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_union_view WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order_union_view WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
+        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"

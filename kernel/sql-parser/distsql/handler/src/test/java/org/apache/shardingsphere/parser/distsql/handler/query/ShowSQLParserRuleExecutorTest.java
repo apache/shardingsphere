@@ -45,7 +45,7 @@ class ShowSQLParserRuleExecutorTest {
     void assertSQLParserRule() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowSQLParserRuleExecutor executor = new ShowSQLParserRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLParserRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSQLParserRuleStatement.class), metaData);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

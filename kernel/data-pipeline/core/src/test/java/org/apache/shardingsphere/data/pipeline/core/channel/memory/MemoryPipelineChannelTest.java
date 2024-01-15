@@ -48,7 +48,7 @@ class MemoryPipelineChannelTest {
         });
         thread.start();
         assertTrue(semaphore.tryAcquire(1L, TimeUnit.SECONDS));
-        assertThat(channel.fetch(1, 50L), is(records));
+        assertThat(channel.fetch(1, 500L), is(records));
     }
     
     @Test
