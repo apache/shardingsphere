@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -104,7 +103,7 @@ class ShowReadwriteSplittingRuleExecutorTest {
         return result;
     }
     
-    private RuleConfiguration createRuleConfiguration() {
+    private ReadwriteSplittingRuleConfiguration createRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
         return new ReadwriteSplittingRuleConfiguration(
@@ -131,7 +130,7 @@ class ShowReadwriteSplittingRuleExecutorTest {
         assertThat(row.getCell(6), is(""));
     }
     
-    private RuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
+    private ReadwriteSplittingRuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
