@@ -124,16 +124,16 @@ services:
 
 ## 可观察性
 
-- 针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
-  https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
+针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
+https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
 
-- 你可以使用 https://www.graalvm.org/jdk17/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
-  并根据其要求使用 VSCode 完成调试工作。如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，你可以关注
-  https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
-  及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的
-  https://github.com/oracle/graal/issues/5648 。
+你可以使用 https://www.graalvm.org/jdk17/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
+并根据其要求使用 VSCode 完成调试工作。如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，你可以关注
+https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
+及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的
+https://github.com/oracle/graal/issues/5648 。
 
-- 对于使用 `ShardingSphere Agent` 等 Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
-  Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065 。
+对于使用 `ShardingSphere Agent` 等 Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
+Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065 。
 
-- 若用户期望在 ShardingSphere Proxy Native 下使用 OpenTelemetry Java Agent，则需要关注 https://github.com/oracle/graal/pull/8077 涉及的变动。
+若用户期望在 ShardingSphere Proxy Native 下使用这类 Java Agent，则需要关注 https://github.com/oracle/graal/pull/8077 涉及的变动。
