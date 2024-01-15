@@ -296,7 +296,7 @@ Moreover, ShardingSphere as an infrastructure, its performance is one of the key
 Apache ShardingSphere Open Source Project Links:
 [ShardingSphere Github](https://github.com/apache/shardingsphere)
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
-[ShardingSphere Slack Channel](https://apacheshardingsphere.slack.com/ssb/redirect)
+[ShardingSphere Slack Channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 [Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 ### Author
