@@ -64,7 +64,7 @@ public final class AbsolutePathURLProvider implements ShardingSphereURLProvider 
             return builder.toString().getBytes(StandardCharsets.UTF_8);
         }
     }
-
+    
     private String replaceVariables(final String line) {
         Pattern variablePattern = Pattern.compile("\\$\\{(.+?)\\}");
         Matcher matcher = variablePattern.matcher(line);

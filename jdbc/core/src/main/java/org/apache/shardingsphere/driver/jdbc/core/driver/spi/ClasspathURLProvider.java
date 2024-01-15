@@ -71,7 +71,7 @@ public final class ClasspathURLProvider implements ShardingSphereURLProvider {
         }
         throw new IllegalArgumentException(String.format("Can not find configuration file `%s`.", resource));
     }
-
+    
     private String replaceVariables(final String line) {
         Pattern variablePattern = Pattern.compile("\\$\\{(.+?)\\}");
         Matcher matcher = variablePattern.matcher(line);
