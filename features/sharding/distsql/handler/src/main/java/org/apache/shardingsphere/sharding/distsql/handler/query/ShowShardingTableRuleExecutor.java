@@ -145,7 +145,7 @@ public final class ShowShardingTableRuleExecutor extends RuleAwareRQLExecutor<Sh
     
     private String getKeyGenerateColumn(final ShardingRuleConfiguration ruleConfig, final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         return getKeyGenerateStrategyConfiguration(ruleConfig, keyGenerateStrategyConfig).isPresent()
-                ? getKeyGenerateStrategyConfiguration(ruleConfig, keyGenerateStrategyConfig).get().getColumn() 
+                ? getKeyGenerateStrategyConfiguration(ruleConfig, keyGenerateStrategyConfig).get().getColumn()
                 : "";
     }
     
