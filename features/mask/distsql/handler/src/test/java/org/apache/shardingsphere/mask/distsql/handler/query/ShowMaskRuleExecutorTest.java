@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -60,6 +61,7 @@ class ShowMaskRuleExecutorTest {
     @Test
     void assertGetRowDataWithoutMaskRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.empty());
         RQLExecutor<ShowMaskRulesStatement> executor = new ShowMaskRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowMaskRulesStatement.class));
         assertTrue(actual.isEmpty());
