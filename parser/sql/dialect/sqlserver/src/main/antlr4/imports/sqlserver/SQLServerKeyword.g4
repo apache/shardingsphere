@@ -1942,3 +1942,7 @@ AUTO_DROP
 PERSIST_SAMPLE_PERCENT
     : P E R S I S T UL_ S A M P L E UL_ P E R C E N T
     ;
+
+OPENJSON
+    : O P E N J S O N
+    ;

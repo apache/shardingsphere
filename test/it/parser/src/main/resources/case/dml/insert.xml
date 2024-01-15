@@ -2952,6 +2952,42 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_with_nchar_4">
+        <table name="@table1" start-index="7" stop-index="13"/>
+        <columns start-index="15" stop-index="32">
+            <column name="c2" start-index="16" stop-index="17"/>
+            <column name="is_transient" start-index="20" stop-index="31"/>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="sample durable" start-index="42" stop-index="58"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="0" start-index="61" stop-index="61"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_nchar_5">
+        <table name="@table1" start-index="7" stop-index="13"/>
+        <columns start-index="15" stop-index="32">
+            <column name="c2" start-index="16" stop-index="17"/>
+            <column name="is_transient" start-index="20" stop-index="31"/>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="sample non-durable" start-index="42" stop-index="62"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="65" stop-index="65"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_data_base_name">
         <table name="VariableTest" start-index="12" stop-index="46">
             <owner name="dbo" start-index="31" stop-index="33">

@@ -629,4 +629,38 @@
             <expression-item expression="COUNT(*)" order-direction="DESC"  start-index="147" stop-index="154"/>
         </order-by>
     </select>
+
+    <select sql-case-id="select_from_open_json_function">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="101">
+            <function-table start-index="14" stop-index="102" table-alias="months">
+                <table-function text="OPENJSON(@array) WITH (  month VARCHAR(3), temp int, month_id tinyint '$.sql:identity()')" function-name="OPENJSON">
+                    <parameter>
+                        <column name="@array" start-index="23" stop-index="28"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_open_json_function_with_path">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="key" start-index="7" stop-index="11" start-delimiter='[' end-delimiter=']'/>
+            <column-projection name="value" start-index="14" stop-index="18"/>
+        </projections>
+        <from start-index="25" stop-index="64">
+            <function-table start-index="25" stop-index="64">
+                <table-function text="OPENJSON(@json,'$.path.to.&quot;sub-object&quot;')" function-name="OPENJSON">
+                    <parameter>
+                        <column name="@json" start-index="34" stop-index="38"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="$.path.to.&quot;sub-object&quot;" start-index="40" stop-index="63"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

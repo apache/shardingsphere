@@ -8137,4 +8137,41 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_contains_function">
+        <projections start-index="7" stop-index="16">
+            <column-projection name="product_id" start-index="7" stop-index="16"/>
+        </projections>
+        <from start-index="23" stop-index="30">
+            <simple-table name="products" start-index="23" stop-index="30"/>
+        </from>
+        <where start-index="32" stop-index="157">
+            <expr>
+                <binary-operation-expression start-index="38" stop-index="157">
+                    <left>
+                        <function text="CONTAINS(product_description, '&quot;Snap Happy 100EZ&quot; OR FORMSOF(THESAURUS,&quot;Snap Happy&quot;) OR &quot;100EZ&quot;')" function-name="CONTAINS" start-index="38" stop-index="134">
+                            <parameter>
+                                <column name="product_description" start-index="47" stop-index="65"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="&quot;Snap Happy 100EZ&quot; OR FORMSOF(THESAURUS,&quot;Snap Happy&quot;) OR &quot;100EZ&quot;" start-index="68" stop-index="133"/>
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="140" stop-index="157">
+                            <left>
+                                <column name="product_cost" start-index="140" stop-index="151"/>
+                            </left>
+                            <right>
+                                <literal-expression value="200" start-index="155" stop-index="157"/>
+                            </right>
+                            <operator>&lt;</operator>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
