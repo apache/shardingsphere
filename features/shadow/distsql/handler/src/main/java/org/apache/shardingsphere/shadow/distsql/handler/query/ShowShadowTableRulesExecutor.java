@@ -47,10 +47,7 @@ public final class ShowShadowTableRulesExecutor implements RQLExecutor<ShowShado
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowTableRulesStatement sqlStatement) {
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
-        Iterator<Map<String, String>> data = Collections.emptyIterator();
-        if (rule.isPresent()) {
-            data = buildData((ShadowRuleConfiguration) rule.get().getConfiguration(), sqlStatement).iterator();
-        }
+        Iterator<Map<String, String>> data = rule.map(optional -> buildData((ShadowRuleConfiguration) optional.getConfiguration(), sqlStatement).iterator()).orElse(Collections.emptyIterator());
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
             Map<String, String> row = data.next();

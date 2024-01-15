@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -42,11 +43,7 @@ public final class ShowMaskRuleExecutor implements RQLExecutor<ShowMaskRulesStat
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowMaskRulesStatement sqlStatement) {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        if (rule.isPresent()) {
-            result = buildData((MaskRuleConfiguration) rule.get().getConfiguration(), sqlStatement);
-        }
-        return result;
+        return rule.isPresent() ? buildData((MaskRuleConfiguration) rule.get().getConfiguration(), sqlStatement) : Collections.emptyList();
     }
     
     private Collection<LocalDataQueryResultRow> buildData(final MaskRuleConfiguration ruleConfig, final ShowMaskRulesStatement sqlStatement) {
@@ -58,8 +55,8 @@ public final class ShowMaskRuleExecutor implements RQLExecutor<ShowMaskRulesStat
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         tableRuleConfig.getColumns().forEach(each -> {
             AlgorithmConfiguration maskAlgorithmConfig = algorithmMap.get(each.getMaskAlgorithm());
-            result.add(new LocalDataQueryResultRow(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(),
-                    maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps()))));
+            result.add(new LocalDataQueryResultRow(
+                    Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(), maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps()))));
         });
         return result;
     }

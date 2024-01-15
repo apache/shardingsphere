@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -48,16 +46,10 @@ public final class ShowShardingTableNodesExecutor implements RQLExecutor<ShowSha
         if (!shardingRule.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         String tableName = sqlStatement.getTableName();
-        if (null == tableName) {
-            for (Entry<String, TableRule> entry : shardingRule.get().getTableRules().entrySet()) {
-                result.add(new LocalDataQueryResultRow(entry.getKey(), getTableNodes(entry.getValue())));
-            }
-        } else {
-            result.add(new LocalDataQueryResultRow(tableName, getTableNodes(shardingRule.get().getTableRule(tableName))));
-        }
-        return result;
+        return null == tableName
+                ? shardingRule.get().getTableRules().entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), getTableNodes(entry.getValue()))).collect(Collectors.toList())
+                : Collections.singleton(new LocalDataQueryResultRow(tableName, getTableNodes(shardingRule.get().getTableRule(tableName))));
     }
     
     private String getTableNodes(final TableRule tableRule) {

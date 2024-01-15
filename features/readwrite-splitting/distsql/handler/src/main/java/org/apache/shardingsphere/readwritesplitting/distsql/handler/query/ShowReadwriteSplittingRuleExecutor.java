@@ -47,12 +47,11 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowReadwriteSplittingRulesStatement sqlStatement) {
         Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         if (rule.isPresent()) {
             buildExportableMap(rule.get());
-            result = buildData(rule.get(), sqlStatement);
+            return buildData(rule.get(), sqlStatement);
         }
-        return result;
+        return Collections.emptyList();
     }
     
     @SuppressWarnings("unchecked")
