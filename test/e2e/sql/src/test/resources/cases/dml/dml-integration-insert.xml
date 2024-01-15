@@ -220,7 +220,7 @@
     </test-case>
 
     <test-case sql="INSERT INTO t_data_type_uuid (id, val) VALUES (?, ?)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
-        <assertion parameters="1:int, 123e4567-e89b-12d3-a456-426614174001:UUID" expected-data-file="insert_uuid_values.xml"/>
+        <assertion parameters="1:int, 123e4567-e89b-12d3-a456-426614174001:uuid" expected-data-file="insert_uuid_values.xml"/>
     </test-case>
     
     <test-case sql="INSERT INTO t_data_type_date (id, creation_date, update_date) VALUES (?, ?, ?)" db-types="MySQL" scenario-types="passthrough">

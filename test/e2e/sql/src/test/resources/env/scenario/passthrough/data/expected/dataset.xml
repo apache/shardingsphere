@@ -63,5 +63,4 @@
     <row data-node="expected_dataset.t_data_type_money" values="1001, 123" />
     <row data-node="expected_dataset.t_data_type_money" values="1002, 456" />
     <row data-node="expected_dataset.t_data_type_date" values="1, 2017-08-08, 2017-08-08 00:00:00" />
-    <row data-node="expected_dataset.t_data_type_uuid" values="1, 123e4567-e89b-12d3-a456-426614174001" />
 </dataset>

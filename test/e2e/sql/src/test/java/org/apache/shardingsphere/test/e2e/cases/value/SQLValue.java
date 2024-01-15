@@ -89,7 +89,7 @@ public final class SQLValue {
                 return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillsFormatter()));
             case "bytes":
                 return value.getBytes(StandardCharsets.UTF_8);
-            case "UUID":
+            case "uuid":
                 return UUID.fromString(value);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
