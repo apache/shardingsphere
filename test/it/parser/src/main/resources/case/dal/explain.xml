@@ -1426,4 +1426,20 @@
             </where>
         </select>
     </describe>
+
+    <describe sql-case-id="explain5">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="31" stop-index="35"/>
+            </from>
+            <where start-index="37" stop-index="69">
+                <expr>
+                    <column name="time_id" start-index="43" stop-index="49"/>
+                </expr>
+            </where>
+        </select>
+    </describe>
 </sql-parser-test-cases>
