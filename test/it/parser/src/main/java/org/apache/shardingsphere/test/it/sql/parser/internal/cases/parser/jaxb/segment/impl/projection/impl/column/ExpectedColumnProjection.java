@@ -20,11 +20,14 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.generic.ExpectedParentheses;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedOwner;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Expected column projection.
@@ -38,4 +41,7 @@ public final class ExpectedColumnProjection extends AbstractExpectedIdentifierSQ
     
     @XmlElement
     private ExpectedOwner owner;
+    
+    @XmlElement(name = "parentheses")
+    private List<ExpectedParentheses> parentheses = new LinkedList<>();
 }

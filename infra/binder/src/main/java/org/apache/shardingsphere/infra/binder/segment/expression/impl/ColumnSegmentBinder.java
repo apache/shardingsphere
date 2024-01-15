@@ -82,6 +82,7 @@ public final class ColumnSegmentBinder {
         Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableBinderContextValues, outerTableBinderContexts, statementBinderContext);
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, inputColumnSegment.orElse(null)));
+        segment.getParentheses().forEach(each -> result.getParentheses().add(each));
         return result;
     }
     
