@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.props.PropertiesConverter;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -45,14 +46,13 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowEncryptRulesStatement sqlStatement) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         if (rule.isPresent()) {
             EncryptRuleConfiguration ruleConfig = rule.get().getConfiguration() instanceof CompatibleEncryptRuleConfiguration
                     ? ((CompatibleEncryptRuleConfiguration) rule.get().getConfiguration()).convertToEncryptRuleConfiguration()
                     : (EncryptRuleConfiguration) rule.get().getConfiguration();
-            result = buildData(ruleConfig, sqlStatement);
+            return buildData(ruleConfig, sqlStatement);
         }
-        return result;
+        return Collections.emptyList();
     }
     
     private Collection<LocalDataQueryResultRow> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {
