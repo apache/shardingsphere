@@ -45,7 +45,7 @@ class ShowSQLFederationRuleExecutorTest {
     void assertSQLFederationRule() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowSQLFederationRuleExecutor executor = new ShowSQLFederationRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLFederationRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSQLFederationRuleStatement.class), metaData);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

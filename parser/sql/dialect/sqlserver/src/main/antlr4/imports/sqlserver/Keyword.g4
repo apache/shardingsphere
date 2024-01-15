@@ -703,3 +703,75 @@ WITHOUT
 APPLY
     : A P P L Y
     ;
+
+KEEPIDENTITY
+    : K E E P I D E N T I T Y
+    ;
+
+KEEPDEFAULTS
+    : K E E P D E F A U L T S
+    ;
+
+HOLDLOCK
+    : H O L D L O C K
+    ;
+
+IGNORE_CONSTRAINTS
+    : I G N O R E UL_ C O N S T R A I N T S
+    ;
+
+IGNORE_TRIGGERS
+    : I G N O R E UL_ T R I G G E R S
+    ;
+
+NOLOCK
+    : N O L O C K
+    ;
+
+NOLOCK
+: N O L O C K
+;
+
+NOWAIT
+: N O W A I T
+;
+
+PAGLOCK
+: P A G L O C K
+;
+
+READCOMMITTED
+: R E A D C O M M I T T E D
+;
+
+READCOMMITTEDLOCK
+: R E A D C O M M I T T E D L O C K
+;
+
+READPAST
+: R E A D P A S T
+;
+
+REPEATABLEREAD
+: R E P E A T A B L E R E A D
+;
+
+ROWLOCK
+: R O W L O C K
+;
+
+TABLOCK
+: T A B L O C K
+;
+
+TABLOCKX
+: T A B L O C K X
+;
+
+UPDLOCK
+: U P D L O C K
+;
+
+XLOCK
+: X L O C K
+;
