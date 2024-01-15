@@ -2867,6 +2867,18 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_distinct_with_brackets" >
+        <from>
+            <simple-table name="t_order_item" start-index="31" stop-index="42" />
+        </from>
+        <projections start-index="16" stop-index="24" distinct-row="true">
+            <column-projection name="item_id" start-index="17" stop-index="23">
+                <parentheses left = "true" start-index = "16" stop-index = "16" />
+                <parentheses left = "false" start-index = "24" stop-index = "24" />
+            </column-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_unique_with_single_column_without_order_by" >
         <from>
             <simple-table name="t_order_item" start-index="27" stop-index="38" />
