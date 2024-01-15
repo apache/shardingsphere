@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -29,24 +29,27 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Show unused sharding auditors executor.
  */
-public final class ShowUnusedShardingAuditorsExecutor implements RQLExecutor<ShowUnusedShardingAuditorsStatement> {
+public final class ShowUnusedShardingAuditorsExecutor extends RuleAwareRQLExecutor<ShowUnusedShardingAuditorsStatement, ShardingRule> {
+    
+    public ShowUnusedShardingAuditorsExecutor() {
+        super(ShardingRule.class);
+    }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingAuditorsStatement sqlStatement) {
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!rule.isPresent()) {
-            return Collections.emptyList();
-        }
-        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) rule.get().getConfiguration();
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "type", "props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingAuditorsStatement sqlStatement, final ShardingRule rule) {
+        ShardingRuleConfiguration shardingRuleConfig = rule.getConfiguration();
         Collection<String> inUsedAuditors = getUsedAuditors(shardingRuleConfig);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getAuditors().entrySet()) {
@@ -66,11 +69,6 @@ public final class ShowUnusedShardingAuditorsExecutor implements RQLExecutor<Sho
             result.addAll(auditStrategy.getAuditorNames());
         }
         return result;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "props");
     }
     
     @Override

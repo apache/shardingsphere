@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,7 +36,11 @@ import java.util.stream.Stream;
 /**
  * Show single table executor.
  */
-public final class ShowSingleTableExecutor implements RQLExecutor<ShowSingleTableStatement> {
+public final class ShowSingleTableExecutor extends RuleAwareRQLExecutor<ShowSingleTableStatement, SingleRule> {
+    
+    public ShowSingleTableExecutor() {
+        super(SingleRule.class);
+    }
     
     @Override
     public Collection<String> getColumnNames() {
@@ -44,13 +48,12 @@ public final class ShowSingleTableExecutor implements RQLExecutor<ShowSingleTabl
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowSingleTableStatement sqlStatement) {
-        return getDataNodes(database, sqlStatement).stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowSingleTableStatement sqlStatement, final SingleRule rule) {
+        return getDataNodes(sqlStatement, rule).stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
     }
     
-    private Collection<DataNode> getDataNodes(final ShardingSphereDatabase database, final ShowSingleTableStatement sqlStatement) {
-        Stream<DataNode> singleTableNodes = database.getRuleMetaData().findRules(SingleRule.class).stream()
-                .map(each -> each.getSingleTableDataNodes().values()).flatMap(Collection::stream).filter(Objects::nonNull).map(each -> each.iterator().next());
+    private Collection<DataNode> getDataNodes(final ShowSingleTableStatement sqlStatement, final SingleRule rule) {
+        Stream<DataNode> singleTableNodes = rule.getSingleTableDataNodes().values().stream().filter(Objects::nonNull).map(each -> each.iterator().next());
         if (sqlStatement.getTableName().isPresent()) {
             singleTableNodes = singleTableNodes.filter(each -> sqlStatement.getTableName().get().equals(each.getTableName()));
         }

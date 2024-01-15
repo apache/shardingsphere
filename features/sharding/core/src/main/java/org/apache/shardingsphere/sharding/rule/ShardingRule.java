@@ -23,7 +23,6 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -89,7 +88,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
-    private final RuleConfiguration configuration;
+    private final ShardingRuleConfiguration configuration;
     
     private final Collection<String> dataSourceNames;
     

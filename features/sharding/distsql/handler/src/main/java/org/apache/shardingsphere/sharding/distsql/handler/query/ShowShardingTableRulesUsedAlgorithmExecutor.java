@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -27,42 +27,46 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Show sharding table rules used algorithm executor.
  */
-public final class ShowShardingTableRulesUsedAlgorithmExecutor implements RQLExecutor<ShowShardingTableRulesUsedAlgorithmStatement> {
+public final class ShowShardingTableRulesUsedAlgorithmExecutor extends RuleAwareRQLExecutor<ShowShardingTableRulesUsedAlgorithmStatement, ShardingRule> {
     
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesUsedAlgorithmStatement sqlStatement) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        rule.ifPresent(optional -> requireResult(sqlStatement, result, optional));
-        return result;
+    public ShowShardingTableRulesUsedAlgorithmExecutor() {
+        super(ShardingRule.class);
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final Collection<LocalDataQueryResultRow> result, final ShardingRule rule) {
-        if (!statement.getShardingAlgorithmName().isPresent()) {
-            return;
+    @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("type", "name");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesUsedAlgorithmStatement sqlStatement, final ShardingRule rule) {
+        if (!sqlStatement.getShardingAlgorithmName().isPresent()) {
+            return Collections.emptyList();
         }
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.getConfiguration();
-        String algorithmName = statement.getShardingAlgorithmName().get();
-        boolean matchDefaultDatabaseShardingStrategy = null != config.getDefaultDatabaseShardingStrategy()
-                && algorithmName.equals(config.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName());
-        boolean matchDefaultTableShardingStrategy = null != config.getDefaultTableShardingStrategy()
-                && algorithmName.equals(config.getDefaultTableShardingStrategy().getShardingAlgorithmName());
-        config.getTables().forEach(each -> {
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        ShardingRuleConfiguration ruleConfig = rule.getConfiguration();
+        String algorithmName = sqlStatement.getShardingAlgorithmName().get();
+        boolean matchDefaultDatabaseShardingStrategy = null != ruleConfig.getDefaultDatabaseShardingStrategy()
+                && algorithmName.equals(ruleConfig.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName());
+        boolean matchDefaultTableShardingStrategy = null != ruleConfig.getDefaultTableShardingStrategy()
+                && algorithmName.equals(ruleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName());
+        ruleConfig.getTables().forEach(each -> {
             if (isMatchDatabaseShardingStrategy(each, algorithmName, matchDefaultDatabaseShardingStrategy) || isMatchTableShardingStrategy(each, algorithmName, matchDefaultTableShardingStrategy)) {
                 result.add(new LocalDataQueryResultRow("table", each.getLogicTable()));
             }
         });
-        config.getAutoTables().forEach(each -> {
+        ruleConfig.getAutoTables().forEach(each -> {
             if (null != each.getShardingStrategy() && algorithmName.equals(each.getShardingStrategy().getShardingAlgorithmName())) {
                 result.add(new LocalDataQueryResultRow("auto_table", each.getLogicTable()));
             }
         });
+        return result;
     }
     
     private boolean isMatchDatabaseShardingStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final String algorithmName, final boolean matchDefaultDatabaseShardingStrategy) {
@@ -87,11 +91,6 @@ public final class ShowShardingTableRulesUsedAlgorithmExecutor implements RQLExe
     
     private boolean isMatchDefaultTableShardingStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final boolean matchDefaultTableShardingStrategy) {
         return null == tableRuleConfig.getTableShardingStrategy() && matchDefaultTableShardingStrategy;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "name");
     }
     
     @Override

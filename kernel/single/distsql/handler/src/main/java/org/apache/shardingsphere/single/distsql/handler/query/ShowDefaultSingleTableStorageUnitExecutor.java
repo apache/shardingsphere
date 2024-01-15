@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowDefaultSingleTableStorageUnitStatement;
@@ -29,7 +29,11 @@ import java.util.Collections;
 /**
  * Show default single table storage unit executor.
  */
-public final class ShowDefaultSingleTableStorageUnitExecutor implements RQLExecutor<ShowDefaultSingleTableStorageUnitStatement> {
+public final class ShowDefaultSingleTableStorageUnitExecutor extends RuleAwareRQLExecutor<ShowDefaultSingleTableStorageUnitStatement, SingleRule> {
+    
+    public ShowDefaultSingleTableStorageUnitExecutor() {
+        super(SingleRule.class);
+    }
     
     @Override
     public Collection<String> getColumnNames() {
@@ -37,8 +41,7 @@ public final class ShowDefaultSingleTableStorageUnitExecutor implements RQLExecu
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDefaultSingleTableStorageUnitStatement sqlStatement) {
-        SingleRule rule = database.getRuleMetaData().getSingleRule(SingleRule.class);
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRule rule) {
         return Collections.singleton(new LocalDataQueryResultRow(rule.getConfiguration().getDefaultDataSource().orElse("RANDOM")));
     }
     

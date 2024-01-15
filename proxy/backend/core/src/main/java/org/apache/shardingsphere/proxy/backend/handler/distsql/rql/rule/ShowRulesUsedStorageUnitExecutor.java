@@ -59,6 +59,11 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
     private static final String MASK = "mask";
     
     @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("type", "name");
+    }
+    
+    @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowRulesUsedStorageUnitStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         String resourceName = sqlStatement.getStorageUnitName().orElse(null);
@@ -78,7 +83,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
             return Collections.emptyList();
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.get().getConfiguration();
+        ShardingRuleConfiguration config = rule.get().getConfiguration();
         for (ShardingAutoTableRuleConfiguration each : config.getAutoTables()) {
             result.add(buildRow(SHARDING, each.getLogicTable()));
         }
@@ -94,7 +99,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
             return Collections.emptyList();
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration();
+        ReadwriteSplittingRuleConfiguration config = rule.get().getConfiguration();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : config.getDataSources()) {
             if (each.getWriteDataSourceName().equalsIgnoreCase(resourceName)) {
                 result.add(buildRow(READWRITE_SPLITTING, each.getName()));
@@ -122,7 +127,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
         if (!rule.isPresent()) {
             return Collections.emptyList();
         }
-        ShadowRuleConfiguration config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        ShadowRuleConfiguration config = rule.get().getConfiguration();
         return config.getDataSources().stream()
                 .filter(each -> each.getShadowDataSourceName().equalsIgnoreCase(resourceName) || each.getProductionDataSourceName().equalsIgnoreCase(resourceName))
                 .map(each -> buildRow(SHADOW, each.getName())).collect(Collectors.toList());
@@ -133,17 +138,12 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
         if (!rule.isPresent()) {
             return Collections.emptyList();
         }
-        MaskRuleConfiguration config = (MaskRuleConfiguration) rule.get().getConfiguration();
+        MaskRuleConfiguration config = rule.get().getConfiguration();
         return config.getTables().stream().map(each -> buildRow(MASK, each.getName())).collect(Collectors.toList());
     }
     
     private LocalDataQueryResultRow buildRow(final String type, final String name) {
         return new LocalDataQueryResultRow(type, name);
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "name");
     }
     
     @Override
