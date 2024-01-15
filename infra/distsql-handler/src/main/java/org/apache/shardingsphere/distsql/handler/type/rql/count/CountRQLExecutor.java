@@ -42,9 +42,12 @@ public final class CountRQLExecutor implements RQLExecutor<CountRuleStatement> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountRuleStatement sqlStatement) {
-        CountResultRowBuilder rowBuilder = TypedSPILoader.getService(CountResultRowBuilder.class, sqlStatement.getType());
-        Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(rowBuilder.getRuleClass());
-        return rule.isPresent() ? rowBuilder.generateRows(rule.get(), database.getName()) : Collections.emptyList();
+        Optional<CountResultRowBuilder> rowBuilder = TypedSPILoader.findService(CountResultRowBuilder.class, sqlStatement.getType());
+        if (!rowBuilder.isPresent()) {
+            return Collections.emptyList();
+        }
+        Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(rowBuilder.get().getRuleClass());
+        return rule.isPresent() ? rowBuilder.get().generateRows(rule.get(), database.getName()) : Collections.emptyList();
     }
     
     @Override
