@@ -30,12 +30,11 @@ import java.util.List;
  * Assisted query column item.
  */
 @RequiredArgsConstructor
+@Getter
 public final class AssistedQueryColumnItem {
     
-    @Getter
     private final String name;
     
-    @Getter
     private final EncryptAlgorithm encryptor;
     
     /**
