@@ -172,8 +172,7 @@ class ShardingRuleTest {
         duplicateTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "MOD"));
         ruleConfig.getTables().add(duplicateTableRuleConfig);
         ruleConfig.getShardingAlgorithms().put("INLINE", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_%{order_id % 2}"))));
-        assertThrows(DuplicateSharingActualDataNodeException.class,
-                () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), null, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
+        assertThrows(DuplicateSharingActualDataNodeException.class, () -> new ShardingRule(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class)));
     }
     
     @Test
