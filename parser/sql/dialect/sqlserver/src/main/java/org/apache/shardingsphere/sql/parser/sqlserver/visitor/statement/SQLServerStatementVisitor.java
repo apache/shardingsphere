@@ -63,6 +63,11 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ide
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertDefaultValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonArrayFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonKeyValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonNullClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonObjectFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertValuesClauseContext;
@@ -137,6 +142,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.KeyValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
@@ -196,6 +202,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherL
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.json.JsonNullClauseSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
@@ -661,7 +668,64 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.openJsonFunction()) {
             return visit(ctx.openJsonFunction());
         }
+        if (null != ctx.jsonFunction()) {
+            return visit(ctx.jsonFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public final ASTNode visitJsonFunction(final JsonFunctionContext ctx) {
+        if (null != ctx.jsonArrayFunction()) {
+            return visit(ctx.jsonArrayFunction());
+        }
+        if (null != ctx.jsonObjectFunction()) {
+            return visit(ctx.jsonObjectFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public final ASTNode visitJsonArrayFunction(final JsonArrayFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_ARRAY().getText(), getOriginalText(ctx));
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        if (null != ctx.jsonNullClause()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.jsonNullClause().start.getStartIndex(), ctx.jsonNullClause().stop.getStopIndex(), ctx.jsonNullClause().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitJsonObjectFunction(final JsonObjectFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_OBJECT().getText(), getOriginalText(ctx));
+        if (null != ctx.jsonKeyValue()) {
+            for (JsonKeyValueContext each : ctx.jsonKeyValue()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        if (null != ctx.jsonNullClause()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.jsonNullClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitJsonNullClause(final JsonNullClauseContext ctx) {
+        return new JsonNullClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitJsonKeyValue(final JsonKeyValueContext ctx) {
+        KeyValueSegment result = new KeyValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+        if (null != ctx.expr()) {
+            result.setKey((ExpressionSegment) visit(ctx.expr(0)));
+            result.setValue((ExpressionSegment) visit(ctx.expr(1)));
+        }
+        return result;
     }
     
     @Override

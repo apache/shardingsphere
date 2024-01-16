@@ -311,7 +311,27 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction | convertFunction | openJsonFunction
+    : castFunction  | charFunction | convertFunction | openJsonFunction | jsonFunction
+    ;
+
+jsonFunction
+    : jsonObjectFunction | jsonArrayFunction
+    ;
+
+jsonObjectFunction
+    : JSON_OBJECT LP_ (jsonKeyValue (COMMA_ jsonKeyValue)* jsonNullClause?)?  RP_
+    ;
+
+jsonArrayFunction
+    : JSON_ARRAY LP_ expr (COMMA_ expr)* jsonNullClause? RP_
+    ;
+
+jsonKeyValue
+    :  expr COLON_ expr
+    ;
+
+jsonNullClause
+    : NULL ON NULL | ABSENT ON NULL
     ;
 
 castFunction
