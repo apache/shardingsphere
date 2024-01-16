@@ -58,14 +58,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class EtcdRepository implements ClusterPersistRepository {
     
+    private static final ExecutorService EVENT_LISTENER_EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Etcd-EventListener-%d").build());
+    
     private Client client;
     
     private EtcdProperties etcdProps;
     
     @Getter
     private DistributedLockHolder distributedLockHolder;
-    
-    private static final ExecutorService EVENT_LISTENER_EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Etcd-EventListener-%d").build());
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
@@ -156,13 +156,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
             for (WatchEvent each : response.getEvents()) {
                 Type type = getEventChangedType(each);
                 if (Type.IGNORED != type) {
-                    CompletableFuture.runAsync(() ->
-                        dataChangedEventListener.onChange(new DataChangedEvent(each.getKeyValue().getKey().toString(StandardCharsets.UTF_8),
-                                each.getKeyValue().getValue().toString(StandardCharsets.UTF_8), type)), EVENT_LISTENER_EXECUTOR).whenComplete((unused, throwable) -> {
-                        if (null != throwable) {
-                           log.error("Consume event failed", throwable);
-                        }
-                    });
+                    dispatchEvent(dataChangedEventListener, each, type);
                 }
             }
         });
@@ -184,6 +178,16 @@ public final class EtcdRepository implements ClusterPersistRepository {
             default:
                 return Type.IGNORED;
         }
+    }
+    
+    private void dispatchEvent(final DataChangedEventListener dataChangedEventListener, final WatchEvent event, final Type type) {
+        CompletableFuture.runAsync(() ->
+                dataChangedEventListener.onChange(new DataChangedEvent(event.getKeyValue().getKey().toString(StandardCharsets.UTF_8),
+                        event.getKeyValue().getValue().toString(StandardCharsets.UTF_8), type)), EVENT_LISTENER_EXECUTOR).whenComplete((unused, throwable) -> {
+                            if (null != throwable) {
+                                log.error("Dispatch event failed", throwable);
+                            }
+                        });
     }
     
     @Override
