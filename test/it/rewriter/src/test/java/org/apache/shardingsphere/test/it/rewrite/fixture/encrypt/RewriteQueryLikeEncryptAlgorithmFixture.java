@@ -18,13 +18,21 @@
 package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
-public final class RewriteQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm {
+public final class RewriteQueryLikeEncryptAlgorithmFixture implements EncryptAlgorithm {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return null == plainValue ? null : "like_query_" + plainValue;
+    }
+    
+    @Override
+    public EncryptAlgorithmMetaData getMetaData() {
+        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
+        result.setSupportLike(true);
+        return result;
     }
     
     @Override

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rule.column.item;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +36,7 @@ public final class AssistedQueryColumnItem {
     private final String name;
     
     @Getter
-    private final AssistedEncryptAlgorithm encryptor;
+    private final EncryptAlgorithm encryptor;
     
     /**
      * Get encrypt assisted query value.

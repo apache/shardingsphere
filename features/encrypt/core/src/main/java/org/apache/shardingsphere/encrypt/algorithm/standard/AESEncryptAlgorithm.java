@@ -23,8 +23,9 @@ import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
@@ -42,7 +43,7 @@ import java.util.Properties;
  * AES encrypt algorithm.
  */
 @EqualsAndHashCode
-public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm {
+public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String AES_KEY = "aes-key-value";
     
@@ -87,6 +88,12 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm {
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(secretKey, getType()));
         return result;
+    }
+    
+    @Override
+    public EncryptAlgorithmMetaData getMetaData() {
+        // TODO get actual expansibility
+        return new EncryptAlgorithmMetaData(1);
     }
     
     @Override

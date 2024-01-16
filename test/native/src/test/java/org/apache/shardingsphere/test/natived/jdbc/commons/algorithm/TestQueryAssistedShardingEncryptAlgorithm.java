@@ -19,12 +19,13 @@ package org.apache.shardingsphere.test.natived.jdbc.commons.algorithm;
 
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
 import java.util.Properties;
 
 @SuppressWarnings("LombokGetterMayBeUsed")
-public final class TestQueryAssistedShardingEncryptAlgorithm implements AssistedEncryptAlgorithm {
+public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptAlgorithm {
     
     @Getter
     private Properties properties;
@@ -37,6 +38,13 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements Assisted
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
+    }
+    
+    @Override
+    public EncryptAlgorithmMetaData getMetaData() {
+        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
+        result.setSupportDecrypt(false);
+        return result;
     }
     
     @Override

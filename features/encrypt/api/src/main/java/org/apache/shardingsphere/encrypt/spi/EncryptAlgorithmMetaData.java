@@ -15,12 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.encrypt.assisted;
+package org.apache.shardingsphere.encrypt.spi;
 
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * Assisted encrypt algorithm.
+ * Encrypt algorithm meta data.
  */
-public interface AssistedEncryptAlgorithm extends EncryptAlgorithm {
+@RequiredArgsConstructor
+@Getter
+public final class EncryptAlgorithmMetaData {
+    
+    private final double expansibility;
+    
+    @Setter
+    private boolean supportDecrypt = true;
+    
+    @Setter
+    private boolean supportEquivalentFilter = true;
+    
+    @Setter
+    private boolean supportLike;
 }

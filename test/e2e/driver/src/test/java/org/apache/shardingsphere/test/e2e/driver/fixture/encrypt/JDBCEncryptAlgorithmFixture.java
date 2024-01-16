@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.test.e2e.driver.fixture.encrypt;
 
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
-public final class JDBCEncryptAlgorithmFixture implements StandardEncryptAlgorithm {
+public final class JDBCEncryptAlgorithmFixture implements EncryptAlgorithm {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -30,6 +31,11 @@ public final class JDBCEncryptAlgorithmFixture implements StandardEncryptAlgorit
     @Override
     public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
         return "decryptValue";
+    }
+    
+    @Override
+    public EncryptAlgorithmMetaData getMetaData() {
+        return new EncryptAlgorithmMetaData(1);
     }
     
     @Override

@@ -18,13 +18,23 @@
 package org.apache.shardingsphere.encrypt.fixture;
 
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
-public final class CoreQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm {
+public final class CoreQueryLikeEncryptAlgorithmFixture implements EncryptAlgorithm {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "likeEncryptValue";
+    }
+    
+    @Override
+    public EncryptAlgorithmMetaData getMetaData() {
+        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
+        result.setSupportLike(true);
+        result.setSupportDecrypt(false);
+        result.setSupportEquivalentFilter(false);
+        return result;
     }
     
     @Override

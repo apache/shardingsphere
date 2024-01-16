@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
-public final class RewriteQueryAssistedEncryptAlgorithmFixture implements AssistedEncryptAlgorithm {
+public final class RewriteQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -28,6 +29,13 @@ public final class RewriteQueryAssistedEncryptAlgorithmFixture implements Assist
             return null;
         }
         return "assisted_query_" + plainValue;
+    }
+    
+    @Override
+    public EncryptAlgorithmMetaData getMetaData() {
+        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
+        result.setSupportDecrypt(false);
+        return result;
     }
     
     @Override

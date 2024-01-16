@@ -18,13 +18,21 @@
 package org.apache.shardingsphere.test.e2e.driver.fixture.encrypt;
 
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
-public final class JDBCQueryAssistedEncryptAlgorithmFixture implements AssistedEncryptAlgorithm {
+public final class JDBCQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
+    }
+    
+    @Override
+    public EncryptAlgorithmMetaData getMetaData() {
+        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
+        result.setSupportDecrypt(false);
+        return result;
     }
     
     @Override

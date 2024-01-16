@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.fixture;
 
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
-public final class DistSQLEncryptAlgorithmFixture implements StandardEncryptAlgorithm {
+public final class DistSQLEncryptAlgorithmFixture implements EncryptAlgorithm {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -30,6 +31,11 @@ public final class DistSQLEncryptAlgorithmFixture implements StandardEncryptAlgo
     @Override
     public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
         return "decryptValue";
+    }
+    
+    @Override
+    public EncryptAlgorithmMetaData getMetaData() {
+        return new EncryptAlgorithmMetaData(1);
     }
     
     @Override
