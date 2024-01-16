@@ -31,22 +31,21 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptA
     
     @Getter
     private Properties properties;
-    
+
+    @Getter
+    private EncryptAlgorithmMetaData metaData;
+
     @Override
     public void init(final Properties props) {
         this.properties = props;
+        EncryptAlgorithmMetaData algorithmMetaData = new EncryptAlgorithmMetaData();
+        algorithmMetaData.setSupportDecrypt(false);
+        metaData = algorithmMetaData;
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
-    }
-
-    @Override
-    public EncryptAlgorithmMetaData getMetaData() {
-        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
-        result.setSupportDecrypt(false);
-        return result;
     }
     
     @Override

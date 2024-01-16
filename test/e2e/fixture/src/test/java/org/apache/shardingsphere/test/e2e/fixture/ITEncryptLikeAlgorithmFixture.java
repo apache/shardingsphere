@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.fixture;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
@@ -59,12 +60,18 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     
     private Map<Character, Integer> charIndexes;
     
+    @Getter
+    private EncryptAlgorithmMetaData metaData;
+    
     @Override
     public void init(final Properties props) {
         delta = createDelta(props);
         mask = createMask(props);
         start = createStart(props);
         charIndexes = createCharIndexes(props);
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
+        encryptAlgorithmMetaData.setSupportLike(true);
+        metaData = encryptAlgorithmMetaData;
     }
     
     private int createDelta(final Properties props) {
@@ -150,13 +157,6 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
             return (char) (((charIndexes.get(originalChar) + delta) & mask) + start);
         }
         return (char) (((originalChar + delta) & mask) + start);
-    }
-    
-    @Override
-    public EncryptAlgorithmMetaData getMetaData() {
-        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
-        result.setSupportLike(true);
-        return result;
     }
     
     @Override

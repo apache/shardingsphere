@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
@@ -49,10 +50,14 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
     
+    @Getter
+    private EncryptAlgorithmMetaData metaData;
+    
     private byte[] secretKey;
     
     @Override
     public void init(final Properties props) {
+        metaData = new EncryptAlgorithmMetaData();
         secretKey = createSecretKey(props);
     }
     
@@ -88,12 +93,6 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(secretKey, getType()));
         return result;
-    }
-    
-    @Override
-    public EncryptAlgorithmMetaData getMetaData() {
-        // TODO get actual expansibility
-        return new EncryptAlgorithmMetaData(1);
     }
     
     @Override

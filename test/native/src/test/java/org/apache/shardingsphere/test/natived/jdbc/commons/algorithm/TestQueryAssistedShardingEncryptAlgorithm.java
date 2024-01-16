@@ -24,27 +24,24 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
 import java.util.Properties;
 
-@SuppressWarnings("LombokGetterMayBeUsed")
+@Getter
 public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptAlgorithm {
     
-    @Getter
     private Properties properties;
+    
+    private EncryptAlgorithmMetaData metaData;
     
     @Override
     public void init(final Properties props) {
         this.properties = props;
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
+        encryptAlgorithmMetaData.setSupportDecrypt(false);
+        metaData = encryptAlgorithmMetaData;
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
-    }
-    
-    @Override
-    public EncryptAlgorithmMetaData getMetaData() {
-        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
-        result.setSupportDecrypt(false);
-        return result;
     }
     
     @Override

@@ -17,11 +17,24 @@
 
 package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
+import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
+import java.util.Properties;
+
+@Getter
 public final class RewriteQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
+    
+    private EncryptAlgorithmMetaData metaData;
+    
+    @Override
+    public void init(final Properties props) {
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
+        encryptAlgorithmMetaData.setSupportDecrypt(false);
+        metaData = encryptAlgorithmMetaData;
+    }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -29,13 +42,6 @@ public final class RewriteQueryAssistedEncryptAlgorithmFixture implements Encryp
             return null;
         }
         return "assisted_query_" + plainValue;
-    }
-    
-    @Override
-    public EncryptAlgorithmMetaData getMetaData() {
-        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
-        result.setSupportDecrypt(false);
-        return result;
     }
     
     @Override

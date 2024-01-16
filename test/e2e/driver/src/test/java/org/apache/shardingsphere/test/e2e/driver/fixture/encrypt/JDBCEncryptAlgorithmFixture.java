@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.test.e2e.driver.fixture.encrypt;
 
+import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
+@Getter
 public final class JDBCEncryptAlgorithmFixture implements EncryptAlgorithm {
+    
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData();
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -31,11 +35,6 @@ public final class JDBCEncryptAlgorithmFixture implements EncryptAlgorithm {
     @Override
     public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
         return "decryptValue";
-    }
-    
-    @Override
-    public EncryptAlgorithmMetaData getMetaData() {
-        return new EncryptAlgorithmMetaData(1);
     }
     
     @Override

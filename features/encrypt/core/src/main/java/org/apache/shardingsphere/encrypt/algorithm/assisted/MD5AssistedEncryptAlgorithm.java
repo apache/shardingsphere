@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -35,22 +36,21 @@ public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     
     private String salt;
     
+    @Getter
+    private EncryptAlgorithmMetaData metaData;
+    
     @Override
     public void init(final Properties props) {
         this.salt = props.getProperty(SALT_KEY, "");
+        // TODO get actual expansibility
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
+        encryptAlgorithmMetaData.setSupportDecrypt(false);
+        metaData = encryptAlgorithmMetaData;
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return null == plainValue ? null : DigestUtils.md5Hex(plainValue + salt);
-    }
-    
-    @Override
-    public EncryptAlgorithmMetaData getMetaData() {
-        // TODO get actual expansibility
-        EncryptAlgorithmMetaData result = new EncryptAlgorithmMetaData(1);
-        result.setSupportDecrypt(false);
-        return result;
     }
     
     @Override

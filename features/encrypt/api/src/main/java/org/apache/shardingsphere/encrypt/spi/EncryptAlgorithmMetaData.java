@@ -28,8 +28,6 @@ import lombok.Setter;
 @Getter
 public final class EncryptAlgorithmMetaData {
     
-    private final double expansibility;
-    
     @Setter
     private boolean supportDecrypt = true;
     
