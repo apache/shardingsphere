@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -31,16 +31,18 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Show unloaded single table executor.
  */
-public final class ShowUnloadedSingleTableExecutor implements RQLExecutor<ShowUnloadedSingleTableStatement> {
+public final class ShowUnloadedSingleTableExecutor extends RuleAwareRQLExecutor<ShowUnloadedSingleTableStatement, SingleRule> {
+    
+    public ShowUnloadedSingleTableExecutor() {
+        super(SingleRule.class);
+    }
     
     @Override
     public Collection<String> getColumnNames() {
@@ -48,17 +50,12 @@ public final class ShowUnloadedSingleTableExecutor implements RQLExecutor<ShowUn
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnloadedSingleTableStatement sqlStatement) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnloadedSingleTableStatement sqlStatement, final SingleRule rule) {
         Map<String, Collection<DataNode>> actualDataNodes = getActualDataNodes(database);
-        Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
-        if (singleRule.isPresent()) {
-            for (String each : singleRule.get().getLogicTableMapper().getTableNames()) {
-                actualDataNodes.remove(each.toLowerCase());
-            }
+        for (String each : rule.getLogicTableMapper().getTableNames()) {
+            actualDataNodes.remove(each.toLowerCase());
         }
-        actualDataNodes.forEach((key, value) -> result.add(new LocalDataQueryResultRow(key, value.iterator().next().getDataSourceName())));
-        return result;
+        return actualDataNodes.entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().iterator().next().getDataSourceName())).collect(Collectors.toList());
     }
     
     private Map<String, Collection<DataNode>> getActualDataNodes(final ShardingSphereDatabase database) {

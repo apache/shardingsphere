@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -108,7 +107,7 @@ class ShowDefaultShardingStrategyExecutorTest {
         assertThat(iterator.next(), is("sharding_algorithm_props"));
     }
     
-    private RuleConfiguration createRuleConfiguration1() {
+    private ShardingRuleConfiguration createRuleConfiguration1() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
@@ -116,7 +115,7 @@ class ShowDefaultShardingStrategyExecutorTest {
         return result;
     }
     
-    private RuleConfiguration createRuleConfiguration2() {
+    private ShardingRuleConfiguration createRuleConfiguration2() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("use_id", "database_inline"));

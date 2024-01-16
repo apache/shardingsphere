@@ -56,8 +56,8 @@ class ShowSingleTableExecutorTest {
     @BeforeEach
     void before() {
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
-        singleTableDataNodeMap.put("t_order", Collections.singletonList(new DataNode("ds_1", "t_order")));
-        singleTableDataNodeMap.put("t_order_item", Collections.singletonList(new DataNode("ds_2", "t_order_item")));
+        singleTableDataNodeMap.put("t_order", Collections.singleton(new DataNode("ds_1", "t_order")));
+        singleTableDataNodeMap.put("t_order_item", Collections.singleton(new DataNode("ds_2", "t_order_item")));
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Collections.singleton(mockSingleRule(singleTableDataNodeMap))));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
     }
@@ -79,8 +79,8 @@ class ShowSingleTableExecutorTest {
     @Test
     void assertGetRowDataMultipleRules() {
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
-        singleTableDataNodeMap.put("t_order_multiple", Collections.singletonList(new DataNode("ds_1_multiple", "t_order_multiple")));
-        singleTableDataNodeMap.put("t_order_item_multiple", Collections.singletonList(new DataNode("ds_2_multiple", "t_order_item_multiple")));
+        singleTableDataNodeMap.put("t_order_multiple", Collections.singleton(new DataNode("ds_1_multiple", "t_order_multiple")));
+        singleTableDataNodeMap.put("t_order_item_multiple", Collections.singleton(new DataNode("ds_2_multiple", "t_order_item_multiple")));
         addShardingSphereRule(mockSingleRule(singleTableDataNodeMap));
         RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
