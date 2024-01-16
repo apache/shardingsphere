@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -50,11 +49,9 @@ public final class ShowDefaultShadowAlgorithmExecutor extends RuleAwareRQLExecut
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDefaultShadowAlgorithmStatement sqlStatement, final ShadowRule rule) {
         String defaultAlgorithm = rule.getConfiguration().getDefaultShadowAlgorithmName();
-        Iterator<Entry<String, AlgorithmConfiguration>> data = rule.getConfiguration().getShadowAlgorithms().entrySet().stream().filter(each -> each.getKey().equals(defaultAlgorithm))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue)).entrySet().iterator();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (data.hasNext()) {
-            Entry<String, AlgorithmConfiguration> entry = data.next();
+        for (Entry<String, AlgorithmConfiguration> entry : rule.getConfiguration().getShadowAlgorithms().entrySet().stream()
+                .filter(each -> each.getKey().equals(defaultAlgorithm)).collect(Collectors.toMap(Entry::getKey, Entry::getValue)).entrySet()) {
             result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), convertToString(entry.getValue().getProps())));
         }
         return result;
