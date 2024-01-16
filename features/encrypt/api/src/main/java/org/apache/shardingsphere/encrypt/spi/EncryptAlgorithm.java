@@ -40,11 +40,8 @@ public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
      * @param cipherValue cipher value
      * @param encryptContext encrypt context
      * @return plain value
-     * @throws UnsupportedOperationException unsupportedOperationException
      */
-    default Object decrypt(Object cipherValue, EncryptContext encryptContext) {
-        throw new UnsupportedOperationException("Unsupported to decrypt");
-    }
+    Object decrypt(Object cipherValue, EncryptContext encryptContext);
     
     /**
      * Get meta data.

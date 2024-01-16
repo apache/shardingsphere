@@ -44,6 +44,11 @@ public final class CoreQueryLikeEncryptAlgorithmFixture implements EncryptAlgori
     }
     
     @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        throw new UnsupportedOperationException("Unsupported to decrypt");
+    }
+    
+    @Override
     public String getType() {
         return "CORE.QUERY_LIKE.FIXTURE";
     }

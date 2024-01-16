@@ -71,6 +71,7 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
         charIndexes = createCharIndexes(props);
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
         encryptAlgorithmMetaData.setSupportLike(true);
+        encryptAlgorithmMetaData.setSupportDecrypt(false);
         metaData = encryptAlgorithmMetaData;
     }
     
@@ -131,6 +132,11 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return null == plainValue ? null : digest(String.valueOf(plainValue));
+    }
+    
+    @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        throw new UnsupportedOperationException("Unsupported to decrypt");
     }
     
     private String digest(final String plainValue) {

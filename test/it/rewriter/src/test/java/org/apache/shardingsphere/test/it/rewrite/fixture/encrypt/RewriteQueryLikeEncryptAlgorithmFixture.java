@@ -33,12 +33,18 @@ public final class RewriteQueryLikeEncryptAlgorithmFixture implements EncryptAlg
     public void init(final Properties props) {
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
         encryptAlgorithmMetaData.setSupportLike(true);
+        encryptAlgorithmMetaData.setSupportDecrypt(false);
         metaData = encryptAlgorithmMetaData;
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return null == plainValue ? null : "like_query_" + plainValue;
+    }
+    
+    @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        throw new UnsupportedOperationException("Unsupported to decrypt");
     }
     
     @Override
