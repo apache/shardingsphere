@@ -181,13 +181,12 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     private void dispatchEvent(final DataChangedEventListener dataChangedEventListener, final WatchEvent event, final Type type) {
-        CompletableFuture.runAsync(() ->
-                dataChangedEventListener.onChange(new DataChangedEvent(event.getKeyValue().getKey().toString(StandardCharsets.UTF_8),
-                        event.getKeyValue().getValue().toString(StandardCharsets.UTF_8), type)), EVENT_LISTENER_EXECUTOR).whenComplete((unused, throwable) -> {
-                            if (null != throwable) {
-                                log.error("Dispatch event failed", throwable);
-                            }
-                        });
+        CompletableFuture.runAsync(() -> dataChangedEventListener.onChange(new DataChangedEvent(event.getKeyValue().getKey().toString(StandardCharsets.UTF_8),
+                event.getKeyValue().getValue().toString(StandardCharsets.UTF_8), type)), EVENT_LISTENER_EXECUTOR).whenComplete((unused, throwable) -> {
+                    if (null != throwable) {
+                        log.error("Dispatch event failed", throwable);
+                    }
+                });
     }
     
     @Override
