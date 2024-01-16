@@ -48,7 +48,8 @@ public final class ShowShadowAlgorithmsExecutor extends RuleAwareRQLExecutor<Sho
         String defaultAlgorithm = rule.getConfiguration().getDefaultShadowAlgorithmName();
         return rule.getConfiguration().getShadowAlgorithms().entrySet().stream()
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(),
-                        convertToString(entry.getValue().getProps()), Boolean.toString(entry.getKey().equals(defaultAlgorithm)))).collect(Collectors.toList());
+                        convertToString(entry.getValue().getProps()), Boolean.toString(entry.getKey().equals(defaultAlgorithm))))
+                .collect(Collectors.toList());
     }
     
     private String convertToString(final Properties props) {
