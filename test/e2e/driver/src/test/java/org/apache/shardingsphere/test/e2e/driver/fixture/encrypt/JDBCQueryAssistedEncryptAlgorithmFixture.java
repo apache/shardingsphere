@@ -35,6 +35,7 @@ public final class JDBCQueryAssistedEncryptAlgorithmFixture implements EncryptAl
         encryptAlgorithmMetaData.setSupportDecrypt(false);
         metaData = encryptAlgorithmMetaData;
     }
+    
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
