@@ -44,7 +44,7 @@ public final class RewriteQueryLikeEncryptAlgorithmFixture implements EncryptAlg
     
     @Override
     public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
-        throw new UnsupportedOperationException("Unsupported to decrypt");
+        throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
     }
     
     @Override

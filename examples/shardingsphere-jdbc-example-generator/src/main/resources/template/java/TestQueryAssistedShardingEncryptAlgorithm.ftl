@@ -47,6 +47,11 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptA
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
     }
+
+    @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
+    }
     
     @Override
     public String getType() {
