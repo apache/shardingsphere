@@ -46,7 +46,7 @@ class ShowGlobalClockRuleExecutorTest {
     void assertGlobalClockRule() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowGlobalClockRuleExecutor executor = new ShowGlobalClockRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowGlobalClockRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowGlobalClockRuleStatement.class), metaData);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

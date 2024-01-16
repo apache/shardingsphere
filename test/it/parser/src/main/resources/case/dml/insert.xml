@@ -2952,6 +2952,42 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_with_nchar_4">
+        <table name="@table1" start-index="7" stop-index="13"/>
+        <columns start-index="15" stop-index="32">
+            <column name="c2" start-index="16" stop-index="17"/>
+            <column name="is_transient" start-index="20" stop-index="31"/>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="sample durable" start-index="42" stop-index="58"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="0" start-index="61" stop-index="61"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_nchar_5">
+        <table name="@table1" start-index="7" stop-index="13"/>
+        <columns start-index="15" stop-index="32">
+            <column name="c2" start-index="16" stop-index="17"/>
+            <column name="is_transient" start-index="20" stop-index="31"/>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="sample non-durable" start-index="42" stop-index="62"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="65" stop-index="65"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_data_base_name">
         <table name="VariableTest" start-index="12" stop-index="46">
             <owner name="dbo" start-index="31" stop-index="33">
@@ -3004,5 +3040,183 @@
                 </assignment-value>
             </value>
         </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_db_schema_name">
+        <table name="Affiliation" start-index="12" stop-index="43">
+            <owner name="dbo" start-index="29" stop-index="31">
+                <owner name="ContosoWarehouse" start-index="12" stop-index="27"/>
+            </owner>
+        </table>
+        <columns start-index="44" stop-index="44"/>
+        <select>
+            <projections start-index="52" stop-index="52">
+                <shorthand-projection start-index="52" stop-index="52"/>
+            </projections>
+            <from>
+                <simple-table name="Affiliation" start-index="59" stop-index="86">
+                    <owner name="dbo" start-index="72" stop-index="74">
+                        <owner name="My_Lakehouse" start-index="59" stop-index="70"/>
+                    </owner>
+                </simple-table>
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_with_exec">
+        <table name="iris_rx_data" start-index="12" stop-index="23" />
+        <columns start-index="25" stop-index="98">
+            <column name="Sepal.Length" start-delimiter="&quot;" end-delimiter="&quot;" start-index="26" stop-index="39"/>
+            <column name="Sepal.Width" start-delimiter="&quot;" end-delimiter="&quot;" start-index="42" stop-index="54"/>
+            <column name="Petal.Length" start-delimiter="&quot;" end-delimiter="&quot;" start-index="57" stop-index="70"/>
+            <column name="Petal.Width" start-delimiter="&quot;" end-delimiter="&quot;" start-index="73" stop-index="85"/>
+            <column name="Species" start-delimiter="&quot;" end-delimiter="&quot;" start-index="89" stop-index="97"/>
+        </columns>
+        <exec name="sp_execute_external_script" start-index="100" stop-index="183">
+            <parameter>
+                <binary-operation-expression start-index="135" stop-index="150">
+                    <left>
+                        <column start-index="135" stop-index="143" name="@language" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="R" start-index="147" stop-index="150" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="154" stop-index="183">
+                    <left>
+                        <column start-index="154" stop-index="160" name="@script" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="iris_data &lt;- iris" start-index="164" stop-index="183" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+        </exec>
+    </insert>
+
+    <insert sql-case-id="insert_into_temp_table">
+        <table name="#NonExistentTable" start-index="12" stop-index="28"/>
+        <columns start-index="29" stop-index="29"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="10" start-index="38" stop-index="39"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_temp_table_with_null_value">
+        <columns start-index="28" stop-index="28"/>
+        <table name="#SampleTempTable" start-index="12" stop-index="27"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="10" start-index="37" stop-index="38"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="41" stop-index="44"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_temp_table_with_all_null_value">
+        <columns start-index="28" stop-index="28"/>
+        <table name="#SampleTempTable" start-index="12" stop-index="27"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="37" stop-index="40"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="43" stop-index="46"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_exec_mtcars">
+        <table name="MTCars" start-index="12" stop-index="21">
+            <owner name="dbo" start-index="12" stop-index="14"/>
+        </table>
+        <columns start-index="22" stop-index="22" />
+        <exec name="sp_execute_external_script" start-index="23" stop-index="156">
+            <parameter>
+                <binary-operation-expression start-index="55" stop-index="70">
+                    <left>
+                        <column name="@language" start-index="55" stop-index="63" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="R" start-index="67" stop-index="70" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="73" stop-index="101">
+                    <left>
+                        <column name="@script" start-index="73" stop-index="79" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="MTCars &lt;- mtcars" start-index="83" stop-index="101" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="105" stop-index="123">
+                    <left>
+                        <column name="@input_data_1" start-index="105" stop-index="117" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="" start-index="121" stop-index="123" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="126" stop-index="156">
+                    <left>
+                        <column name="@output_data_1_name" start-index="126" stop-index="144" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="MTCars" start-index="148" stop-index="156" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+        </exec>
+    </insert>
+
+    <insert sql-case-id="insert_with_exec_model">
+        <table name="GLM_models" start-index="12" stop-index="21" />
+        <columns start-index="22" stop-index="28">
+            <column name="model" start-index="23" stop-index="27" />
+        </columns>
+        <exec name="generate_GLM" start-index="30" stop-index="46" />
+    </insert>
+
+    <insert sql-case-id="insert_with_table_hint">
+        <table name="cci_target" start-index="12" stop-index="21" />
+        <columns start-index="37" stop-index="37"/>
+        <table-hints start-index="23" stop-index="36">
+            <table-hint value="TABLOCK" start-index="29" stop-index="35" />
+        </table-hints>
+        <select>
+            <projections start-index="45" stop-index="56">
+                <top-projection start-index="45" stop-index="54">
+                    <top-value value="300000" start-index="49" stop-index="54" />
+                </top-projection>
+                <shorthand-projection start-index="56" stop-index="56" />
+            </projections>
+            <from>
+                <simple-table name="staging" start-index="63" stop-index="69" />
+            </from>
+        </select>
     </insert>
 </sql-parser-test-cases>

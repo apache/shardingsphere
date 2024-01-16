@@ -24,7 +24,7 @@ TIME_UNIT
     ;
 
 IDENTIFIER_
-    : [A-Za-z\u0080-\uFF0B\uFF0D-\uFFFF]+[A-Za-z_$#0-9\u0080-\uFF0B\uFF0D-\uFFFF]*
+    : [A-Za-z\u0080-\u2FFF\u3001-\uFF0B\uFF0D-\uFFFF]+[A-Za-z_$#0-9\u0080-\u2FFF\u3001-\uFF0B\uFF0D-\uFFFF]*
     ;
 
 STRING_

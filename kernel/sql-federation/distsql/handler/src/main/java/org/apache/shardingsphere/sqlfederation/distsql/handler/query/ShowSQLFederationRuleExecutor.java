@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
@@ -31,20 +31,21 @@ import java.util.Collections;
 /**
  * Show SQL federation rule executor.
  */
-public final class ShowSQLFederationRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowSQLFederationRuleStatement> {
+public final class ShowSQLFederationRuleExecutor implements QueryableRALExecutor<ShowSQLFederationRuleStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowSQLFederationRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLFederationRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
         SQLFederationRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).getConfiguration();
         String sqlFederationEnabled = String.valueOf(ruleConfig.isSqlFederationEnabled());
+        String allQueryUseSQLFederation = String.valueOf(ruleConfig.isAllQueryUseSQLFederation());
         String executionPlanCache = null != ruleConfig.getExecutionPlanCache() ? ruleConfig.getExecutionPlanCache().toString() : "";
-        LocalDataQueryResultRow row = new LocalDataQueryResultRow(sqlFederationEnabled, executionPlanCache);
+        LocalDataQueryResultRow row = new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
         return Collections.singleton(row);
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("sql_federation_enabled", "execution_plan_cache");
+        return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache");
     }
     
     @Override

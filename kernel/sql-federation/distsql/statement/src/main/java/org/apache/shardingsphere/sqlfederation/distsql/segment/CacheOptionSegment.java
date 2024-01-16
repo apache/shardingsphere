@@ -19,14 +19,14 @@ package org.apache.shardingsphere.sqlfederation.distsql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 /**
  * Cache option segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CacheOptionSegment implements ASTNode {
+public final class CacheOptionSegment implements DistSQLSegment {
     
     private final Integer initialCapacity;
     

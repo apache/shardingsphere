@@ -17,13 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Setter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.SQLStatementSegment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Oracle create procedure statement.
  */
-@Setter
+@RequiredArgsConstructor
+@Getter
 public final class OracleCreateProcedureStatement extends CreateProcedureStatement implements OracleStatement {
+    
+    private final List<SQLStatementSegment> sqlStatements;
+    
+    private final List<ProcedureCallNameSegment> procedureCallNames;
+    
+    private final List<ExpressionSegment> dynamicSqlStatementExpressions;
+    
+    private final List<CursorForLoopStatementSegment> cursorForLoopStatements = new ArrayList<>();
 }

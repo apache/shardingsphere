@@ -75,7 +75,7 @@ public final class ShardingRouteAssert {
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType,
-                new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+                new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
         RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(shardingRule, singleRule, timestampServiceRule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, schemas);
         SQLStatementContext sqlStatementContext =

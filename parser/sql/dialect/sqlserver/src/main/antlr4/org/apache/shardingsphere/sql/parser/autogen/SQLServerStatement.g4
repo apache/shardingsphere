@@ -78,5 +78,6 @@ execute
     | explain
     | setUser
     | revert
+    | updateStatistics
     ) SEMI_?
     ;

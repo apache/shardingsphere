@@ -20,7 +20,9 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 import java.util.Optional;
@@ -34,6 +36,10 @@ public final class SQLServerInsertStatement extends InsertStatement implements S
     private WithSegment withSegment;
     
     private OutputSegment outputSegment;
+    
+    private ExecSegment execSegment;
+    
+    private WithTableHintSegment withTableHintSegment;
     
     /**
      * Get with segment.
@@ -51,5 +57,23 @@ public final class SQLServerInsertStatement extends InsertStatement implements S
      */
     public Optional<OutputSegment> getOutputSegment() {
         return Optional.ofNullable(outputSegment);
+    }
+    
+    /**
+     * Get execute segment.
+     *
+     * @return execute segment.
+     */
+    public Optional<ExecSegment> getExecSegment() {
+        return Optional.ofNullable(execSegment);
+    }
+    
+    /**
+     * Get with table hint segment.
+     *
+     * @return with table hint segment.
+     */
+    public Optional<WithTableHintSegment> getWithTableHintSegment() {
+        return Optional.ofNullable(withTableHintSegment);
     }
 }

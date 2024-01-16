@@ -20,7 +20,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.query;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,8 +52,9 @@ class ShowBroadcastTableRuleExecutorTest {
     }
     
     @Test
-    void assertGetRowDataWithoutMaskRule() {
+    void assertGetRowDataWithoutBroadcastRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findSingleRule(BroadcastRule.class)).thenReturn(Optional.empty());
         Collection<LocalDataQueryResultRow> actual = new ShowBroadcastTableRuleExecutor().getRows(database, mock(ShowBroadcastTableRulesStatement.class));
         assertTrue(actual.isEmpty());
     }

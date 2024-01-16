@@ -133,41 +133,18 @@ services:
 
 ## Observability
 
-- ShardingSphere for GraalVM Native Image form Proxy, which provides observability capabilities
-  with https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/
-  not consistent.
+ShardingSphere for GraalVM Native Image form Proxy, which provides observability capabilities
+with https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/
+not consistent.
 
-- You can observe GraalVM Native Image using a series of command line tools or visualization tools available
-  at https://www.graalvm.org/jdk17/tools/, and use VSCode to debug it according to its requirements.
-  If you are using IntelliJ IDEA and want to debug the generated GraalVM Native Image, You can follow
-  https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
-  and its successors. If you are not using Linux, you cannot debug GraalVM Native Image, please pay attention
-  to https://github.com/oracle/graal/issues/5648 which has not been closed yet.
+You can observe GraalVM Native Image using a series of command line tools or visualization tools available
+at https://www.graalvm.org/jdk17/tools/, and use VSCode to debug it according to its requirements.
+If you are using IntelliJ IDEA and want to debug the generated GraalVM Native Image, You can follow
+https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
+and its successors. If you are not using Linux, you cannot debug GraalVM Native Image, please pay attention
+to https://github.com/oracle/graal/issues/5648 which has not been closed yet.
 
-- In the case of using APM Java Agent such as `ShardingSphere Agent`,
-  GraalVM's `native-image` component is not yet fully supported when building Native Images
-  javaagent, you need to follow https://github.com/oracle/graal/issues/1065 which has not been closed.
+For the use of Java Agents such as `ShardingSphere Agent`, GraalVM's `native-image` component does not yet fully support building Native
+when using javaagent with Image, you need to pay attention to https://github.com/oracle/graal/issues/1065 which has not yet been closed.
 
-- The following sections use the `Apache SkyWalking Java Agent` as an example, which can be used to track corresponding
-  issues from the GraalVM community.
-
-1. Download https://archive.apache.org/dist/skywalking/java-agent/8.16.0/apache-skywalking-java-agent-8.16.0.tgz and `untar` it
-   to `distribution/proxy-native` in ShardingSphere Git Source.
-
-2. Modify the `native profile` of `distribution/proxy-native/pom.xml`,
-   Add the following `jvmArgs` to the `configuration` of `org.graalvm.buildtools:native-maven-plugin`.
-
-```xml
-
-<jvmArgs>
-    <arg>-Dskywalking.agent.service_name="your service name"</arg>
-    <arg>-Dskywalking.collector.backend_service="your skywalking oap ip and port"</arg>
-    <arg>-javaagent:./skywalking-agent/skywalking-agent.jar</arg>
-</jvmArgs>
-```
-
-3. Build the GraalVM Native Image from the command line.
-
-```bash
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
-```
+If users expect to use this type of Java Agent under ShardingSphere Proxy Native, they need to pay attention to the changes involved in https://github.com/oracle/graal/pull/8077 .

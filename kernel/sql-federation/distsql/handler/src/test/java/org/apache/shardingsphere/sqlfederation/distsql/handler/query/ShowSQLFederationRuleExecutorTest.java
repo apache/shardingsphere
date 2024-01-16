@@ -45,27 +45,29 @@ class ShowSQLFederationRuleExecutorTest {
     void assertSQLFederationRule() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowSQLFederationRuleExecutor executor = new ShowSQLFederationRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLFederationRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSQLFederationRuleStatement.class), metaData);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("true"));
-        assertThat(row.getCell(2), is("initialCapacity: 2000, maximumSize: 65535"));
+        assertThat(row.getCell(2), is("true"));
+        assertThat(row.getCell(3), is("initialCapacity: 2000, maximumSize: 65535"));
     }
     
     @Test
     void assertGetColumnNames() {
         ShowSQLFederationRuleExecutor executor = new ShowSQLFederationRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
+        assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("sql_federation_enabled"));
+        assertThat(iterator.next(), is("all_query_use_sql_federation"));
         assertThat(iterator.next(), is("execution_plan_cache"));
     }
     
     private ShardingSphereMetaData mockMetaData() {
         SQLFederationRule sqlFederationRule = mock(SQLFederationRule.class);
-        when(sqlFederationRule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, new CacheOption(2000, 65535L)));
+        when(sqlFederationRule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, true, new CacheOption(2000, 65535L)));
         return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class),
                 new RuleMetaData(Collections.singleton(sqlFederationRule)), new ConfigurationProperties(new Properties()));
     }

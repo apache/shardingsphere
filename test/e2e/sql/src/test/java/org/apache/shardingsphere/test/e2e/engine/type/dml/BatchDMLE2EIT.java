@@ -39,7 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @E2ETestCaseSettings(value = SQLCommandType.DML, batch = true)
-class BatchDMLE2EIT {
+class BatchDMLE2EIT extends BaseDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -54,7 +54,7 @@ class BatchDMLE2EIT {
             try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
                 actualUpdateCounts = executeBatchForPreparedStatement(testParam, connection);
             }
-            containerComposer.assertDataSets(actualUpdateCounts);
+            assertDataSets(testParam, containerComposer, actualUpdateCounts);
         }
     }
     

@@ -32,10 +32,5 @@
   "condition":{"typeReachable":"com.mysql.cj.NativeSession"},
   "name":"com.mysql.cj.util.PerVmServerConfigCacheFactory",
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"com.mysql.cj.protocol.StandardSocketFactory"},
-  "name":"java.lang.Thread",
-  "fields":[{"name":"threadLocalRandomProbe"}]
 }
 ]

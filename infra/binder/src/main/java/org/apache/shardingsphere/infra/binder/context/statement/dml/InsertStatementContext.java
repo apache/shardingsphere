@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -142,7 +142,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         if (!onDuplicateKeyColumnsSegment.isPresent()) {
             return Optional.empty();
         }
-        Collection<AssignmentSegment> onDuplicateKeyColumns = onDuplicateKeyColumnsSegment.get().getColumns();
+        Collection<ColumnAssignmentSegment> onDuplicateKeyColumns = onDuplicateKeyColumnsSegment.get().getColumns();
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(onDuplicateKeyColumns, params, parametersOffset.get());
         parametersOffset.addAndGet(onDuplicateUpdateContext.getParameterCount());
         return Optional.of(onDuplicateUpdateContext);
@@ -223,7 +223,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
         List<String> result = new LinkedList<>();
-        for (AssignmentSegment each : setAssignment.getAssignments()) {
+        for (ColumnAssignmentSegment each : setAssignment.getAssignments()) {
             result.add(each.getColumns().get(0).getIdentifier().getValue().toLowerCase());
         }
         return result;
@@ -245,7 +245,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     private List<ExpressionSegment> getAllValueExpressionsFromSetAssignment(final SetAssignmentSegment setAssignment) {
         List<ExpressionSegment> result = new ArrayList<>(setAssignment.getAssignments().size());
-        for (AssignmentSegment each : setAssignment.getAssignments()) {
+        for (ColumnAssignmentSegment each : setAssignment.getAssignments()) {
             result.add(each.getValue());
         }
         return result;

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.cases.value;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.math.BigDecimal;
@@ -29,11 +28,11 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.UUID;
 
 /**
  * SQL value.
  */
-@Slf4j
 public final class SQLValue {
     
     @Getter
@@ -90,6 +89,8 @@ public final class SQLValue {
                 return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillsFormatter()));
             case "bytes":
                 return value.getBytes(StandardCharsets.UTF_8);
+            case "uuid":
+                return UUID.fromString(value);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
         }
@@ -111,6 +112,9 @@ public final class SQLValue {
         }
         if (value instanceof byte[]) {
             return formatString(new String((byte[]) value, StandardCharsets.UTF_8));
+        }
+        if (value instanceof UUID) {
+            return formatString(((UUID) value).toString());
         }
         return value.toString();
     }

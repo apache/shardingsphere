@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.test.natived.jdbc.databases;
 
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
+import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -43,20 +48,24 @@ class OpenGaussTest {
     
     private static final String JDBC_URL = "jdbc:opengauss://localhost:62390/" + DATABASE;
     
-    private static Process process;
-    
     private TestShardingService testShardingService;
     
+    @SuppressWarnings("resource")
     @Test
     @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException, IOException {
-        beforeAll();
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/opengauss.yaml"));
-        testShardingService = new TestShardingService(dataSource);
-        this.initEnvironment();
-        testShardingService.processSuccess();
-        testShardingService.cleanEnvironment();
-        tearDown();
+        try (
+                GenericContainer<?> openGaussContainer = new GenericContainer<>(DockerImageName.parse("opengauss/opengauss:5.0.0"))
+                        .withEnv("GS_PASSWORD", PASSWORD)
+                        .withCreateContainerCmdModifier(cmd -> cmd.withHostConfig(new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(62390), new ExposedPort(5432)))))) {
+            openGaussContainer.start();
+            beforeAll();
+            DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/opengauss.yaml"));
+            testShardingService = new TestShardingService(dataSource);
+            this.initEnvironment();
+            testShardingService.processSuccess();
+            testShardingService.cleanEnvironment();
+        }
     }
     
     private void initEnvironment() throws SQLException {
@@ -76,14 +85,7 @@ class OpenGaussTest {
     }
     
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
-    private static void beforeAll() throws IOException {
-        System.out.println("Starting OpenGauss ...");
-        process = new ProcessBuilder(
-                "docker", "run", "--rm", "-p", "62390:5432", "-e", "GS_PASSWORD=" + PASSWORD,
-                "opengauss/opengauss:5.0.0")
-                        .redirectOutput(new File("target/opengauss-stdout.txt"))
-                        .redirectError(new File("target/opengauss-stderr.txt"))
-                        .start();
+    private void beforeAll() {
         Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().until(() -> {
             openConnection().close();
             return true;
@@ -94,14 +96,6 @@ class OpenGaussTest {
             connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_2;");
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
-        System.out.println("OpenGauss started");
-    }
-    
-    private static void tearDown() {
-        if (null != process && process.isAlive()) {
-            System.out.println("Shutting down OpenGauss");
-            process.destroy();
         }
     }
 }

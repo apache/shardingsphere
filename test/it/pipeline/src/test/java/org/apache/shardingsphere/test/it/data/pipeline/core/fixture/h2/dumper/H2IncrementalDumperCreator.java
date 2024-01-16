@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.dumper;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
 
 import static org.mockito.Mockito.mock;
 
 /**
  * H2 incremental dumper creator.
  */
-public final class H2IncrementalDumperCreator implements IncrementalDumperCreator {
+public final class H2IncrementalDumperCreator implements DialectIncrementalDumperCreator {
     
     @Override
     public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,

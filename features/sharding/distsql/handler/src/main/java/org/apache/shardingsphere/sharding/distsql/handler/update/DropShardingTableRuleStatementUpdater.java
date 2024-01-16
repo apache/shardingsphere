@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
-import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -139,7 +139,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         findUnusedKeyGenerator(currentRuleConfig).forEach(each -> currentRuleConfig.getKeyGenerators().remove(each));
     }
     
-    private static Collection<String> findUnusedKeyGenerator(final ShardingRuleConfiguration currentRuleConfig) {
+    private Collection<String> findUnusedKeyGenerator(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedKeyGenerators = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
                 .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
         inUsedKeyGenerators.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
@@ -154,7 +154,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         findUnusedAuditors(currentRuleConfig).forEach(each -> currentRuleConfig.getAuditors().remove(each));
     }
     
-    private static Collection<String> findUnusedAuditors(final ShardingRuleConfiguration currentRuleConfig) {
+    private Collection<String> findUnusedAuditors(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAuditors = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getAuditStrategy).filter(Objects::nonNull)
                 .flatMap(each -> each.getAuditorNames().stream()).collect(Collectors.toSet());
         inUsedAuditors.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getAuditStrategy).filter(Objects::nonNull)

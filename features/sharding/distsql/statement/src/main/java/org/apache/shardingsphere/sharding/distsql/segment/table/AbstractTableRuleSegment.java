@@ -21,9 +21,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 import java.util.Collection;
 
@@ -34,7 +34,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public abstract class AbstractTableRuleSegment implements ASTNode {
+public abstract class AbstractTableRuleSegment implements DistSQLSegment {
     
     private final String logicTable;
     

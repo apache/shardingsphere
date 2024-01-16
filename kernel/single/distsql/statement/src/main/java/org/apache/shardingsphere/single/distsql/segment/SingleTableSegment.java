@@ -20,7 +20,7 @@ package org.apache.shardingsphere.single.distsql.segment;
 import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 import java.util.Optional;
 
@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SingleTableSegment implements ASTNode {
+public final class SingleTableSegment implements DistSQLSegment {
     
     private final String storageUnitName;
     

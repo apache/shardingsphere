@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
@@ -34,25 +34,29 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Show encrypt rule executor.
  */
-public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRulesStatement> {
+public final class ShowEncryptRuleExecutor extends RuleAwareRQLExecutor<ShowEncryptRulesStatement, EncryptRule> {
+    
+    public ShowEncryptRuleExecutor() {
+        super(EncryptRule.class);
+    }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowEncryptRulesStatement sqlStatement) {
-        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        if (rule.isPresent()) {
-            EncryptRuleConfiguration ruleConfig = rule.get().getConfiguration() instanceof CompatibleEncryptRuleConfiguration
-                    ? ((CompatibleEncryptRuleConfiguration) rule.get().getConfiguration()).convertToEncryptRuleConfiguration()
-                    : (EncryptRuleConfiguration) rule.get().getConfiguration();
-            result = buildData(ruleConfig, sqlStatement);
-        }
-        return result;
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("table", "logic_column", "cipher_column",
+                "assisted_query_column", "like_query_column", "encryptor_type", "encryptor_props", "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowEncryptRulesStatement sqlStatement, final EncryptRule rule) {
+        EncryptRuleConfiguration ruleConfig = rule.getConfiguration() instanceof CompatibleEncryptRuleConfiguration
+                ? ((CompatibleEncryptRuleConfiguration) rule.getConfiguration()).convertToEncryptRuleConfiguration()
+                : (EncryptRuleConfiguration) rule.getConfiguration();
+        return buildData(ruleConfig, sqlStatement);
     }
     
     private Collection<LocalDataQueryResultRow> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {
@@ -85,13 +89,6 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     
     private Object nullToEmptyString(final Object obj) {
         return null == obj ? "" : obj;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("table", "logic_column", "cipher_column",
-                "assisted_query_column", "like_query_column", "encryptor_type", "encryptor_props",
-                "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props");
     }
     
     @Override

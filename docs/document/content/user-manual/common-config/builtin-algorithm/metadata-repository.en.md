@@ -56,6 +56,16 @@ Attributes:
 
 ### Consul Repository
 
+Due to the limitation of the Maven module of `com.ecwid.consul:consul-api:1.4.5`, users cannot connect to the Consul Agent through the gRPC port.
+
+The `serverLists` property of the `Consul` implementation is by design and can only be connected to a single Consul Agent via an HTTP endpoint.
+`serverLists` uses relaxed URL matching principles.
+1. When `serverLists` is empty, it will be resolved to the Consul Agent instance of `http://127.0.0.1:8500`.
+2. When `serverLists` is `hostName`, it will be resolved to the Consul Agent instance of `http://hostName:8500`.
+3. When `serverLists` is `hostName:port`, it will be resolved to the Consul Agent instance of `http://hostName:port`.
+4. When `serverLists` is `http://hostName:port`, it will be resolved to the Consul Agent instance of `http://hostName:port`.
+5. When `serverLists` is `https://hostName:port`, it will be resolved to the Consul Agent instance of `https://hostName:port`.
+
 Type: Consul
 
 Mode: Cluster

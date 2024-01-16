@@ -60,7 +60,7 @@ public abstract class ExternalSQLParserIT {
                         .create(databaseType, SQLParserExternalITEnvironment.getInstance().getResultPath())) {
             try {
                 ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
-                new SQLStatementVisitorEngine(databaseType, true).visit(parseASTNode);
+                new SQLStatementVisitorEngine(databaseType).visit(parseASTNode);
                 isSuccess = true;
             } catch (final ShardingSphereExternalException | ClassCastException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
             } finally {

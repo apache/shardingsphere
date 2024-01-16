@@ -290,6 +290,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.SwitchStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.UnlistenStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.UpdateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CallStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CheckpointStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CopyStatementTestCase;
@@ -1735,6 +1736,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-profile")
     private final List<CreateProfileStatementTestCase> createProfileStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "update-statistics")
+    private final List<UpdateStatisticsStatementTestCase> updateStatisticsStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

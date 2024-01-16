@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,8 @@ class ShowComputeNodesExecutorTest {
     @Test
     void assertExecuteWithStandaloneMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(createStandaloneInstanceContext(), mock(ShowComputeNodesStatement.class));
+        executor.setInstanceContext(createStandaloneInstanceContext());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ShardingSphereMetaData.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));
@@ -78,7 +80,8 @@ class ShowComputeNodesExecutorTest {
     @Test
     void assertExecuteWithClusterMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(createClusterInstanceContext(), mock(ShowComputeNodesStatement.class));
+        executor.setInstanceContext(createClusterInstanceContext());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ShardingSphereMetaData.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));

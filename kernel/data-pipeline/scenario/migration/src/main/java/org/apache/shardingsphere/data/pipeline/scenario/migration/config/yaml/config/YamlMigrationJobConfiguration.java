@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.c
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.config.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.config.YamlPipelineJobConfiguration;
 
 import java.util.List;

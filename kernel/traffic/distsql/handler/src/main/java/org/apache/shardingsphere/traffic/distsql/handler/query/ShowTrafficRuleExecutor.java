@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,10 +34,10 @@ import java.util.LinkedList;
 /**
  * Show traffic rule executor.
  */
-public final class ShowTrafficRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowTrafficRulesStatement> {
+public final class ShowTrafficRuleExecutor implements QueryableRALExecutor<ShowTrafficRulesStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowTrafficRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowTrafficRulesStatement sqlStatement, final ShardingSphereMetaData metaData) {
         TrafficRule rule = metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         return buildData(rule.getConfiguration(), sqlStatement.getRuleName());
     }

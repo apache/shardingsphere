@@ -1,6 +1,6 @@
 +++
 title = "SQL Parser"
-weight = 7
+weight = 8
 +++
 
 ## Background
@@ -17,7 +17,6 @@ Attributes:
 
 | *name*                     | *DataType*  | *Description*                               |
 |----------------------------|-------------|---------------------------------------------|
-| sqlCommentParseEnabled (?) | boolean     | Whether to parse SQL comments               |
 | parseTreeCache (?)         | CacheOption | Parse syntax tree local cache configuration |
 | sqlStatementCache (?)      | CacheOption | sql statement local cache configuration     |
 
@@ -44,7 +43,7 @@ Attributes:
 CacheOption cacheOption = new CacheOption(128, 1024L);
 SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
 ParseASTNode parseASTNode = parserEngine.parse("SELECT t.id, t.name, t.age FROM table1 AS t ORDER BY t.id DESC;", false);
-SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("MySQL", false);
+SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("MySQL");
 MySQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
 System.out.println(sqlStatement.toString());
 ```

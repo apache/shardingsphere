@@ -21,4 +21,6 @@
     <flashback-database sql-case-id="flashback_database_to_timestamp" />
     <flashback-database sql-case-id="flashback_database_to_restore_point" />
     <flashback-database sql-case-id="flashback_database_to_before_resetlogs" />
+    <flashback-database sql-case-id="flashback_database_to_restore_point_string"/>
+    <flashback-database sql-case-id="flashback_only_database_to_scn" />
 </sql-parser-test-cases>

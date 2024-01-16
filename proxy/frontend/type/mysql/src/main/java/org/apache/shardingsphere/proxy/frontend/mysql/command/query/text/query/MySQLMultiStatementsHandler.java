@@ -101,7 +101,11 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
         SQLParserEngine sqlParserEngine = getSQLParserEngine();
         for (String each : extractMultiStatements(pattern, sql)) {
             SQLStatement eachSQLStatement = sqlParserEngine.parse(each, false);
-            ExecutionContext executionContext = createExecutionContext(createQueryContext(each, eachSQLStatement));
+            QueryContext queryContext = createQueryContext(each, eachSQLStatement);
+            if (null == connectionSession.getQueryContext()) {
+                connectionSession.setQueryContext(queryContext);
+            }
+            ExecutionContext executionContext = createExecutionContext(queryContext);
             if (null == anyExecutionContext) {
                 anyExecutionContext = executionContext;
             }

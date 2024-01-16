@@ -20,10 +20,11 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationListStatement;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,7 +38,7 @@ public final class ShowMigrationListExecutor implements QueryableRALExecutor<Sho
     private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement, final ShardingSphereMetaData metaData) {
         return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
                 each.getTableName(), each.getJobMetaData().getJobItemCount(),
                 each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),

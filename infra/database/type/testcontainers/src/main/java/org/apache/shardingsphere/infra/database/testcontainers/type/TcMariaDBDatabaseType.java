@@ -31,7 +31,7 @@ public final class TcMariaDBDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:tc:mariadb:");
+        return Collections.singleton("jdbc:tc:mariadb:");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class TcMariaDBDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public String getType() {
-        return "TestContainersMariaDB";
+        return "TC-MariaDB";
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseTimestampUtils;
@@ -97,16 +97,22 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     private AbstractRowEvent readTableEvent(final String mppData) {
         MppTableData mppTableData;
         mppTableData = JsonUtils.fromJsonString(mppData, MppTableData.class);
-        AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
-        switch (rowEventType) {
-            case IngestDataChangeType.INSERT:
+        PipelineSQLOperationType type;
+        try {
+            type = PipelineSQLOperationType.valueOf(rowEventType);
+        } catch (final IllegalArgumentException ex) {
+            throw new IngestException("Unknown rowEventType: " + rowEventType);
+        }
+        AbstractRowEvent result;
+        switch (type) {
+            case INSERT:
                 result = readWriteRowEvent(mppTableData);
                 break;
-            case IngestDataChangeType.UPDATE:
+            case UPDATE:
                 result = readUpdateRowEvent(mppTableData);
                 break;
-            case IngestDataChangeType.DELETE:
+            case DELETE:
                 result = readDeleteRowEvent(mppTableData);
                 break;
             default:

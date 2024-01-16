@@ -31,7 +31,7 @@ public final class TcOracleDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:tc:oracle:");
+        return Collections.singleton("jdbc:tc:oracle:");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class TcOracleDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public String getType() {
-        return "TestContainersOracle";
+        return "TC-Oracle";
     }
 }

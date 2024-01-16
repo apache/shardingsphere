@@ -22,5 +22,5 @@ package org.apache.shardingsphere.sql.parser.sql.common.enums;
  */
 public enum JoinType {
     
-    INNER, FULL, CROSS, LEFT, RIGHT, COMMA
+    INNER, FULL, CROSS, LEFT, RIGHT, COMMA, APPLY
 }

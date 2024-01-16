@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
@@ -126,7 +127,7 @@ public final class MySQLClient {
      */
     public synchronized boolean execute(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, true);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         return waitExpectedResponse(MySQLOKPacket.class).isPresent();
@@ -141,7 +142,7 @@ public final class MySQLClient {
      */
     public synchronized int executeUpdate(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         Optional<MySQLOKPacket> packet = waitExpectedResponse(MySQLOKPacket.class);
@@ -160,7 +161,7 @@ public final class MySQLClient {
      */
     public synchronized InternalResultSet executeQuery(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         Optional<InternalResultSet> result = waitExpectedResponse(InternalResultSet.class);
@@ -277,21 +278,19 @@ public final class MySQLClient {
     
     /**
      * Close netty channel.
+     *
+     * @return channel future
      */
-    public void closeChannel() {
+    public Optional<ChannelFuture> closeChannel() {
         if (null == channel || !channel.isOpen()) {
-            return;
+            return Optional.empty();
         }
-        try {
-            running = false;
-            channel.close().sync();
-            if (null != eventLoopGroup) {
-                eventLoopGroup.shutdownGracefully();
-            }
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            log.error("close channel interrupted", ex);
+        running = false;
+        ChannelFuture future = channel.close();
+        if (null != eventLoopGroup) {
+            eventLoopGroup.shutdownGracefully();
         }
+        return Optional.of(future);
     }
     
     private final class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
@@ -344,7 +343,7 @@ public final class MySQLClient {
         }
         
         @Override
-        public void channelInactive(final ChannelHandlerContext ctx) {
+        public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
             log.warn("MySQL binlog channel inactive");
             if (!running) {
                 return;
@@ -359,8 +358,11 @@ public final class MySQLClient {
             log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", fileName, position, cause);
         }
         
-        private void reconnect() {
-            closeChannel();
+        private void reconnect() throws ExecutionException, InterruptedException, TimeoutException {
+            Optional<ChannelFuture> futureOptional = closeChannel();
+            if (futureOptional.isPresent()) {
+                futureOptional.get().get(1, TimeUnit.SECONDS);
+            }
             if (reconnectTimes.incrementAndGet() > 3) {
                 log.warn("Exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
                 return;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.database.testcontainers.type;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
- * Abstract Database type in testcontainers-java.
+ * Database type for Testcontainer.
  * All jdbcUrl prefixes supported by testcontainers-java should extend this class.
  */
 public interface TestcontainersDatabaseType extends DatabaseType {
