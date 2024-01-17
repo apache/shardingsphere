@@ -20,8 +20,6 @@ package org.apache.shardingsphere.agent.core.plugin.jar;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.core.log.AgentLogger;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +31,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 
 /**
  * Plugin jar loader.
@@ -40,7 +39,7 @@ import java.util.jar.JarFile;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginJarLoader {
     
-    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(PluginJarLoader.class);
+    private static final Logger LOGGER = Logger.getLogger(PluginJarLoader.class.getName());
     
     /**
      * Load plugin jars.
@@ -54,7 +53,7 @@ public final class PluginJarLoader {
         Collection<JarFile> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new JarFile(each, true));
-            LOGGER.info("Loaded jar: {}", each.getName());
+            LOGGER.info(String.format("Loaded jar: %s", each.getName()));
         }
         return result;
     }
