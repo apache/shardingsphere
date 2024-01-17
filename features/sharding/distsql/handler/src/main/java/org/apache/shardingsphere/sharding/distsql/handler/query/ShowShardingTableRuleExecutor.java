@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,21 +59,21 @@ public final class ShowShardingTableRuleExecutor extends RuleAwareRQLExecutor<Sh
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesStatement sqlStatement, final ShardingRule rule) {
         String tableName = sqlStatement.getTableName();
-        Iterator<ShardingTableRuleConfiguration> tables;
-        Iterator<ShardingAutoTableRuleConfiguration> autoTables;
+        Collection<ShardingTableRuleConfiguration> tables;
+        Collection<ShardingAutoTableRuleConfiguration> autoTables;
         if (null == tableName) {
-            tables = rule.getConfiguration().getTables().iterator();
-            autoTables = rule.getConfiguration().getAutoTables().iterator();
+            tables = rule.getConfiguration().getTables();
+            autoTables = rule.getConfiguration().getAutoTables();
         } else {
-            tables = rule.getConfiguration().getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator();
-            autoTables = rule.getConfiguration().getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator();
+            tables = rule.getConfiguration().getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList());
+            autoTables = rule.getConfiguration().getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList());
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (tables.hasNext()) {
-            result.add(buildTableRowData(rule.getConfiguration(), tables.next()));
+        for (ShardingTableRuleConfiguration each : tables) {
+            result.add(buildTableRowData(rule.getConfiguration(), each));
         }
-        while (autoTables.hasNext()) {
-            result.add(buildAutoTableRowData(rule.getConfiguration(), autoTables.next()));
+        for (ShardingAutoTableRuleConfiguration each : autoTables) {
+            result.add(buildAutoTableRowData(rule.getConfiguration(), each));
         }
         return result;
     }

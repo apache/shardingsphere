@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
@@ -27,10 +26,8 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Show shadow algorithms executor.
@@ -48,14 +45,11 @@ public final class ShowShadowAlgorithmsExecutor extends RuleAwareRQLExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowAlgorithmsStatement sqlStatement, final ShadowRule rule) {
-        Iterator<Entry<String, AlgorithmConfiguration>> data = rule.getConfiguration().getShadowAlgorithms().entrySet().iterator();
         String defaultAlgorithm = rule.getConfiguration().getDefaultShadowAlgorithmName();
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (data.hasNext()) {
-            Entry<String, AlgorithmConfiguration> row = data.next();
-            result.add(new LocalDataQueryResultRow(row.getKey(), row.getValue().getType(), convertToString(row.getValue().getProps()), Boolean.toString(row.getKey().equals(defaultAlgorithm))));
-        }
-        return result;
+        return rule.getConfiguration().getShadowAlgorithms().entrySet().stream()
+                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(),
+                        convertToString(entry.getValue().getProps()), Boolean.toString(entry.getKey().equals(defaultAlgorithm))))
+                .collect(Collectors.toList());
     }
     
     private String convertToString(final Properties props) {
