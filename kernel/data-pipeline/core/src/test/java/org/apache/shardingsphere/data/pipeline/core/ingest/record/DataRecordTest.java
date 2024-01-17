@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.record;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.junit.jupiter.api.Test;
 
@@ -26,29 +26,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class DataRecordTest {
     
-    private DataRecord beforeDataRecord;
-    
-    private DataRecord afterDataRecord;
-    
     @Test
-    void assertKeyEqual() {
-        beforeDataRecord = new DataRecord(IngestDataChangeType.UPDATE, "t1", new IngestPlaceholderPosition(), 2);
+    void assertGetKeyWithUpdate() {
+        DataRecord beforeDataRecord = new DataRecord(PipelineSQLOperationType.UPDATE, "foo_tbl", new IngestPlaceholderPosition(), 1);
         beforeDataRecord.addColumn(new Column("id", 1, true, true));
-        beforeDataRecord.addColumn(new Column("name", "1", true, false));
-        afterDataRecord = new DataRecord(IngestDataChangeType.UPDATE, "t1", new IngestPlaceholderPosition(), 2);
-        afterDataRecord.addColumn(new Column("id", 1, true, true));
-        afterDataRecord.addColumn(new Column("name", "2", true, false));
+        DataRecord afterDataRecord = new DataRecord(PipelineSQLOperationType.UPDATE, "foo_tbl", new IngestPlaceholderPosition(), 1);
+        afterDataRecord.addColumn(new Column("id", 2, 1, true, true));
         assertThat(beforeDataRecord.getKey(), is(afterDataRecord.getKey()));
     }
     
     @Test
-    void assertOldKeyEqual() {
-        beforeDataRecord = new DataRecord(IngestDataChangeType.UPDATE, "t1", new IngestPlaceholderPosition(), 2);
-        beforeDataRecord.addColumn(new Column("id", 1, true, true));
-        beforeDataRecord.addColumn(new Column("name", "1", true, false));
-        afterDataRecord = new DataRecord(IngestDataChangeType.UPDATE, "t1", new IngestPlaceholderPosition(), 2);
-        afterDataRecord.addColumn(new Column("id", 1, 2, true, true));
-        afterDataRecord.addColumn(new Column("name", "2", true, false));
-        assertThat(beforeDataRecord.getKey(), is(afterDataRecord.getOldKey()));
+    void assertGetKeyWithDelete() {
+        DataRecord beforeDataRecord = new DataRecord(PipelineSQLOperationType.DELETE, "foo_tbl", new IngestPlaceholderPosition(), 1);
+        beforeDataRecord.addColumn(new Column("id", 1, 2, true, true));
+        DataRecord afterDataRecord = new DataRecord(PipelineSQLOperationType.DELETE, "foo_tbl", new IngestPlaceholderPosition(), 1);
+        afterDataRecord.addColumn(new Column("id", 1, 3, true, true));
+        assertThat(beforeDataRecord.getKey(), is(afterDataRecord.getKey()));
     }
 }

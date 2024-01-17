@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadwriteSplittingRulesStatement;
@@ -40,32 +40,24 @@ import java.util.Optional;
 /**
  * Show readwrite-splitting rule executor.
  */
-public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<ShowReadwriteSplittingRulesStatement> {
+public final class ShowReadwriteSplittingRuleExecutor extends RuleAwareRQLExecutor<ShowReadwriteSplittingRulesStatement, ReadwriteSplittingRule> {
     
-    private Map<String, Map<String, String>> exportableDataSourceMap = Collections.emptyMap();
+    public ShowReadwriteSplittingRuleExecutor() {
+        super(ReadwriteSplittingRule.class);
+    }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowReadwriteSplittingRulesStatement sqlStatement) {
-        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        if (rule.isPresent()) {
-            buildExportableMap(rule.get());
-            result = buildData(rule.get(), sqlStatement);
-        }
-        return result;
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "write_storage_unit_name", "read_storage_unit_names", "transactional_read_query_strategy", "load_balancer_type", "load_balancer_props");
     }
     
-    @SuppressWarnings("unchecked")
-    private void buildExportableMap(final ReadwriteSplittingRule rule) {
-        Map<String, Object> exportedData = rule.getExportData();
-        exportableDataSourceMap = (Map<String, Map<String, String>>) exportedData.get(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE);
-    }
-    
-    private Collection<LocalDataQueryResultRow> buildData(final ReadwriteSplittingRule rule, final ShowReadwriteSplittingRulesStatement sqlStatement) {
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowReadwriteSplittingRulesStatement sqlStatement, final ReadwriteSplittingRule rule) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        ReadwriteSplittingRuleConfiguration ruleConfig = (ReadwriteSplittingRuleConfiguration) rule.getConfiguration();
+        Map<String, Map<String, String>> exportableDataSourceMap = getExportableDataSourceMap(rule);
+        ReadwriteSplittingRuleConfiguration ruleConfig = rule.getConfiguration();
         ruleConfig.getDataSources().forEach(each -> {
-            LocalDataQueryResultRow dataItem = buildDataItem(each, getLoadBalancers(ruleConfig));
+            LocalDataQueryResultRow dataItem = buildDataItem(exportableDataSourceMap, each, getLoadBalancers(ruleConfig));
             if (null == sqlStatement.getRuleName() || sqlStatement.getRuleName().equalsIgnoreCase(each.getName())) {
                 result.add(dataItem);
             }
@@ -73,7 +65,13 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
         return result;
     }
     
-    private LocalDataQueryResultRow buildDataItem(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, AlgorithmConfiguration> loadBalancers) {
+    @SuppressWarnings("unchecked")
+    private Map<String, Map<String, String>> getExportableDataSourceMap(final ReadwriteSplittingRule rule) {
+        return (Map<String, Map<String, String>>) rule.getExportData().get(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE);
+    }
+    
+    private LocalDataQueryResultRow buildDataItem(final Map<String, Map<String, String>> exportableDataSourceMap,
+                                                  final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, AlgorithmConfiguration> loadBalancers) {
         String name = dataSourceRuleConfig.getName();
         Map<String, String> exportDataSources = exportableDataSourceMap.get(name);
         Optional<AlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
@@ -95,14 +93,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     }
     
     private String getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
-        return null == exportDataSources
-                ? Joiner.on(",").join(dataSourceRuleConfig.getReadDataSourceNames())
-                : exportDataSources.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES);
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "write_storage_unit_name", "read_storage_unit_names", "transactional_read_query_strategy", "load_balancer_type", "load_balancer_props");
+        return null == exportDataSources ? Joiner.on(",").join(dataSourceRuleConfig.getReadDataSourceNames()) : exportDataSources.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES);
     }
     
     @Override

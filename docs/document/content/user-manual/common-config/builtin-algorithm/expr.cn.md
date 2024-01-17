@@ -49,6 +49,14 @@ weight = 10
 7. `C` 代表 chronology 的缩写，意为日历系统，必须遵循 Java `java.time.chrono.Chronology#getId()` 的格式。
 例如：`Japanese`，`Minguo`，`ThaiBuddhist`。存在默认值为 `ISO`。
 
+对于 `C` 的 Key 对应的 Value 是否可用，这取决于 JVM 所处的系统环境。
+这意味着如果用户需要设置 `C=Japanese`，则可能需要在应用的启动类调用 `java.util.Locale.setDefault(java.util.Locale.JAPAN);` 以修改系统环境。
+讨论两种 JVM 环境。
+
+1. Hotspot JVM 在 RunTime 决定 `java.util.Locale.getDefault()` 的返回值。
+
+2. GraalVM Native Image 在 BuildTime 决定 `java.util.Locale.Locale.getDefault()` 的返回值，与 Hotspot JVM 的表现并不一致，参考 https://github.com/oracle/graal/issues/8022 。
+
 类型：INTERVAL
 
 用例：

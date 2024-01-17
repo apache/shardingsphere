@@ -22,8 +22,6 @@ mode:
     props:
       namespace: governance
       server-lists: localhost:62372
-      retryIntervalMilliseconds: 1000
-      timeToLiveSeconds: 1000
 
 dataSources:
   ds_0:

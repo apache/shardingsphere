@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.agent.jaeger.asserts;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.SpanTestCase;
@@ -42,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Span assert.
  */
-@Slf4j
 public final class SpanAssert {
     
     /**

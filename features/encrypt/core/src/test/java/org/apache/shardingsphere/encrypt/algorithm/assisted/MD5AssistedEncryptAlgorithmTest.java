@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -33,11 +32,11 @@ import static org.mockito.Mockito.mock;
 
 class MD5AssistedEncryptAlgorithmTest {
     
-    private AssistedEncryptAlgorithm encryptAlgorithm;
+    private EncryptAlgorithm encryptAlgorithm;
     
     @BeforeEach
     void setUp() {
-        encryptAlgorithm = (AssistedEncryptAlgorithm) TypedSPILoader.getService(EncryptAlgorithm.class, "MD5");
+        encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "MD5");
     }
     
     @Test

@@ -29,14 +29,6 @@ import java.util.Collection;
 public interface PipelineSink extends Closeable {
     
     /**
-     * Identifier matched or not.
-     *
-     * @param identifier sink identifier
-     * @return true if matched, otherwise false
-     */
-    boolean identifierMatched(Object identifier);
-    
-    /**
      * Write data.
      *
      * @param ackId ack id

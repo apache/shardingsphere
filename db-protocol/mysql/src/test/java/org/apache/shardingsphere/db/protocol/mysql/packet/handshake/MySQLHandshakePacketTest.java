@@ -129,7 +129,7 @@ class MySQLHandshakePacketTest {
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
         verify(payload).writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        verify(payload).writeInt2(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
+        verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         verify(payload).writeInt1(authPluginData.getAuthenticationPluginData().length + 1);
         verify(payload).writeReserved(10);
         verify(payload).writeStringNul(new String(authPluginData.getAuthenticationPluginDataPart2()));

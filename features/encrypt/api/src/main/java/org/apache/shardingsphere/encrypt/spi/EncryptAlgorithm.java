@@ -33,4 +33,20 @@ public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
      * @return cipher value
      */
     Object encrypt(Object plainValue, EncryptContext encryptContext);
+    
+    /**
+     * Decrypt.
+     *
+     * @param cipherValue cipher value
+     * @param encryptContext encrypt context
+     * @return plain value
+     */
+    Object decrypt(Object cipherValue, EncryptContext encryptContext);
+    
+    /**
+     * Get meta data.
+     *
+     * @return meta data.
+     */
+    EncryptAlgorithmMetaData getMetaData();
 }

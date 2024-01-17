@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.cache.ShardingCache;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateSharingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -67,7 +68,6 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -77,6 +77,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -89,19 +90,19 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
-    private final RuleConfiguration configuration;
+    private final ShardingRuleConfiguration configuration;
     
     private final Collection<String> dataSourceNames;
     
-    private final Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
+    private final Map<String, ShardingAlgorithm> shardingAlgorithms = new CaseInsensitiveMap<>();
     
-    private final Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
+    private final Map<String, KeyGenerateAlgorithm> keyGenerators = new CaseInsensitiveMap<>();
     
-    private final Map<String, ShardingAuditAlgorithm> auditors = new LinkedHashMap<>();
+    private final Map<String, ShardingAuditAlgorithm> auditors = new CaseInsensitiveMap<>();
     
-    private final Map<String, TableRule> tableRules = new LinkedHashMap<>();
+    private final Map<String, TableRule> tableRules = new CaseInsensitiveMap<>();
     
-    private final Map<String, BindingTableRule> bindingTableRules = new LinkedHashMap<>();
+    private final Map<String, BindingTableRule> bindingTableRules = new CaseInsensitiveMap<>();
     
     private final ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
     
@@ -129,6 +130,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         ruleConfig.getAuditors().forEach((key, value) -> auditors.put(key, TypedSPILoader.getService(ShardingAuditAlgorithm.class, value.getType(), value.getProps())));
         tableRules.putAll(createTableRules(ruleConfig.getTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(ruleConfig.getAutoTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
+        validateUniqueActualDataNodesInTableRules();
         bindingTableRules.putAll(createBindingTableRules(ruleConfig.getBindingTableGroups()));
         defaultDatabaseShardingStrategyConfig = createDefaultDatabaseShardingStrategyConfig(ruleConfig);
         defaultTableShardingStrategyConfig = createDefaultTableShardingStrategyConfig(ruleConfig);
@@ -148,6 +150,16 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
         logicalTableMapper = createLogicalTableMapper();
         actualTableMapper = createActualTableMapper();
+    }
+    
+    private void validateUniqueActualDataNodesInTableRules() {
+        Set<DataNode> uniqueActualDataNodes = new HashSet<>(tableRules.size(), 1L);
+        tableRules.forEach((key, value) -> {
+            DataNode sampleActualDataNode = value.getActualDataNodes().iterator().next();
+            ShardingSpherePreconditions.checkState(!uniqueActualDataNodes.contains(sampleActualDataNode),
+                    () -> new DuplicateSharingActualDataNodeException(key, sampleActualDataNode.getDataSourceName(), sampleActualDataNode.getTableName()));
+            uniqueActualDataNodes.add(sampleActualDataNode);
+        });
     }
     
     private ShardingStrategyConfiguration createDefaultDatabaseShardingStrategyConfig(final ShardingRuleConfiguration ruleConfig) {
@@ -177,9 +189,9 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {
-        Map<String, Collection<DataNode>> result = new HashMap<>(tableRules.size(), 1F);
+        Map<String, Collection<DataNode>> result = new CaseInsensitiveMap<>(tableRules.size(), 1F);
         for (TableRule each : tableRules.values()) {
-            result.put(each.getLogicTable().toLowerCase(), each.getActualDataNodes());
+            result.put(each.getLogicTable(), each.getActualDataNodes());
         }
         return result;
     }
@@ -210,7 +222,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private Map<String, TableRule> createTableRules(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return tableRuleConfigs.stream().map(each -> createTableRule(each, defaultKeyGenerateStrategyConfig))
-                .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, CaseInsensitiveMap::new));
     }
     
     private TableRule createTableRule(final ShardingTableRuleConfiguration tableRuleConfig, final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
@@ -228,7 +240,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     private Map<String, TableRule> createAutoTableRules(final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs,
                                                         final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return autoTableRuleConfigs.stream().map(each -> createAutoTableRule(defaultKeyGenerateStrategyConfig, each))
-                .collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, CaseInsensitiveMap::new));
     }
     
     private TableRule createAutoTableRule(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingAutoTableRuleConfiguration autoTableRuleConfig) {
@@ -252,7 +264,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         for (ShardingTableReferenceRuleConfiguration each : bindingTableGroups) {
             BindingTableRule bindingTableRule = createBindingTableRule(each.getReference());
             for (String logicTable : bindingTableRule.getAllLogicTables()) {
-                result.put(logicTable.toLowerCase(), bindingTableRule);
+                result.put(logicTable, bindingTableRule);
             }
         }
         return result;
@@ -260,7 +272,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
         Map<String, TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream()
-                .map(this::getTableRule).collect(Collectors.toMap(each -> each.getLogicTable().toLowerCase(), Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .map(this::getTableRule).collect(Collectors.toMap(TableRule::getLogicTable, Function.identity(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         BindingTableRule result = new BindingTableRule();
         result.getTableRules().putAll(tableRules);
         return result;
@@ -268,7 +280,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private boolean isValidBindingTableConfiguration(final Map<String, TableRule> tableRules, final BindingTableCheckedConfiguration checkedConfig) {
         for (ShardingTableReferenceRuleConfiguration each : checkedConfig.getBindingTableGroups()) {
-            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.getReference().toLowerCase());
+            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.getReference());
             if (bindingTables.size() <= 1) {
                 continue;
             }
@@ -394,10 +406,10 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return table rule
      */
     public Optional<TableRule> findTableRule(final String logicTableName) {
-        if (Strings.isNullOrEmpty(logicTableName) || !tableRules.containsKey(logicTableName.toLowerCase())) {
+        if (Strings.isNullOrEmpty(logicTableName) || !tableRules.containsKey(logicTableName)) {
             return Optional.empty();
         }
-        return Optional.of(tableRules.get(logicTableName.toLowerCase()));
+        return Optional.of(tableRules.get(logicTableName));
     }
     
     /**
@@ -495,7 +507,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return binding table rule
      */
     public Optional<BindingTableRule> findBindingTableRule(final String logicTableName) {
-        return Optional.ofNullable(bindingTableRules.get(logicTableName.toLowerCase()));
+        return Optional.ofNullable(bindingTableRules.get(logicTableName));
     }
     
     /**
@@ -523,7 +535,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return whether logic table is sharding table or not
      */
     public boolean isShardingTable(final String logicTableName) {
-        return tableRules.containsKey(logicTableName.toLowerCase());
+        return tableRules.containsKey(logicTableName);
     }
     
     /**
@@ -533,7 +545,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return whether all tables are in same data source or not
      */
     public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
-        Collection<String> dataSourceNames = logicTableNames.stream().map(each -> tableRules.get(each.toLowerCase()))
+        Collection<String> dataSourceNames = logicTableNames.stream().map(tableRules::get)
                 .filter(Objects::nonNull).flatMap(each -> each.getActualDataSourceNames().stream()).collect(Collectors.toSet());
         return 1 == dataSourceNames.size();
     }
@@ -561,7 +573,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return sharding column
      */
     public Optional<String> findShardingColumn(final String columnName, final String tableName) {
-        return Optional.ofNullable(tableRules.get(tableName.toLowerCase())).flatMap(optional -> findShardingColumn(optional, columnName));
+        return Optional.ofNullable(tableRules.get(tableName)).flatMap(optional -> findShardingColumn(optional, columnName));
     }
     
     private Optional<String> findShardingColumn(final TableRule tableRule, final String columnName) {
@@ -598,7 +610,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return whether given logic table column is generate key column or not
      */
     public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
-        return Optional.ofNullable(tableRules.get(tableName.toLowerCase())).filter(each -> isGenerateKeyColumn(each, columnName)).isPresent();
+        return Optional.ofNullable(tableRules.get(tableName)).filter(each -> isGenerateKeyColumn(each, columnName)).isPresent();
     }
     
     private boolean isGenerateKeyColumn(final TableRule tableRule, final String columnName) {
@@ -613,7 +625,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return column name of generated key
      */
     public Optional<String> findGenerateKeyColumnName(final String logicTableName) {
-        return Optional.ofNullable(tableRules.get(logicTableName.toLowerCase())).filter(each -> each.getGenerateKeyColumn().isPresent()).flatMap(TableRule::getGenerateKeyColumn);
+        return Optional.ofNullable(tableRules.get(logicTableName)).filter(each -> each.getGenerateKeyColumn().isPresent()).flatMap(TableRule::getGenerateKeyColumn);
     }
     
     /**
@@ -711,7 +723,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     @Override
     public Collection<DataNode> getDataNodesByTableName(final String tableName) {
-        return shardingTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
+        return shardingTableDataNodes.getOrDefault(tableName, Collections.emptyList());
     }
     
     @Override

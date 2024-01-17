@@ -462,7 +462,7 @@
             <simple-table name="t_order" start-index="29" stop-index="35" />
         </from>
     </select>
-    
+
     <select sql-case-id="select_with_lead_and_lag_function">
         <projections start-index="7" stop-index="123" literal-start-index="7" literal-stop-index="123">
             <column-projection name="hire_date" start-index="7" stop-index="15" literal-start-index="7" literal-stop-index="15" />
@@ -571,7 +571,7 @@
             <column-item name="customer_id" order-direction="ASC" start-index="80" stop-index="90" literal-start-index="80" literal-stop-index="90" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_pivot">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
@@ -589,6 +589,78 @@
                     </select>
                 </subquery>
             </subquery-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_string_split_function">
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="Product"  start-index="59" stop-index="65" />
+                </left>
+                <right>
+                    <function-table>
+                        <table-function function-name="STRING_SPLIT" text="STRING_SPLIT(Tags, ',')"/>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="52">
+            <column-projection name="value" alias="tag" start-index="7" stop-index="18" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="21" stop-index="28" alias="number_of_articles"/>
+        </projections>
+        <group-by>
+            <column-item name="value" start-index="112" stop-index="116"/>
+        </group-by>
+        <having start-index="118" stop-index="136">
+            <expr>
+                <binary-operation-expression start-index="125" stop-index="136">
+                    <left>
+                        <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="125" stop-index="132"/>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression start-index="136" stop-index="136" value="2"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <expression-item expression="COUNT(*)" order-direction="DESC"  start-index="147" stop-index="154"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_from_open_json_function">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="101">
+            <function-table start-index="14" stop-index="102" table-alias="months">
+                <table-function text="OPENJSON(@array) WITH (  month VARCHAR(3), temp int, month_id tinyint '$.sql:identity()')" function-name="OPENJSON">
+                    <parameter>
+                        <column name="@array" start-index="23" stop-index="28"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_open_json_function_with_path">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="key" start-index="7" stop-index="11" start-delimiter='[' end-delimiter=']'/>
+            <column-projection name="value" start-index="14" stop-index="18"/>
+        </projections>
+        <from start-index="25" stop-index="64">
+            <function-table start-index="25" stop-index="64">
+                <table-function text="OPENJSON(@json,'$.path.to.&quot;sub-object&quot;')" function-name="OPENJSON">
+                    <parameter>
+                        <column name="@json" start-index="34" stop-index="38"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="$.path.to.&quot;sub-object&quot;" start-index="40" stop-index="63"/>
+                    </parameter>
+                </table-function>
+            </function-table>
         </from>
     </select>
 </sql-parser-test-cases>

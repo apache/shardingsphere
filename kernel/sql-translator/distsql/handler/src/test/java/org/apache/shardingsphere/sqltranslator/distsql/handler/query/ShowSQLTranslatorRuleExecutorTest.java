@@ -44,7 +44,7 @@ class ShowSQLTranslatorRuleExecutorTest {
     void assertExecute() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowSQLTranslatorRuleExecutor executor = new ShowSQLTranslatorRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLTranslatorRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSQLTranslatorRuleStatement.class), metaData);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

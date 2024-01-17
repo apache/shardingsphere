@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -31,19 +31,18 @@ import java.util.Collections;
 /**
  * Show SQL parser rule executor.
  */
-public final class ShowSQLParserRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowSQLParserRuleStatement> {
+public final class ShowSQLParserRuleExecutor implements QueryableRALExecutor<ShowSQLParserRuleStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowSQLParserRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLParserRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
         SQLParserRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(String.valueOf(ruleConfig.isSqlCommentParseEnabled()),
-                null != ruleConfig.getParseTreeCache() ? ruleConfig.getParseTreeCache().toString() : "",
+        return Collections.singleton(new LocalDataQueryResultRow(null != ruleConfig.getParseTreeCache() ? ruleConfig.getParseTreeCache().toString() : "",
                 null != ruleConfig.getSqlStatementCache() ? ruleConfig.getSqlStatementCache().toString() : ""));
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("sql_comment_parse_enabled", "parse_tree_cache", "sql_statement_cache");
+        return Arrays.asList("parse_tree_cache", "sql_statement_cache");
     }
     
     @Override

@@ -20,5 +20,5 @@
         <column name="data_source_name" />
         <column name="actual_sql" />
     </metadata>
-    <row values="write_ds_0| /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME = write_ds_0, SKIP_SQL_REWRITE = true */ SELECT * FROM t_user_item" />
+    <row values="write_ds_0| SELECT * FROM t_user_item" />
 </dataset>

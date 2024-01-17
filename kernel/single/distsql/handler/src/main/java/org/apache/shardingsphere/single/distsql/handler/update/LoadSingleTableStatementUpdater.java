@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -138,7 +138,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
         }
     }
     
-    private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
+    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
                 .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }

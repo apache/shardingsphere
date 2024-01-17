@@ -23,7 +23,6 @@ authority:
     type: ALL_PERMITTED
 
 sqlParser:
-  sqlCommentParseEnabled: true
   sqlStatementCache:
     initialCapacity: 2000
     maximumSize: 65535
@@ -32,7 +31,7 @@ sqlParser:
     maximumSize: 1024
 
 sqlFederation:
-  sqlFederationEnabled: true
+  sqlFederationEnabled: false
   executionPlanCache:
     initialCapacity: 2000
     maximumSize: 65535

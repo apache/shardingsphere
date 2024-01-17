@@ -11,7 +11,6 @@ The SQL parser YAML configuration is readable and easy to use. The YAML files al
 
 ```yaml
 sqlParser:
-  sqlCommentParseEnabled: # Whether to parse SQL comments 
   sqlStatementCache: # SQL statement local cache
     initialCapacity: # Initial capacity of local cache
     maximumSize: # Maximum capacity of local cache
@@ -28,7 +27,6 @@ sqlParser:
 ## Sample
 ```yaml
 sqlParser:
-  sqlCommentParseEnabled: true
   sqlStatementCache:
     initialCapacity: 2000
     maximumSize: 65535

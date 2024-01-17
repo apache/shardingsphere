@@ -204,7 +204,8 @@ class PostgreSQLAuthenticationEngineTest {
     }
     
     private RuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
+                Collections.singleton(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null);
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class));
         return new RuleMetaData(Collections.singleton(rule));
     }

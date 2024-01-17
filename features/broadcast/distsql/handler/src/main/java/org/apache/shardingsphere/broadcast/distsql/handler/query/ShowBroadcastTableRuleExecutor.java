@@ -19,31 +19,31 @@ package org.apache.shardingsphere.broadcast.distsql.handler.query;
 
 import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Show broadcast table rule executor.
  */
-public final class ShowBroadcastTableRuleExecutor implements RQLExecutor<ShowBroadcastTableRulesStatement> {
+public final class ShowBroadcastTableRuleExecutor extends RuleAwareRQLExecutor<ShowBroadcastTableRulesStatement, BroadcastRule> {
     
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowBroadcastTableRulesStatement sqlStatement) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Optional<BroadcastRule> rule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
-        rule.ifPresent(optional -> optional.getConfiguration().getTables().forEach(each -> result.add(new LocalDataQueryResultRow(each))));
-        return result;
+    public ShowBroadcastTableRuleExecutor() {
+        super(BroadcastRule.class);
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Collections.singleton("broadcast_table");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowBroadcastTableRulesStatement sqlStatement, final BroadcastRule rule) {
+        return rule.getConfiguration().getTables().stream().map(LocalDataQueryResultRow::new).collect(Collectors.toList());
     }
     
     @Override

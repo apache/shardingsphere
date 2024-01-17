@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -30,25 +30,28 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
  * Show unused sharding algorithms executor.
  */
-public final class ShowUnusedShardingAlgorithmsExecutor implements RQLExecutor<ShowUnusedShardingAlgorithmsStatement> {
+public final class ShowUnusedShardingAlgorithmsExecutor extends RuleAwareRQLExecutor<ShowUnusedShardingAlgorithmsStatement, ShardingRule> {
+    
+    public ShowUnusedShardingAlgorithmsExecutor() {
+        super(ShardingRule.class);
+    }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingAlgorithmsStatement sqlStatement) {
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!rule.isPresent()) {
-            return Collections.emptyList();
-        }
-        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) rule.get().getConfiguration();
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "type", "props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingAlgorithmsStatement sqlStatement, final ShardingRule rule) {
+        ShardingRuleConfiguration shardingRuleConfig = rule.getConfiguration();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<String> inUsedAlgorithms = getUsedShardingAlgorithms(shardingRuleConfig);
         for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getShardingAlgorithms().entrySet()) {
@@ -79,11 +82,6 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements RQLExecutor<S
             result.add(databaseShardingStrategy.getShardingAlgorithmName());
         }
         return result;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "props");
     }
     
     private String buildProps(final Properties props) {

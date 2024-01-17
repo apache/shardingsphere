@@ -19,14 +19,13 @@ package org.apache.shardingsphere.distsql.segment;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * Transmission rule segment.
  */
 @Getter
 @Setter
-public final class TransmissionRuleSegment implements ASTNode {
+public final class TransmissionRuleSegment implements DistSQLSegment {
     
     private ReadOrWriteSegment readSegment;
     

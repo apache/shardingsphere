@@ -21,8 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.loader.YamlAdvisorsConfigurationLoader;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper.YamlAdvisorsConfigurationSwapper;
-import org.apache.shardingsphere.agent.core.log.AgentLogger;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
 
 import java.io.File;
@@ -31,6 +29,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 
 /**
  * Advisor configuration loader.
@@ -38,7 +37,7 @@ import java.util.jar.JarFile;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
     
-    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(AdvisorConfigurationLoader.class);
+    private static final Logger LOGGER = Logger.getLogger(AdvisorConfigurationLoader.class.getName());
     
     /**
      * Load advisor configurations.
@@ -53,7 +52,7 @@ public final class AdvisorConfigurationLoader {
         for (String each : pluginTypes) {
             InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each);
             if (null == advisorsResourceStream) {
-                LOGGER.info("No configuration of advisor for type `{}`.", each);
+                LOGGER.info(String.format("No configuration of advisor for type `%s`.", each));
             } else {
                 mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each));
             }

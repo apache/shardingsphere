@@ -23,7 +23,6 @@ authority:
     type: ALL_PERMITTED
 
 sqlParser:
-  sqlCommentParseEnabled: true
   sqlStatementCache:
     initialCapacity: 2000
     maximumSize: 65535

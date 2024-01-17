@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GranteeTest {
     
@@ -40,7 +41,6 @@ class GranteeTest {
     void assertEquals() {
         Grantee grantee = new Grantee("name", "%");
         assertThat(grantee, is(new Grantee("name", "")));
-        assertThat(grantee, is(new Grantee("name", "127.0.0.1")));
     }
     
     @Test
@@ -62,6 +62,13 @@ class GranteeTest {
     void assertToString() {
         assertThat(new Grantee("name", "127.0.0.1").toString(), is("name@127.0.0.1"));
         assertThat(new Grantee("name", "%").toString(), is("name@%"));
-        assertThat(new Grantee("name", "").toString(), is("name@"));
+        assertThat(new Grantee("name", "").toString(), is("name@%"));
+    }
+    
+    @Test
+    void assertAccept() {
+        Grantee grantee = new Grantee("name", "%");
+        assertTrue(grantee.accept(new Grantee("name", "")));
+        assertTrue(grantee.accept(new Grantee("name", "127.0.0.1")));
     }
 }
