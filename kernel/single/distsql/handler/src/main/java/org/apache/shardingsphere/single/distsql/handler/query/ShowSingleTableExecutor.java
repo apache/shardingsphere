@@ -49,7 +49,7 @@ public final class ShowSingleTableExecutor implements RQLExecutor<ShowSingleTabl
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowSingleTableStatement sqlStatement) {
         SingleRule singleRule = database.getRuleMetaData().getSingleRule(SingleRule.class);
         Map<String, Collection<DataNode>> singleTableNodes = singleRule.getSingleTableDataNodes();
-        return getRows(singleTableNodes, sqlStatement) ;
+        return getRows(singleTableNodes, sqlStatement);
     }
     
     private Collection<LocalDataQueryResultRow> getRows(final Map<String, Collection<DataNode>> singleTableNodes, final ShowSingleTableStatement sqlStatement) {
