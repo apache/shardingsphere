@@ -1452,6 +1452,5 @@
                 </binary-operation-expression>
             </expr>
         </where>
-
     </update>
 </sql-parser-test-cases>
