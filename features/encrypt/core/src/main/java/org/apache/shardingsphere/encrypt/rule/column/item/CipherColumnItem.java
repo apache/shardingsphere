@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rule.column.item;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +35,7 @@ public final class CipherColumnItem {
     
     private final String name;
     
-    private final StandardEncryptAlgorithm encryptor;
+    private final EncryptAlgorithm encryptor;
     
     /**
      * Encrypt.

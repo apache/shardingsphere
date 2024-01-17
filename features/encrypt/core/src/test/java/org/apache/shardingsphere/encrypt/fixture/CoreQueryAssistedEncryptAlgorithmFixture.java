@@ -17,14 +17,33 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
-public final class CoreQueryAssistedEncryptAlgorithmFixture implements AssistedEncryptAlgorithm {
+import java.util.Properties;
+
+@Getter
+public final class CoreQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
+    
+    private EncryptAlgorithmMetaData metaData;
+    
+    @Override
+    public void init(final Properties props) {
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
+        encryptAlgorithmMetaData.setSupportDecrypt(false);
+        metaData = encryptAlgorithmMetaData;
+    }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
     }
     
     @Override
