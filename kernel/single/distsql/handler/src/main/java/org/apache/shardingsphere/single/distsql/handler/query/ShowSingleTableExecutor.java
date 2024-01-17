@@ -53,21 +53,30 @@ public final class ShowSingleTableExecutor implements RQLExecutor<ShowSingleTabl
     }
     
     private Collection<LocalDataQueryResultRow> getRows(final Map<String, Collection<DataNode>> singleTableNodes, final ShowSingleTableStatement sqlStatement) {
-        Collection<DataNode> resultDataNodes = new LinkedList<>();
         Optional<Pattern> pattern = getPattern(sqlStatement);
-        for (final Entry<String, Collection<DataNode>> entry : singleTableNodes.entrySet()) {
-            if (pattern.isPresent()) {
-                if (pattern.get().matcher(entry.getKey()).matches()) {
-                    resultDataNodes.add(entry.getValue().iterator().next());
-                }
-            } else {
-                if (!sqlStatement.getTableName().isPresent() || sqlStatement.getTableName().get().equalsIgnoreCase(entry.getKey())) {
-                    resultDataNodes.add(entry.getValue().iterator().next());
-                }
-            }
-        }
+        Collection<DataNode> resultDataNodes = pattern.isPresent() ? getDataNodesWithLikePattern(singleTableNodes, pattern.get()) : getDataNodes(singleTableNodes, sqlStatement);
         Collection<DataNode> sortedDataNodes = resultDataNodes.stream().sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
         return sortedDataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
+    }
+    
+    private Collection<DataNode> getDataNodesWithLikePattern(final Map<String, Collection<DataNode>> singleTableNodes, final Pattern pattern) {
+        Collection<DataNode> result = new LinkedList<>();
+        for (final Entry<String, Collection<DataNode>> entry : singleTableNodes.entrySet()) {
+            if (pattern.matcher(entry.getKey()).matches()) {
+                result.add(entry.getValue().iterator().next());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<DataNode> getDataNodes(final Map<String, Collection<DataNode>> singleTableNodes, final ShowSingleTableStatement sqlStatement) {
+        Collection<DataNode> result = new LinkedList<>();
+        for (final Entry<String, Collection<DataNode>> entry : singleTableNodes.entrySet()) {
+            if (!sqlStatement.getTableName().isPresent() || sqlStatement.getTableName().get().equalsIgnoreCase(entry.getKey())) {
+                result.add(entry.getValue().iterator().next());
+            }
+        }
+        return result;
     }
     
     private Optional<Pattern> getPattern(final ShowSingleTableStatement sqlStatement) {
