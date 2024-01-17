@@ -54,7 +54,7 @@ public final class ShowSingleTableExecutor implements RQLExecutor<ShowSingleTabl
     
     private Collection<LocalDataQueryResultRow> getRows(final Map<String, Collection<DataNode>> singleTableNodes, final ShowSingleTableStatement sqlStatement) {
         Optional<Pattern> pattern = getPattern(sqlStatement);
-        Collection<DataNode> resultDataNodes = pattern.isPresent() ? getDataNodesWithLikePattern(singleTableNodes, pattern.get()) : getDataNodes(singleTableNodes, sqlStatement);
+        Collection<DataNode> resultDataNodes = pattern.map(optional -> getDataNodesWithLikePattern(singleTableNodes, optional)).orElseGet(() -> getDataNodes(singleTableNodes, sqlStatement));
         Collection<DataNode> sortedDataNodes = resultDataNodes.stream().sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
         return sortedDataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
     }
