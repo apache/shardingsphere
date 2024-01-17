@@ -46,13 +46,13 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket impl
     
     private final HintValueContext hintValueContext;
     
-    public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
+    public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload) {
         this.payload = payload;
         payload.readInt4();
         statementId = payload.readStringNul();
         String originSQL = payload.readStringNul();
-        hintValueContext = sqlCommentParseEnabled ? new HintValueContext() : SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
-        sql = sqlCommentParseEnabled ? originSQL : SQLHintUtils.removeHint(originSQL);
+        hintValueContext = SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        sql = SQLHintUtils.removeHint(originSQL);
     }
     
     /**

@@ -59,7 +59,7 @@ public interface GlobalPersistService<T> {
      * @param ruleName rule name
      * @return single rule configuration
      */
-    default RuleConfiguration load(String ruleName) {
+    default RuleConfiguration load(final String ruleName) {
         return null;
     }
     

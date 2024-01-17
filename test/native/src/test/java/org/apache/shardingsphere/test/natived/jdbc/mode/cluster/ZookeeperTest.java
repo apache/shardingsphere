@@ -43,6 +43,13 @@ class ZookeeperTest {
     
     private TestShardingService testShardingService;
     
+    /**
+     * TODO On low-performance devices in Github Actions, `INSERT` related SQLs may throw a table not found error under nativeTest.
+     *  So that we need to wait for a period of time after executing `CREATE TABLE` related SQLs before executing `INSERT` related SQLs.
+     *  This may mean that the implementation of {@link org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository} needs optimization.
+     *
+     * @see org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository
+     */
     @SuppressWarnings("resource")
     @Test
     @EnabledInNativeImage
@@ -51,10 +58,14 @@ class ZookeeperTest {
                 GenericContainer<?> zookeeperContainer = new GenericContainer<>(DockerImageName.parse("zookeeper:3.9.1-jre-17"))
                         .withCreateContainerCmdModifier(cmd -> cmd.withHostConfig(new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(62372), new ExposedPort(2181)))))) {
             zookeeperContainer.start();
-            this.beforeAll();
+            beforeAll();
             DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/mode/cluster/zookeeper.yaml"));
             testShardingService = new TestShardingService(dataSource);
-            this.initEnvironment();
+            initEnvironment();
+            Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
+                dataSource.getConnection().close();
+                return true;
+            });
             testShardingService.processSuccess();
             testShardingService.cleanEnvironment();
         }
@@ -70,12 +81,11 @@ class ZookeeperTest {
     }
     
     private void beforeAll() {
-        Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().until(() -> {
-            CuratorFramework client = CuratorFrameworkFactory.newClient("localhost:" + 62372, new ExponentialBackoffRetry(1000, 3));
-            client.start();
-            boolean connected = client.blockUntilConnected(5, TimeUnit.SECONDS);
-            client.close();
-            return connected;
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
+            try (CuratorFramework client = CuratorFrameworkFactory.newClient("localhost:" + 62372, new ExponentialBackoffRetry(1000, 3))) {
+                client.start();
+                return client.blockUntilConnected(5, TimeUnit.SECONDS);
+            }
         });
     }
 }

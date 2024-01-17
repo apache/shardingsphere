@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowKeyGenerateAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 
@@ -38,7 +39,7 @@ public final class ShowKeyGenerateAlgorithmImplementationsExecutor implements Qu
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowKeyGenerateAlgorithmImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowKeyGenerateAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<KeyGenerateAlgorithm> keyGenerateAlgorithms = ShardingSphereServiceLoader.getServiceInstances(KeyGenerateAlgorithm.class);
         for (KeyGenerateAlgorithm each : keyGenerateAlgorithms) {

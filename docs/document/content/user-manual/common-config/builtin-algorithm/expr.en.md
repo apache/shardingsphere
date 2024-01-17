@@ -57,6 +57,15 @@ It must follow the enumeration value of Java `java.time.temporal.ChronoUnit#toSt
 7. `C` stands for the abbreviation of chronology, which means calendar system and must follow the format of Java `java.time.chrono.Chronology#getId()`.
 For example: `Japanese`, `Minguo`, `ThaiBuddhist`. There is a default value of `ISO`.
 
+Whether the Value corresponding to the Key of `C` is available depends on the system environment in which the JVM is located. 
+This means that if the user needs to set `C=Japanese`, they may need to call `java.util.Locale.setDefault(java.util.Locale.JAPAN);` in the application's startup class to modify the system environment. 
+Discuss two JVM environments.
+
+1. Hotspot JVM determines the return value of `java.util.Locale.getDefault()` at RunTime.
+
+2. GraalVM Native Image determines the return value of `java.util.Locale.Locale.getDefault()` at BuildTime, which is inconsistent with the performance of Hotspot JVM. 
+Refer to https://github.com/oracle/graal/issues/8022 .
+
 Type: INTERVAL
 
 Example:

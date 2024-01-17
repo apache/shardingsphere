@@ -20,7 +20,7 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
+    : withClause? INSERT top? INTO? tableName (AS? alias)? withTableHint?  (insertDefaultValue | insertValuesClause | insertSelectClause | insertExecClause)
     ;
 
 insertDefaultValue
@@ -33,6 +33,18 @@ insertValuesClause
 
 insertSelectClause
     : columnNames? outputClause? select
+    ;
+
+insertExecClause
+    : columnNames? exec
+    ;
+
+withTableHint
+    : WITH LP_ (tableHintLimited+) RP_
+    ;
+
+exec
+    : (EXEC | EXECUTE) procedureName (expr (COMMA_ expr)*)?
     ;
 
 update
@@ -89,16 +101,18 @@ duplicateSpecification
     ;
 
 projections
-    : (unqualifiedShorthand | projection) (COMMA_ (unqualifiedShorthand | projection))*
+    : (projection | top projection?) (COMMA_ projection)*
     ;
 
 projection
-    : (alias EQ_)? (top | columnName | expr) | qualifiedShorthand
-    | (top | columnName | expr) (AS? alias)? | qualifiedShorthand
+    : qualifiedShorthand
+    | unqualifiedShorthand
+    | (alias EQ_)? (columnName | expr)
+    | (columnName | expr) (AS? alias)?
     ;
 
 top
-    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_)?
+    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ (AS? alias)?)?
     ;
 
 topNum

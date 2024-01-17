@@ -64,7 +64,7 @@ If the user needs to perform a Federation query in a relational database, it can
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
-[ShardingSphere Slack](https://apacheshardingsphere.slack.com/ssb/redirect)
+[ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 [
 Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 

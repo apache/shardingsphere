@@ -1,6 +1,6 @@
 +++
 title = "REFRESH DATABASE METADATA"
-weight = 9
+weight = 10
 +++
 
 ### 描述

@@ -21,13 +21,10 @@ import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgo
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
-import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
@@ -60,18 +57,35 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     
     private void checkAlgorithmTypes(final CreateEncryptRuleStatement sqlStatement) {
         sqlStatement.getRules().stream().flatMap(each -> each.getColumns().stream()).forEach(each -> {
-            checkAlgorithmType(each.getCipher(), "standard encrypt", StandardEncryptAlgorithm.class);
-            checkAlgorithmType(each.getLikeQuery(), "like encrypt", LikeEncryptAlgorithm.class);
-            checkAlgorithmType(each.getAssistedQuery(), "assisted encrypt", AssistedEncryptAlgorithm.class);
+            checkStandardAlgorithmType(each.getCipher());
+            checkLikeAlgorithmType(each.getLikeQuery());
+            checkAssistedAlgorithmType(each.getAssistedQuery());
         });
     }
     
-    private void checkAlgorithmType(final EncryptColumnItemSegment itemSegment, final String algorithmType, final Class<?> encryptAlgorithmClass) {
+    private void checkStandardAlgorithmType(final EncryptColumnItemSegment itemSegment) {
         if (null == itemSegment || null == itemSegment.getEncryptor()) {
             return;
         }
         EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, itemSegment.getEncryptor().getName(), itemSegment.getEncryptor().getProps());
-        ShardingSpherePreconditions.checkState(encryptAlgorithmClass.isInstance(encryptAlgorithm), () -> new InvalidAlgorithmConfigurationException(algorithmType, encryptAlgorithm.getType()));
+        ShardingSpherePreconditions.checkState(encryptAlgorithm.getMetaData().isSupportDecrypt(), () -> new InvalidAlgorithmConfigurationException("standard encrypt", encryptAlgorithm.getType()));
+    }
+    
+    private void checkLikeAlgorithmType(final EncryptColumnItemSegment itemSegment) {
+        if (null == itemSegment || null == itemSegment.getEncryptor()) {
+            return;
+        }
+        EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, itemSegment.getEncryptor().getName(), itemSegment.getEncryptor().getProps());
+        ShardingSpherePreconditions.checkState(encryptAlgorithm.getMetaData().isSupportLike(), () -> new InvalidAlgorithmConfigurationException("like encrypt", encryptAlgorithm.getType()));
+    }
+    
+    private void checkAssistedAlgorithmType(final EncryptColumnItemSegment itemSegment) {
+        if (null == itemSegment || null == itemSegment.getEncryptor()) {
+            return;
+        }
+        EncryptAlgorithm encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, itemSegment.getEncryptor().getName(), itemSegment.getEncryptor().getProps());
+        ShardingSpherePreconditions.checkState(encryptAlgorithm.getMetaData().isSupportEquivalentFilter(),
+                () -> new InvalidAlgorithmConfigurationException("assisted encrypt", encryptAlgorithm.getType()));
     }
     
     private void checkDuplicateRuleNames(final String databaseName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {

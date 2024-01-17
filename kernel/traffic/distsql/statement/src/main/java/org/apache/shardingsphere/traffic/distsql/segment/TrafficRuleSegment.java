@@ -20,7 +20,7 @@ package org.apache.shardingsphere.traffic.distsql.segment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 import java.util.Collection;
 
@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class TrafficRuleSegment implements ASTNode {
+public final class TrafficRuleSegment implements DistSQLSegment {
     
     private final String name;
     

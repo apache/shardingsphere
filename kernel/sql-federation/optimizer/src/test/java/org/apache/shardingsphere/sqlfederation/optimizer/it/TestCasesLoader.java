@@ -34,7 +34,7 @@ public final class TestCasesLoader {
     
     private static final TestCasesLoader INSTANCE = new TestCasesLoader();
     
-    private static final ObjectMapper XML_MAPPER = XmlMapper.builder().defaultUseWrapper(false).build();
+    private static final ObjectMapper XML_MAPPER = XmlMapper.builder().build();
     
     /**
      * Get singleton instance.

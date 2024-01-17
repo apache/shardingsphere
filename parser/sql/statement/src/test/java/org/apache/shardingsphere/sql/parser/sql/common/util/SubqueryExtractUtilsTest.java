@@ -23,12 +23,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
@@ -181,5 +183,17 @@ class SubqueryExtractUtilsTest {
         result.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
                 left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement(), "")), false)));
         return result;
+    }
+    
+    @Test
+    void assertGetSubquerySegmentsFromProjectionFunctionParams() {
+        SelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "", "");
+        functionSegment.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement(), "")));
+        ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "", functionSegment);
+        selectStatement.getProjections().getProjections().add(expressionProjectionSegment);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
+        assertThat(actual.size(), is(1));
     }
 }

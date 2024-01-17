@@ -19,14 +19,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
@@ -67,22 +64,15 @@ public final class RQLBackendHandler<T extends RQLStatement> implements DistSQLB
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ResponseHeader execute() throws SQLException {
-        String databaseName = getDatabaseName(connectionSession, sqlStatement);
-        checkDatabaseName(databaseName);
         RQLExecutor executor = TypedSPILoader.getService(RQLExecutor.class, sqlStatement.getClass());
         queryHeaders = createQueryHeader(executor.getColumnNames());
-        mergedResult = createMergedResult(executor.getRows(ProxyContext.getInstance().getDatabase(databaseName), sqlStatement));
+        mergedResult = createMergedResult(executor.getRows(ProxyContext.getInstance().getDatabase(getDatabaseName()), sqlStatement));
         return new QueryResponseHeader(queryHeaders);
     }
     
-    private String getDatabaseName(final ConnectionSession connectionSession, final T sqlStatement) {
+    private String getDatabaseName() {
         Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
         return databaseSegment.isPresent() ? databaseSegment.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
-    }
-    
-    private void checkDatabaseName(final String databaseName) {
-        ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
     }
     
     private List<QueryHeader> createQueryHeader(final Collection<String> columnNames) {

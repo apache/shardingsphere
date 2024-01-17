@@ -119,7 +119,7 @@ public interface ModeContextManager {
      * @param toBeAlteredRuleConfig to be altered rule config
      * @return meta data versions
      */
-    default Collection<MetaDataVersion> alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
+    default Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
         return Collections.emptyList();
     }
     
@@ -129,7 +129,7 @@ public interface ModeContextManager {
      * @param databaseName database name
      * @param toBeRemovedRuleConfig to be removed rule config
      */
-    default void removeRuleConfigurationItem(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    default void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
     }
     
     /**
@@ -138,7 +138,7 @@ public interface ModeContextManager {
      * @param databaseName database name
      * @param ruleName rule name
      */
-    default void removeRuleConfiguration(String databaseName, String ruleName) {
+    default void removeRuleConfiguration(final String databaseName, final String ruleName) {
     }
     
     /**
@@ -154,7 +154,7 @@ public interface ModeContextManager {
      *
      * @param globalRuleConfig global rule config
      */
-    default void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
+    default void alterGlobalRuleConfiguration(final RuleConfiguration globalRuleConfig) {
     }
     
     /**

@@ -98,7 +98,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                              |
 |-----------|-------------|-----------------------------------|
-| 44000     | 16500       | Access denied for operation `%s`. |
 
 ### 集群
 

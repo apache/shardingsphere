@@ -4,6 +4,9 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MSSQLServerTest"},
     "pattern":"\\Qcontainer-license-acceptance.txt\\E"
   }, {
+    "condition":{"typeReachable":"ch.qos.logback.core.util.Loader"},
+    "pattern":"\\Qlogback-test.xml\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MSSQLServerTest"},
     "pattern":"\\Qtest-native/yaml/databases/mssqlserver.yaml\\E"
   }, {

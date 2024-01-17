@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
 
 import java.util.Arrays;
@@ -26,7 +25,6 @@ import java.util.Collection;
 /**
  * Pipeline job data source prepare option for openGauss.
  */
-@Slf4j
 public final class OpenGaussPipelineJobDataSourcePrepareOption implements DialectPipelineJobDataSourcePrepareOption {
     
     @Override

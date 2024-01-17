@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStatement;
@@ -34,30 +33,30 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Show shadow rule executor.
  */
-public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRulesStatement> {
+public final class ShowShadowRuleExecutor extends RuleAwareRQLExecutor<ShowShadowRulesStatement, ShadowRule> {
     
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowRulesStatement sqlStatement) {
-        Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        if (rule.isPresent()) {
-            result = buildData((ShadowRuleConfiguration) rule.get().getConfiguration(), sqlStatement);
-        }
-        return result;
+    public ShowShadowRuleExecutor() {
+        super(ShadowRule.class);
     }
     
-    private Collection<LocalDataQueryResultRow> buildData(final ShadowRuleConfiguration ruleConfig, final ShowShadowRulesStatement sqlStatement) {
-        Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(ruleConfig.getTables());
+    @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("shadow_table", "rule_name", "source_name", "shadow_name", "algorithm_type", "algorithm_props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowRulesStatement sqlStatement, final ShadowRule rule) {
+        Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(rule.getConfiguration().getTables());
         Collection<ShadowDataSourceConfiguration> specifiedConfigs = isSpecified(sqlStatement)
-                ? ruleConfig.getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())
-                : ruleConfig.getDataSources();
-        return specifiedConfigs.stream().map(each -> buildColumnData(each, dataSourceTableMap, ruleConfig.getShadowAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
+                ? rule.getConfiguration().getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())
+                : rule.getConfiguration().getDataSources();
+        return specifiedConfigs.stream()
+                .map(each -> buildColumnData(each, dataSourceTableMap, rule.getConfiguration().getShadowAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Map<String, Map<String, ShadowTableConfiguration>> convertToDataSourceTableMap(final Map<String, ShadowTableConfiguration> tables) {
@@ -81,11 +80,6 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
                     algorithmConfig.getType(), PropertiesConverter.convert(algorithmConfig.getProps()))));
         }));
         return result;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("shadow_table", "rule_name", "source_name", "shadow_name", "algorithm_type", "algorithm_props");
     }
     
     @Override

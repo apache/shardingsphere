@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.distsql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 import java.util.Properties;
 
@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class TransactionProviderSegment implements ASTNode {
+public final class TransactionProviderSegment implements DistSQLSegment {
     
     private final String providerType;
     

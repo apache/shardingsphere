@@ -58,7 +58,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -126,21 +126,23 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private Collection<MySQLPacket> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
                                                                              final MySQLServerPreparedStatement serverPreparedStatement) {
-        Map<ParameterMarkerSegment, ShardingSphereColumn> columnsOfParameterMarkers =
+        List<ShardingSphereColumn> columnsOfParameterMarkers =
                 MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatementContext.getSqlStatement(), getSchema(sqlStatementContext));
         Collection<ParameterMarkerSegment> parameterMarkerSegments = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getParameterMarkerSegments();
         Collection<MySQLPacket> result = new ArrayList<>(parameterMarkerSegments.size());
-        for (ParameterMarkerSegment each : parameterMarkerSegments) {
-            ShardingSphereColumn column = columnsOfParameterMarkers.get(each);
+        Collection<Integer> paramColumnDefinitionFlags = new ArrayList<>(parameterMarkerSegments.size());
+        for (int index = 0; index < parameterMarkerSegments.size(); index++) {
+            ShardingSphereColumn column = columnsOfParameterMarkers.isEmpty() ? null : columnsOfParameterMarkers.get(index);
             if (null != column) {
                 int columnDefinitionFlag = calculateColumnDefinitionFlag(column);
                 result.add(createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())));
-                serverPreparedStatement.getParameterColumnDefinitionFlags().add(columnDefinitionFlag);
+                paramColumnDefinitionFlags.add(columnDefinitionFlag);
             } else {
                 result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING));
-                serverPreparedStatement.getParameterColumnDefinitionFlags().add(0);
+                paramColumnDefinitionFlags.add(0);
             }
         }
+        serverPreparedStatement.getParameterColumnDefinitionFlags().addAll(paramColumnDefinitionFlags);
         return result;
     }
     

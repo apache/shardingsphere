@@ -253,7 +253,7 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="158">
-                            <top-projection alias="rownum_" start-index="22" stop-index="70">
+                            <top-projection alias="rownum_" start-index="22" stop-index="81">
                                 <top-value value="3" parameter-index="0" start-index="26" stop-index="26" />
                             </top-projection>
                             <column-projection name="item_id" start-index="84" stop-index="92">
@@ -397,7 +397,7 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="176">
-                            <top-projection alias="rownum_" start-index="22" stop-index="88">
+                            <top-projection alias="rownum_" start-index="22" stop-index="99">
                                 <top-value value="3" parameter-index="0" start-index="26" stop-index="26" />
                             </top-projection>
                             <column-projection name="item_id" start-index="102" stop-index="110">
@@ -541,7 +541,7 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="160">
-                            <top-projection alias="rownum_" start-index="22" stop-index="72">
+                            <top-projection alias="rownum_" start-index="22" stop-index="83">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
                             <column-projection name="item_id" start-index="86" stop-index="94">
@@ -685,7 +685,7 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="178">
-                            <top-projection alias="rownum_" start-index="22" stop-index="90">
+                            <top-projection alias="rownum_" start-index="22" stop-index="101">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
                             <column-projection name="item_id" start-index="104" stop-index="112">
@@ -829,7 +829,7 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="158">
-                            <top-projection alias="rownum_" start-index="22" stop-index="70">
+                            <top-projection alias="rownum_" start-index="22" stop-index="81">
                                 <top-value value="3" parameter-index="0" start-index="26" stop-index="26" />
                             </top-projection>
                             <column-projection name="item_id" start-index="84" stop-index="92">
@@ -973,7 +973,7 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="176">
-                            <top-projection alias="rownum_" start-index="22" stop-index="88">
+                            <top-projection alias="rownum_" start-index="22" stop-index="99">
                                 <top-value value="3" parameter-index="0" start-index="26" stop-index="26" />
                             </top-projection>
                             <column-projection name="item_id" start-index="102" stop-index="110">
@@ -1117,7 +1117,7 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="160">
-                            <top-projection alias="rownum_" start-index="22" stop-index="72">
+                            <top-projection alias="rownum_" start-index="22" stop-index="83">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
                             <column-projection name="item_id" start-index="86" stop-index="94">
@@ -1261,7 +1261,7 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="178">
-                            <top-projection alias="rownum_" start-index="22" stop-index="90">
+                            <top-projection alias="rownum_" start-index="22" stop-index="101">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
                             <column-projection name="item_id" start-index="104" stop-index="112">

@@ -17,8 +17,9 @@
 
 <dataset>
     <metadata>
+        <column name="rule_name" />
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="tbl| 1" />
+    <row values="single| tbl| 1" />
 </dataset>

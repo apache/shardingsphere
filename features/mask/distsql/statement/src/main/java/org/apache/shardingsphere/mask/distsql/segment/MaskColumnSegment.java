@@ -20,14 +20,14 @@ package org.apache.shardingsphere.mask.distsql.segment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 /**
  * Mask column segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MaskColumnSegment implements ASTNode {
+public final class MaskColumnSegment implements DistSQLSegment {
     
     private final String name;
     

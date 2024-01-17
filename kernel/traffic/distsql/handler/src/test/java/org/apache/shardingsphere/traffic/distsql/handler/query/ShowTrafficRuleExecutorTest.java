@@ -49,7 +49,7 @@ class ShowTrafficRuleExecutorTest {
     void assertExecute() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowTrafficRuleExecutor executor = new ShowTrafficRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTrafficRulesStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowTrafficRulesStatement.class), metaData);
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

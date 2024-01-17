@@ -32,7 +32,7 @@ public final class MigrationJobConfigurationChangedProcessor implements JobConfi
     
     @Override
     public PipelineJob createJob(final MigrationJobConfiguration jobConfig) {
-        return new MigrationJob();
+        return new MigrationJob(jobConfig.getJobId());
     }
     
     @Override

@@ -39,17 +39,15 @@ public final class SQLStatementParserEngineFactory {
      * @param databaseType database type
      * @param sqlStatementCacheOption SQL statement cache option
      * @param parseTreeCacheOption parse tree cache option
-     * @param isParseComment is parse comment
      * @return SQL statement parser engine
      */
     public static SQLStatementParserEngine getSQLStatementParserEngine(final DatabaseType databaseType,
-                                                                       final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+                                                                       final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption) {
         SQLStatementParserEngine result = ENGINES.get(databaseType);
         if (null == result) {
-            result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlStatementCacheOption, parseTreeCacheOption, isParseComment));
-        } else if (!result.getSqlStatementCacheOption().equals(sqlStatementCacheOption) || !result.getParseTreeCacheOption().equals(parseTreeCacheOption)
-                || result.isParseComment() != isParseComment) {
-            result = new SQLStatementParserEngine(databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
+            result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlStatementCacheOption, parseTreeCacheOption));
+        } else if (!result.getSqlStatementCacheOption().equals(sqlStatementCacheOption) || !result.getParseTreeCacheOption().equals(parseTreeCacheOption)) {
+            result = new SQLStatementParserEngine(databaseType, sqlStatementCacheOption, parseTreeCacheOption);
             ENGINES.put(databaseType, result);
         }
         return result;

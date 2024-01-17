@@ -32,4 +32,5 @@
     <sql-case id="select_with_between_and_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') AND (SELECT user_id FROM t_user_info WHERE information = 'after')" />
     <sql-case id="select_with_exist_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)" db-types="MySQL, PostgreSQL,openGauss" />
     <sql-case id="select_with_not_exist_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE NOT EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)" db-types="MySQL" />
+    <sql-case id="select_with_exist_string_split_subquery" value="SELECT ProductId, Name, Tags FROM Product WHERE EXISTS (SELECT * FROM STRING_SPLIT(Tags, ',') WHERE value IN ('clothing', 'road'))" db-types="SQLServer"/>
 </sql-cases>

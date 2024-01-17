@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.engine.base;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.compose.DockerContainerComposer;
 
 import java.sql.Connection;
@@ -26,7 +25,6 @@ import java.sql.SQLException;
 /**
  * JDBC data source.
  */
-@Slf4j
 public final class JdbcDataSource extends AutoDataSource {
     
     private final DockerContainerComposer containerComposer;

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -38,7 +39,7 @@ public final class ShowShadowAlgorithmImplementationsExecutor implements Queryab
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<ShadowAlgorithm> shadowAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ShadowAlgorithm.class);
         for (ShadowAlgorithm each : shadowAlgorithms) {

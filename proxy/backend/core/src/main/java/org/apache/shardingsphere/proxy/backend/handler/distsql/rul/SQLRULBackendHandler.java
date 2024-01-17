@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
-import org.apache.shardingsphere.distsql.handler.rul.RULExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
@@ -62,11 +62,8 @@ public final class SQLRULBackendHandler<T extends RULStatement> extends RULBacke
     }
     
     private MergedResult createMergedResult(final RULExecutor<T> executor) throws SQLException {
-        if (executor instanceof ConnectionSessionRequiredRULExecutor) {
-            ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-            return new LocalDataMergedResult(((ConnectionSessionRequiredRULExecutor<T>) executor).getRows(metaData, getConnectionSession(), getSqlStatement()));
-        }
-        return new LocalDataMergedResult(executor.getRows(getSqlStatement()));
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+        return new LocalDataMergedResult(((ConnectionSessionRequiredRULExecutor<T>) executor).getRows(metaData, getConnectionSession(), getSqlStatement()));
     }
     
     @Override

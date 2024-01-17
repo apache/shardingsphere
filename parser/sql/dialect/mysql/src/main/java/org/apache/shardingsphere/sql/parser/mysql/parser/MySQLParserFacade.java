@@ -19,12 +19,12 @@ package org.apache.shardingsphere.sql.parser.mysql.parser;
 
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLDialectParserFacade;
+import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
 
 /**
  * SQL parser facade for MySQL.
  */
-public final class MySQLParserFacade implements SQLDialectParserFacade {
+public final class MySQLParserFacade implements DialectSQLParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
