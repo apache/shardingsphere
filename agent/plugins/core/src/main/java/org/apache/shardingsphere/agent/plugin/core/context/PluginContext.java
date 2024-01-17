@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.plugin.core.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.agent.core.util.AgentReflectionUtils;
+import net.bytebuddy.pool.TypePool;
+import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.driver.ShardingSphereDriver;
 import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -38,12 +38,9 @@ import java.util.Optional;
  * Plugin Context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Setter
 public final class PluginContext {
     
     private static final PluginContext INSTANCE = new PluginContext();
-    
-    private boolean enhancedForProxy;
     
     private ContextManager contextManager;
     
@@ -59,7 +56,7 @@ public final class PluginContext {
     /**
      * Check if the plugin is enabled.
      *
-     * @return the plugin enable value
+     * @return true or false
      */
     public boolean isPluginEnabled() {
         if (null == contextManager) {
@@ -68,18 +65,31 @@ public final class PluginContext {
         return null == contextManager || contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED);
     }
     
-    private Optional<ContextManager> getContextManager() {
-        if (enhancedForProxy) {
+    /**
+     * Get context manager.
+     *
+     * @return ContextManager
+     */
+    public Optional<ContextManager> getContextManager() {
+        if (isProxyEnvironment()) {
             return Optional.ofNullable(ProxyContext.getInstance().getContextManager());
         }
         Optional<ShardingSphereDriver> shardingSphereDriver = getShardingSphereDriver();
-        if (!shardingSphereDriver.isPresent()) {
-            return Optional.empty();
+        if (shardingSphereDriver.isPresent()) {
+            DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(shardingSphereDriver.get(), "dataSourceCache");
+            Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
+            return dataSourceMap.isEmpty() ? Optional.empty() : Optional.ofNullable(AgentReflectionUtils.getFieldValue(dataSourceMap.values().iterator().next(), "contextManager"));
         }
-        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(shardingSphereDriver.get(), "dataSourceCache");
-        Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
-        return dataSourceMap.isEmpty() ? Optional.empty() : Optional.ofNullable(AgentReflectionUtils.getFieldValue(dataSourceMap.values().iterator().next(), "contextManager"));
-        
+        return Optional.empty();
+    }
+    
+    /**
+     * Is proxy environment.
+     *
+     * @return true or false
+     */
+    public boolean isProxyEnvironment() {
+        return TypePool.Default.ofSystemLoader().describe("org.apache.shardingsphere.proxy.Bootstrap").isResolved();
     }
     
     private Optional<ShardingSphereDriver> getShardingSphereDriver() {
