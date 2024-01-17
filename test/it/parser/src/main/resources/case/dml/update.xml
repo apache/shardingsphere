@@ -1408,4 +1408,50 @@
             </expr>
         </where>
     </update>
+
+    <update sql-case-id="update_with_open_row_set_function">
+        <table start-index="7" stop-index="7">
+            <simple-table name="T" start-index="7" stop-index="7"/>
+        </table>
+        <set start-index="9" stop-index="106">
+            <assignment start-index="13" stop-index="106">
+                <column name="XmlCol" start-index="13" stop-index="18"/>
+                <assignment-value>
+                    <subquery start-index="22" stop-index="106">
+                        <select>
+                            <projections start-index="31" stop-index="31">
+                                <shorthand-projection start-index="31" stop-index="31"/>
+                            </projections>
+                            <from start-index="38" stop-index="100">
+                                <function-table start-index="38" stop-index="100" table-alias="x">
+                                    <table-function function-name="OPENROWSET" text="OPENROWSET(BULK 'C:\SampleFolder\SampleData3.txt', SINGLE_BLOB)">
+                                        <parameter>
+                                            <literal-expression value="C:\SampleFolder\SampleData3.txt" start-index="54" stop-index="86"/>
+                                        </parameter>
+                                        <parameter>
+                                            <column name="SINGLE_BLOB" start-index="89" stop-index="99"/>
+                                        </parameter>
+                                    </table-function>
+                                </function-table>
+                            </from>
+                        </select>
+                    </subquery>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="108" stop-index="123">
+            <expr>
+                <binary-operation-expression start-index="114" stop-index="123">
+                    <left>
+                        <column name="IntCol" start-index="114" stop-index="119"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="123" stop-index="123"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+
+    </update>
 </sql-parser-test-cases>

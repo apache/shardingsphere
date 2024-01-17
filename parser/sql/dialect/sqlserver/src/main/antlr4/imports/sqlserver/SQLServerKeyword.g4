@@ -1946,3 +1946,7 @@ PERSIST_SAMPLE_PERCENT
 OPENJSON
     : O P E N J S O N
     ;
+
+OPENROWSET
+    : O P E N R O W S E T
+    ;
