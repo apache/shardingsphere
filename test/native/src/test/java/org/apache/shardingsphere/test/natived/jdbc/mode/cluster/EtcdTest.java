@@ -61,6 +61,13 @@ class EtcdTest {
     
     private TestShardingService testShardingService;
     
+    /**
+     * TODO On low-performance devices in Github Actions, `INSERT` related SQLs may throw a table not found error under nativeTest.
+     *  So that we need to wait for a period of time after executing `CREATE TABLE` related SQLs before executing `INSERT` related SQLs.
+     *  This may mean that the implementation of {@link org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository} needs optimization.
+     *
+     * @see org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository
+     */
     @SuppressWarnings("resource")
     @Test
     @EnabledInNativeImage
@@ -82,6 +89,10 @@ class EtcdTest {
             DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/mode/cluster/etcd.yaml"));
             testShardingService = new TestShardingService(dataSource);
             initEnvironment();
+            Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
+                dataSource.getConnection().close();
+                return true;
+            });
             testShardingService.processSuccess();
             testShardingService.cleanEnvironment();
         }

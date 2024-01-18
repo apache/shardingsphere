@@ -996,7 +996,7 @@
         <profile>
             <id>generateMetadata</id>
             <properties>
-                <java.version>17</java.version>
+                <java.version>21</java.version>
             </properties>
             <build>
                 <pluginManagement>
@@ -1060,7 +1060,7 @@
         <profile>
             <id>nativeTestInShardingSphere</id>
             <properties>
-                <java.version>17</java.version>
+                <java.version>21</java.version>
             </properties>
             <build>
                 <pluginManagement>
