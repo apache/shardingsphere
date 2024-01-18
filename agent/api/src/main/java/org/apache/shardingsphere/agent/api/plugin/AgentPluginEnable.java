@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.file;
+package org.apache.shardingsphere.agent.api.plugin;
 
-import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
-import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
-
-/**
- * File logging plugin lifecycle service.
- */
-public final class FileLoggingPluginLifecycleService implements PluginLifecycleService {
+public interface AgentPluginEnable {
     
-    @Override
-    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        PluginContext.getInstance().setEnhancedForProxy(isEnhancedForProxy);
-    }
-    
-    @Override
-    public String getType() {
-        return "File";
+    /**
+     * Is the plugin enabled.
+     *
+     * @return true or false
+     */
+    default boolean isPluginEnabled() {
+        return true;
     }
 }

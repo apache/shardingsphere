@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.file;
+package org.apache.shardingsphere.agent.plugin.core.advice;
 
-import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
+import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
-import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
-/**
- * File logging plugin lifecycle service.
- */
-public final class FileLoggingPluginLifecycleService implements PluginLifecycleService {
+public abstract class AbstractStaticMethodAdvice implements StaticMethodAdvice, AgentPluginEnable {
     
     @Override
-    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        PluginContext.getInstance().setEnhancedForProxy(isEnhancedForProxy);
-    }
-    
-    @Override
-    public String getType() {
-        return "File";
+    public boolean isPluginEnabled() {
+        return PluginContext.getInstance().isPluginEnabled();
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdk;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
@@ -30,6 +31,7 @@ public final class OpenTelemetryTracingPluginLifecycleService implements PluginL
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
+        PluginContext.getInstance().setEnhancedForProxy(isEnhancedForProxy);
         pluginConfig.getProps().forEach((key, value) -> setSystemProperty(String.valueOf(key), String.valueOf(value)));
         OpenTelemetrySdk openTelemetrySdk = AutoConfiguredOpenTelemetrySdk.initialize().getOpenTelemetrySdk();
         openTelemetrySdk.getTracer(OpenTelemetryConstants.TRACER_NAME);
