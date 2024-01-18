@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
@@ -37,7 +37,7 @@ import java.util.Optional;
 /**
  * Label compute node updater.
  */
-public final class LabelComputeNodeUpdater implements RALUpdater<LabelComputeNodeStatement> {
+public final class LabelComputeNodeUpdater implements DatabaseRuleRALUpdater<LabelComputeNodeStatement> {
     
     @Override
     public void executeUpdate(final String databaseName, final LabelComputeNodeStatement sqlStatement) throws SQLException {

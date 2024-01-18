@@ -24,12 +24,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.SQLException;
 
 /**
- * RAL updater.
+ * Database rule RAL updater.
  * 
  * @param <T> type of updatable RAL statement
  */
 @SingletonSPI
-public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
+public interface DatabaseRuleRALUpdater<T extends SQLStatement> extends TypedSPI {
     
     /**
      * Execute update.

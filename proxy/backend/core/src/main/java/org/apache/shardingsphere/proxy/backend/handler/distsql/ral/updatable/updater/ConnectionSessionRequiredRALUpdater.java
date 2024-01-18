@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -28,7 +28,7 @@ import java.sql.SQLException;
  * 
  * @param <T> type of SQL statement
  */
-public interface ConnectionSessionRequiredRALUpdater<T extends SQLStatement> extends RALUpdater<T> {
+public interface ConnectionSessionRequiredRALUpdater<T extends SQLStatement> extends DatabaseRuleRALUpdater<T> {
     
     /**
      * Execute update.
