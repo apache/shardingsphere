@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.CommitMigrationStatement;
 
@@ -27,7 +27,7 @@ import java.sql.SQLException;
 /**
  * Commit migration updater.
  */
-public final class CommitMigrationUpdater implements DatabaseRuleRALUpdater<CommitMigrationStatement> {
+public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationStatement> {
     
     @Override
     public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) throws SQLException {

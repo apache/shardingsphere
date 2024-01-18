@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableDatabaseRuleRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -56,7 +56,7 @@ class RefreshTableMetaDataUpdaterTest {
         when(contextManager.getStorageUnits("foo_db")).thenReturn(Collections.emptyMap());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
-        UpdatableDatabaseRuleRALBackendHandler<?> backendHandler = new UpdatableDatabaseRuleRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
+        UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
         assertThrows(EmptyStorageUnitException.class, backendHandler::execute);
     }
     
@@ -65,7 +65,7 @@ class RefreshTableMetaDataUpdaterTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
-        UpdatableDatabaseRuleRALBackendHandler<?> backendHandler = new UpdatableDatabaseRuleRALBackendHandler<>(
+        UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(
                 new RefreshTableMetaDataStatement("t_order", "ds_1", null), mockConnectionSession("foo_db"));
         assertThrows(MissingRequiredStorageUnitsException.class, backendHandler::execute);
     }
@@ -75,7 +75,7 @@ class RefreshTableMetaDataUpdaterTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
-        UpdatableDatabaseRuleRALBackendHandler<?> backendHandler = new UpdatableDatabaseRuleRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
+        UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
     }

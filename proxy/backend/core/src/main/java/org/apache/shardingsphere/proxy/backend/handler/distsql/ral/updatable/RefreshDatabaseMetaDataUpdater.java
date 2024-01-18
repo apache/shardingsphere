@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Refresh database meta data updater.
  */
-public final class RefreshDatabaseMetaDataUpdater implements DatabaseRuleRALUpdater<RefreshDatabaseMetaDataStatement> {
+public final class RefreshDatabaseMetaDataUpdater implements RALUpdater<RefreshDatabaseMetaDataStatement> {
     
     @Override
     public void executeUpdate(final String databaseName, final RefreshDatabaseMetaDataStatement sqlStatement) throws SQLException {

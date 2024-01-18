@@ -19,13 +19,13 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update
 
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StopMigrationCheckStatement;
 
 /**
  * Stop migration check updater.
  */
-public final class StopMigrationCheckUpdater implements DatabaseRuleRALUpdater<StopMigrationCheckStatement> {
+public final class StopMigrationCheckUpdater implements RALUpdater<StopMigrationCheckStatement> {
     
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     

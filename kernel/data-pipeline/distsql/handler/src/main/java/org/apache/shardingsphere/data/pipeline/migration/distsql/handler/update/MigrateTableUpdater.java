@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.Migra
 /**
  * Migrate table updater.
  */
-public final class MigrateTableUpdater implements DatabaseRuleRALUpdater<MigrateTableStatement> {
+public final class MigrateTableUpdater implements RALUpdater<MigrateTableStatement> {
     
     @Override
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {

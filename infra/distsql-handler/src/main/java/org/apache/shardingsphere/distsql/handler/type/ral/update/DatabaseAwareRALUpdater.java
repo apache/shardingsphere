@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
  * 
  * @param <T> type of SQL statement
  */
-public interface DatabaseAwareRALUpdater<T extends UpdatableRALStatement> extends DatabaseRuleRALUpdater<T> {
+public interface DatabaseAwareRALUpdater<T extends UpdatableRALStatement> extends RALUpdater<T> {
     
     /**
      * Set database.
