@@ -20,11 +20,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseTypeAwareRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareRALUpdater;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -37,9 +37,9 @@ import java.util.Map;
  * Refresh table meta data handler.
  */
 @Setter
-public final class RefreshTableMetaDataUpdater implements DatabaseTypeAwareRALUpdater<RefreshTableMetaDataStatement> {
+public final class RefreshTableMetaDataUpdater implements DatabaseAwareRALUpdater<RefreshTableMetaDataStatement> {
     
-    private DatabaseType databaseType;
+    private ShardingSphereDatabase database;
     
     @Override
     public void executeUpdate(final String databaseName, final RefreshTableMetaDataStatement sqlStatement) throws SQLException {
@@ -71,7 +71,7 @@ public final class RefreshTableMetaDataUpdater implements DatabaseTypeAwareRALUp
     }
     
     private String getSchemaName(final String databaseName, final RefreshTableMetaDataStatement sqlStatement) {
-        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName().get() : new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
+        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName().get() : new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName);
     }
     
     @Override
