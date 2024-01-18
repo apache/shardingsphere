@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.CommitMigrationStatement;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.DropMigrationCheckStatement;
 
 /**
- * Commit migration updater.
+ * Drop migration check executor.
  */
-public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationStatement> {
+public final class DropMigrationCheckExecutor implements UpdatableRALExecutor<DropMigrationCheckStatement> {
+    
+    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
     @Override
-    public void executeUpdate(final CommitMigrationStatement sqlStatement) throws SQLException {
-        TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").commit(sqlStatement.getJobId());
+    public void executeUpdate(final DropMigrationCheckStatement sqlStatement) {
+        jobAPI.drop(sqlStatement.getJobId());
     }
     
     @Override
-    public Class<CommitMigrationStatement> getType() {
-        return CommitMigrationStatement.class;
+    public Class<DropMigrationCheckStatement> getType() {
+        return DropMigrationCheckStatement.class;
     }
 }

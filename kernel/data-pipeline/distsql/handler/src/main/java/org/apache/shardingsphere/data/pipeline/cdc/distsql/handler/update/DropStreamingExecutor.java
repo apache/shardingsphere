@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.update;
 
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.DropStreamingStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.RollbackMigrationStatement;
 
 import java.sql.SQLException;
 
 /**
- * Rollback migration updater.
+ * Drop streaming executor.
  */
-public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrationStatement> {
+public final class DropStreamingExecutor implements UpdatableRALExecutor<DropStreamingStatement> {
+    
+    private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
     @Override
-    public void executeUpdate(final RollbackMigrationStatement sqlStatement) throws SQLException {
-        TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").rollback(sqlStatement.getJobId());
+    public void executeUpdate(final DropStreamingStatement sqlStatement) throws SQLException {
+        jobAPI.drop(sqlStatement.getJobId());
     }
     
     @Override
-    public Class<RollbackMigrationStatement> getType() {
-        return RollbackMigrationStatement.class;
+    public Class<DropStreamingStatement> getType() {
+        return DropStreamingStatement.class;
     }
 }

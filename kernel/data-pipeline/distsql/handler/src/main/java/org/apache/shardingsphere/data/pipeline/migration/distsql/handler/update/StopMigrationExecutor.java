@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StartMigrationCheckStatement;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StopMigrationStatement;
 
 /**
- * Start migration check updater.
+ * Stop migration executor.
  */
-public final class StartMigrationCheckUpdater implements RALUpdater<StartMigrationCheckStatement> {
+public final class StopMigrationExecutor implements UpdatableRALExecutor<StopMigrationStatement> {
     
-    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
+    private final PipelineJobManager jobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public void executeUpdate(final StartMigrationCheckStatement sqlStatement) {
-        jobAPI.resume(sqlStatement.getJobId());
+    public void executeUpdate(final StopMigrationStatement sqlStatement) {
+        jobManager.stop(sqlStatement.getJobId());
     }
     
     @Override
-    public Class<StartMigrationCheckStatement> getType() {
-        return StartMigrationCheckStatement.class;
+    public Class<StopMigrationStatement> getType() {
+        return StopMigrationStatement.class;
     }
 }

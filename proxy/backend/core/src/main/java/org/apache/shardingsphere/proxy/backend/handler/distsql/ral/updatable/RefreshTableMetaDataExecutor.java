@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareUpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -34,10 +34,10 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Refresh table meta data handler.
+ * Refresh table meta data executor.
  */
 @Setter
-public final class RefreshTableMetaDataUpdater implements DatabaseAwareRALUpdater<RefreshTableMetaDataStatement> {
+public final class RefreshTableMetaDataExecutor implements DatabaseAwareUpdatableRALExecutor<RefreshTableMetaDataStatement> {
     
     private ShardingSphereDatabase database;
     

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -28,38 +28,36 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Unlabel compute node updater.
+ * Label compute node executor.
  */
-public final class UnlabelComputeNodeUpdater implements RALUpdater<UnlabelComputeNodeStatement> {
+public final class LabelComputeNodeExecutor implements UpdatableRALExecutor<LabelComputeNodeStatement> {
     
     @Override
-    public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement) {
-        MetaDataBasedPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        ShardingSpherePreconditions.checkState(persistService.getRepository() instanceof ClusterPersistRepository,
-                () -> new UnsupportedSQLOperationException("Labels can only be removed in cluster mode."));
-        String instanceId = sqlStatement.getInstanceId();
+    public void executeUpdate(final LabelComputeNodeStatement sqlStatement) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+        MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
+        ShardingSpherePreconditions.checkState(null != persistService && null != persistService.getRepository() && persistService.getRepository() instanceof ClusterPersistRepository,
+                () -> new UnsupportedSQLOperationException("Labels can only be added in cluster mode"));
+        String instanceId = sqlStatement.getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {
-            Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());
-            if (sqlStatement.getLabels().isEmpty()) {
-                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, Collections.emptyList()));
-            } else {
-                labels.removeAll(sqlStatement.getLabels());
-                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new ArrayList<>(labels)));
+            Collection<String> labels = new LinkedHashSet<>(sqlStatement.getLabels());
+            if (!sqlStatement.isOverwrite()) {
+                labels.addAll(computeNodeInstance.get().getLabels());
             }
+            contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
         }
     }
     
     @Override
-    public Class<UnlabelComputeNodeStatement> getType() {
-        return UnlabelComputeNodeStatement.class;
+    public Class<LabelComputeNodeStatement> getType() {
+        return LabelComputeNodeStatement.class;
     }
 }

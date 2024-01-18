@@ -67,7 +67,7 @@ class ImportMetaDataUpdaterTest {
     
     private static final String EMPTY = "empty_metadata";
     
-    private ImportMetaDataUpdater importMetaDataUpdater;
+    private ImportMetaDataExecutor importMetaDataUpdater;
     
     private final Map<String, String> featureMap = new HashMap<>(1, 1F);
     
@@ -97,7 +97,7 @@ class ImportMetaDataUpdaterTest {
     }
     
     private void init(final String feature) {
-        importMetaDataUpdater = new ImportMetaDataUpdater();
+        importMetaDataUpdater = new ImportMetaDataExecutor();
         ContextManager contextManager = mockContextManager(feature);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);

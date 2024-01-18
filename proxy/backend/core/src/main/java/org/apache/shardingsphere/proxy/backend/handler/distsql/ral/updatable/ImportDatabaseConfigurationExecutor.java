@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
@@ -29,9 +29,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 /**
- * Import database configuration updater.
+ * Import database configuration executor.
  */
-public final class ImportDatabaseConfigurationUpdater implements RALUpdater<ImportDatabaseConfigurationStatement> {
+public final class ImportDatabaseConfigurationExecutor implements UpdatableRALExecutor<ImportDatabaseConfigurationStatement> {
     
     private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
