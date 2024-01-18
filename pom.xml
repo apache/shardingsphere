@@ -106,6 +106,7 @@
         <zookeeper.version>3.9.1</zookeeper.version>
         <audience-annotations.version>0.12.0</audience-annotations.version>
         <jetcd.version>0.7.6</jetcd.version>
+        <vertx.version>4.4.4</vertx.version>
         <consul.api.version>1.4.5</consul.api.version>
         
         <grpc.version>1.58.0</grpc.version>
@@ -145,7 +146,7 @@
         <testcontainers.version>1.19.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
-        <graalvm.version>21.2.0</graalvm.version>
+        <graal-sdk.version>21.2.0</graal-sdk.version>
         
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
@@ -1079,9 +1080,10 @@
                             <extensions>true</extensions>
                             <configuration>
                                 <buildArgs>
+                                    <buildArg>-J-Xmx7g</buildArg>
                                     <buildArg>-H:+AddAllCharsets</buildArg>
                                 </buildArgs>
-                                <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+                                <quickBuild>true</quickBuild>
                                 <metadataRepository>
                                     <enabled>true</enabled>
                                     <version>0.3.5</version>

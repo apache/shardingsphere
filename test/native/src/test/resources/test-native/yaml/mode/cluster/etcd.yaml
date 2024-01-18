@@ -18,28 +18,28 @@
 mode:
   type: Cluster
   repository:
-    type: ZooKeeper
+    type: etcd
     props:
-      namespace: governance-zookeeper-data-source
-      server-lists: localhost:62372
+      namespace: governance-etcd-data-source
+      server-lists: http://localhost:62290
 
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:cluster_zookeeper_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    jdbcUrl: jdbc:h2:mem:cluster_etcd_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
     username: root
     password: 123456
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:cluster_zookeeper_ds_1;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    jdbcUrl: jdbc:h2:mem:cluster_etcd_ds_1;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
     username: root
     password: 123456
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:cluster_zookeeper_ds_2;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    jdbcUrl: jdbc:h2:mem:cluster_etcd_ds_2;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
     username: root
     password: 123456
 
