@@ -311,7 +311,7 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction | convertFunction | openJsonFunction
+    : castFunction  | charFunction | convertFunction | openJsonFunction | openRowSetFunction
     ;
 
 castFunction
@@ -336,6 +336,11 @@ openJsonWithclause
 
 jsonColumnDefinition
     : columnName dataType expr? (AS JSON)?
+    ;
+
+openRowSetFunction
+    : OPENROWSET LP_ expr COMMA_ ((expr SEMI_ expr SEMI_ expr) | expr) COMMA_ (tableName | expr) RP_
+    | OPENROWSET LP_ BULK expr (COMMA_ expr)* RP_
     ;
 
 regularFunction
