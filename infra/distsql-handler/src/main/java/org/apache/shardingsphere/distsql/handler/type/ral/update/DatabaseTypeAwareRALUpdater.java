@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.distsql.handler.type.ral.update;
 
+import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Database type aware queryable RAL updater.
+ * Database type aware RAL updater.
  * 
  * @param <T> type of SQL statement
  */
-public interface DatabaseTypeAwareQueryableRALUpdater<T extends SQLStatement> extends DatabaseRuleRALUpdater<T> {
+public interface DatabaseTypeAwareRALUpdater<T extends UpdatableRALStatement> extends DatabaseRuleRALUpdater<T> {
     
     /**
      * Set database type.
