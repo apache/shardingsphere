@@ -49,7 +49,7 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
     private final DataSourcePoolPropertiesValidateHandler validateHandler = new DataSourcePoolPropertiesValidateHandler();
     
     @Override
-    public void executeUpdate(final String databaseName, final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
+    public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
         ShardingSpherePreconditions.checkState(dataSources.stream().noneMatch(HostnameAndPortBasedDataSourceSegment.class::isInstance),
                 () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));

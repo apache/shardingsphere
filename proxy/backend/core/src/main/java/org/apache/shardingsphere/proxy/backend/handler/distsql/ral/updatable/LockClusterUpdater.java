@@ -41,7 +41,7 @@ public final class LockClusterUpdater implements RALUpdater<LockClusterStatement
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void executeUpdate(final String databaseName, final LockClusterStatement sqlStatement) {
+    public void executeUpdate(final LockClusterStatement sqlStatement) {
         checkMode();
         checkState();
         checkAlgorithm(sqlStatement);

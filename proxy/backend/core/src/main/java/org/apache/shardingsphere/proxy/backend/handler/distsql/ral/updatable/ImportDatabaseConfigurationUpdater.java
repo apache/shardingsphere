@@ -36,7 +36,7 @@ public final class ImportDatabaseConfigurationUpdater implements RALUpdater<Impo
     private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
     @Override
-    public void executeUpdate(final String databaseName, final ImportDatabaseConfigurationStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final ImportDatabaseConfigurationStatement sqlStatement) throws SQLException {
         File file = new File(sqlStatement.getFilePath());
         YamlProxyDatabaseConfiguration yamlConfig;
         try {

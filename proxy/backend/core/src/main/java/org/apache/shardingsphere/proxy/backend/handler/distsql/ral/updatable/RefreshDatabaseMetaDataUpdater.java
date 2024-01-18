@@ -34,7 +34,7 @@ import java.util.Optional;
 public final class RefreshDatabaseMetaDataUpdater implements RALUpdater<RefreshDatabaseMetaDataStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final RefreshDatabaseMetaDataStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement) throws SQLException {
         Optional<String> toBeRefreshedDatabaseName = sqlStatement.getDatabaseName();
         Map<String, ShardingSphereDatabase> databases = toBeRefreshedDatabaseName.map(optional -> Collections.singletonMap(optional, ProxyContext.getInstance().getDatabase(optional)))
                 .orElseGet(() -> ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases());

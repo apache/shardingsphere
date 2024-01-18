@@ -33,7 +33,7 @@ public final class DropStreamingUpdater implements RALUpdater<DropStreamingState
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
     @Override
-    public void executeUpdate(final String databaseName, final DropStreamingStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final DropStreamingStatement sqlStatement) throws SQLException {
         jobAPI.drop(sqlStatement.getJobId());
     }
     

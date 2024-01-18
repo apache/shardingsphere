@@ -30,7 +30,7 @@ import java.sql.SQLException;
 public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final CommitMigrationStatement sqlStatement) throws SQLException {
         TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").commit(sqlStatement.getJobId());
     }
     

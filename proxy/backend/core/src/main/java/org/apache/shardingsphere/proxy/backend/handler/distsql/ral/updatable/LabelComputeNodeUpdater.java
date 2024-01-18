@@ -40,7 +40,7 @@ import java.util.Optional;
 public final class LabelComputeNodeUpdater implements RALUpdater<LabelComputeNodeStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final LabelComputeNodeStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final LabelComputeNodeStatement sqlStatement) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         ShardingSpherePreconditions.checkState(null != persistService && null != persistService.getRepository() && persistService.getRepository() instanceof ClusterPersistRepository,

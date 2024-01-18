@@ -33,7 +33,7 @@ public final class UnregisterMigrationSourceStorageUnitUpdater implements RALUpd
     private final MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
     
     @Override
-    public void executeUpdate(final String databaseName, final UnregisterMigrationSourceStorageUnitStatement sqlStatement) {
+    public void executeUpdate(final UnregisterMigrationSourceStorageUnitStatement sqlStatement) {
         jobAPI.dropMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), sqlStatement.getNames());
     }
     

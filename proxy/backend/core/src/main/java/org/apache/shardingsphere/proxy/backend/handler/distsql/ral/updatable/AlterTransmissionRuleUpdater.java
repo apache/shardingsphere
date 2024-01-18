@@ -35,7 +35,7 @@ public final class AlterTransmissionRuleUpdater implements RALUpdater<AlterTrans
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
     @Override
-    public void executeUpdate(final String databaseName, final AlterTransmissionRuleStatement sqlStatement) {
+    public void executeUpdate(final AlterTransmissionRuleStatement sqlStatement) {
         PipelineProcessConfiguration processConfig = TransmissionProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
         String jobType = TypedSPILoader.getService(PipelineJobType.class, sqlStatement.getJobTypeName()).getType();
         processConfigPersistService.persist(new PipelineContextKey(InstanceType.PROXY), jobType, processConfig);

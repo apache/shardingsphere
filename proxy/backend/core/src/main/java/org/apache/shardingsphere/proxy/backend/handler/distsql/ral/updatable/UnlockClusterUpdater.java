@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -33,12 +32,11 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 /**
  * Unlock cluster updater.
  */
-@RequiredArgsConstructor
 public final class UnlockClusterUpdater implements RALUpdater<UnlockClusterStatement> {
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void executeUpdate(final String databaseName, final UnlockClusterStatement sqlStatement) {
+    public void executeUpdate(final UnlockClusterStatement sqlStatement) {
         checkMode();
         checkState();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();

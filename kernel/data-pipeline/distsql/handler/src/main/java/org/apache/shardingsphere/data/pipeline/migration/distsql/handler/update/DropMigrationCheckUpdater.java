@@ -30,7 +30,7 @@ public final class DropMigrationCheckUpdater implements RALUpdater<DropMigration
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
     @Override
-    public void executeUpdate(final String databaseName, final DropMigrationCheckStatement sqlStatement) {
+    public void executeUpdate(final DropMigrationCheckStatement sqlStatement) {
         jobAPI.drop(sqlStatement.getJobId());
     }
     

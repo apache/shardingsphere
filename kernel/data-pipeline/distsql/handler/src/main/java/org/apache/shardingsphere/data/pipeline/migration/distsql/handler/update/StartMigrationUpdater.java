@@ -30,7 +30,7 @@ public final class StartMigrationUpdater implements RALUpdater<StartMigrationSta
     private final PipelineJobManager jobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public void executeUpdate(final String databaseName, final StartMigrationStatement sqlStatement) {
+    public void executeUpdate(final StartMigrationStatement sqlStatement) {
         jobManager.resume(sqlStatement.getJobId());
     }
     

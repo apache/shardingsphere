@@ -30,7 +30,7 @@ public final class StopMigrationCheckUpdater implements RALUpdater<StopMigration
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
     @Override
-    public void executeUpdate(final String databaseName, final StopMigrationCheckStatement sqlStatement) {
+    public void executeUpdate(final StopMigrationCheckStatement sqlStatement) {
         jobAPI.stop(sqlStatement.getJobId());
     }
     

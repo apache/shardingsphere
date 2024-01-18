@@ -40,7 +40,7 @@ import java.util.Optional;
 public final class UnlabelComputeNodeUpdater implements RALUpdater<UnlabelComputeNodeStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final UnlabelComputeNodeStatement sqlStatement) {
+    public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement) {
         MetaDataBasedPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         ShardingSpherePreconditions.checkState(persistService.getRepository() instanceof ClusterPersistRepository,
                 () -> new UnsupportedSQLOperationException("Labels can only be removed in cluster mode."));

@@ -49,7 +49,7 @@ public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> i
         if (updater instanceof DatabaseAwareRALUpdater) {
             ((DatabaseAwareRALUpdater<T>) updater).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
         }
-        updater.executeUpdate(connectionSession.getDatabaseName(), (T) sqlStatement);
+        updater.executeUpdate((T) sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
 }

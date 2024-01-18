@@ -30,7 +30,7 @@ import java.sql.SQLException;
 public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrationStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final RollbackMigrationStatement sqlStatement) throws SQLException {
         TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").rollback(sqlStatement.getJobId());
     }
     

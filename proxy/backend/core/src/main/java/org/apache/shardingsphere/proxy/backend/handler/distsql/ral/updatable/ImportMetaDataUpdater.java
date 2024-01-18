@@ -49,7 +49,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
     private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
     @Override
-    public void executeUpdate(final String databaseName, final ImportMetaDataStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final ImportMetaDataStatement sqlStatement) throws SQLException {
         String jsonMetaDataConfig;
         if (sqlStatement.getFilePath().isPresent()) {
             File file = new File(sqlStatement.getFilePath().get());

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 public final class SetInstanceStatusUpdater implements RALUpdater<SetInstanceStatusStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final SetInstanceStatusStatement sqlStatement) {
+    public void executeUpdate(final SetInstanceStatusStatement sqlStatement) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
         String instanceId = sqlStatement.getInstanceId();

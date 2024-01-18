@@ -30,7 +30,7 @@ public final class StopMigrationUpdater implements RALUpdater<StopMigrationState
     private final PipelineJobManager jobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public void executeUpdate(final String databaseName, final StopMigrationStatement sqlStatement) {
+    public void executeUpdate(final StopMigrationStatement sqlStatement) {
         jobManager.stop(sqlStatement.getJobId());
     }
     

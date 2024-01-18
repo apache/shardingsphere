@@ -46,7 +46,7 @@ import java.util.Properties;
 public final class SetDistVariableUpdater implements RALUpdater<SetDistVariableStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final SetDistVariableStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final SetDistVariableStatement sqlStatement) throws SQLException {
         Enum<?> enumType = getEnumType(sqlStatement.getName());
         ShardingSpherePreconditions.checkState(enumType instanceof TypedPropertyKey, () -> new UnsupportedVariableException(sqlStatement.getName()));
         handleConfigurationProperty((TypedPropertyKey) enumType, sqlStatement.getValue());
