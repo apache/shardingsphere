@@ -24,7 +24,7 @@ import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 public abstract class AbstractStaticMethodAdvice implements StaticMethodAdvice, AgentPluginEnable {
     
     @Override
-    public boolean isPluginEnabled(final boolean isEnhancedForProxy) {
+    public boolean isPluginEnabled() {
         return PluginContext.getInstance().isPluginEnabled();
     }
 }

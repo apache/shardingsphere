@@ -42,12 +42,9 @@ public final class AdviceExecutorFactory {
     
     private final AdvisorConfiguration advisorConfig;
     
-    private final boolean isEnhancedForProxy;
-    
-    public AdviceExecutorFactory(final ClassLoaderContext classLoaderContext, final AdvisorConfiguration advisorConfig, final boolean isEnhancedForProxy) {
+    public AdviceExecutorFactory(final ClassLoaderContext classLoaderContext, final AdvisorConfiguration advisorConfig) {
         adviceFactory = new AdviceFactory(classLoaderContext);
         this.advisorConfig = advisorConfig;
-        this.isEnhancedForProxy = isEnhancedForProxy;
     }
     
     /**
@@ -68,13 +65,13 @@ public final class AdviceExecutorFactory {
             return Optional.empty();
         }
         if (isConstructor(methodDescription)) {
-            return Optional.of(new ConstructorAdviceExecutor(convert(advices), isEnhancedForProxy));
+            return Optional.of(new ConstructorAdviceExecutor(convert(advices)));
         }
         if (isStaticMethod(methodDescription)) {
-            return Optional.of(new StaticMethodAdviceExecutor(convert(advices), isEnhancedForProxy));
+            return Optional.of(new StaticMethodAdviceExecutor(convert(advices)));
         }
         if (isMethod(methodDescription)) {
-            return Optional.of(new InstanceMethodAdviceExecutor(convert(advices), isEnhancedForProxy));
+            return Optional.of(new InstanceMethodAdviceExecutor(convert(advices)));
         }
         return Optional.empty();
     }

@@ -40,10 +40,9 @@ public final class MethodAdvisorBuilderInterceptor implements AgentBuilderInterc
     
     private final AdviceExecutorFactory adviceExecutorFactory;
     
-    public MethodAdvisorBuilderInterceptor(final TypeDescription typePointcut, final ClassLoaderContext classLoaderContext,
-                                           final AdvisorConfiguration advisorConfig, final boolean isEnhancedForProxy) {
+    public MethodAdvisorBuilderInterceptor(final TypeDescription typePointcut, final ClassLoaderContext classLoaderContext, final AdvisorConfiguration advisorConfig) {
         this.typePointcut = typePointcut;
-        adviceExecutorFactory = new AdviceExecutorFactory(classLoaderContext, advisorConfig, isEnhancedForProxy);
+        adviceExecutorFactory = new AdviceExecutorFactory(classLoaderContext, advisorConfig);
     }
     
     @Override

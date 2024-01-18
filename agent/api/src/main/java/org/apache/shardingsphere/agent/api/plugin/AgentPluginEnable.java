@@ -22,10 +22,9 @@ public interface AgentPluginEnable {
     /**
      * Is the plugin enabled.
      *
-     * @param isEnhancedForProxy when true, it is the proxy environment, when false, it is the jdbc environment
      * @return true or false
      */
-    default boolean isPluginEnabled(boolean isEnhancedForProxy) {
+    default boolean isPluginEnabled() {
         return true;
     }
 }
