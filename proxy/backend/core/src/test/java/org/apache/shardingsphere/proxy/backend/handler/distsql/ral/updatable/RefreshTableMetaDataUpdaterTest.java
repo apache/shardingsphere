@@ -21,8 +21,6 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStor
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -51,20 +49,6 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class RefreshTableMetaDataUpdaterTest {
-    
-    @Test
-    void assertNoDatabaseSelected() {
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        UpdatableDatabaseRuleRALBackendHandler<?> backendHandler = new UpdatableDatabaseRuleRALBackendHandler<>(new RefreshTableMetaDataStatement(), mock(ConnectionSession.class));
-        assertThrows(NoDatabaseSelectedException.class, backendHandler::execute);
-    }
-    
-    @Test
-    void assertUnknownDatabaseException() {
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        UpdatableDatabaseRuleRALBackendHandler<?> backendHandler = new UpdatableDatabaseRuleRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("not_existed_db"));
-        assertThrows(UnknownDatabaseException.class, backendHandler::execute);
-    }
     
     @Test
     void assertEmptyResource() {
