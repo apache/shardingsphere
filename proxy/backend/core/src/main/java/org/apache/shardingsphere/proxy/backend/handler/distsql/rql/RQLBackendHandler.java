@@ -33,15 +33,13 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -66,13 +64,8 @@ public final class RQLBackendHandler<T extends RQLStatement> implements DistSQLB
     public ResponseHeader execute() throws SQLException {
         RQLExecutor executor = TypedSPILoader.getService(RQLExecutor.class, sqlStatement.getClass());
         queryHeaders = createQueryHeader(executor.getColumnNames());
-        mergedResult = createMergedResult(executor.getRows(ProxyContext.getInstance().getDatabase(getDatabaseName()), sqlStatement));
+        mergedResult = createMergedResult(executor.getRows(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)), sqlStatement));
         return new QueryResponseHeader(queryHeaders);
-    }
-    
-    private String getDatabaseName() {
-        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
-        return databaseSegment.isPresent() ? databaseSegment.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
     }
     
     private List<QueryHeader> createQueryHeader(final Collection<String> columnNames) {
