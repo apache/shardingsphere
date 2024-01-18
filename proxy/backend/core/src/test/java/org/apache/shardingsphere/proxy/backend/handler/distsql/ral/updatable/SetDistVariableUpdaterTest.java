@@ -57,7 +57,7 @@ class SetDistVariableUpdaterTest {
     @Test
     void assertExecuteWithConfigurationKey() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         updater.executeUpdate(statement);
@@ -69,7 +69,7 @@ class SetDistVariableUpdaterTest {
     @Test
     void assertExecuteWithTemporaryConfigurationKey() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         updater.executeUpdate(statement);
@@ -81,7 +81,7 @@ class SetDistVariableUpdaterTest {
     @Test
     void assertExecuteWithTypedSPI() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_database_protocol_type", "MySQL");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         updater.executeUpdate(statement);
@@ -93,7 +93,7 @@ class SetDistVariableUpdaterTest {
     @Test
     void assertExecuteWithSystemLogLevel() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         updater.executeUpdate(statement);
@@ -107,7 +107,7 @@ class SetDistVariableUpdaterTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
         assertThrows(InvalidValueException.class, () -> updater.executeUpdate(statement));
     }
     

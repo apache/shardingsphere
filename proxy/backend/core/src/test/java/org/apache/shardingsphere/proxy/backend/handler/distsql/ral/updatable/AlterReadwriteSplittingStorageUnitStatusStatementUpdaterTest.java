@@ -40,7 +40,7 @@ class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
     
     @Test
     void assertWithStandaloneMode() {
-        AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
+        AlterReadwriteSplittingStorageUnitStatusStatementExecutor updater = new AlterReadwriteSplittingStorageUnitStatusStatementExecutor();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThrows(UnsupportedSQLOperationException.class,
                 () -> updater.executeUpdate(new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("foo_db")), "group", "read_ds", "ENABLE")));
@@ -52,7 +52,7 @@ class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
+        AlterReadwriteSplittingStorageUnitStatusStatementExecutor updater = new AlterReadwriteSplittingStorageUnitStatusStatementExecutor();
         updater.setDatabase(database);
         assertThrows(UnsupportedSQLOperationException.class,
                 () -> updater.executeUpdate(new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("foo_db")), "group", "read_ds", "ENABLE")));

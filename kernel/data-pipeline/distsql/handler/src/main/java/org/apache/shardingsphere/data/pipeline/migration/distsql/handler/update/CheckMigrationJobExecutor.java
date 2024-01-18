@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.Con
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.CheckMigrationStatement;
@@ -36,9 +36,9 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Check migration job updater.
+ * Check migration job executor.
  */
-public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigrationStatement> {
+public final class CheckMigrationJobExecutor implements UpdatableRALExecutor<CheckMigrationStatement> {
     
     private final ConsistencyCheckJobAPI checkJobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     

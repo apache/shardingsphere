@@ -23,17 +23,17 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequire
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareUpdatableRALExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 /**
- * Migrate table updater.
+ * Migrate table executor.
  */
 @Setter
-public final class MigrateTableUpdater implements DatabaseAwareRALUpdater<MigrateTableStatement> {
+public final class MigrateTableExecutor implements DatabaseAwareUpdatableRALExecutor<MigrateTableStatement> {
     
     private ShardingSphereDatabase database;
     

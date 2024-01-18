@@ -38,6 +38,6 @@ class LabelComputeNodeUpdaterTest {
     @Test
     void assertWithStandaloneMode() {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        assertThrows(UnsupportedSQLOperationException.class, () -> new LabelComputeNodeUpdater().executeUpdate(mock(LabelComputeNodeStatement.class)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> new LabelComputeNodeExecutor().executeUpdate(mock(LabelComputeNodeStatement.class)));
     }
 }

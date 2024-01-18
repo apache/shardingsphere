@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
@@ -27,9 +27,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
- * Set instance status updater.
+ * Set instance status executor.
  */
-public final class SetInstanceStatusUpdater implements RALUpdater<SetInstanceStatusStatement> {
+public final class SetInstanceStatusExecutor implements UpdatableRALExecutor<SetInstanceStatusStatement> {
     
     @Override
     public void executeUpdate(final SetInstanceStatusStatement sqlStatement) {
