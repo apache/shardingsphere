@@ -21,7 +21,7 @@ import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableDatabaseRuleRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-class SetDistVariableUpdatableRALBackendHandlerTest {
+class SetDistVariableUpdatableDatabaseRuleRALBackendHandlerTest {
     
     private ConnectionSession connectionSession;
     
@@ -41,7 +41,7 @@ class SetDistVariableUpdatableRALBackendHandlerTest {
     
     @Test
     void assertNotSupportedVariable() {
-        UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("unsupported", "XXX"), connectionSession);
+        UpdatableDatabaseRuleRALBackendHandler<?> handler = new UpdatableDatabaseRuleRALBackendHandler<>(new SetDistVariableStatement("unsupported", "XXX"), connectionSession);
         assertThrows(UnsupportedVariableException.class, handler::execute);
     }
 }
