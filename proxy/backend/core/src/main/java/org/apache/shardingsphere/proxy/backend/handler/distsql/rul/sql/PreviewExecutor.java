@@ -96,7 +96,7 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         if (toBePreviewedStatementContext instanceof CursorAvailable && toBePreviewedStatementContext instanceof CursorDefinitionAware) {
             setUpCursorDefinition(connectionSession, toBePreviewedStatementContext);
         }
-        ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(connectionSession.getDatabaseName()));
+        ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(database.getName()));
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName()));
         SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getStatistics(),
