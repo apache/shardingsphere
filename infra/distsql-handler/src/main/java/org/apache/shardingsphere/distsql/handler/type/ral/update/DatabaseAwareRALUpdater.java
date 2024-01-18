@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.distsql.handler.type.ral.update;
 
 import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * Database type aware RAL updater.
+ * Database aware RAL updater.
  * 
  * @param <T> type of SQL statement
  */
-public interface DatabaseTypeAwareRALUpdater<T extends UpdatableRALStatement> extends DatabaseRuleRALUpdater<T> {
+public interface DatabaseAwareRALUpdater<T extends UpdatableRALStatement> extends DatabaseRuleRALUpdater<T> {
     
     /**
-     * Set database type.
+     * Set database.
      *
-     * @param databaseType database type
+     * @param database database
      */
-    void setDatabaseType(DatabaseType databaseType);
+    void setDatabase(ShardingSphereDatabase database);
 }
