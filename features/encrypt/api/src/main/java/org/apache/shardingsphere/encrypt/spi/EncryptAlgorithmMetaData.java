@@ -15,40 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.log;
+package org.apache.shardingsphere.encrypt.spi;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * Agent logger.
+ * Encrypt algorithm meta data.
  */
-public interface AgentLogger {
+@RequiredArgsConstructor
+@Getter
+public final class EncryptAlgorithmMetaData {
     
-    /**
-     * Info.
-     *
-     * @param msg message
-     */
-    void info(String msg);
+    @Setter
+    private boolean supportDecrypt = true;
     
-    /**
-     * Info.
-     *
-     * @param format format
-     * @param arguments arguments
-     */
-    void info(String format, Object... arguments);
+    @Setter
+    private boolean supportEquivalentFilter = true;
     
-    /**
-     * Error.
-     *
-     * @param format format
-     * @param arguments arguments
-     */
-    void error(String format, Object... arguments);
-    
-    /**
-     * Error.
-     *
-     * @param msg message
-     */
-    void error(String msg);
+    @Setter
+    private boolean supportLike;
 }

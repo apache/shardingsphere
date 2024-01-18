@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.encrypt.assisted;
+package org.apache.shardingsphere.transaction.implicit;
 
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import java.sql.SQLException;
 
 /**
- * Assisted encrypt algorithm.
+ * Implicit transaction callback.
+ *
+ * @param <T> type of return value
  */
-public interface AssistedEncryptAlgorithm extends EncryptAlgorithm {
+public interface ImplicitTransactionCallback<T> {
+    
+    /**
+     * Execute.
+     *
+     * @return return value
+     * @throws SQLException SQL exception
+     */
+    T execute() throws SQLException;
 }

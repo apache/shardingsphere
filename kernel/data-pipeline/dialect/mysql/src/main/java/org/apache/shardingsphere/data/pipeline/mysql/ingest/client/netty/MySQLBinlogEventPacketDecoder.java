@@ -81,7 +81,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 return;
             }
             if (binlogEvent.get() instanceof PlaceholderEvent) {
-                out.add(binlogEvent);
+                out.add(binlogEvent.get());
                 skipChecksum(binlogEventHeader.getEventType(), in);
                 return;
             }

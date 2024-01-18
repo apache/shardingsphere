@@ -17,14 +17,35 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
-public final class CoreQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm {
+import java.util.Properties;
+
+@Getter
+public final class CoreQueryLikeEncryptAlgorithmFixture implements EncryptAlgorithm {
+    
+    private EncryptAlgorithmMetaData metaData;
+    
+    @Override
+    public void init(final Properties props) {
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
+        encryptAlgorithmMetaData.setSupportLike(true);
+        encryptAlgorithmMetaData.setSupportDecrypt(false);
+        encryptAlgorithmMetaData.setSupportEquivalentFilter(false);
+        metaData = encryptAlgorithmMetaData;
+    }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "likeEncryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
     }
     
     @Override

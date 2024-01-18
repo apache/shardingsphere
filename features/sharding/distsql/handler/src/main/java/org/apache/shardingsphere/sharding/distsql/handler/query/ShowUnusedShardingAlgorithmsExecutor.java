@@ -45,6 +45,11 @@ public final class ShowUnusedShardingAlgorithmsExecutor extends RuleAwareRQLExec
     }
     
     @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "type", "props");
+    }
+    
+    @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingAlgorithmsStatement sqlStatement, final ShardingRule rule) {
         ShardingRuleConfiguration shardingRuleConfig = rule.getConfiguration();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
@@ -77,11 +82,6 @@ public final class ShowUnusedShardingAlgorithmsExecutor extends RuleAwareRQLExec
             result.add(databaseShardingStrategy.getShardingAlgorithmName());
         }
         return result;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "props");
     }
     
     private String buildProps(final Properties props) {

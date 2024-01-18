@@ -114,7 +114,7 @@ public final class SQLValue {
             return formatString(new String((byte[]) value, StandardCharsets.UTF_8));
         }
         if (value instanceof UUID) {
-            return formatString(((UUID) value).toString());
+            return formatString(value.toString());
         }
         return value.toString();
     }

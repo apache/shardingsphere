@@ -21,15 +21,13 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.Collection;
@@ -47,29 +45,26 @@ public final class EncryptTable {
     
     private final Map<String, EncryptColumn> columns;
     
-    public EncryptTable(final EncryptTableRuleConfiguration config, final Map<String, StandardEncryptAlgorithm> standardEncryptors,
-                        final Map<String, AssistedEncryptAlgorithm> assistedEncryptors, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
+    public EncryptTable(final EncryptTableRuleConfiguration config, final Map<String, EncryptAlgorithm> encryptors) {
         table = config.getName();
-        columns = createEncryptColumns(config, standardEncryptors, assistedEncryptors, likeEncryptors);
+        columns = createEncryptColumns(config, encryptors);
     }
     
-    private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config, final Map<String, StandardEncryptAlgorithm> standardEncryptors,
-                                                            final Map<String, AssistedEncryptAlgorithm> assistedEncryptors, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
+    private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config, final Map<String, EncryptAlgorithm> encryptors) {
         Map<String, EncryptColumn> result = new CaseInsensitiveMap<>();
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            result.put(each.getName(), createEncryptColumn(each, standardEncryptors, assistedEncryptors, likeEncryptors));
+            result.put(each.getName(), createEncryptColumn(each, encryptors));
         }
         return result;
     }
     
-    private EncryptColumn createEncryptColumn(final EncryptColumnRuleConfiguration config, final Map<String, StandardEncryptAlgorithm> standardEncryptors,
-                                              final Map<String, AssistedEncryptAlgorithm> assistedEncryptors, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
-        EncryptColumn result = new EncryptColumn(config.getName(), new CipherColumnItem(config.getCipher().getName(), standardEncryptors.get(config.getCipher().getEncryptorName())));
+    private EncryptColumn createEncryptColumn(final EncryptColumnRuleConfiguration config, final Map<String, EncryptAlgorithm> encryptors) {
+        EncryptColumn result = new EncryptColumn(config.getName(), new CipherColumnItem(config.getCipher().getName(), encryptors.get(config.getCipher().getEncryptorName())));
         if (config.getAssistedQuery().isPresent()) {
-            result.setAssistedQuery(new AssistedQueryColumnItem(config.getAssistedQuery().get().getName(), assistedEncryptors.get(config.getAssistedQuery().get().getEncryptorName())));
+            result.setAssistedQuery(new AssistedQueryColumnItem(config.getAssistedQuery().get().getName(), encryptors.get(config.getAssistedQuery().get().getEncryptorName())));
         }
         if (config.getLikeQuery().isPresent()) {
-            result.setLikeQuery(new LikeQueryColumnItem(config.getLikeQuery().get().getName(), likeEncryptors.get(config.getLikeQuery().get().getEncryptorName())));
+            result.setLikeQuery(new LikeQueryColumnItem(config.getLikeQuery().get().getName(), encryptors.get(config.getLikeQuery().get().getEncryptorName())));
         }
         return result;
     }
@@ -80,7 +75,7 @@ public final class EncryptTable {
      * @param logicColumnName logic column name
      * @return found encryptor
      */
-    public Optional<StandardEncryptAlgorithm> findEncryptor(final String logicColumnName) {
+    public Optional<EncryptAlgorithm> findEncryptor(final String logicColumnName) {
         return columns.containsKey(logicColumnName) ? Optional.of(columns.get(logicColumnName).getCipher().getEncryptor()) : Optional.empty();
     }
     
