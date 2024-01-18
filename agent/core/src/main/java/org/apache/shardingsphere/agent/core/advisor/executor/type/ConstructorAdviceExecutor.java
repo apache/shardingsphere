@@ -28,14 +28,13 @@ import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
+import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
-import org.apache.shardingsphere.agent.core.log.AgentLogger;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
-import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 /**
  * Constructor advice executor.
@@ -43,7 +42,7 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class ConstructorAdviceExecutor implements AdviceExecutor {
     
-    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(ConstructorAdviceExecutor.class);
+    private static final Logger LOGGER = Logger.getLogger(ConstructorAdviceExecutor.class.getName());
     
     private final Map<String, Collection<ConstructorAdvice>> advices;
     
@@ -55,21 +54,23 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
      */
     @RuntimeType
     public void advice(@This final TargetAdviceObject target, @AllArguments final Object[] args) {
-        boolean adviceEnabled = PluginContext.getInstance().isPluginEnabled();
-        if (!adviceEnabled) {
-            return;
-        }
         try {
             for (Entry<String, Collection<ConstructorAdvice>> entry : advices.entrySet()) {
                 for (ConstructorAdvice each : entry.getValue()) {
-                    each.onConstructor(target, args, entry.getKey());
+                    if (isPluginEnabled(each)) {
+                        each.onConstructor(target, args, entry.getKey());
+                    }
                 }
             }
             // CHECKSTYLE:OFF
-        } catch (final Throwable throwable) {
+        } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.error("Constructor advice execution error. class: {}", target.getClass().getTypeName(), throwable);
+            LOGGER.severe(String.format("Constructor advice execution error. class: %s, %s", target.getClass().getTypeName(), ex.getMessage()));
         }
+    }
+    
+    private boolean isPluginEnabled(final ConstructorAdvice advice) {
+        return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled();
     }
     
     @Override

@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater;
+package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
-import java.sql.SQLException;
+import java.util.Optional;
 
 /**
- * Connection session required RAL updater.
- * 
- * @param <T> type of SQL statement
+ * Database name utility class.
  */
-public interface ConnectionSessionRequiredRALUpdater<T extends SQLStatement> extends RALUpdater<T> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseNameUtils {
     
     /**
-     * Execute update.
-     *
+     * Get database name.
+     * 
+     * @param sqlStatement SQL statement
      * @param connectionSession connection session
-     * @param sqlStatement updatable RAL statement
-     * @throws SQLException SQL exception
+     * @return database name
      */
-    void executeUpdate(ConnectionSession connectionSession, T sqlStatement) throws SQLException;
+    public static String getDatabaseName(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
+        return databaseSegment.map(optional -> optional.getIdentifier().getValue()).orElse(connectionSession.getDatabaseName());
+    }
 }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.handler.type.ral.constant.DistSQLScript
 import org.apache.shardingsphere.distsql.handler.type.ral.query.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
-import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -83,9 +82,6 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         appendResourceDistSQL(yamlConfig, result);
         for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
             Class<? extends RuleConfiguration> type = each.getClass();
-            if (each instanceof CompatibleEncryptRuleConfiguration) {
-                type = ((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration().getClass();
-            }
             ConvertRuleConfigurationProvider convertRuleConfigProvider = TypedSPILoader.getService(ConvertRuleConfigurationProvider.class, type);
             result.append(convertRuleConfigProvider.convert(each));
         }

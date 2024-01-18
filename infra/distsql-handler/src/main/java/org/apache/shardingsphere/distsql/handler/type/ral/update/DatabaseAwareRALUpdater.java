@@ -15,37 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.log.slf4j;
+package org.apache.shardingsphere.distsql.handler.type.ral.update;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.log.AgentLogger;
-import org.slf4j.Logger;
+import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * SLF4J agent logger.
+ * Database aware RAL updater.
+ * 
+ * @param <T> type of SQL statement
  */
-@RequiredArgsConstructor
-public final class SLF4JAgentLogger implements AgentLogger {
+public interface DatabaseAwareRALUpdater<T extends UpdatableRALStatement> extends DatabaseRuleRALUpdater<T> {
     
-    private final Logger logger;
-    
-    @Override
-    public void info(final String msg) {
-        logger.info(msg);
-    }
-    
-    @Override
-    public void info(final String format, final Object... arguments) {
-        logger.info(format, arguments);
-    }
-    
-    @Override
-    public void error(final String format, final Object... arguments) {
-        logger.error(format, arguments);
-    }
-    
-    @Override
-    public void error(final String msg) {
-        logger.error(msg);
-    }
+    /**
+     * Set database.
+     *
+     * @param database database
+     */
+    void setDatabase(ShardingSphereDatabase database);
 }

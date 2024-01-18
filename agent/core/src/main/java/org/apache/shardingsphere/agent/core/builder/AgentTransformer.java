@@ -31,8 +31,6 @@ import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfigur
 import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptChainEngine;
 import org.apache.shardingsphere.agent.core.builder.interceptor.impl.MethodAdvisorBuilderInterceptor;
 import org.apache.shardingsphere.agent.core.builder.interceptor.impl.TargetAdviceObjectBuilderInterceptor;
-import org.apache.shardingsphere.agent.core.log.AgentLogger;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
 import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.classloader.ClassLoaderContext;
@@ -42,6 +40,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 
 /**
  * Agent transformer.
@@ -49,7 +48,7 @@ import java.util.jar.JarFile;
 @RequiredArgsConstructor
 public final class AgentTransformer implements Transformer {
     
-    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(AdvisorConfigurationLoader.class);
+    private static final Logger LOGGER = Logger.getLogger(AdvisorConfigurationLoader.class.getName());
     
     private static final Map<AgentPluginClassLoader, TypePool> TYPE_POOL_MAP = new ConcurrentHashMap<>();
     
@@ -80,7 +79,7 @@ public final class AgentTransformer implements Transformer {
                 result.getAdvisors().add(each);
                 continue;
             }
-            LOGGER.error("The advice class `{}` does not exist", each.getAdviceClassName());
+            LOGGER.severe(String.format("The advice class `%s` does not exist", each.getAdviceClassName()));
         }
         return result;
     }

@@ -17,34 +17,35 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import com.google.common.base.Strings;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareRALUpdater;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 
 /**
  * Refresh table meta data handler.
  */
-public final class RefreshTableMetaDataUpdater implements ConnectionSessionRequiredRALUpdater<RefreshTableMetaDataStatement> {
+@Setter
+public final class RefreshTableMetaDataUpdater implements DatabaseAwareRALUpdater<RefreshTableMetaDataStatement> {
+    
+    private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final ConnectionSession connectionSession, final RefreshTableMetaDataStatement sqlStatement) {
-        String databaseName = getDatabaseName(connectionSession);
+    public void executeUpdate(final String databaseName, final RefreshTableMetaDataStatement sqlStatement) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         checkStorageUnit(databaseName, contextManager.getStorageUnits(databaseName), sqlStatement);
-        String schemaName = getSchemaName(databaseName, sqlStatement, connectionSession);
+        String schemaName = getSchemaName(databaseName, sqlStatement);
         if (sqlStatement.getStorageUnitName().isPresent()) {
             if (sqlStatement.getTableName().isPresent()) {
                 contextManager.reloadTable(databaseName, schemaName, sqlStatement.getStorageUnitName().get(), sqlStatement.getTableName().get());
@@ -69,19 +70,8 @@ public final class RefreshTableMetaDataUpdater implements ConnectionSessionRequi
         }
     }
     
-    private String getDatabaseName(final ConnectionSession connectionSession) {
-        String result = connectionSession.getDatabaseName();
-        if (Strings.isNullOrEmpty(result)) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().databaseExists(result)) {
-            throw new UnknownDatabaseException(result);
-        }
-        return result;
-    }
-    
-    private String getSchemaName(final String databaseName, final RefreshTableMetaDataStatement sqlStatement, final ConnectionSession connectionSession) {
-        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName().get() : new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDefaultSchemaName(databaseName);
+    private String getSchemaName(final String databaseName, final RefreshTableMetaDataStatement sqlStatement) {
+        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName().get() : new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName);
     }
     
     @Override

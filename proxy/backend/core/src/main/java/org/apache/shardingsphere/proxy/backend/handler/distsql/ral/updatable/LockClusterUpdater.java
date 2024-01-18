@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
  */
 @RequiredArgsConstructor
 @Setter
-public final class LockClusterUpdater implements RALUpdater<LockClusterStatement> {
+public final class LockClusterUpdater implements DatabaseRuleRALUpdater<LockClusterStatement> {
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})

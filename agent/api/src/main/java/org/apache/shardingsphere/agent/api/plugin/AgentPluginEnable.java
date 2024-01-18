@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.encrypt.assisted;
+package org.apache.shardingsphere.agent.api.plugin;
 
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-
-/**
- * Assisted encrypt algorithm.
- */
-public interface AssistedEncryptAlgorithm extends EncryptAlgorithm {
+public interface AgentPluginEnable {
+    
+    /**
+     * Is the plugin enabled.
+     *
+     * @return true or false
+     */
+    default boolean isPluginEnabled() {
+        return true;
+    }
 }

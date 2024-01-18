@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.encrypt.standard;
+package org.apache.shardingsphere.agent.plugin.core.advice;
 
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
+import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 
-/**
- * Standard encrypt algorithm.
- */
-public interface StandardEncryptAlgorithm extends EncryptAlgorithm {
+public abstract class AbstractStaticMethodAdvice implements StaticMethodAdvice, AgentPluginEnable {
     
-    /**
-     * Decrypt.
-     *
-     * @param cipherValue cipher value
-     * @param encryptContext encrypt context
-     * @return plain value
-     */
-    Object decrypt(Object cipherValue, EncryptContext encryptContext);
+    @Override
+    public boolean isPluginEnabled() {
+        return PluginContext.getInstance().isPluginEnabled();
+    }
 }

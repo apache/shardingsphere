@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.yaml.config.rule;
+package org.apache.shardingsphere.transaction.implicit;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.sql.SQLException;
 
 /**
- * Encrypt table rule configuration for YAML.
+ * Implicit transaction callback.
  *
- * @deprecated Should use new api, compatible api will remove in next version.
+ * @param <T> type of return value
  */
-@Getter
-@Setter
-@Deprecated
-public final class YamlCompatibleEncryptTableRuleConfiguration implements YamlConfiguration {
+public interface ImplicitTransactionCallback<T> {
     
-    private String name;
-    
-    private Map<String, YamlCompatibleEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
+    /**
+     * Execute.
+     *
+     * @return return value
+     * @throws SQLException SQL exception
+     */
+    T execute() throws SQLException;
 }

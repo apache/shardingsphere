@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -32,7 +32,7 @@ import java.util.Arrays;
 /**
  * Route result count advice.
  */
-public final class RouteResultCountAdvice implements InstanceMethodAdvice {
+public final class RouteResultCountAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration routedResultConfig = new MetricConfiguration("routed_result_total",
             MetricCollectorType.COUNTER, "Total count of routed result", Arrays.asList("object", "name"));

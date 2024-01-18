@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
@@ -91,7 +91,7 @@ class EncryptInsertDerivedColumnsTokenGeneratorTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
         when(encryptTable.isEncryptColumn("foo_col")).thenReturn(true);
-        when(encryptTable.getEncryptColumn("foo_col").getAssistedQuery()).thenReturn(Optional.of(new AssistedQueryColumnItem("assisted_query_col", mock(AssistedEncryptAlgorithm.class))));
+        when(encryptTable.getEncryptColumn("foo_col").getAssistedQuery()).thenReturn(Optional.of(new AssistedQueryColumnItem("assisted_query_col", mock(EncryptAlgorithm.class))));
         when(result.getEncryptTable("foo_tbl")).thenReturn(encryptTable);
         return result;
     }

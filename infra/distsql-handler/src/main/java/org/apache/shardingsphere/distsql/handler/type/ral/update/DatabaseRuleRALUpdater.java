@@ -15,40 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.log;
+package org.apache.shardingsphere.distsql.handler.type.ral.update;
+
+import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+
+import java.sql.SQLException;
 
 /**
- * Agent logger.
+ * Database rule RAL updater.
+ * 
+ * @param <T> type of updatable RAL statement
  */
-public interface AgentLogger {
+@SingletonSPI
+public interface DatabaseRuleRALUpdater<T extends UpdatableRALStatement> extends TypedSPI {
     
     /**
-     * Info.
+     * Execute update.
      *
-     * @param msg message
+     * @param databaseName database name
+     * @param sqlStatement updatable RAL statement
+     * @throws SQLException SQL exception
      */
-    void info(String msg);
+    void executeUpdate(String databaseName, T sqlStatement) throws SQLException;
     
-    /**
-     * Info.
-     *
-     * @param format format
-     * @param arguments arguments
-     */
-    void info(String format, Object... arguments);
-    
-    /**
-     * Error.
-     *
-     * @param format format
-     * @param arguments arguments
-     */
-    void error(String format, Object... arguments);
-    
-    /**
-     * Error.
-     *
-     * @param msg message
-     */
-    void error(String msg);
+    @Override
+    Class<T> getType();
 }

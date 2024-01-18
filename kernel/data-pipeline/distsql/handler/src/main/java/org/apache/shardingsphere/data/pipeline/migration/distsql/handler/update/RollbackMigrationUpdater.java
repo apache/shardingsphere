@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.RollbackMigrationStatement;
 
@@ -27,7 +27,7 @@ import java.sql.SQLException;
 /**
  * Rollback migration updater.
  */
-public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrationStatement> {
+public final class RollbackMigrationUpdater implements DatabaseRuleRALUpdater<RollbackMigrationStatement> {
     
     @Override
     public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) throws SQLException {

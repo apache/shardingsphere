@@ -20,8 +20,6 @@ package org.apache.shardingsphere.agent.core.plugin;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.log.AgentLogger;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
@@ -31,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 
 /**
  * Plugin lifecycle service manager.
@@ -40,7 +39,7 @@ public final class PluginLifecycleServiceManager {
     
     private static final AtomicBoolean STARTED_FLAG = new AtomicBoolean(false);
     
-    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(PluginLifecycleServiceManager.class);
+    private static final Logger LOGGER = Logger.getLogger(PluginLifecycleServiceManager.class.getName());
     
     /**
      * Initialize all plugins.
@@ -72,12 +71,12 @@ public final class PluginLifecycleServiceManager {
     
     private static void start(final PluginConfiguration pluginConfig, final PluginLifecycleService pluginLifecycleService, final boolean isEnhancedForProxy) {
         try {
-            LOGGER.info("Start plugin: {}", pluginLifecycleService.getType());
+            LOGGER.info(String.format("Start plugin: %s", pluginLifecycleService.getType()));
             pluginLifecycleService.start(pluginConfig, isEnhancedForProxy);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.error("Failed to start service.", ex);
+            LOGGER.severe(String.format("Failed to start service %s.", ex.getMessage()));
         }
     }
     
@@ -87,7 +86,7 @@ public final class PluginLifecycleServiceManager {
             try {
                 each.close();
             } catch (final IOException ex) {
-                LOGGER.error("Failed to close jar file.", ex);
+                LOGGER.severe(String.format("Failed to close jar file %s.", ex.getMessage()));
             }
         });
     }

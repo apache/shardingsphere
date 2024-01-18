@@ -17,33 +17,31 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import io.netty.util.DefaultAttributeMap;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableDatabaseRuleRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
-class RefreshDatabaseMetaDataUpdaterTest {
+class SetDistVariableUpdatableDatabaseRuleRALBackendHandlerTest {
     
-    @Mock
     private ConnectionSession connectionSession;
     
+    @BeforeEach
+    void setUp() {
+        connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
+    }
+    
     @Test
-    void assertExecuteWithNoDatabase() {
-        RefreshDatabaseMetaDataUpdater updater = new RefreshDatabaseMetaDataUpdater();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        assertThrows(UnknownDatabaseException.class, () -> updater.executeUpdate(connectionSession, new RefreshDatabaseMetaDataStatement("foo", true)));
+    void assertNotSupportedVariable() {
+        UpdatableDatabaseRuleRALBackendHandler<?> handler = new UpdatableDatabaseRuleRALBackendHandler<>(new SetDistVariableStatement("unsupported", "XXX"), connectionSession);
+        assertThrows(UnsupportedVariableException.class, handler::execute);
     }
 }

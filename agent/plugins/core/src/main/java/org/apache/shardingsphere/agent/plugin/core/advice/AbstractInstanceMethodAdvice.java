@@ -15,33 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.yaml.config.rule;
+package org.apache.shardingsphere.agent.plugin.core.advice;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
+import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 
-/**
- * Encrypt column rule configuration for YAML.
- * 
- * @deprecated Should use new api, compatible api will remove in next version.
- */
-@Getter
-@Setter
-@Deprecated
-public final class YamlCompatibleEncryptColumnRuleConfiguration implements YamlConfiguration {
+public abstract class AbstractInstanceMethodAdvice implements InstanceMethodAdvice, AgentPluginEnable {
     
-    private String logicColumn;
-    
-    private String cipherColumn;
-    
-    private String assistedQueryColumn;
-    
-    private String likeQueryColumn;
-    
-    private String encryptorName;
-    
-    private String assistedQueryEncryptorName;
-    
-    private String likeQueryEncryptorName;
+    @Override
+    public boolean isPluginEnabled() {
+        return PluginContext.getInstance().isPluginEnabled();
+    }
 }

@@ -123,6 +123,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Exe
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProcedureNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenJsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintLimitedContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenRowSetFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -668,6 +669,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.openJsonFunction()) {
             return visit(ctx.openJsonFunction());
         }
+        if (null != ctx.openRowSetFunction()) {
+            return visit(ctx.openRowSetFunction());
+        }
         if (null != ctx.jsonFunction()) {
             return visit(ctx.jsonFunction());
         }
@@ -764,6 +768,18 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENJSON().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitOpenRowSetFunction(final OpenRowSetFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENROWSET().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        if (null != ctx.tableName()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.tableName().getStart().getStartIndex(), ctx.tableName().getStop().getStopIndex(), ctx.tableName().getText()));
         }
         return result;
     }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
+import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.DatabaseAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
@@ -26,22 +27,19 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedRe
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -79,7 +77,7 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
             ((InstanceContextAwareQueryableRALExecutor<T>) executor).setInstanceContext(ProxyContext.getInstance().getContextManager().getInstanceContext());
         }
         if (executor instanceof DatabaseAwareQueryableRALExecutor) {
-            ((DatabaseAwareQueryableRALExecutor<T>) executor).setCurrentDatabase(ProxyContext.getInstance().getDatabase(getDatabaseName(connectionSession, sqlStatement)));
+            ((DatabaseAwareQueryableRALExecutor<T>) executor).setCurrentDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
         }
         if (executor instanceof ConnectionSizeAwareQueryableRALExecutor) {
             ((ConnectionSizeAwareQueryableRALExecutor<T>) executor).setConnectionSize(connectionSession.getDatabaseConnectionManager().getConnectionSize());
@@ -93,11 +91,6 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
     
     private MergedResult createMergedResult(final Collection<LocalDataQueryResultRow> rows) {
         return new LocalDataMergedResult(rows);
-    }
-    
-    private String getDatabaseName(final ConnectionSession connectionSession, final T sqlStatement) {
-        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
-        return databaseSegment.isPresent() ? databaseSegment.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
     }
     
     @Override

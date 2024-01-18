@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.fixture;
 
+import lombok.Getter;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
-public final class DistSQLEncryptAlgorithmFixture implements StandardEncryptAlgorithm {
+@Getter
+public final class DistSQLEncryptAlgorithmFixture implements EncryptAlgorithm {
+    
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData();
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

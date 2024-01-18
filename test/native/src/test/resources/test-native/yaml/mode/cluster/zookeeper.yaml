@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: governance
+      namespace: governance-zookeeper-data-source
       server-lists: localhost:62372
 
 dataSources:

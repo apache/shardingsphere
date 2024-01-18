@@ -20,39 +20,36 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
  * Set dist variable statement updater.
  */
-public final class SetDistVariableUpdater implements ConnectionSessionRequiredRALUpdater<SetDistVariableStatement> {
+public final class SetDistVariableUpdater implements DatabaseRuleRALUpdater<SetDistVariableStatement> {
     
     @Override
-    public void executeUpdate(final ConnectionSession connectionSession, final SetDistVariableStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final SetDistVariableStatement sqlStatement) throws SQLException {
         Enum<?> enumType = getEnumType(sqlStatement.getName());
-        if (enumType instanceof TypedPropertyKey) {
-            handleConfigurationProperty((TypedPropertyKey) enumType, sqlStatement.getValue());
-        } else {
-            throw new UnsupportedVariableException(sqlStatement.getName());
-        }
+        ShardingSpherePreconditions.checkState(enumType instanceof TypedPropertyKey, () -> new UnsupportedVariableException(sqlStatement.getName()));
+        handleConfigurationProperty((TypedPropertyKey) enumType, sqlStatement.getValue());
     }
     
     private Enum<?> getEnumType(final String name) {
@@ -68,13 +65,12 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
     }
     
     private void handleConfigurationProperty(final TypedPropertyKey propertyKey, final String value) {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Properties props = new Properties();
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());
         props.putAll(metaDataContexts.getMetaData().getTemporaryProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
-        contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterProperties(props);
         refreshRootLogger(props);
         syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value);
         syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value);
