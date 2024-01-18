@@ -42,36 +42,36 @@ public final class RefreshTableMetaDataUpdater implements DatabaseAwareRALUpdate
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final String databaseName, final RefreshTableMetaDataStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        checkStorageUnit(databaseName, contextManager.getStorageUnits(databaseName), sqlStatement);
-        String schemaName = getSchemaName(databaseName, sqlStatement);
+        checkStorageUnit(contextManager.getStorageUnits(database.getName()), sqlStatement);
+        String schemaName = getSchemaName(sqlStatement);
         if (sqlStatement.getStorageUnitName().isPresent()) {
             if (sqlStatement.getTableName().isPresent()) {
-                contextManager.reloadTable(databaseName, schemaName, sqlStatement.getStorageUnitName().get(), sqlStatement.getTableName().get());
+                contextManager.reloadTable(database.getName(), schemaName, sqlStatement.getStorageUnitName().get(), sqlStatement.getTableName().get());
             } else {
-                contextManager.reloadSchema(databaseName, schemaName, sqlStatement.getStorageUnitName().get());
+                contextManager.reloadSchema(database.getName(), schemaName, sqlStatement.getStorageUnitName().get());
             }
             return;
         }
         if (sqlStatement.getTableName().isPresent()) {
-            contextManager.reloadTable(databaseName, schemaName, sqlStatement.getTableName().get());
+            contextManager.reloadTable(database.getName(), schemaName, sqlStatement.getTableName().get());
         } else {
-            contextManager.refreshTableMetaData(databaseName);
+            contextManager.refreshTableMetaData(database.getName());
         }
     }
     
-    private void checkStorageUnit(final String databaseName, final Map<String, StorageUnit> storageUnits, final RefreshTableMetaDataStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(!storageUnits.isEmpty(), () -> new EmptyStorageUnitException(databaseName));
+    private void checkStorageUnit(final Map<String, StorageUnit> storageUnits, final RefreshTableMetaDataStatement sqlStatement) {
+        ShardingSpherePreconditions.checkState(!storageUnits.isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
         if (sqlStatement.getStorageUnitName().isPresent()) {
             String storageUnitName = sqlStatement.getStorageUnitName().get();
             ShardingSpherePreconditions.checkState(
-                    storageUnits.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singleton(storageUnitName)));
+                    storageUnits.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(storageUnitName)));
         }
     }
     
-    private String getSchemaName(final String databaseName, final RefreshTableMetaDataStatement sqlStatement) {
-        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName().get() : new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName);
+    private String getSchemaName(final RefreshTableMetaDataStatement sqlStatement) {
+        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName().get() : new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
     }
     
     @Override

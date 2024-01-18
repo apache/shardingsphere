@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.UnregisterMigrationSourceStorageUnitStatement;
@@ -28,12 +28,12 @@ import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.Unreg
 /**
  * Unregister migration source storage unit updater.
  */
-public final class UnregisterMigrationSourceStorageUnitUpdater implements DatabaseRuleRALUpdater<UnregisterMigrationSourceStorageUnitStatement> {
+public final class UnregisterMigrationSourceStorageUnitUpdater implements RALUpdater<UnregisterMigrationSourceStorageUnitStatement> {
     
     private final MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
     
     @Override
-    public void executeUpdate(final String databaseName, final UnregisterMigrationSourceStorageUnitStatement sqlStatement) {
+    public void executeUpdate(final UnregisterMigrationSourceStorageUnitStatement sqlStatement) {
         jobAPI.dropMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), sqlStatement.getNames());
     }
     

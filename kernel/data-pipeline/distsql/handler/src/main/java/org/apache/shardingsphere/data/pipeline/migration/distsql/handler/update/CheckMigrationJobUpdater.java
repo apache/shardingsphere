@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.Con
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.CheckMigrationStatement;
@@ -38,14 +38,14 @@ import java.util.Properties;
 /**
  * Check migration job updater.
  */
-public final class CheckMigrationJobUpdater implements DatabaseRuleRALUpdater<CheckMigrationStatement> {
+public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigrationStatement> {
     
     private final ConsistencyCheckJobAPI checkJobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
     private final PipelineJobType migrationJobType = new MigrationJobType();
     
     @Override
-    public void executeUpdate(final String databaseName, final CheckMigrationStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final CheckMigrationStatement sqlStatement) throws SQLException {
         AlgorithmSegment typeStrategy = sqlStatement.getTypeStrategy();
         String algorithmTypeName = null == typeStrategy ? null : typeStrategy.getName();
         Properties algorithmProps = null == typeStrategy ? null : typeStrategy.getProps();

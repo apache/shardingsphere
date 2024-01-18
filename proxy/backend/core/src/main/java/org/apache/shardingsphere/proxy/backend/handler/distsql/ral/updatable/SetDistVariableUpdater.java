@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
@@ -43,10 +43,10 @@ import java.util.Properties;
 /**
  * Set dist variable statement updater.
  */
-public final class SetDistVariableUpdater implements DatabaseRuleRALUpdater<SetDistVariableStatement> {
+public final class SetDistVariableUpdater implements RALUpdater<SetDistVariableStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final SetDistVariableStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final SetDistVariableStatement sqlStatement) throws SQLException {
         Enum<?> enumType = getEnumType(sqlStatement.getName());
         ShardingSpherePreconditions.checkState(enumType instanceof TypedPropertyKey, () -> new UnsupportedVariableException(sqlStatement.getName()));
         handleConfigurationProperty((TypedPropertyKey) enumType, sqlStatement.getValue());

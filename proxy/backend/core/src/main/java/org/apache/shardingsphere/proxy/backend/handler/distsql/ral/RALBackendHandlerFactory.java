@@ -51,6 +51,6 @@ public final class RALBackendHandlerFactory {
             }
             return new UpdatableGlobalRuleRALBackendHandler((UpdatableGlobalRuleRALStatement) sqlStatement);
         }
-        return new UpdatableDatabaseRuleRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
+        return new UpdatableRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
     }
 }

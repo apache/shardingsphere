@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.config.Pipeline
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -30,12 +30,12 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.con
 /**
  * Alter transmission rule updater.
  */
-public final class AlterTransmissionRuleUpdater implements DatabaseRuleRALUpdater<AlterTransmissionRuleStatement> {
+public final class AlterTransmissionRuleUpdater implements RALUpdater<AlterTransmissionRuleStatement> {
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
     @Override
-    public void executeUpdate(final String databaseName, final AlterTransmissionRuleStatement sqlStatement) {
+    public void executeUpdate(final AlterTransmissionRuleStatement sqlStatement) {
         PipelineProcessConfiguration processConfig = TransmissionProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
         String jobType = TypedSPILoader.getService(PipelineJobType.class, sqlStatement.getJobTypeName()).getType();
         processConfigPersistService.persist(new PipelineContextKey(InstanceType.PROXY), jobType, processConfig);
