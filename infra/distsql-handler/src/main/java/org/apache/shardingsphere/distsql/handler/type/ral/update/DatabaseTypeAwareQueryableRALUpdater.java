@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater;
+package org.apache.shardingsphere.distsql.handler.type.ral.update;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.sql.SQLException;
-
 /**
- * Connection session required RAL updater.
+ * Database type aware queryable RAL updater.
  * 
  * @param <T> type of SQL statement
  */
-public interface ConnectionSessionRequiredRALUpdater<T extends SQLStatement> extends DatabaseRuleRALUpdater<T> {
+public interface DatabaseTypeAwareQueryableRALUpdater<T extends SQLStatement> extends DatabaseRuleRALUpdater<T> {
     
     /**
-     * Execute update.
+     * Set database type.
      *
-     * @param connectionSession connection session
-     * @param sqlStatement updatable RAL statement
-     * @throws SQLException SQL exception
+     * @param databaseType database type
      */
-    void executeUpdate(ConnectionSession connectionSession, T sqlStatement) throws SQLException;
+    void setDatabaseType(DatabaseType databaseType);
 }
