@@ -72,6 +72,6 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
-        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("SCHEMATA", "Database", "schema_name", Types.VARCHAR, "VARCHAR", 255, 0)));
+        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("SCHEMATA", "SCHEMA_NAME", "Database", Types.VARCHAR, "VARCHAR", 255, 0)));
     }
 }
