@@ -39,6 +39,6 @@ class UnlabelComputeNodeUpdaterTest {
     void assertWithStandaloneMode() {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         UnlabelComputeNodeUpdater updater = new UnlabelComputeNodeUpdater();
-        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", mock(UnlabelComputeNodeStatement.class)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate(mock(UnlabelComputeNodeStatement.class)));
     }
 }
