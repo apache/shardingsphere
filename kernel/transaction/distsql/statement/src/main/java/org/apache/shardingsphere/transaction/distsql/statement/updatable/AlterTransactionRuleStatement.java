@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.distsql.statement.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableGlobalRuleRALStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.transaction.distsql.segment.TransactionProviderSegment;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.transaction.distsql.segment.TransactionProvider
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterTransactionRuleStatement extends UpdatableGlobalRuleRALStatement {
+public final class AlterTransactionRuleStatement extends RuleDefinitionStatement {
     
     private final String defaultType;
     
