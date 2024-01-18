@@ -50,6 +50,8 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private final Map<String, Collection<InstanceMethodAdvice>> advices;
     
+    private final boolean isEnhancedForProxy;
+    
     /**
      * Advice instance method.
      *
@@ -126,7 +128,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     }
     
     private boolean isPluginEnabled(final InstanceMethodAdvice advice) {
-        return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled();
+        return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled(isEnhancedForProxy);
     }
     
     @Override

@@ -48,6 +48,8 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     
     private final Map<String, Collection<StaticMethodAdvice>> advices;
     
+    private final boolean isEnhancedForProxy;
+    
     /**
      * Advice static method.
      *
@@ -124,7 +126,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     }
     
     private boolean isPluginEnabled(final StaticMethodAdvice advice) {
-        return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled();
+        return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled(isEnhancedForProxy);
     }
     
     @Override

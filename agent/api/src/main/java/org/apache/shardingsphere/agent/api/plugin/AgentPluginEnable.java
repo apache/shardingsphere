@@ -22,9 +22,10 @@ public interface AgentPluginEnable {
     /**
      * Is the plugin enabled.
      *
+     * @param isEnhancedForProxy is enhanced for proxy
      * @return true or false
      */
-    default boolean isPluginEnabled() {
+    default boolean isPluginEnabled(boolean isEnhancedForProxy) {
         return true;
     }
 }

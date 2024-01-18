@@ -46,6 +46,8 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
     
     private final Map<String, Collection<ConstructorAdvice>> advices;
     
+    private final boolean isEnhancedForProxy;
+    
     /**
      * Advice constructor.
      *
@@ -70,7 +72,7 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
     }
     
     private boolean isPluginEnabled(final ConstructorAdvice advice) {
-        return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled();
+        return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled(isEnhancedForProxy);
     }
     
     @Override

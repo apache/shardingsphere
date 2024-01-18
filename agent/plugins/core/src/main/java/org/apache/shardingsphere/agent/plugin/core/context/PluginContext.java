@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.core.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.pool.TypePool;
+import lombok.Setter;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.driver.ShardingSphereDriver;
 import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
@@ -38,11 +38,14 @@ import java.util.Optional;
  * Plugin Context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Setter
 public final class PluginContext {
     
     private static final PluginContext INSTANCE = new PluginContext();
     
     private ContextManager contextManager;
+    
+    private boolean isEnhancedForProxy;
     
     /**
      * Get instance of plugin context.
@@ -71,7 +74,7 @@ public final class PluginContext {
      * @return ContextManager
      */
     public Optional<ContextManager> getContextManager() {
-        if (isProxyEnvironment()) {
+        if (isEnhancedForProxy) {
             return Optional.ofNullable(ProxyContext.getInstance().getContextManager());
         }
         Optional<ShardingSphereDriver> shardingSphereDriver = getShardingSphereDriver();
@@ -81,15 +84,6 @@ public final class PluginContext {
             return dataSourceMap.isEmpty() ? Optional.empty() : Optional.ofNullable(AgentReflectionUtils.getFieldValue(dataSourceMap.values().iterator().next(), "contextManager"));
         }
         return Optional.empty();
-    }
-    
-    /**
-     * Is proxy environment.
-     *
-     * @return true or false
-     */
-    public boolean isProxyEnvironment() {
-        return TypePool.Default.ofSystemLoader().describe("org.apache.shardingsphere.proxy.Bootstrap").isResolved();
     }
     
     private Optional<ShardingSphereDriver> getShardingSphereDriver() {
