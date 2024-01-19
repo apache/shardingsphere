@@ -19,9 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
@@ -83,15 +81,15 @@ public final class PipelineJdbcUtils {
      * Cancel statement.
      *
      * @param statement statement
-     * @throws SQLWrapperException if cancelling statement failed
      */
-    public static void cancelStatement(final Statement statement) throws SQLWrapperException {
+    public static void cancelStatement(final Statement statement) {
         try {
             if (!statement.isClosed()) {
                 statement.cancel();
             }
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ignored) {
+            // CHECKSTYLE:ON
         }
     }
 }

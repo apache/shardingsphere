@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,13 +41,13 @@ class MemoryPipelineChannelTest {
     void assertZeroQueueSizeWorks() {
         MemoryPipelineChannel channel = new MemoryPipelineChannel(0, new InventoryTaskAckCallback(new AtomicReference<>()));
         List<Record> records = Collections.singletonList(new PlaceholderRecord(new IngestFinishedPosition()));
-        Semaphore semaphore = new Semaphore(1);
+        CountDownLatch latch = new CountDownLatch(1);
         Thread thread = new Thread(() -> {
-            semaphore.release();
+            latch.countDown();
             channel.push(records);
         });
         thread.start();
-        assertTrue(semaphore.tryAcquire(1L, TimeUnit.SECONDS));
+        assertTrue(latch.await(1L, TimeUnit.SECONDS));
         assertThat(channel.fetch(1, 500L), is(records));
     }
     
