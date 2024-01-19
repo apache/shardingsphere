@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.RollbackMigrationStatement;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StartMigrationStatement;
 
 /**
- * Rollback migration updater.
+ * Start migration executor.
  */
-public final class RollbackMigrationUpdater implements DatabaseRuleRALUpdater<RollbackMigrationStatement> {
+public final class StartMigrationExecutor implements UpdatableRALExecutor<StartMigrationStatement> {
+    
+    private final PipelineJobManager jobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) throws SQLException {
-        TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").rollback(sqlStatement.getJobId());
+    public void executeUpdate(final StartMigrationStatement sqlStatement) {
+        jobManager.resume(sqlStatement.getJobId());
     }
     
     @Override
-    public Class<RollbackMigrationStatement> getType() {
-        return RollbackMigrationStatement.class;
+    public Class<StartMigrationStatement> getType() {
+        return StartMigrationStatement.class;
     }
 }

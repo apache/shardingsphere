@@ -18,30 +18,27 @@
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.MigrateTableStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.UnregisterMigrationSourceStorageUnitStatement;
 
 /**
- * Migrate table updater.
+ * Unregister migration source storage unit executor.
  */
-public final class MigrateTableUpdater implements DatabaseRuleRALUpdater<MigrateTableStatement> {
+public final class UnregisterMigrationSourceStorageUnitExecutor implements UpdatableRALExecutor<UnregisterMigrationSourceStorageUnitStatement> {
+    
+    private final MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
     
     @Override
-    public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
-        String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? databaseName : sqlStatement.getTargetDatabaseName();
-        ShardingSpherePreconditions.checkNotNull(targetDatabaseName, MissingRequiredTargetDatabaseException::new);
-        MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
-        jobAPI.start(new PipelineContextKey(InstanceType.PROXY), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
+    public void executeUpdate(final UnregisterMigrationSourceStorageUnitStatement sqlStatement) {
+        jobAPI.dropMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), sqlStatement.getNames());
     }
     
     @Override
-    public Class<MigrateTableStatement> getType() {
-        return MigrateTableStatement.class;
+    public Class<UnregisterMigrationSourceStorageUnitStatement> getType() {
+        return UnregisterMigrationSourceStorageUnitStatement.class;
     }
 }

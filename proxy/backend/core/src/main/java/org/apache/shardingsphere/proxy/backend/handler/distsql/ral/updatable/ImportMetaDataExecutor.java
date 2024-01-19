@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
@@ -40,16 +40,16 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Import meta data updater.
+ * Import meta data executor.
  */
-public final class ImportMetaDataUpdater implements DatabaseRuleRALUpdater<ImportMetaDataStatement> {
+public final class ImportMetaDataExecutor implements UpdatableRALExecutor<ImportMetaDataStatement> {
     
     private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     
     private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
     @Override
-    public void executeUpdate(final String databaseName, final ImportMetaDataStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final ImportMetaDataStatement sqlStatement) throws SQLException {
         String jsonMetaDataConfig;
         if (sqlStatement.getFilePath().isPresent()) {
             File file = new File(sqlStatement.getFilePath().get());

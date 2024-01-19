@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StartMigrationStatement;
+import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.CommitMigrationStatement;
+
+import java.sql.SQLException;
 
 /**
- * Start migration updater.
+ * Commit migration executor.
  */
-public final class StartMigrationUpdater implements DatabaseRuleRALUpdater<StartMigrationStatement> {
-    
-    private final PipelineJobManager jobManager = new PipelineJobManager(new MigrationJobType());
+public final class CommitMigrationExecutor implements UpdatableRALExecutor<CommitMigrationStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final StartMigrationStatement sqlStatement) {
-        jobManager.resume(sqlStatement.getJobId());
+    public void executeUpdate(final CommitMigrationStatement sqlStatement) throws SQLException {
+        TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").commit(sqlStatement.getJobId());
     }
     
     @Override
-    public Class<StartMigrationStatement> getType() {
-        return StartMigrationStatement.class;
+    public Class<CommitMigrationStatement> getType() {
+        return CommitMigrationStatement.class;
     }
 }

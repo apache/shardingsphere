@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseRuleRALUpdater;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareUpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -36,7 +36,7 @@ import java.sql.SQLException;
  * @param <T> type of SQL statement
  */
 @RequiredArgsConstructor
-public final class UpdatableDatabaseRuleRALBackendHandler<T extends UpdatableRALStatement> implements RALBackendHandler {
+public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> implements RALBackendHandler {
     
     private final UpdatableRALStatement sqlStatement;
     
@@ -45,11 +45,11 @@ public final class UpdatableDatabaseRuleRALBackendHandler<T extends UpdatableRAL
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        DatabaseRuleRALUpdater<T> updater = TypedSPILoader.getService(DatabaseRuleRALUpdater.class, sqlStatement.getClass());
-        if (updater instanceof DatabaseAwareRALUpdater) {
-            ((DatabaseAwareRALUpdater<T>) updater).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
+        UpdatableRALExecutor<T> updater = TypedSPILoader.getService(UpdatableRALExecutor.class, sqlStatement.getClass());
+        if (updater instanceof DatabaseAwareUpdatableRALExecutor) {
+            ((DatabaseAwareUpdatableRALExecutor<T>) updater).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
         }
-        updater.executeUpdate(connectionSession.getDatabaseName(), (T) sqlStatement);
+        updater.executeUpdate((T) sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
 }

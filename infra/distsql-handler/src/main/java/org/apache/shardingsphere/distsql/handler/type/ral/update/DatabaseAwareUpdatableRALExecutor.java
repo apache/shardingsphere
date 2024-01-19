@@ -18,28 +18,19 @@
 package org.apache.shardingsphere.distsql.handler.type.ral.update;
 
 import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * Database rule RAL updater.
+ * Database aware updatable RAL executor.
  * 
- * @param <T> type of updatable RAL statement
+ * @param <T> type of SQL statement
  */
-@SingletonSPI
-public interface DatabaseRuleRALUpdater<T extends UpdatableRALStatement> extends TypedSPI {
+public interface DatabaseAwareUpdatableRALExecutor<T extends UpdatableRALStatement> extends UpdatableRALExecutor<T> {
     
     /**
-     * Execute update.
+     * Set database.
      *
-     * @param databaseName database name
-     * @param sqlStatement updatable RAL statement
-     * @throws SQLException SQL exception
+     * @param database database
      */
-    void executeUpdate(String databaseName, T sqlStatement) throws SQLException;
-    
-    @Override
-    Class<T> getType();
+    void setDatabase(ShardingSphereDatabase database);
 }
