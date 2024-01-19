@@ -90,12 +90,7 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
     }
     
     private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (RuleConfiguration each : database.getRuleMetaData().getConfigurations()) {
-            if (ruleConfigClass.isAssignableFrom(each.getClass())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+        return database.getRuleMetaData().getConfigurations().stream().filter(each -> ruleConfigClass.isAssignableFrom(each.getClass())).findFirst();
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
