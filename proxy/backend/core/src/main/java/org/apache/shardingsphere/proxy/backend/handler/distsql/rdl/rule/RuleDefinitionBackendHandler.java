@@ -57,15 +57,14 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    protected ResponseHeader execute(final String databaseName, final T sqlStatement) {
+    protected ResponseHeader execute(final ShardingSphereDatabase database, final T sqlStatement) {
         DatabaseRuleRDLExecutor executor = TypedSPILoader.getService(DatabaseRuleRDLExecutor.class, sqlStatement.getClass());
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         if (getRefreshStatus(sqlStatement, currentRuleConfig, executor)) {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager()
-                    .alterRuleConfiguration(databaseName, processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
+                    .alterRuleConfiguration(database.getName(), processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
         }
         return new UpdateResponseHeader(sqlStatement);
     }

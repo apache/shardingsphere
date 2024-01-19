@@ -20,9 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -46,15 +44,8 @@ public abstract class RDLBackendHandler<T extends RDLStatement> implements DistS
     
     @Override
     public final ResponseHeader execute() throws SQLException {
-        String databaseName = DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession);
-        checkDatabaseName(databaseName);
-        return execute(databaseName, sqlStatement);
+        return execute(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)), sqlStatement);
     }
     
-    protected abstract ResponseHeader execute(String databaseName, T sqlStatement);
-    
-    private void checkDatabaseName(final String databaseName) {
-        ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
-    }
+    protected abstract ResponseHeader execute(ShardingSphereDatabase database, T sqlStatement);
 }

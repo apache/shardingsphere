@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -65,12 +66,12 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
     }
     
     @Override
-    public ResponseHeader execute(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
-        checkSQLStatement(databaseName, sqlStatement);
+    public ResponseHeader execute(final ShardingSphereDatabase database, final AlterStorageUnitStatement sqlStatement) {
+        checkSQLStatement(database, sqlStatement);
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         validateHandler.validate(propsMap);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterStorageUnits(databaseName, propsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterStorageUnits(database.getName(), propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             log.error("Alter storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
@@ -79,11 +80,11 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
     }
     
     @Override
-    public void checkSQLStatement(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterStorageUnitStatement sqlStatement) {
         Collection<String> toBeAlteredStorageUnitNames = getToBeAlteredStorageUnitNames(sqlStatement);
         checkDuplicatedStorageUnitNames(toBeAlteredStorageUnitNames);
-        checkStorageUnitNameExisted(databaseName, toBeAlteredStorageUnitNames);
-        checkDatabase(databaseName, sqlStatement);
+        checkStorageUnitNameExisted(database, toBeAlteredStorageUnitNames);
+        checkDatabase(database, sqlStatement);
     }
     
     private Collection<String> getToBeAlteredStorageUnitNames(final AlterStorageUnitStatement sqlStatement) {
@@ -99,14 +100,14 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
         return storageUnitNames.stream().filter(each -> storageUnitNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
     }
     
-    private void checkStorageUnitNameExisted(final String databaseName, final Collection<String> storageUnitNames) {
-        Map<String, StorageUnit> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
+    private void checkStorageUnitNameExisted(final ShardingSphereDatabase database, final Collection<String> storageUnitNames) {
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         Collection<String> notExistedStorageUnitNames = storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedStorageUnitNames.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnitNames));
+        ShardingSpherePreconditions.checkState(notExistedStorageUnitNames.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedStorageUnitNames));
     }
     
-    private void checkDatabase(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
-        Map<String, StorageUnit> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
+    private void checkDatabase(final ShardingSphereDatabase database, final AlterStorageUnitStatement sqlStatement) {
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         Collection<String> invalidStorageUnitNames = sqlStatement.getStorageUnits().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), storageUnits.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(),

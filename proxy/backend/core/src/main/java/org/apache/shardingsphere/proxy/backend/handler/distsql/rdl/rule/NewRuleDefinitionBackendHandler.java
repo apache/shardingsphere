@@ -67,10 +67,10 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
     
     @SuppressWarnings("rawtypes")
     @Override
-    protected ResponseHeader execute(final String databaseName, final T sqlStatement) {
+    protected ResponseHeader execute(final ShardingSphereDatabase database, final T sqlStatement) {
         Optional<DatabaseRuleRDLExecutor> executor = TypedSPILoader.findService(DatabaseRuleRDLExecutor.class, sqlStatement.getClass());
         if (executor.isPresent()) {
-            execute(databaseName, sqlStatement, executor.get());
+            execute(database, sqlStatement, executor.get());
             return new UpdateResponseHeader(sqlStatement);
         }
         String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
@@ -78,9 +78,8 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void execute(final String databaseName, final T sqlStatement, final DatabaseRuleRDLExecutor executor) {
+    private void execute(final ShardingSphereDatabase database, final T sqlStatement, final DatabaseRuleRDLExecutor executor) {
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         if (getRefreshStatus(sqlStatement, currentRuleConfig, executor)) {
