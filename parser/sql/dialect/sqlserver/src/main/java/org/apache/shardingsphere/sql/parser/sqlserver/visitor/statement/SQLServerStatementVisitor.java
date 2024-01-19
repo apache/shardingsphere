@@ -719,7 +719,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitJsonNullClause(final JsonNullClauseContext ctx) {
-        return new JsonNullClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+        return new JsonNullClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
     }
     
     @Override

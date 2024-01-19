@@ -863,7 +863,7 @@
                             </key-value>
                         </parameter>
                         <parameter>
-                            <json-null-clause-expression text="ABSENTONNULL" start-index="47" stop-index="60"/>
+                            <json-null-clause-expression text="ABSENT ON NULL" start-index="47" stop-index="60"/>
                         </parameter>
                     </function>
                 </expr>
