@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
@@ -31,7 +31,7 @@ import java.util.Collections;
 /**
  * Set default single table storage unit executor.
  */
-public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleCreateExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRuleConfiguration> {
+public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleRDLCreateExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {

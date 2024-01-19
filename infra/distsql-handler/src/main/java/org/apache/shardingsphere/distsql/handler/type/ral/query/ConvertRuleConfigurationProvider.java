@@ -53,11 +53,9 @@ public interface ConvertRuleConfigurationProvider extends TypedSPI {
             return result.toString();
         }
         String type = algorithmConfig.getType().toLowerCase();
-        if (algorithmConfig.getProps().isEmpty()) {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type));
-        } else {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
-        }
+        result.append(algorithmConfig.getProps().isEmpty()
+                ? String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type)
+                : String.format(DistSQLScriptConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
         return result.toString();
     }
     

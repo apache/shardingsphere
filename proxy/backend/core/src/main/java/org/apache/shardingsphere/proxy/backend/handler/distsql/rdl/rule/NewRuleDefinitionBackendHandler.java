@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleAlterExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLDropExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -101,20 +101,20 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
     @SuppressWarnings("rawtypes")
     private Collection<MetaDataVersion> processSQLStatement(final ShardingSphereDatabase database,
                                                             final T sqlStatement, final DatabaseRuleRDLExecutor executor, final RuleConfiguration currentRuleConfig) {
-        if (executor instanceof DatabaseRuleCreateExecutor) {
-            return processCreate(database, sqlStatement, (DatabaseRuleCreateExecutor) executor, currentRuleConfig);
+        if (executor instanceof DatabaseRuleRDLCreateExecutor) {
+            return processCreate(database, sqlStatement, (DatabaseRuleRDLCreateExecutor) executor, currentRuleConfig);
         }
-        if (executor instanceof DatabaseRuleAlterExecutor) {
-            return processAlter(database, sqlStatement, (DatabaseRuleAlterExecutor) executor, currentRuleConfig);
+        if (executor instanceof DatabaseRuleRDLAlterExecutor) {
+            return processAlter(database, sqlStatement, (DatabaseRuleRDLAlterExecutor) executor, currentRuleConfig);
         }
-        if (executor instanceof DatabaseRuleDropExecutor) {
-            return processDrop(database, sqlStatement, (DatabaseRuleDropExecutor) executor, currentRuleConfig);
+        if (executor instanceof DatabaseRuleRDLDropExecutor) {
+            return processDrop(database, sqlStatement, (DatabaseRuleRDLDropExecutor) executor, currentRuleConfig);
         }
         throw new UnsupportedSQLOperationException(String.format("Cannot support RDL executor type `%s`", executor.getClass().getName()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<MetaDataVersion> processCreate(final ShardingSphereDatabase database, final T sqlStatement, final DatabaseRuleCreateExecutor executor,
+    private Collection<MetaDataVersion> processCreate(final ShardingSphereDatabase database, final T sqlStatement, final DatabaseRuleRDLCreateExecutor executor,
                                                       final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         if (null != currentRuleConfig) {
@@ -128,7 +128,8 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<MetaDataVersion> processAlter(final ShardingSphereDatabase database, final T sqlStatement, final DatabaseRuleAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private Collection<MetaDataVersion> processAlter(final ShardingSphereDatabase database,
+                                                     final T sqlStatement, final DatabaseRuleRDLAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         if (sqlStatement instanceof UnloadSingleTableStatement) {
@@ -150,7 +151,8 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<MetaDataVersion> processDrop(final ShardingSphereDatabase database, final T sqlStatement, final DatabaseRuleDropExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private Collection<MetaDataVersion> processDrop(final ShardingSphereDatabase database,
+                                                    final T sqlStatement, final DatabaseRuleRDLDropExecutor executor, final RuleConfiguration currentRuleConfig) {
         if (!executor.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
             return Collections.emptyList();
         }
@@ -175,6 +177,6 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final DatabaseRuleRDLExecutor<?, ?> executor) {
-        return !(executor instanceof DatabaseRuleDropExecutor) || ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+        return !(executor instanceof DatabaseRuleRDLDropExecutor) || ((DatabaseRuleRDLDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
     }
 }
