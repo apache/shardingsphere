@@ -28,13 +28,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AlterGlobalClockRuleStatementUpdaterTest {
+class AlterGlobalClockRuleExecutorTest {
     
     @Test
     void assertExecute() {
-        AlterGlobalClockRuleStatementUpdater updater = new AlterGlobalClockRuleStatementUpdater();
+        AlterGlobalClockRuleExecutor executor = new AlterGlobalClockRuleExecutor();
         AlterGlobalClockRuleStatement sqlStatement = new AlterGlobalClockRuleStatement("TSO", "redis", Boolean.TRUE, PropertiesBuilder.build(new Property("host", "127.0.0.1")));
-        GlobalClockRuleConfiguration actual = updater.buildAlteredRuleConfiguration(getSQLParserRuleConfiguration(), sqlStatement);
+        GlobalClockRuleConfiguration actual = executor.buildAlteredRuleConfiguration(getSQLParserRuleConfiguration(), sqlStatement);
         assertThat(actual.getType(), is("TSO"));
         assertThat(actual.getProvider(), is("redis"));
         assertTrue(actual.isEnabled());

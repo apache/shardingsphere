@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqlfederation.distsql.handler.update.AlterSQLFederationRuleStatementUpdater
+org.apache.shardingsphere.traffic.distsql.handler.update.AlterTrafficRuleExecutor

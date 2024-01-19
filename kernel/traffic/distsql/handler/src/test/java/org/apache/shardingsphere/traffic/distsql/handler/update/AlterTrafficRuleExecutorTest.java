@@ -38,32 +38,32 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class AlterTrafficRuleStatementUpdaterTest {
+class AlterTrafficRuleExecutorTest {
     
     @Test
     void assertExecuteWithNotExistRuleName() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
+        AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
         assertThrows(MissingRequiredRuleException.class,
-                () -> updater.checkSQLStatement(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
+                () -> executor.checkSQLStatement(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
     }
     
     @Test
     void assertExecuteWithInvalidAlgorithmType() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
-        AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
+        AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
         assertThrows(ServiceProviderNotFoundException.class,
-                () -> updater.checkSQLStatement(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
+                () -> executor.checkSQLStatement(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
     }
     
     @Test
     void assertExecuteWithLoadBalancerCannotBeNull() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
-        AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
-        TrafficRuleConfiguration actual = updater.buildAlteredRuleConfiguration(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
+        AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
+        TrafficRuleConfiguration actual = executor.buildAlteredRuleConfiguration(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
         assertThat(actual.getTrafficStrategies().size(), is(2));
         assertThat(actual.getTrafficAlgorithms().size(), is(2));
         assertThat(actual.getLoadBalancers().size(), is(1));
@@ -75,9 +75,9 @@ class AlterTrafficRuleStatementUpdaterTest {
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment(
                 "rule_name_2", Collections.emptyList(), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
+        AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
         TrafficRuleConfiguration actual =
-                updater.buildAlteredRuleConfiguration(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)));
+                executor.buildAlteredRuleConfiguration(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)));
         assertThat(actual.getTrafficStrategies().size(), is(2));
         assertThat(actual.getTrafficAlgorithms().size(), is(2));
         assertThat(actual.getLoadBalancers().size(), is(2));
