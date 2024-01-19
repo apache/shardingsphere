@@ -33,6 +33,8 @@ import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceCont
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.NewGlobalRuleRDLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.GlobalRuleRDLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -63,10 +65,20 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
         super(sqlStatement, connectionSession);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     @Override
     protected ResponseHeader execute(final String databaseName, final T sqlStatement) {
-        RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPILoader.getService(RuleDefinitionUpdater.class, sqlStatement.getClass());
+        Optional<RuleDefinitionUpdater> ruleDefinitionUpdater = TypedSPILoader.findService(RuleDefinitionUpdater.class, sqlStatement.getClass());
+        if (ruleDefinitionUpdater.isPresent()) {
+            execute(databaseName, sqlStatement, ruleDefinitionUpdater.get());
+            return new UpdateResponseHeader(sqlStatement);
+        }
+        String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
+        return "Cluster".equals(modeType) || "Standalone".equals(modeType) ? new NewGlobalRuleRDLBackendHandler(sqlStatement).execute() : new GlobalRuleRDLBackendHandler(sqlStatement).execute();
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void execute(final String databaseName, final T sqlStatement, final RuleDefinitionUpdater ruleDefinitionUpdater) {
         Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
@@ -75,7 +87,6 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
             ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(
                     processSQLStatement(database, sqlStatement, ruleDefinitionUpdater, currentRuleConfig));
         }
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {

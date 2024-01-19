@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.ral.update;
+package org.apache.shardingsphere.distsql.handler.type.rdl;
 
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableGlobalRuleRALStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * RAL updater for global rule.
+ * RDL updater for global rule.
  * 
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
 @SingletonSPI
-public interface GlobalRuleRALUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface GlobalRuleRDLUpdater<T extends RuleDefinitionStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Check SQL statement.
@@ -57,5 +56,5 @@ public interface GlobalRuleRALUpdater<T extends SQLStatement, R extends RuleConf
     Class<R> getRuleConfigurationClass();
     
     @Override
-    Class<? extends UpdatableGlobalRuleRALStatement> getType();
+    Class<T> getType();
 }

@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.globalclock.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.GlobalRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.GlobalRuleRDLUpdater;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
 
 /**
  * Alter global clock rule statement updater.
  */
-public final class AlterGlobalClockRuleStatementUpdater implements GlobalRuleRALUpdater<AlterGlobalClockRuleStatement, GlobalClockRuleConfiguration> {
+public final class AlterGlobalClockRuleStatementUpdater implements GlobalRuleRDLUpdater<AlterGlobalClockRuleStatement, GlobalClockRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final GlobalClockRuleConfiguration currentRuleConfig, final AlterGlobalClockRuleStatement sqlStatement) {

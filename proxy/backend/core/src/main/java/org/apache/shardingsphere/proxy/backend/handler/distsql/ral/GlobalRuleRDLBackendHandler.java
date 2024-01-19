@@ -19,9 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.GlobalRuleRALUpdater;
-import org.apache.shardingsphere.distsql.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableGlobalRuleRALStatement;
+import org.apache.shardingsphere.distsql.handler.type.rdl.GlobalRuleRDLUpdater;
+import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -31,19 +30,20 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * New updatable RAL backend handler for global rule.
+ * RDL backend handler for global rule.
  */
 @RequiredArgsConstructor
-public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBackendHandler {
+public final class GlobalRuleRDLBackendHandler implements DistSQLBackendHandler {
     
-    private final UpdatableGlobalRuleRALStatement sqlStatement;
+    private final RuleDefinitionStatement sqlStatement;
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ResponseHeader execute() {
-        GlobalRuleRALUpdater globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass());
+        GlobalRuleRDLUpdater globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRDLUpdater.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = globalRuleUpdater.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
@@ -63,11 +63,11 @@ public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBac
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigurations, final RALStatement sqlStatement, final GlobalRuleRALUpdater globalRuleUpdater,
-                                            final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration result = globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
-        ruleConfigurations.remove(currentRuleConfig);
-        ruleConfigurations.add(result);
+    private Collection<RuleConfiguration> processUpdate(final Collection<RuleConfiguration> ruleConfigurations,
+                                                        final RuleDefinitionStatement sqlStatement, final GlobalRuleRDLUpdater globalRuleUpdater, final RuleConfiguration currentRuleConfig) {
+        Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigurations);
+        result.remove(currentRuleConfig);
+        result.add(globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement));
         return result;
     }
 }
