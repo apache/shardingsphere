@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.SQLStatementSegment;
 
@@ -39,6 +40,8 @@ public final class OracleCreateProcedureStatement extends CreateProcedureStateme
     private final List<SQLStatementSegment> sqlStatements;
     
     private final List<ProcedureCallNameSegment> procedureCallNames;
+    
+    private final List<ProcedureBodyEndNameSegment> procedureBodyEndNameSegments;
     
     private final List<ExpressionSegment> dynamicSqlStatementExpressions;
     
