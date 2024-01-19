@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Drop shadow rule executor.
  */
-public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<DropShadowRuleStatement, ShadowRuleConfiguration> {
+public final class DropShadowRuleExecutor implements DatabaseRuleRDLDropExecutor<DropShadowRuleStatement, ShadowRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {

@@ -24,12 +24,12 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Database rule drop executor.
+ * Database rule RDL drop executor.
  * 
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends RuleConfiguration> extends DatabaseRuleRDLExecutor<T, R> {
+public interface DatabaseRuleRDLDropExecutor<T extends SQLStatement, R extends RuleConfiguration> extends DatabaseRuleRDLExecutor<T, R> {
     
     /**
      * TODO Remove temporary default implementation
