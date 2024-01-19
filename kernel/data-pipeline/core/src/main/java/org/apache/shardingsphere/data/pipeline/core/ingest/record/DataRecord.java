@@ -105,7 +105,16 @@ public final class DataRecord extends Record {
      * @return key
      */
     public Key getKey() {
-        return PipelineSQLOperationType.DELETE == type ? new Key(tableName, oldUniqueKeyValues) : new Key(tableName, uniqueKeyValue);
+        return new Key(tableName, uniqueKeyValue);
+    }
+    
+    /**
+     * Get old key.
+     *
+     * @return key
+     */
+    public Key getOldKey() {
+        return new Key(tableName, oldUniqueKeyValues);
     }
     
     @RequiredArgsConstructor
