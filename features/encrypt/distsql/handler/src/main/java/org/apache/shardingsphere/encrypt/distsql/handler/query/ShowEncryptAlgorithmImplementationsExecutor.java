@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Show encrypt algorithm implementations executor.
@@ -40,12 +40,8 @@ public final class ShowEncryptAlgorithmImplementationsExecutor implements Querya
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<EncryptAlgorithm> encryptAlgorithms = ShardingSphereServiceLoader.getServiceInstances(EncryptAlgorithm.class);
-        for (EncryptAlgorithm each : encryptAlgorithms) {
-            result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
-        }
-        return result;
+        return encryptAlgorithms.stream().map(each -> new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName())).collect(Collectors.toList());
     }
     
     @Override

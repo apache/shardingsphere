@@ -52,7 +52,7 @@ public final class ShowComputeNodesExecutor implements InstanceContextAwareQuery
             return Collections.singleton(buildRow(instanceContext.getInstance(), modeType));
         }
         Collection<ComputeNodeInstance> instances = instanceContext.getAllClusterInstances();
-        return instances.isEmpty() ? Collections.emptyList() : instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
+        return instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {

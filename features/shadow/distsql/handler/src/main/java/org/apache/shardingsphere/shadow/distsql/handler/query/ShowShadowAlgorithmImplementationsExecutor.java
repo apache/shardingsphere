@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Show shadow algorithm implementations executor.
@@ -40,12 +40,8 @@ public final class ShowShadowAlgorithmImplementationsExecutor implements Queryab
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<ShadowAlgorithm> shadowAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ShadowAlgorithm.class);
-        for (ShadowAlgorithm each : shadowAlgorithms) {
-            result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
-        }
-        return result;
+        return shadowAlgorithms.stream().map(each -> new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName())).collect(Collectors.toList());
     }
     
     @Override
