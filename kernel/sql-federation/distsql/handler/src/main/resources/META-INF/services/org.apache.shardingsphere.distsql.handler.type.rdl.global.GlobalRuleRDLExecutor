@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.globalclock.distsql.handler.update.AlterGlobalClockRuleStatementUpdater
+org.apache.shardingsphere.sqlfederation.distsql.handler.update.AlterSQLFederationRuleExecutor

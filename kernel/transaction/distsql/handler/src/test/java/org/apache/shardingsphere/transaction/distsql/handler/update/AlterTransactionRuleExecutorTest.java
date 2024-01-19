@@ -42,13 +42,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShardingSphereServiceLoader.class)
-class AlterTransactionRuleStatementUpdaterTest {
+class AlterTransactionRuleExecutorTest {
     
     @Test
     void assertExecuteWithXA() {
         when(ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
-        AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
-        TransactionRuleConfiguration actual = updater.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("XA",
+        AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
+        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("XA",
                 new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")))));
         assertThat(actual.getDefaultType(), is("XA"));
         assertThat(actual.getProviderType(), is("Atomikos"));
@@ -60,9 +60,9 @@ class AlterTransactionRuleStatementUpdaterTest {
     
     @Test
     void assertExecuteWithLocal() {
-        AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
+        AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
         TransactionRuleConfiguration actual =
-                updater.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
+                executor.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
         assertThat(actual.getDefaultType(), is("LOCAL"));
         assertThat(actual.getProviderType(), is(""));
     }

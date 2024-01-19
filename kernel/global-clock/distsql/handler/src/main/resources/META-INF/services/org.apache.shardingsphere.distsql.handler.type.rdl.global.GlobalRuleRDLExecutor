@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.transaction.distsql.handler.update.AlterTransactionRuleStatementUpdater
+org.apache.shardingsphere.globalclock.distsql.handler.update.AlterGlobalClockRuleExecutor

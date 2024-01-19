@@ -27,13 +27,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AlterSQLFederationRuleStatementUpdaterTest {
+class AlterSQLFederationRuleExecutorTest {
     
     @Test
     void assertExecute() {
-        AlterSQLFederationRuleStatementUpdater updater = new AlterSQLFederationRuleStatementUpdater();
+        AlterSQLFederationRuleExecutor executor = new AlterSQLFederationRuleExecutor();
         AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(true, true, new CacheOptionSegment(64, 512L));
-        SQLFederationRuleConfiguration actual = updater.buildAlteredRuleConfiguration(getSQLFederationRuleConfiguration(), sqlStatement);
+        SQLFederationRuleConfiguration actual = executor.buildAlteredRuleConfiguration(getSQLFederationRuleConfiguration(), sqlStatement);
         assertTrue(actual.isSqlFederationEnabled());
         assertTrue(actual.isAllQueryUseSQLFederation());
         assertThat(actual.getExecutionPlanCache().getInitialCapacity(), is(64));

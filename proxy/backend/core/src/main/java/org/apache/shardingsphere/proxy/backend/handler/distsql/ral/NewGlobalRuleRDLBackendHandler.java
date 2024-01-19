@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.GlobalRuleRDLUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -42,7 +42,7 @@ public final class NewGlobalRuleRDLBackendHandler implements DistSQLBackendHandl
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ResponseHeader execute() {
-        GlobalRuleRDLUpdater globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRDLUpdater.class, sqlStatement.getClass());
+        GlobalRuleRDLExecutor globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRDLExecutor.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = globalRuleUpdater.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
@@ -62,7 +62,7 @@ public final class NewGlobalRuleRDLBackendHandler implements DistSQLBackendHandl
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigurations, final RuleDefinitionStatement sqlStatement, final GlobalRuleRDLUpdater globalRuleUpdater,
+    private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigurations, final RuleDefinitionStatement sqlStatement, final GlobalRuleRDLExecutor globalRuleUpdater,
                                             final RuleConfiguration currentRuleConfig) {
         RuleConfiguration result = globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
         ruleConfigurations.remove(currentRuleConfig);

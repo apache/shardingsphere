@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.GlobalRuleRDLUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
 
 /**
- * Alter SQL federation rule statement updater.
+ * Alter SQL federation rule executor.
  */
-public final class AlterSQLFederationRuleStatementUpdater implements GlobalRuleRDLUpdater<AlterSQLFederationRuleStatement, SQLFederationRuleConfiguration> {
+public final class AlterSQLFederationRuleExecutor implements GlobalRuleRDLExecutor<AlterSQLFederationRuleStatement, SQLFederationRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final SQLFederationRuleConfiguration currentRuleConfig, final AlterSQLFederationRuleStatement sqlStatement) {

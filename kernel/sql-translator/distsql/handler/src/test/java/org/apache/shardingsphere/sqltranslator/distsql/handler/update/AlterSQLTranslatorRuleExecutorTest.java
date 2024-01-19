@@ -32,12 +32,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AlterSQLTranslatorRuleStatementUpdaterTest {
+class AlterSQLTranslatorRuleExecutorTest {
     
     @Test
     void assertExecute() {
-        AlterSQLTranslatorRuleStatementUpdater updater = new AlterSQLTranslatorRuleStatementUpdater();
-        SQLTranslatorRuleConfiguration actual = updater.buildAlteredRuleConfiguration(createSQLTranslatorRuleConfiguration(),
+        AlterSQLTranslatorRuleExecutor executor = new AlterSQLTranslatorRuleExecutor();
+        SQLTranslatorRuleConfiguration actual = executor.buildAlteredRuleConfiguration(createSQLTranslatorRuleConfiguration(),
                 new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("JOOQ", PropertiesBuilder.build(new Property("foo", "bar"))), null));
         assertThat(actual.getType(), is("JOOQ"));
         assertFalse(actual.getProps().isEmpty());
