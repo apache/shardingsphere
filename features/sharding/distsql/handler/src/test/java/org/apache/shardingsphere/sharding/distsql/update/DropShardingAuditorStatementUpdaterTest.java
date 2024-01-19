@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAuditorStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAuditorExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAuditorStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class DropShardingAuditorStatementUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    private final DropShardingAuditorStatementUpdater updater = new DropShardingAuditorStatementUpdater();
+    private final DropShardingAuditorExecutor executor = new DropShardingAuditorExecutor();
     
     @BeforeEach
     void before() {
@@ -59,20 +59,20 @@ class DropShardingAuditorStatementUpdaterTest {
     
     @Test
     void assertExecuteWithNotExist() {
-        assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), new ShardingRuleConfiguration()));
+        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), new ShardingRuleConfiguration()));
     }
     
     @Test
     void assertExecuteWithNotExistWithIfExists() {
         DropShardingAuditorStatement sqlStatement = new DropShardingAuditorStatement(true, Collections.singleton("sharding_key_required_auditor"));
-        updater.checkSQLStatement(database, sqlStatement, new ShardingRuleConfiguration());
+        executor.checkSQLStatement(database, sqlStatement, new ShardingRuleConfiguration());
     }
     
     @Test
     void assertDropSpecifiedAuditor() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
-        updater.updateCurrentRuleConfiguration(createSQLStatement("sharding_key_required_auditor"), currentRuleConfig);
+        executor.updateCurrentRuleConfiguration(createSQLStatement("sharding_key_required_auditor"), currentRuleConfig);
         assertTrue(currentRuleConfig.getAuditors().isEmpty());
     }
     
@@ -81,7 +81,7 @@ class DropShardingAuditorStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", null));
         currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());
-        assertThrows(AlgorithmInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), currentRuleConfig));
+        assertThrows(AlgorithmInUsedException.class, () -> executor.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), currentRuleConfig));
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {

@@ -43,26 +43,26 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class DropMaskRuleStatementUpdaterTest {
     
-    private final DropMaskRuleStatementUpdater updater = new DropMaskRuleStatementUpdater();
+    private final DropMaskRuleExecutor executor = new DropMaskRuleExecutor();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "t_mask"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement(false, "t_mask"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> updater.checkSQLStatement(database, createSQLStatement(false, "t_mask"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkSQLStatement(database, createSQLStatement(false, "t_mask"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
     void assertUpdateCurrentRuleConfiguration() {
         MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
-        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(false, "t_mask"), ruleConfig));
+        assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement(false, "t_mask"), ruleConfig));
         assertTrue(ruleConfig.getMaskAlgorithms().isEmpty());
         assertTrue(ruleConfig.getTables().isEmpty());
     }
@@ -71,8 +71,8 @@ class DropMaskRuleStatementUpdaterTest {
     void assertUpdateCurrentRuleConfigurationWithIfExists() {
         MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropMaskRuleStatement statement = createSQLStatement(true, "t_user");
-        updater.checkSQLStatement(database, statement, mock(MaskRuleConfiguration.class));
-        assertFalse(updater.updateCurrentRuleConfiguration(statement, ruleConfig));
+        executor.checkSQLStatement(database, statement, mock(MaskRuleConfiguration.class));
+        assertFalse(executor.updateCurrentRuleConfiguration(statement, ruleConfig));
         assertThat(ruleConfig.getTables().size(), is(1));
     }
     
