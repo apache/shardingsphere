@@ -98,6 +98,11 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
         return Optional.empty();
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final DatabaseRuleRDLExecutor<?, ?> executor) {
+        return !(executor instanceof DatabaseRuleRDLDropExecutor) || ((DatabaseRuleRDLDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+    }
+    
     @SuppressWarnings("rawtypes")
     private Collection<MetaDataVersion> processSQLStatement(final ShardingSphereDatabase database,
                                                             final T sqlStatement, final DatabaseRuleRDLExecutor executor, final RuleConfiguration currentRuleConfig) {
@@ -141,15 +146,6 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
         return ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private RuleConfiguration decorateRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
-        Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass());
-        return decorator.map(optional -> optional.decorate(database.getName(),
-                database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
-    }
-    
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Collection<MetaDataVersion> processDrop(final ShardingSphereDatabase database,
                                                     final T sqlStatement, final DatabaseRuleRDLDropExecutor executor, final RuleConfiguration currentRuleConfig) {
@@ -171,12 +167,15 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
             // TODO refactor to new metadata refresh way
         }
         modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
-        final RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
+        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
         return modeContextManager.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final DatabaseRuleRDLExecutor<?, ?> executor) {
-        return !(executor instanceof DatabaseRuleRDLDropExecutor) || ((DatabaseRuleRDLDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+    @SuppressWarnings("unchecked")
+    private RuleConfiguration decorateRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+        return TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass()).map(optional -> optional.decorate(database.getName(),
+                database.getResourceMetaData().getStorageUnits().entrySet().stream()
+                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
     }
 }
