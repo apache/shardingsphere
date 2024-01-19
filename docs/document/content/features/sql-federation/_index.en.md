@@ -7,7 +7,7 @@ chapter = true
 
 ## Background
 
-When data is sharded and stored in multiple database instances, although it can effectively address database performance bottlenecks, it also brings some new problems in business implementation.
+When users use data sharding to horizontally split massive amounts of data, although it can effectively solve database performance bottlenecks, it also brings some new problems in business.
 
 For example, in the following scenarios: cross database association queries, sub queries, pagination, sorting, aggregation queries.
 

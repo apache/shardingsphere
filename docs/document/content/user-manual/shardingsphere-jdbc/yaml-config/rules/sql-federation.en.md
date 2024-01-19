@@ -5,7 +5,7 @@ weight = 13
 
 ## Background
 
-This feature is **experimental**.
+This function is an **experimental one and is currently not suitable for use in core system production environments**.
 When multiple tables in a join query are distributed across different database instances, enabling federated query allows for cross-database join queries, as well as subqueries.
 
 ## Parameters
