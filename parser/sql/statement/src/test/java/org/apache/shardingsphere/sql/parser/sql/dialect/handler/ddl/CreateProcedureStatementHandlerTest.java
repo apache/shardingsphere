@@ -52,7 +52,8 @@ class CreateProcedureStatementHandlerTest {
     @Test
     void assertGetRoutineBodySegmentForOtherDatabases() {
         assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OpenGaussCreateProcedureStatement()).isPresent());
-        assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OracleCreateProcedureStatement(Collections.emptyList(), Collections.emptyList(), Collections.emptyList())).isPresent());
+        assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OracleCreateProcedureStatement(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList())).isPresent());
         assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new PostgreSQLCreateProcedureStatement()).isPresent());
         assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new SQLServerCreateProcedureStatement()).isPresent());
     }
