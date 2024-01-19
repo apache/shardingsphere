@@ -49,4 +49,9 @@
     <sql-case id="select_from_open_json_function_with_path" value="SELECT [key], value FROM OPENJSON(@json,'$.path.to.&quot;sub-object&quot;')" db-types="SQLServer"/>
     <sql-case id="select_from_open_row_set_with_provider_name" value="SELECT a.* FROM OPENROWSET('Microsoft.Jet.OLEDB.4.0', 'C:\SAMPLES\Northwind.mdb';'admin';'password', Customers) AS a;" db-types="SQLServer"/>
     <sql-case id="select_from_open_row_set_with_provider_string" value="SELECT d.* FROM OPENROWSET('SQLNCLI','Server=Seattle1;Trusted_Connection=yes;',AdventureWorks2022.HumanResources.Department) AS d;" db-types="SQLServer"/>
+    <sql-case id="select_json_object_simple_key_value" value="SELECT JSON_OBJECT('name':'value', 'type':1)" db-types="SQLServer" />
+    <sql-case id="select_json_object_absent_not_null" value="SELECT JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" db-types="SQLServer" />
+    <sql-case id="select_json_array" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" db-types="SQLServer" />
+    <sql-case id="select_nest_json_object" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" db-types="SQLServer" />
+    <sql-case id="select_json_object_with_subquery" value="SELECT JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" db-types="SQLServer" />
 </sql-cases>
