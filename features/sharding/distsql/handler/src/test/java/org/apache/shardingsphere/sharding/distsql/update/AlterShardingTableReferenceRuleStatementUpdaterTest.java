@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableReferenceRuleStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableReferenceRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableReferenceRuleStatement;
 import org.junit.jupiter.api.Test;
@@ -46,25 +46,25 @@ class AlterShardingTableReferenceRuleStatementUpdaterTest {
     @Test
     void assertCheckWithoutCurrentRuleConfig() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("foo", "t_order,t_order_item"), null));
+                () -> new AlterShardingTableReferenceRuleExecutor().checkSQLStatement(database, createSQLStatement("foo", "t_order,t_order_item"), null));
     }
     
     @Test
     void assertCheckWithNotExistedRule() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration()));
+                () -> new AlterShardingTableReferenceRuleExecutor().checkSQLStatement(database, createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckWithNotExistedTables() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("reference_0", "t_3,t_4"), createCurrentRuleConfiguration()));
+                () -> new AlterShardingTableReferenceRuleExecutor().checkSQLStatement(database, createSQLStatement("reference_0", "t_3,t_4"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertUpdate() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        new AlterShardingTableReferenceRuleStatementUpdater().updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfig());
+        new AlterShardingTableReferenceRuleExecutor().updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfig());
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
         assertThat(currentRuleConfig.getBindingTableGroups().iterator().next().getName(), is("reference_0"));
         assertThat(currentRuleConfig.getBindingTableGroups().iterator().next().getReference(), is("t_order,t_order_item,t_1,t_2"));

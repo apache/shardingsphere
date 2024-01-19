@@ -37,7 +37,7 @@ class DropBroadcastTableRuleStatementUpdaterTest {
     
     private ShardingSphereDatabase database;
     
-    private final DropBroadcastTableRuleStatementUpdater updater = new DropBroadcastTableRuleStatementUpdater();
+    private final DropBroadcastTableRuleExecutor executor = new DropBroadcastTableRuleExecutor();
     
     @BeforeEach
     void setUp() {
@@ -48,13 +48,13 @@ class DropBroadcastTableRuleStatementUpdaterTest {
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
         DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, statement, null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, statement, null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
         DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, statement, new BroadcastRuleConfiguration(Collections.emptyList())));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, statement, new BroadcastRuleConfiguration(Collections.emptyList())));
     }
     
     @Test
@@ -62,7 +62,7 @@ class DropBroadcastTableRuleStatementUpdaterTest {
         BroadcastRuleConfiguration config = new BroadcastRuleConfiguration(new LinkedList<>());
         config.getTables().add("t_address");
         DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertTrue(updater.updateCurrentRuleConfiguration(statement, config));
+        assertTrue(executor.updateCurrentRuleConfiguration(statement, config));
         assertTrue(config.getTables().isEmpty());
     }
 }

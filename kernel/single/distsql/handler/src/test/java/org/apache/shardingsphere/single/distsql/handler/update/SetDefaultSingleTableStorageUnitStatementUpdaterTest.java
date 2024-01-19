@@ -36,17 +36,17 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class SetDefaultSingleTableStorageUnitStatementUpdaterTest {
     
-    private final SetDefaultSingleTableStorageUnitStatementUpdater updater = new SetDefaultSingleTableStorageUnitStatementUpdater();
+    private final SetDefaultSingleTableStorageUnitExecutor executor = new SetDefaultSingleTableStorageUnitExecutor();
     
     @Test
     void assertCheckWithInvalidResource() {
         assertThrows(MissingRequiredStorageUnitsException.class,
-                () -> updater.checkSQLStatement(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), new SetDefaultSingleTableStorageUnitStatement("bar_ds"), mock(SingleRuleConfiguration.class)));
+                () -> executor.checkSQLStatement(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), new SetDefaultSingleTableStorageUnitStatement("bar_ds"), mock(SingleRuleConfiguration.class)));
     }
     
     @Test
     void assertBuild() {
-        SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(mock(SingleRuleConfiguration.class), new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(mock(SingleRuleConfiguration.class), new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
         assertTrue(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
         assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
     }
@@ -54,8 +54,8 @@ class SetDefaultSingleTableStorageUnitStatementUpdaterTest {
     @Test
     void assertUpdate() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
-        updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
+        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertTrue(currentConfig.getDefaultDataSource().isPresent());
         assertThat(currentConfig.getDefaultDataSource().get(), is("foo_ds"));
     }
@@ -63,8 +63,8 @@ class SetDefaultSingleTableStorageUnitStatementUpdaterTest {
     @Test
     void assertRandom() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement(null));
-        updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement(null));
+        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertFalse(currentConfig.getDefaultDataSource().isPresent());
     }
 }
