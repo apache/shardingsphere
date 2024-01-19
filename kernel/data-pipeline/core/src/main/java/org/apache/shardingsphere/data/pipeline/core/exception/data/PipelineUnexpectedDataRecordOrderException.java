@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.record.group;
+package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 
-import java.util.Collection;
-
-@RequiredArgsConstructor
-@Getter
-public final class GroupedDataRecord {
+/**
+ * Pipeline unexpected data record order exception.
+ */
+public final class PipelineUnexpectedDataRecordOrderException extends PipelineSQLException {
     
-    private final String tableName;
+    private static final long serialVersionUID = 6023695604738387750L;
     
-    private final Collection<DataRecord> insertDataRecords;
-    
-    private final Collection<DataRecord> updateDataRecords;
-    
-    private final Collection<DataRecord> deleteDataRecords;
+    public PipelineUnexpectedDataRecordOrderException(final DataRecord beforeDataRecord, final DataRecord afterDataRecord) {
+        super(XOpenSQLState.GENERAL_ERROR, 50, String.format("Before data record is `%s`, after data record is `%s`.", beforeDataRecord, afterDataRecord));
+    }
 }

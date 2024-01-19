@@ -39,7 +39,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -72,15 +71,14 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     @Override
     public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
-        Collection<DataRecord> dataRecords = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
+        List<DataRecord> dataRecords = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
         if (dataRecords.isEmpty()) {
             return new PipelineJobProgressUpdatedParameter(0);
         }
         for (GroupedDataRecord each : groupEngine.group(dataRecords)) {
-            batchWrite(each.getBatchDeleteDataRecords());
-            batchWrite(each.getBatchInsertDataRecords());
-            batchWrite(each.getBatchUpdateDataRecords());
-            sequentialWrite(each.getNonBatchRecords());
+            batchWrite(each.getDeleteDataRecords());
+            batchWrite(each.getInsertDataRecords());
+            batchWrite(each.getUpdateDataRecords());
         }
         return new PipelineJobProgressUpdatedParameter((int) dataRecords.stream().filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count());
     }
@@ -102,17 +100,6 @@ public final class PipelineDataSourceSink implements PipelineSink {
                 }
                 Thread.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
             }
-        }
-    }
-    
-    private void sequentialWrite(final Collection<DataRecord> records) {
-        // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
-        try {
-            for (DataRecord each : records) {
-                doWrite(Collections.singleton(each));
-            }
-        } catch (final SQLException ex) {
-            throw new PipelineImporterJobWriteException(ex);
         }
     }
     
