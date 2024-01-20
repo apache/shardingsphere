@@ -48,16 +48,16 @@ public final class RefreshTableMetaDataExecutor implements DatabaseAwareUpdatabl
         String schemaName = getSchemaName(sqlStatement);
         if (sqlStatement.getStorageUnitName().isPresent()) {
             if (sqlStatement.getTableName().isPresent()) {
-                contextManager.reloadTable(database.getName(), schemaName, sqlStatement.getStorageUnitName().get(), sqlStatement.getTableName().get());
+                contextManager.reloadTable(database, schemaName, sqlStatement.getStorageUnitName().get(), sqlStatement.getTableName().get());
             } else {
-                contextManager.reloadSchema(database.getName(), schemaName, sqlStatement.getStorageUnitName().get());
+                contextManager.reloadSchema(database, schemaName, sqlStatement.getStorageUnitName().get());
             }
             return;
         }
         if (sqlStatement.getTableName().isPresent()) {
-            contextManager.reloadTable(database.getName(), schemaName, sqlStatement.getTableName().get());
+            contextManager.reloadTable(database, schemaName, sqlStatement.getTableName().get());
         } else {
-            contextManager.refreshTableMetaData(database.getName());
+            contextManager.refreshTableMetaData(database);
         }
     }
     

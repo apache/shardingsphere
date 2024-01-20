@@ -98,6 +98,7 @@ class ContextManagerTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         MutableDataNodeRule mutableDataNodeRule = mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS);
         when(mutableDataNodeRule.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
@@ -301,7 +302,8 @@ class ContextManagerTest {
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(persistService);
-        contextManager.reloadSchema("foo_db", "foo_schema", "foo_ds");
+        ShardingSphereDatabase database = mockDatabase();
+        contextManager.reloadSchema(database, "foo_schema", "foo_ds");
         verify(databaseMetaDataPersistService).dropSchema("foo_db", "foo_schema");
     }
     
@@ -311,7 +313,8 @@ class ContextManagerTest {
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(persistService);
-        contextManager.reloadTable("foo_db", "foo_schema", "foo_table");
+        ShardingSphereDatabase database = mockDatabase();
+        contextManager.reloadTable(database, "foo_schema", "foo_table");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits().containsKey("foo_ds"));
     }
     
