@@ -50,8 +50,9 @@ class ShowShardingTableRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowShardingTableRulesStatement> executor = new ShowShardingTableRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingTableRulesStatement.class));
+        ShowShardingTableRuleExecutor executor = new ShowShardingTableRuleExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingTableRulesStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
