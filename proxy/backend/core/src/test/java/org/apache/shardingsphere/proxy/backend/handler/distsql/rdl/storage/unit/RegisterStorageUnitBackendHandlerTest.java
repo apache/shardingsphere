@@ -71,6 +71,7 @@ class RegisterStorageUnitBackendHandlerTest {
     void setUp() throws ReflectiveOperationException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(database.getName()).thenReturn("foo_db");
         when(database.getRuleMetaData()).thenReturn(mock(RuleMetaData.class));
         handler = new RegisterStorageUnitBackendHandler(mock(RegisterStorageUnitStatement.class), connectionSession);
         Plugins.getMemberAccessor().set(handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePoolPropertiesValidateHandler.class));
