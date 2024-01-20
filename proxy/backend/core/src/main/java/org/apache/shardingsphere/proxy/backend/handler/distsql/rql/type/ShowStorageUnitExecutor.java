@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;
@@ -117,10 +117,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     private String getStandardProperty(final Map<String, Object> standardProps, final String key) {
-        if (standardProps.containsKey(key) && null != standardProps.get(key)) {
-            return standardProps.get(key).toString();
-        }
-        return "";
+        return standardProps.containsKey(key) && null != standardProps.get(key) ? standardProps.get(key).toString() : "";
     }
     
     @Override

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
@@ -44,14 +43,11 @@ import java.util.stream.Collectors;
 
 /**
  * RQL backend handler.
- *
- * @param <T> type of RQL statement
  */
 @RequiredArgsConstructor
-@Getter
-public final class RQLBackendHandler<T extends RQLStatement> implements DistSQLBackendHandler {
+public final class RQLBackendHandler implements DistSQLBackendHandler {
     
-    private final T sqlStatement;
+    private final RQLStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
