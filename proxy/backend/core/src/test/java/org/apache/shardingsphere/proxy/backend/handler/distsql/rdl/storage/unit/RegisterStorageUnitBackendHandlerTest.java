@@ -82,7 +82,7 @@ class RegisterStorageUnitBackendHandlerTest {
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        ResponseHeader responseHeader = handler.execute("foo_db", createRegisterStorageUnitStatement());
+        ResponseHeader responseHeader = handler.execute(database, createRegisterStorageUnitStatement());
         assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -91,7 +91,7 @@ class RegisterStorageUnitBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(DuplicateStorageUnitException.class, () -> handler.execute("foo_db", createRegisterStorageUnitStatementWithDuplicateStorageUnitNames()));
+        assertThrows(DuplicateStorageUnitException.class, () -> handler.execute(database, createRegisterStorageUnitStatementWithDuplicateStorageUnitNames()));
     }
     
     @Test
@@ -99,7 +99,7 @@ class RegisterStorageUnitBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStorageUnits("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(DuplicateStorageUnitException.class, () -> handler.execute("foo_db", createRegisterStorageUnitStatement()));
+        assertThrows(DuplicateStorageUnitException.class, () -> handler.execute(database, createRegisterStorageUnitStatement()));
     }
     
     @Test
@@ -111,14 +111,14 @@ class RegisterStorageUnitBackendHandlerTest {
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(rule));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        assertThrows(InvalidStorageUnitsException.class, () -> handler.execute("foo_db", createRegisterStorageUnitStatement()));
+        assertThrows(InvalidStorageUnitsException.class, () -> handler.execute(database, createRegisterStorageUnitStatement()));
     }
     
     @Test
     void assertCheckStatementWithIfNotExists() {
         RegisterStorageUnitStatement registerStorageUnitStatementWithIfNotExists = new RegisterStorageUnitStatement(true, Collections.singleton(
                 new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "db_1", "root", "", new Properties())));
-        handler.checkSQLStatement("foo_db", registerStorageUnitStatementWithIfNotExists);
+        handler.checkSQLStatement(database, registerStorageUnitStatementWithIfNotExists);
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {

@@ -112,14 +112,14 @@ class UnregisterStorageUnitBackendHandlerTest {
         when(database.getRuleMetaData().getInUsedStorageUnitNameAndRulesMap()).thenReturn(Collections.emptyMap());
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false);
-        assertThat(handler.execute("foo_db", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        assertThat(handler.execute(database, unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
         verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
     @Test
     void assertStorageUnitNameNotExistedExecute() {
         when(ProxyContext.getInstance().getDatabase("foo_db").getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> handler.execute("foo_db", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false)));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> handler.execute(database, new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false)));
     }
     
     @Test
@@ -132,7 +132,7 @@ class UnregisterStorageUnitBackendHandlerTest {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         assertThrows(StorageUnitInUsedException.class,
-                () -> handler.execute("foo_db", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false)));
+                () -> handler.execute(database, new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false)));
     }
     
     @Test
@@ -146,7 +146,7 @@ class UnregisterStorageUnitBackendHandlerTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
-        assertThrows(StorageUnitInUsedException.class, () -> handler.execute("foo_db", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false)));
+        assertThrows(StorageUnitInUsedException.class, () -> handler.execute(database, new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false)));
     }
     
     @Test
@@ -161,14 +161,14 @@ class UnregisterStorageUnitBackendHandlerTest {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true, false);
-        assertThat(handler.execute("foo_db", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        assertThat(handler.execute(database, unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
         verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
     @Test
     void assertExecuteWithIfExists() throws SQLException {
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
-        assertThat(handler.execute("foo_db", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        assertThat(handler.execute(database, unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
         verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
@@ -178,6 +178,6 @@ class UnregisterStorageUnitBackendHandlerTest {
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
-        assertThrows(DistSQLException.class, () -> handler.execute("foo_db", unregisterStorageUnitStatement));
+        assertThrows(DistSQLException.class, () -> handler.execute(database, unregisterStorageUnitStatement));
     }
 }
