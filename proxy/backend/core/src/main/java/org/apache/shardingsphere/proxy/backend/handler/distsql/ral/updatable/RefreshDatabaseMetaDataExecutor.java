@@ -40,7 +40,7 @@ public final class RefreshDatabaseMetaDataExecutor implements UpdatableRALExecut
                 .orElseGet(() -> ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases());
         for (ShardingSphereDatabase each : databases.values()) {
             if (!SystemSchemaUtils.isSystemSchema(each)) {
-                ProxyContext.getInstance().getContextManager().refreshDatabaseMetaData(each.getName(), sqlStatement.isForce());
+                ProxyContext.getInstance().getContextManager().refreshDatabaseMetaData(each, sqlStatement.isForce());
             }
         }
     }
