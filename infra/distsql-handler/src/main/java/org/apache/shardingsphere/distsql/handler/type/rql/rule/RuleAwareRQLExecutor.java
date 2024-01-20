@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.distsql.handler.type.rql.rule;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -34,12 +35,15 @@ import java.util.Collections;
  * @param <R> type of ShardingSphere rule
  */
 @RequiredArgsConstructor
-public abstract class RuleAwareRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> implements RQLExecutor<T> {
+@Setter
+public abstract class RuleAwareRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> implements DatabaseAwareRQLExecutor<T> {
     
     private final Class<R> ruleClass;
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final T sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final T sqlStatement) {
         return database.getRuleMetaData().findSingleRule(ruleClass).map(optional -> getRows(database, sqlStatement, optional)).orElse(Collections.emptyList());
     }
     

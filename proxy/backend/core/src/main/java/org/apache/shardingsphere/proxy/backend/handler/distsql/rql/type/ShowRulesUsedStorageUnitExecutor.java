@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -45,7 +46,8 @@ import java.util.stream.Collectors;
 /**
  * Show rules used storage unit executor.
  */
-public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowRulesUsedStorageUnitStatement> {
+@Setter
+public final class ShowRulesUsedStorageUnitExecutor implements DatabaseAwareRQLExecutor<ShowRulesUsedStorageUnitStatement> {
     
     private static final String SHARDING = "sharding";
     
@@ -57,13 +59,15 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
     
     private static final String MASK = "mask";
     
+    private ShardingSphereDatabase database;
+    
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("type", "name");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowRulesUsedStorageUnitStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowRulesUsedStorageUnitStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         String resourceName = sqlStatement.getStorageUnitName().orElse(null);
         if (database.getResourceMetaData().getStorageUnits().containsKey(resourceName)) {

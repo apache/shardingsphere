@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
@@ -60,7 +61,10 @@ public final class RQLBackendHandler implements DistSQLBackendHandler {
     public ResponseHeader execute() throws SQLException {
         RQLExecutor executor = TypedSPILoader.getService(RQLExecutor.class, sqlStatement.getClass());
         queryHeaders = createQueryHeader(executor.getColumnNames());
-        mergedResult = createMergedResult(executor.getRows(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)), sqlStatement));
+        if (executor instanceof DatabaseAwareRQLExecutor) {
+            ((DatabaseAwareRQLExecutor<?>) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
+        }
+        mergedResult = createMergedResult(executor.getRows(sqlStatement));
         return new QueryResponseHeader(queryHeaders);
     }
     
