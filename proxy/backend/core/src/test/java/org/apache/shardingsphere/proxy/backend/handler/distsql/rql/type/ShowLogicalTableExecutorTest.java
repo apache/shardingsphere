@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -45,7 +44,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShowLogicalTableExecutorTest {
     
-    private final RQLExecutor<ShowLogicalTablesStatement> executor = new ShowLogicalTableExecutor();
+    private final ShowLogicalTableExecutor executor = new ShowLogicalTableExecutor();
     
     @Mock
     private ShardingSphereDatabase database;
@@ -57,11 +56,12 @@ class ShowLogicalTableExecutorTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("foo_db")).thenReturn(schema);
         when(schema.getAllTableNames()).thenReturn(Arrays.asList("t_order", "t_order_item"));
+        executor.setDatabase(database);
     }
     
     @Test
     void assertGetRowData() {
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowLogicalTablesStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowLogicalTablesStatement.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -72,7 +72,7 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertRowDataWithLike() {
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, new ShowLogicalTablesStatement("t_order_%", null));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowLogicalTablesStatement("t_order_%", null));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         assertThat(iterator.next().getCell(1), is("t_order_item"));
