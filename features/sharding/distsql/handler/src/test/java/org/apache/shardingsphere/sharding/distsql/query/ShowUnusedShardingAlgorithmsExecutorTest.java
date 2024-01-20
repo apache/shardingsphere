@@ -46,8 +46,9 @@ class ShowUnusedShardingAlgorithmsExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowUnusedShardingAlgorithmsStatement> executor = new ShowUnusedShardingAlgorithmsExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowUnusedShardingAlgorithmsStatement.class));
+        ShowUnusedShardingAlgorithmsExecutor executor = new ShowUnusedShardingAlgorithmsExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowUnusedShardingAlgorithmsStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

@@ -47,8 +47,9 @@ class ShowUnusedShardingAuditorsExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowUnusedShardingAuditorsStatement> executor = new ShowUnusedShardingAuditorsExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowUnusedShardingAuditorsStatement.class));
+        ShowUnusedShardingAuditorsExecutor executor = new ShowUnusedShardingAuditorsExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowUnusedShardingAuditorsStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

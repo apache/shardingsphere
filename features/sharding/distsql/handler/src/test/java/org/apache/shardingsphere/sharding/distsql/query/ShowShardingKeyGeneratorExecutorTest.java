@@ -49,8 +49,9 @@ class ShowShardingKeyGeneratorExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        RQLExecutor<ShowShardingKeyGeneratorsStatement> executor = new ShowShardingKeyGeneratorExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowShardingKeyGeneratorsStatement.class));
+        ShowShardingKeyGeneratorExecutor executor = new ShowShardingKeyGeneratorExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingKeyGeneratorsStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

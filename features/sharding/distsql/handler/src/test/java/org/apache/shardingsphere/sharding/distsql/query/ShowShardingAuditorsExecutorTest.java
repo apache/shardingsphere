@@ -48,8 +48,9 @@ class ShowShardingAuditorsExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        RQLExecutor<ShowShardingAuditorsStatement> executor = new ShowShardingAuditorsExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowShardingAuditorsStatement.class));
+        ShowShardingAuditorsExecutor executor = new ShowShardingAuditorsExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingAuditorsStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

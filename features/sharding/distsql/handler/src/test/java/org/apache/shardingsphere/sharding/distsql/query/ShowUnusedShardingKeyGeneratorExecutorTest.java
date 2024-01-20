@@ -45,8 +45,9 @@ class ShowUnusedShardingKeyGeneratorExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowUnusedShardingKeyGeneratorsStatement> executor = new ShowUnusedShardingKeyGeneratorExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowUnusedShardingKeyGeneratorsStatement.class));
+        ShowUnusedShardingKeyGeneratorExecutor executor = new ShowUnusedShardingKeyGeneratorExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowUnusedShardingKeyGeneratorsStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

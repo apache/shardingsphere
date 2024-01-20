@@ -45,8 +45,9 @@ class ShowShardingAlgorithmExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowShardingAlgorithmsStatement> executor = new ShowShardingAlgorithmExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingAlgorithmsStatement.class));
+        ShowShardingAlgorithmExecutor executor = new ShowShardingAlgorithmExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingAlgorithmsStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -73,8 +74,9 @@ class ShowShardingAlgorithmExecutorTest {
     void assertGetRowDataWithoutShardingRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
-        RQLExecutor<ShowShardingAlgorithmsStatement> executor = new ShowShardingAlgorithmExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowShardingAlgorithmsStatement.class));
+        ShowShardingAlgorithmExecutor executor = new ShowShardingAlgorithmExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingAlgorithmsStatement.class));
         assertTrue(actual.isEmpty());
     }
     
