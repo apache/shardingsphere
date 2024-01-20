@@ -109,12 +109,13 @@ class ShowStorageUnitExecutorTest {
     @Test
     void assertAllStorageUnit() {
         ShowStorageUnitExecutor executor = new ShowStorageUnitExecutor();
+        executor.setDatabase(database);
         ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null);
         Map<Integer, String> nameMap = new HashMap<>(3, 1F);
         nameMap.put(0, "ds_2");
         nameMap.put(1, "ds_1");
         nameMap.put(2, "ds_0");
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, showStorageUnitsStatement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(showStorageUnitsStatement);
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         assertThat(actual.size(), is(3));
         int index = 0;
@@ -138,9 +139,10 @@ class ShowStorageUnitExecutorTest {
     
     @Test
     void assertUnusedStorageUnit() {
-        RQLExecutor<ShowStorageUnitsStatement> executor = new ShowStorageUnitExecutor();
+        ShowStorageUnitExecutor executor = new ShowStorageUnitExecutor();
+        executor.setDatabase(database);
         ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), 0);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, showStorageUnitsStatement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(showStorageUnitsStatement);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         LocalDataQueryResultRow data = rowData.next();

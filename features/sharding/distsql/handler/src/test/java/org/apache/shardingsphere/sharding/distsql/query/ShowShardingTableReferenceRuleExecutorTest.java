@@ -43,8 +43,9 @@ class ShowShardingTableReferenceRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingTableReferenceRulesStatement.class));
+        ShowShardingTableReferenceRuleExecutor executor = new ShowShardingTableReferenceRuleExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingTableReferenceRulesStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -54,8 +55,9 @@ class ShowShardingTableReferenceRuleExecutorTest {
     
     @Test
     void assertGetRowDataWithSpecifiedRuleName() {
-        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), new ShowShardingTableReferenceRulesStatement("foo", null));
+        ShowShardingTableReferenceRuleExecutor executor = new ShowShardingTableReferenceRuleExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableReferenceRulesStatement("foo", null));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

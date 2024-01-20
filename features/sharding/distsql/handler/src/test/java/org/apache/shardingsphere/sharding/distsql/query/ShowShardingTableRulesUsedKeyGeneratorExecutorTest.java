@@ -55,10 +55,11 @@ class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        RQLExecutor<ShowShardingTableRulesUsedKeyGeneratorStatement> executor = new ShowShardingTableRulesUsedKeyGeneratorExecutor();
+        ShowShardingTableRulesUsedKeyGeneratorExecutor executor = new ShowShardingTableRulesUsedKeyGeneratorExecutor();
+        executor.setDatabase(database);
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = mock(ShowShardingTableRulesUsedKeyGeneratorStatement.class);
         when(statement.getKeyGeneratorName()).thenReturn(Optional.of("snowflake"));
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, statement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement);
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

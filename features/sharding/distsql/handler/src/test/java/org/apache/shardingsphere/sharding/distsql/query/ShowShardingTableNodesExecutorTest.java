@@ -72,8 +72,9 @@ class ShowShardingTableNodesExecutorTest {
     }
     
     private void assertOrder(final ShardingSphereDatabase database) {
-        RQLExecutor<ShowShardingTableNodesStatement> executor = new ShowShardingTableNodesExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, new ShowShardingTableNodesStatement("t_order", null));
+        ShowShardingTableNodesExecutor executor = new ShowShardingTableNodesExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableNodesStatement("t_order", null));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -82,8 +83,9 @@ class ShowShardingTableNodesExecutorTest {
     }
     
     private void assertOrderItem(final ShardingSphereDatabase database) {
-        RQLExecutor<ShowShardingTableNodesStatement> executor = new ShowShardingTableNodesExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, new ShowShardingTableNodesStatement("t_order_item", null));
+        ShowShardingTableNodesExecutor executor = new ShowShardingTableNodesExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableNodesStatement("t_order_item", null));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -92,8 +94,9 @@ class ShowShardingTableNodesExecutorTest {
     }
     
     private void assertAll(final ShardingSphereDatabase database) {
-        RQLExecutor<ShowShardingTableNodesStatement> executor = new ShowShardingTableNodesExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, new ShowShardingTableNodesStatement(null, null));
+        ShowShardingTableNodesExecutor executor = new ShowShardingTableNodesExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableNodesStatement(null, null));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

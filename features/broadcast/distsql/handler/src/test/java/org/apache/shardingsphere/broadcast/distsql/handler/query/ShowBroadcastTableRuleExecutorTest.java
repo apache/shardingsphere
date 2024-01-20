@@ -42,9 +42,9 @@ class ShowBroadcastTableRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        ShardingSphereDatabase database = mockDatabase();
-        RQLExecutor<ShowBroadcastTableRulesStatement> executor = new ShowBroadcastTableRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowBroadcastTableRulesStatement.class));
+        ShowBroadcastTableRuleExecutor executor = new ShowBroadcastTableRuleExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowBroadcastTableRulesStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -55,7 +55,9 @@ class ShowBroadcastTableRuleExecutorTest {
     void assertGetRowDataWithoutBroadcastRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().findSingleRule(BroadcastRule.class)).thenReturn(Optional.empty());
-        Collection<LocalDataQueryResultRow> actual = new ShowBroadcastTableRuleExecutor().getRows(database, mock(ShowBroadcastTableRulesStatement.class));
+        ShowBroadcastTableRuleExecutor executor = new ShowBroadcastTableRuleExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowBroadcastTableRulesStatement.class));
         assertTrue(actual.isEmpty());
     }
     

@@ -46,8 +46,9 @@ class ShowShadowTableRulesExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowShadowTableRulesStatement> executor = new ShowShadowTableRulesExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShadowTableRulesStatement.class));
+        ShowShadowTableRulesExecutor executor = new ShowShadowTableRulesExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShadowTableRulesStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

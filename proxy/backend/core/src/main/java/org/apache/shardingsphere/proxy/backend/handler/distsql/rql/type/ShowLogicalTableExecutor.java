@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -33,7 +34,10 @@ import java.util.stream.Collectors;
 /**
  * Show logical table executor.
  */
-public final class ShowLogicalTableExecutor implements RQLExecutor<ShowLogicalTablesStatement> {
+@Setter
+public final class ShowLogicalTableExecutor implements DatabaseAwareRQLExecutor<ShowLogicalTablesStatement> {
+    
+    private ShardingSphereDatabase database;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -41,7 +45,7 @@ public final class ShowLogicalTableExecutor implements RQLExecutor<ShowLogicalTa
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowLogicalTablesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowLogicalTablesStatement sqlStatement) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
         String schemaName = dialectDatabaseMetaData.getDefaultSchema().orElse(database.getName());
         if (null == database.getSchema(schemaName)) {

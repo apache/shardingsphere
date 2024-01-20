@@ -52,8 +52,9 @@ class ShowDefaultShardingStrategyExecutorTest {
         ShardingRule rule1 = mock(ShardingRule.class);
         when(rule1.getConfiguration()).thenReturn(createRuleConfiguration1());
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule1)));
-        RQLExecutor<ShowDefaultShardingStrategyStatement> executor = new ShowDefaultShardingStrategyExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowDefaultShardingStrategyStatement.class));
+        ShowDefaultShardingStrategyExecutor executor = new ShowDefaultShardingStrategyExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDefaultShardingStrategyStatement.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -74,7 +75,8 @@ class ShowDefaultShardingStrategyExecutorTest {
         when(rule2.getConfiguration()).thenReturn(createRuleConfiguration2());
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule2)));
         executor = new ShowDefaultShardingStrategyExecutor();
-        actual = executor.getRows(database, mock(ShowDefaultShardingStrategyStatement.class));
+        executor.setDatabase(database);
+        actual = executor.getRows(mock(ShowDefaultShardingStrategyStatement.class));
         assertThat(actual.size(), is(2));
         iterator = actual.iterator();
         row = iterator.next();

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -43,7 +44,10 @@ import java.util.Properties;
 /**
  * Show storage unit executor.
  */
-public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUnitsStatement> {
+@Setter
+public final class ShowStorageUnitExecutor implements DatabaseAwareRQLExecutor<ShowStorageUnitsStatement> {
+    
+    private ShardingSphereDatabase database;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -52,7 +56,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStorageUnitsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, StorageUnit> entry : getToBeShownStorageUnits(database, sqlStatement).entrySet()) {
             ConnectionProperties connectionProps = entry.getValue().getConnectionProperties();

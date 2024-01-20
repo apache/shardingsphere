@@ -59,10 +59,11 @@ class ShowRulesUsedStorageUnitExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowRulesUsedStorageUnitStatement> executor = new ShowRulesUsedStorageUnitExecutor();
+        ShowRulesUsedStorageUnitExecutor executor = new ShowRulesUsedStorageUnitExecutor();
+        executor.setDatabase(mockDatabase());
         ShowRulesUsedStorageUnitStatement sqlStatement = mock(ShowRulesUsedStorageUnitStatement.class);
         when(sqlStatement.getStorageUnitName()).thenReturn(Optional.of("foo_ds"));
-        Collection<LocalDataQueryResultRow> rowData = executor.getRows(mockDatabase(), sqlStatement);
+        Collection<LocalDataQueryResultRow> rowData = executor.getRows(sqlStatement);
         assertThat(rowData.size(), is(7));
         Iterator<LocalDataQueryResultRow> actual = rowData.iterator();
         LocalDataQueryResultRow row = actual.next();
@@ -143,11 +144,11 @@ class ShowRulesUsedStorageUnitExecutorTest {
     
     @Test
     void assertGetEmptyRowData() {
-        ShardingSphereDatabase database = mockEmptyDatabase();
-        RQLExecutor<ShowRulesUsedStorageUnitStatement> executor = new ShowRulesUsedStorageUnitExecutor();
+        ShowRulesUsedStorageUnitExecutor executor = new ShowRulesUsedStorageUnitExecutor();
+        executor.setDatabase(mockEmptyDatabase());
         ShowRulesUsedStorageUnitStatement sqlStatement = mock(ShowRulesUsedStorageUnitStatement.class);
         when(sqlStatement.getStorageUnitName()).thenReturn(Optional.of("empty_ds"));
-        Collection<LocalDataQueryResultRow> rowData = executor.getRows(database, sqlStatement);
+        Collection<LocalDataQueryResultRow> rowData = executor.getRows(sqlStatement);
         assertTrue(rowData.isEmpty());
     }
     

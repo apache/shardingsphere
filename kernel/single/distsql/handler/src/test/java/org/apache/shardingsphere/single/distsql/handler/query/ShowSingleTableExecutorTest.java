@@ -61,7 +61,9 @@ class ShowSingleTableExecutorTest {
     
     @Test
     void assertGetRowData() {
-        Collection<LocalDataQueryResultRow> actual = new ShowSingleTableExecutor().getRows(database, mock(ShowSingleTableStatement.class));
+        ShowSingleTableExecutor executor = new ShowSingleTableExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSingleTableStatement.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -74,8 +76,10 @@ class ShowSingleTableExecutorTest {
     
     @Test
     void assertGetSingleTableWithLikeLiteral() {
+        ShowSingleTableExecutor executor = new ShowSingleTableExecutor();
+        executor.setDatabase(database);
         ShowSingleTableStatement statement = new ShowSingleTableStatement(null, "%item", null);
-        Collection<LocalDataQueryResultRow> actual = new ShowSingleTableExecutor().getRows(database, statement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

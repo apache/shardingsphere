@@ -46,9 +46,9 @@ class ShowMaskRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        ShardingSphereDatabase database = mockDatabase();
-        RQLExecutor<ShowMaskRulesStatement> executor = new ShowMaskRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowMaskRulesStatement.class));
+        ShowMaskRuleExecutor executor = new ShowMaskRuleExecutor();
+        executor.setDatabase(mockDatabase());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowMaskRulesStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -62,8 +62,9 @@ class ShowMaskRuleExecutorTest {
     void assertGetRowDataWithoutMaskRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.empty());
-        RQLExecutor<ShowMaskRulesStatement> executor = new ShowMaskRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowMaskRulesStatement.class));
+        ShowMaskRuleExecutor executor = new ShowMaskRuleExecutor();
+        executor.setDatabase(database);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowMaskRulesStatement.class));
         assertTrue(actual.isEmpty());
     }
     
