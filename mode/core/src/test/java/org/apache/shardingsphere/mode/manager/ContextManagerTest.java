@@ -301,7 +301,9 @@ class ContextManagerTest {
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(persistService);
-        contextManager.reloadSchema("foo_db", "foo_schema", "foo_ds");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        contextManager.reloadSchema(database, "foo_schema", "foo_ds");
         verify(databaseMetaDataPersistService).dropSchema("foo_db", "foo_schema");
     }
     
@@ -311,7 +313,9 @@ class ContextManagerTest {
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(persistService);
-        contextManager.reloadTable("foo_db", "foo_schema", "foo_table");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        contextManager.reloadTable(database, "foo_schema", "foo_table");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits().containsKey("foo_ds"));
     }
     
