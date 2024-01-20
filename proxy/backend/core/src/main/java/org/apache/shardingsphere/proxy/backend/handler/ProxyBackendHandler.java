@@ -26,7 +26,7 @@ import java.util.Collections;
 /**
  * Proxy backend handler.
  */
-public interface ProxyBackendHandler {
+public interface ProxyBackendHandler extends AutoCloseable {
     
     /**
      * Execute command.
@@ -56,11 +56,7 @@ public interface ProxyBackendHandler {
         return new QueryResponseRow(Collections.emptyList());
     }
     
-    /**
-     * Close handler.
-     *
-     * @throws SQLException SQL exception
-     */
+    @Override
     default void close() throws SQLException {
     }
 }
