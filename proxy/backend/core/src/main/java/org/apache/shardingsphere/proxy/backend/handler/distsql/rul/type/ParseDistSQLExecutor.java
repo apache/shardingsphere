@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.ConnectionSessionRequiredRULExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware.ConnectionSessionAwareRULExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -33,7 +34,10 @@ import java.util.Collections;
 /**
  * Parse DistSQL executor.
  */
-public final class ParseDistSQLExecutor implements ConnectionSessionRequiredRULExecutor<ParseStatement> {
+@Setter
+public final class ParseDistSQLExecutor implements ConnectionSessionAwareRULExecutor<ParseStatement> {
+    
+    private ConnectionSession connectionSession;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -41,12 +45,12 @@ public final class ParseDistSQLExecutor implements ConnectionSessionRequiredRULE
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ParseStatement sqlStatement) {
-        SQLStatement parsedSqlStatement = parseSQL(metaData, connectionSession, sqlStatement);
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ParseStatement sqlStatement) {
+        SQLStatement parsedSqlStatement = parseSQL(metaData, sqlStatement);
         return Collections.singleton(new LocalDataQueryResultRow(parsedSqlStatement.getClass().getSimpleName(), JsonUtils.toJsonString(parsedSqlStatement)));
     }
     
-    private SQLStatement parseSQL(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ParseStatement sqlStatement) {
+    private SQLStatement parseSQL(final ShardingSphereMetaData metaData, final ParseStatement sqlStatement) {
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         return sqlParserRule.getSQLParserEngine(connectionSession.getProtocolType()).parse(sqlStatement.getSql(), false);
     }

@@ -372,11 +372,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return new QueryResponseRow(cells);
     }
     
-    /**
-     * Close database connector.
-     *
-     * @throws SQLException SQL exception
-     */
     @Override
     public void close() throws SQLException {
         Collection<SQLException> result = new LinkedList<>();

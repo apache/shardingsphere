@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware;
 
 import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import java.sql.SQLException;
-import java.util.Collection;
-
 /**
- * Connection session required RUL executor.
- *
- * @param <T> type of SQL statement
+ * Connection session aware RUL executor.
+ * 
+ * @param <T> type of RUL statement
  */
-public interface ConnectionSessionRequiredRULExecutor<T extends RULStatement> extends RULExecutor<T> {
+public interface ConnectionSessionAwareRULExecutor<T extends RULStatement> extends RULExecutor<T> {
     
     /**
-     * Get query result rows.
-     *
-     * @param metaData ShardingSphere meta data
-     * @param connectionSession connectionSession connection session
-     * @param sqlStatement SQL statement
-     * @return query result rows
-     * @throws SQLException SQL exception
+     * Set connection session.
+     * 
+     * @param connectionSession connection session
      */
-    Collection<LocalDataQueryResultRow> getRows(ShardingSphereMetaData metaData, ConnectionSession connectionSession, T sqlStatement) throws SQLException;
+    void setConnectionSession(ConnectionSession connectionSession);
 }
