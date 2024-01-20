@@ -43,13 +43,11 @@ import java.util.stream.Collectors;
 
 /**
  * RQL backend handler.
- *
- * @param <T> type of RQL statement
  */
 @RequiredArgsConstructor
-public final class RQLBackendHandler<T extends RQLStatement> implements DistSQLBackendHandler {
+public final class RQLBackendHandler implements DistSQLBackendHandler {
     
-    private final T sqlStatement;
+    private final RQLStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
