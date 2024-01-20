@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.FormatSQLExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.ParseDistSQLExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.PreviewExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type.FormatSQLExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type.ParseDistSQLExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type.PreviewExecutor

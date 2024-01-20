@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.ConnectionSessionRequiredRULExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware.ConnectionSessionAwareRULExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLFormatEngine;
@@ -33,7 +34,10 @@ import java.util.Properties;
 /**
  * Format SQL executor.
  */
-public final class FormatSQLExecutor implements ConnectionSessionRequiredRULExecutor<FormatStatement> {
+@Setter
+public final class FormatSQLExecutor implements ConnectionSessionAwareRULExecutor<FormatStatement> {
+    
+    private ConnectionSession connectionSession;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -41,7 +45,7 @@ public final class FormatSQLExecutor implements ConnectionSessionRequiredRULExec
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final FormatStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final FormatStatement sqlStatement) {
         return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sqlStatement.getSql(), connectionSession.getProtocolType())));
     }
     

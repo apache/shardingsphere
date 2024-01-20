@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
 
-import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.RULBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -71,8 +69,7 @@ class ParseDistSQLExecutorTest {
     void assertGetRowDataForMySQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
-        handler.init(new ParseStatement(sql), connectionSession);
+        RULBackendHandler handler = new RULBackendHandler(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
@@ -84,8 +81,7 @@ class ParseDistSQLExecutorTest {
     void assertGetRowDataForPostgreSQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
-        handler.init(new ParseStatement(sql), connectionSession);
+        RULBackendHandler handler = new RULBackendHandler(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
@@ -96,8 +92,7 @@ class ParseDistSQLExecutorTest {
     void assertExecute() {
         String sql = "wrong sql";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
-        handler.init(new ParseStatement(sql), connectionSession);
+        RULBackendHandler handler = new RULBackendHandler(new ParseStatement(sql), connectionSession);
         assertThrows(SQLParsingException.class, handler::execute);
     }
 }
