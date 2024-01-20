@@ -3219,4 +3219,68 @@
             </from>
         </select>
     </insert>
+    
+    <insert sql-case-id="insert_sales_with_nchar">
+        <table name="sales" start-index="12" stop-index="16" />
+        <columns start-index="17" stop-index="17" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Canada" start-index="26" stop-index="34" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="British Columbia" start-index="37" stop-index="55" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="300" start-index="58" stop-index="60" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_sales_with_nchar_2">
+        <table name="sales" start-index="12" stop-index="16" />
+        <columns start-index="17" stop-index="17" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="United States" start-index="26" stop-index="41" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Montana" start-index="44" stop-index="53" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="100" start-index="56" stop-index="58" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_currency_value">
+        <table name="Employees" start-index="12" stop-index="27" start-delimiter="[" end-delimiter="]">
+            <owner name="HR" start-index="12" stop-index="15" start-delimiter="[" end-delimiter="]" />
+        </table>
+        <columns start-index="28" stop-index="69">
+            <column name="SSN" start-index="29" stop-index="33" start-delimiter="[" end-delimiter="]" />
+            <column name="FirstName" start-index="36" stop-index="46" start-delimiter="[" end-delimiter="]" />
+            <column name="LastName" start-index="49" stop-index="58" start-delimiter="[" end-delimiter="]" />
+            <column name="Salary" start-index="61" stop-index="68" start-delimiter="[" end-delimiter="]" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="795-73-9838" start-index="79" stop-index="91" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Catherine" start-index="94" stop-index="105" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Abel" start-index="108" stop-index="114" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="$31692" start-index="117" stop-index="122" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

@@ -824,4 +824,90 @@
             </column-item>
         </order-by>
     </select>
+    
+    <select sql-case-id="select_with_datepart_group_by_with_order_by">
+        <projections start-index="7" stop-index="81">
+            <expression-projection text="DATEPART(yyyy,OrderDate)" alias="Year" start-index="7" stop-index="41">
+                <expr>
+                    <function function-name="DATEPART" text="DATEPART(yyyy,OrderDate)" start-index="7" stop-index="30">
+                        <parameter>
+                            <column name="yyyy" start-index="16" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <column name="OrderDate" start-index="21" stop-index="29" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <aggregation-projection type="SUM" expression="SUM(TotalDue)" alias="Total Order Amount" start-index="44" stop-index="56">
+                <paramters>
+                    <column name="TotalDue" start-index="48" stop-index="55" />
+                </paramters>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesOrderHeader"  start-index="88" stop-index="109">
+                <owner name="Sales" start-index="88" stop-index="92"/>
+            </simple-table>
+        </from>
+        <group-by>
+            <expression-item expression="DATEPART(yyyy,OrderDate)" start-index="120" stop-index="143" />
+        </group-by>
+        <order-by>
+            <expression-item expression="DATEPART(yyyy,OrderDate)" order-direction="ASC" start-index="154" stop-index="177" />
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_with_datepart_group_by_with_having_order_by">
+        <projections start-index="7" stop-index="81">
+            <expression-projection text="DATEPART(yyyy,OrderDate)" alias="Year" start-index="7" stop-index="41">
+                <expr>
+                    <function function-name="DATEPART" text="DATEPART(yyyy,OrderDate)" start-index="7" stop-index="30">
+                        <parameter>
+                            <column name="yyyy" start-index="16" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <column name="OrderDate" start-index="21" stop-index="29" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <aggregation-projection type="SUM" expression="SUM(TotalDue)" alias="Total Order Amount" start-index="44" stop-index="56">
+                <paramters>
+                    <column name="TotalDue" start-index="48" stop-index="55" />
+                </paramters>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesOrderHeader"  start-index="88" stop-index="109">
+                <owner name="Sales" start-index="88" stop-index="92"/>
+            </simple-table>
+        </from>
+        <group-by>
+            <expression-item expression="DATEPART(yyyy,OrderDate)" start-index="120" stop-index="143" />
+        </group-by>
+        <having start-index="145" stop-index="186">
+            <expr>
+                <binary-operation-expression text="DATEPART(yyyy,OrderDate) &gt;= N'2003'" start-index="152" stop-index="186">
+                    <left>
+                        <function function-name="DATEPART" text="DATEPART(yyyy,OrderDate)" start-index="152" stop-index="175">
+                            <parameter>
+                                <column name="yyyy" start-index="161" stop-index="164" />
+                            </parameter>
+                            <parameter>
+                                <column name="OrderDate" start-index="166" stop-index="174" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <right>
+                        <literal-expression value="2003" start-index="180" stop-index="186" />
+                    </right>
+                    <operator>&gt;=</operator>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <expression-item expression="DATEPART(yyyy,OrderDate)" order-direction="ASC" start-index="197" stop-index="220" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>

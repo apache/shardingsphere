@@ -208,7 +208,7 @@ collationName
     ;
 
 alias
-    : identifier | STRING_
+    : identifier | STRING_ | NCHAR_TEXT
     ;
 
 dataTypeLength
@@ -286,7 +286,7 @@ simpleExpr
     | columnName
     | variableName
     | simpleExpr OR_ simpleExpr
-    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY | DOLLAR_) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
