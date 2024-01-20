@@ -53,10 +53,10 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     }
     
     @Override
-    public ResponseHeader execute(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
-        checkSQLStatement(databaseName, sqlStatement);
+    public ResponseHeader execute(final ShardingSphereDatabase database, final UnregisterStorageUnitStatement sqlStatement) {
+        checkSQLStatement(database, sqlStatement);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().unregisterStorageUnits(databaseName, sqlStatement.getStorageUnitNames());
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Unregister storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
@@ -65,21 +65,20 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     }
     
     @Override
-    public void checkSQLStatement(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final UnregisterStorageUnitStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkExisted(databaseName, sqlStatement.getStorageUnitNames());
+            checkExisted(database, sqlStatement.getStorageUnitNames());
         }
-        checkInUsed(databaseName, sqlStatement);
+        checkInUsed(database, sqlStatement);
     }
     
-    private void checkExisted(final String databaseName, final Collection<String> storageUnitNames) {
-        Map<String, StorageUnit> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
+    private void checkExisted(final ShardingSphereDatabase database, final Collection<String> storageUnitNames) {
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         Collection<String> notExistedStorageUnits = storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnits));
+        ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedStorageUnits));
     }
     
-    private void checkInUsed(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
+    private void checkInUsed(final ShardingSphereDatabase database, final UnregisterStorageUnitStatement sqlStatement) {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits = database.getRuleMetaData().getInUsedStorageUnitNameAndRulesMap();
         Collection<String> inUsedStorageUnitNames = inUsedStorageUnits.keySet();
         inUsedStorageUnitNames.retainAll(sqlStatement.getStorageUnitNames());

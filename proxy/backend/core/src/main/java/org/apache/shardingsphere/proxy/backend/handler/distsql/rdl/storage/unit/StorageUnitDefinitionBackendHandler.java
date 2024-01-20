@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
 
 import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -32,5 +33,5 @@ public abstract class StorageUnitDefinitionBackendHandler<T extends StorageUnitD
         super(sqlStatement, connectionSession);
     }
     
-    protected abstract void checkSQLStatement(String databaseName, T sqlStatement);
+    protected abstract void checkSQLStatement(ShardingSphereDatabase database, T sqlStatement);
 }

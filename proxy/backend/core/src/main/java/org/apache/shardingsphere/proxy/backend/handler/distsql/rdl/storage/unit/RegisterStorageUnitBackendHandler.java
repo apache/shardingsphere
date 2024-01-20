@@ -26,6 +26,7 @@ import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsCon
 import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
@@ -59,12 +60,12 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     }
     
     @Override
-    public ResponseHeader execute(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
-        checkSQLStatement(databaseName, sqlStatement);
+    public ResponseHeader execute(final ShardingSphereDatabase database, final RegisterStorageUnitStatement sqlStatement) {
+        checkSQLStatement(database, sqlStatement);
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         if (sqlStatement.isIfNotExists()) {
-            Collection<String> currentStorageUnits = getCurrentStorageUnitNames(databaseName);
-            Collection<String> logicalDataSourceNames = getLogicalDataSourceNames(databaseName);
+            Collection<String> currentStorageUnits = getCurrentStorageUnitNames(database);
+            Collection<String> logicalDataSourceNames = getLogicalDataSourceNames(database);
             propsMap.keySet().removeIf(currentStorageUnits::contains);
             propsMap.keySet().removeIf(logicalDataSourceNames::contains);
         }
@@ -73,7 +74,7 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
         }
         validateHandler.validate(propsMap);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, propsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(database.getName(), propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             log.error("Register storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
@@ -82,18 +83,18 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     }
     
     @Override
-    public void checkSQLStatement(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getStorageUnits().size());
         if (!sqlStatement.isIfNotExists()) {
-            checkDuplicatedDataSourceNames(databaseName, dataSourceNames, sqlStatement);
-            checkDuplicatedLogicalDataSourceNames(databaseName, dataSourceNames);
+            checkDuplicatedDataSourceNames(database, dataSourceNames, sqlStatement);
+            checkDuplicatedLogicalDataSourceNames(database, dataSourceNames);
         }
     }
     
-    private void checkDuplicatedDataSourceNames(final String databaseName, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
+    private void checkDuplicatedDataSourceNames(final ShardingSphereDatabase database, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> duplicatedDataSourceNames = new HashSet<>(sqlStatement.getStorageUnits().size(), 1F);
         for (DataSourceSegment each : sqlStatement.getStorageUnits()) {
-            if (dataSourceNames.contains(each.getName()) || getCurrentStorageUnitNames(databaseName).contains(each.getName())) {
+            if (dataSourceNames.contains(each.getName()) || getCurrentStorageUnitNames(database).contains(each.getName())) {
                 duplicatedDataSourceNames.add(each.getName());
             }
             dataSourceNames.add(each.getName());
@@ -101,8 +102,8 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
         ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedDataSourceNames));
     }
     
-    private void checkDuplicatedLogicalDataSourceNames(final String databaseName, final Collection<String> requiredDataSourceNames) {
-        Collection<String> logicalDataSourceNames = getLogicalDataSourceNames(databaseName);
+    private void checkDuplicatedLogicalDataSourceNames(final ShardingSphereDatabase database, final Collection<String> requiredDataSourceNames) {
+        Collection<String> logicalDataSourceNames = getLogicalDataSourceNames(database);
         if (logicalDataSourceNames.isEmpty()) {
             return;
         }
@@ -111,12 +112,11 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
                 () -> new InvalidStorageUnitsException(Collections.singleton(String.format("%s already existed in rule", duplicatedDataSourceNames))));
     }
     
-    private Collection<String> getCurrentStorageUnitNames(final String databaseName) {
-        return ProxyContext.getInstance().getContextManager().getStorageUnits(databaseName).keySet();
+    private Collection<String> getCurrentStorageUnitNames(final ShardingSphereDatabase database) {
+        return ProxyContext.getInstance().getContextManager().getStorageUnits(database.getName()).keySet();
     }
     
-    private Collection<String> getLogicalDataSourceNames(final String databaseName) {
-        return ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
-                .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toList());
+    private Collection<String> getLogicalDataSourceNames(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream().map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }

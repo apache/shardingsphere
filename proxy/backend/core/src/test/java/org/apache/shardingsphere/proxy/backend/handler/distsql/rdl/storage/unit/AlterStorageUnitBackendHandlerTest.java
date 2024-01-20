@@ -41,6 +41,7 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -60,7 +61,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class AlterStorageUnitBackendHandlerTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     private AlterStorageUnitBackendHandler handler;
@@ -85,12 +86,12 @@ class AlterStorageUnitBackendHandlerTest {
         when(storageUnit.getConnectionProperties()).thenReturn(connectionProperties);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        assertThat(handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
+        assertThat(handler.execute(database, createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithDuplicateStorageUnitNames() {
-        assertThrows(DuplicateStorageUnitException.class, () -> handler.execute("foo_db", createAlterStorageUnitStatementWithDuplicateStorageUnitNames()));
+        assertThrows(DuplicateStorageUnitException.class, () -> handler.execute(database, createAlterStorageUnitStatementWithDuplicateStorageUnitNames()));
     }
     
     @Test
@@ -99,7 +100,7 @@ class AlterStorageUnitBackendHandlerTest {
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", database));
         ContextManager contextManager = mockContextManager(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> handler.execute("foo_db", createAlterStorageUnitStatement("not_existed")));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> handler.execute(database, createAlterStorageUnitStatement("not_existed")));
     }
     
     @Test
@@ -113,7 +114,7 @@ class AlterStorageUnitBackendHandlerTest {
         when(storageUnit.getConnectionProperties()).thenReturn(connectionProperties);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        assertThrows(InvalidStorageUnitsException.class, () -> handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")));
+        assertThrows(InvalidStorageUnitsException.class, () -> handler.execute(database, createAlterStorageUnitStatement("ds_0")));
     }
     
     private ContextManager mockContextManager(final MetaDataContexts metaDataContexts) {
