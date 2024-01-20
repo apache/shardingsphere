@@ -57,7 +57,7 @@ class ShowBroadcastTableRuleExecutorTest {
         when(database.getRuleMetaData().findSingleRule(BroadcastRule.class)).thenReturn(Optional.empty());
         ShowBroadcastTableRuleExecutor executor = new ShowBroadcastTableRuleExecutor();
         executor.setDatabase(database);
-        Collection<LocalDataQueryResultRow> actual = new ShowBroadcastTableRuleExecutor().getRows(mock(ShowBroadcastTableRulesStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowBroadcastTableRulesStatement.class));
         assertTrue(actual.isEmpty());
     }
     
