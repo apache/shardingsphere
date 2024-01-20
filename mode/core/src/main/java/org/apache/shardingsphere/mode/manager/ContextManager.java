@@ -110,25 +110,23 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Reload database meta data.
      *
-     * @param databaseName to be reloaded database name
+     * @param database to be reloaded database
      * @param force whether to force refresh table metadata
      */
-    public void refreshDatabaseMetaData(final String databaseName, final boolean force) {
+    public void refreshDatabaseMetaData(final ShardingSphereDatabase database, final boolean force) {
         try {
-            ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(database);
             if (force) {
                 metaDataContexts.set(reloadedMetaDataContexts);
-                metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas()
-                        .forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().persist(database.getName(), schemaName, schema));
+                database.getSchemas().forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().persist(database.getName(), schemaName, schema));
             } else {
-                deletedSchemaNames(databaseName, reloadedMetaDataContexts.getMetaData().getDatabase(databaseName), database);
+                deletedSchemaNames(database.getName(), reloadedMetaDataContexts.getMetaData().getDatabase(database.getName()), database);
                 metaDataContexts.set(reloadedMetaDataContexts);
-                metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas()
+                database.getSchemas()
                         .forEach((schemaName, schema) -> metaDataContexts.get().getPersistService().getDatabaseMetaDataService().compareAndPersist(database.getName(), schemaName, schema));
             }
         } catch (final SQLException ex) {
-            log.error("Refresh database meta data: {} failed", databaseName, ex);
+            log.error("Refresh database meta data: {} failed", database.getName(), ex);
         }
     }
     
