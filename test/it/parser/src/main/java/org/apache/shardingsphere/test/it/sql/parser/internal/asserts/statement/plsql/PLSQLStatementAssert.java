@@ -23,11 +23,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.SQLStatementSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedDynamicSqlStatementExpressionSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureCallNameSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedSQLStatementSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.plsql.CreateFunctionTestCase;
@@ -79,6 +81,16 @@ public final class PLSQLStatementAssert {
         } else {
             assertTrue(actual.getProcedureName().isPresent(), assertContext.getText("Procedure name should be exist."));
             assertThat(assertContext.getText("Procedure name mismatched:"), actual.getProcedureName().get().getIdentifier().getValue(), is(expected.getProcedureName().getName()));
+        }
+        if (null == expected.getProcedureBodyEndNameSegments()) {
+            assertThat(assertContext.getText("Procedure body end names size mismatched:"), actual.getProcedureBodyEndNameSegments().size(), is(0));
+        } else {
+            assertThat(assertContext.getText("Procedure body end names size mismatched:"), actual.getProcedureBodyEndNameSegments().size(), is(expected.getProcedureBodyEndNameSegments().size()));
+            for (int i = 0; i < expected.getProcedureBodyEndNameSegments().size(); i++) {
+                ProcedureBodyEndNameSegment actualSegment = actual.getProcedureBodyEndNameSegments().get(i);
+                ExpectedProcedureBodyEndNameSegment expectedSegment = expected.getProcedureBodyEndNameSegments().get(i);
+                assertThat(assertContext.getText("Procedure body end name mismatched:"), actualSegment.toString(), is(expectedSegment.getName()));
+            }
         }
     }
     

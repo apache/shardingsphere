@@ -26,7 +26,13 @@ import org.apache.shardingsphere.distsql.statement.rdl.create.CreateRuleStatemen
 import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.drop.DropRuleStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.drop.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
+import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.AlterGlobalClockRuleStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.AlterSQLParserRuleStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.AlterTrafficRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.AlterRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.AlterStorageUnitStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.CreateRuleStatementAssert;
@@ -34,9 +40,14 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.r
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.drop.DropRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.drop.UnregisterStorageUnitStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterGlobalClockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterSQLParserRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.AlterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.RegisterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.UnregisterStorageUnitStatementTestCase;
+import org.apache.shardingsphere.traffic.distsql.statement.updatable.AlterTrafficRuleStatement;
+import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 
 /**
  * RDL statement assert.
@@ -64,6 +75,14 @@ public final class RDLStatementAssert {
             AlterStorageUnitStatementAssert.assertIs(assertContext, (AlterStorageUnitStatement) actual, (AlterStorageUnitStatementTestCase) expected);
         } else if (actual instanceof UnregisterStorageUnitStatement) {
             UnregisterStorageUnitStatementAssert.assertIs(assertContext, (UnregisterStorageUnitStatement) actual, (UnregisterStorageUnitStatementTestCase) expected);
+        } else if (actual instanceof AlterSQLParserRuleStatement) {
+            AlterSQLParserRuleStatementAssert.assertIs(assertContext, (AlterSQLParserRuleStatement) actual, (AlterSQLParserRuleStatementTestCase) expected);
+        } else if (actual instanceof AlterTrafficRuleStatement) {
+            AlterTrafficRuleStatementAssert.assertIs(assertContext, (AlterTrafficRuleStatement) actual, (AlterTrafficRuleStatementTestCase) expected);
+        } else if (actual instanceof AlterTransactionRuleStatement) {
+            ExistingAssert.assertIs(assertContext, actual, expected);
+        } else if (actual instanceof AlterGlobalClockRuleStatement) {
+            AlterGlobalClockRuleStatementAssert.assertIs(assertContext, (AlterGlobalClockRuleStatement) actual, (AlterGlobalClockRuleStatementTestCase) expected);
         }
     }
 }

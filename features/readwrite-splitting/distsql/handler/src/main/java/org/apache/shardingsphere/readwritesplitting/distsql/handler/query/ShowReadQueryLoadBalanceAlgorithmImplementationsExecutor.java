@@ -26,7 +26,7 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgo
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Show read query load balance algorithm implementations executor.
@@ -40,12 +40,8 @@ public final class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor impl
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowReadQueryLoadBalanceAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<ReadQueryLoadBalanceAlgorithm> loadBalanceAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ReadQueryLoadBalanceAlgorithm.class);
-        for (ReadQueryLoadBalanceAlgorithm each : loadBalanceAlgorithms) {
-            result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
-        }
-        return result;
+        return loadBalanceAlgorithms.stream().map(each -> new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName())).collect(Collectors.toList());
     }
     
     @Override

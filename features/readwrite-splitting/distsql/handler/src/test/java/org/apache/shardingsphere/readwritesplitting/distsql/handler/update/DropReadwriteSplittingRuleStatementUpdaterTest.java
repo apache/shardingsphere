@@ -52,27 +52,27 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class DropReadwriteSplittingRuleStatementUpdaterTest {
     
-    private final DropReadwriteSplittingRuleStatementUpdater updater = new DropReadwriteSplittingRuleStatementUpdater();
+    private final DropReadwriteSplittingRuleExecutor executor = new DropReadwriteSplittingRuleExecutor();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement(), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
         assertThrows(MissingRequiredRuleException.class,
-                () -> updater.checkSQLStatement(database, createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkSQLStatement(database, createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
     void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
+        executor.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
                 new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
+        executor.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
     }
     
     @Test
@@ -83,27 +83,27 @@ class DropReadwriteSplittingRuleStatementUpdaterTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getAllDataNodes()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton(new DataNode("readwrite_ds.tbl"))));
         when(database.getRuleMetaData().findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(dataNodeContainedRule));
-        assertThrows(RuleInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatement(), createCurrentRuleConfiguration()));
+        assertThrows(RuleInUsedException.class, () -> executor.checkSQLStatement(database, createSQLStatement(), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertUpdateCurrentRuleConfiguration() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
-        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
+        assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
         assertThat(ruleConfig.getLoadBalancers().size(), is(0));
     }
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithInUsedLoadBalancer() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createMultipleCurrentRuleConfigurations();
-        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
+        assertFalse(executor.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
         assertThat(ruleConfig.getLoadBalancers().size(), is(1));
     }
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithoutLoadBalancerName() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithoutLoadBalancerName();
-        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
+        assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
         assertThat(ruleConfig.getLoadBalancers().size(), is(0));
     }
     

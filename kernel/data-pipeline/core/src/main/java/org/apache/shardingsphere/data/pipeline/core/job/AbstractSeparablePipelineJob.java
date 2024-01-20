@@ -57,11 +57,6 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
-    // TODO Remove constructor
-    protected AbstractSeparablePipelineJob() {
-        this("");
-    }
-    
     protected AbstractSeparablePipelineJob(final String jobId) {
         jobRunnerManager = new PipelineJobRunnerManager();
         jobProcessContext = isTransmissionProcessContextNeeded() ? createTransmissionProcessContext(jobId) : null;

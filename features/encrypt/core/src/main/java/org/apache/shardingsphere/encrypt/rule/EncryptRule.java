@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -57,23 +56,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
         ruleConfig.getEncryptors().forEach((key, value) -> encryptors.put(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, encryptors));
-            tables.put(each.getName().toLowerCase(), new EncryptTable(each, encryptors));
-            tableNamesMapper.put(each.getName());
-        }
-    }
-    
-    /**
-     * Encrypt rule constructor.
-     * 
-     * @deprecated deprecated by compatible encrypt rule configuration
-     */
-    @Deprecated
-    public EncryptRule(final String databaseName, final CompatibleEncryptRuleConfiguration ruleConfig) {
-        this.databaseName = databaseName;
-        configuration = ruleConfig;
-        Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
-        ruleConfig.getEncryptors().forEach((key, value) -> encryptors.put(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
-        for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             tables.put(each.getName().toLowerCase(), new EncryptTable(each, encryptors));
             tableNamesMapper.put(each.getName());
         }

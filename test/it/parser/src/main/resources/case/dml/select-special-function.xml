@@ -663,6 +663,58 @@
             </function-table>
         </from>
     </select>
+
+    <select sql-case-id="select_from_open_row_set_with_provider_name">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="a"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="16" stop-index="110">
+            <function-table start-index="16" stop-index="110" table-alias="a">
+                <table-function function-name="OPENROWSET" text="OPENROWSET('Microsoft.Jet.OLEDB.4.0', 'C:\SAMPLES\Northwind.mdb';'admin';'password', Customers)">
+                    <parameter>
+                        <literal-expression value="Microsoft.Jet.OLEDB.4.0" start-index="27" stop-index="51"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="C:\SAMPLES\Northwind.mdb" start-index="54" stop-index="79"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="admin" start-index="81" stop-index="87"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="password" start-index="89" stop-index="98"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="Customers" start-index="101" stop-index="109"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_open_row_set_with_provider_string">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="d"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="6" stop-index="123">
+            <function-table start-index="16" stop-index="123" table-alias="d">
+                <table-function function-name="OPENROWSET" text="OPENROWSET('SQLNCLI','Server=Seattle1;Trusted_Connection=yes;',AdventureWorks2022.HumanResources.Department)">
+                    <parameter>
+                        <literal-expression value="SQLNCLI" start-index="27" stop-index="35"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="Server=Seattle1;Trusted_Connection=yes;" start-index="37" stop-index="77"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="AdventureWorks2022.HumanResources.Department" start-index="79" stop-index="122"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
     
     <select sql-case-id="select_json_object_simple_key_value">
         <projections start-index="7" stop-index="43">
@@ -811,7 +863,7 @@
                             </key-value>
                         </parameter>
                         <parameter>
-                            <json-null-clause-expression text="ABSENTONNULL" start-index="47" stop-index="60"/>
+                            <json-null-clause-expression text="ABSENT ON NULL" start-index="47" stop-index="60"/>
                         </parameter>
                     </function>
                 </expr>

@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedDynamicSqlStatementExpressionSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedProcedureCallNameSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedRoutineName;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.plsql.ExpectedSQLStatementSegment;
@@ -47,6 +48,10 @@ public final class CreateProcedureTestCase extends SQLParserTestCase {
     @XmlElementWrapper(name = "procedure-calls")
     @XmlElement(name = "procedure-call")
     private List<ExpectedProcedureCallNameSegment> procedureCalls = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "procedure-body-end-names")
+    @XmlElement(name = "procedure-body-end-name")
+    private List<ExpectedProcedureBodyEndNameSegment> procedureBodyEndNameSegments = new LinkedList<>();
     
     @XmlElementWrapper(name = "dynamic-sql-statement-expressions")
     @XmlElement(name = "dynamic-sql-statement-expression")

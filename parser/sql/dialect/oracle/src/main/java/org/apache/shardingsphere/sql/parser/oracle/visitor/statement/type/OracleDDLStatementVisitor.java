@@ -344,6 +344,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.SQLStatementSegment;
 
@@ -1343,7 +1344,8 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
-        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement(getSqlStatementsInPlsql(), getProcedureCallNames(), getDynamicSqlStatementExpressions());
+        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement(getSqlStatementsInPlsql(), getProcedureCallNames(), getProcedureBodyEndNameSegments(),
+                getDynamicSqlStatementExpressions());
         result.setProcedureName(visitProcedureName(ctx.plsqlProcedureSource()));
         result.getVariableNames().addAll(getVariableNames());
         getSqlStatementsInPlsql().forEach(each -> each.getSqlStatement().getVariableNames().addAll(getVariableNames()));
@@ -1445,6 +1447,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             for (StatementContext each : eachExceptionHandler.statement()) {
                 visit(each);
             }
+        }
+        if (null != ctx.identifier()) {
+            getProcedureBodyEndNameSegments().add(
+                    new ProcedureBodyEndNameSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
         }
         return defaultResult();
     }

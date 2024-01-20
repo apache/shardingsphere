@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementUpdater;
+import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleExecutor;
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowRuleStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,27 +50,27 @@ class DropShadowRuleStatementUpdaterTest {
     
     @Test
     void assertCheckWithNullConfiguration() {
-        assertThrows(MissingRequiredRuleException.class, () -> new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("anyRuleName"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> new DropShadowRuleExecutor().checkSQLStatement(database, createSQLStatement("anyRuleName"), null));
     }
     
     @Test
     void assertCheckWithRuleNotExisted() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class)));
+                () -> new DropShadowRuleExecutor().checkSQLStatement(database, createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class)));
     }
     
     @Test
     void assertCheckWithIfExists() {
-        new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement(true, "notExistedRuleName"), mock(ShadowRuleConfiguration.class));
+        new DropShadowRuleExecutor().checkSQLStatement(database, createSQLStatement(true, "notExistedRuleName"), mock(ShadowRuleConfiguration.class));
     }
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithUnusedAlgorithms() {
         DropShadowRuleStatement sqlStatement = createSQLStatement("shadow_group");
         ShadowRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
-        DropShadowRuleStatementUpdater updater = new DropShadowRuleStatementUpdater();
-        updater.checkSQLStatement(database, sqlStatement, ruleConfig);
-        assertTrue(updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
+        DropShadowRuleExecutor executor = new DropShadowRuleExecutor();
+        executor.checkSQLStatement(database, sqlStatement, ruleConfig);
+        assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
         assertTrue(ruleConfig.getDataSources().isEmpty());
         assertTrue(ruleConfig.getTables().isEmpty());
         assertTrue(ruleConfig.getShadowAlgorithms().isEmpty());
@@ -80,9 +80,9 @@ class DropShadowRuleStatementUpdaterTest {
     void assertUpdateMultipleCurrentRuleConfigurationWithInUsedAlgorithms() {
         DropShadowRuleStatement sqlStatement = createSQLStatement("shadow_group");
         ShadowRuleConfiguration ruleConfig = createMultipleCurrentRuleConfiguration();
-        DropShadowRuleStatementUpdater updater = new DropShadowRuleStatementUpdater();
-        updater.checkSQLStatement(database, sqlStatement, ruleConfig);
-        assertTrue(updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
+        DropShadowRuleExecutor executor = new DropShadowRuleExecutor();
+        executor.checkSQLStatement(database, sqlStatement, ruleConfig);
+        assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
         assertTrue(ruleConfig.getDataSources().isEmpty());
         assertTrue(ruleConfig.getTables().isEmpty());
         assertThat(ruleConfig.getShadowAlgorithms().size(), is(1));

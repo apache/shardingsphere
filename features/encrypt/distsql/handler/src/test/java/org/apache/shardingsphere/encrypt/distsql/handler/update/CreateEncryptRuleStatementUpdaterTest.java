@@ -54,30 +54,30 @@ class CreateEncryptRuleStatementUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
+    private final CreateEncryptRuleExecutor executor = new CreateEncryptRuleExecutor();
     
     @Test
     void assertCheckSQLStatementWithDuplicateEncryptRule() {
-        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig()));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithConflictColumnNames() {
-        assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, createConflictColumnNameSQLStatement(), getCurrentRuleConfig()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkSQLStatement(database, createConflictColumnNameSQLStatement(), getCurrentRuleConfig()));
     }
     
     @Test
     void assertCreateEncryptRuleWithIfNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
-        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
-        EncryptRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        EncryptRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
+        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
         assertTrue(currentRuleConfig.getEncryptors().isEmpty());
     }
@@ -129,7 +129,7 @@ class CreateEncryptRuleStatementUpdaterTest {
     void assertCreateAESEncryptRuleWithPropertiesNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createWrongAESEncryptorSQLStatement();
-        assertThrows(EncryptAlgorithmInitializationException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentRuleConfig));
+        assertThrows(EncryptAlgorithmInitializationException.class, () -> executor.checkSQLStatement(database, sqlStatement, currentRuleConfig));
     }
     
     private CreateEncryptRuleStatement createWrongAESEncryptorSQLStatement() {

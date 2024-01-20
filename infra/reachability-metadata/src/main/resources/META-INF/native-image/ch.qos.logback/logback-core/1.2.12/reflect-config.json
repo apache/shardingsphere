@@ -55,11 +55,6 @@
   "methods":[{"name":"setEncoder","parameterTypes":["ch.qos.logback.core.encoder.Encoder"] }]
 },
 {
-  "condition":{"typeReachable":"ch.qos.logback.core.joran.action.NestedComplexPropertyIA"},
-  "name":"ch.qos.logback.core.encoder.Encoder",
-  "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
-},
-{
   "condition":{"typeReachable":"ch.qos.logback.core.joran.util.PropertySetter"},
   "name":"ch.qos.logback.core.encoder.LayoutWrappingEncoder",
   "methods":[{"name":"setParent","parameterTypes":["ch.qos.logback.core.spi.ContextAware"] }]
@@ -68,11 +63,6 @@
   "condition":{"typeReachable":"ch.qos.logback.core.joran.util.PropertySetter"},
   "name":"ch.qos.logback.core.pattern.PatternLayoutEncoderBase",
   "methods":[{"name":"setPattern","parameterTypes":["java.lang.String"] }]
-},
-{
-  "condition":{"typeReachable":"ch.qos.logback.core.joran.action.NestedComplexPropertyIA"},
-  "name":"ch.qos.logback.core.spi.ContextAware",
-  "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
 },
 {
   "condition":{"typeReachable":"ch.qos.logback.core.joran.action.StatusListenerAction"},

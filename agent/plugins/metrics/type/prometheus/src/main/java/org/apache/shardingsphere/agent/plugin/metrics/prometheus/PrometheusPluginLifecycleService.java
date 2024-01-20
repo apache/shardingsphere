@@ -23,6 +23,7 @@ import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
+import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.BuildInfoExporter;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc.JDBCMetaDataInfoExporter;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc.JDBCStateExporter;
@@ -46,6 +47,7 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
+        PluginContext.getInstance().setEnhancedForProxy(isEnhancedForProxy);
         PluginConfigurationValidator.validatePort(getType(), pluginConfig);
         startServer(pluginConfig, isEnhancedForProxy);
     }

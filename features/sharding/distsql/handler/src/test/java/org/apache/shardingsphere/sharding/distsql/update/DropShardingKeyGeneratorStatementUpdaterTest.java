@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGeneratorStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGeneratorExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGeneratorStatement;
 import org.junit.jupiter.api.Test;
 
@@ -41,13 +41,13 @@ class DropShardingKeyGeneratorStatementUpdaterTest {
     void assertExecuteWithNotExist() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(false, Collections.singleton("uuid_key_generator"));
         assertThrows(MissingRequiredAlgorithmException.class,
-                () -> new DropShardingKeyGeneratorStatementUpdater().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration()));
+                () -> new DropShardingKeyGeneratorExecutor().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration()));
     }
     
     @Test
     void assertExecuteWithNotExistWithIfExists() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(true, Collections.singleton("uuid_key_generator"));
-        new DropShardingKeyGeneratorStatementUpdater().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration());
+        new DropShardingKeyGeneratorExecutor().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration());
     }
     
     @Test
@@ -55,7 +55,7 @@ class DropShardingKeyGeneratorStatementUpdaterTest {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(false, Collections.singleton("uuid_key_generator"));
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("uuid", new Properties()));
-        new DropShardingKeyGeneratorStatementUpdater().updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
+        new DropShardingKeyGeneratorExecutor().updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertTrue(currentRuleConfig.getKeyGenerators().isEmpty());
     }
     
@@ -65,7 +65,7 @@ class DropShardingKeyGeneratorStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));
         currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());
-        assertThrows(AlgorithmInUsedException.class, () -> new DropShardingKeyGeneratorStatementUpdater().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, currentRuleConfig));
+        assertThrows(AlgorithmInUsedException.class, () -> new DropShardingKeyGeneratorExecutor().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, currentRuleConfig));
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {

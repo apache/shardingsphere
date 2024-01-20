@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -116,9 +115,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
         if (!rule.isPresent()) {
             return Collections.emptyList();
         }
-        EncryptRuleConfiguration ruleConfig =
-                rule.get().getConfiguration() instanceof CompatibleEncryptRuleConfiguration ? ((CompatibleEncryptRuleConfiguration) rule.get().getConfiguration()).convertToEncryptRuleConfiguration()
-                        : (EncryptRuleConfiguration) rule.get().getConfiguration();
+        EncryptRuleConfiguration ruleConfig = (EncryptRuleConfiguration) rule.get().getConfiguration();
         return ruleConfig.getTables().stream().map(each -> buildRow(ENCRYPT, each.getName())).collect(Collectors.toList());
     }
     
