@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.parser.distsql.statement.queryable;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 
 /**
  * Show SQL parser rule statement.
  */
-public final class ShowSQLParserRuleStatement extends QueryableRALStatement {
+public final class ShowSQLParserRuleStatement extends RQLStatement {
 }

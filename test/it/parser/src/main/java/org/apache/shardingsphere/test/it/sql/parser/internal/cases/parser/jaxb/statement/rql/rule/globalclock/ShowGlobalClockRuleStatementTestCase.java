@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.globalclock;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Show transaction rule statement test case.
+ * Show global clock rule statement test case.
  */
-public final class ShowTransactionRuleStatementTestCase extends SQLParserTestCase {
+public final class ShowGlobalClockRuleStatementTestCase extends SQLParserTestCase {
 }

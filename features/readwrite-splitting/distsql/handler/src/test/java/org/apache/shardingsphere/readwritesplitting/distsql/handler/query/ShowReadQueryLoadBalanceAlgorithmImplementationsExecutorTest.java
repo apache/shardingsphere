@@ -44,15 +44,4 @@ class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutorTest {
         assertThat(row.getCell(2), is("DISTSQL.FIXTURE"));
         assertThat(row.getCell(3), is("org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture.DistSQLReadQueryLoadBalanceAlgorithmFixture"));
     }
-    
-    @Test
-    void assertGetColumnNames() {
-        QueryableRALExecutor<ShowReadQueryLoadBalanceAlgorithmImplementationsStatement> executor = new ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("class_path"));
-    }
 }

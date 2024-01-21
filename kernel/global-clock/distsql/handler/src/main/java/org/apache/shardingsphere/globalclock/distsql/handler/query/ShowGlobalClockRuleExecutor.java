@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.globalclock.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 
 import java.util.Arrays;
@@ -32,18 +32,26 @@ import java.util.Collections;
 /**
  * Show global clock rule executor.
  */
-public final class ShowGlobalClockRuleExecutor implements QueryableRALExecutor<ShowGlobalClockRuleStatement> {
+@Setter
+public final class ShowGlobalClockRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowGlobalClockRuleStatement, GlobalClockRule> {
+    
+    private GlobalClockRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        GlobalClockRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(GlobalClockRule.class).getConfiguration();
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("type", "provider", "enable", "props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement) {
+        GlobalClockRuleConfiguration ruleConfig = rule.getConfiguration();
         return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(),
                 String.valueOf(ruleConfig.isEnabled()), PropertiesConverter.convert(ruleConfig.getProps())));
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "provider", "enable", "props");
+    public Class<GlobalClockRule> getRuleClass() {
+        return GlobalClockRule.class;
     }
     
     @Override

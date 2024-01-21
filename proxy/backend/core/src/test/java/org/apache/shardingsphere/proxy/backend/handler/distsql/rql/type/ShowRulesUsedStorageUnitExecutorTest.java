@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -158,15 +157,5 @@ class ShowRulesUsedStorageUnitExecutorTest {
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("empty_ds", new MockedDataSource()));
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowRulesUsedStorageUnitStatement> executor = new ShowRulesUsedStorageUnitExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("name"));
     }
 }

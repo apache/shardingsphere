@@ -226,7 +226,7 @@ class ProxyBackendHandlerFactoryTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SHOW TRANSACTION RULE;";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
+        assertThat(actual, instanceOf(RQLBackendHandler.class));
     }
     
     @Test

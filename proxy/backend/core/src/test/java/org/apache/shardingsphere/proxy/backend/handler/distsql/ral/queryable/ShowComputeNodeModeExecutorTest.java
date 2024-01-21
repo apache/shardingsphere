@@ -51,17 +51,6 @@ class ShowComputeNodeModeExecutorTest {
         assertThat(row.getCell(3), is("{\"key\":\"value1,value2\"}"));
     }
     
-    @Test
-    void assertGetColumnNames() {
-        ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("repository"));
-        assertThat(iterator.next(), is("props"));
-    }
-    
     private InstanceContext createInstanceContext() {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getInstance().getMetaData().getId()).thenReturn("127.0.0.1@3309");

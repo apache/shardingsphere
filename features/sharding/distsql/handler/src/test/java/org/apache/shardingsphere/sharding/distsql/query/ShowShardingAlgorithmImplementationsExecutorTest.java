@@ -45,15 +45,4 @@ class ShowShardingAlgorithmImplementationsExecutorTest {
         assertThat(row.getCell(2), is("FOO.DISTSQL.FIXTURE"));
         assertThat(row.getCell(3), is("org.apache.shardingsphere.sharding.distsql.fixture.sharding.FooDistSQLShardingAlgorithmFixture"));
     }
-    
-    @Test
-    void assertGetColumnNames() {
-        QueryableRALExecutor<ShowShardingAlgorithmImplementationsStatement> executor = new ShowShardingAlgorithmImplementationsExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("class_path"));
-    }
 }

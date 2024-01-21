@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.translator;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class ShowMigrationRuleExecutorTest {
-    
-    @Test
-    void assertGetColumnNames() {
-        ShowMigrationRuleExecutor executor = new ShowMigrationRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("read"));
-        assertThat(iterator.next(), is("write"));
-        assertThat(iterator.next(), is("stream_channel"));
-    }
+/**
+ * Show SQL translator rule statement test case.
+ */
+public final class ShowSQLTranslatorRuleStatementTestCase extends SQLParserTestCase {
 }

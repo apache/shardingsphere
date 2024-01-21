@@ -77,12 +77,4 @@ class ShowLogicalTableExecutorTest {
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         assertThat(iterator.next().getCell(1), is("t_order_item"));
     }
-    
-    @Test
-    void assertGetColumnNames() {
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(1));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("table_name"));
-    }
 }

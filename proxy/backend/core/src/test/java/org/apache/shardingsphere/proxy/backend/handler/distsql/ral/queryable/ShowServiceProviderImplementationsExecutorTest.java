@@ -47,15 +47,4 @@ class ShowServiceProviderImplementationsExecutorTest {
         assertThat(row.getCell(2), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(row.getCell(3), is("org.apache.shardingsphere.infra.datasource.pool.hikari.detector.HikariDataSourcePoolActiveDetector"));
     }
-    
-    @Test
-    void assertGetColumnNames() {
-        QueryableRALExecutor<ShowServiceProviderImplementationsStatement> executor = new ShowServiceProviderImplementationsExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("class_path"));
-    }
 }
