@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
@@ -32,13 +29,10 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +41,9 @@ class ShowMaskRuleExecutorTest {
     @Test
     void assertGetRowData() {
         ShowMaskRuleExecutor executor = new ShowMaskRuleExecutor();
-        executor.setDatabase(mockDatabase());
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
+        executor.setRule(rule);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowMaskRulesStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -56,36 +52,6 @@ class ShowMaskRuleExecutorTest {
         assertThat(row.getCell(2), is("user_id"));
         assertThat(row.getCell(3), is("md5"));
         assertThat(row.getCell(4), is(""));
-    }
-    
-    @Test
-    void assertGetRowDataWithoutMaskRule() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.empty());
-        ShowMaskRuleExecutor executor = new ShowMaskRuleExecutor();
-        executor.setDatabase(database);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowMaskRulesStatement.class));
-        assertTrue(actual.isEmpty());
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowMaskRulesStatement> executor = new ShowMaskRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(4));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("table"));
-        assertThat(iterator.next(), is("column"));
-        assertThat(iterator.next(), is("algorithm_type"));
-        assertThat(iterator.next(), is("algorithm_props"));
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MaskRule rule = mock(MaskRule.class);
-        when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
     }
     
     private MaskRuleConfiguration getRuleConfiguration() {

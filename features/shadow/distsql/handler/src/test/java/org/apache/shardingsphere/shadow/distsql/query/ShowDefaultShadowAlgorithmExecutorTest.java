@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.shadow.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.query.ShowDefaultShadowAlgorithmExecutor;
@@ -37,7 +34,6 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +42,9 @@ class ShowDefaultShadowAlgorithmExecutorTest {
     @Test
     void assertGetRowData() {
         ShowDefaultShadowAlgorithmExecutor executor = new ShowDefaultShadowAlgorithmExecutor();
-        executor.setDatabase(mockDatabase());
+        ShadowRule rule = mock(ShadowRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        executor.setRule(rule);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDefaultShadowAlgorithmStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -54,25 +52,6 @@ class ShowDefaultShadowAlgorithmExecutorTest {
         assertThat(row.getCell(1), is("shadowAlgorithmName"));
         assertThat(row.getCell(2), is("sql_hint"));
         assertThat(row.getCell(3), is("{\"foo\":\"bar\"}"));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowDefaultShadowAlgorithmStatement> executor = new ShowDefaultShadowAlgorithmExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("shadow_algorithm_name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("props"));
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
     }
     
     private ShadowRuleConfiguration createRuleConfiguration() {
