@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;

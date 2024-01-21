@@ -22,9 +22,9 @@ import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterStorageUnitSta
 import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.AlterStorageUnitBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.RegisterStorageUnitBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.UnregisterStorageUnitBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AlterStorageUnitBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.RegisterStorageUnitBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.UnregisterStorageUnitBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
