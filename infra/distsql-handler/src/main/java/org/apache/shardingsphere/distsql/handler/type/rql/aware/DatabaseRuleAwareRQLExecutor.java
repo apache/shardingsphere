@@ -15,37 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rql.rule;
+package org.apache.shardingsphere.distsql.handler.type.rql.aware;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * Rule aware RQL executor.
+ * Database rule aware RQL executor.
  * 
- * @param <T> type of RQL statement
+ * @param <T> type of SQL statement
  * @param <R> type of ShardingSphere rule
  */
-@RequiredArgsConstructor
-@Setter
-public abstract class RuleAwareRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> implements DatabaseAwareRQLExecutor<T> {
+public interface DatabaseRuleAwareRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> extends DatabaseAwareRQLExecutor<T> {
     
-    private final Class<R> ruleClass;
+    /**
+     * Set ShardingSphere rule.
+     *
+     * @param rule rule
+     */
+    void setRule(R rule);
     
-    private ShardingSphereDatabase database;
+    /**
+     * Get rule class.
+     * 
+     * @return rule class
+     */
+    Class<R> getRuleClass();
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final T sqlStatement) {
-        return database.getRuleMetaData().findSingleRule(ruleClass).map(optional -> getRows(database, sqlStatement, optional)).orElse(Collections.emptyList());
+    default void setDatabase(ShardingSphereDatabase database) {
     }
-    
-    protected abstract Collection<LocalDataQueryResultRow> getRows(ShardingSphereDatabase database, T sqlStatement, R rule);
 }

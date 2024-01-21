@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAlgorithmsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -32,11 +32,10 @@ import java.util.stream.Collectors;
 /**
  * Show sharding algorithm executor.
  */
-public final class ShowShardingAlgorithmExecutor extends RuleAwareRQLExecutor<ShowShardingAlgorithmsStatement, ShardingRule> {
+@Setter
+public final class ShowShardingAlgorithmExecutor implements DatabaseRuleAwareRQLExecutor<ShowShardingAlgorithmsStatement, ShardingRule> {
     
-    public ShowShardingAlgorithmExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -44,13 +43,18 @@ public final class ShowShardingAlgorithmExecutor extends RuleAwareRQLExecutor<Sh
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingAlgorithmsStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingAlgorithmsStatement sqlStatement) {
         return rule.getConfiguration().getShardingAlgorithms().entrySet().stream()
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), buildProps(entry.getValue().getProps()))).collect(Collectors.toList());
     }
     
     private String buildProps(final Properties props) {
         return null == props ? "" : PropertiesConverter.convert(props);
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override
