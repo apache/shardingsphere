@@ -80,7 +80,7 @@ public final class RQLBackendHandler implements DistSQLBackendHandler {
         if (executor instanceof DatabaseRuleAwareRQLExecutor) {
             Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(((DatabaseRuleAwareRQLExecutor) executor).getRuleClass());
             if (rule.isPresent()) {
-                ((DatabaseRuleAwareRQLExecutor) executor).setRule(rule.get());    
+                ((DatabaseRuleAwareRQLExecutor) executor).setRule(rule.get());
             } else {
                 mergedResult = createMergedResult(Collections.emptyList());
             }
