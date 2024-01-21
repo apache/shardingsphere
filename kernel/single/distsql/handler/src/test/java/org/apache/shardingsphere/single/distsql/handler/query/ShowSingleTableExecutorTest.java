@@ -19,23 +19,14 @@ package org.apache.shardingsphere.single.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,26 +34,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ShowSingleTableExecutorTest {
-    
-    @Mock
-    private ShardingSphereDatabase database;
-    
-    @BeforeEach
-    void before() {
-        Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
-        singleTableDataNodeMap.put("t_order", Collections.singleton(new DataNode("ds_1", "t_order")));
-        singleTableDataNodeMap.put("t_order_item", Collections.singleton(new DataNode("ds_2", "t_order_item")));
-        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Collections.singleton(mockSingleRule(singleTableDataNodeMap))));
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-    }
     
     @Test
     void assertGetRowData() {
         ShowSingleTableExecutor executor = new ShowSingleTableExecutor();
-        executor.setDatabase(database);
+        executor.setRule(mockSingleRule());
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSingleTableStatement.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -77,7 +54,7 @@ class ShowSingleTableExecutorTest {
     @Test
     void assertGetSingleTableWithLikeLiteral() {
         ShowSingleTableExecutor executor = new ShowSingleTableExecutor();
-        executor.setDatabase(database);
+        executor.setRule(mockSingleRule());
         ShowSingleTableStatement statement = new ShowSingleTableStatement(null, "%item", null);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(statement);
         assertThat(actual.size(), is(1));
@@ -87,17 +64,11 @@ class ShowSingleTableExecutorTest {
         assertThat(row.getCell(2), is("ds_2"));
     }
     
-    @Test
-    void assertGetColumns() {
-        Collection<String> columns = new ShowSingleTableExecutor().getColumnNames();
-        assertThat(columns.size(), is(2));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("table_name"));
-        assertThat(iterator.next(), is("storage_unit_name"));
-    }
-    
-    private SingleRule mockSingleRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
+    private SingleRule mockSingleRule() {
         SingleRule result = mock(SingleRule.class);
+        Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
+        singleTableDataNodeMap.put("t_order", Collections.singleton(new DataNode("ds_1", "t_order")));
+        singleTableDataNodeMap.put("t_order_item", Collections.singleton(new DataNode("ds_2", "t_order_item")));
         when(result.getSingleTableDataNodes()).thenReturn(singleTableDataNodeMap);
         return result;
     }
