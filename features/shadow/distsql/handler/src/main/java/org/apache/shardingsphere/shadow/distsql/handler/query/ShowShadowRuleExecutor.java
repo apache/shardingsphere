@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -38,11 +38,10 @@ import java.util.stream.Collectors;
 /**
  * Show shadow rule executor.
  */
-public final class ShowShadowRuleExecutor extends RuleAwareRQLExecutor<ShowShadowRulesStatement, ShadowRule> {
+@Setter
+public final class ShowShadowRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowShadowRulesStatement, ShadowRule> {
     
-    public ShowShadowRuleExecutor() {
-        super(ShadowRule.class);
-    }
+    private ShadowRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -50,7 +49,7 @@ public final class ShowShadowRuleExecutor extends RuleAwareRQLExecutor<ShowShado
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowRulesStatement sqlStatement, final ShadowRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowRulesStatement sqlStatement) {
         Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(rule.getConfiguration().getTables());
         Collection<ShadowDataSourceConfiguration> specifiedConfigs = isSpecified(sqlStatement)
                 ? rule.getConfiguration().getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())
@@ -80,6 +79,11 @@ public final class ShowShadowRuleExecutor extends RuleAwareRQLExecutor<ShowShado
                     algorithmConfig.getType(), PropertiesConverter.convert(algorithmConfig.getProps()))));
         }));
         return result;
+    }
+    
+    @Override
+    public Class<ShadowRule> getRuleClass() {
+        return ShadowRule.class;
     }
     
     @Override

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedAuditorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -31,11 +31,10 @@ import java.util.LinkedList;
 /**
  * Show sharding table rules used auditor executor.
  */
-public final class ShowShardingTableRulesUsedAuditorExecutor extends RuleAwareRQLExecutor<ShowShardingTableRulesUsedAuditorStatement, ShardingRule> {
+@Setter
+public final class ShowShardingTableRulesUsedAuditorExecutor implements DatabaseRuleAwareRQLExecutor<ShowShardingTableRulesUsedAuditorStatement, ShardingRule> {
     
-    public ShowShardingTableRulesUsedAuditorExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -43,7 +42,7 @@ public final class ShowShardingTableRulesUsedAuditorExecutor extends RuleAwareRQ
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesUsedAuditorStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedAuditorStatement sqlStatement) {
         if (!sqlStatement.getAuditorName().isPresent()) {
             return Collections.emptyList();
         }
@@ -59,6 +58,11 @@ public final class ShowShardingTableRulesUsedAuditorExecutor extends RuleAwareRQ
             }
         });
         return result;
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedAlgorithmStatement;
@@ -33,11 +33,10 @@ import java.util.LinkedList;
 /**
  * Show sharding table rules used algorithm executor.
  */
-public final class ShowShardingTableRulesUsedAlgorithmExecutor extends RuleAwareRQLExecutor<ShowShardingTableRulesUsedAlgorithmStatement, ShardingRule> {
+@Setter
+public final class ShowShardingTableRulesUsedAlgorithmExecutor implements DatabaseRuleAwareRQLExecutor<ShowShardingTableRulesUsedAlgorithmStatement, ShardingRule> {
     
-    public ShowShardingTableRulesUsedAlgorithmExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -45,7 +44,7 @@ public final class ShowShardingTableRulesUsedAlgorithmExecutor extends RuleAware
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesUsedAlgorithmStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedAlgorithmStatement sqlStatement) {
         if (!sqlStatement.getShardingAlgorithmName().isPresent()) {
             return Collections.emptyList();
         }
@@ -91,6 +90,11 @@ public final class ShowShardingTableRulesUsedAlgorithmExecutor extends RuleAware
     
     private boolean isMatchDefaultTableShardingStrategy(final ShardingTableRuleConfiguration tableRuleConfig, final boolean matchDefaultTableShardingStrategy) {
         return null == tableRuleConfig.getTableShardingStrategy() && matchDefaultTableShardingStrategy;
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

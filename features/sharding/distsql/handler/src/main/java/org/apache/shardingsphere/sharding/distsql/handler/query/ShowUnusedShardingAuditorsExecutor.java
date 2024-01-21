@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -34,11 +34,10 @@ import java.util.stream.Collectors;
 /**
  * Show unused sharding auditors executor.
  */
-public final class ShowUnusedShardingAuditorsExecutor extends RuleAwareRQLExecutor<ShowUnusedShardingAuditorsStatement, ShardingRule> {
+@Setter
+public final class ShowUnusedShardingAuditorsExecutor implements DatabaseRuleAwareRQLExecutor<ShowUnusedShardingAuditorsStatement, ShardingRule> {
     
-    public ShowUnusedShardingAuditorsExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -46,7 +45,7 @@ public final class ShowUnusedShardingAuditorsExecutor extends RuleAwareRQLExecut
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingAuditorsStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingAuditorsStatement sqlStatement) {
         ShardingRuleConfiguration shardingRuleConfig = rule.getConfiguration();
         Collection<String> inUsedAuditors = getUsedAuditors(shardingRuleConfig);
         return shardingRuleConfig.getAuditors().entrySet().stream().filter(entry -> !inUsedAuditors.contains(entry.getKey()))
@@ -62,6 +61,11 @@ public final class ShowUnusedShardingAuditorsExecutor extends RuleAwareRQLExecut
             result.addAll(auditStrategy.getAuditorNames());
         }
         return result;
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override
