@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.RDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.aware.DatabaseAwareRDLExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.Reso
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.NewRuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 
 /**
  * RDL backend handler factory.
@@ -46,7 +48,7 @@ public final class RDLBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof StorageUnitDefinitionStatement) {
-            return getStorageUnitBackendHandler((StorageUnitDefinitionStatement) sqlStatement);
+            return getStorageUnitBackendHandler((StorageUnitDefinitionStatement) sqlStatement, connectionSession);
         }
         // TODO Remove when metadata structure adjustment completed. #25485
         String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
@@ -56,7 +58,12 @@ public final class RDLBackendHandlerFactory {
         return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
     }
     
-    private static ResourceDefinitionBackendHandler getStorageUnitBackendHandler(final StorageUnitDefinitionStatement sqlStatement) {
-        return new ResourceDefinitionBackendHandler(sqlStatement, TypedSPILoader.getService(RDLExecutor.class, sqlStatement.getClass()));
+    @SuppressWarnings("rawtypes")
+    private static ResourceDefinitionBackendHandler getStorageUnitBackendHandler(final StorageUnitDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
+        RDLExecutor executor = TypedSPILoader.getService(RDLExecutor.class, sqlStatement.getClass());
+        if (executor instanceof DatabaseAwareRDLExecutor) {
+            ((DatabaseAwareRDLExecutor<?>) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
+        }
+        return new ResourceDefinitionBackendHandler(sqlStatement, executor);
     }
 }
