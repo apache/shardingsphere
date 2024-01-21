@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.type.rdl.aware.DatabaseAwareRDLExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,33 +42,28 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Register storage unit backend handler.
+ * Register storage unit executor.
  */
+@Setter
 @Slf4j
-public final class RegisterStorageUnitBackendHandler extends StorageUnitDefinitionBackendHandler<RegisterStorageUnitStatement> {
+public final class RegisterStorageUnitExecutor implements DatabaseAwareRDLExecutor<RegisterStorageUnitStatement> {
     
-    private final DatabaseType databaseType;
+    private final DataSourcePoolPropertiesValidateHandler validateHandler = new DataSourcePoolPropertiesValidateHandler();
     
-    private final DataSourcePoolPropertiesValidateHandler validateHandler;
-    
-    public RegisterStorageUnitBackendHandler(final RegisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, connectionSession);
-        databaseType = connectionSession.getProtocolType();
-        validateHandler = new DataSourcePoolPropertiesValidateHandler();
-    }
+    private ShardingSphereDatabase database;
     
     @Override
-    public ResponseHeader execute(final ShardingSphereDatabase database, final RegisterStorageUnitStatement sqlStatement) {
-        checkSQLStatement(database, sqlStatement);
-        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
+    public void execute(final RegisterStorageUnitStatement sqlStatement) {
+        checkSQLStatement(sqlStatement);
+        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
         if (sqlStatement.isIfNotExists()) {
-            Collection<String> currentStorageUnits = getCurrentStorageUnitNames(database);
-            Collection<String> logicalDataSourceNames = getLogicalDataSourceNames(database);
+            Collection<String> currentStorageUnits = getCurrentStorageUnitNames();
+            Collection<String> logicalDataSourceNames = getLogicalDataSourceNames();
             propsMap.keySet().removeIf(currentStorageUnits::contains);
             propsMap.keySet().removeIf(logicalDataSourceNames::contains);
         }
         if (propsMap.isEmpty()) {
-            return new UpdateResponseHeader(sqlStatement);
+            return;
         }
         validateHandler.validate(propsMap);
         try {
@@ -79,22 +72,20 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
             log.error("Register storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
-        return new UpdateResponseHeader(sqlStatement);
     }
     
-    @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final RegisterStorageUnitStatement sqlStatement) {
+    private void checkSQLStatement(final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getStorageUnits().size());
         if (!sqlStatement.isIfNotExists()) {
-            checkDuplicatedDataSourceNames(database, dataSourceNames, sqlStatement);
-            checkDuplicatedLogicalDataSourceNames(database, dataSourceNames);
+            checkDuplicatedDataSourceNames(dataSourceNames, sqlStatement);
+            checkDuplicatedLogicalDataSourceNames(dataSourceNames);
         }
     }
     
-    private void checkDuplicatedDataSourceNames(final ShardingSphereDatabase database, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
+    private void checkDuplicatedDataSourceNames(final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> duplicatedDataSourceNames = new HashSet<>(sqlStatement.getStorageUnits().size(), 1F);
         for (DataSourceSegment each : sqlStatement.getStorageUnits()) {
-            if (dataSourceNames.contains(each.getName()) || getCurrentStorageUnitNames(database).contains(each.getName())) {
+            if (dataSourceNames.contains(each.getName()) || getCurrentStorageUnitNames().contains(each.getName())) {
                 duplicatedDataSourceNames.add(each.getName());
             }
             dataSourceNames.add(each.getName());
@@ -102,8 +93,8 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
         ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedDataSourceNames));
     }
     
-    private void checkDuplicatedLogicalDataSourceNames(final ShardingSphereDatabase database, final Collection<String> requiredDataSourceNames) {
-        Collection<String> logicalDataSourceNames = getLogicalDataSourceNames(database);
+    private void checkDuplicatedLogicalDataSourceNames(final Collection<String> requiredDataSourceNames) {
+        Collection<String> logicalDataSourceNames = getLogicalDataSourceNames();
         if (logicalDataSourceNames.isEmpty()) {
             return;
         }
@@ -112,11 +103,16 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
                 () -> new InvalidStorageUnitsException(Collections.singleton(String.format("%s already existed in rule", duplicatedDataSourceNames))));
     }
     
-    private Collection<String> getCurrentStorageUnitNames(final ShardingSphereDatabase database) {
+    private Collection<String> getCurrentStorageUnitNames() {
         return ProxyContext.getInstance().getContextManager().getStorageUnits(database.getName()).keySet();
     }
     
-    private Collection<String> getLogicalDataSourceNames(final ShardingSphereDatabase database) {
+    private Collection<String> getLogicalDataSourceNames() {
         return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream().map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Class<RegisterStorageUnitStatement> getType() {
+        return RegisterStorageUnitStatement.class;
     }
 }

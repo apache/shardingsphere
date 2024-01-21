@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
+package org.apache.shardingsphere.distsql.handler.type.rdl.aware;
 
-import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RDLExecutor;
+import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
- * Storage unit definition backend handler.
- *
- * @param <T> type of storage unit definition statement
+ * Database aware RDL executor.
+ * 
+ * @param <T> type of SQL statement
  */
-public abstract class StorageUnitDefinitionBackendHandler<T extends StorageUnitDefinitionStatement> extends RDLBackendHandler<T> {
+public interface DatabaseAwareRDLExecutor<T extends RDLStatement> extends RDLExecutor<T> {
     
-    protected StorageUnitDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, connectionSession);
-    }
-    
-    protected abstract void checkSQLStatement(ShardingSphereDatabase database, T sqlStatement);
+    /**
+     * Set database.
+     *
+     * @param database database
+     */
+    void setDatabase(ShardingSphereDatabase database);
 }
