@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
@@ -69,6 +70,9 @@ public final class RQLBackendHandler implements DistSQLBackendHandler {
         if (executor instanceof DatabaseAwareRQLExecutor) {
             setUpDatabaseAwareExecutor((DatabaseAwareRQLExecutor) executor);
         }
+        if (executor instanceof GlobalRuleAwareRQLExecutor) {
+            setUpGlobalRuleAwareExecutor((GlobalRuleAwareRQLExecutor) executor);
+        }
         mergedResult = null == mergedResult ? createMergedResult(executor.getRows(sqlStatement)) : mergedResult;
         return new QueryResponseHeader(queryHeaders);
     }
@@ -84,6 +88,16 @@ public final class RQLBackendHandler implements DistSQLBackendHandler {
             } else {
                 mergedResult = createMergedResult(Collections.emptyList());
             }
+        }
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void setUpGlobalRuleAwareExecutor(final GlobalRuleAwareRQLExecutor executor) {
+        Optional<ShardingSphereRule> rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
+        if (rule.isPresent()) {
+            executor.setRule(rule.get());
+        } else {
+            mergedResult = createMergedResult(Collections.emptyList());
         }
     }
     

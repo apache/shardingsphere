@@ -15,12 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
+package org.apache.shardingsphere.distsql.handler.type.rql.aware;
 
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Show global clock rule statement test case.
+ * Global rule aware RQL executor.
+ * 
+ * @param <T> type of SQL statement
+ * @param <R> type of ShardingSphere rule
  */
-public final class ShowGlobalClockRuleStatementTestCase extends SQLParserTestCase {
+public interface GlobalRuleAwareRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> extends RQLExecutor<T> {
+    
+    /**
+     * Set ShardingSphere rule.
+     *
+     * @param rule rule
+     */
+    void setRule(R rule);
+    
+    /**
+     * Get rule class.
+     * 
+     * @return rule class
+     */
+    Class<R> getRuleClass();
 }

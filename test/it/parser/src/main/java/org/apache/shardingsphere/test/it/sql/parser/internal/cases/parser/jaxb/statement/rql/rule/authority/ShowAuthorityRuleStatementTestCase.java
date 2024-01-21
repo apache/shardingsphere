@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.authority;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Show SQL translator rule statement test case.
+ * Show authority rule statement test case.
  */
-public final class ShowSQLTranslatorRuleStatementTestCase extends SQLParserTestCase {
+public final class ShowAuthorityRuleStatementTestCase extends SQLParserTestCase {
 }

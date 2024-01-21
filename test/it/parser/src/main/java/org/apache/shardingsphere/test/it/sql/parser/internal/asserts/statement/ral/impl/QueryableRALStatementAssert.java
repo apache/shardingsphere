@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportDatabaseConfigurationStatement;
@@ -31,24 +30,18 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNode
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowTableMetaDataStatement;
-import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ConvertYamlConfigurationStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowDistVariableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowDistVariablesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowTableMetaDataStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowTrafficRulesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ConvertYamlConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowDistVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowDistVariablesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTableMetaDataStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTrafficRulesStatementTestCase;
-import org.apache.shardingsphere.traffic.distsql.statement.queryable.ShowTrafficRulesStatement;
-import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 
 /**
  * Queryable RAL statement assert.
@@ -74,21 +67,11 @@ public final class QueryableRALStatementAssert {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowTableMetaDataStatement) {
             ShowTableMetaDataStatementAssert.assertIs(assertContext, (ShowTableMetaDataStatement) actual, (ShowTableMetaDataStatementTestCase) expected);
-        } else if (actual instanceof ShowAuthorityRuleStatement) {
-            ExistingAssert.assertIs(assertContext, actual, expected);
-        } else if (actual instanceof ShowTransactionRuleStatement) {
-            ExistingAssert.assertIs(assertContext, actual, expected);
-        } else if (actual instanceof ShowTrafficRulesStatement) {
-            ShowTrafficRulesStatementAssert.assertIs(assertContext, (ShowTrafficRulesStatement) actual, (ShowTrafficRulesStatementTestCase) expected);
-        } else if (actual instanceof ShowSQLParserRuleStatement) {
-            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ExportDatabaseConfigurationStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ExportMetaDataStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ExportStorageNodesStatement) {
-            ExistingAssert.assertIs(assertContext, actual, expected);
-        } else if (actual instanceof ShowSQLTranslatorRuleStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowComputeNodeInfoStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);

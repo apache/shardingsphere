@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -31,18 +31,25 @@ import java.util.Collections;
 /**
  * Show transaction rule executor.
  */
-public final class ShowTransactionRuleExecutor implements QueryableRALExecutor<ShowTransactionRuleStatement> {
+@Setter
+public final class ShowTransactionRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowTransactionRuleStatement, TransactionRule> {
+    
+    private TransactionRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowTransactionRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        TransactionRule rule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("default_type", "provider_type", "props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowTransactionRuleStatement sqlStatement) {
         return Collections.singleton(new LocalDataQueryResultRow(rule.getDefaultType().name(), null != rule.getProviderType() ? rule.getProviderType() : "",
                 rule.getProps().isEmpty() ? "" : PropertiesConverter.convert(rule.getProps())));
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("default_type", "provider_type", "props");
+    public Class<TransactionRule> getRuleClass() {
+        return TransactionRule.class;
     }
     
     @Override

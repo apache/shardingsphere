@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.traffic;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
- * Show SQL parser rule statement test case.
+ * Show traffic rules statement test case.
  */
-public final class ShowSQLParserRuleStatementTestCase extends SQLParserTestCase {
+@Getter
+@Setter
+public final class ShowTrafficRulesStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "rule-name")
+    private String ruleName;
 }

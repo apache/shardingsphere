@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
@@ -32,22 +32,26 @@ import java.util.Collections;
 /**
  * Show SQL translator rule executor.
  */
-public final class ShowSQLTranslatorRuleExecutor implements QueryableRALExecutor<ShowSQLTranslatorRuleStatement> {
+@Setter
+public final class ShowSQLTranslatorRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowSQLTranslatorRuleStatement, SQLTranslatorRule> {
+    
+    private SQLTranslatorRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLTranslatorRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        SQLTranslatorRule rule = metaData.getGlobalRuleMetaData().getSingleRule(SQLTranslatorRule.class);
-        return buildData(rule.getConfiguration());
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("type", "props", "use_original_sql_when_translating_failed");
     }
     
-    private Collection<LocalDataQueryResultRow> buildData(final SQLTranslatorRuleConfiguration ruleConfig) {
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLTranslatorRuleStatement sqlStatement) {
+        SQLTranslatorRuleConfiguration ruleConfig = rule.getConfiguration();
         return Collections.singleton(new LocalDataQueryResultRow(null == ruleConfig.getType() ? "" : ruleConfig.getType(),
                 PropertiesConverter.convert(ruleConfig.getProps()), String.valueOf(ruleConfig.isUseOriginalSQLWhenTranslatingFailed())));
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "props", "use_original_sql_when_translating_failed");
+    public Class<SQLTranslatorRule> getRuleClass() {
+        return SQLTranslatorRule.class;
     }
     
     @Override
