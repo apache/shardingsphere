@@ -21,21 +21,16 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.Duplicate
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
-import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,13 +40,11 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -59,62 +52,60 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class AlterStorageUnitBackendHandlerTest {
+class AlterStorageUnitExecutorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    private AlterStorageUnitBackendHandler handler;
+    private AlterStorageUnitExecutor executor;
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        handler = new AlterStorageUnitBackendHandler(mock(AlterStorageUnitStatement.class), connectionSession);
-        Plugins.getMemberAccessor().set(
-                handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePoolPropertiesValidateHandler.class));
+        executor = new AlterStorageUnitExecutor();
+        Plugins.getMemberAccessor().set(executor.getClass().getDeclaredField("validateHandler"), executor, mock(DataSourcePoolPropertiesValidateHandler.class));
     }
     
     @Test
     void assertExecute() {
         ContextManager contextManager = mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         ConnectionProperties connectionProperties = mockConnectionProperties("ds_0");
         when(storageUnit.getConnectionProperties()).thenReturn(connectionProperties);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        assertThat(handler.execute(database, createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
+        executor.setDatabase(database);
+        assertDoesNotThrow(() -> executor.execute(createAlterStorageUnitStatement("ds_0")));
     }
     
     @Test
     void assertExecuteWithDuplicateStorageUnitNames() {
-        assertThrows(DuplicateStorageUnitException.class, () -> handler.execute(database, createAlterStorageUnitStatementWithDuplicateStorageUnitNames()));
+        executor.setDatabase(database);
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createAlterStorageUnitStatementWithDuplicateStorageUnitNames()));
     }
     
     @Test
     void assertExecuteWithNotExistedStorageUnitNames() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", database));
         ContextManager contextManager = mockContextManager(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> handler.execute(database, createAlterStorageUnitStatement("not_existed")));
+        executor.setDatabase(database);
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.execute(createAlterStorageUnitStatement("not_existed")));
     }
     
     @Test
     void assertExecuteWithAlterDatabase() {
         ContextManager contextManager = mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         ConnectionProperties connectionProperties = mockConnectionProperties("ds_1");
         when(storageUnit.getConnectionProperties()).thenReturn(connectionProperties);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        assertThrows(InvalidStorageUnitsException.class, () -> handler.execute(database, createAlterStorageUnitStatement("ds_0")));
+        executor.setDatabase(database);
+        assertThrows(InvalidStorageUnitsException.class, () -> executor.execute(createAlterStorageUnitStatement("ds_0")));
     }
     
     private ContextManager mockContextManager(final MetaDataContexts metaDataContexts) {
@@ -128,10 +119,9 @@ class AlterStorageUnitBackendHandlerTest {
     }
     
     private AlterStorageUnitStatement createAlterStorageUnitStatementWithDuplicateStorageUnitNames() {
-        Collection<DataSourceSegment> result = new LinkedList<>();
-        result.add(new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()));
-        result.add(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties()));
-        return new AlterStorageUnitStatement(result);
+        return new AlterStorageUnitStatement(Arrays.asList(
+                new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()),
+                new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties())));
     }
     
     private ConnectionProperties mockConnectionProperties(final String catalog) {
