@@ -29,7 +29,7 @@ import java.sql.SQLException;
 /**
  * Resource definition backend handler.
  */
-// TODO merge to RDLBackendHandler @zhangliang 
+// TODO merge to RDLBackendHandler @zhangliang
 @RequiredArgsConstructor
 public final class ResourceDefinitionBackendHandler implements DistSQLBackendHandler {
     
