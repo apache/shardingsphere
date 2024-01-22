@@ -28,7 +28,7 @@ shadowTableRule ::=
   tableName '(' shadowAlgorithm ')'
     
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefinition ')'
+  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'
 
 ruleName ::=
   identifier
@@ -42,7 +42,7 @@ tableName ::=
 algorithmName ::=
   identifier
 
-shadowAlgorithmType ::=
+algorithmType ::=
   string
 
 propertiesDefinition ::=
@@ -66,8 +66,8 @@ value ::=
 - `storageUnitMapping` 指定源数据库和影子库的映射关系，需使用 `RDL` 管理的 `STORAGE UNIT`
   ，请参考 [存储单元](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)；
 - `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`；
-- `algorithmName` 会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 自动生成；
-- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SQL_HINT`；
+- `algorithmName` 会根据 `ruleName`、`tableName` 和 `algorithmType` 自动生成；
+- `algorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SQL_HINT`；
 - `ifNotExists` 子句用于避免出现 `Duplicate shadow rule` 错误。
 
 ### 示例
