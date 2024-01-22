@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -78,7 +79,7 @@ public final class AgentTransformer implements Transformer {
                 result.getAdvisors().add(each);
                 continue;
             }
-            LOGGER.severe(String.format("The advice class `%s` does not exist", each.getAdviceClassName()));
+            LOGGER.log(Level.SEVERE, "The advice class `{0}` does not exist", new String[]{each.getAdviceClassName()});
         }
         return result;
     }
