@@ -28,7 +28,7 @@ shadowTableRule ::=
   tableName '(' shadowAlgorithm ')'
     
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefinition ')'
+  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'
 
 ruleName ::=
   identifier
@@ -42,7 +42,7 @@ tableName ::=
 algorithmName ::=
   identifier
 
-shadowAlgorithmType ::=
+algorithmType ::=
   string
 
 propertiesDefinition ::=
@@ -68,8 +68,8 @@ value ::=
   to [STORAGE UNIT](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/);
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time;
 - If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName`
-  and `shadowAlgorithmType`;
-- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SQL_HINT`;
+  and `algorithmType`;
+- `algorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SQL_HINT`;
 - `ifNotExists` caluse is used for avoid `Duplicate shadow rule` error.
 
 ### Example

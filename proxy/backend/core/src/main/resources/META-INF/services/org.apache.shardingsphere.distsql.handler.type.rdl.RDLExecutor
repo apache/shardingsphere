@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.RegisterStorageUnitExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AlterStorageUnitExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.UnregisterStorageUnitExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.type.RegisterStorageUnitExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.type.AlterStorageUnitExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.type.UnregisterStorageUnitExecutor

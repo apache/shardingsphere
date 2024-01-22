@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy;
 
 import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
@@ -45,7 +45,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Rule definition backend handler.
+ * Database rule definition backend handler.
  *
  * @param <T> type of rule definition statement
  */

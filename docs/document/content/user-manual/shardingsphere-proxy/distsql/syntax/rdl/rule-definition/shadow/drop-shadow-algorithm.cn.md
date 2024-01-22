@@ -13,12 +13,12 @@ weight = 7
 {{% tab name="语法" %}}
 ```sql
 DropShadowAlgorithm ::=
-  'DROP' 'SHADOW' 'ALGORITHM' ifExists? shadowAlgorithmName (',' shadowAlgorithmName)* ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'ALGORITHM' ifExists? algorithmName (',' algorithmName)* ('FROM' databaseName)?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-shadowAlgorithmName ::=
+algorithmName ::=
   identifier
 
 databaseName ::=

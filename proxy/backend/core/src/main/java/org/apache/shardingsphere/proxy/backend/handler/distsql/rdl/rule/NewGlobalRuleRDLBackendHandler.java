@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
@@ -30,31 +29,32 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * RDL backend handler for global rule.
+ * New RDL backend handler for global rule.
  */
 @RequiredArgsConstructor
-public final class GlobalRuleRDLBackendHandler implements DistSQLBackendHandler {
+public final class NewGlobalRuleRDLBackendHandler implements DistSQLBackendHandler {
     
     private final RuleDefinitionStatement sqlStatement;
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
+    private final GlobalRuleRDLExecutor executor;
+    
+    @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() {
-        GlobalRuleRDLExecutor globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRDLExecutor.class, sqlStatement.getClass());
-        Class<? extends RuleConfiguration> ruleConfigClass = globalRuleUpdater.getRuleConfigurationClass();
+        Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
-        globalRuleUpdater.checkSQLStatement(currentRuleConfig, sqlStatement);
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, globalRuleUpdater, currentRuleConfig));
+        executor.checkSQLStatement(currentRuleConfig, sqlStatement);
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, executor, currentRuleConfig));
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (RuleConfiguration each : ruleConfigurations) {
+    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs, final Class<? extends RuleConfiguration> ruleConfigClass) {
+        for (RuleConfiguration each : ruleConfigs) {
             if (ruleConfigClass.isAssignableFrom(each.getClass())) {
                 return each;
             }
@@ -63,11 +63,11 @@ public final class GlobalRuleRDLBackendHandler implements DistSQLBackendHandler 
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<RuleConfiguration> processUpdate(final Collection<RuleConfiguration> ruleConfigurations,
-                                                        final RuleDefinitionStatement sqlStatement, final GlobalRuleRDLExecutor globalRuleUpdater, final RuleConfiguration currentRuleConfig) {
-        Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigurations);
-        result.remove(currentRuleConfig);
-        result.add(globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement));
+    private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigurations, final RuleDefinitionStatement sqlStatement, final GlobalRuleRDLExecutor executor,
+                                            final RuleConfiguration currentRuleConfig) {
+        RuleConfiguration result = executor.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
+        ruleConfigurations.remove(currentRuleConfig);
+        ruleConfigurations.add(result);
         return result;
     }
 }
