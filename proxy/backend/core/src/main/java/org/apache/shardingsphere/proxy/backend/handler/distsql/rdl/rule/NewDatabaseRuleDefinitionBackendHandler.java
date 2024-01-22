@@ -53,13 +53,13 @@ import java.util.stream.Collectors;
 
 /**
  * TODO Rename to RuleDefinitionBackendHandler when metadata structure adjustment completed. #25485
- * Rule definition backend handler.
+ * Database rule definition backend handler.
  *
  * @param <T> type of rule definition statement
  */
-public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends RDLBackendHandler<T> {
+public final class NewDatabaseRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends RDLBackendHandler<T> {
     
-    public NewRuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
+    public NewDatabaseRuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
     }
     

@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class RuleDefinitionBackendHandlerTest {
+class DatabaseRuleDefinitionBackendHandlerTest {
     
     @Test
     void assertExecute() throws SQLException {
@@ -55,7 +55,7 @@ class RuleDefinitionBackendHandlerTest {
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), connectionSession).execute();
+        ResponseHeader response = new DatabaseRuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }

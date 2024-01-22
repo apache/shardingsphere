@@ -45,13 +45,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Rule definition backend handler.
+ * Database rule definition backend handler.
  *
  * @param <T> type of rule definition statement
  */
-public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends RDLBackendHandler<T> {
+public final class DatabaseRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends RDLBackendHandler<T> {
     
-    public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
+    public DatabaseRuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
     }
     

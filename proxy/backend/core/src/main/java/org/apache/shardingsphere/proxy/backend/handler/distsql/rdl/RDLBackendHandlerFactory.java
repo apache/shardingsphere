@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.ResourceDefinitionBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.NewRuleDefinitionBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.NewDatabaseRuleDefinitionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.DatabaseRuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 
@@ -53,9 +53,9 @@ public final class RDLBackendHandlerFactory {
         // TODO Remove when metadata structure adjustment completed. #25485
         String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
         if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
-            return new NewRuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
+            return new NewDatabaseRuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
         }
-        return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
+        return new DatabaseRuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
     }
     
     @SuppressWarnings("rawtypes")
