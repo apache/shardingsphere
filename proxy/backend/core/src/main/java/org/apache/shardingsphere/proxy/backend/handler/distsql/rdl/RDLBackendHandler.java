@@ -44,7 +44,8 @@ public abstract class RDLBackendHandler<T extends RDLStatement> implements DistS
     
     @Override
     public final ResponseHeader execute() throws SQLException {
-        return execute(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)), sqlStatement);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession));
+        return execute(database, sqlStatement);
     }
     
     protected abstract ResponseHeader execute(ShardingSphereDatabase database, T sqlStatement);
