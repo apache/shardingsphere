@@ -21,6 +21,9 @@ ifNotExists ::=
 referenceRelationshipDefinition ::=
    ruleName '(' tableName (',' tableName)* ')'
 
+ruleName ::=
+  identifier
+
 tableName ::=
   identifier
 ```
