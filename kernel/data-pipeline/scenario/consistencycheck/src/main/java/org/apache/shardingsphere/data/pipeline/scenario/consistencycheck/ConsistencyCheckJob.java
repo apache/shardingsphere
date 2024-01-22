@@ -32,12 +32,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.task.Co
 public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<ConsistencyCheckJobConfiguration, ConsistencyCheckJobItemContext, ConsistencyCheckJobItemProgress> {
     
     public ConsistencyCheckJob(final String jobId) {
-        super(jobId);
-    }
-    
-    @Override
-    protected boolean isTransmissionProcessContextNeeded() {
-        return false;
+        super(jobId, false);
     }
     
     @Override
