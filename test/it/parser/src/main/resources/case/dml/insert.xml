@@ -3255,7 +3255,7 @@
             </value>
         </values>
     </insert>
-    
+"INSERT INTO [HR].[Employees]([SSN], [FirstName], [LastName], [Salary]) VALUES ('795-73-9838', N'Catherine', N'Abel', $31692)"
     <insert sql-case-id="insert_with_currency_value">
         <table name="Employees" start-index="12" stop-index="27" start-delimiter="[" end-delimiter="]">
             <owner name="HR" start-index="12" stop-index="15" start-delimiter="[" end-delimiter="]" />
@@ -3272,13 +3272,32 @@
                     <literal-expression value="795-73-9838" start-index="79" stop-index="91" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="Catherine" start-index="94" stop-index="105" />
+                    <literal-expression value="Catherine" start-index="94/95" stop-index="105/107" />
                 </assignment-value>
                 <assignment-value>
                     <literal-expression value="Abel" start-index="108" stop-index="114" />
                 </assignment-value>
                 <assignment-value>
                     <common-expression text="$31692" start-index="117" stop-index="122" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+<!--INSERT INTO #SampleTempTable VALUES (null, null)-->
+<!--INSERT INTO #Test VALUES (N'OC', N'Ounces', GETDATE())-->
+    <insert sql-case-id="insert_into_table_get_date">
+        <table name="#SampleTempTable" start-index="12" stop-index="17"/>
+        <columns start-index="28" stop-index="28"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="OC" start-index="25" stop-index="29"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Ounces" start-index="32" stop-index="40"/>
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="GETDATE" text="GETDATE()" start-index="43" stop-index="51" />
                 </assignment-value>
             </value>
         </values>
