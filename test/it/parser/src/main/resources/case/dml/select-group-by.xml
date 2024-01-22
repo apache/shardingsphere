@@ -910,4 +910,39 @@
             <expression-item expression="DATEPART(yyyy,OrderDate)" order-direction="ASC" start-index="197" stop-index="220" />
         </order-by>
     </select>
+    
+    <select sql-case-id="select_group_by_top_column_value">
+        <projections start-index="7" stop-index="34">
+            <top-projection start-index="7" stop-index="12">
+                <top-value value="10" start-index="26" stop-index="26" />
+            </top-projection>
+            <column-projection name="hash_unique_bigint_id" start-index="14" stop-index="34" />
+        </projections>
+        <from start-index="41" stop-index="55">
+            <simple-table name="TelemetryDS" start-index="41" stop-index="55">
+                <owner name="dbo" start-index="41" stop-index="43" />
+            </simple-table>
+        </from>
+        <where start-index="57" stop-index="103">
+            <expr>
+                <between-expression start-index="63" stop-index="103">
+                    <left>
+                        <column name="Timestamp" start-index="63" stop-index="71"/>
+                    </left>
+                    <between-expr>
+                        <column name="@StartTime" start-index="81" stop-index="90"/>
+                    </between-expr>
+                    <and-expr>
+                        <column name="@EndTime" start-index="96" stop-index="103" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+        <group-by start-index="57" stop-index="103">
+            <column-item name="hash_unique_bigint_id" order-direction="ASC" start-index="114" stop-index="134" />
+        </group-by>
+        <order-by start-index="136" stop-index="179">
+            <expression-item expression="MAX(max_elapsed_time_microsec)" order-direction="DESC" start-index="145" stop-index="174" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>

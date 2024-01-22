@@ -3283,4 +3283,34 @@
             </value>
         </values>
     </insert>
+    
+    <insert sql-case-id="insert_into_production_location">
+        <table name="Location" start-index="12" stop-index="49">
+            <owner name="Production" start-index="31" stop-index="40">
+                <owner name="AdventureWorks2022"  start-index="12" stop-index="29" />
+            </owner>
+        </table>
+        <columns start-index="50" stop-index="93">
+            <column name="Name" start-index="51" stop-index="54" />
+            <column name="CostRate" start-index="57" stop-index="64" />
+            <column name="Availability" start-index="67" stop-index="78" />
+            <column name="ModifiedDate" start-index="81" stop-index="92" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <function function-name="NEWID" text="NEWID()" start-index="103" stop-index="109" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="0.5" start-index="112" stop-index="113" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="5.2" start-index="116" stop-index="118" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="GETDATE" text="GETDATE()" start-index="121" stop-index="129" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
