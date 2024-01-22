@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLDropExecutor;
@@ -33,10 +34,11 @@ import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceCont
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.update.DropReadwriteSplittingRuleExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
@@ -57,25 +59,20 @@ import java.util.stream.Collectors;
  *
  * @param <T> type of rule definition statement
  */
-public final class NewDatabaseRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends RDLBackendHandler<T> {
+@RequiredArgsConstructor
+public final class NewDatabaseRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> implements DistSQLBackendHandler {
+    
+    private final T sqlStatement;
+    
+    private final ConnectionSession connectionSession;
     
     @SuppressWarnings("rawtypes")
     private final DatabaseRuleRDLExecutor executor;
     
-    @SuppressWarnings("rawtypes")
-    public NewDatabaseRuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession, final DatabaseRuleRDLExecutor executor) {
-        super(sqlStatement, connectionSession);
-        this.executor = executor;
-    }
-    
+    @SuppressWarnings("unchecked")
     @Override
-    protected ResponseHeader execute(final ShardingSphereDatabase database, final T sqlStatement) {
-        execute(database, sqlStatement, executor);
-        return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void execute(final ShardingSphereDatabase database, final T sqlStatement, final DatabaseRuleRDLExecutor executor) {
+    public ResponseHeader execute() {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession));
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
@@ -83,6 +80,7 @@ public final class NewDatabaseRuleDefinitionBackendHandler<T extends RuleDefinit
             ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(
                     processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
         }
+        return new UpdateResponseHeader(sqlStatement);
     }
     
     private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.GlobalRuleRDLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -36,18 +36,19 @@ import java.util.Optional;
  *
  * @param <T> type of rule definition statement
  */
-public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends RDLBackendHandler<T> {
+@RequiredArgsConstructor
+public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> implements DistSQLBackendHandler {
     
-    public NewRuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, connectionSession);
-    }
+    private final T sqlStatement;
+    
+    private final ConnectionSession connectionSession;
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    protected ResponseHeader execute(final ShardingSphereDatabase database, final T sqlStatement) {
+    public ResponseHeader execute() {
         Optional<DatabaseRuleRDLExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleRDLExecutor.class, sqlStatement.getClass());
         if (databaseExecutor.isPresent()) {
-            return new NewDatabaseRuleDefinitionBackendHandler(sqlStatement, getConnectionSession(), databaseExecutor.get()).execute(database, sqlStatement);
+            return new NewDatabaseRuleDefinitionBackendHandler(sqlStatement, connectionSession, databaseExecutor.get()).execute();
         }
         String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
         GlobalRuleRDLExecutor globalExecutor = TypedSPILoader.getService(GlobalRuleRDLExecutor.class, sqlStatement.getClass());
