@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredR
 import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
@@ -39,10 +38,12 @@ public final class NewGlobalRuleRDLBackendHandler implements DistSQLBackendHandl
     
     private final RuleDefinitionStatement sqlStatement;
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
+    private final GlobalRuleRDLExecutor executor;
+    
+    @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() {
-        GlobalRuleRDLExecutor executor = TypedSPILoader.getService(GlobalRuleRDLExecutor.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
@@ -52,8 +53,8 @@ public final class NewGlobalRuleRDLBackendHandler implements DistSQLBackendHandl
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (RuleConfiguration each : ruleConfigurations) {
+    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs, final Class<? extends RuleConfiguration> ruleConfigClass) {
+        for (RuleConfiguration each : ruleConfigs) {
             if (ruleConfigClass.isAssignableFrom(each.getClass())) {
                 return each;
             }
@@ -62,9 +63,9 @@ public final class NewGlobalRuleRDLBackendHandler implements DistSQLBackendHandl
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigurations, final RuleDefinitionStatement sqlStatement, final GlobalRuleRDLExecutor globalRuleUpdater,
+    private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigurations, final RuleDefinitionStatement sqlStatement, final GlobalRuleRDLExecutor executor,
                                             final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration result = globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
+        RuleConfiguration result = executor.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
         ruleConfigurations.remove(currentRuleConfig);
         ruleConfigurations.add(result);
         return result;

@@ -59,20 +59,19 @@ import java.util.stream.Collectors;
  */
 public final class NewDatabaseRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends RDLBackendHandler<T> {
     
-    public NewDatabaseRuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, connectionSession);
-    }
+    @SuppressWarnings("rawtypes")
+    private final DatabaseRuleRDLExecutor executor;
     
     @SuppressWarnings("rawtypes")
+    public NewDatabaseRuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession, final DatabaseRuleRDLExecutor executor) {
+        super(sqlStatement, connectionSession);
+        this.executor = executor;
+    }
+    
     @Override
     protected ResponseHeader execute(final ShardingSphereDatabase database, final T sqlStatement) {
-        Optional<DatabaseRuleRDLExecutor> executor = TypedSPILoader.findService(DatabaseRuleRDLExecutor.class, sqlStatement.getClass());
-        if (executor.isPresent()) {
-            execute(database, sqlStatement, executor.get());
-            return new UpdateResponseHeader(sqlStatement);
-        }
-        String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
-        return "Cluster".equals(modeType) || "Standalone".equals(modeType) ? new NewGlobalRuleRDLBackendHandler(sqlStatement).execute() : new GlobalRuleRDLBackendHandler(sqlStatement).execute();
+        execute(database, sqlStatement, executor);
+        return new UpdateResponseHeader(sqlStatement);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
