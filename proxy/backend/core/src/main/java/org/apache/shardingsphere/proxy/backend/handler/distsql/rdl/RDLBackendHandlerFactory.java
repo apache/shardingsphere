@@ -50,12 +50,7 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof StorageUnitDefinitionStatement) {
             return getStorageUnitBackendHandler((StorageUnitDefinitionStatement) sqlStatement, connectionSession);
         }
-        // TODO Remove when metadata structure adjustment completed. #25485
-        String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
-        if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
-            return new NewRuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
-        }
-        return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
+        return getRuleBackendHandler((RuleDefinitionStatement) sqlStatement, connectionSession);
     }
     
     @SuppressWarnings("rawtypes")
@@ -65,5 +60,14 @@ public final class RDLBackendHandlerFactory {
             ((DatabaseAwareRDLExecutor<?>) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
         }
         return new ResourceDefinitionBackendHandler(sqlStatement, executor);
+    }
+    
+    private static RDLBackendHandler<RuleDefinitionStatement> getRuleBackendHandler(final RuleDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
+        // TODO Remove when metadata structure adjustment completed. #25485
+        String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
+        if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
+            return new NewRuleDefinitionBackendHandler<>(sqlStatement, connectionSession);
+        }
+        return new RuleDefinitionBackendHandler<>(sqlStatement, connectionSession);
     }
 }
