@@ -46,6 +46,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+// TODO Remove when metadata structure adjustment completed. #25485
 /**
  * Legacy rule definition backend handler.
  *
