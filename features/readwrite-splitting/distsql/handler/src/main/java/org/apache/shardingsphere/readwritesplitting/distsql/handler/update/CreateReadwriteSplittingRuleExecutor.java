@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleRDLCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Create readwrite-splitting rule executor.
  */
-public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleRDLCreateExecutor<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
+public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleCreateExecutor<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {

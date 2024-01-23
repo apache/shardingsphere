@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.databas
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleRDLAlterExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleRDLCreateExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleRDLDropExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.type.AlterDatabaseRuleRDLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.type.CreateDatabaseRuleRDLExecuteEngine;
@@ -41,15 +41,15 @@ public final class DatabaseRuleRDLExecuteEngineFactory {
      * @throws UnsupportedSQLOperationException if invalid database rule RDL executor
      */
     @SuppressWarnings("rawtypes")
-    public static DatabaseRuleRDLExecuteEngine newInstance(final DatabaseRuleRDLExecutor executor) {
-        if (executor instanceof DatabaseRuleRDLCreateExecutor) {
-            return new CreateDatabaseRuleRDLExecuteEngine((DatabaseRuleRDLCreateExecutor) executor);
+    public static DatabaseRuleRDLExecuteEngine newInstance(final DatabaseRuleDefinitionExecutor executor) {
+        if (executor instanceof DatabaseRuleCreateExecutor) {
+            return new CreateDatabaseRuleRDLExecuteEngine((DatabaseRuleCreateExecutor) executor);
         }
-        if (executor instanceof DatabaseRuleRDLAlterExecutor) {
-            return new AlterDatabaseRuleRDLExecuteEngine((DatabaseRuleRDLAlterExecutor) executor);
+        if (executor instanceof DatabaseRuleAlterExecutor) {
+            return new AlterDatabaseRuleRDLExecuteEngine((DatabaseRuleAlterExecutor) executor);
         }
-        if (executor instanceof DatabaseRuleRDLDropExecutor) {
-            return new DropDatabaseRuleRDLExecuteEngine((DatabaseRuleRDLDropExecutor) executor);
+        if (executor instanceof DatabaseRuleDropExecutor) {
+            return new DropDatabaseRuleRDLExecuteEngine((DatabaseRuleDropExecutor) executor);
         }
         throw new UnsupportedSQLOperationException(String.format("Cannot support RDL executor type `%s`", executor.getClass().getName()));
     }

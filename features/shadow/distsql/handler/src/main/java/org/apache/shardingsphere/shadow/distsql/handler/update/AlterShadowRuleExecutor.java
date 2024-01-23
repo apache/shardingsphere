@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -40,7 +40,7 @@ import java.util.Map;
 /**
  * Alter shadow rule executor.
  */
-public final class AlterShadowRuleExecutor implements DatabaseRuleRDLAlterExecutor<AlterShadowRuleStatement, ShadowRuleConfiguration> {
+public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<AlterShadowRuleStatement, ShadowRuleConfiguration> {
     
     @Override
     public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShadowRuleStatement sqlStatement) {

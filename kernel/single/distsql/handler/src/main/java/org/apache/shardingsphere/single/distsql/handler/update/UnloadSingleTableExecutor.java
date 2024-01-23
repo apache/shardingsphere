@@ -20,7 +20,7 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Unload single table statement executor.
  */
-public final class UnloadSingleTableExecutor implements DatabaseRuleRDLAlterExecutor<UnloadSingleTableStatement, SingleRuleConfiguration> {
+public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecutor<UnloadSingleTableStatement, SingleRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {

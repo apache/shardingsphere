@@ -24,13 +24,13 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Database rule RDL executor.
+ * Database rule definition executor.
  * 
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
 @SingletonSPI
-public interface DatabaseRuleRDLExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Check SQL statement.

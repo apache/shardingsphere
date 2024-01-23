@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.type;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public final class AlterDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDLExecuteEngine {
     
     @SuppressWarnings("rawtypes")
-    private final DatabaseRuleRDLAlterExecutor executor;
+    private final DatabaseRuleAlterExecutor executor;
     
     @Override
     @SuppressWarnings("unchecked")
