@@ -29,15 +29,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
 
 /**
  * Advisor configuration loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
-    
-    private static final Logger LOGGER = Logger.getLogger(AdvisorConfigurationLoader.class.getName());
     
     /**
      * Load advisor configurations.
@@ -51,9 +48,7 @@ public final class AdvisorConfigurationLoader {
         AgentPluginClassLoader agentPluginClassLoader = new AgentPluginClassLoader(Thread.currentThread().getContextClassLoader(), pluginJars);
         for (String each : pluginTypes) {
             InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each);
-            if (null == advisorsResourceStream) {
-                LOGGER.info(String.format("No configuration of advisor for type `%s`.", each));
-            } else {
+            if (null != advisorsResourceStream) {
                 mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each));
             }
         }
