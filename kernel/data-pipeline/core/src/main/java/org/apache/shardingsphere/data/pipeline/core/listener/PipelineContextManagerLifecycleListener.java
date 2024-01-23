@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
@@ -64,7 +63,9 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
         try {
             dispatchEnablePipelineJobStartEvent(contextKey);
-        } catch (final IllegalArgumentException | UnsupportedOperationException | PipelineJobNotFoundException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
             log.error("Dispatch enable pipeline job start event failed", ex);
         }
     }
@@ -72,7 +73,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
     private void dispatchEnablePipelineJobStartEvent(final PipelineContextKey contextKey) {
         JobConfigurationAPI jobConfigAPI = PipelineAPIFactory.getJobConfigurationAPI(contextKey);
         List<JobBriefInfo> allJobsBriefInfo = PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo()
-                .stream().filter(each -> !each.getJobName().startsWith("_") && !each.getJobName().startsWith("j02")).collect(Collectors.toList());
+                .stream().filter(each -> !each.getJobName().startsWith("_")).collect(Collectors.toList());
         for (JobBriefInfo each : allJobsBriefInfo) {
             PipelineJobType jobType = PipelineJobIdUtils.parseJobType(each.getJobName());
             PipelineJobInfo jobInfo = jobType.getJobInfo(each.getJobName());
