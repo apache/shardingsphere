@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.GlobalRuleUpdater;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyGlobalRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -33,12 +33,12 @@ import java.util.Optional;
 
 /**
  * TODO Rename to RuleDefinitionBackendHandler when metadata structure adjustment completed. #25485
- * Database rule definition backend handler.
+ * Rule definition backend handler.
  *
  * @param <T> type of rule definition statement
  */
 @RequiredArgsConstructor
-public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> implements DistSQLBackendHandler {
+public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> implements DistSQLBackendHandler {
     
     private final T sqlStatement;
     
@@ -49,14 +49,14 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
     public ResponseHeader execute() {
         Optional<DatabaseRuleRDLExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleRDLExecutor.class, sqlStatement.getClass());
         if (databaseExecutor.isPresent()) {
-            new NewDatabaseRuleUpdater(sqlStatement, connectionSession, databaseExecutor.get()).executeUpdate();
+            new DatabaseRuleUpdater(sqlStatement, connectionSession, databaseExecutor.get()).executeUpdate();
         } else {
             String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
             GlobalRuleRDLExecutor globalExecutor = TypedSPILoader.getService(GlobalRuleRDLExecutor.class, sqlStatement.getClass());
             if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
-                new NewGlobalRuleUpdater(sqlStatement, globalExecutor).executeUpdate();
+                new GlobalRuleUpdater(sqlStatement, globalExecutor).executeUpdate();
             } else {
-                new GlobalRuleUpdater(sqlStatement).executeUpdate();
+                new LegacyGlobalRuleUpdater(sqlStatement).executeUpdate();
             }
         }
         return new UpdateResponseHeader(sqlStatement);

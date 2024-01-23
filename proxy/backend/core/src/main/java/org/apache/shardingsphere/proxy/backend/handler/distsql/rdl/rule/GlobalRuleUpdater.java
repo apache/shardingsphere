@@ -31,7 +31,7 @@ import java.util.Collection;
  * Global rule updater.
  */
 @RequiredArgsConstructor
-public final class NewGlobalRuleUpdater {
+public final class GlobalRuleUpdater {
     
     private final RuleDefinitionStatement sqlStatement;
     

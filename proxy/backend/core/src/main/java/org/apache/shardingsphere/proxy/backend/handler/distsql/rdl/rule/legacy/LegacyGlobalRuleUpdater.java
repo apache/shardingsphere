@@ -30,10 +30,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Global rule updater.
+ * Legacy global rule updater.
  */
 @RequiredArgsConstructor
-public final class GlobalRuleUpdater {
+public final class LegacyGlobalRuleUpdater {
     
     private final RuleDefinitionStatement sqlStatement;
     

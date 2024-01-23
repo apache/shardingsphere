@@ -47,12 +47,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Database rule definition backend handler.
+ * Legacy rule definition backend handler.
  *
  * @param <T> type of rule definition statement
  */
 @RequiredArgsConstructor
-public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> implements DistSQLBackendHandler {
+public final class LegacyRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> implements DistSQLBackendHandler {
     
     private final T sqlStatement;
     
