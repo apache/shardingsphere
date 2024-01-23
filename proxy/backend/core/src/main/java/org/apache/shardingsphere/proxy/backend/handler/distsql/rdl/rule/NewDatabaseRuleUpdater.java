@@ -34,9 +34,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceCont
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.update.DropReadwriteSplittingRuleExecutor;
@@ -55,12 +52,12 @@ import java.util.stream.Collectors;
 
 /**
  * TODO Rename to RuleDefinitionBackendHandler when metadata structure adjustment completed. #25485
- * Database rule definition backend handler.
+ * Database rule updater.
  *
  * @param <T> type of rule definition statement
  */
 @RequiredArgsConstructor
-public final class NewDatabaseRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> implements DistSQLBackendHandler {
+public final class NewDatabaseRuleUpdater<T extends RuleDefinitionStatement> {
     
     private final T sqlStatement;
     
@@ -69,9 +66,11 @@ public final class NewDatabaseRuleDefinitionBackendHandler<T extends RuleDefinit
     @SuppressWarnings("rawtypes")
     private final DatabaseRuleRDLExecutor executor;
     
+    /**
+     * Execute update.
+     */
     @SuppressWarnings("unchecked")
-    @Override
-    public ResponseHeader execute() {
+    public void executeUpdate() {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession));
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
@@ -80,7 +79,6 @@ public final class NewDatabaseRuleDefinitionBackendHandler<T extends RuleDefinit
             ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(
                     processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
         }
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {

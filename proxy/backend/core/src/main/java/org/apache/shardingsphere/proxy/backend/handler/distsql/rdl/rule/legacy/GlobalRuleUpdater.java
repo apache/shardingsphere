@@ -25,24 +25,23 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * RDL backend handler for global rule.
+ * Global rule updater.
  */
 @RequiredArgsConstructor
-public final class GlobalRuleRDLBackendHandler implements DistSQLBackendHandler {
+public final class GlobalRuleUpdater {
     
     private final RuleDefinitionStatement sqlStatement;
     
+    /**
+     * Execute update.
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Override
-    public ResponseHeader execute() {
+    public void executeUpdate() {
         GlobalRuleRDLExecutor executor = TypedSPILoader.getService(GlobalRuleRDLExecutor.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
@@ -50,7 +49,6 @@ public final class GlobalRuleRDLBackendHandler implements DistSQLBackendHandler 
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
         executor.checkSQLStatement(currentRuleConfig, sqlStatement);
         contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, executor, currentRuleConfig));
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations, final Class<? extends RuleConfiguration> ruleConfigClass) {
