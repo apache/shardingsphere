@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.global;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
@@ -48,7 +48,7 @@ public final class GlobalRuleUpdater {
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
         executor.checkSQLStatement(currentRuleConfig, sqlStatement);
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, executor, currentRuleConfig));
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, currentRuleConfig));
     }
     
     private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs, final Class<? extends RuleConfiguration> ruleConfigClass) {
@@ -60,12 +60,11 @@ public final class GlobalRuleUpdater {
         throw new MissingRequiredRuleException(ruleConfigClass.getSimpleName());
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigurations, final RuleDefinitionStatement sqlStatement, final GlobalRuleRDLExecutor executor,
-                                            final RuleConfiguration currentRuleConfig) {
+    @SuppressWarnings("unchecked")
+    private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigs, final RuleDefinitionStatement sqlStatement, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration result = executor.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
-        ruleConfigurations.remove(currentRuleConfig);
-        ruleConfigurations.add(result);
+        ruleConfigs.remove(currentRuleConfig);
+        ruleConfigs.add(result);
         return result;
     }
 }
