@@ -56,7 +56,7 @@ public final class DropDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDLEx
         if (executor.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig) && ((DatabaseRuleConfiguration) currentRuleConfig).isEmpty()) {
             modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
             new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(currentRuleConfig)).values().stream().findFirst()
-                    .ifPresent(swapper -> modeContextManager.removeRuleConfiguration(database.getName(), swapper.getRuleTagName().toLowerCase()));
+                    .ifPresent(optional -> modeContextManager.removeRuleConfiguration(database.getName(), optional.getRuleTagName().toLowerCase()));
             return Collections.emptyList();
         }
         if (executor instanceof DropReadwriteSplittingRuleExecutor) {
