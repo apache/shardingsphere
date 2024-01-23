@@ -1572,4 +1572,48 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_cross_apply_join_with_like_nchar">
+        <projections start-index="7" stop-index="26">
+            <column-projection name="plan_handle" start-index="7" stop-index="17"/>
+            <column-projection name="text" start-index="20" stop-index="26">
+                <owner name="st" start-index="20" stop-index="21"/>
+            </column-projection>
+        </projections>
+        <from start-index="33" stop-index="108">
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="dm_exec_cached_plans" start-index="33" stop-index="56">
+                        <owner name="sys" start-index="33" stop-index="35"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table start-index="70" stop-index="102" table-alias="st">
+                        <table-function text="sys.dm_exec_sql_text(plan_handle)" function-name="sys.dm_exec_sql_text">
+                            <parameter>
+                                <column name="plan_handle" start-index="91" stop-index="101"/>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="110" stop-index="157">
+            <expr>
+                <binary-operation-expression start-index="116" stop-index="157">
+                    <left>
+                        <column name="text" start-index="116" stop-index="119"/>
+                    </left>
+                    <right>
+                        <list-expression start-index="126" stop-index="157">
+                            <items>
+                                <literal-expression value="SELECT * FROM Person.Address%" start-index="126" stop-index="157"/>
+                            </items>
+                        </list-expression>
+                    </right>
+                    <operator>LIKE</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
