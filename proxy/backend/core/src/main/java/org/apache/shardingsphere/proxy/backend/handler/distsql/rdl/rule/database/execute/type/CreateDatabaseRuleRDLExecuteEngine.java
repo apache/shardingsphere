@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.DatabaseRuleRDLExecuteEngine;
-import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
-import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -49,19 +47,12 @@ public final class CreateDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDL
     @SuppressWarnings("unchecked")
     public Collection<MetaDataVersion> execute(final RuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
-        if (null != currentRuleConfig) {
-            executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        }
         ModeContextManager modeContextManager = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager();
-        return modeContextManager.alterRuleConfiguration(database.getName(), getToBeCreatedRuleConfiguration(sqlStatement, database, currentRuleConfig, toBeCreatedRuleConfig));
-    }
-    
-    private RuleConfiguration getToBeCreatedRuleConfiguration(final RuleDefinitionStatement sqlStatement,
-                                                              final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig, final RuleConfiguration toBeCreatedRuleConfig) {
-        if (sqlStatement instanceof LoadSingleTableStatement || sqlStatement instanceof SetDefaultSingleTableStorageUnitStatement) {
-            return null == currentRuleConfig ? decorateRuleConfiguration(database, toBeCreatedRuleConfig) : decorateRuleConfiguration(database, currentRuleConfig);
+        if (null == currentRuleConfig) {
+            return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
         }
-        return toBeCreatedRuleConfig;
+        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, currentRuleConfig));
     }
     
     @SuppressWarnings("unchecked")
