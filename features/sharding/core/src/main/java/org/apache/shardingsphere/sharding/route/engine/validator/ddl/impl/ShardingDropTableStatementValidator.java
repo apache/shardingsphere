@@ -38,7 +38,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableSt
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableStatementHandler;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,7 +76,6 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     }
     
     private void checkTableInUsed(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final RouteContext routeContext) {
-        Collection<String> inUsedTables = new LinkedList<>();
         Collection<String> dropTables = sqlStatementContext.getTablesContext().getTableNames();
         Set<String> actualTables = routeContext.getRouteUnits().stream().flatMap(each -> each.getTableMappers().stream().map(RouteMapper::getActualName)).collect(Collectors.toSet());
         // TODO check actual tables not be used in multi rules, and remove this check logic
@@ -86,11 +84,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
         if (otherRuleActualTables.isEmpty()) {
             return;
         }
-        for (String each : actualTables) {
-            if (otherRuleActualTables.contains(each)) {
-                inUsedTables.add(each);
-            }
-        }
+        Collection<String> inUsedTables = actualTables.stream().filter(otherRuleActualTables::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(inUsedTables.isEmpty(), () -> new DropInUsedTablesException(inUsedTables));
     }
 }
