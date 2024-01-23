@@ -41,7 +41,6 @@ import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwr
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -75,9 +74,9 @@ public final class DatabaseRuleUpdater<T extends RuleDefinitionStatement> {
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
-        if (getRefreshStatus(sqlStatement, currentRuleConfig, executor)) {
-            ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(
-                    processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
+        if (getRefreshStatus(currentRuleConfig)) {
+            ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
+                    .switchActiveVersion(processSQLStatement(database, currentRuleConfig));
         }
     }
     
@@ -86,13 +85,12 @@ public final class DatabaseRuleUpdater<T extends RuleDefinitionStatement> {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final DatabaseRuleRDLExecutor<?, ?> executor) {
+    private boolean getRefreshStatus(final RuleConfiguration currentRuleConfig) {
         return !(executor instanceof DatabaseRuleRDLDropExecutor) || ((DatabaseRuleRDLDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
     }
     
     @SuppressWarnings("rawtypes")
-    private Collection<MetaDataVersion> processSQLStatement(final ShardingSphereDatabase database,
-                                                            final T sqlStatement, final DatabaseRuleRDLExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private Collection<MetaDataVersion> processSQLStatement(final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
         if (executor instanceof DatabaseRuleRDLCreateExecutor) {
             return processCreate(database, sqlStatement, (DatabaseRuleRDLCreateExecutor) executor, currentRuleConfig);
         }
