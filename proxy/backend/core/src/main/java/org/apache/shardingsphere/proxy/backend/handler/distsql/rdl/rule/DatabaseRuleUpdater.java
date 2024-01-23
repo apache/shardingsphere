@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  * @param <T> type of rule definition statement
  */
 @RequiredArgsConstructor
-public final class NewDatabaseRuleUpdater<T extends RuleDefinitionStatement> {
+public final class DatabaseRuleUpdater<T extends RuleDefinitionStatement> {
     
     private final T sqlStatement;
     
