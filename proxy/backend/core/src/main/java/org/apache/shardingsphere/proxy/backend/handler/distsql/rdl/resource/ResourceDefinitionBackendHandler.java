@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -35,7 +35,7 @@ public final class ResourceDefinitionBackendHandler implements DistSQLBackendHan
     private final StorageUnitDefinitionStatement sqlStatement;
     
     @SuppressWarnings("rawtypes")
-    private final ResourceRDLExecutor executor;
+    private final ResourceDefinitionExecutor executor;
     
     @SuppressWarnings("unchecked")
     @Override

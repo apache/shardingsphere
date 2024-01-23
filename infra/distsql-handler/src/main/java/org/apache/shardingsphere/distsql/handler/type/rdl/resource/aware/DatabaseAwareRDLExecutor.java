@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.type.rdl.resource.aware;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
  * 
  * @param <T> type of storage unit definition statement
  */
-public interface DatabaseAwareRDLExecutor<T extends StorageUnitDefinitionStatement> extends ResourceRDLExecutor<T> {
+public interface DatabaseAwareRDLExecutor<T extends StorageUnitDefinitionStatement> extends ResourceDefinitionExecutor<T> {
     
     /**
      * Set database.

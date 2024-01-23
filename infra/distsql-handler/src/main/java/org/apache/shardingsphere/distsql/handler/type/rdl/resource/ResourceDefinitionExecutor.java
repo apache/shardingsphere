@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
  * @param <T> type of storage unit definition statement
  */
 @SingletonSPI
-public interface ResourceRDLExecutor<T extends StorageUnitDefinitionStatement> extends TypedSPI {
+public interface ResourceDefinitionExecutor<T extends StorageUnitDefinitionStatement> extends TypedSPI {
     
     /**
      * Execute update.
