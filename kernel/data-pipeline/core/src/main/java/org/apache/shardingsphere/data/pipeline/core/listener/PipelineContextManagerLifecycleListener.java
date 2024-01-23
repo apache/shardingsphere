@@ -21,14 +21,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNodeWatcher;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Pipeline context manager lifecycle listener.
@@ -51,6 +61,22 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
         PipelineMetaDataNodeWatcher.getInstance(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
+        dispatchEnablePipelineJobStartEvent(contextKey);
+    }
+    
+    private void dispatchEnablePipelineJobStartEvent(final PipelineContextKey contextKey) {
+        JobConfigurationAPI jobConfigAPI = PipelineAPIFactory.getJobConfigurationAPI(contextKey);
+        List<JobBriefInfo> allJobsBriefInfo = PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo()
+                .stream().filter(each -> !each.getJobName().startsWith("_")).collect(Collectors.toList());
+        for (JobBriefInfo each : allJobsBriefInfo) {
+            PipelineJobType pipelineJobType = PipelineJobIdUtils.parseJobType(each.getJobName());
+            PipelineJobMetaData jobMetaData = pipelineJobType.getJobInfo(each.getJobName()).getJobMetaData();
+            if (!jobMetaData.isActive()) {
+                return;
+            }
+            JobConfigurationPOJO jobConfiguration = jobConfigAPI.getJobConfiguration(each.getJobName());
+            jobConfigAPI.updateJobConfiguration(jobConfiguration);
+        }
     }
     
     @Override
