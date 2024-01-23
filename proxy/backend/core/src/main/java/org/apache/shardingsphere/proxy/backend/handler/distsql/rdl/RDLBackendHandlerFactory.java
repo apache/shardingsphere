@@ -67,8 +67,8 @@ public final class RDLBackendHandlerFactory {
         // TODO Remove when metadata structure adjustment completed. #25485
         String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
         if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
-            return new RuleDefinitionBackendHandler<>(sqlStatement, connectionSession);
+            return new RuleDefinitionBackendHandler(sqlStatement, connectionSession);
         }
-        return new LegacyRuleDefinitionBackendHandler<>(sqlStatement, connectionSession);
+        return new LegacyRuleDefinitionBackendHandler(sqlStatement, connectionSession);
     }
 }
