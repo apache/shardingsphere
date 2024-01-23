@@ -26,7 +26,7 @@ import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Show key generate algorithm implementations executor.
@@ -40,12 +40,8 @@ public final class ShowKeyGenerateAlgorithmImplementationsExecutor implements Qu
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowKeyGenerateAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<KeyGenerateAlgorithm> keyGenerateAlgorithms = ShardingSphereServiceLoader.getServiceInstances(KeyGenerateAlgorithm.class);
-        for (KeyGenerateAlgorithm each : keyGenerateAlgorithms) {
-            result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
-        }
-        return result;
+        return keyGenerateAlgorithms.stream().map(each -> new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName())).collect(Collectors.toList());
     }
     
     @Override

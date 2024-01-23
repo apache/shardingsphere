@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -30,12 +27,10 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,8 +38,11 @@ class ShowShardingTableReferenceRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingTableReferenceRulesStatement.class));
+        ShowShardingTableReferenceRuleExecutor executor = new ShowShardingTableReferenceRuleExecutor();
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        executor.setRule(rule);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingTableReferenceRulesStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -54,31 +52,16 @@ class ShowShardingTableReferenceRuleExecutorTest {
     
     @Test
     void assertGetRowDataWithSpecifiedRuleName() {
-        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), new ShowShardingTableReferenceRulesStatement("foo", null));
+        ShowShardingTableReferenceRuleExecutor executor = new ShowShardingTableReferenceRuleExecutor();
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        executor.setRule(rule);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableReferenceRulesStatement("foo", null));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("foo"));
         assertThat(row.getCell(2), is("t_order,t_order_item"));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("sharding_table_reference"));
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {

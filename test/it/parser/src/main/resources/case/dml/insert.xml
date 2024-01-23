@@ -3219,4 +3219,165 @@
             </from>
         </select>
     </insert>
+    
+    <insert sql-case-id="insert_sales_with_nchar">
+        <table name="sales" start-index="12" stop-index="16" />
+        <columns start-index="17" stop-index="17" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Canada" start-index="26" stop-index="34" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="British Columbia" start-index="37" stop-index="55" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="300" start-index="58" stop-index="60" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_sales_with_nchar_2">
+        <table name="sales" start-index="12" stop-index="16" />
+        <columns start-index="17" stop-index="17" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="United States" start-index="26" stop-index="41" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Montana" start-index="44" stop-index="53" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="100" start-index="56" stop-index="58" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_currency_value">
+        <table name="Employees" start-index="12" stop-index="27" start-delimiter="[" end-delimiter="]">
+            <owner name="HR" start-index="12" stop-index="15" start-delimiter="[" end-delimiter="]" />
+        </table>
+        <columns start-index="28" stop-index="69">
+            <column name="SSN" start-index="29" stop-index="33" start-delimiter="[" end-delimiter="]" />
+            <column name="FirstName" start-index="36" stop-index="46" start-delimiter="[" end-delimiter="]" />
+            <column name="LastName" start-index="49" stop-index="58" start-delimiter="[" end-delimiter="]" />
+            <column name="Salary" start-index="61" stop-index="68" start-delimiter="[" end-delimiter="]" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="795-73-9838" start-index="79" stop-index="91" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Catherine" start-index="94" stop-index="105" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Abel" start-index="108" stop-index="114" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="$31692" start-index="117" stop-index="122" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_select_from_open_row_1">
+        <table name="myTable" start-index="12" stop-index="18"/>
+        <columns start-index="19" stop-index="48">
+            <column name="FileName" start-index="20" stop-index="27"/>
+            <column name="FileType" start-index="30" stop-index="37"/>
+            <column name="Document" start-index="40" stop-index="47"/>
+        </columns>
+        <select>
+            <projections start-index="57" stop-index="102">
+                <expression-projection text="Text1.txt" start-index="57" stop-index="79" alias="FileName"/>
+                <expression-projection text=".txt" start-index="82" stop-index="99" alias="FileType"/>
+                <shorthand-projection start-index="102" stop-index="102"/>
+            </projections>
+            <from>
+                <function-table start-index="109" stop-index="153" table-alias="Document">
+                <table-function text="OPENROWSET(BULK N'C:\Text1.txt', SINGLE_BLOB)" function-name="OPENROWSET">
+                    <parameter>
+                        <literal-expression value="C:\Text1.txt" start-index="125" stop-index="139"/>
+                    </parameter>
+                    <parameter>
+                        <column name="SINGLE_BLOB" start-index="142" stop-index="152"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_with_select_from_open_row_2">
+        <table name="achievements" start-index="12" stop-index="23"/>
+        <table-hints start-index="25" stop-index="38">
+            <table-hint value="TABLOCK" start-index="31" stop-index="37"/>
+        </table-hints>
+        <columns start-index="40" stop-index="56">
+            <column name="id" start-index="41" stop-index="42"/>
+            <column name="description" start-index="45" stop-index="55"/>
+        </columns>
+        <select>
+            <projections start-index="65" stop-index="65">
+                <shorthand-projection start-index="65" stop-index="65"/>
+            </projections>
+            <from>
+                <function-table start-index="72" stop-index="245" table-alias="DataFile">
+                    <table-function function-name="OPENROWSET" text="OPENROWSET(BULK 'csv/achievements.csv', DATA_SOURCE = 'MyAzureBlobStorage', FORMAT ='CSV', FORMATFILE='csv/achievements-c.xml', FORMATFILE_DATA_SOURCE = 'MyAzureBlobStorage')">
+                        <parameter>
+                            <literal-expression value="csv/achievements.csv" start-index="88" stop-index="109"/>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="112" stop-index="145">
+                                <left>
+                                    <column name="DATA_SOURCE" start-index="112" stop-index="122"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="MyAzureBlobStorage" start-index="126" stop-index="145"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="148" stop-index="160">
+                                <left>
+                                    <column name="FORMAT" start-index="148" stop-index="153"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="CSV" start-index="156" stop-index="140"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="163" stop-index="197">
+                                <left>
+                                    <column name="FORMATFILE" start-index="163" stop-index="172"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="csv/achievements-c.xml" start-index="174" stop-index="197"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="200" stop-index="244">
+                                <left>
+                                    <column name="FORMATFILE_DATA_SOURCE" start-index="200" stop-index="221"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="MyAzureBlobStorage" start-index="225" stop-index="244"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                    </table-function>
+                </function-table>
+            </from>
+        </select>
+    </insert>
 </sql-parser-test-cases>

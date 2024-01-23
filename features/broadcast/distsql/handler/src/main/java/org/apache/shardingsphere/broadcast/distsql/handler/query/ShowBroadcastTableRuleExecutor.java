@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.query;
 
+import lombok.Setter;
 import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,11 +30,10 @@ import java.util.stream.Collectors;
 /**
  * Show broadcast table rule executor.
  */
-public final class ShowBroadcastTableRuleExecutor extends RuleAwareRQLExecutor<ShowBroadcastTableRulesStatement, BroadcastRule> {
+@Setter
+public final class ShowBroadcastTableRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowBroadcastTableRulesStatement, BroadcastRule> {
     
-    public ShowBroadcastTableRuleExecutor() {
-        super(BroadcastRule.class);
-    }
+    private BroadcastRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -42,8 +41,13 @@ public final class ShowBroadcastTableRuleExecutor extends RuleAwareRQLExecutor<S
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowBroadcastTableRulesStatement sqlStatement, final BroadcastRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowBroadcastTableRulesStatement sqlStatement) {
         return rule.getConfiguration().getTables().stream().map(LocalDataQueryResultRow::new).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Class<BroadcastRule> getRuleClass() {
+        return BroadcastRule.class;
     }
     
     @Override

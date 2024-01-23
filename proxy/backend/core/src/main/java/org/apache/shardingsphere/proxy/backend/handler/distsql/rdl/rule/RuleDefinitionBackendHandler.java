@@ -17,132 +17,47 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionUpdater;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.DatabaseRuleUpdater;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.global.GlobalRuleUpdater;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyGlobalRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.update.DropReadwriteSplittingRuleStatementUpdater;
-import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Rule definition backend handler.
- *
- * @param <T> type of rule definition statement
  */
-public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends RDLBackendHandler<T> {
+@RequiredArgsConstructor
+public final class RuleDefinitionBackendHandler implements DistSQLBackendHandler {
     
-    public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, connectionSession);
-    }
+    private final RuleDefinitionStatement sqlStatement;
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Override
-    protected ResponseHeader execute(final String databaseName, final T sqlStatement) {
-        RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPILoader.getService(RuleDefinitionUpdater.class, sqlStatement.getClass());
-        Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
-        ruleDefinitionUpdater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
-        if (getRefreshStatus(sqlStatement, currentRuleConfig, ruleDefinitionUpdater)) {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterRuleConfiguration(databaseName,
-                    processSQLStatement(database, sqlStatement, ruleDefinitionUpdater, currentRuleConfig));
-        }
-        return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (RuleConfiguration each : database.getRuleMetaData().getConfigurations()) {
-            if (ruleConfigClass.isAssignableFrom(each.getClass())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
-    }
+    private final ConnectionSession connectionSession;
     
     @SuppressWarnings("rawtypes")
-    private Collection<RuleConfiguration> processSQLStatement(final ShardingSphereDatabase database,
-                                                              final T sqlStatement, final RuleDefinitionUpdater updater, final RuleConfiguration currentRuleConfig) {
-        Collection<RuleConfiguration> result = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        if (updater instanceof RuleDefinitionCreateUpdater) {
-            if (null != currentRuleConfig) {
-                result.remove(currentRuleConfig);
-            }
-            RuleConfiguration createdRuleConfig = processCreate(sqlStatement, (RuleDefinitionCreateUpdater) updater, currentRuleConfig);
-            result.add(decorateRuleConfiguration(database, createdRuleConfig));
-        } else if (updater instanceof RuleDefinitionAlterUpdater) {
-            result.remove(currentRuleConfig);
-            RuleConfiguration alteredRuleConfig = processAlter(sqlStatement, (RuleDefinitionAlterUpdater) updater, currentRuleConfig);
-            result.add(decorateRuleConfiguration(database, alteredRuleConfig));
-        } else if (updater instanceof RuleDefinitionDropUpdater) {
-            processDrop(database, result, sqlStatement, (RuleDefinitionDropUpdater) updater, currentRuleConfig);
+    @Override
+    public ResponseHeader execute() {
+        Optional<DatabaseRuleRDLExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleRDLExecutor.class, sqlStatement.getClass());
+        if (databaseExecutor.isPresent()) {
+            new DatabaseRuleUpdater(sqlStatement, connectionSession, databaseExecutor.get()).executeUpdate();
         } else {
-            throw new UnsupportedSQLOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getName()));
+            String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
+            GlobalRuleRDLExecutor globalExecutor = TypedSPILoader.getService(GlobalRuleRDLExecutor.class, sqlStatement.getClass());
+            if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
+                new GlobalRuleUpdater(sqlStatement, globalExecutor).executeUpdate();
+            } else {
+                new LegacyGlobalRuleUpdater(sqlStatement).executeUpdate();
+            }
         }
-        return result;
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private RuleConfiguration decorateRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
-        Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass());
-        return decorator.map(optional -> optional.decorate(database.getName(),
-                database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processCreate(final T sqlStatement, final RuleDefinitionCreateUpdater updater, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
-        if (null == currentRuleConfig) {
-            return toBeCreatedRuleConfig;
-        }
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        return currentRuleConfig;
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processAlter(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        return currentRuleConfig;
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processDrop(final ShardingSphereDatabase database, final Collection<RuleConfiguration> configs, final T sqlStatement,
-                             final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
-        if (!updater.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
-            return;
-        }
-        if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
-            configs.remove(currentRuleConfig);
-        }
-        if (updater instanceof DropReadwriteSplittingRuleStatementUpdater) {
-            database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)
-                    .ifPresent(optional -> ((DropReadwriteSplittingRuleStatement) sqlStatement).getNames().forEach(optional::cleanStorageNodeDataSource));
-        }
-    }
-    
-    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater<?, ?> updater) {
-        return !(updater instanceof RuleDefinitionDropUpdater) || ((RuleDefinitionDropUpdater) updater).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+        return new UpdateResponseHeader(sqlStatement);
     }
 }

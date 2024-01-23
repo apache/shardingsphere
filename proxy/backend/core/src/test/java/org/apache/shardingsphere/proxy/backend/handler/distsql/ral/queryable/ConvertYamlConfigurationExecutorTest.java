@@ -32,7 +32,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -72,15 +71,6 @@ class ConvertYamlConfigurationExecutorTest {
     @Test
     void assertExecuteWithMix() {
         assertExecute("/conf/convert/config-mix.yaml", "/expected/convert-mix.yaml");
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        ConvertYamlConfigurationExecutor executor = new ConvertYamlConfigurationExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(1));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("dist_sql"));
     }
     
     private void assertExecute(final String configFilePath, final String expectedFilePath) {

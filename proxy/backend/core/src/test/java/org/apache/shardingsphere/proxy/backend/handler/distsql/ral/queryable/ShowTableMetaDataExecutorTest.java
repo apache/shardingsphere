@@ -52,19 +52,6 @@ import static org.mockito.Mockito.when;
 class ShowTableMetaDataExecutorTest {
     
     @Test
-    void assertGetColumnNames() {
-        ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(5));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("database_name"));
-        assertThat(iterator.next(), is("table_name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("value"));
-    }
-    
-    @Test
     void assertExecute() {
         ShardingSphereDatabase database = mockDatabase();
         ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();

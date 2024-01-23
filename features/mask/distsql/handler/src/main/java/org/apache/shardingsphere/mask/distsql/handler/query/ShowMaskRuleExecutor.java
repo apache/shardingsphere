@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskRulesStatement;
@@ -35,11 +35,10 @@ import java.util.stream.Collectors;
 /**
  * Show mask rule executor.
  */
-public final class ShowMaskRuleExecutor extends RuleAwareRQLExecutor<ShowMaskRulesStatement, MaskRule> {
+@Setter
+public final class ShowMaskRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowMaskRulesStatement, MaskRule> {
     
-    public ShowMaskRuleExecutor() {
-        super(MaskRule.class);
-    }
+    private MaskRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -47,7 +46,7 @@ public final class ShowMaskRuleExecutor extends RuleAwareRQLExecutor<ShowMaskRul
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowMaskRulesStatement sqlStatement, final MaskRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMaskRulesStatement sqlStatement) {
         return rule.getConfiguration().getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
                 .map(each -> buildColumnData(each, rule.getConfiguration().getMaskAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
     }
@@ -60,6 +59,11 @@ public final class ShowMaskRuleExecutor extends RuleAwareRQLExecutor<ShowMaskRul
                     Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(), maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps()))));
         });
         return result;
+    }
+    
+    @Override
+    public Class<MaskRule> getRuleClass() {
+        return MaskRule.class;
     }
     
     @Override

@@ -40,19 +40,6 @@ public final class AgentPreconditions {
     }
     
     /**
-     * Check not null.
-     *
-     * @param reference reference
-     * @param errorMessage error message
-     * @throws NullPointerException null pointer exception
-     */
-    public static void checkNotNull(final Object reference, final String errorMessage) {
-        if (null == reference) {
-            throw new NullPointerException(errorMessage);
-        }
-    }
-    
-    /**
      * Check argument.
      *
      * @param condition condition

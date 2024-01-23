@@ -38,3 +38,12 @@ sqlTranslator:
   type:
   useOriginalSQLWhenTranslatingFailed:
 ```
+* [SQL Federation](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-federation/)
+```yaml
+sqlFederation:
+  sqlFederationEnabled: true
+  allQueryUseSQLFederation: false
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535
+```

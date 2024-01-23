@@ -45,15 +45,4 @@ class ShowShadowAlgorithmImplementationsExecutorTest {
         assertThat(row.getCell(2), is("DISTSQL.FIXTURE"));
         assertThat(row.getCell(3), is("org.apache.shardingsphere.shadow.distsql.fixture.DistSQLShadowAlgorithmFixture"));
     }
-    
-    @Test
-    void assertGetColumnNames() {
-        QueryableRALExecutor<ShowShadowAlgorithmImplementationsStatement> executor = new ShowShadowAlgorithmImplementationsExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("class_path"));
-    }
 }

@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="schema_name" />
+        <column name="database" />
     </metadata>
     <row values="db" />
     <row values="information_schema" />

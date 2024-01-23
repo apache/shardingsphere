@@ -27,15 +27,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 
@@ -217,15 +216,17 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     
     private void doWithoutSorting(final CDCChannelProgressPair progressPair) {
         PipelineChannel channel = progressPair.getChannel();
-        List<Record> records = channel.fetch(batchSize, timeoutMillis).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
+        List<Record> records = channel.fetch(batchSize, timeoutMillis);
         if (records.isEmpty()) {
             return;
         }
         Record lastRecord = records.get(records.size() - 1);
-        if (lastRecord instanceof FinishedRecord && records.stream().noneMatch(DataRecord.class::isInstance)) {
+        if (records.stream().noneMatch(DataRecord.class::isInstance)) {
             channel.ack(records);
             progressPair.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
-            originalChannelProgressPairs.remove(progressPair);
+            if (lastRecord instanceof FinishedRecord) {
+                originalChannelProgressPairs.remove(progressPair);
+            }
             return;
         }
         if (null != rateLimitAlgorithm) {

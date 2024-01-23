@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
-public final class CoreEncryptAlgorithmFixture implements StandardEncryptAlgorithm {
+@Getter
+public final class CoreEncryptAlgorithmFixture implements EncryptAlgorithm {
+    
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData();
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

@@ -663,4 +663,258 @@
             </function-table>
         </from>
     </select>
+
+    <select sql-case-id="select_from_open_row_set_with_provider_name">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="a"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="16" stop-index="110">
+            <function-table start-index="16" stop-index="110" table-alias="a">
+                <table-function function-name="OPENROWSET" text="OPENROWSET('Microsoft.Jet.OLEDB.4.0', 'C:\SAMPLES\Northwind.mdb';'admin';'password', Customers)">
+                    <parameter>
+                        <literal-expression value="Microsoft.Jet.OLEDB.4.0" start-index="27" stop-index="51"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="C:\SAMPLES\Northwind.mdb" start-index="54" stop-index="79"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="admin" start-index="81" stop-index="87"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="password" start-index="89" stop-index="98"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="Customers" start-index="101" stop-index="109"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_open_row_set_with_provider_string">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="d"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="6" stop-index="123">
+            <function-table start-index="16" stop-index="123" table-alias="d">
+                <table-function function-name="OPENROWSET" text="OPENROWSET('SQLNCLI','Server=Seattle1;Trusted_Connection=yes;',AdventureWorks2022.HumanResources.Department)">
+                    <parameter>
+                        <literal-expression value="SQLNCLI" start-index="27" stop-index="35"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="Server=Seattle1;Trusted_Connection=yes;" start-index="37" stop-index="77"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="AdventureWorks2022.HumanResources.Department" start-index="79" stop-index="122"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_json_object_simple_key_value">
+        <projections start-index="7" stop-index="43">
+            <expression-projection start-index="7" stop-index="43" text="JSON_OBJECT('name':'value', 'type':1)">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name':'value', 'type':1)" start-index="7" stop-index="43">
+                        <parameter>
+                            <key-value start-index="19" stop-index="32" text="'name':'value'">
+                                <key>
+                                    <literal-expression start-index="19" stop-index="24" value="name"/>
+                                </key>
+                                <value>
+                                    <literal-expression start-index="26" stop-index="32" value="value"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value start-index="35" stop-index="42" text="'type':1">
+                                <key>
+                                    <literal-expression start-index="35" stop-index="40" value="type"/>
+                                </key>
+                                <value>
+                                    <literal-expression start-index="42" stop-index="42" value="1"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_nest_json_object">
+        <projections start-index="7" stop-index="78">
+            <expression-projection text="JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" start-index="7" stop-index="78">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" start-index="7" stop-index="78">
+                        <parameter>
+                            <key-value text="'name':'value'" start-index="19" stop-index="32">
+                                <key>
+                                    <literal-expression value="name" start-index="19" stop-index="24"/>
+                                </key>
+                                <value>
+                                    <literal-expression value="value" start-index="26" stop-index="32"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="'type':JSON_OBJECT('type_id':1,'name':'a')" start-index="35" stop-index="77">
+                                <key>
+                                    <literal-expression value="type" start-index="35" stop-index="40"/>
+                                </key>
+                                <value>
+                                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('type_id':1, 'name':'a')" start-index="42" stop-index="77">
+                                        <parameter>
+                                            <key-value text="'type_id':1" start-index="54" stop-index="64">
+                                                <key>
+                                                    <literal-expression value="type_id" start-index="54" stop-index="62"/>
+                                                </key>
+                                                <value>
+                                                    <literal-expression value="1" start-index="64" stop-index="64"/>
+                                                </value>
+                                            </key-value>
+                                        </parameter>
+                                        <parameter>
+                                            <key-value text="'name':'a'" start-index="67" stop-index="76">
+                                                <key>
+                                                    <literal-expression value="name" start-index="67" stop-index="72"/>
+                                                </key>
+                                                <value>
+                                                    <literal-expression value="a" start-index="74" stop-index="76"/>
+                                                </value>
+                                            </key-value>
+                                        </parameter>
+                                    </function>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_json_array">
+        <projections start-index="7" stop-index="58">
+            <expression-projection text="JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" start-index="7" stop-index="58">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" start-index="7" stop-index="58">
+                        <parameter>
+                            <key-value text="'name':'value'" start-index="19" stop-index="32">
+                                <key>
+                                    <literal-expression value="name" start-index="19" stop-index="24"/>
+                                </key>
+                                <value>
+                                    <literal-expression value="value" start-index="26" stop-index="32"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="'type':JSON_ARRAY(1,2)" start-index="35" stop-index="57">
+                                <key>
+                                    <literal-expression value="type" start-index="35" stop-index="40"/>
+                                </key>
+                                <value>
+                                    <function function-name="JSON_ARRAY" text="JSON_ARRAY(1, 2)" start-index="42" stop-index="57">
+                                        <parameter>
+                                            <literal-expression value="1" start-index="53" stop-index="53"/>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="2" start-index="56" stop-index="56"/>
+                                        </parameter>
+                                    </function>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_json_object_absent_not_null">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" start-index="7" stop-index="61">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" start-index="7" stop-index="61">
+                        <parameter>
+                            <key-value start-index="19" stop-index="32" text="'name':'value'">
+                                <key>
+                                    <literal-expression start-index="19" stop-index="24" value="name"/>
+                                </key>
+                                <value>
+                                    <literal-expression start-index="26" stop-index="32" value="value"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value start-index="35" stop-index="45" text="'type':NULL">
+                                <key>
+                                    <literal-expression start-index="35" stop-index="40" value="type"/>
+                                </key>
+                                <value>
+                                    <literal-expression start-index="42" stop-index="45" value="null"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <json-null-clause-expression text="ABSENT ON NULL" start-index="47" stop-index="60"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_json_object_with_subquery">
+        <projections start-index="7" stop-index="84">
+            <expression-projection text="JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" start-index="7" stop-index="84">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" start-index="7" stop-index="84">
+                        <parameter>
+                            <key-value text="'user_name':USER_NAME()" start-index="19" stop-index="41">
+                                <key>
+                                    <literal-expression value="user_name" start-index="19" stop-index="29"/>
+                                </key>
+                                <value>
+                                    <function function-name="USER_NAME" text="USER_NAME()" start-index="31" stop-index="41"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="@id_key:@id_value" start-index="44" stop-index="60">
+                                <key>
+                                    <column name="@id_key" start-index="44" stop-index="50"/>
+                                </key>
+                                <value>
+                                    <column name="@id_value" start-index="52" stop-index="60"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="'sid':(SELECT@@SPID)" start-index="63" stop-index="83">
+                                <key>
+                                    <literal-expression value="sid" start-index="63" stop-index="67"/>
+                                </key>
+                                <value>
+                                    <subquery start-index="69" stop-index="83">
+                                        <select>
+                                            <projections start-index="77" stop-index="82">
+                                                <column-projection name="@@SPID" start-index="77" stop-index="82"/>
+                                            </projections>
+                                        </select>
+                                    </subquery>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

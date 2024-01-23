@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -31,11 +31,10 @@ import java.util.stream.Collectors;
 /**
  * Show sharding auditors executor.
  */
-public final class ShowShardingAuditorsExecutor extends RuleAwareRQLExecutor<ShowShardingAuditorsStatement, ShardingRule> {
+@Setter
+public final class ShowShardingAuditorsExecutor implements DatabaseRuleAwareRQLExecutor<ShowShardingAuditorsStatement, ShardingRule> {
     
-    public ShowShardingAuditorsExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -43,9 +42,14 @@ public final class ShowShardingAuditorsExecutor extends RuleAwareRQLExecutor<Sho
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingAuditorsStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingAuditorsStatement sqlStatement) {
         return rule.getConfiguration().getAuditors().entrySet().stream()
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), PropertiesConverter.convert(entry.getValue().getProps()))).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

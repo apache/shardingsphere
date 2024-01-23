@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExtractArgExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.KeyValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.interval.IntervalDayToSecondExpression;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.interval.IntervalYearToMonthExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
@@ -52,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlQueryAndExistsFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.json.JsonNullClauseSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
@@ -72,6 +74,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedIntervalDayToSecondExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedIntervalExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedIntervalYearToMonthExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedKeyValueSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedListExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMatchExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMultisetExpression;
@@ -86,6 +89,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedSubquery;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.json.ExpectedJsonNullClauseSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xmlquery.ExpectedXmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 
@@ -100,7 +104,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- *  Expression assert.
+ * Expression assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExpressionAssert {
@@ -217,7 +221,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert binary operation expression.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual binary operation expression
      * @param expected expected binary operation expression
@@ -238,7 +242,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert in operation expression.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual in operation expression
      * @param expected expected in operation expression
@@ -259,7 +263,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert not operation expression.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual not operation expression
      * @param expected expected not operation expression
@@ -277,7 +281,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert list operation expression.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual list operation expression
      * @param expected expected list operation expression
@@ -301,7 +305,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert between operation expression.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual between operation expression
      * @param expected expected between operation expression
@@ -548,7 +552,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert unary operation expression.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual unary operation expression
      * @param expected expected unary operation expression
@@ -581,6 +585,39 @@ public final class ExpressionAssert {
         Iterator<ExpressionSegment> actualIterator = actual.getParameters().iterator();
         while (expectedIterator.hasNext()) {
             ExpressionAssert.assertExpression(assertContext, actualIterator.next(), expectedIterator.next());
+        }
+    }
+    
+    /**
+     * Assert key value segment.
+     *
+     * @param assertContext assert context
+     * @param actual actual key value segment
+     * @param expected expected key value segment
+     */
+    private static void assertKeyValueSegment(final SQLCaseAssertContext assertContext, final KeyValueSegment actual, final ExpectedKeyValueSegment expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual key value should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual key value should exist."));
+            assertExpression(assertContext, actual.getKey(), expected.getKey());
+            assertExpression(assertContext, actual.getValue(), expected.getValue());
+        }
+    }
+    
+    /**
+     * Assert json null clause segment.
+     *
+     * @param assertContext assert context
+     * @param actual actual json null clause segment
+     * @param expected expected json null clause segment
+     */
+    private static void assertJsonNullClauseSegment(final SQLCaseAssertContext assertContext, final JsonNullClauseSegment actual, final ExpectedJsonNullClauseSegment expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual json null clause should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual json null clause should exist."));
+            assertThat(assertContext.getText("Json null clause assertion error."), actual.getText(), is(expected.getText()));
         }
     }
     
@@ -655,6 +692,10 @@ public final class ExpressionAssert {
             assertUnaryOperationExpression(assertContext, (UnaryOperationExpression) actual, expected.getUnaryOperationExpression());
         } else if (actual instanceof XmlQueryAndExistsFunctionSegment) {
             assertXmlQueryAndExistsFunctionSegment(assertContext, (XmlQueryAndExistsFunctionSegment) actual, expected.getExpectedXmlQueryAndExistsFunctionSegment());
+        } else if (actual instanceof KeyValueSegment) {
+            assertKeyValueSegment(assertContext, (KeyValueSegment) actual, expected.getKeyValueSegment());
+        } else if (actual instanceof JsonNullClauseSegment) {
+            assertJsonNullClauseSegment(assertContext, (JsonNullClauseSegment) actual, expected.getJsonNullClauseSegment());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

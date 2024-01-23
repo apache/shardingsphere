@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,11 +43,10 @@ import java.util.stream.Collectors;
 /**
  * Show sharding table rules executor.
  */
-public final class ShowShardingTableRuleExecutor extends RuleAwareRQLExecutor<ShowShardingTableRulesStatement, ShardingRule> {
+@Setter
+public final class ShowShardingTableRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowShardingTableRulesStatement, ShardingRule> {
     
-    public ShowShardingTableRuleExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -58,23 +56,23 @@ public final class ShowShardingTableRuleExecutor extends RuleAwareRQLExecutor<Sh
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesStatement sqlStatement) {
         String tableName = sqlStatement.getTableName();
-        Iterator<ShardingTableRuleConfiguration> tables;
-        Iterator<ShardingAutoTableRuleConfiguration> autoTables;
+        Collection<ShardingTableRuleConfiguration> tables;
+        Collection<ShardingAutoTableRuleConfiguration> autoTables;
         if (null == tableName) {
-            tables = rule.getConfiguration().getTables().iterator();
-            autoTables = rule.getConfiguration().getAutoTables().iterator();
+            tables = rule.getConfiguration().getTables();
+            autoTables = rule.getConfiguration().getAutoTables();
         } else {
-            tables = rule.getConfiguration().getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator();
-            autoTables = rule.getConfiguration().getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator();
+            tables = rule.getConfiguration().getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList());
+            autoTables = rule.getConfiguration().getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList());
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (tables.hasNext()) {
-            result.add(buildTableRowData(rule.getConfiguration(), tables.next()));
+        for (ShardingTableRuleConfiguration each : tables) {
+            result.add(buildTableRowData(rule.getConfiguration(), each));
         }
-        while (autoTables.hasNext()) {
-            result.add(buildAutoTableRowData(rule.getConfiguration(), autoTables.next()));
+        for (ShardingAutoTableRuleConfiguration each : autoTables) {
+            result.add(buildAutoTableRowData(rule.getConfiguration(), each));
         }
         return result;
     }
@@ -184,6 +182,11 @@ public final class ShowShardingTableRuleExecutor extends RuleAwareRQLExecutor<Sh
     private Optional<ShardingAuditStrategyConfiguration> getShardingAuditStrategyConfiguration(final ShardingRuleConfiguration ruleConfig,
                                                                                                final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
         return null == shardingAuditStrategyConfig ? Optional.ofNullable(ruleConfig.getDefaultAuditStrategy()) : Optional.of(shardingAuditStrategyConfig);
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

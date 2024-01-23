@@ -19,20 +19,20 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.aware.DatabaseAwareRDLExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.drop.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.NewRuleDefinitionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.ResourceDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.AlterStorageUnitBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.RegisterStorageUnitBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.UnregisterStorageUnitBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyRuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 
 /**
  * RDL backend handler factory.
@@ -51,21 +51,24 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof StorageUnitDefinitionStatement) {
             return getStorageUnitBackendHandler((StorageUnitDefinitionStatement) sqlStatement, connectionSession);
         }
+        return getRuleBackendHandler((RuleDefinitionStatement) sqlStatement, connectionSession);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private static ResourceDefinitionBackendHandler getStorageUnitBackendHandler(final StorageUnitDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
+        RDLExecutor executor = TypedSPILoader.getService(RDLExecutor.class, sqlStatement.getClass());
+        if (executor instanceof DatabaseAwareRDLExecutor) {
+            ((DatabaseAwareRDLExecutor<?>) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
+        }
+        return new ResourceDefinitionBackendHandler(sqlStatement, executor);
+    }
+    
+    private static DistSQLBackendHandler getRuleBackendHandler(final RuleDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
         // TODO Remove when metadata structure adjustment completed. #25485
         String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
         if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
-            return new NewRuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
+            return new RuleDefinitionBackendHandler(sqlStatement, connectionSession);
         }
-        return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
-    }
-    
-    private static ProxyBackendHandler getStorageUnitBackendHandler(final StorageUnitDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
-        if (sqlStatement instanceof RegisterStorageUnitStatement) {
-            return new RegisterStorageUnitBackendHandler((RegisterStorageUnitStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof AlterStorageUnitStatement) {
-            return new AlterStorageUnitBackendHandler((AlterStorageUnitStatement) sqlStatement, connectionSession);
-        }
-        return new UnregisterStorageUnitBackendHandler((UnregisterStorageUnitStatement) sqlStatement, connectionSession);
+        return new LegacyRuleDefinitionBackendHandler(sqlStatement, connectionSession);
     }
 }

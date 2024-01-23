@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.type.rql.count;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.show.CountRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -32,7 +33,10 @@ import java.util.Optional;
 /**
  * Count RQL executor.
  */
-public final class CountRQLExecutor implements RQLExecutor<CountRuleStatement> {
+@Setter
+public final class CountRQLExecutor implements DatabaseAwareRQLExecutor<CountRuleStatement> {
+    
+    private ShardingSphereDatabase database;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -41,7 +45,7 @@ public final class CountRQLExecutor implements RQLExecutor<CountRuleStatement> {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final CountRuleStatement sqlStatement) {
         Optional<CountResultRowBuilder> rowBuilder = TypedSPILoader.findService(CountResultRowBuilder.class, sqlStatement.getType());
         if (!rowBuilder.isPresent()) {
             return Collections.emptyList();

@@ -18,13 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareUpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 
 import java.sql.SQLException;
 
@@ -34,7 +37,7 @@ import java.sql.SQLException;
  * @param <T> type of SQL statement
  */
 @RequiredArgsConstructor
-public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> implements RALBackendHandler {
+public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> implements DistSQLBackendHandler {
     
     private final UpdatableRALStatement sqlStatement;
     
@@ -43,12 +46,11 @@ public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> i
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        RALUpdater<T> updater = TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass());
-        if (updater instanceof ConnectionSessionRequiredRALUpdater) {
-            ((ConnectionSessionRequiredRALUpdater<T>) updater).executeUpdate(connectionSession, (T) sqlStatement);
-        } else {
-            updater.executeUpdate(connectionSession.getDatabaseName(), (T) sqlStatement);
+        UpdatableRALExecutor<T> updater = TypedSPILoader.getService(UpdatableRALExecutor.class, sqlStatement.getClass());
+        if (updater instanceof DatabaseAwareUpdatableRALExecutor) {
+            ((DatabaseAwareUpdatableRALExecutor<T>) updater).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
         }
+        updater.executeUpdate((T) sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
 }

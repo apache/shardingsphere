@@ -17,28 +17,16 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -46,89 +34,42 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ShowSingleTableExecutorTest {
-    
-    @Mock
-    private ShardingSphereDatabase database;
-    
-    @BeforeEach
-    void before() {
-        Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
-        singleTableDataNodeMap.put("t_order", Collections.singleton(new DataNode("ds_1", "t_order")));
-        singleTableDataNodeMap.put("t_order_item", Collections.singleton(new DataNode("ds_2", "t_order_item")));
-        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Collections.singleton(mockSingleRule(singleTableDataNodeMap))));
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-    }
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
+        ShowSingleTableExecutor executor = new ShowSingleTableExecutor();
+        executor.setRule(mockSingleRule());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSingleTableStatement.class));
         assertThat(actual.size(), is(2));
-        Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
-        LocalDataQueryResultRow firstRow = rowData.next();
-        assertThat(firstRow.getCell(1), is("t_order"));
-        assertThat(firstRow.getCell(2), is("ds_1"));
-        LocalDataQueryResultRow secondRow = rowData.next();
-        assertThat(secondRow.getCell(1), is("t_order_item"));
-        assertThat(secondRow.getCell(2), is("ds_2"));
-    }
-    
-    @Test
-    void assertGetRowDataMultipleRules() {
-        Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
-        singleTableDataNodeMap.put("t_order_multiple", Collections.singleton(new DataNode("ds_1_multiple", "t_order_multiple")));
-        singleTableDataNodeMap.put("t_order_item_multiple", Collections.singleton(new DataNode("ds_2_multiple", "t_order_item_multiple")));
-        addShardingSphereRule(mockSingleRule(singleTableDataNodeMap));
-        RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
-        assertThat(actual.size(), is(4));
-        Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
-        LocalDataQueryResultRow firstRow = rowData.next();
-        assertThat(firstRow.getCell(1), is("t_order"));
-        assertThat(firstRow.getCell(2), is("ds_1"));
-        LocalDataQueryResultRow secondRow = rowData.next();
-        assertThat(secondRow.getCell(1), is("t_order_item"));
-        assertThat(secondRow.getCell(2), is("ds_2"));
-        LocalDataQueryResultRow thirdRow = rowData.next();
-        assertThat(thirdRow.getCell(1), is("t_order_item_multiple"));
-        assertThat(thirdRow.getCell(2), is("ds_2_multiple"));
-        LocalDataQueryResultRow fourthRow = rowData.next();
-        assertThat(fourthRow.getCell(1), is("t_order_multiple"));
-        assertThat(fourthRow.getCell(2), is("ds_1_multiple"));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("t_order"));
+        assertThat(row.getCell(2), is("ds_1"));
+        row = iterator.next();
+        assertThat(row.getCell(1), is("t_order_item"));
+        assertThat(row.getCell(2), is("ds_2"));
     }
     
     @Test
     void assertGetSingleTableWithLikeLiteral() {
-        RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
+        ShowSingleTableExecutor executor = new ShowSingleTableExecutor();
+        executor.setRule(mockSingleRule());
         ShowSingleTableStatement statement = new ShowSingleTableStatement(null, "%item", null);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, statement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement);
         assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
-        LocalDataQueryResultRow firstRow = rowData.next();
-        assertThat(firstRow.getCell(1), is("t_order_item"));
-        assertThat(firstRow.getCell(2), is("ds_2"));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("t_order_item"));
+        assertThat(row.getCell(2), is("ds_2"));
     }
     
-    @Test
-    void assertGetColumns() {
-        RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("table_name"));
-        assertThat(iterator.next(), is("storage_unit_name"));
-    }
-    
-    private SingleRule mockSingleRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
+    private SingleRule mockSingleRule() {
         SingleRule result = mock(SingleRule.class);
+        Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
+        singleTableDataNodeMap.put("t_order", Collections.singleton(new DataNode("ds_1", "t_order")));
+        singleTableDataNodeMap.put("t_order_item", Collections.singleton(new DataNode("ds_2", "t_order_item")));
         when(result.getSingleTableDataNodes()).thenReturn(singleTableDataNodeMap);
         return result;
-    }
-    
-    private void addShardingSphereRule(final ShardingSphereRule... rules) {
-        database.getRuleMetaData().getRules().addAll(Arrays.asList(rules));
     }
 }

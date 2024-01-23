@@ -55,9 +55,9 @@ class ZookeeperTest {
     @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException, IOException {
         try (
-                GenericContainer<?> zookeeperContainer = new GenericContainer<>(DockerImageName.parse("zookeeper:3.9.1-jre-17"))
+                GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("zookeeper:3.9.1-jre-17"))
                         .withCreateContainerCmdModifier(cmd -> cmd.withHostConfig(new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(62372), new ExposedPort(2181)))))) {
-            zookeeperContainer.start();
+            container.start();
             beforeAll();
             DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/mode/cluster/zookeeper.yaml"));
             testShardingService = new TestShardingService(dataSource);

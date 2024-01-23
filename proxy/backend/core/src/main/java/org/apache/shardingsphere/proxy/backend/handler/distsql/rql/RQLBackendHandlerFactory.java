@@ -37,6 +37,6 @@ public final class RQLBackendHandlerFactory {
      * @return RDL backend handler
      */
     public static ProxyBackendHandler newInstance(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        return new RQLBackendHandler<>(sqlStatement, connectionSession);
+        return new RQLBackendHandler(sqlStatement, connectionSession);
     }
 }
