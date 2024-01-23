@@ -49,7 +49,9 @@ public final class CreateDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDL
     @SuppressWarnings("unchecked")
     public Collection<MetaDataVersion> execute(final RuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        if (null != currentRuleConfig) {
+            executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        }
         ModeContextManager modeContextManager = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager();
         return modeContextManager.alterRuleConfiguration(database.getName(), getToBeCreatedRuleConfiguration(sqlStatement, database, currentRuleConfig, toBeCreatedRuleConfig));
     }
