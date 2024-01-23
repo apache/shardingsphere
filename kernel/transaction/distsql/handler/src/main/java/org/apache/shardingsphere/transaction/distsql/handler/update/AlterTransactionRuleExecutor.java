@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  * Alter transaction rule executor.
  */
-public final class AlterTransactionRuleExecutor implements GlobalRuleRDLExecutor<AlterTransactionRuleStatement, TransactionRuleConfiguration> {
+public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionExecutor<AlterTransactionRuleStatement, TransactionRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final TransactionRuleConfiguration currentRuleConfig, final AlterTransactionRuleStatement sqlStatement) {

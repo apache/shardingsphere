@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.global;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -36,7 +36,7 @@ public final class GlobalRuleUpdater {
     private final RuleDefinitionStatement sqlStatement;
     
     @SuppressWarnings("rawtypes")
-    private final GlobalRuleRDLExecutor executor;
+    private final GlobalRuleDefinitionExecutor executor;
     
     /**
      * Execute update.
