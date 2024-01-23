@@ -61,7 +61,13 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
         PipelineMetaDataNodeWatcher.getInstance(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
-        dispatchEnablePipelineJobStartEvent(contextKey);
+        try {
+            dispatchEnablePipelineJobStartEvent(contextKey);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.error("Dispatch enable pipeline job start event failed", ex);
+        }
     }
     
     private void dispatchEnablePipelineJobStartEvent(final PipelineContextKey contextKey) {
@@ -69,13 +75,16 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         List<JobBriefInfo> allJobsBriefInfo = PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo()
                 .stream().filter(each -> !each.getJobName().startsWith("_")).collect(Collectors.toList());
         for (JobBriefInfo each : allJobsBriefInfo) {
-            PipelineJobType pipelineJobType = PipelineJobIdUtils.parseJobType(each.getJobName());
-            PipelineJobMetaData jobMetaData = pipelineJobType.getJobInfo(each.getJobName()).getJobMetaData();
+            PipelineJobType jobType = PipelineJobIdUtils.parseJobType(each.getJobName());
+            PipelineJobMetaData jobMetaData = jobType.getJobInfo(each.getJobName()).getJobMetaData();
+            if (null == jobMetaData) {
+                continue;
+            }
             if (!jobMetaData.isActive()) {
                 return;
             }
-            JobConfigurationPOJO jobConfiguration = jobConfigAPI.getJobConfiguration(each.getJobName());
-            jobConfigAPI.updateJobConfiguration(jobConfiguration);
+            JobConfigurationPOJO jobConfig = jobConfigAPI.getJobConfiguration(each.getJobName());
+            jobConfigAPI.updateJobConfiguration(jobConfig);
         }
     }
     
