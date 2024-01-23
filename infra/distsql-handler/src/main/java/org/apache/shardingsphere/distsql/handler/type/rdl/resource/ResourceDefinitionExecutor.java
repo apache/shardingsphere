@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Resource executor.
+ * Resource definition executor.
  * 
  * @param <T> type of storage unit definition statement
  */

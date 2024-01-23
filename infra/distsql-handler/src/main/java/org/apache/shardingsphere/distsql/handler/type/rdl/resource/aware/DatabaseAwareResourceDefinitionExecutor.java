@@ -22,11 +22,11 @@ import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStat
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * Database aware RDL executor.
+ * Database aware resource definition executor.
  * 
  * @param <T> type of storage unit definition statement
  */
-public interface DatabaseAwareRDLExecutor<T extends StorageUnitDefinitionStatement> extends ResourceDefinitionExecutor<T> {
+public interface DatabaseAwareResourceDefinitionExecutor<T extends StorageUnitDefinitionStatement> extends ResourceDefinitionExecutor<T> {
     
     /**
      * Set database.
