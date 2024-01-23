@@ -32,13 +32,11 @@ import java.util.Optional;
 
 /**
  * Database rule updater.
- *
- * @param <T> type of rule definition statement
  */
 @RequiredArgsConstructor
-public final class DatabaseRuleUpdater<T extends RuleDefinitionStatement> {
+public final class DatabaseRuleUpdater {
     
-    private final T sqlStatement;
+    private final RuleDefinitionStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     

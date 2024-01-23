@@ -55,7 +55,7 @@ class LegacyRuleDefinitionBackendHandlerTest {
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        ResponseHeader response = new LegacyRuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), connectionSession).execute();
+        ResponseHeader response = new LegacyRuleDefinitionBackendHandler(new CreateFixtureRuleStatement(), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
