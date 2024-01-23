@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
@@ -63,9 +64,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
         try {
             dispatchEnablePipelineJobStartEvent(contextKey);
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
+        } catch (final IllegalArgumentException | PipelineJobNotFoundException ex) {
             log.error("Dispatch enable pipeline job start event failed", ex);
         }
     }
