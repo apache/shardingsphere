@@ -15,42 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.global;
+package org.apache.shardingsphere.distsql.handler.type.rdl.rule.database;
 
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Global rule RDL executor.
+ * Database rule RDL executor.
  * 
- * @param <T> type of rule definition statement
+ * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
 @SingletonSPI
-public interface GlobalRuleRDLExecutor<T extends RuleDefinitionStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface DatabaseRuleRDLExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Check SQL statement.
      *
-     * @param currentRuleConfig current rule configuration
+     * @param database database
      * @param sqlStatement SQL statement
-     */
-    void checkSQLStatement(R currentRuleConfig, T sqlStatement);
-    
-    /**
-     * Build altered rule configuration.
-     *
      * @param currentRuleConfig current rule configuration
-     * @param sqlStatement SQL statement
-     * @return built altered rule configuration
      */
-    RuleConfiguration buildAlteredRuleConfiguration(R currentRuleConfig, T sqlStatement);
+    void checkSQLStatement(ShardingSphereDatabase database, T sqlStatement, R currentRuleConfig);
     
     /**
      * Get rule configuration class.
-     *
+     * 
      * @return rule configuration class
      */
     Class<R> getRuleConfigurationClass();

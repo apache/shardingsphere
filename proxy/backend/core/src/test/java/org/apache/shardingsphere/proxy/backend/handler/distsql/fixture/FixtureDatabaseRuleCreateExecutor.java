@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleRDLCreateExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleRDLCreateExecutor<CreateFixtureRuleStatement, FixtureRuleConfiguration> {

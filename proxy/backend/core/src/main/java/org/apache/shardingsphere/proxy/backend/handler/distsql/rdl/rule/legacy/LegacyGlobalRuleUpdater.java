@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleRDLExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

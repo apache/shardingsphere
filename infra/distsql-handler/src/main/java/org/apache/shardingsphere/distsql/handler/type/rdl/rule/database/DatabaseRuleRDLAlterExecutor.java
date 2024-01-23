@@ -15,39 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.database;
+package org.apache.shardingsphere.distsql.handler.type.rdl.rule.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Database rule RDL executor.
- * 
+ * Database rule RDL alter executor.
+ *
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-@SingletonSPI
-public interface DatabaseRuleRDLExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface DatabaseRuleRDLAlterExecutor<T extends SQLStatement, R extends RuleConfiguration> extends DatabaseRuleRDLExecutor<T, R> {
     
     /**
-     * Check SQL statement.
+     * Build to be altered rule configuration.
      *
-     * @param database database
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration
+     * @return to be altered rule configuration
      */
-    void checkSQLStatement(ShardingSphereDatabase database, T sqlStatement, R currentRuleConfig);
+    R buildToBeAlteredRuleConfiguration(T sqlStatement);
     
     /**
-     * Get rule configuration class.
-     * 
-     * @return rule configuration class
+     * TODO Remove temporary default implementation
+     * Build to be dropped rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration
+     * @param toBeAlteredRuleConfig new rule configuration to be renewed
+     * @return to be dropped rule configuration
      */
-    Class<R> getRuleConfigurationClass();
+    default R buildToBeDroppedRuleConfiguration(final R currentRuleConfig, final R toBeAlteredRuleConfig) {
+        return null;
+    }
     
-    @Override
-    Class<T> getType();
+    /**
+     * Update current rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration to be updated
+     * @param toBeAlteredRuleConfig to be altered rule configuration
+     */
+    void updateCurrentRuleConfiguration(R currentRuleConfig, R toBeAlteredRuleConfig);
 }

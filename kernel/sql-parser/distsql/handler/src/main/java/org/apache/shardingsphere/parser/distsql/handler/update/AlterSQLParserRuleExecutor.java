@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleRDLExecutor;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
