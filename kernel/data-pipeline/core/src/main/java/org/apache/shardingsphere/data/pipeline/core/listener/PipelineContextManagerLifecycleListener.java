@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNodeWatcher;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
@@ -64,7 +64,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
         try {
             dispatchEnablePipelineJobStartEvent(contextKey);
-        } catch (final IllegalArgumentException | PipelineJobNotFoundException ex) {
+        } catch (final IllegalArgumentException | UnsupportedOperationException | PipelineJobNotFoundException ex) {
             log.error("Dispatch enable pipeline job start event failed", ex);
         }
     }
@@ -72,14 +72,14 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
     private void dispatchEnablePipelineJobStartEvent(final PipelineContextKey contextKey) {
         JobConfigurationAPI jobConfigAPI = PipelineAPIFactory.getJobConfigurationAPI(contextKey);
         List<JobBriefInfo> allJobsBriefInfo = PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo()
-                .stream().filter(each -> !each.getJobName().startsWith("_")).collect(Collectors.toList());
+                .stream().filter(each -> !each.getJobName().startsWith("_") && !each.getJobName().startsWith("j02")).collect(Collectors.toList());
         for (JobBriefInfo each : allJobsBriefInfo) {
             PipelineJobType jobType = PipelineJobIdUtils.parseJobType(each.getJobName());
-            PipelineJobMetaData jobMetaData = jobType.getJobInfo(each.getJobName()).getJobMetaData();
-            if (null == jobMetaData) {
+            PipelineJobInfo jobInfo = jobType.getJobInfo(each.getJobName());
+            if (null == jobInfo || null == jobInfo.getJobMetaData()) {
                 continue;
             }
-            if (!jobMetaData.isActive()) {
+            if (!jobInfo.getJobMetaData().isActive()) {
                 return;
             }
             JobConfigurationPOJO jobConfig = jobConfigAPI.getJobConfiguration(each.getJobName());
