@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.impl.sql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
+import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.ParseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.PreviewStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Parse statement assert.
+ * Preview statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParseStatementAssert {
+public final class PreviewStatementAssert {
     
     /**
-     * Assert parse statement is correct with expected parser result.
+     * Assert preview statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual parse statement
-     * @param expected expected parse statement test case
+     * @param actual actual preview statement
+     * @param expected expected preview statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ParseStatement actual, final ParseStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PreviewStatement actual, final PreviewStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(assertContext.getText("SQL assertion error"), actual.getSql(), is(expected.getSql()));
         }
