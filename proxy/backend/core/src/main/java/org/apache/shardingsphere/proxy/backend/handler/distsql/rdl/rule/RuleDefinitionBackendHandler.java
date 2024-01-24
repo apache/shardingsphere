@@ -24,6 +24,8 @@ import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.DatabaseRuleUpdater;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.global.GlobalRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyGlobalRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -32,19 +34,16 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import java.util.Optional;
 
 /**
- * TODO Rename to RuleDefinitionBackendHandler when metadata structure adjustment completed. #25485
  * Rule definition backend handler.
- *
- * @param <T> type of rule definition statement
  */
 @RequiredArgsConstructor
-public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> implements DistSQLBackendHandler {
+public final class RuleDefinitionBackendHandler implements DistSQLBackendHandler {
     
-    private final T sqlStatement;
+    private final RuleDefinitionStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     @Override
     public ResponseHeader execute() {
         Optional<DatabaseRuleRDLExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleRDLExecutor.class, sqlStatement.getClass());

@@ -46,15 +46,14 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+// TODO Remove when metadata structure adjustment completed. #25485
 /**
  * Legacy rule definition backend handler.
- *
- * @param <T> type of rule definition statement
  */
 @RequiredArgsConstructor
-public final class LegacyRuleDefinitionBackendHandler<T extends RuleDefinitionStatement> implements DistSQLBackendHandler {
+public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendHandler {
     
-    private final T sqlStatement;
+    private final RuleDefinitionStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
@@ -84,7 +83,7 @@ public final class LegacyRuleDefinitionBackendHandler<T extends RuleDefinitionSt
     
     @SuppressWarnings("rawtypes")
     private Collection<RuleConfiguration> processSQLStatement(final ShardingSphereDatabase database,
-                                                              final T sqlStatement, final DatabaseRuleRDLExecutor executor, final RuleConfiguration currentRuleConfig) {
+                                                              final RuleDefinitionStatement sqlStatement, final DatabaseRuleRDLExecutor executor, final RuleConfiguration currentRuleConfig) {
         Collection<RuleConfiguration> result = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         if (executor instanceof DatabaseRuleRDLCreateExecutor) {
             if (null != currentRuleConfig) {
@@ -105,7 +104,7 @@ public final class LegacyRuleDefinitionBackendHandler<T extends RuleDefinitionSt
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processCreate(final T sqlStatement, final DatabaseRuleRDLCreateExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private RuleConfiguration processCreate(final RuleDefinitionStatement sqlStatement, final DatabaseRuleRDLCreateExecutor executor, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         if (null == currentRuleConfig) {
             return toBeCreatedRuleConfig;
@@ -115,14 +114,14 @@ public final class LegacyRuleDefinitionBackendHandler<T extends RuleDefinitionSt
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processAlter(final T sqlStatement, final DatabaseRuleRDLAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private RuleConfiguration processAlter(final RuleDefinitionStatement sqlStatement, final DatabaseRuleRDLAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         return currentRuleConfig;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processDrop(final ShardingSphereDatabase database, final Collection<RuleConfiguration> configs, final T sqlStatement,
+    private void processDrop(final ShardingSphereDatabase database, final Collection<RuleConfiguration> configs, final RuleDefinitionStatement sqlStatement,
                              final DatabaseRuleRDLDropExecutor executor, final RuleConfiguration currentRuleConfig) {
         if (!executor.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
             return;

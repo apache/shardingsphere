@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import java.util.Collection;
 import java.util.LinkedList;
 
+// TODO Remove when metadata structure adjustment completed. #25485
 /**
  * Legacy global rule updater.
  */
