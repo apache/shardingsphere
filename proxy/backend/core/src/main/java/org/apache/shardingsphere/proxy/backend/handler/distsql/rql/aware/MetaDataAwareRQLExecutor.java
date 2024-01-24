@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.statement;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.aware;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
-
-import java.util.Optional;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 /**
- * Show status from readwrite-splitting rules statement.
+ * Meta data aware RQL executor.
+ * 
+ * @param <T> type of SQL statement
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowStatusFromReadwriteSplittingRulesStatement extends RQLStatement implements FromDatabaseAvailable {
+public interface MetaDataAwareRQLExecutor<T extends RQLStatement> extends RQLExecutor<T> {
     
-    private final DatabaseSegment database;
-    
-    private final String groupName;
-    
-    @Override
-    public Optional<DatabaseSegment> getDatabase() {
-        return Optional.ofNullable(database);
-    }
-    
+    /**
+     * Set database.
+     *
+     * @param metaDataContexts meta data contexts
+     */
+    void setMetaDataContexts(MetaDataContexts metaDataContexts);
 }
