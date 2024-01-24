@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.DatabaseRuleRDLExecuteEngine;
-import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -50,12 +50,16 @@ public final class AlterDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDLE
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         ModeContextManager modeContextManager = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager();
-        if (sqlStatement instanceof UnloadSingleTableStatement) {
+        if (isSinglePersistNode(currentRuleConfig)) {
             return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, currentRuleConfig));
         }
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
         return modeContextManager.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
+    }
+    
+    private boolean isSinglePersistNode(final RuleConfiguration currentRuleConfig) {
+        return currentRuleConfig instanceof SingleRuleConfiguration;
     }
     
     @SuppressWarnings("unchecked")
