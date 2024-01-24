@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.distsql.handler.type.rdl.resource;
 
-import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Resource definition executor.
  * 
- * @param <T> type of storage unit definition statement
+ * @param <T> type of resource definition statement
  */
 @SingletonSPI
-public interface ResourceDefinitionExecutor<T extends StorageUnitDefinitionStatement> extends TypedSPI {
+public interface ResourceDefinitionExecutor<T extends ResourceDefinitionStatement> extends TypedSPI {
     
     /**
      * Execute update.

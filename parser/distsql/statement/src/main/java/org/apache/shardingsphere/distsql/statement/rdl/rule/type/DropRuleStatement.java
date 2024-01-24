@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rdl.alter;
+package org.apache.shardingsphere.distsql.statement.rdl.rule.type;
 
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 
 /**
- * Alter rule statement.
+ * Drop rule statement.
  */
-public abstract class AlterRuleStatement extends RuleDefinitionStatement {
+@RequiredArgsConstructor
+@Getter
+public abstract class DropRuleStatement extends RuleDefinitionStatement {
+    
+    private final boolean ifExists;
+    
+    protected DropRuleStatement() {
+        this(false);
+    }
 }

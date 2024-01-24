@@ -15,10 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rdl;
+package org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.StorageUnitDefinitionStatement;
+
+import java.util.Collection;
 
 /**
- * Rule definition statement.
+ * Alter storage unit statement.
  */
-public abstract class RuleDefinitionStatement extends RDLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class AlterStorageUnitStatement extends StorageUnitDefinitionStatement {
+    
+    private final Collection<DataSourceSegment> storageUnits;
 }

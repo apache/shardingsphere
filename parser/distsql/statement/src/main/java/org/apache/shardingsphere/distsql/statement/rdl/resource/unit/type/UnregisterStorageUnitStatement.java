@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rdl.drop;
+package org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.StorageUnitDefinitionStatement;
 
 import java.util.Collection;
 
