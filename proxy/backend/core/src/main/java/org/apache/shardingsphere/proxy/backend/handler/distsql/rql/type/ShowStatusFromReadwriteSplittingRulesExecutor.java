@@ -54,7 +54,9 @@ import java.util.stream.Collectors;
  */
 @Setter
 public final class ShowStatusFromReadwriteSplittingRulesExecutor
-        implements DatabaseAwareRQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement>, MetaDataAwareRQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement> {
+        implements
+            DatabaseAwareRQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement>,
+            MetaDataAwareRQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement> {
     
     private ShardingSphereDatabase database;
     
