@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.readwritesplitting;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -51,10 +50,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Set readwrite-splitting storage unit status executor.
+ * Alter readwrite-splitting storage unit status executor.
  */
+// TODO move to readwritesplitting module
 @Setter
-public final class AlterReadwriteSplittingStorageUnitStatusStatementExecutor implements DatabaseAwareUpdatableRALExecutor<AlterReadwriteSplittingStorageUnitStatusStatement> {
+public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements DatabaseAwareUpdatableRALExecutor<AlterReadwriteSplittingStorageUnitStatusStatement> {
     
     private static final String DISABLE = "DISABLE";
     
@@ -178,7 +178,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementExecutor imp
     }
     
     private Collection<QualifiedDatabase> getDisabledStorageNodes(final MetaDataBasedPersistService persistService) {
-        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
+        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService(persistService.getRepository()).loadStorageNodes();
         return storageNodes.entrySet().stream().filter(each -> DataSourceState.DISABLED == each.getValue().getStatus())
                 .map(each -> new QualifiedDatabase(each.getKey())).filter(each -> database.getName().equalsIgnoreCase(each.getDatabaseName())).collect(Collectors.toList());
     }

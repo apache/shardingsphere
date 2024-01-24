@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.readwritesplitting;
 
 import com.google.common.base.Strings;
 import lombok.Setter;
@@ -52,6 +52,7 @@ import java.util.stream.Collectors;
 /**
  * Show status from readwrite-splitting rules executor.
  */
+// TODO move to readwritesplitting module
 @Setter
 public final class ShowStatusFromReadwriteSplittingRulesExecutor
         implements
