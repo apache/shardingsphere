@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -43,7 +43,7 @@ public final class LegacyGlobalRuleUpdater {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void executeUpdate() {
-        GlobalRuleRDLExecutor executor = TypedSPILoader.getService(GlobalRuleRDLExecutor.class, sqlStatement.getClass());
+        GlobalRuleDefinitionExecutor executor = TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
@@ -63,7 +63,7 @@ public final class LegacyGlobalRuleUpdater {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Collection<RuleConfiguration> processUpdate(final Collection<RuleConfiguration> ruleConfigurations,
-                                                        final RuleDefinitionStatement sqlStatement, final GlobalRuleRDLExecutor globalRuleUpdater, final RuleConfiguration currentRuleConfig) {
+                                                        final RuleDefinitionStatement sqlStatement, final GlobalRuleDefinitionExecutor globalRuleUpdater, final RuleConfiguration currentRuleConfig) {
         Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigurations);
         result.remove(currentRuleConfig);
         result.add(globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement));

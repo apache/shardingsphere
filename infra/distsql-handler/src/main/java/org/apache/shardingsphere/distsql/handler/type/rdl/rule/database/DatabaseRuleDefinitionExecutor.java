@@ -15,26 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl;
+package org.apache.shardingsphere.distsql.handler.type.rdl.rule.database;
 
-import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * RDL executor.
+ * Database rule definition executor.
  * 
- * @param <T> type of RQL statement
+ * @param <T> type of SQL statement
+ * @param <R> type of rule configuration
  */
 @SingletonSPI
-public interface RDLExecutor<T extends RDLStatement> extends TypedSPI {
+public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
-     * Execute update.
-     * 
+     * Check SQL statement.
+     *
+     * @param database database
      * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration
      */
-    void execute(T sqlStatement);
+    void checkSQLStatement(ShardingSphereDatabase database, T sqlStatement, R currentRuleConfig);
+    
+    /**
+     * Get rule configuration class.
+     * 
+     * @return rule configuration class
+     */
+    Class<R> getRuleConfigurationClass();
     
     @Override
     Class<T> getType();

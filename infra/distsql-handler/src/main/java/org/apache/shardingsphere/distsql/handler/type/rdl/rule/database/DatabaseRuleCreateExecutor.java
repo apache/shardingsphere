@@ -15,39 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.database;
+package org.apache.shardingsphere.distsql.handler.type.rdl.rule.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Database rule RDL executor.
- * 
+ * Database rule create executor.
+ *
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-@SingletonSPI
-public interface DatabaseRuleRDLExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
     
     /**
-     * Check SQL statement.
+     * Build to be created rule configuration.
      *
-     * @param database database
+     * @param currentRuleConfig current rule configuration to be updated
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration
+     * @return to be created rule configuration
      */
-    void checkSQLStatement(ShardingSphereDatabase database, T sqlStatement, R currentRuleConfig);
+    R buildToBeCreatedRuleConfiguration(R currentRuleConfig, T sqlStatement);
     
     /**
-     * Get rule configuration class.
-     * 
-     * @return rule configuration class
+     * Update current rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration to be updated
+     * @param toBeCreatedRuleConfig to be created rule configuration
      */
-    Class<R> getRuleConfigurationClass();
-    
-    @Override
-    Class<T> getType();
+    void updateCurrentRuleConfiguration(R currentRuleConfig, R toBeCreatedRuleConfig);
 }

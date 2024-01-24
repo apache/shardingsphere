@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Drop mask rule statement executor.
  */
-public final class DropMaskRuleExecutor implements DatabaseRuleRDLDropExecutor<DropMaskRuleStatement, MaskRuleConfiguration> {
+public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<DropMaskRuleStatement, MaskRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {

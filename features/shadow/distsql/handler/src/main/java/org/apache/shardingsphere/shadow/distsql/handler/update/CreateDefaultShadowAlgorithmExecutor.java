@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.DuplicateAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -39,7 +39,7 @@ import java.util.stream.Stream;
 /**
  * Create default shadow algorithm statement executor.
  */
-public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleRDLCreateExecutor<CreateDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
+public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleCreateExecutor<CreateDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {

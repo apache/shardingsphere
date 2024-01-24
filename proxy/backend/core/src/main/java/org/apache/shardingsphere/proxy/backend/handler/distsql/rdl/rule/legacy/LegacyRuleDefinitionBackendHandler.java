@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLDropExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
@@ -61,7 +61,7 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
     @Override
     public ResponseHeader execute() {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession));
-        DatabaseRuleRDLExecutor executor = TypedSPILoader.getService(DatabaseRuleRDLExecutor.class, sqlStatement.getClass());
+        DatabaseRuleDefinitionExecutor executor = TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
@@ -77,26 +77,26 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final DatabaseRuleRDLExecutor<?, ?> executor) {
-        return !(executor instanceof DatabaseRuleRDLDropExecutor) || ((DatabaseRuleRDLDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final DatabaseRuleDefinitionExecutor<?, ?> executor) {
+        return !(executor instanceof DatabaseRuleDropExecutor) || ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
     }
     
     @SuppressWarnings("rawtypes")
     private Collection<RuleConfiguration> processSQLStatement(final ShardingSphereDatabase database,
-                                                              final RuleDefinitionStatement sqlStatement, final DatabaseRuleRDLExecutor executor, final RuleConfiguration currentRuleConfig) {
+                                                              final RuleDefinitionStatement sqlStatement, final DatabaseRuleDefinitionExecutor executor, final RuleConfiguration currentRuleConfig) {
         Collection<RuleConfiguration> result = new LinkedList<>(database.getRuleMetaData().getConfigurations());
-        if (executor instanceof DatabaseRuleRDLCreateExecutor) {
+        if (executor instanceof DatabaseRuleCreateExecutor) {
             if (null != currentRuleConfig) {
                 result.remove(currentRuleConfig);
             }
-            RuleConfiguration createdRuleConfig = processCreate(sqlStatement, (DatabaseRuleRDLCreateExecutor) executor, currentRuleConfig);
+            RuleConfiguration createdRuleConfig = processCreate(sqlStatement, (DatabaseRuleCreateExecutor) executor, currentRuleConfig);
             result.add(decorateRuleConfiguration(database, createdRuleConfig));
-        } else if (executor instanceof DatabaseRuleRDLAlterExecutor) {
+        } else if (executor instanceof DatabaseRuleAlterExecutor) {
             result.remove(currentRuleConfig);
-            RuleConfiguration alteredRuleConfig = processAlter(sqlStatement, (DatabaseRuleRDLAlterExecutor) executor, currentRuleConfig);
+            RuleConfiguration alteredRuleConfig = processAlter(sqlStatement, (DatabaseRuleAlterExecutor) executor, currentRuleConfig);
             result.add(decorateRuleConfiguration(database, alteredRuleConfig));
-        } else if (executor instanceof DatabaseRuleRDLDropExecutor) {
-            processDrop(database, result, sqlStatement, (DatabaseRuleRDLDropExecutor) executor, currentRuleConfig);
+        } else if (executor instanceof DatabaseRuleDropExecutor) {
+            processDrop(database, result, sqlStatement, (DatabaseRuleDropExecutor) executor, currentRuleConfig);
         } else {
             throw new UnsupportedSQLOperationException(String.format("Cannot support RDL executor type `%s`", executor.getClass().getName()));
         }
@@ -104,7 +104,7 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processCreate(final RuleDefinitionStatement sqlStatement, final DatabaseRuleRDLCreateExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private RuleConfiguration processCreate(final RuleDefinitionStatement sqlStatement, final DatabaseRuleCreateExecutor executor, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         if (null == currentRuleConfig) {
             return toBeCreatedRuleConfig;
@@ -114,7 +114,7 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processAlter(final RuleDefinitionStatement sqlStatement, final DatabaseRuleRDLAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private RuleConfiguration processAlter(final RuleDefinitionStatement sqlStatement, final DatabaseRuleAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         return currentRuleConfig;
@@ -122,7 +122,7 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processDrop(final ShardingSphereDatabase database, final Collection<RuleConfiguration> configs, final RuleDefinitionStatement sqlStatement,
-                             final DatabaseRuleRDLDropExecutor executor, final RuleConfiguration currentRuleConfig) {
+                             final DatabaseRuleDropExecutor executor, final RuleConfiguration currentRuleConfig) {
         if (!executor.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
             return;
         }

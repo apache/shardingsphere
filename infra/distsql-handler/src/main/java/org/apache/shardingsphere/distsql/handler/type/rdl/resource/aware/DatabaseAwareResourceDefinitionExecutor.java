@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.aware;
+package org.apache.shardingsphere.distsql.handler.type.rdl.resource.aware;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.RDLExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
+import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * Database aware RDL executor.
+ * Database aware resource definition executor.
  * 
- * @param <T> type of SQL statement
+ * @param <T> type of storage unit definition statement
  */
-public interface DatabaseAwareRDLExecutor<T extends RDLStatement> extends RDLExecutor<T> {
+public interface DatabaseAwareResourceDefinitionExecutor<T extends StorageUnitDefinitionStatement> extends ResourceDefinitionExecutor<T> {
     
     /**
      * Set database.

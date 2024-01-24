@@ -29,7 +29,7 @@ import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
 
 import java.util.Arrays;
@@ -102,7 +102,7 @@ public final class ShowDistVariableExecutor implements ConnectionSizeAwareQuerya
     }
     
     private String getConnectionSize(final String variableName) {
-        ShardingSpherePreconditions.checkState(VariableEnum.CACHED_CONNECTIONS == VariableEnum.getValueOf(variableName), () -> new UnsupportedVariableException(variableName));
+        ShardingSpherePreconditions.checkState(DistSQLVariable.CACHED_CONNECTIONS == DistSQLVariable.getValueOf(variableName), () -> new UnsupportedVariableException(variableName));
         return String.valueOf(connectionSize);
     }
     

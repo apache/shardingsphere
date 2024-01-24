@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common;
 
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 
 /**
- * Variable enum.
+ * DistSQL variable.
  */
-public enum VariableEnum {
+public enum DistSQLVariable {
     
     CACHED_CONNECTIONS;
     
@@ -33,7 +33,7 @@ public enum VariableEnum {
      * @return variable constant
      * @throws UnsupportedVariableException unsupported variable exception
      */
-    public static VariableEnum getValueOf(final String variableName) {
+    public static DistSQLVariable getValueOf(final String variableName) {
         try {
             return valueOf(variableName.toUpperCase());
         } catch (final IllegalArgumentException ignored) {

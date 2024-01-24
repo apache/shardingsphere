@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.aware.DatabaseAwareRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.resource.aware.DatabaseAwareResourceDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
@@ -48,11 +48,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Alter storage unit backend handler.
+ * Alter storage unit executor.
  */
 @Slf4j
 @Setter
-public final class AlterStorageUnitExecutor implements DatabaseAwareRDLExecutor<AlterStorageUnitStatement> {
+public final class AlterStorageUnitExecutor implements DatabaseAwareResourceDefinitionExecutor<AlterStorageUnitStatement> {
     
     private final DataSourcePoolPropertiesValidateHandler validateHandler = new DataSourcePoolPropertiesValidateHandler();
     

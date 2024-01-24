@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.global;
+package org.apache.shardingsphere.distsql.handler.type.rdl.rule.global;
 
 import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -23,13 +23,13 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Global rule RDL executor.
+ * Global rule definition executor.
  * 
  * @param <T> type of rule definition statement
  * @param <R> type of rule configuration
  */
 @SingletonSPI
-public interface GlobalRuleRDLExecutor<T extends RuleDefinitionStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface GlobalRuleDefinitionExecutor<T extends RuleDefinitionStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Check SQL statement.
