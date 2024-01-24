@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.type.ral.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.convert.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;

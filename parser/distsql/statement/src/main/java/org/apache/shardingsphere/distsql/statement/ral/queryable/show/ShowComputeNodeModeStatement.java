@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
 
-import lombok.RequiredArgsConstructor;
-
-import java.util.Optional;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
- * Export metadata statement.
+ * Show compute node mode statement.
  */
-@RequiredArgsConstructor
-public final class ExportMetaDataStatement extends QueryableRALStatement {
-    
-    private final String filePath;
-    
-    /**
-     * Get file path.
-     *
-     * @return file path
-     */
-    public Optional<String> getFilePath() {
-        return Optional.ofNullable(filePath);
-    }
+public final class ShowComputeNodeModeStatement extends QueryableRALStatement {
 }

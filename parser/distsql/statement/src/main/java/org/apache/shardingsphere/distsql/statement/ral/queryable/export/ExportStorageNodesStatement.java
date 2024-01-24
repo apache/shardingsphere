@@ -15,17 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.export;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+
+import java.util.Optional;
 
 /**
- * Show service provider implementations statement.
+ * Export storage nodes statement.
  */
 @RequiredArgsConstructor
-@Getter
-public final class ShowServiceProviderImplementationsStatement extends QueryableRALStatement {
+public final class ExportStorageNodesStatement extends QueryableRALStatement {
     
-    private final String serviceProviderInterface;
+    @Getter
+    private final String databaseName;
+    
+    private final String filePath;
+    
+    /**
+     * Get file path.
+     *
+     * @return file path
+     */
+    public Optional<String> getFilePath() {
+        return Optional.ofNullable(filePath);
+    }
 }
