@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rdl.create;
+package org.apache.shardingsphere.distsql.statement.rdl.rule;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 
 /**
- * Create rule statement.
+ * Rule definition statement.
  */
-@RequiredArgsConstructor
-@Getter
-public abstract class CreateRuleStatement extends RuleDefinitionStatement {
-    
-    private final boolean ifNotExists;
-    
-    protected CreateRuleStatement() {
-        this(false);
-    }
+public abstract class RuleDefinitionStatement extends RDLStatement {
 }

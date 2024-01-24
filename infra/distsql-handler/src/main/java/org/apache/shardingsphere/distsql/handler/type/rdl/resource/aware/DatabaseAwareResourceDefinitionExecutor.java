@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.distsql.handler.type.rdl.resource.aware;
 
 import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
  * Database aware resource definition executor.
  * 
- * @param <T> type of storage unit definition statement
+ * @param <T> type of resource definition statement
  */
-public interface DatabaseAwareResourceDefinitionExecutor<T extends StorageUnitDefinitionStatement> extends ResourceDefinitionExecutor<T> {
+public interface DatabaseAwareResourceDefinitionExecutor<T extends ResourceDefinitionStatement> extends ResourceDefinitionExecutor<T> {
     
     /**
      * Set database.

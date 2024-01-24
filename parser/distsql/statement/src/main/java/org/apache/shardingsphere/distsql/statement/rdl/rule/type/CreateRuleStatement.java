@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rdl.create;
+package org.apache.shardingsphere.distsql.statement.rdl.rule.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 
 /**
- * Register storage unit statement.
+ * Create rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RegisterStorageUnitStatement extends StorageUnitDefinitionStatement {
+public abstract class CreateRuleStatement extends RuleDefinitionStatement {
     
     private final boolean ifNotExists;
     
-    private final Collection<DataSourceSegment> storageUnits;
+    protected CreateRuleStatement() {
+        this(false);
+    }
 }

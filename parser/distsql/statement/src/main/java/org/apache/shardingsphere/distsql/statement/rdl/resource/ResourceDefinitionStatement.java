@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rdl;
+package org.apache.shardingsphere.distsql.statement.rdl.resource;
+
+import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 
 /**
- * Storage unit definition statement.
+ * Resource definition statement.
  */
-public abstract class StorageUnitDefinitionStatement extends RDLStatement {
+public abstract class ResourceDefinitionStatement extends RDLStatement {
 }

@@ -101,9 +101,9 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariable
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.drop.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;

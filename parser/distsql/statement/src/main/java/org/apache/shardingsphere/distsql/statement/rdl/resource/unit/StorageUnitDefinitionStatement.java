@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.distsql.statement.updateable;
+package org.apache.shardingsphere.distsql.statement.rdl.resource.unit;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
 
 /**
- * Alter SQL translator rule statement.
+ * Storage unit definition statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterSQLTranslatorRuleStatement extends RuleDefinitionStatement {
-    
-    private final AlgorithmSegment provider;
-    
-    private final Boolean useOriginalSQLWhenTranslatingFailed;
+public abstract class StorageUnitDefinitionStatement extends ResourceDefinitionStatement {
 }

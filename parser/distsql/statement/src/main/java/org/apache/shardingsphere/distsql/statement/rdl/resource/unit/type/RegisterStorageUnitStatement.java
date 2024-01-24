@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rdl.drop;
+package org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.StorageUnitDefinitionStatement;
+
+import java.util.Collection;
 
 /**
- * Drop rule statement.
+ * Register storage unit statement.
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class DropRuleStatement extends RuleDefinitionStatement {
+public final class RegisterStorageUnitStatement extends StorageUnitDefinitionStatement {
     
-    private final boolean ifExists;
+    private final boolean ifNotExists;
     
-    protected DropRuleStatement() {
-        this(false);
-    }
+    private final Collection<DataSourceSegment> storageUnits;
 }
