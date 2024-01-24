@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAw
 import org.apache.shardingsphere.distsql.handler.type.ral.query.DatabaseAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;

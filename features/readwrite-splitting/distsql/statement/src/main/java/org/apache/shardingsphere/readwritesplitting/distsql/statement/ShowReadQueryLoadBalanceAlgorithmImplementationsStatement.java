@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
  * Show read query load balance algorithm implementations statement.

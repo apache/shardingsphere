@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral;
+package org.apache.shardingsphere.distsql.statement.ral.updatable;
+
+import org.apache.shardingsphere.distsql.statement.ral.RALStatement;
 
 /**
  * Updatable RAL statement.
