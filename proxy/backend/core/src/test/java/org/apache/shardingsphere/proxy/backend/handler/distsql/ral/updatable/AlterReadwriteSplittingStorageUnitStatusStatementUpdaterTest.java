@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.readwritesplitting.AlterReadwriteSplittingStorageUnitStatusExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -40,7 +41,7 @@ class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
     
     @Test
     void assertWithStandaloneMode() {
-        AlterReadwriteSplittingStorageUnitStatusStatementExecutor updater = new AlterReadwriteSplittingStorageUnitStatusStatementExecutor();
+        AlterReadwriteSplittingStorageUnitStatusExecutor updater = new AlterReadwriteSplittingStorageUnitStatusExecutor();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThrows(UnsupportedSQLOperationException.class,
                 () -> updater.executeUpdate(new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("foo_db")), "group", "read_ds", "ENABLE")));
@@ -52,7 +53,7 @@ class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        AlterReadwriteSplittingStorageUnitStatusStatementExecutor updater = new AlterReadwriteSplittingStorageUnitStatusStatementExecutor();
+        AlterReadwriteSplittingStorageUnitStatusExecutor updater = new AlterReadwriteSplittingStorageUnitStatusExecutor();
         updater.setDatabase(database);
         assertThrows(UnsupportedSQLOperationException.class,
                 () -> updater.executeUpdate(new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("foo_db")), "group", "read_ds", "ENABLE")));
