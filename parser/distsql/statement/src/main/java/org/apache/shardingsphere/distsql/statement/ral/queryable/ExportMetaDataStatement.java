@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.statement.ral.queryable;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
 import java.util.Optional;
 
