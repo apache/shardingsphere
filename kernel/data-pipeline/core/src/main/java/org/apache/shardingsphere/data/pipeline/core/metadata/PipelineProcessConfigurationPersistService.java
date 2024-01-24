@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.metadata;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.yaml.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 /**
@@ -34,8 +33,8 @@ public final class PipelineProcessConfigurationPersistService implements Pipelin
     private final YamlPipelineProcessConfigurationSwapper swapper = new YamlPipelineProcessConfigurationSwapper();
     
     @Override
-    public PipelineProcessConfiguration load(final PipelineContextKey contextKey, final JobType jobType) {
-        String yamlText = PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataProcessConfiguration(jobType);
+    public PipelineProcessConfiguration load(final PipelineContextKey contextKey, final String jobType) {
+        String yamlText = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getMetaDataFacade().getProcessConfiguration().load(jobType);
         if (Strings.isNullOrEmpty(yamlText)) {
             return null;
         }
@@ -44,8 +43,8 @@ public final class PipelineProcessConfigurationPersistService implements Pipelin
     }
     
     @Override
-    public void persist(final PipelineContextKey contextKey, final JobType jobType, final PipelineProcessConfiguration processConfig) {
+    public void persist(final PipelineContextKey contextKey, final String jobType, final PipelineProcessConfiguration processConfig) {
         String yamlText = YamlEngine.marshal(swapper.swapToYamlConfiguration(processConfig));
-        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).persistMetaDataProcessConfiguration(jobType, yamlText);
+        PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getMetaDataFacade().getProcessConfiguration().persist(jobType, yamlText);
     }
 }

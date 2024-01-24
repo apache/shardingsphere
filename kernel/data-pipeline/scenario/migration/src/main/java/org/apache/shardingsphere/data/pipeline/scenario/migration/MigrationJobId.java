@@ -18,23 +18,23 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 
 import java.util.List;
 
 /**
  * Migration job id.
  */
+@RequiredArgsConstructor
 @Getter
-@ToString(callSuper = true)
-public final class MigrationJobId extends AbstractPipelineJobId {
+public final class MigrationJobId implements PipelineJobId {
+    
+    private final PipelineJobType jobType = new MigrationJobType();
+    
+    private final PipelineContextKey contextKey;
     
     private final List<String> jobShardingDataNodes;
-    
-    public MigrationJobId(final PipelineContextKey contextKey, final List<String> jobShardingDataNodes) {
-        super(new MigrationJobType(), contextKey);
-        this.jobShardingDataNodes = jobShardingDataNodes;
-    }
 }

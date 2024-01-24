@@ -40,8 +40,8 @@ class SetInstanceStatusUpdaterTest {
     void assertExecuteWithNotNotClusterMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID")));
+        SetInstanceStatusExecutor updater = new SetInstanceStatusExecutor();
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate(new SetInstanceStatusStatement("ENABLE", "instanceID")));
     }
     
     @Test
@@ -49,8 +49,8 @@ class SetInstanceStatusUpdaterTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID")));
+        SetInstanceStatusExecutor updater = new SetInstanceStatusExecutor();
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate(new SetInstanceStatusStatement("ENABLE", "instanceID")));
     }
     
     @Test
@@ -59,8 +59,8 @@ class SetInstanceStatusUpdaterTest {
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("instanceID");
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID")));
+        SetInstanceStatusExecutor updater = new SetInstanceStatusExecutor();
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID")));
     }
     
     @Test
@@ -71,7 +71,7 @@ class SetInstanceStatusUpdaterTest {
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").isPresent()).thenReturn(true);
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(InstanceState.CIRCUIT_BREAK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID")));
+        SetInstanceStatusExecutor updater = new SetInstanceStatusExecutor();
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID")));
     }
 }

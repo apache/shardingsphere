@@ -35,7 +35,7 @@ public final class XmlTableFunctionSegment implements ComplexExpressionSegment, 
     
     private final String functionName;
     
-    private final XmlNameSpacesClauseSegment xmlNameSpacesClause;
+    private final XmlNamespacesClauseSegment xmlNamespacesClause;
     
     private final String xQueryString;
     

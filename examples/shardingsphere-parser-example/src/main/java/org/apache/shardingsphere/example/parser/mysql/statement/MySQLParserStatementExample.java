@@ -57,7 +57,7 @@ public final class MySQLParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(each, false);
-            SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("MySQL", false);
+            SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("MySQL");
             SQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });

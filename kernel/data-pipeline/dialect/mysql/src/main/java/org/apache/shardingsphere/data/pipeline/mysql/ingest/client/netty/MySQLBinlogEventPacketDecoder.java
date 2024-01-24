@@ -81,7 +81,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 return;
             }
             if (binlogEvent.get() instanceof PlaceholderEvent) {
-                out.add(binlogEvent);
+                out.add(binlogEvent.get());
                 skipChecksum(binlogEventHeader.getEventType(), in);
                 return;
             }
@@ -125,6 +125,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             QueryEvent queryEvent = (QueryEvent) binlogEvent;
             if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
                 records = new LinkedList<>();
+            } else {
+                out.add(binlogEvent);
             }
         } else if (binlogEvent instanceof XidEvent) {
             records.add(binlogEvent);
@@ -165,7 +167,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             case DELETE_ROWS_EVENT_V2:
                 return Optional.of(decodeDeleteRowsEventV2(binlogEventHeader, payload));
             case QUERY_EVENT:
-                return Optional.of(decodeQueryEvent(binlogEventHeader.getChecksumLength(), payload));
+                return Optional.of(decodeQueryEvent(binlogEventHeader, payload));
             case XID_EVENT:
                 return Optional.of(decodeXidEvent(binlogEventHeader, payload));
             default:
@@ -241,15 +243,20 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         return result;
     }
     
-    private QueryEvent decodeQueryEvent(final int checksumLength, final MySQLPacketPayload payload) {
+    private QueryEvent decodeQueryEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         int threadId = payload.readInt4();
         int executionTime = payload.readInt4();
         payload.skipReserved(1);
         int errorCode = payload.readInt2();
         payload.skipReserved(payload.readInt2());
         String databaseName = payload.readStringNul();
-        String sql = payload.readStringFix(payload.getByteBuf().readableBytes() - checksumLength);
-        return new QueryEvent(threadId, executionTime, errorCode, databaseName, sql);
+        String sql = payload.readStringFix(payload.getByteBuf().readableBytes() - binlogEventHeader.getChecksumLength());
+        QueryEvent result = new QueryEvent(threadId, executionTime, errorCode, databaseName, sql);
+        result.setFileName(binlogContext.getFileName());
+        result.setPosition(binlogEventHeader.getLogPos());
+        result.setTimestamp(binlogEventHeader.getTimestamp());
+        result.setServerId(binlogEventHeader.getServerId());
+        return result;
     }
     
     private XidEvent decodeXidEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {

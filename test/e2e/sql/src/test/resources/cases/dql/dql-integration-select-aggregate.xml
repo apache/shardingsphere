@@ -121,19 +121,19 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), MIN(m.merchant_name) FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? GROUP BY m.merchant_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), MIN(m.merchant_name) FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? GROUP BY m.merchant_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT MIN(d.detail_id), MIN(p.category_id), p.product_id FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id = ? GROUP BY p.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT MIN(d.detail_id), MIN(p.category_id), p.product_id FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id = ? GROUP BY p.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id INNER JOIN t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) > ? ORDER BY max_price" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id INNER JOIN t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) > ? ORDER BY max_price" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
     </test-case>
     

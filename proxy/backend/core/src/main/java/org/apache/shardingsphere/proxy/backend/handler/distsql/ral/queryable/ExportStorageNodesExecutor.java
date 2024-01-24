@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportStorageNodesStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
@@ -43,7 +43,7 @@ import java.util.Map.Entry;
 /**
  * Export storage nodes executor.
  */
-public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryableRALExecutor<ExportStorageNodesStatement> {
+public final class ExportStorageNodesExecutor implements QueryableRALExecutor<ExportStorageNodesStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -51,7 +51,7 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ExportStorageNodesStatement sqlStatement, final ShardingSphereMetaData metaData) {
         checkSQLStatement(metaData, sqlStatement);
         String exportedData = generateExportData(metaData, sqlStatement);
         if (sqlStatement.getFilePath().isPresent()) {

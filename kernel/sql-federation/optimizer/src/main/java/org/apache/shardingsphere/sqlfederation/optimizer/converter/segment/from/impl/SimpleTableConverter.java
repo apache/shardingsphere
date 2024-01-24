@@ -55,6 +55,10 @@ public final class SimpleTableConverter {
             addOwnerNames(names, segment.getOwner().get());
         }
         names.add(tableName.getIdentifier().getValue());
+        if (segment.getDbLink().isPresent() && segment.getAt().isPresent()) {
+            names.add(segment.getAt().get().getValue());
+            names.add(segment.getDbLink().get().getValue());
+        }
         SqlNode tableNameSQLNode = new SqlIdentifier(names, SqlParserPos.ZERO);
         if (segment.getAliasName().isPresent()) {
             SqlNode aliasSQLNode = new SqlIdentifier(segment.getAliasName().get(), SqlParserPos.ZERO);

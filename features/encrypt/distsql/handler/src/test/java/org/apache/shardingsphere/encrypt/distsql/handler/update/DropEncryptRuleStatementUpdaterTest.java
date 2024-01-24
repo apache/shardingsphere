@@ -48,33 +48,33 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class DropEncryptRuleStatementUpdaterTest {
     
-    private final DropEncryptRuleStatementUpdater updater = new DropEncryptRuleStatementUpdater();
+    private final DropEncryptRuleExecutor executor = new DropEncryptRuleExecutor();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_encrypt"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement("t_encrypt"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> updater.checkSQLStatement(database, createSQLStatement("t_encrypt"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkSQLStatement(database, createSQLStatement("t_encrypt"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
     void assertUpdateCurrentRuleConfiguration() {
         EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
-        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
+        assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
         assertTrue(ruleConfig.getEncryptors().isEmpty());
     }
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
         EncryptRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithMultipleTableRules();
-        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
+        assertFalse(executor.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
         assertThat(ruleConfig.getEncryptors().size(), is(1));
     }
     
@@ -82,8 +82,8 @@ class DropEncryptRuleStatementUpdaterTest {
     void assertUpdateCurrentRuleConfigurationWithIfExists() {
         EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropEncryptRuleStatement statement = createSQLStatement(true, "t_encrypt_1");
-        updater.checkSQLStatement(database, statement, mock(EncryptRuleConfiguration.class));
-        assertFalse(updater.updateCurrentRuleConfiguration(statement, ruleConfig));
+        executor.checkSQLStatement(database, statement, mock(EncryptRuleConfiguration.class));
+        assertFalse(executor.updateCurrentRuleConfiguration(statement, ruleConfig));
         assertThat(ruleConfig.getEncryptors().size(), is(3));
     }
     

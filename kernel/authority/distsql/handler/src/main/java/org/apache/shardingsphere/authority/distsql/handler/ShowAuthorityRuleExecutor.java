@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.authority.distsql.handler;
 
+import lombok.Setter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,19 +32,26 @@ import java.util.stream.Collectors;
 /**
  * Show authority rule executor.
  */
-public final class ShowAuthorityRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowAuthorityRuleStatement> {
+@Setter
+public final class ShowAuthorityRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowAuthorityRuleStatement, AuthorityRule> {
     
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowAuthorityRuleStatement sqlStatement) {
-        AuthorityRule rule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        AuthorityRuleConfiguration ruleConfig = rule.getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
-                ruleConfig.getAuthorityProvider().getType(), ruleConfig.getAuthorityProvider().getProps().isEmpty() ? "" : ruleConfig.getAuthorityProvider().getProps()));
-    }
+    private AuthorityRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("users", "provider", "props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowAuthorityRuleStatement sqlStatement) {
+        AuthorityRuleConfiguration ruleConfig = rule.getConfiguration();
+        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
+                ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps().isEmpty() ? "" : ruleConfig.getPrivilegeProvider().getProps()));
+    }
+    
+    @Override
+    public Class<AuthorityRule> getRuleClass() {
+        return AuthorityRule.class;
     }
     
     @Override

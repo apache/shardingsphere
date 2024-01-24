@@ -135,7 +135,7 @@ Java的整数相除结果是整数，但是对于 inline 表达式中的 Groovy 
 
 回答：
 
-不需要，ShardingSphere 会自动识别。
+不分库分表的表在 ShardingSphere 中叫做单表，可以使用 [LOAD 语句](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/)或者 [SINGLE 规则](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/single/)配置需要加载的单表。
 
 ### [分片] 指定了泛型为 Long 的 `SingleKeyTableShardingAlgorithm`，遇到 `ClassCastException: Integer can not cast to Long`?
 

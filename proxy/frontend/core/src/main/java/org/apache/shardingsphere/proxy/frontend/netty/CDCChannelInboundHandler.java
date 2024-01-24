@@ -151,7 +151,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
                 .orElseThrow(() -> new CDCExceptionWrapper(requestId, new MissingRequiredRuleException("authority")));
         ShardingSpherePrivileges privileges = authorityRule.findPrivileges(grantee)
-                .orElseThrow(() -> new CDCExceptionWrapper(requestId, new SQLAuditException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname()))));
+                .orElseThrow(() -> new CDCExceptionWrapper(requestId, new SQLAuditException(String.format("Access denied for user '%s'", grantee))));
         ShardingSpherePreconditions.checkState(privileges.hasPrivileges(currentDatabase),
                 () -> new CDCExceptionWrapper(requestId, new SQLAuditException(String.format("Unknown database '%s'", currentDatabase))));
     }
@@ -210,7 +210,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         StopStreamingRequestBody requestBody = request.getStopStreamingRequestBody();
         String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
-        backendHandler.stopStreaming(connectionContext.getJobId(), ctx.channel().id());
+        backendHandler.stopStreaming(requestBody.getStreamingId(), ctx.channel().id());
         connectionContext.setJobId(null);
         ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }
@@ -218,7 +218,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     private void processDropStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         DropStreamingRequestBody requestBody = request.getDropStreamingRequestBody();
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId()));
-        backendHandler.dropStreaming(connectionContext.getJobId());
+        backendHandler.dropStreaming(requestBody.getStreamingId());
         connectionContext.setJobId(null);
         ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }

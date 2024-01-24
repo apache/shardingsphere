@@ -31,6 +31,8 @@ public final class YamlSQLFederationRuleConfiguration implements YamlGlobalRuleC
     
     private boolean sqlFederationEnabled;
     
+    private boolean allQueryUseSQLFederation;
+    
     private YamlSQLFederationExecutionPlanCacheRuleConfiguration executionPlanCache;
     
     @Override

@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.test.e2e.fixture;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +34,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public final class ITEncryptLikeAlgorithmFixture implements LikeEncryptAlgorithm {
+public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     
     private static final String DELTA_KEY = "delta";
     
@@ -58,12 +60,19 @@ public final class ITEncryptLikeAlgorithmFixture implements LikeEncryptAlgorithm
     
     private Map<Character, Integer> charIndexes;
     
+    @Getter
+    private EncryptAlgorithmMetaData metaData;
+    
     @Override
     public void init(final Properties props) {
         delta = createDelta(props);
         mask = createMask(props);
         start = createStart(props);
         charIndexes = createCharIndexes(props);
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
+        encryptAlgorithmMetaData.setSupportLike(true);
+        encryptAlgorithmMetaData.setSupportDecrypt(false);
+        metaData = encryptAlgorithmMetaData;
     }
     
     private int createDelta(final Properties props) {
@@ -123,6 +132,11 @@ public final class ITEncryptLikeAlgorithmFixture implements LikeEncryptAlgorithm
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return null == plainValue ? null : digest(String.valueOf(plainValue));
+    }
+    
+    @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
     }
     
     private String digest(final String plainValue) {

@@ -13,12 +13,12 @@ weight = 3
 {{% tab name="语法" %}}
 ```sql
 DropReadwriteSplittingRule ::=
-  'DROP' 'READWRITE_SPLITTING' 'RULE' ifExists? readwriteSplittingRuleName (',' readwriteSplittingRuleName)* ('FROM' databaseName)?
+  'DROP' 'READWRITE_SPLITTING' 'RULE' ifExists? ruleName (',' ruleName)* ('FROM' databaseName)?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-readwriteSplittingRuleName ::=
+ruleName ::=
   identifier
 
 databaseName ::=

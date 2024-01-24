@@ -18,24 +18,22 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
-import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableRuleStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLStatementParserFacade;
+import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableRuleExecutor;
+import org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLParserFacade;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
@@ -81,7 +79,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
     
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
-    private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
+    private final CreateShardingTableRuleExecutor executor = new CreateShardingTableRuleExecutor();
     
     @BeforeEach
     void before() {
@@ -94,9 +92,9 @@ class CreateShardingTableRuleStatementUpdaterTest {
     @Test
     void assertUpdate() {
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
-        updater.checkSQLStatement(database, statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        executor.checkSQLStatement(database, statement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
+        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
         ShardingTableRuleConfiguration tableRule = tableRuleIterator.next();
@@ -139,7 +137,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='6')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        updater.checkSQLStatement(database, distSQLStatement, null);
+        executor.checkSQLStatement(database, distSQLStatement, null);
     }
     
     @Test
@@ -150,7 +148,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(DistSQLException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
+        assertThrows(DistSQLException.class, () -> executor.checkSQLStatement(database, distSQLStatement, null));
     }
     
     @Test
@@ -161,7 +159,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        updater.checkSQLStatement(database, distSQLStatement, null);
+        executor.checkSQLStatement(database, distSQLStatement, null);
     }
     
     @Test
@@ -172,7 +170,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> executor.checkSQLStatement(database, distSQLStatement, null));
     }
     
     @Test
@@ -183,7 +181,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='NONE')"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        updater.checkSQLStatement(database, distSQLStatement, null);
+        executor.checkSQLStatement(database, distSQLStatement, null);
     }
     
     @Test
@@ -194,7 +192,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='NONE')"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> executor.checkSQLStatement(database, distSQLStatement, null));
     }
     
     @Test
@@ -203,8 +201,8 @@ class CreateShardingTableRuleStatementUpdaterTest {
         segments.add(createCompleteAutoTableRule());
         segments.add(createCompleteTableRule());
         CreateShardingTableRuleStatement statementWithIfNotExists = new CreateShardingTableRuleStatement(true, segments);
-        updater.checkSQLStatement(database, statementWithIfNotExists, currentRuleConfig);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statementWithIfNotExists));
+        executor.checkSQLStatement(database, statementWithIfNotExists, currentRuleConfig);
+        executor.updateCurrentRuleConfiguration(currentRuleConfig, executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, statementWithIfNotExists));
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
         ShardingTableRuleConfiguration tableRule = tableRuleIterator.next();
@@ -288,9 +286,9 @@ class CreateShardingTableRuleStatementUpdaterTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
     private DistSQLStatement getDistSQLStatement(final String sql) {
-        ShardingDistSQLStatementParserFacade facade = new ShardingDistSQLStatementParserFacade();
+        ShardingDistSQLParserFacade facade = new ShardingDistSQLParserFacade();
         ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, facade.getLexerClass(), facade.getParserClass()).parse();
-        SQLVisitor visitor = TypedSPILoader.getService(FeaturedDistSQLStatementParserFacade.class, facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLVisitor visitor = facade.getVisitorClass().getDeclaredConstructor().newInstance();
         return (DistSQLStatement) visitor.visit(parseASTNode.getRootNode());
     }
     

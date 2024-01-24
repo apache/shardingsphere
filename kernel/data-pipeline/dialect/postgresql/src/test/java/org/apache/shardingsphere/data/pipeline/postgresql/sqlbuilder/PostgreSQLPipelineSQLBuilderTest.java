@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ class PostgreSQLPipelineSQLBuilderTest {
     }
     
     private DataRecord mockDataRecord() {
-        DataRecord result = new DataRecord(IngestDataChangeType.INSERT, "t_order", new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "t_order", new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
         result.addColumn(new Column("order_id", 1, true, true));
         result.addColumn(new Column("user_id", 2, true, false));
         result.addColumn(new Column("status", "ok", true, false));

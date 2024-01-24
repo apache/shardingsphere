@@ -19,7 +19,7 @@ databaseName: mask
 
 dataSources:
   mask:
-    url: jdbc:mysql://mysql.mask.host:3306/mask?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.mask.host:3306/mask?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000

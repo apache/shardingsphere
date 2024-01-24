@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.distsql.statement.rul.sql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rul.SQLRULStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 
 /**
  * Parse statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ParseStatement extends SQLRULStatement {
+public final class ParseStatement extends RULStatement {
     
-    public ParseStatement(final String sql) {
-        super(sql);
-    }
+    private final String sql;
 }

@@ -30,6 +30,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHand
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableConditionalIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertIntoSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table.MultiTableInsertType;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
@@ -294,5 +296,43 @@ public final class InsertStatementHandler implements SQLStatementHandler {
         if (insertStatement instanceof OracleInsertStatement) {
             ((OracleInsertStatement) insertStatement).setWhere(whereSegment);
         }
+    }
+    
+    /**
+     * Get execute segment.
+     *
+     * @param insertStatement insert statement
+     * @return execute segment
+     */
+    public static Optional<ExecSegment> getExecSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof SQLServerInsertStatement) {
+            return ((SQLServerInsertStatement) insertStatement).getExecSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Set execute segment.
+     * 
+     * @param insertStatement insert statement
+     * @param execSegment execute segment
+     */
+    public static void setExecSegment(final InsertStatement insertStatement, final ExecSegment execSegment) {
+        if (insertStatement instanceof SQLServerInsertStatement) {
+            ((SQLServerInsertStatement) insertStatement).setExecSegment(execSegment);
+        }
+    }
+    
+    /**
+     * Get with table hint segment.
+     *
+     * @param insertStatement insert statement
+     * @return with table hint segment
+     */
+    public static Optional<WithTableHintSegment> getWithTableHintSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof SQLServerInsertStatement) {
+            return ((SQLServerInsertStatement) insertStatement).getWithTableHintSegment();
+        }
+        return Optional.empty();
     }
 }

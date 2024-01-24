@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.distsql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 import java.util.Collection;
 
@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MaskRuleSegment implements ASTNode {
+public final class MaskRuleSegment implements DistSQLSegment {
     
     private final String tableName;
     

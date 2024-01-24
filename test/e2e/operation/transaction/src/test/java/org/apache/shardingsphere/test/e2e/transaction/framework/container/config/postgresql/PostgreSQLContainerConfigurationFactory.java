@@ -44,8 +44,9 @@ public final class PostgreSQLContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance(final String scenario) {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario), DatabaseEnvironmentManager.getDatabaseNames(scenario),
-                DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario));
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario),
+                DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")),
+                DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
     }
     
     private static String getCommand() {

@@ -107,7 +107,8 @@ jobs:
 
   build-proxy-native-image:
     if: github.repository == 'apache/shardingsphere'
-    name: Build GraalVM Native Image
+    name: Build Proxy Native Image
+    needs: global-environment
     timeout-minutes: 90
     permissions:
       contents: read
@@ -119,7 +120,7 @@ jobs:
           ref: ${{ inputs.commit-id }}
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '17.0.8'
+          java-version: '21.0.2'
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/cache@v3
@@ -136,7 +137,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker Image
         run: |
-          ./mvnw -PgenerateStandardMetadata -DskipNativeTests -B -T1C clean test
           ./mvnw -am -pl distribution/proxy-native -Prelease.native,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.image.tag=${{ github.sha }} clean package
 
   build-cache:

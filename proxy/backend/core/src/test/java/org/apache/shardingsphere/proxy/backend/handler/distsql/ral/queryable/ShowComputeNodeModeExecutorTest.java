@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNode
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -40,24 +41,14 @@ class ShowComputeNodeModeExecutorTest {
     @Test
     void assertExecute() {
         ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(createInstanceContext(), new ShowComputeNodeModeStatement());
+        executor.setInstanceContext(createInstanceContext());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowComputeNodeModeStatement(), mock(ShardingSphereMetaData.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("Cluster"));
         assertThat(row.getCell(2), is("ZooKeeper"));
         assertThat(row.getCell(3), is("{\"key\":\"value1,value2\"}"));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("repository"));
-        assertThat(iterator.next(), is("props"));
     }
     
     private InstanceContext createInstanceContext() {

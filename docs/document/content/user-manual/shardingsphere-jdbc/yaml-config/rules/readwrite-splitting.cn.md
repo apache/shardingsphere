@@ -15,9 +15,9 @@ weight = 3
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    <data_source_name> (+): # 读写分离逻辑数据源名称
-       write_data_source_name: # 写库数据源名称
-       read_data_source_names: # 读库数据源名称，多个从数据源用逗号分隔
+    <data_source_name> (+): # 读写分离逻辑数据源名称，默认使用 Groovy 的行表达式 SPI 实现来解析
+       write_data_source_name: # 写库数据源名称，默认使用 Groovy 的行表达式 SPI 实现来解析
+       read_data_source_names: # 读库数据源名称，多个从数据源用逗号分隔，默认使用 Groovy 的行表达式 SPI 实现来解析
        transactionalReadQueryStrategy (?): # 事务内读请求的路由策略，可选值：PRIMARY（路由至主库）、FIXED（同一事务内路由至固定数据源）、DYNAMIC（同一事务内路由至非固定数据源）。默认值：DYNAMIC
        loadBalancerName: # 负载均衡算法名称
   

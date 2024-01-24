@@ -24,7 +24,7 @@ IDENTIFIER_
     ;
 
 DELIMITED_IDENTIFIER_
-    : (LBT_ | DQ_) [a-zA-Z0-9@$#_.\\/\u0080-\uFFFF ]+ (DQ_ | RBT_)
+    : (LBT_ | DQ_) [a-zA-Z0-9@$#_,.\-\\/\u0080-\uFFFF ]+ (DQ_ | RBT_)
     ;
 
 STRING_

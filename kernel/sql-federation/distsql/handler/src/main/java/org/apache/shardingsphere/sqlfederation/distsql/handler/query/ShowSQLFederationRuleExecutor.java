@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.queryable.ShowSQLFederationRuleStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
@@ -31,20 +31,29 @@ import java.util.Collections;
 /**
  * Show SQL federation rule executor.
  */
-public final class ShowSQLFederationRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowSQLFederationRuleStatement> {
+@Setter
+public final class ShowSQLFederationRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowSQLFederationRuleStatement, SQLFederationRule> {
+    
+    private SQLFederationRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowSQLFederationRuleStatement sqlStatement) {
-        SQLFederationRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).getConfiguration();
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLFederationRuleStatement sqlStatement) {
+        SQLFederationRuleConfiguration ruleConfig = rule.getConfiguration();
         String sqlFederationEnabled = String.valueOf(ruleConfig.isSqlFederationEnabled());
+        String allQueryUseSQLFederation = String.valueOf(ruleConfig.isAllQueryUseSQLFederation());
         String executionPlanCache = null != ruleConfig.getExecutionPlanCache() ? ruleConfig.getExecutionPlanCache().toString() : "";
-        LocalDataQueryResultRow row = new LocalDataQueryResultRow(sqlFederationEnabled, executionPlanCache);
+        LocalDataQueryResultRow row = new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
         return Collections.singleton(row);
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("sql_federation_enabled", "execution_plan_cache");
+    public Class<SQLFederationRule> getRuleClass() {
+        return SQLFederationRule.class;
     }
     
     @Override

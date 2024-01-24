@@ -51,7 +51,7 @@ public final class RuleItemChangedSubscriber {
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
         String yamlContent =
                 contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getVersionPathByActiveVersion(event.getActiveVersionKey(), event.getActiveVersion());
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(event.getDatabaseName());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
             processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
@@ -71,7 +71,7 @@ public final class RuleItemChangedSubscriber {
             return;
         }
         RuleItemConfigurationChangedProcessor processor = TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, event.getType());
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(event.getDatabaseName());
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(event.getDatabaseName());
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
             processor.dropRuleItemConfiguration(event, currentRuleConfig);

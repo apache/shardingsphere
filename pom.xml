@@ -69,16 +69,16 @@
         <j2objc-annotations.version>1.3</j2objc-annotations.version>
         
         <commons-lang3.version>3.12.0</commons-lang3.version>
-        <commons-collections4.version>4.4</commons-collections4.version>
         <commons-codec.version>1.16.0</commons-codec.version>
         <commons-math3.version>3.6.1</commons-math3.version>
         <caffeine.version>2.9.3</caffeine.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
+        <java-util.version>2.4.0</java-util.version>
         
         <antlr4.version>4.10.1</antlr4.version>
         <snakeyaml.version>2.2</snakeyaml.version>
         <gson.version>2.10.1</gson.version>
-        <jackson.version>2.14.0</jackson.version>
+        <jackson.version>2.16.0</jackson.version>
         <json-path.version>2.8.0</json-path.version>
         <json-smart.version>2.4.10</json-smart.version>
         <accessors-smart.version>2.4.9</accessors-smart.version>
@@ -87,14 +87,12 @@
         <freemarker.version>2.3.31</freemarker.version>
         <bytebuddy.version>1.14.8</bytebuddy.version>
         
-        <jaxb.version>2.3.0</jaxb.version>
-        <annotation-api.version>1.3.2</annotation-api.version>
-        <activation-api.version>1.2.0</activation-api.version>
+        <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
+        <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         
         <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
         
-        <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>6.0.0</atomikos.version>
         <narayana.version>5.12.4.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
@@ -104,21 +102,22 @@
         <netty.version>4.1.99.Final</netty.version>
         <bouncycastle.version>1.70</bouncycastle.version>
         
-        <curator.version>5.5.0</curator.version>
-        <zookeeper.version>3.9.0</zookeeper.version>
+        <curator.version>5.6.0</curator.version>
+        <zookeeper.version>3.9.1</zookeeper.version>
         <audience-annotations.version>0.12.0</audience-annotations.version>
         <jetcd.version>0.7.6</jetcd.version>
-        <consul.api.version>1.4.1</consul.api.version>
+        <vertx.version>4.4.4</vertx.version>
+        <consul.api.version>1.4.5</consul.api.version>
         
         <grpc.version>1.58.0</grpc.version>
         <protobuf.version>3.21.12</protobuf.version>
-        <httpclient.version>4.5.13</httpclient.version>
+        <httpclient.version>4.5.14</httpclient.version>
         <okhttp.version>4.12.0</okhttp.version>
         
         <elasticjob.version>3.0.4</elasticjob.version>
         
-        <slf4j.version>2.0.9</slf4j.version>
-        <logback.version>1.3.11</logback.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <logback.version>1.2.13</logback.version>
         <commons-logging.version>1.2</commons-logging.version>
         
         <lombok.version>1.18.30</lombok.version>
@@ -144,17 +143,17 @@
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.2.0</awaitility.version>
-        <testcontainers.version>1.17.3</testcontainers.version>
+        <testcontainers.version>1.19.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
-        <graalvm.version>21.2.0</graalvm.version>
+        <graal-sdk.version>21.2.0</graal-sdk.version>
         
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
-        <native-maven-plugin.version>0.9.27</native-maven-plugin.version>
+        <native-maven-plugin.version>0.9.28</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
@@ -232,11 +231,6 @@
                 <version>${commons-lang3.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>${commons-collections4.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
@@ -296,29 +290,18 @@
             </dependency>
             
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${jaxb.version}</version>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-bom</artifactId>
+                <version>${jakarta.jakartaee-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
-                <version>${annotation-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.activation</groupId>
-                <artifactId>javax.activation-api</artifactId>
-                <version>${activation-api.version}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-bom</artifactId>
+                <version>${glassfish-jaxb.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             
             <dependency>
@@ -342,12 +325,6 @@
                 <artifactId>value</artifactId>
                 <version>${immutables.version}</version>
                 <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>javax.transaction</groupId>
-                <artifactId>jta</artifactId>
-                <version>${javax.transaction.version}</version>
             </dependency>
             
             <dependency>
@@ -441,10 +418,18 @@
             
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-bom</artifactId>
+                <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
             
             <dependency>
@@ -573,6 +558,11 @@
                 <version>${bytebuddy.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.cedarsoftware</groupId>
+                <artifactId>java-util</artifactId>
+                <version>${java-util.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -585,10 +575,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-        </dependency>
         
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -598,6 +584,12 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -640,6 +632,10 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cedarsoftware</groupId>
+            <artifactId>java-util</artifactId>
         </dependency>
     </dependencies>
     
@@ -998,73 +994,113 @@
             </build>
         </profile>
         <profile>
-            <id>generateStandardMetadata</id>
+            <id>generateMetadata</id>
             <properties>
-                <jacoco.skip>true</jacoco.skip>
-                <maven.javadoc.skip>true</maven.javadoc.skip>
-                <checkstyle.skip>true</checkstyle.skip>
-                <rat.skip>true</rat.skip>
-                <spotless.apply.skip>true</spotless.apply.skip>
+                <java.version>21</java.version>
             </properties>
             <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>${maven-compiler-plugin.version}</version>
-                        <configuration>
-                            <source>17</source>
-                            <target>17</target>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven-surefire-plugin.version}</version>
-                        <configuration>
-                            <excludes>
-                                <exclude>org.apache.shardingsphere.agent.core.**</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <version>${native-maven-plugin.version}</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <agent>
-                                <enabled>true</enabled>
-                                <defaultMode>Direct</defaultMode>
-                                <modes>
-                                    <direct>config-output-dir=${project.basedir}/src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}</direct>
-                                </modes>
-                                <options>
-                                    <callerFilterFiles>
-                                        <filterFile>${user.dir}/distribution/proxy-native/caller-filter.json</filterFile>
-                                    </callerFilterFiles>
-                                    <accessFilterFiles>
-                                        <filterFile>${user.dir}/distribution/proxy-native/access-filter.json</filterFile>
-                                    </accessFilterFiles>
-                                </options>
-                            </agent>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>test-native</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <phase>test</phase>
-                            </execution>
-                            <execution>
-                                <id>build-native</id>
-                                <goals>
-                                    <goal>compile-no-fork</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <version>${maven-surefire-plugin.version}</version>
+                            <configuration>
+                                <includes>
+                                    <include>org.apache.shardingsphere.test.natived.**</include>
+                                </includes>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native-maven-plugin.version}</version>
+                            <extensions>true</extensions>
+                            <configuration>
+                                <agent>
+                                    <enabled>true</enabled>
+                                    <defaultMode>Conditional</defaultMode>
+                                    <modes>
+                                        <conditional>
+                                            <userCodeFilterPath>${user.dir}/test/native/native-image-filter/user-code-filter.json</userCodeFilterPath>
+                                            <extraFilterPath>${user.dir}/test/native/native-image-filter/extra-filter.json</extraFilterPath>
+                                            <parallel>true</parallel>
+                                        </conditional>
+                                    </modes>
+                                    <metadataCopy>
+                                        <disabledStages>
+                                            <stage>main</stage>
+                                        </disabledStages>
+                                        <merge>false</merge>
+                                        <outputDirectory>${user.dir}/infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/shardingsphere-infra-reachability-metadata/</outputDirectory>
+                                    </metadataCopy>
+                                </agent>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>build-native</id>
+                                    <goals>
+                                        <goal>compile-no-fork</goal>
+                                    </goals>
+                                    <phase>package</phase>
+                                </execution>
+                                <execution>
+                                    <id>test-native</id>
+                                    <goals>
+                                        <goal>test</goal>
+                                    </goals>
+                                    <phase>test</phase>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>nativeTestInShardingSphere</id>
+            <properties>
+                <java.version>21</java.version>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <includes>
+                                    <include>org.apache.shardingsphere.test.natived.**</include>
+                                </includes>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.graalvm.buildtools</groupId>
+                            <artifactId>native-maven-plugin</artifactId>
+                            <version>${native-maven-plugin.version}</version>
+                            <extensions>true</extensions>
+                            <configuration>
+                                <buildArgs>
+                                    <buildArg>-J-Xmx7g</buildArg>
+                                    <buildArg>-H:+AddAllCharsets</buildArg>
+                                </buildArgs>
+                                <quickBuild>true</quickBuild>
+                                <metadataRepository>
+                                    <enabled>true</enabled>
+                                    <version>0.3.5</version>
+                                </metadataRepository>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>test-native</id>
+                                    <goals>
+                                        <goal>test</goal>
+                                    </goals>
+                                    <phase>test</phase>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
             </build>
         </profile>
         <profile>

@@ -19,7 +19,7 @@ databaseName: tbl
 
 dataSources:
   tbl:
-    url: jdbc:mysql://mysql.tbl.host:3306/tbl?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.tbl.host:3306/tbl?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -87,6 +87,3 @@ rules:
   tables:
     - t_broadcast_table
     - t_broadcast_table_for_ddl
-  
-- !SQL_PARSER
-  sqlCommentParseEnabled: true

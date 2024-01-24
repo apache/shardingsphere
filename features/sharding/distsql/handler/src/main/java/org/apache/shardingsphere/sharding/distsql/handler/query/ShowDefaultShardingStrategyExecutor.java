@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
@@ -29,27 +29,27 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Show default sharding strategy executor.
  */
-public final class ShowDefaultShardingStrategyExecutor implements RQLExecutor<ShowDefaultShardingStrategyStatement> {
+@Setter
+public final class ShowDefaultShardingStrategyExecutor implements DatabaseRuleAwareRQLExecutor<ShowDefaultShardingStrategyStatement, ShardingRule> {
+    
+    private ShardingRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDefaultShardingStrategyStatement sqlStatement) {
-        Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        return shardingRule.map(this::buildData).orElse(Collections.emptyList());
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "type", "sharding_column", "sharding_algorithm_name", "sharding_algorithm_type", "sharding_algorithm_props");
     }
     
-    private Collection<LocalDataQueryResultRow> buildData(final ShardingRule rule) {
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowDefaultShardingStrategyStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        ShardingRuleConfiguration ruleConfig = (ShardingRuleConfiguration) rule.getConfiguration();
-        result.add(buildDataItem("TABLE", ruleConfig, ruleConfig.getDefaultTableShardingStrategy()));
-        result.add(buildDataItem("DATABASE", ruleConfig, ruleConfig.getDefaultDatabaseShardingStrategy()));
+        result.add(buildDataItem("TABLE", rule.getConfiguration(), rule.getConfiguration().getDefaultTableShardingStrategy()));
+        result.add(buildDataItem("DATABASE", rule.getConfiguration(), rule.getConfiguration().getDefaultDatabaseShardingStrategy()));
         return result;
     }
     
@@ -69,8 +69,8 @@ public final class ShowDefaultShardingStrategyExecutor implements RQLExecutor<Sh
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "sharding_column", "sharding_algorithm_name", "sharding_algorithm_type", "sharding_algorithm_props");
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

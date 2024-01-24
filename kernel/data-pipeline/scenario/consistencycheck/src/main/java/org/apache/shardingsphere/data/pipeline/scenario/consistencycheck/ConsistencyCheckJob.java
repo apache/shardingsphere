@@ -17,49 +17,36 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractSimplePipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.task.ConsistencyCheckTasksRunner;
-import org.apache.shardingsphere.elasticjob.api.ShardingContext;
-
-import java.util.Optional;
 
 /**
  * Consistency check job.
  */
-@Slf4j
-public final class ConsistencyCheckJob extends AbstractSimplePipelineJob {
+public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<ConsistencyCheckJobConfiguration, ConsistencyCheckJobItemContext, ConsistencyCheckJobItemProgress> {
     
     public ConsistencyCheckJob(final String jobId) {
-        super(jobId);
+        super(jobId, false);
     }
     
     @Override
-    public ConsistencyCheckJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
-        ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        ConsistencyCheckJobAPI jobAPI = (ConsistencyCheckJobAPI) getJobAPI();
-        Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobAPI.getJobItemProgress(jobConfig.getJobId(), shardingContext.getShardingItem());
-        return new ConsistencyCheckJobItemContext(jobConfig, shardingContext.getShardingItem(), JobStatus.RUNNING, jobItemProgress.orElse(null));
+    public ConsistencyCheckJobItemContext buildJobItemContext(final ConsistencyCheckJobConfiguration jobConfig,
+                                                              final int shardingItem, final ConsistencyCheckJobItemProgress jobItemProgress, final TransmissionProcessContext jobProcessContext) {
+        return new ConsistencyCheckJobItemContext(jobConfig, shardingItem, JobStatus.RUNNING, jobItemProgress);
     }
     
     @Override
-    protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
-        return new ConsistencyCheckTasksRunner((ConsistencyCheckJobItemContext) pipelineJobItemContext);
+    protected PipelineTasksRunner buildTasksRunner(final ConsistencyCheckJobItemContext jobItemContext) {
+        return new ConsistencyCheckTasksRunner(jobItemContext);
     }
     
     @Override
-    protected void doPrepare(final PipelineJobItemContext jobItemContext) {
-    }
-    
-    @Override
-    protected void doClean() {
+    protected void doPrepare(final ConsistencyCheckJobItemContext jobItemContext) {
     }
 }

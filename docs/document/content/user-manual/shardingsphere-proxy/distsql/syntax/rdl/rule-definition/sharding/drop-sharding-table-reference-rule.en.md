@@ -13,12 +13,12 @@ The `DROP SHARDING TABLE REFERENCE RULE` syntax is used to drop specified shardi
 {{% tab name="Grammar" %}}
 ```sql
 DropShardingTableReferenceRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE' ifExists? shardingReferenceRuleName (',' shardingReferenceRuleName)*
+  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE' ifExists? ruleName (',' ruleName)*
 
 ifExists ::=
   'IF' 'EXISTS'
 
-shardingReferenceRuleName ::=
+ruleName ::=
   identifier
 ```
 {{% /tab %}}

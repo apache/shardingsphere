@@ -25,7 +25,7 @@ transactionalReadQueryStrategyDefinition ::=
     'TRANSACTIONAL_READ_QUERY_STRATEGY' '=' transactionalReadQueryStrategyType
 
 loadBalancerDefinition ::=
-    'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
+    'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 ruleName ::=
   identifier
@@ -39,7 +39,7 @@ storageUnitName ::=
 transactionalReadQueryStrategyType ::=
   string
 
-loadBalancerType ::=
+algorithmType ::=
   string
 
 propertiesDefinition ::=
@@ -60,7 +60,7 @@ value ::=
 ### Supplement
 
 - `transactionalReadQueryStrategyType` specifies the routing strategy for read query within a transaction, please refer to [YAML configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/);
-- `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/).
+- `algorithmType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/).
 
 ### Example
 

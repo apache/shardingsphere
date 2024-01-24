@@ -19,7 +19,7 @@ databaseName: passthrough
 
 dataSources:
   passthrough:
-    url: jdbc:mysql://mysql.passthrough.host:3306/passthrough?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.passthrough.host:3306/passthrough?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000

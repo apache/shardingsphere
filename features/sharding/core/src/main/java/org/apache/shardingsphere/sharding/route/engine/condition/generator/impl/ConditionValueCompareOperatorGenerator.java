@@ -65,6 +65,9 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         }
         ExpressionSegment valueExpression = predicate.getLeft() instanceof ColumnSegment ? predicate.getRight() : predicate.getLeft();
         ConditionValue conditionValue = new ConditionValue(valueExpression, params);
+        if (conditionValue.isNull()) {
+            return generate(null, column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
+        }
         Optional<Comparable<?>> value = conditionValue.getValue();
         if (value.isPresent()) {
             return generate(value.get(), column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
@@ -83,13 +86,13 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             case EQUAL:
                 return Optional.of(new ListShardingConditionValue<>(columnName, tableName, new ArrayList<>(Collections.singleton(comparable)), parameterMarkerIndexes));
             case GREATER_THAN:
-                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.greaterThan(comparable), parameterMarkerIndexes));
+                return null == comparable ? Optional.empty() : Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.greaterThan(comparable), parameterMarkerIndexes));
             case LESS_THAN:
-                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.lessThan(comparable), parameterMarkerIndexes));
+                return null == comparable ? Optional.empty() : Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.lessThan(comparable), parameterMarkerIndexes));
             case AT_MOST:
-                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atMost(comparable), parameterMarkerIndexes));
+                return null == comparable ? Optional.empty() : Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atMost(comparable), parameterMarkerIndexes));
             case AT_LEAST:
-                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atLeast(comparable), parameterMarkerIndexes));
+                return null == comparable ? Optional.empty() : Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atLeast(comparable), parameterMarkerIndexes));
             case IS:
                 return "null".equalsIgnoreCase(String.valueOf(comparable))
                         ? Optional.of(new ListShardingConditionValue<>(columnName, tableName, new ArrayList<>(Collections.singleton(null)), parameterMarkerIndexes))

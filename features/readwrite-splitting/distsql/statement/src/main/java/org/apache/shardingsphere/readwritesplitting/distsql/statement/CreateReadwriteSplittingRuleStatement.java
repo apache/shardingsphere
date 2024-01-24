@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.CreateRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 
 import java.util.Collection;

@@ -35,11 +35,11 @@ import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.TableFromStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.TableIdentifierContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.UnloadSingleTableContext;
+import org.apache.shardingsphere.distsql.statement.rql.show.CountRuleStatement;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
-import org.apache.shardingsphere.single.distsql.statement.rql.CountSingleTableStatement;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTableStatement;
@@ -59,7 +59,7 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     
     @Override
     public ASTNode visitCountSingleTable(final CountSingleTableContext ctx) {
-        return new CountSingleTableStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "SINGLE");
     }
     
     @Override

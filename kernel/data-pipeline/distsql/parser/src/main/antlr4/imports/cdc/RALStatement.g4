@@ -19,6 +19,46 @@ grammar RALStatement;
 
 import BaseRule;
 
+showStreamingRule
+    : SHOW STREAMING RULE
+    ;
+
+alterStreamingRule
+    : ALTER STREAMING RULE transmissionRule?
+    ;
+
+transmissionRule
+    : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
+    ;
+
+readDefinition
+    : READ LP_ workerThread? (COMMA_? batchSize)? (COMMA_? shardingSize)? (COMMA_? rateLimiter)? RP_
+    ;
+
+workerThread
+    : WORKER_THREAD EQ_ intValue
+    ;
+
+batchSize
+    : BATCH_SIZE EQ_ intValue
+    ;
+
+shardingSize
+    : SHARDING_SIZE EQ_ intValue
+    ;
+
+rateLimiter
+    : RATE_LIMITER LP_ algorithmDefinition RP_
+    ;
+
+writeDefinition
+    : WRITE LP_ workerThread? (COMMA_? batchSize)? (COMMA_? rateLimiter)? RP_
+    ;
+
+streamChannel
+    : STREAM_CHANNEL LP_ algorithmDefinition RP_
+    ;
+
 showStreamingList
     : SHOW STREAMING LIST
     ;

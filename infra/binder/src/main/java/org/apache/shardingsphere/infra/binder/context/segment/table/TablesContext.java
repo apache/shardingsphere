@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.table;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.context.segment.select.subquery.SubqueryTableContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.subquery.engine.SubqueryTableContextEngine;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -56,12 +56,11 @@ public final class TablesContext {
     
     private final Collection<SimpleTableSegment> simpleTableSegments = new LinkedList<>();
     
-    @Getter
-    private final Collection<String> tableNames = new HashSet<>();
+    private final Collection<String> tableNames = new CaseInsensitiveSet<>();
     
-    private final Collection<String> schemaNames = new HashSet<>();
+    private final Collection<String> schemaNames = new CaseInsensitiveSet<>();
     
-    private final Collection<String> databaseNames = new HashSet<>();
+    private final Collection<String> databaseNames = new CaseInsensitiveSet<>();
     
     private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
     

@@ -37,8 +37,6 @@ public final class RULBackendHandlerFactory {
      * @return created instance
      */
     public static ProxyBackendHandler newInstance(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
-        RULBackendHandler<?> result = new SQLRULBackendHandler<>();
-        result.init(sqlStatement, connectionSession);
-        return result;
+        return new RULBackendHandler(sqlStatement, connectionSession);
     }
 }

@@ -30,9 +30,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.generic.ParenthesesAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
@@ -47,6 +49,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.top.ExpectedTopProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 
+import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -135,6 +138,11 @@ public final class ProjectionAssert {
             assertThat(assertContext.getText("Nested Object attributes assertion error: "), actual.getColumn().getExpression(), is(expected.getName()));
         } else {
             IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Column projection");
+        }
+        if (!expected.getParentheses().isEmpty()) {
+            assertThat(expected.getParentheses().size(), is(actual.getColumn().getParentheses().size()));
+            Iterator<ParenthesesSegment> iterator = actual.getColumn().getParentheses().iterator();
+            expected.getParentheses().forEach(each -> ParenthesesAssert.assertIs(assertContext, iterator.next(), each));
         }
         if (null == expected.getOwner()) {
             assertFalse(actual.getColumn().getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));

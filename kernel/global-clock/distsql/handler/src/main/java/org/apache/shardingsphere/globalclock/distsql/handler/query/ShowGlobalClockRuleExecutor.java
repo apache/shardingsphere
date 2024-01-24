@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.globalclock.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,17 +32,26 @@ import java.util.Collections;
 /**
  * Show global clock rule executor.
  */
-public final class ShowGlobalClockRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowGlobalClockRuleStatement> {
+@Setter
+public final class ShowGlobalClockRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowGlobalClockRuleStatement, GlobalClockRule> {
     
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowGlobalClockRuleStatement sqlStatement) {
-        GlobalClockRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(GlobalClockRule.class).getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(), String.valueOf(ruleConfig.isEnabled()), ruleConfig.getProps().toString()));
-    }
+    private GlobalClockRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("type", "provider", "enable", "props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement) {
+        GlobalClockRuleConfiguration ruleConfig = rule.getConfiguration();
+        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(),
+                String.valueOf(ruleConfig.isEnabled()), PropertiesConverter.convert(ruleConfig.getProps())));
+    }
+    
+    @Override
+    public Class<GlobalClockRule> getRuleClass() {
+        return GlobalClockRule.class;
     }
     
     @Override

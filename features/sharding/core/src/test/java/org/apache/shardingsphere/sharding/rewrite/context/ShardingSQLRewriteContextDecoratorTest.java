@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.context;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -41,6 +43,18 @@ class ShardingSQLRewriteContextDecoratorTest {
         when(sqlRewriteContext.getParameters()).thenReturn(Collections.singletonList(new Object()));
         when(sqlRewriteContext.getSqlStatementContext()).thenReturn(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS));
         new ShardingSQLRewriteContextDecorator().decorate(mock(ShardingRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
+        assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
+    }
+    
+    @Test
+    void assertDecorateWhenInsertStatementNotContainsShardingTable() {
+        SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(insertStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
+        when(sqlRewriteContext.getSqlStatementContext()).thenReturn(insertStatementContext);
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(shardingRule.findTableRule("t_order")).thenReturn(Optional.empty());
+        new ShardingSQLRewriteContextDecorator().decorate(shardingRule, mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
     }
 }

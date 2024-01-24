@@ -25,6 +25,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.internal.StringUtil;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.QueryEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.XidEvent;
@@ -50,6 +51,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -106,6 +109,20 @@ class MySQLBinlogEventPacketDecoderTest {
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertTrue(decodedEvents.isEmpty());
         assertThat(binlogContext.getChecksumLength(), is(4));
+    }
+    
+    @Test
+    void assertDecodeQueryEvent() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeBytes(StringUtil.decodeHexDump("00f3e25665020100000087000000c2740f0a0400c9150000000000000400002d000000000000012000a045000000000603737464042d002d00e0000c0164735f3000116df40b00000"
+                + "0000012ff0064735f300044524f50205441424c452060745f70726f76696e636560202f2a2067656e65726174656420627920736572766572202a2fcefe4ec6"));
+        List<Object> decodedEvents = new LinkedList<>();
+        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
+        assertFalse(decodedEvents.isEmpty());
+        Object actual = decodedEvents.get(0);
+        assertInstanceOf(QueryEvent.class, actual);
+        assertThat(((QueryEvent) actual).getTimestamp(), is(1700193011L));
+        assertThat(((QueryEvent) actual).getPosition(), is(168785090L));
     }
     
     @Test

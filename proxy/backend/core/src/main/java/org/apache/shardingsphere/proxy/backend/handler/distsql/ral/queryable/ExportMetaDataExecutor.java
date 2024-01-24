@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportMetaDataStatement;
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
@@ -49,7 +49,7 @@ import java.util.Properties;
 /**
  * Export metadata executor.
  */
-public final class ExportMetaDataExecutor implements MetaDataRequiredQueryableRALExecutor<ExportMetaDataStatement> {
+public final class ExportMetaDataExecutor implements QueryableRALExecutor<ExportMetaDataStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -57,7 +57,7 @@ public final class ExportMetaDataExecutor implements MetaDataRequiredQueryableRA
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ExportMetaDataStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ExportMetaDataStatement sqlStatement, final ShardingSphereMetaData metaData) {
         String exportedData = generateExportData(metaData);
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();

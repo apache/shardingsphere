@@ -1083,6 +1083,10 @@ INTEGER
     : I N T E G E R
     ;
 
+INTERSECT
+    : I N T E R S E C T
+    ;
+
 INTERVAL
     : I N T E R V A L
     ;
@@ -3142,3 +3146,6 @@ ZONE
     : Z O N E
     ;
 
+TIMESTAMPDIFF
+    : T I M E S T A M P D I F F
+    ;

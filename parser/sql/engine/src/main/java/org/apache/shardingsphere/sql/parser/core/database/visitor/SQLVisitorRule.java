@@ -703,7 +703,9 @@ public enum SQLVisitorRule {
     
     SWITCH("Switch", SQLStatementType.DDL),
     
-    CREATE_PROFILE("CreateProfile", SQLStatementType.DDL);
+    CREATE_PROFILE("CreateProfile", SQLStatementType.DDL),
+    
+    UPDATE_STATISTICS("UpdateStatistics", SQLStatementType.DDL);
     
     private final String name;
     

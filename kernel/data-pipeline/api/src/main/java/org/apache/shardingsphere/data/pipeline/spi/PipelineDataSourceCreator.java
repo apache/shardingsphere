@@ -36,5 +36,5 @@ public interface PipelineDataSourceCreator extends TypedSPI {
      * @return pipeline data source
      * @throws SQLException if create data source failed
      */
-    DataSource createPipelineDataSource(Object dataSourceConfig) throws SQLException;
+    DataSource create(Object dataSourceConfig) throws SQLException;
 }

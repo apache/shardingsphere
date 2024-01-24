@@ -25,47 +25,21 @@ services:
       - "3307:3307"
 ```
 
-- 若你发现构建过程存在缺失的 GraalVM Reachability Metadata,
-  应当在 https://github.com/oracle/graalvm-reachability-metadata 打开新的 issue ，
-  并提交包含 ShardingSphere 自身或依赖的第三方库缺失的 GraalVM Reachability Metadata 的 PR。
-
-- ShardingSphere 的 master 分支尚未准备好处理 Native Image 中的单元测试 ， 你总是需要在构建 GraalVM Native Image 的过程中，
-  加上特定于 `GraalVM Native Build Tools` 的 `-DskipNativeTests` 或 `-DskipTests` 参数跳过 Native Image 中的单元测试。
-
-- 如下的算法类由于涉及到 https://github.com/oracle/graal/issues/5522 ， 暂未可在 GraalVM Native Image 下使用。
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
-
-- 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 不支持使用 `InlineExpressionParser` SPI 的默认实现的 `行表达式`， 
-  这首先导致 `数据分片` 功能的`actualDataNodes` 属性只能使用其他 `InlineExpressionParser` SPI 的实现来配置， 例如使用
- `InlineExpressionParser` SPI 实现为 `LITERAL` 的 `行表达式`, 即 `<LITERAL>ds_0.t_order_0, ds_0.t_order_1`
-  或 `<LITERAL>ds_0.t_user_0, ds_15.t_user_1023`。
-
 - 本节假定处于 Linux（amd64，aarch64）， MacOS（amd64）或 Windows（amd64）环境。
   如果你位于 MacOS（aarch64/M1） 环境，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/2666 。
 
-- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd` 受
-  https://github.com/micronaut-projects/micronaut-gcp/issues/532 影响，不可使用。
-
 ## 前提条件
 
-1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 17 对应的 `GraalVM Community Edition`
+1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 21 对应的 `GraalVM Community Edition`
    或 `GraalVM Community Edition` 的下游发行版。若使用 `SDKMAN!`，
 
 ```shell
-sdk install java 17.0.8-graalce
+sdk install java 21.0.2-graalce
 ```
 
 2. 根据 https://www.graalvm.org/jdk17/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
 
 3. 如果需要构建 Docker Image， 确保 `docker-ce` 已安装。
-
-4. 首先需要在项目的根目录下，执行如下命令以为所有子模块采集 Standard 形态的 GraalVM 可达性元数据。
-
-```shell
-./mvnw -PgenerateStandardMetadata -DskipNativeTests -B -T1C clean test
-```
 
 ## 操作步骤
 
@@ -108,7 +82,7 @@ sdk install java 17.0.8-graalce
 - 通过命令行构建 GraalVM Native Image。
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
 ```
 
 3. 通过命令行启动 Native Image, 需要带上 4 个参数。
@@ -123,7 +97,7 @@ sdk install java 17.0.8-graalce
 4. 如果需要构建 Docker Image, 在添加存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令。
 
 ```shell
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native,docker.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,docker.native -DskipTests clean package
 ```
 
 - 假设存在包含`server.yaml` 的 `conf` 文件夹为 `./custom/conf`，可通过如下的 `docker-compose.yml` 文件启动 GraalVM Native
@@ -148,39 +122,18 @@ services:
   另请注意，某些第三方依赖将需要在 `Dockerfile` 安装更多系统库，例如 `libdl`。
   因此请确保根据你的使用情况调整 `distribution/proxy-native` 下的 `pom.xml` 和 `Dockerfile` 的内容。
 
-# 可观察性
+## 可观察性
 
-- 针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
-  https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
+针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
+https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
 
-- 你可以使用 https://www.graalvm.org/jdk17/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
-  并根据其要求使用 VSCode 完成调试工作。如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，你可以关注
-  https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
-  及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的
-  https://github.com/oracle/graal/issues/5648 。
+你可以使用 https://www.graalvm.org/jdk17/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
+并根据其要求使用 VSCode 完成调试工作。如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，你可以关注
+https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
+及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的
+https://github.com/oracle/graal/issues/5648 。
 
-- 对于使用 `ShardingSphere Agent` 等 APM Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
-  Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065。
+对于使用 `ShardingSphere Agent` 等 Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
+Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065 。
 
-- 以下部分采用 `Apache SkyWalking Java Agent` 作为示例，可用于跟踪 GraalVM 社区的对应 issue。
-
-1. 下载 https://archive.apache.org/dist/skywalking/java-agent/8.16.0/apache-skywalking-java-agent-8.16.0.tgz ，
-   并解压到 ShardingSphere Git Source 的 `distribution/proxy-native`。
-
-2. 修改 `distribution/proxy-native/pom.xml` 的 `native profile`，
-   为 `org.graalvm.buildtools:native-maven-plugin` 的 `configuration` 添加如下的 `jvmArgs`。
-
-```xml
-
-<jvmArgs>
-    <arg>-Dskywalking.agent.service_name="your service name"</arg>
-    <arg>-Dskywalking.collector.backend_service="your skywalking oap ip and port"</arg>
-    <arg>-javaagent:./skywalking-agent/skywalking-agent.jar</arg>
-</jvmArgs>
-```
-
-3. 通过命令行构建 GraalVM Native Image。
-
-```bash
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
-```
+若用户期望在 ShardingSphere Proxy Native 下使用这类 Java Agent，则需要关注 https://github.com/oracle/graal/pull/8077 涉及的变动。

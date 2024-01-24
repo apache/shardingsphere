@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_with_comment" value="/*FORCE_IMCI_NODES*/ select /*+ SET_VAR(cost_threshold_for_imci=0) */ * from t_order" db-types="MySQL" />
     <sql-case id="select_position_function" value="select position(&quot;0&quot; in &quot;baaa&quot; in (1)),position(&quot;0&quot; in &quot;1&quot; in (1,2,3)),position(&quot;sql&quot; in (&quot;mysql&quot;))" db-types="MySQL" />
     <sql-case id="select_extract_function_with_day_hour" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />
     <sql-case id="select_with_latin1" value="select _latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" db-types="MySQL" />
@@ -90,7 +91,18 @@
     <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL" />
     <sql-case id="select_with_json_separator" value="select content_json->>'$.nation' as nation,content_json->>'$.title' as title from tb_content_json b where b.content_id=1" db-types="MySQL" />
     <sql-case id="select_with_json_value_return_type" value="SELECT * FROM t_order WHERE JSON_VALUE(items, '$.name' RETURNING VARCHAR(100)) = 'jack'" db-types="MySQL" />
-    <sql-case id="select_with_convert_function" value="SELECT CONVERT(SUBSTRING(content, 5) , SIGNED) AS signed_content FROM t_order WHERE order_id = 1" db-types="MySQL" />
+    <sql-case id="select_with_convert_function1" value="SELECT CONVERT(SUBSTRING(content, 5) , SIGNED) AS signed_content FROM t_order WHERE order_id = 1" db-types="MySQL" />
+    <sql-case id="select_with_convert_function2" value="select sequence_name, sequence_catalog, sequence_schema, convert( bigint, start_value ) as start_value, convert( bigint, minimum_value ) as minimum_value, convert( bigint, maximum_value ) as maximum_value, convert( bigint, increment ) as increment from INFORMATION_SCHEMA.SEQUENCES" db-types="SQLServer" />
+    <sql-case id="select_with_convert_function3" value="SELECT CONVERT(NVARCHAR, GETDATE(), 0)" db-types="SQLServer" />
+    <sql-case id="select_with_convert_function4" value="SELECT CONVERT(DECIMAL(10, 5), CONVERT(VARBINARY(20), @myval))" db-types="SQLServer" />
+    <sql-case id="select_with_convert_function5" value="SELECT CONVERT(BINARY(8), 'Name', 0) AS [Style 0, character to binary]" db-types="SQLServer" />
+    <sql-case id="select_with_convert_xml1" value="SELECT CONVERT(XML, '&lt;root&gt;&lt;child/&gt;&lt;/root&gt;')" db-types="SQLServer" />
+    <sql-case id="select_with_convert_xml2" value="SELECT CONVERT(XML, '&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;', 1)" db-types="SQLServer" />
+    <sql-case id="select_cast_convert_function" value="SELECT GETDATE() AS UnconvertedDateTime, CAST(GETDATE() AS NVARCHAR(30)) AS UsingCast, CONVERT(NVARCHAR(30), GETDATE(), 126) AS UsingConvertTo_ISO8601" db-types="SQLServer" />
+    <sql-case id="select_cast_convert_datetime" value="SELECT '2006-04-25T15:50:59.997' AS UnconvertedText, CAST('2006-04-25T15:50:59.997' AS DATETIME) AS UsingCast, CONVERT(DATETIME, '2006-04-25T15:50:59.997', 126) AS UsingConvertFrom_ISO8601" db-types="SQLServer" />
+    <sql-case id="select_with_convert_hex1" value="SELECT CONVERT(CHAR(8), 0x4E616d65, 0) AS [Style 0, binary to character]" db-types="SQLServer" />
+    <sql-case id="select_with_convert_hex2" value="SELECT CONVERT(CHAR(8), 0x4E616d65, 1) AS [Style 1, binary to character]" db-types="SQLServer" />
+    <sql-case id="select_with_convert_hex3" value="SELECT CONVERT(BINARY(4), '0x4E616D65', 1) AS [Style 1, character to binary]" db-types="SQLServer" />
     <sql-case id="select_with_json_extract" value="SELECT content_json::json->'title', content_json::json->'nation' FROM tb_content_json WHERE content_id = 1" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_json_extract_text" value="SELECT * FROM tb_content_json WHERE content_json::json->>'nation'='CHINA'" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_json_path_extract" value="SELECT content_json::json#>'{keyword,1}' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
@@ -184,6 +196,7 @@
     <sql-case id="select_constant_with_nested_type_cast" value="SELECT CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" db-types="PostgreSQL,openGauss"  />
     <sql-case id="select_projection_with_parameter" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Oracle"  />
     <sql-case id="select_with_chinese_comma" value="SELECT 1， 2，3 FROM DUAL" db-types="Oracle"  />
+    <sql-case id="select_with_chinese_whitespace" value="SELECT 1， 2，3 FROM　DUAL" db-types="Oracle"  />
     <sql-case id="select_with_keyword_system" value="SELECT * FROM vtx_project WHERE system = ?" />
     <sql-case id="select_with_keyword_groups_and_rank" value="SELECT t.groups, t.rank FROM t_order t" db-types="MySQL" />
     <sql-case id="select_with_format_function" value="SELECT wi.code.format(null,'PURE_IDENTITY') as PURE_IDENTITY FROM warehouse_info wi;" db-types="Oracle" />
@@ -217,4 +230,23 @@
     <sql-case id="select_wm_concat_function2" value="SELECT WM_CONCAT(NAME) NAME FROM TEST_TABLE" db-types="Oracle" />
     <sql-case id="select_wm_concat_function3" value="SELECT REPLACE(WM_CONCAT(NAME),',','|') FROM TEST_TABLE" db-types="Oracle" />
     <sql-case id="select_wm_concat_function4" value="SELECT NAME,WM_CONCAT(DECODE(SUBSTR((TO_CHAR(NAME)),0,1),'.','0'||TO_CHAR(NAME),TO_CHAR(NAME))) WM_NAME FROM TEST_TABLE WHERE NAME ='TEST' GROUP BY NAME" db-types="Oracle" />
+    <sql-case id="select_with_user_updatable_columns" value="SELECT column_name, updatable FROM user_updatable_columns WHERE table_name = 'LOCATIONS_VIEW' ORDER BY column_name, updatable" db-types="Oracle" />
+    <sql-case id="select_with_script_variables" value="SELECT x.$(ColumnName) FROM Person.Person x WHERE x.BusinessEntityID > 5" db-types="SQLServer" />
+    <sql-case id="select_not_expression" value="select !0,NOT 0=1,!(0=0),1 AND 1,1 &amp;&amp; 0,0 OR 1,1 || NULL, 1=1 or 1=1 and 1=0" db-types="MySQL" />
+    <sql-case id="select_with_unreserved_column" value="SELECT name, server_id, provider FROM sys.servers" db-types="SQLServer" />
+    <sql-case id="select_with_count_temp_table" value="SELECT COUNT(*) AS [Number of rows] FROM #Test" db-types="SQLServer"/>
+    <sql-case id="select_with_bracket_alias" value="SELECT obj1.name AS [XEvent-name], col2.name AS [XEvent-column], obj1.description AS [Descr-name], col2.description AS [Descr-column] FROM sys.dm_xe_objects AS obj1 INNER JOIN sys.dm_xe_object_columns AS col2 ON col2.object_name = obj1.name ORDER BY obj1.name, col2.name" db-types="SQLServer"/>
+    <sql-case id="select_with_cross_apply" value="SELECT query = a.text, start_time, percent_complete, eta = dateadd(second,estimated_completion_time/1000, getdate()) FROM sys.dm_exec_requests r CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) a WHERE r.command = 'RESTORE DATABASE'" db-types="SQLServer"/>
+    <sql-case id="select_with_top_restrict1" value="SELECT TOP 10 * FROM TableName" db-types="SQLServer"/>
+    <sql-case id="select_with_top_restrict2" value="SELECT TOP 10 columnName FROM TableName;" db-types="SQLServer"/>
+    <sql-case id="select_with_top_restrict3" value="SELECT TOP 10 alias1.columnName from TableName alias1" db-types="SQLServer"/>
+    <sql-case id="select_with_top_with_ties" value="SELECT TOP 10 WITH TIES alias1.columnName from TableName alias1" db-types="SQLServer"/>
+    <sql-case id="select_with_object_id_function" value="SELECT OBJECT_NAME(object_id) AS referencing_object_name,COALESCE(COL_NAME(object_id, column_id), '(n/a)') AS referencing_column_name,* FROM sys.sql_dependencies WHERE referenced_major_id = OBJECT_ID('&lt;schema_name.table_name&gt;') ORDER BY OBJECT_NAME(object_id), COL_NAME(object_id, column_id)" db-types="SQLServer"/>
+    <sql-case id="select_from_sys_views" value="SELECT name AS view_name,SCHEMA_NAME(schema_id) AS schema_name,OBJECTPROPERTYEX(object_id,'IsIndexed') AS IsIndexed,OBJECTPROPERTYEX(object_id,'IsIndexable') AS IsIndexable,create_date,modify_date FROM sys.views" db-types="SQLServer"/>
+    <sql-case id="select_with_substring_function" value="SELECT ProductID, Name, ProductNumber FROM [Production].[Product] WHERE SUBSTRING(ProductNumber, 0, 4) =  'HN-'" db-types="SQLServer"/>
+    <sql-case id="select_with_not_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS NOT DISTINCT FROM NULL" db-types="SQLServer"/>
+    <sql-case id="select_with_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS DISTINCT FROM 17;" db-types="SQLServer"/>
+    <sql-case id="select_with_database_files" value="SELECT name, size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0 AS AvailableSpaceInMB FROM sys.database_files" db-types="SQLServer"/>
+    <sql-case id="select_with_contains_function" value="SELECT product_id FROM products WHERE CONTAINS(product_description, '&quot;Snap Happy 100EZ&quot; OR FORMSOF(THESAURUS,&quot;Snap Happy&quot;) OR &quot;100EZ&quot;') AND product_cost &lt; 200" db-types="SQLServer"/>
+    <sql-case id="select_with_default_schema" value="SELECT has_backup_checksums, database_name, * FROM msdb..backupset" db-types="SQLServer"/>
 </sql-cases>

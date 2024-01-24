@@ -201,18 +201,9 @@ mysql> /* ShardingSphere hint: disableAuditNames=sharding_key_required_auditor *
 2 rows in set (0.01 sec)
 ```
 
-**Note:** `HINT` requires you to modify the `server.yaml` configuration of Proxy. In addition, if you are using MySQL terminal to connect to Proxy directly, you need to add the `-c` property — otherwise, `HINT `comments will be filtered out of the MySQL terminal and will not be parsed by Proxy on the backend.
+**Note:**  If you are using MySQL terminal to connect to Proxy directly, you need to add the `-c` property — otherwise, `HINT `comments will be filtered out of the MySQL terminal and will not be parsed by Proxy on the backend.
 
 ```sql
-rules:
-  - !SQL_PARSER
-    sqlCommentParseEnabled: true
-    sqlStatementCache:
-      initialCapacity: 2000
-      maximumSize: 65535
-    parseTreeCache:
-      initialCapacity: 128
-      maximumSize: 1024
 props:
   proxy-hint-enabled: truemysql -uroot -proot -h127.0.0.1 -P3307  -c
 ```

@@ -53,33 +53,33 @@ class AlterEncryptRuleStatementUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    private final AlterEncryptRuleStatementUpdater updater = new AlterEncryptRuleStatementUpdater();
+    private final AlterEncryptRuleExecutor executor = new AlterEncryptRuleExecutor();
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("MD5"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement("MD5"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredRules() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> updater.checkSQLStatement(database, createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkSQLStatement(database, createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredEncryptors() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithConflictColumnNames() {
-        assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, createConflictColumnNameSQLStatement(), createCurrentRuleConfiguration()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkSQLStatement(database, createConflictColumnNameSQLStatement(), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
         EncryptRuleConfiguration currentRuleConfig = createCurrentRuleConfigurationWithMultipleTableRules();
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfiguration());
+        executor.updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfiguration());
         assertThat(currentRuleConfig.getEncryptors().size(), is(1));
     }
     

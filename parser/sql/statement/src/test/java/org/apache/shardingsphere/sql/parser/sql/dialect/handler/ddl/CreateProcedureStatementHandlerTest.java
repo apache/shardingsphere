@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateProcedureStatement;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -51,7 +52,8 @@ class CreateProcedureStatementHandlerTest {
     @Test
     void assertGetRoutineBodySegmentForOtherDatabases() {
         assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OpenGaussCreateProcedureStatement()).isPresent());
-        assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OracleCreateProcedureStatement()).isPresent());
+        assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OracleCreateProcedureStatement(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList())).isPresent());
         assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new PostgreSQLCreateProcedureStatement()).isPresent());
         assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new SQLServerCreateProcedureStatement()).isPresent());
     }

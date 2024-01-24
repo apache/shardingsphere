@@ -30,7 +30,6 @@ import com.google.protobuf.StringValue;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -52,7 +51,6 @@ import java.util.Date;
  * Column value convert utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class ColumnValueConvertUtils {
     
     /**

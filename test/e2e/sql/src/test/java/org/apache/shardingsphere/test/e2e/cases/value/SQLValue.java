@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.cases.value;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -28,12 +28,11 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 /**
  * SQL value.
  */
-@Slf4j
 public final class SQLValue {
     
     @Getter
@@ -41,14 +40,6 @@ public final class SQLValue {
     
     @Getter
     private final int index;
-    
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-    
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    
-    private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     
     public SQLValue(final String value, final String type, final int index) {
         this.value = null == type ? value : getValue(value, type);
@@ -86,18 +77,20 @@ public final class SQLValue {
             case "boolean":
                 return Boolean.parseBoolean(value);
             case "Date":
-                return Date.valueOf(LocalDate.parse(value, dateFormatter));
+                return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()));
             case "datetime":
                 if (10 == value.length()) {
-                    return Date.valueOf(LocalDate.parse(value, dateFormatter));
+                    return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()));
                 }
-                return Date.valueOf(LocalDate.parse(value, dateTimeFormatter));
+                return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
             case "time":
-                return Time.valueOf(LocalTime.parse(value, timeFormatter));
+                return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getTimeFormatter()));
             case "timestamp":
-                return Timestamp.valueOf(LocalDateTime.parse(value, timestampFormatter));
+                return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillsFormatter()));
             case "bytes":
                 return value.getBytes(StandardCharsets.UTF_8);
+            case "uuid":
+                return UUID.fromString(value);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
         }
@@ -109,16 +102,19 @@ public final class SQLValue {
             return formatString((String) value);
         }
         if (value instanceof Date) {
-            return formatString(dateFormatter.format(((Date) value).toLocalDate()));
+            return formatString(DateTimeFormatterFactory.getDateFormatter().format(((Date) value).toLocalDate()));
         }
         if (value instanceof Time) {
-            return formatString(timeFormatter.format(((Time) value).toLocalTime()));
+            return formatString(DateTimeFormatterFactory.getTimeFormatter().format(((Time) value).toLocalTime()));
         }
         if (value instanceof Timestamp) {
-            return formatString(timestampFormatter.format(((Timestamp) value).toLocalDateTime()));
+            return formatString(DateTimeFormatterFactory.getShortMillsFormatter().format(((Timestamp) value).toLocalDateTime()));
         }
         if (value instanceof byte[]) {
             return formatString(new String((byte[]) value, StandardCharsets.UTF_8));
+        }
+        if (value instanceof UUID) {
+            return formatString(value.toString());
         }
         return value.toString();
     }

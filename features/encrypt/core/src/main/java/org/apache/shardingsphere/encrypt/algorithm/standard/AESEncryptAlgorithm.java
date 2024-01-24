@@ -19,12 +19,14 @@ package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
@@ -42,16 +44,20 @@ import java.util.Properties;
  * AES encrypt algorithm.
  */
 @EqualsAndHashCode
-public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm {
+public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String AES_KEY = "aes-key-value";
     
     private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
     
+    @Getter
+    private EncryptAlgorithmMetaData metaData;
+    
     private byte[] secretKey;
     
     @Override
     public void init(final Properties props) {
+        metaData = new EncryptAlgorithmMetaData();
         secretKey = createSecretKey(props);
     }
     
