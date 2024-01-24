@@ -24,7 +24,7 @@ import java.util.Optional;
 /**
  * Show rules used storage unit statement.
  */
-public final class ShowRulesUsedStorageUnitStatement extends ShowRulesStatement {
+public final class ShowRulesUsedStorageUnitStatement extends ShowDatabaseRulesStatement {
     
     private final String storageUnitName;
     

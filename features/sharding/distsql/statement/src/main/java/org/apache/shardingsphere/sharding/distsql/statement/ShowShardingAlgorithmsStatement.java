@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show sharding algorithms statement.
  */
-public final class ShowShardingAlgorithmsStatement extends ShowRulesStatement {
+public final class ShowShardingAlgorithmsStatement extends ShowDatabaseRulesStatement {
     
     public ShowShardingAlgorithmsStatement(final DatabaseSegment database) {
         super(database);

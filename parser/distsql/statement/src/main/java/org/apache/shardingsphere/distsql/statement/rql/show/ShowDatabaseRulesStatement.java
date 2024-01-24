@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.statement;
+package org.apache.shardingsphere.distsql.statement.rql.show;
 
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
+
+import java.util.Optional;
 
 /**
- * Count sharding rule statement.
+ * Show database rules statement.
  */
-public final class CountShardingRuleStatement extends ShowRulesStatement {
+@RequiredArgsConstructor
+public abstract class ShowDatabaseRulesStatement extends RQLStatement implements FromDatabaseAvailable {
     
-    public CountShardingRuleStatement(final DatabaseSegment database) {
-        super(database);
+    private final DatabaseSegment database;
+    
+    @Override
+    public final Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
     }
 }

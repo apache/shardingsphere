@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowTablesStatement;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
@@ -52,8 +52,8 @@ public final class RQLStatementAssert {
      * @param expected expected RQL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RQLStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof ShowRulesStatement) {
-            ShowRulesStatementAssert.assertIs(assertContext, (ShowRulesStatement) actual, expected);
+        if (actual instanceof ShowDatabaseRulesStatement) {
+            ShowRulesStatementAssert.assertIs(assertContext, (ShowDatabaseRulesStatement) actual, expected);
         } else if (actual instanceof ShowTablesStatement) {
             ShowTablesStatementAssert.assertIs(assertContext, (ShowTablesStatement) actual, expected);
         } else if (actual instanceof ShowStorageUnitsStatement) {
