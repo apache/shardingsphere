@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
 import com.google.common.base.Strings;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.DatabaseAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
@@ -33,8 +32,9 @@ import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.aware.MetaDataAwareRQLExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 
 import java.util.Arrays;
@@ -53,9 +53,12 @@ import java.util.stream.Collectors;
  * Show status from readwrite-splitting rules executor.
  */
 @Setter
-public final class ShowStatusFromReadwriteSplittingRulesExecutor implements DatabaseAwareQueryableRALExecutor<ShowStatusFromReadwriteSplittingRulesStatement> {
+public final class ShowStatusFromReadwriteSplittingRulesExecutor
+        implements DatabaseAwareRQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement>, MetaDataAwareRQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement> {
     
-    private ShardingSphereDatabase currentDatabase;
+    private ShardingSphereDatabase database;
+    
+    private MetaDataContexts metaDataContexts;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -63,14 +66,13 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Data
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        Collection<String> allReadResources = getAllReadResources(currentDatabase, sqlStatement.getGroupName());
-        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(
-                currentDatabase.getName(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService());
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
+        Collection<String> allReadResources = getAllReadResources(sqlStatement.getGroupName());
+        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(database.getName(), metaDataContexts.getPersistService());
         return buildRows(allReadResources, persistentReadResources);
     }
     
-    private Collection<String> getAllReadResources(final ShardingSphereDatabase database, final String groupName) {
+    private Collection<String> getAllReadResources(final String groupName) {
         Collection<String> exportKeys = Arrays.asList(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE);
         Map<String, Object> exportMap = database.getRuleMetaData().findRules(ExportableRule.class).stream()
                 .filter(each -> new RuleExportEngine(each).containExportableKey(exportKeys)).findFirst().map(each -> new RuleExportEngine(each).export(exportKeys)).orElse(Collections.emptyMap());
@@ -88,7 +90,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Data
         if (null == persistService || null == persistService.getRepository() || !(persistService.getRepository() instanceof ClusterPersistRepository)) {
             return Collections.emptyMap();
         }
-        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
+        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService(persistService.getRepository()).loadStorageNodes();
         Map<String, StorageNodeDataSource> result = new HashMap<>();
         storageNodes.entrySet().stream().filter(entry -> StorageNodeRole.MEMBER == entry.getValue().getRole()).forEach(entry -> {
             QualifiedDatabase qualifiedDatabase = new QualifiedDatabase(entry.getKey());
