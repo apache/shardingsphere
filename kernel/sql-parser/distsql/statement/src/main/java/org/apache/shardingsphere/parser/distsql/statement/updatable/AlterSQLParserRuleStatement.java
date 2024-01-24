@@ -19,7 +19,7 @@ package org.apache.shardingsphere.parser.distsql.statement.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.AlterRuleStatement;
 import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterSQLParserRuleStatement extends RuleDefinitionStatement {
+public final class AlterSQLParserRuleStatement extends AlterRuleStatement {
     
     private final CacheOptionSegment parseTreeCache;
     
