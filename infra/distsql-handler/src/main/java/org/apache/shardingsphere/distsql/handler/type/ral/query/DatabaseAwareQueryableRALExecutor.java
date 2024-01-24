@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.type.ral.query;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**

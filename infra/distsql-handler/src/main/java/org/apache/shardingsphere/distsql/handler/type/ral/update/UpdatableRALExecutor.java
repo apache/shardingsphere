@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.type.ral.update;
 
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 

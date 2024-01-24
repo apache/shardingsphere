@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.distsql.statement.ral.queryable;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
-
 /**
  * Show compute nodes statement.
  */

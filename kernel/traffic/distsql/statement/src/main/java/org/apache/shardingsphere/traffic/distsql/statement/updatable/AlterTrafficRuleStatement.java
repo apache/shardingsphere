@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.distsql.statement.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.AlterRuleStatement;
 import org.apache.shardingsphere.traffic.distsql.segment.TrafficRuleSegment;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterTrafficRuleStatement extends RuleDefinitionStatement {
+public final class AlterTrafficRuleStatement extends AlterRuleStatement {
     
     private final Collection<TrafficRuleSegment> segments;
 }

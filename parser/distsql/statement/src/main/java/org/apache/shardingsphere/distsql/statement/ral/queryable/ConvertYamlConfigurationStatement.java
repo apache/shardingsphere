@@ -19,7 +19,6 @@ package org.apache.shardingsphere.distsql.statement.ral.queryable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
 /**
  * Convert YAML configuration statement.

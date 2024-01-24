@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.statement.ral.pipeline.QueryablePipelineRALStatement;
 import org.apache.shardingsphere.distsql.statement.ral.pipeline.UpdatablePipelineRALStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
