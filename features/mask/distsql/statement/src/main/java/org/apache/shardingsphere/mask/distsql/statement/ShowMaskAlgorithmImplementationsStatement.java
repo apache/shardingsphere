@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
  * Show mask algorithm implementations statement.

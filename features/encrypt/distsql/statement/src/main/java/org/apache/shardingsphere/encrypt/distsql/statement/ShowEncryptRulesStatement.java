@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.encrypt.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show encrypt rules statement.
  */
 @Getter
-public final class ShowEncryptRulesStatement extends ShowRulesStatement {
+public final class ShowEncryptRulesStatement extends ShowDatabaseRulesStatement {
     
     private final String tableName;
     

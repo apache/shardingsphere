@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.DatabaseAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -47,7 +49,8 @@ import java.util.stream.Collectors;
  *
  * @param <T> type of queryable RAL statement
  */
-public final class QueryableRALBackendHandler<T extends QueryableRALStatement> implements RALBackendHandler {
+@RequiredArgsConstructor
+public final class QueryableRALBackendHandler<T extends QueryableRALStatement> implements DistSQLBackendHandler {
     
     private final T sqlStatement;
     
@@ -56,12 +59,6 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
-    
-    @SuppressWarnings("unchecked")
-    public QueryableRALBackendHandler(final QueryableRALStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = (T) sqlStatement;
-        this.connectionSession = connectionSession;
-    }
     
     @SuppressWarnings("unchecked")
     @Override

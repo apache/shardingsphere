@@ -57,11 +57,11 @@ public final class DataRecordGroupEngine {
     public List<DataRecord> merge(final List<DataRecord> dataRecords) {
         Map<DataRecord.Key, DataRecord> result = new HashMap<>();
         dataRecords.forEach(each -> {
-            if (PipelineSQLOperationType.INSERT.equals(each.getType())) {
+            if (PipelineSQLOperationType.INSERT == each.getType()) {
                 mergeInsert(each, result);
-            } else if (PipelineSQLOperationType.UPDATE.equals(each.getType())) {
+            } else if (PipelineSQLOperationType.UPDATE == each.getType()) {
                 mergeUpdate(each, result);
-            } else if (PipelineSQLOperationType.DELETE.equals(each.getType())) {
+            } else if (PipelineSQLOperationType.DELETE == each.getType()) {
                 mergeDelete(each, result);
             }
         });
@@ -88,8 +88,8 @@ public final class DataRecordGroupEngine {
     
     private void mergeInsert(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
         DataRecord beforeDataRecord = dataRecords.get(dataRecord.getKey());
-        ShardingSpherePreconditions.checkState(null == beforeDataRecord
-                || PipelineSQLOperationType.DELETE.equals(beforeDataRecord.getType()), () -> new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord));
+        ShardingSpherePreconditions.checkState(null == beforeDataRecord || PipelineSQLOperationType.DELETE == beforeDataRecord.getType(),
+                () -> new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord));
         dataRecords.put(dataRecord.getKey(), dataRecord);
     }
     
@@ -99,16 +99,16 @@ public final class DataRecordGroupEngine {
             dataRecords.put(dataRecord.getKey(), dataRecord);
             return;
         }
-        ShardingSpherePreconditions.checkState(!PipelineSQLOperationType.DELETE.equals(beforeDataRecord.getType()), () -> new UnsupportedSQLOperationException("Not Delete"));
+        ShardingSpherePreconditions.checkState(PipelineSQLOperationType.DELETE != beforeDataRecord.getType(), () -> new UnsupportedSQLOperationException("Not Delete"));
         if (checkUpdatedUniqueKey(dataRecord)) {
             dataRecords.remove(dataRecord.getOldKey());
         }
-        if (PipelineSQLOperationType.INSERT.equals(beforeDataRecord.getType())) {
+        if (PipelineSQLOperationType.INSERT == beforeDataRecord.getType()) {
             DataRecord mergedDataRecord = mergeColumn(PipelineSQLOperationType.INSERT, dataRecord.getTableName(), beforeDataRecord, dataRecord);
             dataRecords.put(mergedDataRecord.getKey(), mergedDataRecord);
             return;
         }
-        if (PipelineSQLOperationType.UPDATE.equals(beforeDataRecord.getType())) {
+        if (PipelineSQLOperationType.UPDATE == beforeDataRecord.getType()) {
             DataRecord mergedDataRecord = mergeColumn(PipelineSQLOperationType.UPDATE, dataRecord.getTableName(), beforeDataRecord, dataRecord);
             dataRecords.put(mergedDataRecord.getKey(), mergedDataRecord);
         }
@@ -116,9 +116,9 @@ public final class DataRecordGroupEngine {
     
     private void mergeDelete(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
         DataRecord beforeDataRecord = dataRecords.get(dataRecord.getOldKey());
-        ShardingSpherePreconditions.checkState(null == beforeDataRecord
-                || !PipelineSQLOperationType.DELETE.equals(beforeDataRecord.getType()), () -> new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord));
-        if (null != beforeDataRecord && PipelineSQLOperationType.UPDATE.equals(beforeDataRecord.getType()) && checkUpdatedUniqueKey(beforeDataRecord)) {
+        ShardingSpherePreconditions.checkState(null == beforeDataRecord || PipelineSQLOperationType.DELETE != beforeDataRecord.getType(),
+                () -> new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord));
+        if (null != beforeDataRecord && PipelineSQLOperationType.UPDATE == beforeDataRecord.getType() && checkUpdatedUniqueKey(beforeDataRecord)) {
             DataRecord mergedDataRecord = new DataRecord(PipelineSQLOperationType.DELETE, dataRecord.getTableName(), dataRecord.getPosition(), dataRecord.getColumnCount());
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
                 mergedDataRecord.addColumn(new Column(dataRecord.getColumn(i).getName(),
@@ -146,7 +146,7 @@ public final class DataRecordGroupEngine {
             result.addColumn(new Column(
                     curDataRecord.getColumn(i).getName(),
                     preDataRecord.getColumn(i).isUniqueKey()
-                            ? mergePrimaryKeyOldValue(preDataRecord.getColumn(i), curDataRecord.getColumn(i))
+                            ? mergeUniqueKeyOldValue(preDataRecord.getColumn(i), curDataRecord.getColumn(i))
                             : null,
                     curDataRecord.getColumn(i).getValue(),
                     preDataRecord.getColumn(i).isUpdated() || curDataRecord.getColumn(i).isUpdated(),
@@ -155,7 +155,10 @@ public final class DataRecordGroupEngine {
         return result;
     }
     
-    private Object mergePrimaryKeyOldValue(final Column beforeColumn, final Column column) {
-        return beforeColumn.isUpdated() ? beforeColumn.getOldValue() : (column.isUpdated() ? column.getOldValue() : null);
+    private Object mergeUniqueKeyOldValue(final Column beforeColumn, final Column column) {
+        if (beforeColumn.isUpdated()) {
+            return beforeColumn.getOldValue();
+        }
+        return column.isUpdated() ? column.getOldValue() : null;
     }
 }

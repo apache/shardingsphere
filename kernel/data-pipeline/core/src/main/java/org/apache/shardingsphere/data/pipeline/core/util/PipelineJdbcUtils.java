@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
@@ -88,7 +89,7 @@ public final class PipelineJdbcUtils {
                 statement.cancel();
             }
             // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
+        } catch (final SQLException ignored) {
             // CHECKSTYLE:ON
         }
     }

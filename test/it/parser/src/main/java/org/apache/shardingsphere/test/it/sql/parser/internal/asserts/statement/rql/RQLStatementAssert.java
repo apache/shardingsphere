@@ -21,10 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.distsql.statement.rql.show.ShowTablesStatement;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
@@ -51,8 +52,8 @@ public final class RQLStatementAssert {
      * @param expected expected RQL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RQLStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof ShowRulesStatement) {
-            ShowRulesStatementAssert.assertIs(assertContext, (ShowRulesStatement) actual, expected);
+        if (actual instanceof ShowDatabaseRulesStatement) {
+            ShowRulesStatementAssert.assertIs(assertContext, (ShowDatabaseRulesStatement) actual, expected);
         } else if (actual instanceof ShowTablesStatement) {
             ShowTablesStatementAssert.assertIs(assertContext, (ShowTablesStatement) actual, expected);
         } else if (actual instanceof ShowStorageUnitsStatement) {
@@ -66,6 +67,8 @@ public final class RQLStatementAssert {
         } else if (actual instanceof ShowSQLParserRuleStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowSQLTranslatorRuleStatement) {
+            ExistingAssert.assertIs(assertContext, actual, expected);
+        } else if (actual instanceof ShowStatusFromReadwriteSplittingRulesStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         }
     }

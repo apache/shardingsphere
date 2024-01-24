@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mask.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show mask rules statement.
  */
 @Getter
-public final class ShowMaskRulesStatement extends ShowRulesStatement {
+public final class ShowMaskRulesStatement extends ShowDatabaseRulesStatement {
     
     private final String tableName;
     

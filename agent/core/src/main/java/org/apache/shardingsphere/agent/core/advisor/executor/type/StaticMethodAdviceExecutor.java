@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -87,7 +88,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.severe(String.format("Failed to execute the pre-method of method `%s` in class `%s`, %s.", method.getName(), klass, ex.getMessage()));
+            LOGGER.log(Level.SEVERE, "Failed to execute the pre-method of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
         }
     }
     
@@ -103,7 +104,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             // CHECKSTYLE:OFF
         } catch (final Throwable ignored) {
             // CHECKSTYLE:ON
-            LOGGER.severe(String.format("Failed to execute the error handler of method `%s` in class `%s`, %s.", method.getName(), klass, ex.getMessage()));
+            LOGGER.log(Level.SEVERE, "Failed to execute the error handler of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
         }
     }
     
@@ -119,7 +120,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.severe(String.format("Failed to execute the post-method of method `%s` in class `%s` %s.", method.getName(), klass, ex.getMessage()));
+            LOGGER.log(Level.SEVERE, "Failed to execute the post-method of method `{0}` in class `{1}` {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
         }
     }
     

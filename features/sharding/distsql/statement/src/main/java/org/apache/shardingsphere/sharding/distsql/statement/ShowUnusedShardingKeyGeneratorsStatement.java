@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show unused sharding key generators statement.
  */
-public final class ShowUnusedShardingKeyGeneratorsStatement extends ShowRulesStatement {
+public final class ShowUnusedShardingKeyGeneratorsStatement extends ShowDatabaseRulesStatement {
     
     public ShowUnusedShardingKeyGeneratorsStatement(final DatabaseSegment database) {
         super(database);

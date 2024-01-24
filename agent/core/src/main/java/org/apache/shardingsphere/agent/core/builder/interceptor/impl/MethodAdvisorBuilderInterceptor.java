@@ -27,6 +27,7 @@ import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInte
 import org.apache.shardingsphere.agent.core.plugin.classloader.ClassLoaderContext;
 
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -58,7 +59,7 @@ public final class MethodAdvisorBuilderInterceptor implements AgentBuilderInterc
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                LOGGER.severe(String.format("Failed to load advice class: %s, %s.", typePointcut.getTypeName(), ex.getMessage()));
+                LOGGER.log(Level.SEVERE, "Failed to load advice class: {0}, {1}", new String[]{typePointcut.getTypeName(), ex.getMessage()});
             }
         }
         return result;

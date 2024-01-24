@@ -20,9 +20,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareUpdatableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -36,7 +37,7 @@ import java.sql.SQLException;
  * @param <T> type of SQL statement
  */
 @RequiredArgsConstructor
-public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> implements RALBackendHandler {
+public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> implements DistSQLBackendHandler {
     
     private final UpdatableRALStatement sqlStatement;
     

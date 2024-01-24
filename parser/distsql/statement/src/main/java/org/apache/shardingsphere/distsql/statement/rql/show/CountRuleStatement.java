@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  * Count rule statement.
  */
 @Getter
-public final class CountRuleStatement extends ShowRulesStatement {
+public final class CountRuleStatement extends ShowDatabaseRulesStatement {
     
     private final String type;
     

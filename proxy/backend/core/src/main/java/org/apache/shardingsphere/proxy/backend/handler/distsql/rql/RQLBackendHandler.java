@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.aware.MetaDataAwareRQLExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -72,6 +73,9 @@ public final class RQLBackendHandler implements DistSQLBackendHandler {
         }
         if (executor instanceof GlobalRuleAwareRQLExecutor) {
             setUpGlobalRuleAwareExecutor((GlobalRuleAwareRQLExecutor) executor);
+        }
+        if (executor instanceof MetaDataAwareRQLExecutor) {
+            ((MetaDataAwareRQLExecutor<?>) executor).setMetaDataContexts(ProxyContext.getInstance().getContextManager().getMetaDataContexts());
         }
         mergedResult = null == mergedResult ? createMergedResult(executor.getRows(sqlStatement)) : mergedResult;
         return new QueryResponseHeader(queryHeaders);

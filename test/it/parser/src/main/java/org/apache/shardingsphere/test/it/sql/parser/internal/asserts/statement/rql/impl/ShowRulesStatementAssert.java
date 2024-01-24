@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
@@ -43,12 +43,12 @@ public final class ShowRulesStatementAssert {
      * @param actual actual show rules statement
      * @param expected expected show rules statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowRulesStatement actual, final SQLParserTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDatabaseRulesStatement actual, final SQLParserTestCase expected) {
         assertThat("Expected value should be DatabaseContainedTestCase", expected, instanceOf(DatabaseContainedTestCase.class));
         assertIs(assertContext, actual, (DatabaseContainedTestCase) expected);
     }
     
-    private static void assertIs(final SQLCaseAssertContext assertContext, final ShowRulesStatement actual, final DatabaseContainedTestCase expected) {
+    private static void assertIs(final SQLCaseAssertContext assertContext, final ShowDatabaseRulesStatement actual, final DatabaseContainedTestCase expected) {
         if (null == expected.getDatabase()) {
             assertFalse(actual.getDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
         } else {

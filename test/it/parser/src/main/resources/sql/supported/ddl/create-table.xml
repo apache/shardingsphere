@@ -315,4 +315,7 @@
     PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
     BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
     TABLESPACE &quot;TPCCTAB&quot;" db-types="Oracle" />
+    <sql-case id="create_table_cluster_with_select1" value="CREATE TABLE dept_10 CLUSTER personnel (department_id) AS SELECT * FROM employees WHERE department_id = 10" db-types="Oracle" />
+    <sql-case id="create_table_cluster_with_select2" value="CREATE TABLE dept_20 CLUSTER personnel (department_id) AS SELECT * FROM employees WHERE department_id = 20" db-types="Oracle" />
+    <sql-case id="create_table_cluster_with_select3" value="CREATE TABLE customers_demo AS SELECT * FROM customers" db-types="Oracle" />
 </sql-cases>

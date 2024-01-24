@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -38,7 +38,7 @@ import java.util.Map;
 /**
  * Alter default shadow algorithm executor.
  */
-public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleRDLAlterExecutor<AlterDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
+public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
     private static final String DEFAULT_ALGORITHM_NAME = "default_shadow_algorithm";
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 import java.util.Optional;
@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * Show sharding table rules used algorithm statement.
  */
-public final class ShowShardingTableRulesUsedAlgorithmStatement extends ShowRulesStatement {
+public final class ShowShardingTableRulesUsedAlgorithmStatement extends ShowDatabaseRulesStatement {
     
     private final String shardingAlgorithmName;
     

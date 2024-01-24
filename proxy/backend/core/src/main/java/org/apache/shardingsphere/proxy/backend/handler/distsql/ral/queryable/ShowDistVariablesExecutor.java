@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariablesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
@@ -60,7 +60,7 @@ public final class ShowDistVariablesExecutor implements ConnectionSizeAwareQuery
         result.addAll(TemporaryConfigurationPropertyKey.getKeyNames().stream()
                 .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), getStringResult(metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(each)))))
                 .collect(Collectors.toList()));
-        result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), connectionSize));
+        result.add(new LocalDataQueryResultRow(DistSQLVariable.CACHED_CONNECTIONS.name().toLowerCase(), connectionSize));
         addLoggingPropsRows(metaData, result);
         if (sqlStatement.getLikePattern().isPresent()) {
             String pattern = SQLUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());

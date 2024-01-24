@@ -13,13 +13,13 @@ The `ALTER SHARDING TABLE RULE` syntax is used to alter sharding table rule for 
 {{% tab name="Grammar" %}}
 ```sql
 AlterShardingTableRule ::=
-  'ALTER' 'SHARDING' 'TABLE' 'RULE' (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
+  'ALTER' 'SHARDING' 'TABLE' 'RULE' (tableRuleDefinition | autoTableRuleDefinition) (',' (tableRuleDefinition | autoTableRuleDefinition))*
 
-tableDefinition ::= 
-  tableName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+tableRuleDefinition ::= 
+  ruleName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
-autoTableDefinition ::=
-  tableName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+autoTableRuleDefinition ::=
+  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
@@ -42,7 +42,7 @@ key ::=
 value ::=
   literal
 
-tableName ::=
+ruleName ::=
   identifier
 
 dataNode ::=
@@ -54,10 +54,10 @@ storageUnitName ::=
 columnName ::=
   identifier
 
-algorithmType ::=
-  identifier
-
 strategyType ::=
+  string
+
+algorithmType ::=
   string
 ```
 {{% /tab %}}
@@ -68,7 +68,7 @@ strategyType ::=
 
 ### Supplement
 
-- `tableDefinition` is defined for standard sharding table rule; `autoTableDefinition` is defined for auto sharding
+- `tableRuleDefinition` is defined for standard sharding table rule; `autoTableRuleDefinition` is defined for auto sharding
   table rule. For standard sharding rules and auto sharding rule, refer
   to [Data Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/);
 - use standard sharding table rule:
