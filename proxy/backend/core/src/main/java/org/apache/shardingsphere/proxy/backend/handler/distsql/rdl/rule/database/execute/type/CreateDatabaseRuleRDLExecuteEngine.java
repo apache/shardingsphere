@@ -28,8 +28,7 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.DatabaseRuleRDLExecuteEngine;
-import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
-import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -51,20 +50,21 @@ public final class CreateDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDL
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         ModeContextManager modeContextManager = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager();
         if (null == currentRuleConfig) {
-            return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(sqlStatement, database, toBeCreatedRuleConfig));
+            return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
         }
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(sqlStatement, database, currentRuleConfig));
+        return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, isSinglePersistNode(currentRuleConfig) ? currentRuleConfig : toBeCreatedRuleConfig));
+    }
+    
+    private boolean isSinglePersistNode(final RuleConfiguration currentRuleConfig) {
+        return currentRuleConfig instanceof SingleRuleConfiguration;
     }
     
     @SuppressWarnings("unchecked")
-    private RuleConfiguration decorateRuleConfiguration(final RuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
-        if (sqlStatement instanceof LoadSingleTableStatement || sqlStatement instanceof SetDefaultSingleTableStorageUnitStatement) {
-            return TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass()).map(optional -> optional.decorate(database.getName(),
-                    database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                            .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                    database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
-        }
-        return ruleConfig;
+    private RuleConfiguration decorateRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+        return TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass()).map(optional -> optional.decorate(database.getName(),
+                database.getResourceMetaData().getStorageUnits().entrySet().stream()
+                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
     }
 }
