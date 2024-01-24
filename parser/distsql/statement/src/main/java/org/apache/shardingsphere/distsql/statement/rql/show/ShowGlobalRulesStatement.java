@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.distsql.statement.queryable;
+package org.apache.shardingsphere.distsql.statement.rql.show;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowGlobalRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 
 /**
- * Show traffic rules statement.
+ * Show global rules statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowTrafficRulesStatement extends ShowGlobalRulesStatement {
-    
-    private final String ruleName;
+public abstract class ShowGlobalRulesStatement extends RQLStatement {
 }
