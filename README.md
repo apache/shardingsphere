@@ -17,10 +17,29 @@
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
-
 |                                               **Stargazers Over Time**                                                | **Contributors Over Time**                                                                                                                                                                                                                       |
 |:---------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [![Stargazers Over Time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere) | [![Contributor over time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere) |
+
+<details>
+  <summary>Table of Contents</summary>
+
+  - [Overview](#overview-)
+  - [Documentation](#documentation-)
+  - [Contribution](#contribution-)
+  - [Team](#team-)
+  - [Community & Support](#community--support-)
+  - [Status](#status-)
+  - [How it Works](#how-it-works-)
+    - [ShardingSphere-JDBC](#shardingsphere-jdbc-)
+    - [ShardingSphere-Proxy](#shardingsphere-proxy-)
+    - [Hybrid Architecture](#hybrid-architecture-)
+  - [Solution](#solution-)
+  - [Roadmap](#roadmap-)
+  - [How to Build Apache ShardingSphere](#how-to-build-apache-shardingsphere-)
+  - [Landscapes](#landscapes-)
+
+</details>
 
 ### OVERVIEW
 
