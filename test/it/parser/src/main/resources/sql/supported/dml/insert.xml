@@ -122,4 +122,5 @@
     <sql-case id="insert_sales_with_nchar_2" value="INSERT INTO sales VALUES (N'United States', N'Montana', 100)" db-types="SQLServer"/>
     <sql-case id="insert_with_currency_value" value="INSERT INTO [HR].[Employees]([SSN], [FirstName], [LastName], [Salary]) VALUES ('795-73-9838', N'Catherine', N'Abel', $31692)" db-types="SQLServer"/>
     <sql-case id="insert_into_table_get_date" value="INSERT INTO #Test VALUES (N'OC', N'Ounces', GETDATE())" db-types="SQLServer"/>
+    <sql-case id="insert_into_table_from_table" value="INSERT INTO #Test SELECT * FROM Production.UnitMeasure" db-types="SQLServer"/>
 </sql-cases>
