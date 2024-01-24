@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.distsql.statement.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.AlterRuleStatement;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegmen
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterSQLFederationRuleStatement extends RuleDefinitionStatement {
+public final class AlterSQLFederationRuleStatement extends AlterRuleStatement {
     
     private final Boolean sqlFederationEnabled;
     
