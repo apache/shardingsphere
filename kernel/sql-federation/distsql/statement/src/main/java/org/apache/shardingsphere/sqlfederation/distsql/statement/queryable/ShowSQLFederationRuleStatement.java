@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.statement.queryable;
 
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowGlobalRulesStatement;
 
 /**
  * Show SQL federation rule statement.
  */
-public final class ShowSQLFederationRuleStatement extends RQLStatement {
+public final class ShowSQLFederationRuleStatement extends ShowGlobalRulesStatement {
 }
