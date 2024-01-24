@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
- * Convert YAML configuration statement.
+ * Show service provider implementations statement.
  */
 @RequiredArgsConstructor
 @Getter
-public class ConvertYamlConfigurationStatement extends QueryableRALStatement {
+public final class ShowServiceProviderImplementationsStatement extends QueryableRALStatement {
     
-    private final String filePath;
+    private final String serviceProviderInterface;
 }

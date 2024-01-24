@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
+
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
  * Show compute node info statement.

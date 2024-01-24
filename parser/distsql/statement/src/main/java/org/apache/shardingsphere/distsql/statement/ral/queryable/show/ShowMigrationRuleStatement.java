@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
+
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
 
 /**
- * Show key generate algorithm implementations statement.
+ * Show migration rule statement.
  */
-public final class ShowKeyGenerateAlgorithmImplementationsStatement extends QueryableRALStatement {
+public final class ShowMigrationRuleStatement extends QueryableMigrationRALStatement {
 }

@@ -15,26 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.export;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
 import java.util.Optional;
 
 /**
- * Show dist variables statement.
+ * Export database configuration statement.
  */
 @RequiredArgsConstructor
-public final class ShowDistVariablesStatement extends QueryableRALStatement {
+public final class ExportDatabaseConfigurationStatement extends QueryableRALStatement implements FromDatabaseAvailable {
     
-    private final String likePattern;
+    private final DatabaseSegment database;
+    
+    private final String filePath;
+    
+    @Override
+    public Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
+    }
     
     /**
-     * Get like pattern.
+     * Get file path.
      *
-     * @return like pattern
+     * @return file path
      */
-    public Optional<String> getLikePattern() {
-        return Optional.ofNullable(likePattern);
+    public Optional<String> getFilePath() {
+        return Optional.ofNullable(filePath);
     }
 }

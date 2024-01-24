@@ -15,10 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+
+import java.util.Optional;
 
 /**
- * Show compute nodes statement.
+ * Show dist variables statement.
  */
-public final class ShowComputeNodesStatement extends QueryableRALStatement {
+@RequiredArgsConstructor
+public final class ShowDistVariablesStatement extends QueryableRALStatement {
+    
+    private final String likePattern;
+    
+    /**
+     * Get like pattern.
+     *
+     * @return like pattern
+     */
+    public Optional<String> getLikePattern() {
+        return Optional.ofNullable(likePattern);
+    }
 }

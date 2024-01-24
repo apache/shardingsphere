@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
+
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
- * Show compute node mode statement.
+ * Show compute nodes statement.
  */
-public final class ShowComputeNodeModeStatement extends QueryableRALStatement {
+public final class ShowComputeNodesStatement extends QueryableRALStatement {
 }

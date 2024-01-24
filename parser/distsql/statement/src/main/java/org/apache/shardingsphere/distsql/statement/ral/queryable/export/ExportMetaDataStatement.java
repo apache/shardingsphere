@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.export;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 import java.util.Optional;
 
 /**
- * Export database configuration statement.
+ * Export metadata statement.
  */
 @RequiredArgsConstructor
-public final class ExportDatabaseConfigurationStatement extends QueryableRALStatement implements FromDatabaseAvailable {
-    
-    private final DatabaseSegment database;
+public final class ExportMetaDataStatement extends QueryableRALStatement {
     
     private final String filePath;
-    
-    @Override
-    public Optional<DatabaseSegment> getDatabase() {
-        return Optional.ofNullable(database);
-    }
     
     /**
      * Get file path.

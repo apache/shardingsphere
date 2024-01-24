@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportStorageNodesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportStorageNodesStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
