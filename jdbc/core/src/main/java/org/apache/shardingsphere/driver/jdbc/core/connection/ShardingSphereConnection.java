@@ -185,13 +185,16 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     /**
      * Handle auto commit.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     public void handleAutoCommit() throws SQLException {
-        if (!autoCommit && TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())
-                && !databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
-            beginDistributedTransaction();
+        if (!autoCommit && !databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
+            if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
+                beginDistributedTransaction();
+            } else {
+                getConnectionContext().getTransactionContext().setInTransaction(true);
+            }
         }
     }
     
