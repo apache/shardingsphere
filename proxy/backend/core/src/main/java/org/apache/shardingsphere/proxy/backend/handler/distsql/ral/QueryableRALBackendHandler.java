@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.DatabaseAwareQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.InstanceContextAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.ConnectionSizeAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.DatabaseAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -74,7 +74,7 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
             ((InstanceContextAwareQueryableRALExecutor<T>) executor).setInstanceContext(ProxyContext.getInstance().getContextManager().getInstanceContext());
         }
         if (executor instanceof DatabaseAwareQueryableRALExecutor) {
-            ((DatabaseAwareQueryableRALExecutor<T>) executor).setCurrentDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
+            ((DatabaseAwareQueryableRALExecutor<T>) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
         }
         if (executor instanceof ConnectionSizeAwareQueryableRALExecutor) {
             ((ConnectionSizeAwareQueryableRALExecutor<T>) executor).setConnectionSize(connectionSession.getDatabaseConnectionManager().getConnectionSize());

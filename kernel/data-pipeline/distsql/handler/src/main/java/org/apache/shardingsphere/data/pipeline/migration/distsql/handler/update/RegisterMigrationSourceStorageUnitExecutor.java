@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
@@ -46,7 +46,7 @@ public final class RegisterMigrationSourceStorageUnitExecutor implements Updatab
     
     private final MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
     
-    private final DataSourcePoolPropertiesValidateHandler validateHandler = new DataSourcePoolPropertiesValidateHandler();
+    private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
     
     @Override
     public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement) {

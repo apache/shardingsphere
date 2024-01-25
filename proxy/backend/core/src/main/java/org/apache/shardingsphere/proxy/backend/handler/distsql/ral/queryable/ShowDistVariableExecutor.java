@@ -30,7 +30,7 @@ import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.ConnectionSizeAwareQueryableRALExecutor;
 
 import java.util.Arrays;
 import java.util.Collection;
