@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.aware;
+package org.apache.shardingsphere.distsql.handler.type.rql.aware;
 
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;

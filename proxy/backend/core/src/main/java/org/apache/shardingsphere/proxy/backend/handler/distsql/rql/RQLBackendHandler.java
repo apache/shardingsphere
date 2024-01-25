@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.aware.MetaDataAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.MetaDataAwareRQLExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
