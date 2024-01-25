@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.statement;
-
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.aware.StaticDataSourceContainedRuleAwareStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.type.DropRuleStatement;
+package org.apache.shardingsphere.distsql.statement.rdl.rule.aware;
 
 import java.util.Collection;
 
 /**
- * Drop readwrite-splitting rule statement.
+ * Static data source contained rule aware statement.
  */
-@Getter
-public final class DropReadwriteSplittingRuleStatement extends DropRuleStatement implements StaticDataSourceContainedRuleAwareStatement {
+public interface StaticDataSourceContainedRuleAwareStatement {
     
-    private final Collection<String> names;
-    
-    public DropReadwriteSplittingRuleStatement(final boolean ifExists, final Collection<String> names) {
-        super(ifExists);
-        this.names = names;
-    }
+    /**
+     * Get names.
+     * 
+     * @return names
+     */
+    Collection<String> getNames();
 }

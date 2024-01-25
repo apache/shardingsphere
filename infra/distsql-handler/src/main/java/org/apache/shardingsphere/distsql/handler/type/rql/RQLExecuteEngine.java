@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -44,9 +44,9 @@ public abstract class RQLExecuteEngine {
     
     private final RQLStatement sqlStatement;
     
-    private final MetaDataContexts metaDataContexts;
-    
     private final String currentDatabaseName;
+    
+    private final ContextManager contextManager;
     
     @Getter
     private Collection<String> columnNames;
@@ -70,7 +70,7 @@ public abstract class RQLExecuteEngine {
             setUpGlobalRuleAwareExecutor((GlobalRuleAwareRQLExecutor) executor);
         }
         if (executor instanceof MetaDataAwareRQLExecutor) {
-            ((MetaDataAwareRQLExecutor<?>) executor).setMetaDataContexts(metaDataContexts);
+            ((MetaDataAwareRQLExecutor<?>) executor).setMetaDataContexts(contextManager.getMetaDataContexts());
         }
         if (null == rows) {
             rows = executor.getRows(sqlStatement);
@@ -93,7 +93,7 @@ public abstract class RQLExecuteEngine {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void setUpGlobalRuleAwareExecutor(final GlobalRuleAwareRQLExecutor executor) {
-        Optional<ShardingSphereRule> rule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
+        Optional<ShardingSphereRule> rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
         if (rule.isPresent()) {
             executor.setRule(rule.get());
         } else {

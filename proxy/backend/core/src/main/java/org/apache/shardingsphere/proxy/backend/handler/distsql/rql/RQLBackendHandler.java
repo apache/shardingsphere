@@ -49,7 +49,7 @@ public final class RQLBackendHandler extends RQLExecuteEngine implements DistSQL
     private MergedResult mergedResult;
     
     public RQLBackendHandler(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, ProxyContext.getInstance().getContextManager().getMetaDataContexts(), connectionSession.getDatabaseName());
+        super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
     }
     
     @Override
