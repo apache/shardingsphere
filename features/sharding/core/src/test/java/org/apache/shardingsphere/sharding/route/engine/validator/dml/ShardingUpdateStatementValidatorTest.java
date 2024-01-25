@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatem
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -61,7 +60,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -74,9 +72,6 @@ class ShardingUpdateStatementValidatorTest {
     @Mock
     private ShardingSphereDatabase database;
     
-    @Mock
-    private ShardingSphereSchema schema;
-    
     @Test
     void assertPreValidateWhenUpdateSingleTable() {
         UpdateStatement updateStatement = createUpdateStatement();
@@ -85,9 +80,6 @@ class ShardingUpdateStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        when(schema.containsTable("user")).thenReturn(true);
-        when(database.getSchema(any())).thenReturn(schema);
-        when(database.getName()).thenReturn("sharding_db");
         assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().preValidate(
                 shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
@@ -103,10 +95,6 @@ class ShardingUpdateStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        when(schema.containsTable("user")).thenReturn(true);
-        when(schema.containsTable("order")).thenReturn(true);
-        when(database.getSchema(any())).thenReturn(schema);
-        when(database.getName()).thenReturn("sharding_db");
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateStatementValidator().preValidate(
                 shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
