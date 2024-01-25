@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.statement.rql.resource;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
@@ -28,7 +27,7 @@ import java.util.Optional;
  * Show tables statement.
  */
 @RequiredArgsConstructor
-public abstract class ShowTablesStatement extends RQLStatement implements FromDatabaseAvailable {
+public abstract class ShowTablesStatement extends ResourceQueryStatement implements FromDatabaseAvailable {
     
     private final String likePattern;
     

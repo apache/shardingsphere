@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rql.rule;
+package org.apache.shardingsphere.distsql.statement.rql.rule.global;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
-
-import java.util.Optional;
+import org.apache.shardingsphere.distsql.statement.rql.rule.RuleQueryStatement;
 
 /**
- * Show database rules statement.
+ * Show global rules statement.
  */
-@RequiredArgsConstructor
-public abstract class ShowDatabaseRulesStatement extends RQLStatement implements FromDatabaseAvailable {
-    
-    private final DatabaseSegment database;
-    
-    @Override
-    public final Optional<DatabaseSegment> getDatabase() {
-        return Optional.ofNullable(database);
-    }
+public abstract class ShowGlobalRulesStatement extends RuleQueryStatement {
 }

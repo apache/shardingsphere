@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.rql.resource.ResourceQueryStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowStatusFromReadwriteSplittingRulesStatement extends RQLStatement implements FromDatabaseAvailable {
+public final class ShowStatusFromReadwriteSplittingRulesStatement extends ResourceQueryStatement implements FromDatabaseAvailable {
     
     private final DatabaseSegment database;
     

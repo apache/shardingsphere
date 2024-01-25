@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rql.resource;
+package org.apache.shardingsphere.distsql.statement.rql.rule.database;
 
-import org.apache.shardingsphere.distsql.statement.rql.rule.ShowDatabaseRulesStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.rql.rule.RuleQueryStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
 import java.util.Optional;
 
 /**
- * Show rules used storage unit statement.
+ * Show database rules statement.
  */
-public final class ShowRulesUsedStorageUnitStatement extends ShowDatabaseRulesStatement {
+@RequiredArgsConstructor
+public abstract class ShowDatabaseRulesStatement extends RuleQueryStatement implements FromDatabaseAvailable {
     
-    private final String storageUnitName;
+    private final DatabaseSegment database;
     
-    public ShowRulesUsedStorageUnitStatement(final String storageUnitName, final DatabaseSegment database) {
-        super(database);
-        this.storageUnitName = storageUnitName;
-    }
-    
-    /**
-     * Get resource name.
-     *
-     * @return resource name
-     */
-    public Optional<String> getStorageUnitName() {
-        return Optional.ofNullable(storageUnitName);
+    @Override
+    public final Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
     }
 }

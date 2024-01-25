@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.statement;
+package org.apache.shardingsphere.distsql.statement.rql.resource;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 
 /**
- * Show encrypt rules statement.
+ * Resource query statement.
  */
-@Getter
-public final class ShowEncryptRulesStatement extends ShowDatabaseRulesStatement {
-    
-    private final String tableName;
-    
-    public ShowEncryptRulesStatement(final String tableName, final DatabaseSegment database) {
-        super(database);
-        this.tableName = tableName;
-    }
+public abstract class ResourceQueryStatement extends RQLStatement {
 }

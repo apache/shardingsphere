@@ -15,12 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rql.rule;
+package org.apache.shardingsphere.distsql.statement.rql.rule.database;
 
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+
+import java.util.Optional;
 
 /**
- * Show global rules statement.
+ * Show rules used storage unit statement.
  */
-public abstract class ShowGlobalRulesStatement extends RQLStatement {
+public final class ShowRulesUsedStorageUnitStatement extends ShowDatabaseRulesStatement {
+    
+    private final String storageUnitName;
+    
+    public ShowRulesUsedStorageUnitStatement(final String storageUnitName, final DatabaseSegment database) {
+        super(database);
+        this.storageUnitName = storageUnitName;
+    }
+    
+    /**
+     * Get resource name.
+     *
+     * @return resource name
+     */
+    public Optional<String> getStorageUnitName() {
+        return Optional.ofNullable(storageUnitName);
+    }
 }

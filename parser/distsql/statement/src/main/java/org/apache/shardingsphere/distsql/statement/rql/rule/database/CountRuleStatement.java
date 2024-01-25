@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.statement;
+package org.apache.shardingsphere.distsql.statement.rql.rule.database;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Show encrypt rules statement.
+ * Count rule statement.
  */
 @Getter
-public final class ShowEncryptRulesStatement extends ShowDatabaseRulesStatement {
+public final class CountRuleStatement extends ShowDatabaseRulesStatement {
     
-    private final String tableName;
+    private final String type;
     
-    public ShowEncryptRulesStatement(final String tableName, final DatabaseSegment database) {
+    public CountRuleStatement(final DatabaseSegment database, final String type) {
         super(database);
-        this.tableName = tableName;
+        this.type = type;
     }
 }

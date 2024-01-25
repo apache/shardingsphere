@@ -64,7 +64,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.TableReferenceRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.statement.rql.rule.CountRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingAuditorSegment;

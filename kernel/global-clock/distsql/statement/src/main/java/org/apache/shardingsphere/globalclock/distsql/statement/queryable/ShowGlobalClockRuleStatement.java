@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.globalclock.distsql.statement.queryable;
 
-import org.apache.shardingsphere.distsql.statement.rql.rule.ShowGlobalRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.global.ShowGlobalRulesStatement;
 
 /**
  * Show global clock rule statement.
