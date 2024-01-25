@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.ral.query;
+package org.apache.shardingsphere.distsql.handler.type.ral.query.aware;
 
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 
 /**
- * Connection size aware queryable RAL executor.
+ * Instance context aware queryable RAL executor.
  * 
- * @param <T> type of SQL statement
+ * @param <T> type of queryable RAL statement
  */
-public interface ConnectionSizeAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
+public interface InstanceContextAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
-     * Set connection size.
+     * Set Instance context.
      *
-     * @param connectionSize connection size
+     * @param instanceContext instance context
      */
-    void setConnectionSize(int connectionSize);
+    void setInstanceContext(InstanceContext instanceContext);
 }

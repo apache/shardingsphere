@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.ral.query;
+package org.apache.shardingsphere.distsql.handler.type.ral.query.aware;
 
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
