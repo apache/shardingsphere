@@ -28,19 +28,21 @@ import org.mockito.Mock;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 class SchemaMetaDataReviseEngineTest {
+    
     @Mock
     private SchemaMetaDataReviseEngine schemaMetaDataReviseEngine;
     
     @Test
     void assertRevise() {
         Collection<ShardingSphereRule> rules = new ArrayList<>();
-        Collection<TableMetaData> tableMetaData = new ArrayList<>();
+        Collection<TableMetaData> tableMetaData = Collections.singleton(mock(TableMetaData.class));
         ConfigurationProperties props = mock(ConfigurationProperties.class);
         DatabaseType databaseType = mock(DatabaseType.class);
         DataSource dataSource = mock(DataSource.class);
