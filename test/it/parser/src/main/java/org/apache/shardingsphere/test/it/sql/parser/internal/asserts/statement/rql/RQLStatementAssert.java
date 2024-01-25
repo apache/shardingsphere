@@ -23,7 +23,7 @@ import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleSt
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowTablesStatement;
-import org.apache.shardingsphere.distsql.statement.rql.rule.ShowDatabaseRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;

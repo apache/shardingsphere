@@ -17,19 +17,10 @@
 
 package org.apache.shardingsphere.distsql.statement.rql.rule;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 
 /**
- * Count rule statement.
+ * Rule query statement.
  */
-@Getter
-public final class CountRuleStatement extends ShowDatabaseRulesStatement {
-    
-    private final String type;
-    
-    public CountRuleStatement(final DatabaseSegment database, final String type) {
-        super(database);
-        this.type = type;
-    }
+public abstract class RuleQueryStatement extends RQLStatement {
 }

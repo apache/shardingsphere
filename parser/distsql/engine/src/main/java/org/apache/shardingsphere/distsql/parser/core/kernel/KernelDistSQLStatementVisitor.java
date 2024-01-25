@@ -105,7 +105,7 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterS
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowLogicalTablesStatement;
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
