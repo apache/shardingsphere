@@ -896,6 +896,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
+        if (null != ctx.intoClause()) {
+            result.setIntoSegment((TableSegment) visit(ctx.intoClause()));
+        }
         if (null != ctx.fromClause()) {
             TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
             result.setFrom(tableSource);
