@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -30,7 +30,7 @@ import java.util.Collections;
 /**
  * Execute errors count advice for ShardingSphere-Proxy.
  */
-public final class ExecuteErrorsCountAdvice implements InstanceMethodAdvice {
+public final class ExecuteErrorsCountAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_execute_errors_total",
             MetricCollectorType.COUNTER, "Total execute errors of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());

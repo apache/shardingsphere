@@ -40,5 +40,6 @@
         <module>logging</module>
         <module>metadata</module>
         <module>global-clock</module>
+        <module>schedule</module>
     </modules>
 </project>

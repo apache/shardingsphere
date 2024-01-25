@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariable
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -34,16 +35,17 @@ import org.apache.shardingsphere.mode.manager.standalone.StandaloneModeContextMa
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.slf4j.event.Level;
+
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,40 +54,49 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class SetDistVariableUpdaterTest {
     
-    @Mock
-    private ConnectionSession connectionSession;
-    
     @Test
-    void assertExecuteWithConfigurationKey() {
+    void assertExecuteWithConfigurationKey() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        updater.executeUpdate(connectionSession, statement);
+        updater.executeUpdate(statement);
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertThat(actualValue.toString(), is("1024"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
     }
     
     @Test
-    void assertExecuteWithTemporaryConfigurationKey() {
+    void assertExecuteWithTemporaryConfigurationKey() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        updater.executeUpdate(connectionSession, statement);
+        updater.executeUpdate(statement);
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getProps().get("proxy-meta-data-collector-enabled");
         assertThat(actualValue.toString(), is("false"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
     }
     
     @Test
-    void assertExecuteWithSystemLogLevel() {
-        SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+    void assertExecuteWithTypedSPI() throws SQLException {
+        SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_database_protocol_type", "MySQL");
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        updater.executeUpdate(connectionSession, statement);
+        updater.executeUpdate(statement);
+        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-database-protocol-type");
+        assertThat(actualValue.toString(), is("MySQL"));
+        assertInstanceOf(MySQLDatabaseType.class, contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE));
+    }
+    
+    @Test
+    void assertExecuteWithSystemLogLevel() throws SQLException {
+        SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        updater.executeUpdate(statement);
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("system-log-level");
         assertThat(actualValue.toString(), is("DEBUG"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(Level.DEBUG));
@@ -96,8 +107,8 @@ class SetDistVariableUpdaterTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
-        assertThrows(InvalidValueException.class, () -> updater.executeUpdate(connectionSession, statement));
+        SetDistVariableExecutor updater = new SetDistVariableExecutor();
+        assertThrows(InvalidValueException.class, () -> updater.executeUpdate(statement));
     }
     
     private ContextManager mockContextManager() {

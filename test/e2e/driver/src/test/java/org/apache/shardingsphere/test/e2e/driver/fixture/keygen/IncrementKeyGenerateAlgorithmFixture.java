@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.test.e2e.driver.fixture.keygen;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
 
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class IncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     private final AtomicInteger count = new AtomicInteger();
     
     @Override
-    public Comparable<?> generateKey() {
-        return count.incrementAndGet();
+    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+        return IntStream.range(0, keyGenerateCount).mapToObj(each -> count.incrementAndGet()).collect(Collectors.toList());
     }
     
     @Override

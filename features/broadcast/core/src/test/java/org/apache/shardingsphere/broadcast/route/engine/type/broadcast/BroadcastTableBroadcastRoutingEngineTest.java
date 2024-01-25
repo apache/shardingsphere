@@ -41,7 +41,7 @@ class BroadcastTableBroadcastRoutingEngineTest {
         Collection<String> broadcastRuleTableNames = Collections.singleton("t_address");
         BroadcastTableBroadcastRoutingEngine engine = new BroadcastTableBroadcastRoutingEngine(broadcastRuleTableNames);
         BroadcastRule broadcastRule = mock(BroadcastRule.class);
-        when(broadcastRule.getAvailableDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(broadcastRule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(broadcastRule.getBroadcastRuleTableNames(any())).thenReturn(Collections.singleton("t_address"));
         RouteContext routeContext = engine.route(new RouteContext(), broadcastRule);
         assertThat(routeContext.getRouteUnits().size(), is(2));
@@ -55,7 +55,7 @@ class BroadcastTableBroadcastRoutingEngineTest {
         Collection<String> broadcastRuleTableNames = Collections.singleton("t_address");
         BroadcastTableBroadcastRoutingEngine engine = new BroadcastTableBroadcastRoutingEngine(broadcastRuleTableNames);
         BroadcastRule broadcastRule = mock(BroadcastRule.class);
-        when(broadcastRule.getAvailableDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(broadcastRule.getDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(broadcastRule.getBroadcastRuleTableNames(any())).thenReturn(Collections.emptyList());
         RouteContext routeContext = engine.route(new RouteContext(), broadcastRule);
         assertThat(routeContext.getRouteUnits().size(), is(2));

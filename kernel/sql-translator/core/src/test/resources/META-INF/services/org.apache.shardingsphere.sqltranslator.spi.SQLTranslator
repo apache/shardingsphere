@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sqltranslator.rule.fixture.AlwaysFailedSQLTranslator
-org.apache.shardingsphere.sqltranslator.rule.fixture.ConvertToUpperCaseSQLTranslator
+org.apache.shardingsphere.sqltranslator.rule.fixture.FixtureSQLTranslator

@@ -60,6 +60,3 @@
 **/_helpers.tpl
 
 # test files
-
-**/export-metadata-configuration.data
-

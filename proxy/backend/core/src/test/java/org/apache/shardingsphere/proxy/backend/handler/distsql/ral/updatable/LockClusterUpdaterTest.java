@@ -44,8 +44,8 @@ class LockClusterUpdaterTest {
     void assertExecuteWithNotClusterMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        LockClusterUpdater updater = new LockClusterUpdater();
-        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()))));
+        LockClusterExecutor updater = new LockClusterExecutor();
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()))));
     }
     
     @Test
@@ -54,8 +54,8 @@ class LockClusterUpdaterTest {
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.UNAVAILABLE);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        LockClusterUpdater updater = new LockClusterUpdater();
-        assertThrows(IllegalStateException.class, () -> updater.executeUpdate("foo", new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()))));
+        LockClusterExecutor updater = new LockClusterExecutor();
+        assertThrows(IllegalStateException.class, () -> updater.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()))));
     }
     
     @Test
@@ -64,7 +64,7 @@ class LockClusterUpdaterTest {
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        LockClusterUpdater updater = new LockClusterUpdater();
-        assertThrows(ServiceProviderNotFoundException.class, () -> updater.executeUpdate("foo", new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()))));
+        LockClusterExecutor updater = new LockClusterExecutor();
+        assertThrows(ServiceProviderNotFoundException.class, () -> updater.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()))));
     }
 }

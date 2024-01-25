@@ -143,7 +143,7 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     
     private void routeToAllDatabaseInstance(final RouteContext routeContext, final ShardingSphereDatabase database, final BroadcastRule broadcastRule) {
         routeContext.getRouteUnits().clear();
-        for (String each : broadcastRule.getAvailableDataSourceNames()) {
+        for (String each : broadcastRule.getDataSourceNames()) {
             if (database.getResourceMetaData().getAllInstanceDataSourceNames().contains(each)) {
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
@@ -152,7 +152,7 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
     
     private void routeToAllDatabase(final RouteContext routeContext, final BroadcastRule broadcastRule) {
         routeContext.getRouteUnits().clear();
-        for (String each : broadcastRule.getAvailableDataSourceNames()) {
+        for (String each : broadcastRule.getDataSourceNames()) {
             routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
     }

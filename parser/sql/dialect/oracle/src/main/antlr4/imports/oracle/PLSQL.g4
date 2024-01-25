@@ -17,7 +17,7 @@
 
 grammar PLSQL;
 
-import Keyword, BaseRule, DDLStatement, DMLStatement;
+import Keyword, BaseRule, DDLStatement, DMLStatement, TCLStatement;
 
 call
     : CALL 
@@ -48,12 +48,12 @@ plsqlProcedureSource
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
     ;
 
-plsqlBlock
-    : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)* DECLARE declareSection body
-    ;
-
 createFunction
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
+    ;
+
+createTrigger
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TRIGGER plsqlTriggerSource
     ;
 
 plsqlFunctionSource
@@ -64,58 +64,346 @@ plsqlFunctionSource
     | deterministicClause
     | parallelEnableClause
     | resultCacheClause
-    | aggregateClause
     | pipelinedClause
-    | sqlMacroClause)* 
-    (IS | AS) (callSpec | declareSection? body)
+    | sqlMacroClause)*
+    (aggregateClause | ((IS | AS) (callSpec | declareSection? body)))
     ;
     
 body
     : BEGIN statement+ (EXCEPTION (exceptionHandler)+)? END (identifier)? SEMI_
     ;
 
-//need add more statement type according to the doc
+// TODO need add more statement type according to the doc
 statement
     : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_) *)?
-        (select
-        | update
-        | delete
-        | insert
-        | lockTable
-        | merge
-        | assignmentStatement
+        (assignStatement
         | basicLoopStatement
+        | caseStatement
         | closeStatement
+        | continueStatement
+        | cursorForLoopStatement
+        | executeImmediateStatement
+        | exitStatement
         | fetchStatement
-        | ifStatment
+        | forLoopStatement
+        | forallStatement
+        | gotoStatement
+        | ifStatement
+        | nullStatement
+        | openStatement
+        | openForStatement
+        | pipeRowStatement
+        | plsqlBlock
+        | raiseStatement
         | returnStatement
-        ) SEMI_
+        | selectIntoStatement
+        | sqlStatementInPlsql
+        | procedureCall
+        | whileLoopStatement
+        )
+    ;
+
+assignStatement
+    : assignStatementTarget ASSIGNMENT_OPERATOR_ expression SEMI_
+    ;
+
+assignStatementTarget
+    : collectionVariable=name (LP_ INTEGER_ RP_)?
+    // TODO cursor_variable, out_parameter, scalar_variable
+    | name
+    | placeholder
+    | hostCursorVariable
+    // TODO object.attribute, record_variable.field
+    | attributeName
+    ;
+
+placeholder
+    : COLON_ hostVariable=name (DOT_ columnName)? (COLON_ indicatorVariable=name)?
+    ;
+
+// TODO PL/SQL grammar more than expr
+expression
+    : expr
+    ;
+
+booleanExpression
+    : NOT? booleanPrimary ((AND | OR) NOT? booleanPrimary)*
     ;
 
 basicLoopStatement
-    : LOOP (statement (EXIT label? (WHEN booleanPrimary)? SEMI_)?)+ END LOOP label?
+    : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)?
+    LOOP statement+ END LOOP label? SEMI_
     ;
 
-assignmentStatement
-    : variableName ASSIGNMENT_OPERATOR_ expr
+caseStatement
+    : simpleCaseStatement | searchedCaseStatement
+    ;
+
+simpleCaseStatement
+    : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)?
+    CASE selector=expression
+    (WHEN booleanExpression THEN statement)+
+    (ELSE statement+)?
+    END CASE label? SEMI_
+    ;
+
+searchedCaseStatement
+    : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)?
+    CASE
+    (WHEN booleanExpression THEN statement+)+
+    (ELSE statement+)?
+    END CASE label? SEMI_
     ;
 
 closeStatement
-    : CLOSE cursorName
+    : CLOSE (cursor | cursorVariable | hostCursorVariable) SEMI_
+    ;
+
+continueStatement
+    : CONTINUE label? (WHEN booleanExpression)? SEMI_
+    ;
+
+cursorForLoopStatement
+    : FOR record IN
+    (cursor (LP_ actualCursorParameter (COMMA_? actualCursorParameter)* RP_)?
+    | LP_ select RP_
+    )
+    LOOP statement+ END LOOP label? SEMI_
+    ;
+
+executeImmediateStatement
+    : EXECUTE IMMEDIATE dynamicSqlStmt
+        ((selectIntoClause | bulkCollectIntoClause) plsqlUsingClause?
+        | plsqlUsingClause dynamicReturningClause?
+        | dynamicReturningClause
+        )? SEMI_
+    ;
+
+dynamicReturningClause
+    : (RETURNING | RETURN) (selectIntoClause | bulkCollectIntoClause)
+    ;
+
+exitStatement
+    : EXIT label? (WHEN booleanExpression)? SEMI_
     ;
 
 fetchStatement
-    : FETCH cursorName INTO identifier
+    : FETCH (cursor | cursorVariable | hostCursorVariable)
+    (selectIntoClause | bulkCollectIntoClause (LIMIT expression)?) SEMI_
     ;
 
-ifStatment
-    : IF booleanPrimary THEN statement+ (ELSIF booleanPrimary THEN statement+)? (ELSE statement)? END IF
+forLoopStatement
+    : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)?
+    FOR iterator
+        LOOP statement+
+    END LOOP label? SEMI_
+    ;
+
+iterator
+    : iterandDecl (COMMA_ iterandDecl)* IN iterationCtlSeq
+    ;
+
+iterandDecl
+    : plsIdentifier=identifier (MUTABLE | IMMUTABLE)? constrainedType=dataType?
+    ;
+
+iterationCtlSeq
+    : qualIterationCtl (COMMA_ qualIterationCtl)*
+    ;
+
+qualIterationCtl
+    : REVERSE? iterationCcontrol predClauseSeq
+    ;
+
+iterationCcontrol
+    : steppedControl
+    | singleExpressionControl
+    | valuesOfControl
+    | indicesOfControl
+    | pairsOfControl
+    | cursorIterationControl
+    ;
+
+predClauseSeq
+    : (WHILE booleanExpression)? (WHEN booleanExpression)?
+    ;
+
+steppedControl
+    : lowerBound RANGE_OPERATOR_ upperBound (BY step=expression)?
+    ;
+
+singleExpressionControl
+    : REPEAT? expression
+    ;
+
+valuesOfControl
+    : VALUES OF
+    (expression
+    | cursorVariable
+    | LP_ cursorObject | dynamicSql | sqlStatementInPlsql RP_
+    )
+    ;
+
+indicesOfControl
+    : INDICES OF
+    (expression
+    | cursorVariable
+    | LP_ cursorObject | cursorVariable | dynamicSql | sqlStatementInPlsql RP_
+    )
+    ;
+
+pairsOfControl
+    : PAIRS OF
+    (expression
+    | cursorVariable
+    | LP_ cursorObject | dynamicSql | sqlStatementInPlsql RP_
+    )
+    ;
+
+cursorIterationControl
+    : LP_ cursorObject | cursorVariable | dynamicSql | sqlStatementInPlsql RP_
+    ;
+
+dynamicSql
+    : EXECUTE IMMEDIATE dynamicSqlStmt (USING IN? (bindArgument COMMA_?)* )?
+    ;
+
+cursorObject
+    : variableName
+    ;
+
+forallStatement
+    : FORALL index=name IN boundsClause (SAVE EXCEPTIONS)? dmlStatement SEMI_
+    ;
+
+boundsClause
+    : lowerBound RANGE_OPERATOR_ upperBound
+    | INDICES OF collection=name (BETWEEN lowerBound AND upperBound)?
+    | VALUES OF indexCollection=name
+    ;
+
+lowerBound
+    : expression
+    ;
+
+upperBound
+    : expression
+    ;
+
+dmlStatement
+    : insert | update | delete | merge | dynamicSqlStmt
+    ;
+
+dynamicSqlStmt
+    : expression
+    ;
+
+gotoStatement
+    : GOTO label SEMI_
+    ;
+
+ifStatement
+    : IF booleanExpression THEN statement+
+    (ELSIF booleanExpression THEN statement+)*
+    (ELSE statement+)?
+    END IF SEMI_
+    ;
+
+nullStatement
+    : NULL SEMI_
+    ;
+
+openStatement
+    : OPEN cursor (LP_ actualCursorParameter (COMMA_? actualCursorParameter)* RP_)? SEMI_
+    ;
+
+cursor
+    : variableName
+    ;
+
+openForStatement
+    : OPEN (cursorVariable | hostCursorVariable) FOR (select | dynamicSqlStmt) plsqlUsingClause? SEMI_
+    ;
+
+cursorVariable
+    : variableName
+    ;
+
+plsqlUsingClause
+    : USING (IN | OUT | IN OUT)? bindArgument (COMMA_? (IN | OUT | IN OUT)? bindArgument)*
+    ;
+
+bindArgument
+    : expression
+    ;
+
+pipeRowStatement
+    : PIPE ROW LP_ row=expression RP_ SEMI_
+    ;
+
+plsqlBlock
+    : ((SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)*)? (DECLARE declareSection)? body
+    ;
+
+procedureCall
+    : (packageName DOT_)? procedureName (LP_ (parameter=expression (COMMA_ parameter=expression)*)? RP_)? SEMI_
+    ;
+
+raiseStatement
+    : RAISE name? SEMI_
     ;
 
 returnStatement
-    : RETURN expr
+    : RETURN expression? SEMI_
     ;
 
+selectIntoStatement
+    : SELECT (DISTINCT | UNIQUE | ALL)? selectList (selectIntoClause | bulkCollectIntoClause) FROM fromClauseList whereClause? hierarchicalQueryClause? groupByClause? modelClause? windowClause? orderByClause? rowLimitingClause? SEMI_
+    ;
+
+// TODO into_clause of PL/SQL
+selectIntoClause
+    : INTO (variableName (COMMA_ variableName)* | record)
+    ;
+
+record
+    : name
+    ;
+
+bulkCollectIntoClause
+    : BULK COLLECT INTO (collection=name | hostArray)
+    ;
+
+hostArray
+    : COLON_ variableName
+    ;
+
+hostCursorVariable
+    : COLON_ variableName
+    ;
+
+actualCursorParameter
+    : expression
+    ;
+
+sqlStatementInPlsql
+    : (commit
+    // TODO collection_method_call
+    | delete
+    | insert
+    | lockTable
+    | merge
+    | rollback
+    | savepoint
+    | setTransaction
+    | update
+    ) SEMI_
+    ;
+
+whileLoopStatement
+    : WHILE booleanExpression
+    LOOP statement+ END LOOP label? SEMI_
+    ;
 
 exceptionHandler
     : WHEN ((typeName (OR typeName)*)| OTHERS) THEN statement+
@@ -269,9 +557,73 @@ rowtypeAttribute
 
 pragma
     : autonomousTransPragma | restrictReferencesPragma
-//    TODO Support more pragma
+    // TODO Support more pragma
     ;
 
 autonomousTransPragma
     : PRAGMA AUTONOMOUS_TRANSACTION SEMI_
+    ;
+
+plsqlTriggerSource
+    : (schemaName DOT_)? triggerName sharingClause? defaultCollationClause? (simpleDmlTrigger | systemTrigger)
+    ;
+
+simpleDmlTrigger
+    : (BEFORE | AFTER) dmlEventClause (FOR EACH ROW)? triggerBody
+    ;
+
+dmlEventClause
+    : dmlEventElement (OR dmlEventElement)* ON viewName
+    ;
+
+dmlEventElement
+    : (DELETE | INSERT | UPDATE) (OF LP_ columnName (COMMA_ columnName)* RP_)?
+    ;
+
+systemTrigger
+    : (BEFORE | AFTER | INSTEAD OF) (ddlEvent (OR ddlEvent)* | databaseEvent (OR databaseEvent)*) ON ((PLUGGABLE? DATABASE) | (schemaName DOT_)? SCHEMA) triggerBody
+    ;
+
+ddlEvent
+    : ALTER
+    | ANALYZE
+    | ASSOCIATE STATISTICS
+    | AUDIT
+    | COMMENT
+    | CREATE
+    | DISASSOCIATE STATISTICS
+    | DROP
+    | GRANT
+    | NOAUDIT
+    | RENAME
+    | REVOKE
+    | TRUNCATE
+    | DDL
+    | STARTUP
+    | SHUTDOWN
+    | DB_ROLE_CHANGE
+    | LOGON
+    | LOGOFF
+    | SERVERERROR
+    | SUSPEND
+    | DATABASE
+    | SCHEMA
+    | FOLLOWS
+    ;
+
+databaseEvent
+    : AFTER STARTUP
+    | BEFORE SHUTDOWN
+    | AFTER DB_ROLE_CHANGE
+    | AFTER SERVERERROR
+    | AFTER LOGON
+    | BEFORE LOGOFF
+    | AFTER SUSPEND
+    | AFTER CLONE
+    | BEFORE UNPLUG
+    | (BEFORE | AFTER) SET CONTAINER
+    ;
+
+triggerBody
+    : plsqlBlock
     ;

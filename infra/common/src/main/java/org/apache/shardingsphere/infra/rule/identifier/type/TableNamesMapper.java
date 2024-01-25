@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
+
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -26,7 +27,7 @@ import java.util.Map;
  */
 public final class TableNamesMapper {
     
-    private final Map<String, String> lowerCaseTableNames = new LinkedHashMap<>();
+    private final Map<String, String> lowerCaseTableNames = new CaseInsensitiveMap<>();
     
     /**
      * Judge whether contains table or not.
@@ -35,7 +36,7 @@ public final class TableNamesMapper {
      * @return whether contains table or not
      */
     public boolean contains(final String tableName) {
-        return lowerCaseTableNames.containsKey(tableName.toLowerCase());
+        return lowerCaseTableNames.containsKey(tableName);
     }
     
     /**
@@ -53,7 +54,7 @@ public final class TableNamesMapper {
      * @param tableName table name
      */
     public void put(final String tableName) {
-        lowerCaseTableNames.put(tableName.toLowerCase(), tableName);
+        lowerCaseTableNames.put(tableName, tableName);
     }
     
     /**
@@ -62,6 +63,6 @@ public final class TableNamesMapper {
      * @param tableName table name
      */
     public void remove(final String tableName) {
-        lowerCaseTableNames.remove(tableName.toLowerCase());
+        lowerCaseTableNames.remove(tableName);
     }
 }

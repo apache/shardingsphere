@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.statement;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.CreateRuleStatement;
 
 /**
  * Create default sharding strategy statement.

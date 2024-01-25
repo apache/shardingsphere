@@ -19,7 +19,6 @@ Unlike ShardingSphere-JDBC, the following rules need to be configured in Shardin
 * [SQL Parsing](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/)
 ```yaml
 sqlParser:
-  sqlCommentParseEnabled: true
   sqlStatementCache:
     initialCapacity: 2000
     maximumSize: 65535
@@ -38,4 +37,13 @@ transaction:
 sqlTranslator:
   type:
   useOriginalSQLWhenTranslatingFailed:
+```
+* [SQL Federation](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-federation/)
+```yaml
+sqlFederation:
+  sqlFederationEnabled: true
+  allQueryUseSQLFederation: false
+  executionPlanCache:
+    initialCapacity: 2000
+    maximumSize: 65535
 ```

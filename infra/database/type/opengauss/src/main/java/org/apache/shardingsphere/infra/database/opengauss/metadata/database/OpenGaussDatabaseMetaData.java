@@ -71,6 +71,11 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     }
     
     @Override
+    public boolean isSupportGlobalCSN() {
+        return true;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "openGauss";
     }

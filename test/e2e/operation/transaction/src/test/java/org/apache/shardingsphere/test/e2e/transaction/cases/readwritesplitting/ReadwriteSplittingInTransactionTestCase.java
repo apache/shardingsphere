@@ -76,11 +76,14 @@ public final class ReadwriteSplittingInTransactionTestCase extends BaseTransacti
     }
     
     private String preview(final Connection connection, final String sql) throws SQLException {
-        ResultSet resultSet = connection.createStatement().executeQuery(String.format("PREVIEW %s;", sql));
-        if (resultSet.next()) {
-            return resultSet.getString("data_source_name");
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(String.format("PREVIEW %s;", sql));
+            ResultSet resultSet = statement.getResultSet();
+            if (resultSet.next()) {
+                return resultSet.getString("data_source_name");
+            }
+            return "";
         }
-        return "";
     }
     
     private void assertWriteDataSourceTableRowCount(final Connection connection, final int rowNum) throws SQLException {

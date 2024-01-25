@@ -17,9 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="sql_comment_parse_enabled" />
         <column name="parse_tree_cache" />
         <column name="sql_statement_cache" />
     </metadata>
-    <row values="true| initialCapacity: 128, maximumSize: 1024| initialCapacity: 2000, maximumSize: 65535" />
+    <row values="initialCapacity: 128, maximumSize: 1024| initialCapacity: 2000, maximumSize: 65535" />
 </dataset>

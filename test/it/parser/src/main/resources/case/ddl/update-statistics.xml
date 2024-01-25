@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <update-statistics sql-case-id="update_statistics_with_full_scan">
+        <table name="Customer" start-index="18" stop-index="25"/>
+        <index name="CustomerStats1" start-index="28" stop-index="41"/>
+        <strategy start-index="44" stop-index="56">
+            <sample-option strategy="FULLSCAN" persist-sample-percent="false" start-index="49" stop-index="56"/>
+        </strategy>
+    </update-statistics>
+
+    <update-statistics sql-case-id="update_statistics_with_auto_drop">
+        <table name="Customer" start-index="18" stop-index="25"/>
+        <index name="CustomerStats1" start-index="28" stop-index="41"/>
+        <strategy start-index="44" stop-index="62">
+            <statistics-option auto-drop="true" start-index="49" stop-index="62"/>
+        </strategy>
+    </update-statistics>
+
+    <update-statistics sql-case-id="update_statistics_with_sample">
+        <table name="Product" start-index="18" stop-index="35">
+            <owner name="Production" start-index="18" stop-index="27"/>
+        </table>
+        <index name="Products" start-index="37" stop-index="44"/>
+        <strategy start-index="47" stop-index="68">
+            <sample-option strategy="SAMPLE" sample-number="50" scan-unit="PERCENT" persist-sample-percent="false" start-index="52" stop-index="68"/>
+        </strategy>
+    </update-statistics>
+
+    <update-statistics sql-case-id="update_statistics_with_no_index">
+        <table name="SalesOrderDetail" start-index="18" stop-index="39">
+            <owner name="Sales" start-index="18" stop-index="22"/>
+        </table>
+    </update-statistics>
+
+    <update-statistics sql-case-id="update_statistics_with_full_scan_no_recompute">
+        <table name="Product" start-index="18" stop-index="35">
+            <owner name="Production" start-index="18" stop-index="27"/>
+        </table>
+        <index name="Products" start-index="37" stop-index="44"/>
+        <strategy start-index="47" stop-index="72">
+            <sample-option strategy="FULLSCAN" persist-sample-percent="false" start-index="52" stop-index="59"/>
+            <statistics-option no-recompute="true" start-index="60" stop-index="72"/>
+        </strategy>
+    </update-statistics>
+
+    <update-statistics sql-case-id="update_statistics_with_resample_on_partitions">
+        <table name="PartitionIncrStatDemo" start-index="18" stop-index="42">
+            <owner name="dbo" start-index="18" stop-index="20"/>
+        </table>
+        <index name="IX_PartitionIncrStatDemo_ID" start-index="44" stop-index="70"/>
+        <strategy start-index="73" stop-index="102">
+            <sample-option strategy="RESAMPLE" persist-sample-percent="false" partitions="3" start-index="78" stop-index="102"/>
+        </strategy>
+    </update-statistics>
+</sql-parser-test-cases>

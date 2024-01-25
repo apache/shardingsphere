@@ -16,19 +16,13 @@ AlterSqlParserRule ::=
   'ALTER' 'SQL_PARSER' 'RULE' '(' sqlParserRuleDefinition ')'
 
 sqlParserRuleDefinition ::=
-  commentDefinition? (',' parseTreeCacheDefinition)? (',' sqlStatementCacheDefinition)?
-
-commentDefinition ::=
-  'SQL_COMMENT_PARSE_ENABLED' '=' sqlCommentParseEnabled
+  parseTreeCacheDefinition? (',' sqlStatementCacheDefinition)?
 
 parseTreeCacheDefinition ::=
   'PARSE_TREE_CACHE' '(' cacheOption ')'
 
 sqlStatementCacheDefinition ::=
   'SQL_STATEMENT_CACHE' '(' cacheOption ')'
-
-sqlCommentParseEnabled ::=
-  boolean
 
 cacheOption ::=
   ('INITIAL_CAPACITY' '=' initialCapacity)? (','? 'MAXIMUM_SIZE' '=' maximumSize)?
@@ -46,9 +40,6 @@ maximumSize ::=
 {{< /tabs >}}
 
 ### Note
-
-- `SQL_COMMENT_PARSE_ENABLE`: specifies whether to parse the SQL comment.
-
 - `PARSE_TREE_CACHE`: local cache configuration of the syntax tree.
 
 - `SQL_STATEMENT_CACHE`: the local cache of SQL statement.
@@ -59,7 +50,6 @@ maximumSize ::=
 
 ```sql
 ALTER SQL_PARSER RULE (
-  SQL_COMMENT_PARSE_ENABLED=false, 
   PARSE_TREE_CACHE(INITIAL_CAPACITY=128, MAXIMUM_SIZE=1024), 
   SQL_STATEMENT_CACHE(INITIAL_CAPACITY=2000, MAXIMUM_SIZE=65535)
 );
@@ -67,7 +57,7 @@ ALTER SQL_PARSER RULE (
 
 ### Reserved word
 
-`ALTER`, `SQL_PARSER`, `RULE`, `SQL_COMMENT_PARSE_ENABLED`, `PARSE_TREE_CACHE`, `INITIAL_CAPACITY`, `MAXIMUM_SIZE`, `SQL_STATEMENT_CACHE`
+`ALTER`, `SQL_PARSER`, `RULE`, `PARSE_TREE_CACHE`, `INITIAL_CAPACITY`, `MAXIMUM_SIZE`, `SQL_STATEMENT_CACHE`
 
 ### Related links
 

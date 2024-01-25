@@ -31,7 +31,7 @@ public interface TypedSPI {
      * 
      * @param props properties to be initialized
      */
-    default void init(Properties props) {
+    default void init(final Properties props) {
     }
     
     /**

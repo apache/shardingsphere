@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -81,9 +80,8 @@ class SQLStatementContextFactoryTest {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")));
-        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columnSegments, null);
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0,
-                Collections.singleton(assignment)));
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columnSegments, null);
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(assignment)));
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(insertStatement);
     }
     

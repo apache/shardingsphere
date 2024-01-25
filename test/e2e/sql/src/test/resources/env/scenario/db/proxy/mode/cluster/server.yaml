@@ -35,7 +35,6 @@ authority:
     type: ALL_PERMITTED
     
 sqlParser:
-  sqlCommentParseEnabled: true
   sqlStatementCache:
     initialCapacity: 2000
     maximumSize: 65535
@@ -44,7 +43,7 @@ sqlParser:
     maximumSize: 1024
     
 sqlFederation:
-  sqlFederationEnabled: true
+  sqlFederationEnabled: false
   executionPlanCache:
     initialCapacity: 2000
     maximumSize: 65535
@@ -55,3 +54,4 @@ props:
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   sql-show: false
   proxy-frontend-ssl-enabled: true
+  proxy-meta-data-collector-enabled: true

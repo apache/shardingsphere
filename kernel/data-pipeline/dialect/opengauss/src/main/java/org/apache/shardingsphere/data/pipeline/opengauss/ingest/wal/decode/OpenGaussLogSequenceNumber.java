@@ -32,8 +32,8 @@ public final class OpenGaussLogSequenceNumber implements BaseLogSequenceNumber {
     private final LogSequenceNumber logSequenceNumber;
     
     @Override
-    public long asLong() {
-        return logSequenceNumber.asLong();
+    public String asString() {
+        return logSequenceNumber.asString();
     }
     
     @Override

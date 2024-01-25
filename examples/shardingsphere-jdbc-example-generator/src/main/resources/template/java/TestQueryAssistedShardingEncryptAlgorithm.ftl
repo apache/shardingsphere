@@ -21,27 +21,40 @@ package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
 import java.util.Properties;
 
-public final class TestQueryAssistedShardingEncryptAlgorithm implements AssistedEncryptAlgorithm<Object, String> {
+@SuppressWarnings("LombokGetterMayBeUsed")
+public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptAlgorithm {
     
     @Getter
-    private Properties props;
+    private Properties properties;
+
+    @Getter
+    private EncryptAlgorithmMetaData metaData;
+
+    @Override
+    public void init(final Properties props) {
+        this.properties = props;
+        EncryptAlgorithmMetaData algorithmMetaData = new EncryptAlgorithmMetaData();
+        algorithmMetaData.setSupportDecrypt(false);
+        metaData = algorithmMetaData;
+    }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
     }
+
+    @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
+    }
     
     @Override
     public String getType() {
         return "assistedTest";
-    }
-
-    @Override
-    public void init(Properties props) {
-        this.props = props;
     }
 }

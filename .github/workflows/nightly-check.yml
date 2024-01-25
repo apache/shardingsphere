@@ -58,7 +58,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
       - uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
@@ -88,7 +88,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
       - uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
@@ -102,7 +102,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Aggregate checkstyle report
         run: |
-          export MAVEN_OPTS='-Xmx4g -Xms512m'
+          export MAVEN_OPTS='-Xmx6g -Xms512m'
           ./mvnw clean verify checkstyle:checkstyle-aggregate
       - name: Upload checkstyle report to SonarCloud
         env:
@@ -166,11 +166,14 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Install Project
-        run: ./mvnw clean install -DskipTests
+        run: |
+          ./mvnw clean install -DskipTests -B -ntp -T1C
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
           category: "/language:java"
+          minimum-size: 1GB
+          maximum-size: 5GB
 
   check-stale:
     if: github.repository == 'apache/shardingsphere'

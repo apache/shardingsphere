@@ -44,5 +44,7 @@
         <module>session</module>
         <module>expr</module>
         <module>util</module>
+        <module>reachability-metadata</module>
+        <module>algorithm</module>
     </modules>
 </project>

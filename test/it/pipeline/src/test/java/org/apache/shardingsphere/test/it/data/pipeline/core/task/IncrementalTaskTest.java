@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.task;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
@@ -54,9 +54,9 @@ class IncrementalTaskTest {
     @BeforeEach
     void setUp() {
         MigrationTaskConfiguration taskConfig = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
-        taskConfig.getDumperContext().getCommonContext().setPosition(new PlaceholderPosition());
+        taskConfig.getDumperContext().getCommonContext().setPosition(new IngestPlaceholderPosition());
         incrementalTask = new IncrementalTask("ds_0", PipelineContextUtils.getExecuteEngine(), mock(Dumper.class),
-                Collections.singletonList(mock(Importer.class)), new IncrementalTaskProgress(new PlaceholderPosition()));
+                Collections.singletonList(mock(Importer.class)), new IncrementalTaskProgress(new IngestPlaceholderPosition()));
     }
     
     @AfterEach
@@ -69,6 +69,6 @@ class IncrementalTaskTest {
     void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture.allOf(incrementalTask.start().toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
-        assertThat(incrementalTask.getTaskProgress().getPosition(), instanceOf(PlaceholderPosition.class));
+        assertThat(incrementalTask.getTaskProgress().getPosition(), instanceOf(IngestPlaceholderPosition.class));
     }
 }

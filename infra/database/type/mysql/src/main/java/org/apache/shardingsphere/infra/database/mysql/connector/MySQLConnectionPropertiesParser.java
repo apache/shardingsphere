@@ -54,7 +54,6 @@ public final class MySQLConnectionPropertiesParser implements ConnectionProperti
         result.setProperty("netTimeoutForStreamingResults", "0");
         result.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
         result.setProperty("useSSL", Boolean.FALSE.toString());
-        result.setProperty("serverTimezone", "UTC");
         result.setProperty("zeroDateTimeBehavior", "round");
         return result;
     }

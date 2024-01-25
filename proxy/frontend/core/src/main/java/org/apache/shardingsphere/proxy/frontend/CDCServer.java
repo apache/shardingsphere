@@ -31,7 +31,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.frontend.netty.CDCServerHandlerInitializer;
 
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import java.util.List;
 /**
  * CDC server.
  */
-@Slf4j
 @RequiredArgsConstructor
 public final class CDCServer extends Thread {
     

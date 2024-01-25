@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.Database
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +44,7 @@ public final class H2ContainerConfigurationFactory {
     public static StorageContainerConfiguration newInstance() {
         Map<String, String> mountedResources = new HashMap<>(1, 1F);
         mountedResources.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
-        return new StorageContainerConfiguration("", Collections.emptyMap(), mountedResources, new ArrayList<>(), new ArrayList<>());
+        return new StorageContainerConfiguration("", Collections.emptyMap(), mountedResources, Collections.emptyMap(), Collections.emptyMap());
     }
     
     /**
@@ -60,7 +59,8 @@ public final class H2ContainerConfigurationFactory {
                 "/docker-entrypoint-initdb.d/01-actual-init.sql");
         mountedResources.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "H2")) + "/01-expected-init.sql",
                 "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        return new StorageContainerConfiguration(scenario, "", Collections.emptyMap(), mountedResources, DatabaseEnvironmentManager.getDatabaseNames(scenario),
-                DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario));
+        return new StorageContainerConfiguration(scenario, "", Collections.emptyMap(), mountedResources,
+                DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "H2")),
+                DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "H2")));
     }
 }

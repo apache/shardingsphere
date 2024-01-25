@@ -160,7 +160,6 @@ rules:
     defaultType: XA
     providerType: Atomikos
   - !SQL_PARSER
-    sqlCommentParseEnabled: true
     sqlStatementCache:
       initialCapacity: 2000
       maximumSize: 65535
@@ -183,7 +182,6 @@ authority:
 transaction:
   defaultType: XA
   providerType: AtomikossqlParser:
-  sqlCommentParseEnabled: true
   sqlStatementCache:
     initialCapacity: 2000
     maximumSize: 65535

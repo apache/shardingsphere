@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +35,10 @@ import java.util.stream.Collectors;
 /**
  * Show compute nodes executor.
  */
-public final class ShowComputeNodesExecutor implements InstanceContextRequiredQueryableRALExecutor<ShowComputeNodesStatement> {
+@Setter
+public final class ShowComputeNodesExecutor implements InstanceContextAwareQueryableRALExecutor<ShowComputeNodesStatement> {
+    
+    private InstanceContext instanceContext;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -41,13 +46,13 @@ public final class ShowComputeNodesExecutor implements InstanceContextRequiredQu
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final InstanceContext instanceContext, final ShowComputeNodesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodesStatement sqlStatement, final ShardingSphereMetaData metaData) {
         String modeType = instanceContext.getModeConfiguration().getType();
         if ("Standalone".equals(modeType)) {
             return Collections.singleton(buildRow(instanceContext.getInstance(), modeType));
         }
         Collection<ComputeNodeInstance> instances = instanceContext.getAllClusterInstances();
-        return instances.isEmpty() ? Collections.emptyList() : instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
+        return instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {

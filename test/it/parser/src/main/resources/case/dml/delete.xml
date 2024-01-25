@@ -611,7 +611,7 @@
     </delete>
 
     <delete sql-case-id="delete_with_remote_database_table">
-        <table name="locations" start-index="12" stop-index="23">
+        <table name="locations" start-index="12" stop-index="30">
             <owner name="hr" start-index="12" stop-index="13" />
         </table>
         <where start-index="32" stop-index="55">
@@ -699,5 +699,22 @@
         <table name="t_order" start-index="12" stop-index="22">
             <owner name="db1" start-index="12" stop-index="14" />
         </table>
+    </delete>
+
+    <delete sql-case-id="delete_with_simple_condition">
+        <table name="Q1_2000_sales" start-index="12" stop-index="24" />
+        <where start-index="26" stop-index="46">
+            <expr>
+                <binary-operation-expression start-index="32" stop-index="46">
+                    <left>
+                        <column name="amount_sold" start-index="32" stop-index="42" />
+                    </left>
+                    <operator>&lt;</operator>
+                    <right>
+                        <literal-expression value="0" start-index="46" stop-index="46" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </delete>
 </sql-parser-test-cases>

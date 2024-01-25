@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseTimestampUtils;
@@ -97,16 +97,22 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     private AbstractRowEvent readTableEvent(final String mppData) {
         MppTableData mppTableData;
         mppTableData = JsonUtils.fromJsonString(mppData, MppTableData.class);
-        AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
-        switch (rowEventType) {
-            case IngestDataChangeType.INSERT:
+        PipelineSQLOperationType type;
+        try {
+            type = PipelineSQLOperationType.valueOf(rowEventType);
+        } catch (final IllegalArgumentException ex) {
+            throw new IngestException("Unknown rowEventType: " + rowEventType);
+        }
+        AbstractRowEvent result;
+        switch (type) {
+            case INSERT:
                 result = readWriteRowEvent(mppTableData);
                 break;
-            case IngestDataChangeType.UPDATE:
+            case UPDATE:
                 result = readUpdateRowEvent(mppTableData);
                 break;
-            case IngestDataChangeType.DELETE:
+            case DELETE:
                 result = readDeleteRowEvent(mppTableData);
                 break;
             default:
@@ -163,8 +169,8 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             return decodeString(data.substring(1));
         }
         switch (columnType) {
+            case "tinyint":
             case "smallint":
-                return Short.parseShort(data);
             case "integer":
                 return Integer.parseInt(data);
             case "bigint":
@@ -193,9 +199,16 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
                     throw new DecodingException(ex);
                 }
             case "bytea":
+            case "blob":
                 return decodeBytea(data);
             case "raw":
             case "reltime":
+            case "int4range":
+            case "int8range":
+            case "numrange":
+            case "tsrange":
+            case "tstzrange":
+            case "daterange":
                 return decodePgObject(data, columnType);
             case "money":
                 return decodeMoney(data);
@@ -205,6 +218,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             case "text":
             case "character":
             case "nvarchar2":
+            case "tsquery":
             default:
                 return decodeString(data).replace("''", "'");
         }
@@ -229,16 +243,8 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         }
     }
     
-    private PGobject decodeBytea(final String data) {
-        try {
-            PGobject result = new PGobject();
-            result.setType("bytea");
-            byte[] decodeByte = decodeHex(decodeString(data).substring(2));
-            result.setValue(new String(decodeByte));
-            return result;
-        } catch (final SQLException ignored) {
-            return null;
-        }
+    private Object decodeBytea(final String data) {
+        return decodeHex(decodeString(data).substring(2));
     }
     
     private String decodeMoney(final String data) {

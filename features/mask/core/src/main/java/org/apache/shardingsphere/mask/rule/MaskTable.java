@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.rule;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 

@@ -49,7 +49,7 @@ mysql> SHOW SHARDING KEY GENERATORS FROM sharding_db;
 +-------------------------+-----------+-------+
 | name                    | type      | props |
 +-------------------------+-----------+-------+
-| snowflake_key_generator | snowflake | {}    |
+| snowflake_key_generator | snowflake |       |
 +-------------------------+-----------+-------+
 1 row in set (0.00 sec)
 ```
@@ -65,7 +65,7 @@ mysql> SHOW SHARDING KEY GENERATORS;
 +-------------------------+-----------+-------+
 | name                    | type      | props |
 +-------------------------+-----------+-------+
-| snowflake_key_generator | snowflake | {}    |
+| snowflake_key_generator | snowflake |       |
 +-------------------------+-----------+-------+
 1 row in set (0.00 sec)
 ```

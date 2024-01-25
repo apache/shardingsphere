@@ -49,4 +49,8 @@
     <sql-case id="create_cluster_hashkeys" value="CREATE CLUSTER test_cluster (col1 NUMBER) HASHKEYS 5" db-types="Oracle" />
     <sql-case id="create_cluster_single_table" value="CREATE CLUSTER test_cluster (col1 NUMBER) SINGLE TABLE HASHKEYS 5" db-types="Oracle" />
     <sql-case id="create_cluster_single_table_hash" value="CREATE CLUSTER test_cluster (col1 NUMBER) SINGLE TABLE HASHKEYS 5 HASH IS MOD(arg1, arg2)" db-types="Oracle" />
+    <sql-case id="create_cluster_size_initial_next" value="CREATE CLUSTER language (cust_language VARCHAR2(3)) SIZE 512 HASHKEYS 10 STORAGE (INITIAL 100k next 50k)" db-types="Oracle" />
+    <sql-case id="create_cluster_hash_is_mod" value="CREATE CLUSTER address (postal_code NUMBER, country_id CHAR(2)) HASHKEYS 20 HASH IS MOD(postal_code + country_id, 101)" db-types="Oracle" />
+    <sql-case id="create_cluster_number_size" value="CREATE CLUSTER employees_departments_cluster (department_id NUMBER(4)) SIZE 512" db-types="Oracle" />
+    <sql-case id="create_cluster_number_size_hashkeys" value="CREATE CLUSTER employees_departments_cluster (department_id NUMBER(4)) SIZE 8192 HASHKEYS 100" db-types="Oracle" />
 </sql-cases>

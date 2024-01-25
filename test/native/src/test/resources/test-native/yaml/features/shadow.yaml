@@ -1,0 +1,87 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+mode:
+  type: Standalone
+  repository:
+    type: JDBC
+
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:local_shadow_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    username: root
+    password: 123456
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:local_shadow_ds_1;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    username: root
+    password: 123456
+
+rules:
+- !SHADOW
+  dataSources:
+    shadow-data-source:
+      productionDataSourceName: ds_0
+      shadowDataSourceName: ds_1
+  tables:
+    t_order:
+      dataSourceNames:
+        - shadow-data-source
+      shadowAlgorithmNames:
+        - order-type-insert-match-algorithm
+        - order-type-delete-match-algorithm
+        - order-type-select-match-algorithm
+        - sql-hint-algorithm
+  shadowAlgorithms:
+    order-type-insert-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: insert
+        column: order_type
+        value: "1"
+    order-type-delete-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: delete
+        column: order_type
+        value: "1"
+    order-type-select-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: select
+        column: order_type
+        value: "1"
+    sql-hint-algorithm:
+      type: SQL_HINT
+      props:
+        shadow: true
+        foo: bar
+  defaultShadowAlgorithmName: sql-hint-algorithm
+
+sqlParser:
+  sqlStatementCache:
+    initialCapacity: 128
+    maximumSize: 1024
+  parseTreeCache:
+    initialCapacity: 2000
+    maximumSize: 65535
+
+props:
+  sql-show: false

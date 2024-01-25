@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -30,7 +30,7 @@ import java.util.Collections;
 /**
  * Current connections count advice for ShardingSphere-Proxy.
  */
-public final class CurrentConnectionsCountAdvice implements InstanceMethodAdvice {
+public final class CurrentConnectionsCountAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_current_connections",
             MetricCollectorType.GAUGE, "Current connections of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());

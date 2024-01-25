@@ -17,43 +17,54 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.jdbc.sql;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Getter;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * JDBC repository SQL.
+ * `required` in {@link com.fasterxml.jackson.annotation.JsonProperty} only provides Metadata without detecting Null values, which is actually consistent with the design of the JAXB API.
+ * See <a href="https://github.com/FasterXML/jackson-dataformat-xml/issues/625">FasterXML/jackson-dataformat-xml#625</a>
+ *
+ * @see JsonProperty
  */
-@XmlRootElement(name = "sql")
+@JacksonXmlRootElement(localName = "sql")
 @Getter
 public final class JDBCRepositorySQL {
     
-    @XmlAttribute(required = true)
+    @JsonProperty(required = true)
+    @JacksonXmlProperty(isAttribute = true)
     private String type;
     
-    @XmlAttribute(name = "driver-class-name", required = true)
+    @JsonProperty(required = true)
+    @JacksonXmlProperty(localName = "driver-class-name", isAttribute = true)
     private String driverClassName;
     
-    @XmlAttribute(name = "default")
+    @JacksonXmlProperty(localName = "default", isAttribute = true)
     private boolean isDefault;
     
-    @XmlElement(name = "create-table", required = true)
+    @JsonProperty(required = true)
+    @JacksonXmlProperty(localName = "create-table")
     private String createTableSQL;
     
-    @XmlElement(name = "select-by-key", required = true)
+    @JsonProperty(required = true)
+    @JacksonXmlProperty(localName = "select-by-key")
     private String selectByKeySQL;
     
-    @XmlElement(name = "select-by-parent", required = true)
+    @JsonProperty(required = true)
+    @JacksonXmlProperty(localName = "select-by-parent")
     private String selectByParentKeySQL;
     
-    @XmlElement(name = "insert", required = true)
+    @JsonProperty(required = true)
+    @JacksonXmlProperty(localName = "insert")
     private String insertSQL;
     
-    @XmlElement(name = "update", required = true)
+    @JsonProperty(required = true)
+    @JacksonXmlProperty(localName = "update")
     private String updateSQL;
     
-    @XmlElement(name = "delete", required = true)
+    @JsonProperty(required = true)
+    @JacksonXmlProperty(localName = "delete")
     private String deleteSQL;
 }

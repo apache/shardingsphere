@@ -73,7 +73,7 @@
         </assertion>
     </test-case>
     
-    <test-case sql="ALTER TABLE t_user_details ADD name varchar(10)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <test-case sql="ALTER TABLE t_user_details ADD name varchar(10)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" db-types="MySQL,PostgreSQL,openGauss">
         <assertion expected-data-file="alter_add.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
             <destroy-sql sql="DROP TABLE t_user_details" />

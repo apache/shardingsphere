@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -42,11 +41,11 @@ import static org.mockito.Mockito.times;
 
 class AESEncryptAlgorithmTest {
     
-    private StandardEncryptAlgorithm encryptAlgorithm;
+    private EncryptAlgorithm encryptAlgorithm;
     
     @BeforeEach
     void setUp() {
-        encryptAlgorithm = (StandardEncryptAlgorithm) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
+        encryptAlgorithm = TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
     }
     
     @Test

@@ -505,6 +505,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/37339007?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+         <td>
+            <a href="https://github.com/zihaoAK47" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/106047330?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -521,6 +526,9 @@ chapter = true
         </td>
         <td>
             <b>陈家豪</b>
+        </td>
+        <td>
+            <b>牛子豪</b>
         </td>
     </tr>
 </table>

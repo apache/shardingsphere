@@ -39,8 +39,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Transaction deadlock test case.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
+@Slf4j
 public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
     
     private final CyclicBarrier barrier = new CyclicBarrier(2);
@@ -82,7 +82,7 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                assertThat(ex.getMessage(), is("com.mysql.jdbc.exceptions.jdbc4.MySQLTransactionRollbackException: Lock wait timeout exceeded; try restarting transaction"));
+                assertThat(ex.getMessage(), is("com.mysql.cj.jdbc.exceptions.MySQLTransactionRollbackException: Lock wait timeout exceeded; try restarting transaction"));
             }
         }
         log.info("The deadlock test case execution time is: {}", System.currentTimeMillis() - startTime);

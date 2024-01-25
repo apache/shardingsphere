@@ -23,11 +23,13 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallCon
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HandlerStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ImportStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadDataStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadXmlStatementContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDoStatement;
@@ -37,6 +39,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -81,5 +85,33 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
         return new MySQLLoadXMLStatement((SimpleTableSegment) visit(ctx.tableName()));
+    }
+    
+    @Override
+    public ASTNode visitIndexHint(final IndexHintContext ctx) {
+        Collection<String> indexNames = new LinkedList<>();
+        ctx.indexName().forEach(each -> indexNames.add(each.getText()));
+        String useType;
+        if (null != ctx.USE()) {
+            useType = ctx.USE().getText();
+        } else if (null != ctx.IGNORE()) {
+            useType = ctx.IGNORE().getText();
+        } else {
+            useType = ctx.FORCE().getText();
+        }
+        IndexHintSegment result = new IndexHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNames, useType,
+                null == ctx.INDEX() ? ctx.KEY().getText() : ctx.INDEX().getText(), getOriginalText(ctx));
+        if (null != ctx.FOR()) {
+            String hintScope;
+            if (null != ctx.JOIN()) {
+                hintScope = "JOIN";
+            } else if (null != ctx.ORDER()) {
+                hintScope = "ORDER BY";
+            } else {
+                hintScope = "GROUP BY";
+            }
+            result.setHintScope(hintScope);
+        }
+        return result;
     }
 }

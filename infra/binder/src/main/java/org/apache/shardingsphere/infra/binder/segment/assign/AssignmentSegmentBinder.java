@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegme
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -52,14 +51,10 @@ public final class AssignmentSegmentBinder {
      */
     public static SetAssignmentSegment bind(final SetAssignmentSegment segment, final SQLStatementBinderContext statementBinderContext,
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        Collection<AssignmentSegment> assignments = new LinkedList<>();
-        for (AssignmentSegment each : segment.getAssignments()) {
-            if (each instanceof ColumnAssignmentSegment) {
-                assignments.add(new ColumnAssignmentSegment(each.getStartIndex(), each.getStopIndex(), bindColumns(each.getColumns(), statementBinderContext, tableBinderContexts,
-                        outerTableBinderContexts), bindValue(each.getValue(), statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
-            } else {
-                assignments.add(each);
-            }
+        Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
+        for (ColumnAssignmentSegment each : segment.getAssignments()) {
+            assignments.add(new ColumnAssignmentSegment(each.getStartIndex(), each.getStopIndex(), bindColumns(each.getColumns(), statementBinderContext, tableBinderContexts,
+                    outerTableBinderContexts), bindValue(each.getValue(), statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
         }
         return new SetAssignmentSegment(segment.getStartIndex(), segment.getStopIndex(), assignments);
     }

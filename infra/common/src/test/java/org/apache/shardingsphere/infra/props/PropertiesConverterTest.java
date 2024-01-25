@@ -30,7 +30,7 @@ class PropertiesConverterTest {
     
     @Test
     void assertConvert() {
-        assertThat(PropertiesConverter.convert(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))), is("bar=bar_value,foo=foo_value"));
+        assertThat(PropertiesConverter.convert(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))), is("{\"bar\":\"bar_value\",\"foo\":\"foo_value\"}"));
     }
     
     @Test

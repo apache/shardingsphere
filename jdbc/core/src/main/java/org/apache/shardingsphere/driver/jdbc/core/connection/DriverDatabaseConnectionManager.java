@@ -400,11 +400,11 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                 Connection connection = createConnection(databaseName, dataSourceName, dataSource, transactionConnectionContext);
                 methodInvocationRecorder.replay(connection);
                 result.add(connection);
-            } catch (final SQLException ignored) {
+            } catch (final SQLException ex) {
                 for (Connection each : result) {
                     each.close();
                 }
-                throw new OverallConnectionNotEnoughException(connectionSize, result.size()).toSQLException();
+                throw new OverallConnectionNotEnoughException(connectionSize, result.size(), ex).toSQLException();
             }
         }
         return result;

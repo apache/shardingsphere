@@ -42,11 +42,30 @@ class ConditionValueTest {
     }
     
     @Test
+    void assertGetValueFromLiteralExpressionSegmentOfNullValue() {
+        ExpressionSegment expressionSegment = new LiteralExpressionSegment(0, 0, null);
+        ConditionValue conditionValue = new ConditionValue(expressionSegment, new LinkedList<>());
+        assertFalse(conditionValue.getValue().isPresent());
+        assertTrue(conditionValue.isNull());
+        assertFalse(conditionValue.getParameterMarkerIndex().isPresent());
+    }
+    
+    @Test
     void assertGetValueFromParameterMarkerSegment() {
         ExpressionSegment expressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
         ConditionValue conditionValue = new ConditionValue(expressionSegment, Collections.singletonList(1));
         assertTrue(conditionValue.getValue().isPresent());
         assertThat(conditionValue.getValue().get(), is(1));
+        assertTrue(conditionValue.getParameterMarkerIndex().isPresent());
+        assertThat(conditionValue.getParameterMarkerIndex().get(), is(0));
+    }
+    
+    @Test
+    void assertGetValueFromParameterMarkerSegmentOfNullValue() {
+        ExpressionSegment expressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
+        ConditionValue conditionValue = new ConditionValue(expressionSegment, Collections.singletonList(null));
+        assertFalse(conditionValue.getValue().isPresent());
+        assertTrue(conditionValue.isNull());
         assertTrue(conditionValue.getParameterMarkerIndex().isPresent());
         assertThat(conditionValue.getParameterMarkerIndex().get(), is(0));
     }

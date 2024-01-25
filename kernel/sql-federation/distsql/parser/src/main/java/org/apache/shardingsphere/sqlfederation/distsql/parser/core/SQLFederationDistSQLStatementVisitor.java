@@ -48,8 +48,9 @@ public final class SQLFederationDistSQLStatementVisitor extends SQLFederationDis
     @Override
     public ASTNode visitSqlFederationRuleDefinition(final SqlFederationRuleDefinitionContext ctx) {
         Boolean sqlFederationEnabled = null == ctx.sqlFederationEnabled() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.sqlFederationEnabled().boolean_()));
+        Boolean allQueryUseSQLFederation = null == ctx.allQueryUseSQLFederation() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.allQueryUseSQLFederation().boolean_()));
         CacheOptionSegment executionPlanCache = null == ctx.executionPlanCache() ? null : visitCacheOption(ctx.executionPlanCache().cacheOption());
-        return new AlterSQLFederationRuleStatement(sqlFederationEnabled, executionPlanCache);
+        return new AlterSQLFederationRuleStatement(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
     }
     
     @Override
@@ -62,5 +63,4 @@ public final class SQLFederationDistSQLStatementVisitor extends SQLFederationDis
     private String getIdentifierValue(final ParseTree context) {
         return null == context ? null : new IdentifierValue(context.getText()).getValue();
     }
-    
 }

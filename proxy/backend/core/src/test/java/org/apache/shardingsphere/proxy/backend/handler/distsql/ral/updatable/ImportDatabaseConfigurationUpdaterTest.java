@@ -25,12 +25,14 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseC
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
@@ -58,7 +60,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ImportDatabaseConfigurationUpdaterTest {
     
-    private ImportDatabaseConfigurationUpdater importDatabaseConfigUpdater;
+    private ImportDatabaseConfigurationExecutor importDatabaseConfigUpdater;
     
     @BeforeAll
     static void setUp() throws ClassNotFoundException {
@@ -119,14 +121,14 @@ class ImportDatabaseConfigurationUpdaterTest {
     
     private void assertExecute(final String databaseName, final String filePath) throws SQLException {
         init(databaseName);
-        importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(ImportDatabaseConfigurationUpdaterTest.class.getResource(filePath).getPath()));
+        importDatabaseConfigUpdater.executeUpdate(new ImportDatabaseConfigurationStatement(ImportDatabaseConfigurationUpdaterTest.class.getResource(filePath).getPath()));
     }
     
     @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})
     private void init(final String databaseName) {
         ContextManager contextManager = mockContextManager(databaseName);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        importDatabaseConfigUpdater = new ImportDatabaseConfigurationUpdater();
+        importDatabaseConfigUpdater = new ImportDatabaseConfigurationExecutor();
         YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
         Plugins.getMemberAccessor().set(importDatabaseConfigUpdater.getClass().getDeclaredField("databaseConfigImportExecutor"), importDatabaseConfigUpdater, databaseConfigImportExecutor);
         Plugins.getMemberAccessor().set(databaseConfigImportExecutor.getClass().getDeclaredField("validateHandler"), databaseConfigImportExecutor, mock(DataSourcePoolPropertiesValidateHandler.class));
@@ -137,6 +139,7 @@ class ImportDatabaseConfigurationUpdaterTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class);

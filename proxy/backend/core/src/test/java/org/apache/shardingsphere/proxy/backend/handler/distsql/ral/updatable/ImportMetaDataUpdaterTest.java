@@ -67,7 +67,7 @@ class ImportMetaDataUpdaterTest {
     
     private static final String EMPTY = "empty_metadata";
     
-    private ImportMetaDataUpdater importMetaDataUpdater;
+    private ImportMetaDataExecutor importMetaDataUpdater;
     
     private final Map<String, String> featureMap = new HashMap<>(1, 1F);
     
@@ -80,24 +80,24 @@ class ImportMetaDataUpdaterTest {
     void assertCheckImportEmptyMetaData() {
         init(null);
         assertThrows(MissingRequiredDataSourcesException.class, () -> importMetaDataUpdater.executeUpdate(
-                EMPTY, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath())));
+                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath())));
     }
     
     @Test
     void assertImportMetaDataFromJsonValue() {
         init(EMPTY);
-        assertThrows(NullPointerException.class, () -> importMetaDataUpdater.executeUpdate(EMPTY, new ImportMetaDataStatement(METADATA_VALUE, null)));
+        assertThrows(NullPointerException.class, () -> importMetaDataUpdater.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null)));
     }
     
     @Test
     void assertImportExistedMetaDataFromFile() {
         init(EMPTY);
         assertThrows(UnsupportedSQLOperationException.class, () -> importMetaDataUpdater.executeUpdate(
-                EMPTY, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath())));
+                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath())));
     }
     
     private void init(final String feature) {
-        importMetaDataUpdater = new ImportMetaDataUpdater();
+        importMetaDataUpdater = new ImportMetaDataExecutor();
         ContextManager contextManager = mockContextManager(feature);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);

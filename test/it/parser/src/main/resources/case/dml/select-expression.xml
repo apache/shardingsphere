@@ -3125,4 +3125,57 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_case_when_from_sys">
+        <from start-index="651" stop-index="681">
+            <simple-table name="database_files" start-index="651" stop-index="681" alias="df">
+                <owner name="sys" start-index="658" stop-index="660">
+                    <owner name="tempdb" start-index="651" stop-index="656"/>
+                </owner>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="644">
+            <column-projection name="name" start-index="7" stop-index="24" alias="FileName">
+                <owner name="df" start-index="18" stop-index="19"/>
+            </column-projection>
+            <expression-projection text="df.size*1.0/128" start-index="27" stop-index="64" alias="current_file_size_MB">
+                <expr>
+                    <binary-operation-expression start-index="50" stop-index="64">
+                        <left>
+                            <binary-operation-expression start-index="50" stop-index="60">
+                                <left>
+                                    <column name="size" start-index="50" stop-index="56">
+                                        <owner name="df" start-index="50" stop-index="51"/>
+                                    </column>
+                                </left>
+                                <right>
+                                    <literal-expression value="1.0" start-index="58" stop-index="60"/>
+                                </right>
+                                <operator>*</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <literal-expression value="128" start-index="62" stop-index="64"/>
+                        </right>
+                        <operator>/</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="67" stop-index="212" alias="max_size" text="CASEdf.max_sizeWHEN0THEN'Autogrowth is off.'WHEN-1THEN'Autogrowth is on.'ELSE'Log file grows to a maximum size of 2 TB.'END">
+                <expr>
+                    <common-expression literal-text="CASEdf.max_sizeWHEN0THEN'Autogrowth is off.'WHEN-1THEN'Autogrowth is on.'ELSE'Log file grows to a maximum size of 2 TB.'END" start-index="78" stop-index="212"/>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="215" stop-index="407" alias="growth_value" text="CASEWHENdf.growth=0THENdf.growthWHENdf.growth>0ANDdf.is_percent_growth=0THENdf.growth*1.0/128.0WHENdf.growth>0ANDdf.is_percent_growth=1THENdf.growthEND">
+                <expr>
+                    <common-expression literal-text="CASEWHENdf.growth=0THENdf.growthWHENdf.growth>0ANDdf.is_percent_growth=0THENdf.growth*1.0/128.0WHENdf.growth>0ANDdf.is_percent_growth=1THENdf.growthEND" start-index="230" stop-index="407"/>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="410" stop-index="644" alias="growth_increment_unit" text="CASEWHENdf.growth=0THEN'Size is fixed.'WHENdf.growth>0ANDdf.is_percent_growth=0THEN'Growth value is MB.'WHENdf.growth>0ANDdf.is_percent_growth=1THEN'Growth value is a percentage.'END">
+                <expr>
+                    <common-expression literal-text="CASEWHENdf.growth=0THEN'Size is fixed.'WHENdf.growth>0ANDdf.is_percent_growth=0THEN'Growth value is MB.'WHENdf.growth>0ANDdf.is_percent_growth=1THEN'Growth value is a percentage.'END" start-index="434" stop-index="644"/>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
