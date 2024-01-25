@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.DatabaseRuleRDLExecuteEngine;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -53,11 +52,7 @@ public final class CreateDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDL
             return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
         }
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, isSinglePersistNode(currentRuleConfig) ? currentRuleConfig : toBeCreatedRuleConfig));
-    }
-    
-    private boolean isSinglePersistNode(final RuleConfiguration currentRuleConfig) {
-        return currentRuleConfig instanceof SingleRuleConfiguration;
+        return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
     }
     
     @SuppressWarnings("unchecked")

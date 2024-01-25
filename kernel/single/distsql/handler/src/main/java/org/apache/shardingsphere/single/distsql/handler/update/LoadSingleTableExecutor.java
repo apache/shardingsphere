@@ -147,11 +147,13 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final LoadSingleTableStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         result.getTables().addAll(getRequiredTables(currentRuleConfig, sqlStatement));
+        result.getTables().addAll(currentRuleConfig.getTables());
         return result;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeCreatedRuleConfig) {
+        currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
     }
     

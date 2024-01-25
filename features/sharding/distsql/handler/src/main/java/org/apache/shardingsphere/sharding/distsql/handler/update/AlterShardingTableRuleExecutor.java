@@ -43,7 +43,7 @@ public final class AlterShardingTableRuleExecutor implements DatabaseRuleAlterEx
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final AlterShardingTableRuleStatement sqlStatement) {
         return ShardingTableRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

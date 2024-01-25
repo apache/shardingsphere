@@ -31,10 +31,11 @@ public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends Rul
     /**
      * Build to be altered rule configuration.
      *
+     * @param currentRuleConfig current rule configuration
      * @param sqlStatement SQL statement
      * @return to be altered rule configuration
      */
-    R buildToBeAlteredRuleConfiguration(T sqlStatement);
+    R buildToBeAlteredRuleConfiguration(R currentRuleConfig, T sqlStatement);
     
     /**
      * TODO Remove temporary default implementation
