@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rql.show;
+package org.apache.shardingsphere.distsql.statement.rql.rule;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Show logical tables statement.
+ * Count rule statement.
  */
-public final class ShowLogicalTablesStatement extends ShowTablesStatement {
+@Getter
+public final class CountRuleStatement extends ShowDatabaseRulesStatement {
     
-    public ShowLogicalTablesStatement(final String likePattern, final DatabaseSegment database) {
-        super(likePattern, database);
+    private final String type;
+    
+    public CountRuleStatement(final DatabaseSegment database, final String type) {
+        super(database);
+        this.type = type;
     }
 }

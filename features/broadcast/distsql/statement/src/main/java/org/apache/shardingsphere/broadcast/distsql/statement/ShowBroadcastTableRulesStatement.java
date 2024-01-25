@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**

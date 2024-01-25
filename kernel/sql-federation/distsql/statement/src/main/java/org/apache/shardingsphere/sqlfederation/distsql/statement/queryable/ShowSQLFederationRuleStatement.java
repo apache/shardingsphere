@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.statement.queryable;
 
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowGlobalRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.ShowGlobalRulesStatement;
 
 /**
  * Show SQL federation rule statement.

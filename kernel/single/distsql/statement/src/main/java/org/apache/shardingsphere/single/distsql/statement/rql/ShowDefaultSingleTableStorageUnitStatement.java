@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.distsql.statement.rql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowDatabaseRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**

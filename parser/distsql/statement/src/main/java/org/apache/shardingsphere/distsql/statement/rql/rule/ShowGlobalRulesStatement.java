@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rql.show;
+package org.apache.shardingsphere.distsql.statement.rql.rule;
 
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 
