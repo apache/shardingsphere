@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataNodeTest {
@@ -50,13 +50,14 @@ class DataNodeTest {
         assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0,tbl_0"));
     }
     
+    @SuppressWarnings({"SimplifiableAssertion", "ConstantValue"})
     @Test
     void assertEquals() {
         DataNode dataNode = new DataNode("ds_0.tbl_0");
         assertThat(dataNode, is(new DataNode("ds_0.tbl_0")));
         assertThat(dataNode, is(dataNode));
         assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
-        assertNotEquals(null, dataNode);
+        assertFalse(dataNode.equals(null));
     }
     
     @Test
