@@ -48,6 +48,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -94,7 +95,7 @@ public abstract class BaseDMLE2EIT {
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(containerComposer, dataNode, databaseType))) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(containerComposer.getActualDataSourceMap(), dataNode, databaseType))) {
                 assertDataSet(preparedStatement, expectedDataSetMetaData, containerComposer.getDataSet().findRows(dataNode), databaseType);
             }
         }
@@ -121,17 +122,16 @@ public abstract class BaseDMLE2EIT {
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
+                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(containerComposer.getActualDataSourceMap(), dataNode, databaseType))) {
                 assertDataSet(preparedStatement, expectedDataSetMetaData, containerComposer.getDataSet(actualUpdateCounts).findRows(dataNode), databaseType);
             }
         }
     }
     
-    private String generateFetchActualDataSQL(final SingleE2EContainerComposer containerComposer, final DataNode dataNode, final DatabaseType databaseType) throws SQLException {
+    private String generateFetchActualDataSQL(final Map<String, DataSource> actualDataSourceMap, final DataNode dataNode, final DatabaseType databaseType) throws SQLException {
         Optional<DatabaseAssertionMetaData> databaseAssertionMetaData = DatabaseAssertionMetaDataFactory.newInstance(databaseType);
         if (databaseAssertionMetaData.isPresent()) {
-            String primaryKeyColumnName = databaseAssertionMetaData.get().getPrimaryKeyColumnName(
-                    containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
+            String primaryKeyColumnName = databaseAssertionMetaData.get().getPrimaryKeyColumnName(actualDataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName());
             return String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
         }
         return String.format("SELECT * FROM %s", dataNode.getTableName());
