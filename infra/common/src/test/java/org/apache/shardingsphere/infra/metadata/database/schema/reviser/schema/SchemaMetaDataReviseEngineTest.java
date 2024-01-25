@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMe
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -35,9 +34,6 @@ import static org.mockito.Mockito.mock;
 
 class SchemaMetaDataReviseEngineTest {
     
-    @Mock
-    private SchemaMetaDataReviseEngine schemaMetaDataReviseEngine;
-    
     @Test
     void assertRevise() {
         Collection<ShardingSphereRule> rules = new ArrayList<>();
@@ -46,7 +42,6 @@ class SchemaMetaDataReviseEngineTest {
         DatabaseType databaseType = mock(DatabaseType.class);
         DataSource dataSource = mock(DataSource.class);
         SchemaMetaData schemaMetaData = new SchemaMetaData("expected", tableMetaData);
-        schemaMetaDataReviseEngine = mock(SchemaMetaDataReviseEngine.class);
         SchemaMetaData actual = new SchemaMetaDataReviseEngine(rules, props, databaseType, dataSource).revise(schemaMetaData);
         assertEquals(schemaMetaData.getName(), actual.getName());
         assertEquals(schemaMetaData.getTables(), actual.getTables());
