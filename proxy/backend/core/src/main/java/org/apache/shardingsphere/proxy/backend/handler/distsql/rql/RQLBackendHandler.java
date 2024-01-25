@@ -54,6 +54,7 @@ public final class RQLBackendHandler extends RQLExecuteEngine implements DistSQL
     
     @Override
     public ResponseHeader execute() throws SQLException {
+        executeQuery();
         queryHeaders = createQueryHeader(getColumnNames());
         mergedResult = null == mergedResult ? createMergedResult(getRows()) : mergedResult;
         return new QueryResponseHeader(queryHeaders);
