@@ -34,7 +34,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 class SchemaMetaDataReviseEngineTest {
-    
     @Mock
     private SchemaMetaDataReviseEngine schemaMetaDataReviseEngine;
     
@@ -51,6 +50,5 @@ class SchemaMetaDataReviseEngineTest {
         SchemaMetaData actual = new SchemaMetaDataReviseEngine(rules, props, databaseType, dataSource).revise(schemaMetaData);
         assertEquals(schemaMetaData.getName(), actual.getName());
         assertEquals(schemaMetaData.getTables(), actual.getTables());
-        
     }
 }
