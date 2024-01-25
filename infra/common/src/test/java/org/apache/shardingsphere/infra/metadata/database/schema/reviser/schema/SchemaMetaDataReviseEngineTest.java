@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class SchemaMetaDataReviseEngineTest {
@@ -43,7 +44,7 @@ class SchemaMetaDataReviseEngineTest {
         DataSource dataSource = mock(DataSource.class);
         SchemaMetaData schemaMetaData = new SchemaMetaData("expected", tableMetaData);
         SchemaMetaData actual = new SchemaMetaDataReviseEngine(rules, props, databaseType, dataSource).revise(schemaMetaData);
-        assertEquals(schemaMetaData.getName(), actual.getName());
-        assertEquals(schemaMetaData.getTables(), actual.getTables());
+        assertThat(actual.getName(), is(schemaMetaData.getName()));
+        assertThat(actual.getTables(), is(schemaMetaData.getTables()));
     }
 }
