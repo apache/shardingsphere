@@ -21,13 +21,11 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,13 +35,9 @@ class SchemaMetaDataReviseEngineTest {
     
     @Test
     void assertRevise() {
-        Collection<ShardingSphereRule> rules = new ArrayList<>();
-        Collection<TableMetaData> tableMetaData = Collections.singleton(mock(TableMetaData.class));
-        ConfigurationProperties props = mock(ConfigurationProperties.class);
-        DatabaseType databaseType = mock(DatabaseType.class);
-        DataSource dataSource = mock(DataSource.class);
-        SchemaMetaData schemaMetaData = new SchemaMetaData("expected", tableMetaData);
-        SchemaMetaData actual = new SchemaMetaDataReviseEngine(rules, props, databaseType, dataSource).revise(schemaMetaData);
+        SchemaMetaData schemaMetaData = new SchemaMetaData("expected", Collections.singleton(mock(TableMetaData.class)));
+        SchemaMetaData actual = new SchemaMetaDataReviseEngine(
+                Collections.emptyList(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class), mock(DataSource.class)).revise(schemaMetaData);
         assertThat(actual.getName(), is(schemaMetaData.getName()));
         assertThat(actual.getTables(), is(schemaMetaData.getTables()));
     }
