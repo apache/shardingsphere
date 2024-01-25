@@ -17,92 +17,46 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.MetaDataAwareRQLExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * RQL backend handler.
  */
-@RequiredArgsConstructor
-public final class RQLBackendHandler implements DistSQLBackendHandler {
-    
-    private final RQLStatement sqlStatement;
-    
-    private final ConnectionSession connectionSession;
+public final class RQLBackendHandler extends RQLExecuteEngine implements DistSQLBackendHandler {
     
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    public RQLBackendHandler(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
+        super(sqlStatement, ProxyContext.getInstance().getContextManager().getMetaDataContexts(), connectionSession.getDatabaseName());
+    }
+    
     @Override
     public ResponseHeader execute() throws SQLException {
-        RQLExecutor executor = TypedSPILoader.getService(RQLExecutor.class, sqlStatement.getClass());
-        queryHeaders = createQueryHeader(executor.getColumnNames());
-        if (executor instanceof DatabaseAwareRQLExecutor) {
-            setUpDatabaseAwareExecutor((DatabaseAwareRQLExecutor) executor);
-        }
-        if (executor instanceof GlobalRuleAwareRQLExecutor) {
-            setUpGlobalRuleAwareExecutor((GlobalRuleAwareRQLExecutor) executor);
-        }
-        if (executor instanceof MetaDataAwareRQLExecutor) {
-            ((MetaDataAwareRQLExecutor<?>) executor).setMetaDataContexts(ProxyContext.getInstance().getContextManager().getMetaDataContexts());
-        }
-        mergedResult = null == mergedResult ? createMergedResult(executor.getRows(sqlStatement)) : mergedResult;
+        queryHeaders = createQueryHeader(getColumnNames());
+        mergedResult = null == mergedResult ? createMergedResult(getRows()) : mergedResult;
         return new QueryResponseHeader(queryHeaders);
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void setUpDatabaseAwareExecutor(final DatabaseAwareRQLExecutor executor) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession));
-        ((DatabaseAwareRQLExecutor<?>) executor).setDatabase(database);
-        if (executor instanceof DatabaseRuleAwareRQLExecutor) {
-            Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(((DatabaseRuleAwareRQLExecutor) executor).getRuleClass());
-            if (rule.isPresent()) {
-                ((DatabaseRuleAwareRQLExecutor) executor).setRule(rule.get());
-            } else {
-                mergedResult = createMergedResult(Collections.emptyList());
-            }
-        }
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void setUpGlobalRuleAwareExecutor(final GlobalRuleAwareRQLExecutor executor) {
-        Optional<ShardingSphereRule> rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
-        if (rule.isPresent()) {
-            executor.setRule(rule.get());
-        } else {
-            mergedResult = createMergedResult(Collections.emptyList());
-        }
     }
     
     private List<QueryHeader> createQueryHeader(final Collection<String> columnNames) {
@@ -125,5 +79,10 @@ public final class RQLBackendHandler implements DistSQLBackendHandler {
             cells.add(new QueryResponseCell(queryHeaders.get(i).getColumnType(), mergedResult.getValue(i + 1, Object.class)));
         }
         return new QueryResponseRow(cells);
+    }
+    
+    @Override
+    protected ShardingSphereDatabase getDatabase(final String databaseName) {
+        return ProxyContext.getInstance().getDatabase(databaseName);
     }
 }
