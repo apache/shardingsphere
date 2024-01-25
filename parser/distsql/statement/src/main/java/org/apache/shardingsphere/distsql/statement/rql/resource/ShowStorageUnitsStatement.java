@@ -15,21 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rql.show;
+package org.apache.shardingsphere.distsql.statement.rql.resource;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
+
+import java.util.Optional;
 
 /**
- * Count rule statement.
+ * Show storage unit statement.
  */
 @Getter
-public final class CountRuleStatement extends ShowDatabaseRulesStatement {
+@RequiredArgsConstructor
+public final class ShowStorageUnitsStatement extends RQLStatement implements FromDatabaseAvailable {
     
-    private final String type;
+    private final DatabaseSegment database;
     
-    public CountRuleStatement(final DatabaseSegment database, final String type) {
-        super(database);
-        this.type = type;
+    private final Integer usageCount;
+    
+    @Override
+    public Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
+    }
+    
+    /**
+     * get usage count.
+     * 
+     * @return usage count
+     */
+    public Optional<Integer> getUsageCount() {
+        return Optional.ofNullable(usageCount);
     }
 }
