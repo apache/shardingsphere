@@ -93,7 +93,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? forClause?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? fromClause? whereClause? groupByClause? havingClause? orderByClause? forClause?
     ;
 
 duplicateSpecification
@@ -125,6 +125,10 @@ unqualifiedShorthand
 
 qualifiedShorthand
     : identifier DOT_ASTERISK_
+    ;
+
+intoClause
+    : INTO tableName
     ;
 
 fromClause

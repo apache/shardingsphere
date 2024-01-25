@@ -124,6 +124,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Pro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenJsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintLimitedContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenRowSetFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConversionFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -657,11 +659,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
-        if (null != ctx.castFunction()) {
-            return visit(ctx.castFunction());
-        }
-        if (null != ctx.convertFunction()) {
-            return visit(ctx.convertFunction());
+        if (null != ctx.conversionFunction()) {
+            return visit(ctx.conversionFunction());
         }
         if (null != ctx.charFunction()) {
             return visit(ctx.charFunction());
@@ -677,7 +676,18 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
-    
+
+    @Override
+    public final ASTNode visitConversionFunction(final ConversionFunctionContext ctx) {
+        if (null != ctx.castFunction()) {
+            return visit(ctx.castFunction());
+        }
+        if (null != ctx.convertFunction()) {
+            return visit(ctx.convertFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+
     @Override
     public final ASTNode visitJsonFunction(final JsonFunctionContext ctx) {
         if (null != ctx.jsonArrayFunction()) {
@@ -735,7 +745,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
+        String functionName = null != ctx.CAST() ? ctx.CAST().getText() : ctx.TRY_CAST().getText();
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
         ASTNode exprSegment = visit(ctx.expr());
         if (exprSegment instanceof ColumnSegment) {
             result.getParameters().add((ColumnSegment) exprSegment);
@@ -748,7 +759,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CONVERT().getText(), getOriginalText(ctx));
+        String functionName = null != ctx.CONVERT() ? ctx.CONVERT().getText() : ctx.TRY_CONVERT().getText();
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         if (null != ctx.NUMBER_()) {
@@ -1408,7 +1420,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     private int getStopIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
         return null != alias && alias.getStopIndex() > sqlSegment.getStopIndex() ? alias.getStopIndex() : sqlSegment.getStopIndex();
     }
-    
+
+    @Override
+    public ASTNode visitIntoClause(final IntoClauseContext ctx) {
+        return visit(ctx.tableName());
+    }
+
     @Override
     public ASTNode visitFromClause(final FromClauseContext ctx) {
         return visit(ctx.tableReferences());
