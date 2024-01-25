@@ -74,7 +74,7 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
             ((InstanceContextAwareQueryableRALExecutor<T>) executor).setInstanceContext(ProxyContext.getInstance().getContextManager().getInstanceContext());
         }
         if (executor instanceof DatabaseAwareQueryableRALExecutor) {
-            ((DatabaseAwareQueryableRALExecutor<T>) executor).setCurrentDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
+            ((DatabaseAwareQueryableRALExecutor<T>) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
         }
         if (executor instanceof ConnectionSizeAwareQueryableRALExecutor) {
             ((ConnectionSizeAwareQueryableRALExecutor<T>) executor).setConnectionSize(connectionSession.getDatabaseConnectionManager().getConnectionSize());

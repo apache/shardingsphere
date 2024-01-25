@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @Setter
 public final class ShowTableMetaDataExecutor implements DatabaseAwareQueryableRALExecutor<ShowTableMetaDataStatement> {
     
-    private ShardingSphereDatabase currentDatabase;
+    private ShardingSphereDatabase database;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -50,10 +50,10 @@ public final class ShowTableMetaDataExecutor implements DatabaseAwareQueryableRA
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowTableMetaDataStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        String defaultSchema = new DatabaseTypeRegistry(currentDatabase.getProtocolType()).getDefaultSchemaName(currentDatabase.getName());
-        ShardingSphereSchema schema = currentDatabase.getSchema(defaultSchema);
+        String defaultSchema = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
+        ShardingSphereSchema schema = database.getSchema(defaultSchema);
         return sqlStatement.getTableNames().stream().filter(each -> schema.getAllTableNames().contains(each.toLowerCase()))
-                .map(each -> buildTableRows(currentDatabase.getName(), schema, each.toLowerCase())).flatMap(Collection::stream).collect(Collectors.toList());
+                .map(each -> buildTableRows(database.getName(), schema, each.toLowerCase())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {

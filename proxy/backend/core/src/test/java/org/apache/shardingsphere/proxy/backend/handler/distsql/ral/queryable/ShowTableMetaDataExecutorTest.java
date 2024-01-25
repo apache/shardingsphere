@@ -55,7 +55,7 @@ class ShowTableMetaDataExecutorTest {
     void assertExecute() {
         ShardingSphereDatabase database = mockDatabase();
         ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
-        executor.setCurrentDatabase(database);
+        executor.setDatabase(database);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createSqlStatement(), mock(ShardingSphereMetaData.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();

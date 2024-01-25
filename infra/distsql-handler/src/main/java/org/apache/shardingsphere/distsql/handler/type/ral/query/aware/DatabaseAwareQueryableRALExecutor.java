@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 public interface DatabaseAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
-     * Set current database.
+     * Set database.
      * 
-     * @param currentDatabase current database
+     * @param database database
      */
-    void setCurrentDatabase(ShardingSphereDatabase currentDatabase);
+    void setDatabase(ShardingSphereDatabase database);
 }
