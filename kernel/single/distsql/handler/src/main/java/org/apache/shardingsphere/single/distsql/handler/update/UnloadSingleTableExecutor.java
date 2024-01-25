@@ -18,23 +18,21 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
 import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,19 +86,20 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     }
     
     @Override
-    public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final UnloadSingleTableStatement sqlStatement) {
+    public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final UnloadSingleTableStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
-        result.getTables().addAll(sqlStatement.isUnloadAllTables() ? Collections.singletonList(SingleTableConstants.ASTERISK) : sqlStatement.getTables());
+        currentRuleConfig.getDefaultDataSource().ifPresent(result::setDefaultDataSource);
+        if (!sqlStatement.isUnloadAllTables()) {
+            result.getTables().addAll(currentRuleConfig.getTables());
+            result.getTables().removeIf(each -> sqlStatement.getTables().contains(extractTableName(each)));
+        }
         return result;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeAlteredRuleConfig) {
-        if (toBeAlteredRuleConfig.getTables().contains(SingleTableConstants.ASTERISK)) {
-            currentRuleConfig.getTables().clear();
-        } else {
-            currentRuleConfig.getTables().removeIf(each -> toBeAlteredRuleConfig.getTables().contains(extractTableName(each)));
-        }
+        currentRuleConfig.getTables().clear();
+        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
     }
     
     private String extractTableName(final String tableNode) {

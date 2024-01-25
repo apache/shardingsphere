@@ -115,7 +115,7 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private RuleConfiguration processAlter(final RuleDefinitionStatement sqlStatement, final DatabaseRuleAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
+        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         return currentRuleConfig;
     }

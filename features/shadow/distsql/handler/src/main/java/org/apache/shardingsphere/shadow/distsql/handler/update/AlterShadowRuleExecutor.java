@@ -43,7 +43,7 @@ import java.util.Map;
 public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<AlterShadowRuleStatement, ShadowRuleConfiguration> {
     
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShadowRuleStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final AlterShadowRuleStatement sqlStatement) {
         return ShadowRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

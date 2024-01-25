@@ -50,6 +50,7 @@ public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseR
     public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         result.setDefaultDataSource(sqlStatement.getDefaultStorageUnit());
+        result.getTables().addAll(currentRuleConfig.getTables());
         return result;
     }
     

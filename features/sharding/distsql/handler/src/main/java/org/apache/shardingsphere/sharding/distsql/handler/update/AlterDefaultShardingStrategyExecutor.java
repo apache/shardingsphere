@@ -79,7 +79,7 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleA
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShardingStrategyStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final AlterDefaultShardingStrategyStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         if ("none".equalsIgnoreCase(sqlStatement.getStrategyType())) {
             setStrategyConfiguration(result, sqlStatement.getDefaultType(), new NoneShardingStrategyConfiguration());
