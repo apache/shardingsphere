@@ -80,7 +80,7 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "model")
     private ExpectedModelClause modelClause;
-
+    
     @XmlElement(name = "into")
     private ExpectedTable intoClause;
 }

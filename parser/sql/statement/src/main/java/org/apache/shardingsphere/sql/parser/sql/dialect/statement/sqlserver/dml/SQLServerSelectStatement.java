@@ -33,11 +33,11 @@ import java.util.Optional;
 public final class SQLServerSelectStatement extends SelectStatement implements SQLServerStatement {
     
     private LimitSegment limit;
-
+    
     private WithSegment withSegment;
-
+    
     private TableSegment intoSegment;
-
+    
     /**
      * Get order by segment.
      *
@@ -55,7 +55,7 @@ public final class SQLServerSelectStatement extends SelectStatement implements S
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
     }
-
+    
     /**
      * Get into segment.
      * @return into segment

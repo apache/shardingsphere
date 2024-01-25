@@ -676,7 +676,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public final ASTNode visitConversionFunction(final ConversionFunctionContext ctx) {
         if (null != ctx.castFunction()) {
@@ -687,7 +687,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public final ASTNode visitJsonFunction(final JsonFunctionContext ctx) {
         if (null != ctx.jsonArrayFunction()) {
@@ -1423,12 +1423,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     private int getStopIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
         return null != alias && alias.getStopIndex() > sqlSegment.getStopIndex() ? alias.getStopIndex() : sqlSegment.getStopIndex();
     }
-
+    
     @Override
     public ASTNode visitIntoClause(final IntoClauseContext ctx) {
         return visit(ctx.tableName());
     }
-
+    
     @Override
     public ASTNode visitFromClause(final FromClauseContext ctx) {
         return visit(ctx.tableReferences());

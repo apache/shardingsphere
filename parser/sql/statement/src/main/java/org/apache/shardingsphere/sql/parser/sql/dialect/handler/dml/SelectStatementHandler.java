@@ -232,7 +232,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
             ((OracleSelectStatement) selectStatement).setModelSegment(modelSegment);
         }
     }
-
+    
     /**
      * Get into segment.
      * @param selectStatement select statement
@@ -244,7 +244,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Set into segment.
      * @param selectStatement select statement

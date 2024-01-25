@@ -204,7 +204,7 @@ public final class SelectStatementAssert {
             ModelClauseAssert.assertIs(assertContext, modelSegment.get(), expected.getModelClause());
         }
     }
-
+    
     private static void assertIntoClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         Optional<TableSegment> intoSegment = SelectStatementHandler.getIntoSegment(actual);
         if (null == expected.getIntoClause()) {
