@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 class SchemaMetaDataReviseEngineTest {
     
     @Test
-    void assertRevise() {
+    void assertReviseWithoutMetaDataReviseEntry() {
         SchemaMetaData schemaMetaData = new SchemaMetaData("expected", Collections.singleton(mock(TableMetaData.class)));
         SchemaMetaData actual = new SchemaMetaDataReviseEngine(
                 Collections.emptyList(), new ConfigurationProperties(new Properties()), mock(DatabaseType.class), mock(DataSource.class)).revise(schemaMetaData);
