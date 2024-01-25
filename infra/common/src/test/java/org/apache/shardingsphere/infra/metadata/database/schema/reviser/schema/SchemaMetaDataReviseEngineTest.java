@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 class SchemaMetaDataReviseEngineTest {
@@ -48,7 +47,6 @@ class SchemaMetaDataReviseEngineTest {
         DataSource dataSource = mock(DataSource.class);
         SchemaMetaData schemaMetaData = new SchemaMetaData("expected", tableMetaData);
         schemaMetaDataReviseEngine = mock(SchemaMetaDataReviseEngine.class);
-        doReturn(schemaMetaData).when(schemaMetaDataReviseEngine);
         SchemaMetaData actual = new SchemaMetaDataReviseEngine(rules, props, databaseType, dataSource).revise(schemaMetaData);
         assertEquals(schemaMetaData.getName(), actual.getName());
         assertEquals(schemaMetaData.getTables(), actual.getTables());
