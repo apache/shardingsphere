@@ -123,4 +123,6 @@
     <sql-case id="insert_with_currency_value" value="INSERT INTO [HR].[Employees]([SSN], [FirstName], [LastName], [Salary]) VALUES ('795-73-9838', N'Catherine', N'Abel', $31692)" db-types="SQLServer"/>
     <sql-case id="insert_with_select_from_open_row_1" value="INSERT INTO myTable(FileName, FileType, Document) SELECT 'Text1.txt' AS FileName, '.txt' AS FileType, * FROM OPENROWSET(BULK N'C:\Text1.txt', SINGLE_BLOB) AS Document" db-types="SQLServer"/>
     <sql-case id="insert_with_select_from_open_row_2" value="INSERT INTO achievements with (TABLOCK) (id, description) SELECT * FROM OPENROWSET(BULK 'csv/achievements.csv', DATA_SOURCE = 'MyAzureBlobStorage', FORMAT ='CSV', FORMATFILE='csv/achievements-c.xml', FORMATFILE_DATA_SOURCE = 'MyAzureBlobStorage') AS DataFile" db-types="SQLServer"/>
+    <sql-case id="insert_into_table_get_date" value="INSERT INTO #Test VALUES (N'OC', N'Ounces', GETDATE())" db-types="SQLServer"/>
+    <sql-case id="insert_into_table_from_table" value="INSERT INTO #Test SELECT * FROM Production.UnitMeasure" db-types="SQLServer"/>
 </sql-cases>

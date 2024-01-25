@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute;
 
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 /**
  * Load single table statement executor.
  */
-public final class LoadSingleTableExecutor implements DatabaseRuleRDLCreateExecutor<LoadSingleTableStatement, SingleRuleConfiguration> {
+public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor<LoadSingleTableStatement, SingleRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
@@ -146,12 +146,14 @@ public final class LoadSingleTableExecutor implements DatabaseRuleRDLCreateExecu
     @Override
     public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final LoadSingleTableStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
+        result.getTables().addAll(currentRuleConfig.getTables());
         result.getTables().addAll(getRequiredTables(currentRuleConfig, sqlStatement));
         return result;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeCreatedRuleConfig) {
+        currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
     }
     

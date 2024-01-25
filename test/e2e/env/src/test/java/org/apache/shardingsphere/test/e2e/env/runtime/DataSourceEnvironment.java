@@ -88,7 +88,7 @@ public final class DataSourceEnvironment {
             case "MySQL":
                 return String.format(
                         "jdbc:mysql://%s:%s/%s?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"
-                                + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true",
+                                + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true",
                         host, port, dataSourceName);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/%s?ssl=on&sslmode=prefer", host, port, dataSourceName);

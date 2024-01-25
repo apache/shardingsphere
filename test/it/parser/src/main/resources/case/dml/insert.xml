@@ -3380,4 +3380,37 @@
             </from>
         </select>
     </insert>
+
+    <insert sql-case-id="insert_into_table_get_date">
+        <table name="#Test" start-index="12" stop-index="16"/>
+        <columns start-index="17" stop-index="17"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="OC" start-index="26" stop-index="30"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Ounces" start-index="33" stop-index="41"/>
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="GETDATE" text="GETDATE()" start-index="44" stop-index="52" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_table_from_table">
+        <table name="#Test" start-index="12" stop-index="16"/>
+        <columns start-index="17" stop-index="17"/>
+        <select>
+            <projections start-index="25" stop-index="25">
+                <shorthand-projection start-index="25" stop-index="25"/>
+            </projections>
+            <from>
+                <simple-table name="UnitMeasure" start-index="32" stop-index="53">
+                    <owner name="Production" start-index="32" stop-index="41"/>
+                </simple-table>
+            </from>
+        </select>
+    </insert>
 </sql-parser-test-cases>

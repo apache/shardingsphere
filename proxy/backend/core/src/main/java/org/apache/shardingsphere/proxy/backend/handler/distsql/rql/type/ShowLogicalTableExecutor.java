@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowLogicalTablesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.resource.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;

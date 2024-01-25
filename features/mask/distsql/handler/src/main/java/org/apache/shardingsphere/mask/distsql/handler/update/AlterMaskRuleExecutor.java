@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Alter mask rule executor.
  */
-public final class AlterMaskRuleExecutor implements DatabaseRuleRDLAlterExecutor<AlterMaskRuleStatement, MaskRuleConfiguration> {
+public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<AlterMaskRuleStatement, MaskRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
@@ -62,7 +62,7 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleRDLAlterExecutor
     }
     
     @Override
-    public MaskRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterMaskRuleStatement sqlStatement) {
+    public MaskRuleConfiguration buildToBeAlteredRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final AlterMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

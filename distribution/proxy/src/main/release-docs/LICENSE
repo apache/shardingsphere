@@ -269,7 +269,7 @@ The text of each license is the standard Apache 2.0 license.
     jetcd-common 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-core 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-grpc 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
-    json-path 2.8.0: https://github.com/jayway/JsonPath, Apache 2.0
+    json-path 2.9.0: https://github.com/jayway/JsonPath, Apache 2.0
     json-smart 2.4.10: https://www.minidev.net/, Apache 2.0
     json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0

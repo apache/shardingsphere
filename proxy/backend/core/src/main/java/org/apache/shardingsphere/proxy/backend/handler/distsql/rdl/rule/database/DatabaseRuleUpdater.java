@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLDropExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -41,7 +41,7 @@ public final class DatabaseRuleUpdater {
     private final ConnectionSession connectionSession;
     
     @SuppressWarnings("rawtypes")
-    private final DatabaseRuleRDLExecutor executor;
+    private final DatabaseRuleDefinitionExecutor executor;
     
     /**
      * Execute update.
@@ -64,6 +64,6 @@ public final class DatabaseRuleUpdater {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private boolean getRefreshStatus(final RuleConfiguration currentRuleConfig) {
-        return !(executor instanceof DatabaseRuleRDLDropExecutor) || ((DatabaseRuleRDLDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+        return !(executor instanceof DatabaseRuleDropExecutor) || ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
     }
 }

@@ -27,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -149,6 +148,6 @@ class ShardingSphereTableTest {
         ShardingSphereTable otherTable = new ShardingSphereTable();
         otherTable.putColumn(new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false, false));
         otherTable.putIndex(new ShardingSphereIndex("foo_index_1"));
-        assertEquals(shardingSphereTable, otherTable);
+        assertThat(shardingSphereTable, is(otherTable));
     }
 }

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.readwritesplitting.ShowStatusFromReadwriteSplittingRulesExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -73,9 +74,10 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.setCurrentDatabase(mockMetaData().getDatabase("readwrite_db"));
+        executor.setDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase("readwrite_db"));
+        executor.setMetaDataContexts(contextManager.getMetaDataContexts());
         Collection<LocalDataQueryResultRow> actual = executor.getRows(
-                new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null), mockMetaData());
+                new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null));
         assertTrue(actual.isEmpty());
     }
     

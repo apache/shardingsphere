@@ -29,7 +29,7 @@ spring.datasource.driver-class-name=org.apache.shardingsphere.driver.ShardingSph
 spring.datasource.url=jdbc:shardingsphere:classpath:xxx.yaml
 ```
 
-`spring.datasource.url` 中的 YAML 配置文件当前支持通过多种方式获取，具体可参考 [已知实现](../known-implementation/_index.cn.md) 。
+`spring.datasource.url` 中的 YAML 配置文件当前支持通过多种方式获取，具体可参考 [已知实现](../known-implementation/) 。
 
 ### 使用数据源
 

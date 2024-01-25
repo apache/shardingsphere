@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -38,7 +38,7 @@ import java.util.Optional;
 /**
  * Alter default sharding strategy executor.
  */
-public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleRDLAlterExecutor<AlterDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
+public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
@@ -79,7 +79,7 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleR
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShardingStrategyStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final AlterDefaultShardingStrategyStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         if ("none".equalsIgnoreCase(sqlStatement.getStrategyType())) {
             setStrategyConfiguration(result, sqlStatement.getDefaultType(), new NoneShardingStrategyConfiguration());

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.type.rql.count;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
-import org.apache.shardingsphere.distsql.statement.rql.show.CountRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;

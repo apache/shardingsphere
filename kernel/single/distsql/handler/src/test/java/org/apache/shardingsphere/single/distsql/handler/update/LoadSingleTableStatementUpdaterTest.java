@@ -88,7 +88,8 @@ class LoadSingleTableStatementUpdaterTest {
     void assertUpdate() {
         Collection<String> currentTables = new LinkedList<>(Collections.singletonList("ds_0.foo"));
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration(currentTables, null);
-        SingleRuleConfiguration toBeCreatedRuleConfig = new SingleRuleConfiguration(Collections.singletonList("ds_0.bar"), null);
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "bar")));
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         Iterator<String> iterator = currentConfig.getTables().iterator();
         assertThat(iterator.next(), is("ds_0.foo"));

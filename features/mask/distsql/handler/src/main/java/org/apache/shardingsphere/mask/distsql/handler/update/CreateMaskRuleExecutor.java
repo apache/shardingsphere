@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Create mask rule executor.
  */
-public final class CreateMaskRuleExecutor implements DatabaseRuleRDLCreateExecutor<CreateMaskRuleStatement, MaskRuleConfiguration> {
+public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<CreateMaskRuleStatement, MaskRuleConfiguration> {
     
     private boolean ifNotExists;
     

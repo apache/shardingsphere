@@ -78,6 +78,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         result.setDatabaseName(rootConfig.getDatabaseName());
         result.setDataSources(rootConfig.getDataSources());
         result.setRules(rootConfig.getRules());
+        result.getProps().putAll(rootConfig.getProps());
         return result;
     }
     
@@ -144,5 +145,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         private Map<String, Map<String, Object>> dataSources = new HashMap<>();
         
         private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+        
+        private Properties props = new Properties();
     }
 }

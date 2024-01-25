@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding table reference rule executor.
  */
-public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRuleRDLAlterExecutor<AlterShardingTableReferenceRuleStatement, ShardingRuleConfiguration> {
+public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRuleAlterExecutor<AlterShardingTableReferenceRuleStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
@@ -84,7 +84,7 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
     }
     
     private void checkShardingTableReferenceRulesValid(final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<ShardingTableReferenceRuleConfiguration> toBeAlteredShardingTableReferenceRules = buildToBeAlteredRuleConfiguration(sqlStatement).getBindingTableGroups();
+        Collection<ShardingTableReferenceRuleConfiguration> toBeAlteredShardingTableReferenceRules = buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement).getBindingTableGroups();
         Collection<String> ruleNames = toBeAlteredShardingTableReferenceRules.stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(ShardingTableRuleStatementChecker.isValidBindingTableGroups(toBeAlteredShardingTableReferenceRules, currentRuleConfig),
                 () -> new InvalidRuleConfigurationException("sharding table", ruleNames, Collections.singleton("invalid sharding table reference.")));
@@ -112,7 +112,7 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingTableReferenceRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final AlterShardingTableReferenceRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         sqlStatement.getRules().forEach(each -> result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration(each.getName(), each.getReference())));
         return result;

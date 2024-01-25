@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.type;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class CreateDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDLExecuteEngine {
     
     @SuppressWarnings("rawtypes")
-    private final DatabaseRuleRDLCreateExecutor executor;
+    private final DatabaseRuleCreateExecutor executor;
     
     @Override
     @SuppressWarnings("unchecked")
@@ -52,7 +52,7 @@ public final class CreateDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDL
             return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
         }
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, currentRuleConfig));
+        return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
     }
     
     @SuppressWarnings("unchecked")

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 /**
  * Alter SQL parser rule executor.
  */
-public final class AlterSQLParserRuleExecutor implements GlobalRuleRDLExecutor<AlterSQLParserRuleStatement, SQLParserRuleConfiguration> {
+public final class AlterSQLParserRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLParserRuleStatement, SQLParserRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final SQLParserRuleConfiguration currentRuleConfig, final AlterSQLParserRuleStatement sqlStatement) {

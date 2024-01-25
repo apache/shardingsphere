@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -75,7 +75,7 @@ class ExportDatabaseConfigurationExecutorTest {
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ExportDatabaseConfigurationExecutor executor = new ExportDatabaseConfigurationExecutor();
-        executor.setCurrentDatabase(database);
+        executor.setDatabase(database);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportDatabaseConfigurationStatement(mock(DatabaseSegment.class), null), mock(ShardingSphereMetaData.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
@@ -101,7 +101,7 @@ class ExportDatabaseConfigurationExecutorTest {
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("empty_db")), null);
         ExportDatabaseConfigurationExecutor executor = new ExportDatabaseConfigurationExecutor();
-        executor.setCurrentDatabase(database);
+        executor.setDatabase(database);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, mock(ShardingSphereMetaData.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();

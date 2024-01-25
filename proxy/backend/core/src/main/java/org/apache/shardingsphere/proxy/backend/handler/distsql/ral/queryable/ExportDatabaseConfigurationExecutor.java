@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.DatabaseAwareQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.DatabaseAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -34,7 +34,7 @@ import java.util.Collections;
 @Setter
 public final class ExportDatabaseConfigurationExecutor implements DatabaseAwareQueryableRALExecutor<ExportDatabaseConfigurationStatement> {
     
-    private ShardingSphereDatabase currentDatabase;
+    private ShardingSphereDatabase database;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -43,7 +43,7 @@ public final class ExportDatabaseConfigurationExecutor implements DatabaseAwareQ
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ExportDatabaseConfigurationStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        String exportedData = ExportUtils.generateExportDatabaseData(currentDatabase);
+        String exportedData = ExportUtils.generateExportDatabaseData(database);
         if (!sqlStatement.getFilePath().isPresent()) {
             return Collections.singleton(new LocalDataQueryResultRow(exportedData));
         }
@@ -53,8 +53,8 @@ public final class ExportDatabaseConfigurationExecutor implements DatabaseAwareQ
     }
     
     @Override
-    public void setCurrentDatabase(final ShardingSphereDatabase currentDatabase) {
-        this.currentDatabase = currentDatabase;
+    public void setDatabase(final ShardingSphereDatabase database) {
+        this.database = database;
     }
     
     @Override

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.InstanceContextAwareQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodeInfoStatement;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.InstanceContextAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;

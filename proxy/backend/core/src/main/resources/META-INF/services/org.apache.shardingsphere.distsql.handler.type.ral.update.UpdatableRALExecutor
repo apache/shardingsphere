@@ -21,7 +21,7 @@ org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.UnlabelCom
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetInstanceStatusExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportDatabaseConfigurationExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportMetaDataExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterReadwriteSplittingStorageUnitStatusStatementExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.readwritesplitting.AlterReadwriteSplittingStorageUnitStatusExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetDistVariableExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshDatabaseMetaDataExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.LockClusterExecutor

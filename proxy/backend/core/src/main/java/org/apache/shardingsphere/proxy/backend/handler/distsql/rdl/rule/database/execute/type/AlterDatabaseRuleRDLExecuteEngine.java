@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.type;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.DatabaseRuleRDLExecuteEngine;
-import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -42,20 +41,17 @@ import java.util.stream.Collectors;
 public final class AlterDatabaseRuleRDLExecuteEngine implements DatabaseRuleRDLExecuteEngine {
     
     @SuppressWarnings("rawtypes")
-    private final DatabaseRuleRDLAlterExecutor executor;
+    private final DatabaseRuleAlterExecutor executor;
     
     @Override
     @SuppressWarnings("unchecked")
     public Collection<MetaDataVersion> execute(final RuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
+        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         ModeContextManager modeContextManager = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager();
-        if (sqlStatement instanceof UnloadSingleTableStatement) {
-            return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, currentRuleConfig));
-        }
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
-        return modeContextManager.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
+        return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeAlteredRuleConfig));
     }
     
     @SuppressWarnings("unchecked")

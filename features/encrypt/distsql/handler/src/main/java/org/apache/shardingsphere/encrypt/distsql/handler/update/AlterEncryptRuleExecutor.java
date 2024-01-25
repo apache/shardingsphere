@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Alter encrypt rule executor.
  */
-public final class AlterEncryptRuleExecutor implements DatabaseRuleRDLAlterExecutor<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
+public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
@@ -96,7 +96,7 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleRDLAlterExecu
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterEncryptRuleStatement sqlStatement) {
+    public EncryptRuleConfiguration buildToBeAlteredRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final AlterEncryptRuleStatement sqlStatement) {
         return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.connection.validator.ShardingSphereMetaDataValidateUtils;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -59,7 +58,6 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        ShardingSphereMetaDataValidateUtils.validateTableExist(sqlStatementContext, database);
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             validateMultipleTable(shardingRule, sqlStatementContext);
         }

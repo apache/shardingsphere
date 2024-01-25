@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.RDLExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -29,14 +29,13 @@ import java.sql.SQLException;
 /**
  * Resource definition backend handler.
  */
-// TODO merge to RDLBackendHandler @zhangliang
 @RequiredArgsConstructor
 public final class ResourceDefinitionBackendHandler implements DistSQLBackendHandler {
     
-    private final RDLStatement sqlStatement;
+    private final ResourceDefinitionStatement sqlStatement;
     
     @SuppressWarnings("rawtypes")
-    private final RDLExecutor executor;
+    private final ResourceDefinitionExecutor executor;
     
     @SuppressWarnings("unchecked")
     @Override

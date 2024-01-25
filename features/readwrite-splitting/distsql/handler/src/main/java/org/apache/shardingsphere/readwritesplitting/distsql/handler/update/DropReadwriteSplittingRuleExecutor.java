@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * Drop readwrite-splitting rule executor.
  */
-public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleRDLDropExecutor<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
+public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDropExecutor<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {

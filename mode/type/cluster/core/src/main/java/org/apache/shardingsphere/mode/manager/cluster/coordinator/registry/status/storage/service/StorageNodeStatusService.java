@@ -20,11 +20,11 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml.YamlStorageNodeDataSource;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml.YamlStorageNodeDataSourceSwapper;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class StorageNodeStatusService {
     
-    private final ClusterPersistRepository repository;
+    private final PersistRepository repository;
     
     /**
      * Load storage node names.

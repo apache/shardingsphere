@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
@@ -46,12 +46,12 @@ public final class RuleDefinitionBackendHandler implements DistSQLBackendHandler
     @SuppressWarnings("rawtypes")
     @Override
     public ResponseHeader execute() {
-        Optional<DatabaseRuleRDLExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleRDLExecutor.class, sqlStatement.getClass());
+        Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
         if (databaseExecutor.isPresent()) {
             new DatabaseRuleUpdater(sqlStatement, connectionSession, databaseExecutor.get()).executeUpdate();
         } else {
             String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
-            GlobalRuleRDLExecutor globalExecutor = TypedSPILoader.getService(GlobalRuleRDLExecutor.class, sqlStatement.getClass());
+            GlobalRuleDefinitionExecutor globalExecutor = TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass());
             if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
                 new GlobalRuleUpdater(sqlStatement, globalExecutor).executeUpdate();
             } else {
