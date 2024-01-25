@@ -29,7 +29,7 @@ spring.datasource.driver-class-name=org.apache.shardingsphere.driver.ShardingSph
 spring.datasource.url=jdbc:shardingsphere:classpath:xxx.yaml
 ```
 
-The YAML configuration file in 'spring.datasource.url' currently support in multiple ways, refer to [Known Implementation](../known-implementation/_index.en.md).
+The YAML configuration file in 'spring.datasource.url' currently support in multiple ways, refer to [Known Implementation](../known-implementation/).
 
 ### Use Data Source
 
