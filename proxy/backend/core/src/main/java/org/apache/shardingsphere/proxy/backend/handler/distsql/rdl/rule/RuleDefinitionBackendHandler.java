@@ -17,47 +17,35 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDefinitionExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.RuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.DatabaseRuleUpdater;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.global.GlobalRuleUpdater;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyGlobalRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import java.util.Optional;
-
 /**
  * Rule definition backend handler.
  */
-@RequiredArgsConstructor
-public final class RuleDefinitionBackendHandler implements DistSQLBackendHandler {
+public final class RuleDefinitionBackendHandler extends RuleDefinitionExecuteEngine implements DistSQLBackendHandler {
     
     private final RuleDefinitionStatement sqlStatement;
     
-    private final ConnectionSession connectionSession;
+    public RuleDefinitionBackendHandler(final RuleDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
+        super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
+        this.sqlStatement = sqlStatement;
+    }
     
-    @SuppressWarnings("rawtypes")
     @Override
     public ResponseHeader execute() {
-        Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
-        if (databaseExecutor.isPresent()) {
-            new DatabaseRuleUpdater(sqlStatement, connectionSession, databaseExecutor.get()).executeUpdate();
-        } else {
-            String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
-            GlobalRuleDefinitionExecutor globalExecutor = TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass());
-            if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
-                new GlobalRuleUpdater(sqlStatement, globalExecutor).executeUpdate();
-            } else {
-                new LegacyGlobalRuleUpdater(sqlStatement).executeUpdate();
-            }
-        }
+        executeUpdate();
         return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    @Override
+    protected ShardingSphereDatabase getDatabase(final String databaseName) {
+        return ProxyContext.getInstance().getDatabase(databaseName);
     }
 }

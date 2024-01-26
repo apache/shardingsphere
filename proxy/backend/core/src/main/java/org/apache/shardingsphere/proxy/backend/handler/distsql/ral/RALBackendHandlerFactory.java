@@ -40,7 +40,7 @@ public final class RALBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
         return sqlStatement instanceof QueryableRALStatement
-                ? new QueryableRALBackendHandler<>((QueryableRALStatement) sqlStatement, connectionSession)
-                : new UpdatableRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
+                ? new QueryableRALBackendHandler((QueryableRALStatement) sqlStatement, connectionSession)
+                : new UpdatableRALBackendHandler((UpdatableRALStatement) sqlStatement, connectionSession);
     }
 }

@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.statement;
+package org.apache.shardingsphere.distsql.handler.type.rql.aware;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.aware.StaticDataSourceContainedRuleAwareStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.type.DropRuleStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 /**
- * Drop readwrite-splitting rule statement.
+ * Meta data aware RQL executor.
+ * 
+ * @param <T> type of SQL statement
  */
-@Getter
-public final class DropReadwriteSplittingRuleStatement extends DropRuleStatement implements StaticDataSourceContainedRuleAwareStatement {
+public interface MetaDataAwareRQLExecutor<T extends RQLStatement> extends RQLExecutor<T> {
     
-    private final Collection<String> names;
-    
-    public DropReadwriteSplittingRuleStatement(final boolean ifExists, final Collection<String> names) {
-        super(ifExists);
-        this.names = names;
-    }
+    /**
+     * Set database.
+     *
+     * @param metaDataContexts meta data contexts
+     */
+    void setMetaDataContexts(MetaDataContexts metaDataContexts);
 }

@@ -15,39 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.rule.database;
+package org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.database;
 
+import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
+
+import java.util.Collection;
 
 /**
- * Database rule definition executor.
- * 
- * @param <T> type of SQL statement
- * @param <R> type of rule configuration
+ * Database rule operator.
  */
-@SingletonSPI
-public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface DatabaseRuleOperator {
     
     /**
-     * Check SQL statement.
-     *
-     * @param database database
-     * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration
-     */
-    void checkSQLStatement(ShardingSphereDatabase database, T sqlStatement, R currentRuleConfig);
-    
-    /**
-     * Get rule configuration class.
+     * Operate rule change.
      * 
-     * @return rule configuration class
+     * @param sqlStatement SQL statement
+     * @param database database
+     * @param currentRuleConfig current rule configuration
+     * @return meta data versions
      */
-    Class<R> getRuleConfigurationClass();
-    
-    @Override
-    Class<T> getType();
+    Collection<MetaDataVersion> operate(RuleDefinitionStatement sqlStatement, ShardingSphereDatabase database, RuleConfiguration currentRuleConfig);
 }

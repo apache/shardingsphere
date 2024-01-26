@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.aware;
+package org.apache.shardingsphere.distsql.statement.rdl.rule.aware;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import java.util.Collection;
 
 /**
- * Meta data aware RQL executor.
- * 
- * @param <T> type of SQL statement
+ * Static data source contained rule aware statement.
  */
-public interface MetaDataAwareRQLExecutor<T extends RQLStatement> extends RQLExecutor<T> {
+public interface StaticDataSourceContainedRuleAwareStatement {
     
     /**
-     * Set database.
-     *
-     * @param metaDataContexts meta data contexts
+     * Get names.
+     * 
+     * @return names
      */
-    void setMetaDataContexts(MetaDataContexts metaDataContexts);
+    Collection<String> getNames();
 }
