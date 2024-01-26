@@ -32,10 +32,15 @@ literals
     | booleanLiterals
     | nullValueLiterals
     | intervalLiterals
+    | bindLiterals
     ;
 
 intervalLiterals
     : INTERVAL stringLiterals intervalUnit (intervalPrecision)? (TO intervalUnit (intervalPrecision)?)?
+    ;
+
+bindLiterals
+    : COLON_ identifier
     ;
 
 intervalPrecision
