@@ -20,6 +20,7 @@ package org.apache.shardingsphere.distsql.handler.type.rdl.resource;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Resource definition executor.
@@ -33,8 +34,9 @@ public interface ResourceDefinitionExecutor<T extends ResourceDefinitionStatemen
      * Execute update.
      * 
      * @param sqlStatement SQL statement
+     * @param contextManager context manager
      */
-    void execute(T sqlStatement);
+    void execute(T sqlStatement, ContextManager contextManager);
     
     @Override
     Class<T> getType();

@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.SQLException;
@@ -59,7 +60,7 @@ public final class AlterStorageUnitExecutor implements DatabaseAwareResourceDefi
     private ShardingSphereDatabase database;
     
     @Override
-    public void execute(final AlterStorageUnitStatement sqlStatement) {
+    public void execute(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         checkSQLStatement(sqlStatement);
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
         validateHandler.validate(propsMap);

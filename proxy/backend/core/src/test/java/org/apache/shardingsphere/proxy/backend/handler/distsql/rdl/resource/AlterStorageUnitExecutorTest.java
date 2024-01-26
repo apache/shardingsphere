@@ -77,13 +77,13 @@ class AlterStorageUnitExecutorTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         executor.setDatabase(database);
-        assertDoesNotThrow(() -> executor.execute(createAlterStorageUnitStatement("ds_0")));
+        assertDoesNotThrow(() -> executor.execute(createAlterStorageUnitStatement("ds_0"), mock(ContextManager.class)));
     }
     
     @Test
     void assertExecuteWithDuplicateStorageUnitNames() {
         executor.setDatabase(database);
-        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createAlterStorageUnitStatementWithDuplicateStorageUnitNames()));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createAlterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
     @Test
@@ -92,7 +92,7 @@ class AlterStorageUnitExecutorTest {
         ContextManager contextManager = mockContextManager(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.setDatabase(database);
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.execute(createAlterStorageUnitStatement("not_existed")));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.execute(createAlterStorageUnitStatement("not_existed"), mock(ContextManager.class)));
     }
     
     @Test
@@ -106,7 +106,7 @@ class AlterStorageUnitExecutorTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         executor.setDatabase(database);
-        assertThrows(InvalidStorageUnitsException.class, () -> executor.execute(createAlterStorageUnitStatement("ds_0")));
+        assertThrows(InvalidStorageUnitsException.class, () -> executor.execute(createAlterStorageUnitStatement("ds_0"), mock(ContextManager.class)));
     }
     
     private ContextManager mockContextManager(final MetaDataContexts metaDataContexts) {

@@ -76,13 +76,13 @@ class RegisterStorageUnitExecutorTest {
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.setDatabase(database);
-        assertDoesNotThrow(() -> executor.execute(createRegisterStorageUnitStatement()));
+        assertDoesNotThrow(() -> executor.execute(createRegisterStorageUnitStatement(), mock(ContextManager.class)));
     }
     
     @Test
     void assertExecuteWithDuplicateStorageUnitNamesInStatement() {
         executor.setDatabase(database);
-        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames()));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
     @Test
@@ -91,7 +91,7 @@ class RegisterStorageUnitExecutorTest {
         when(contextManager.getStorageUnits("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.setDatabase(database);
-        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createRegisterStorageUnitStatement()));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createRegisterStorageUnitStatement(), mock(ContextManager.class)));
     }
     
     @Test
@@ -103,7 +103,7 @@ class RegisterStorageUnitExecutorTest {
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(rule));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.setDatabase(database);
-        assertThrows(InvalidStorageUnitsException.class, () -> executor.execute(createRegisterStorageUnitStatement()));
+        assertThrows(InvalidStorageUnitsException.class, () -> executor.execute(createRegisterStorageUnitStatement(), mock(ContextManager.class)));
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {
