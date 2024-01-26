@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
@@ -34,6 +35,8 @@ public final class SQLServerSelectStatement extends SelectStatement implements S
     private LimitSegment limit;
     
     private WithSegment withSegment;
+    
+    private TableSegment intoSegment;
     
     /**
      * Get order by segment.
@@ -51,5 +54,14 @@ public final class SQLServerSelectStatement extends SelectStatement implements S
      */
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
+    }
+    
+    /**
+     * Get into segment.
+     *
+     * @return into segment
+     */
+    public Optional<TableSegment> getIntoSegment() {
+        return Optional.ofNullable(intoSegment);
     }
 }

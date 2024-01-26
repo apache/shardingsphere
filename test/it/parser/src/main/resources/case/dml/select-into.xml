@@ -210,4 +210,81 @@
             <simple-table name="table_or_view_name" start-index="50" stop-index="67" literal-start-index="50" literal-stop-index="67" />
         </from>
     </select>
+
+    <select sql-case-id="select_into_table_with_try_cast_function">
+        <projections start-index="7" stop-index="108">
+            <column-projection name="temperature" start-index="7" stop-index="25">
+                <owner name="machine" start-index="7" stop-index="13"/>
+            </column-projection>
+            <expression-projection text="udf.ASAEdgeUDFDemo_Class1_SquareFunction(try_cast(machine.temperature as bigint))" start-index="28" stop-index="108">
+                <expr>
+                    <function function-name="udf.ASAEdgeUDFDemo_Class1_SquareFunction" text="udf.ASAEdgeUDFDemo_Class1_SquareFunction(try_cast(machine.temperature as bigint))" start-index="28" stop-index="108">
+                        <parameter>
+                            <function function-name="try_cast" text="try_cast(machine.temperature as bigint)" start-index="69" stop-index="107">
+                                <parameter>
+                                    <column name="temperature" start-index="78" stop-index="96">
+                                        <owner name="machine" start-index="78" stop-index="84"/>
+                                    </column>
+                                </parameter>
+                                <parameter>
+                                    <data-type value="bigint" start-index="101" stop-index="106" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <into>
+            <simple-table name="Output" start-index="115" stop-index="120"/>
+        </into>
+        <from>
+            <simple-table name="Input" start-index="127" stop-index="131"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_into_table_before_from">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <into>
+            <simple-table name="NewProducts" start-index="14" stop-index="28">
+                <owner name="dbo" start-index="14" stop-index="16"/>
+            </simple-table>
+        </into>
+        <from start-index="35" stop-index="52">
+            <simple-table name="Product" start-index="35" stop-index="52">
+                <owner name="Production" start-index="35" stop-index="44"/>
+            </simple-table>
+        </from>
+        <where start-index="54" stop-index="95">
+            <expr>
+                <binary-operation-expression start-index="60" stop-index="95">
+                    <left>
+                        <binary-operation-expression start-index="60" stop-index="74">
+                            <left>
+                                <column name="ListPrice" start-index="60" stop-index="68"/>
+                            </left>
+                            <right>
+                                <common-expression literal-text="$25" start-index="72" stop-index="74" />
+                            </right>
+                            <operator>&gt;</operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <binary-operation-expression start-index="80" stop-index="95">
+                            <left>
+                                <column name="ListPrice" start-index="80" stop-index="88"/>
+                            </left>
+                            <right>
+                                <common-expression literal-text="$100" start-index="92" stop-index="95" />
+                            </right>
+                            <operator>&lt;</operator>
+                        </binary-operation-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
