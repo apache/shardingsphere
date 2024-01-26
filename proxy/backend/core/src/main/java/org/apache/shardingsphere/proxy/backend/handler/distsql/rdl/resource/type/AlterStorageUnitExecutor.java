@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExt
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -65,7 +64,7 @@ public final class AlterStorageUnitExecutor implements DatabaseAwareResourceDefi
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
         validateHandler.validate(propsMap);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterStorageUnits(database.getName(), propsMap);
+            contextManager.getInstanceContext().getModeContextManager().alterStorageUnits(database.getName(), propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             log.error("Alter storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.sql.SQLException;
@@ -55,7 +54,7 @@ public final class UnregisterStorageUnitExecutor implements DatabaseAwareResourc
     public void execute(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         checkSQLStatement(sqlStatement);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
+            contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Unregister storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));

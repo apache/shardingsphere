@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNode;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNodes;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
@@ -58,11 +57,11 @@ public final class ExportStorageNodesExecutor implements QueryableRALExecutor<Ex
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
             ExportUtils.exportToFile(filePath, exportedData);
-            return Collections.singleton(new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
+            return Collections.singleton(new LocalDataQueryResultRow(contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
                     String.format("Successfully exported to：'%s'", filePath)));
         }
         return Collections.singleton(
-                new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), exportedData));
+                new LocalDataQueryResultRow(contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), exportedData));
     }
     
     private void checkSQLStatement(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {

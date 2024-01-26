@@ -38,10 +38,10 @@ public final class RefreshDatabaseMetaDataExecutor implements UpdatableRALExecut
     public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         Optional<String> toBeRefreshedDatabaseName = sqlStatement.getDatabaseName();
         Map<String, ShardingSphereDatabase> databases = toBeRefreshedDatabaseName.map(optional -> Collections.singletonMap(optional, ProxyContext.getInstance().getDatabase(optional)))
-                .orElseGet(() -> ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases());
+                .orElseGet(() -> contextManager.getMetaDataContexts().getMetaData().getDatabases());
         for (ShardingSphereDatabase each : databases.values()) {
             if (!SystemSchemaUtils.isSystemSchema(each)) {
-                ProxyContext.getInstance().getContextManager().refreshDatabaseMetaData(each, sqlStatement.isForce());
+                contextManager.refreshDatabaseMetaData(each, sqlStatement.isForce());
             }
         }
     }

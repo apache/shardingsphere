@@ -63,11 +63,11 @@ public final class ExportMetaDataExecutor implements QueryableRALExecutor<Export
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
             ExportUtils.exportToFile(filePath, exportedData);
-            return Collections.singleton(new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
+            return Collections.singleton(new LocalDataQueryResultRow(contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
                     String.format("Successfully exported to：'%s'", filePath)));
         }
         return Collections.singleton(new LocalDataQueryResultRow(
-                ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), Base64.encodeBase64String(exportedData.getBytes())));
+                contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), Base64.encodeBase64String(exportedData.getBytes())));
     }
     
     private String generateExportData(final ShardingSphereMetaData metaData) {

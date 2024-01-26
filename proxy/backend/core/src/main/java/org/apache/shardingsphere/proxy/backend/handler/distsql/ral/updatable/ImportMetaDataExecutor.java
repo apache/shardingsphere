@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
@@ -64,18 +63,18 @@ public final class ImportMetaDataExecutor implements UpdatableRALExecutor<Import
         }
         ExportedClusterInfo exportedClusterInfo = JsonUtils.fromJsonString(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();
-        importServerConfig(exportedMetaData);
+        importServerConfig(contextManager, exportedMetaData);
         importDatabase(exportedMetaData);
     }
     
-    private void importServerConfig(final ExportedMetaData exportedMetaData) {
+    private void importServerConfig(final ContextManager contextManager, final ExportedMetaData exportedMetaData) {
         YamlProxyServerConfiguration yamlServerConfig = YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
         if (null == yamlServerConfig) {
             return;
         }
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(rules);
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterProperties(yamlServerConfig.getProps());
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(rules);
+        contextManager.getInstanceContext().getModeContextManager().alterProperties(yamlServerConfig.getProps());
     }
     
     private void importDatabase(final ExportedMetaData exportedMetaData) {

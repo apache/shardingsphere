@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 
 /**
@@ -43,14 +42,14 @@ public final class LockClusterExecutor implements UpdatableRALExecutor<LockClust
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
-        checkMode();
-        checkState();
+        checkMode(contextManager);
+        checkState(contextManager);
         checkAlgorithm(sqlStatement);
-        LockContext lockContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext();
+        LockContext lockContext = contextManager.getInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
         if (lockContext.tryLock(lockDefinition, 3000L)) {
             try {
-                checkState();
+                checkState(contextManager);
                 TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
             } finally {
                 lockContext.unlock(lockDefinition);
@@ -58,13 +57,13 @@ public final class LockClusterExecutor implements UpdatableRALExecutor<LockClust
         }
     }
     
-    private void checkMode() {
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster(),
+    private void checkMode(final ContextManager contextManager) {
+        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(),
                 () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
     }
     
-    private void checkState() {
-        ClusterState currentState = ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState();
+    private void checkState(final ContextManager contextManager) {
+        ClusterState currentState = contextManager.getClusterStateContext().getCurrentState();
         ShardingSpherePreconditions.checkState(ClusterState.OK == currentState, () -> new IllegalStateException("Cluster is already locked"));
     }
     
