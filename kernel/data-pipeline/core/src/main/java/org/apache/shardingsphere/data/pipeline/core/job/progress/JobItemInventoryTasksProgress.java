@@ -43,7 +43,7 @@ public final class JobItemInventoryTasksProgress {
      * @return inventory position
      */
     public Map<String, IngestPosition> getInventoryPosition(final String tableName) {
-        Pattern pattern = Pattern.compile(String.format("\\.%s#(\\d+)?", tableName));
+        Pattern pattern = Pattern.compile(String.format("\\.%s#(\\d+)?", tableName), Pattern.CASE_INSENSITIVE);
         return progresses.entrySet().stream().filter(entry -> pattern.matcher(entry.getKey()).find()).collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition()));
     }
 }
