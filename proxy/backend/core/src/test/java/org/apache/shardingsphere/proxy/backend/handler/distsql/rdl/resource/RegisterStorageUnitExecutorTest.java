@@ -74,9 +74,8 @@ class RegisterStorageUnitExecutorTest {
     void assertExecute() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.setDatabase(database);
-        assertDoesNotThrow(() -> executor.execute(createRegisterStorageUnitStatement(), mock(ContextManager.class)));
+        assertDoesNotThrow(() -> executor.execute(createRegisterStorageUnitStatement(), contextManager));
     }
     
     @Test
@@ -89,9 +88,8 @@ class RegisterStorageUnitExecutorTest {
     void assertExecuteWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStorageUnits("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.setDatabase(database);
-        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createRegisterStorageUnitStatement(), mock(ContextManager.class)));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createRegisterStorageUnitStatement(), contextManager));
     }
     
     @Test
