@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.ConnectionSizeAwareQueryableRALExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -53,7 +54,8 @@ public final class ShowDistVariablesExecutor implements ConnectionSizeAwareQuery
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariablesStatement sqlStatement, final ShardingSphereMetaData metaData) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariablesStatement sqlStatement, final ContextManager contextManager) {
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream()
                 .filter(each -> !ConfigurationPropertyKey.SQL_SHOW.name().equals(each) && !ConfigurationPropertyKey.SQL_SIMPLE.name().equals(each))
                 .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(each))))).collect(Collectors.toList());

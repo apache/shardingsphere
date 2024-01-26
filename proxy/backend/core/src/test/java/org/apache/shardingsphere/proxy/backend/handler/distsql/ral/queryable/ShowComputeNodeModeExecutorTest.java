@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComput
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -42,7 +42,7 @@ class ShowComputeNodeModeExecutorTest {
     void assertExecute() {
         ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
         executor.setInstanceContext(createInstanceContext());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowComputeNodeModeStatement(), mock(ShardingSphereMetaData.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowComputeNodeModeStatement(), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

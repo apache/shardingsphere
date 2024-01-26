@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 
@@ -33,7 +34,7 @@ public final class DropStreamingExecutor implements UpdatableRALExecutor<DropStr
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
     @Override
-    public void executeUpdate(final DropStreamingStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final DropStreamingStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         jobAPI.drop(sqlStatement.getJobId());
     }
     

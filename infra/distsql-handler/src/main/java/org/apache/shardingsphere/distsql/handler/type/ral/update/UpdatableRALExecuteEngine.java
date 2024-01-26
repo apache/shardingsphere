@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 
@@ -35,6 +36,8 @@ public abstract class UpdatableRALExecuteEngine {
     
     private final String currentDatabaseName;
     
+    private final ContextManager contextManager;
+    
     /**
      * Execute update.
      * 
@@ -46,7 +49,7 @@ public abstract class UpdatableRALExecuteEngine {
         if (executor instanceof DatabaseAwareUpdatableRALExecutor) {
             ((DatabaseAwareUpdatableRALExecutor) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
-        executor.executeUpdate(sqlStatement);
+        executor.executeUpdate(sqlStatement, contextManager);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);

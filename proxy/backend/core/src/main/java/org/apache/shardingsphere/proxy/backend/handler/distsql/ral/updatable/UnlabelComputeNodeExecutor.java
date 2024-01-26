@@ -40,12 +40,11 @@ import java.util.Optional;
 public final class UnlabelComputeNodeExecutor implements UpdatableRALExecutor<UnlabelComputeNodeStatement> {
     
     @Override
-    public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement) {
+    public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement, final ContextManager contextManager) {
         MetaDataBasedPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         ShardingSpherePreconditions.checkState(persistService.getRepository() instanceof ClusterPersistRepository,
                 () -> new UnsupportedSQLOperationException("Labels can only be removed in cluster mode."));
         String instanceId = sqlStatement.getInstanceId();
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {
             Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Migrate table executor.
@@ -38,7 +39,7 @@ public final class MigrateTableExecutor implements DatabaseAwareUpdatableRALExec
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final MigrateTableStatement sqlStatement) {
+    public void executeUpdate(final MigrateTableStatement sqlStatement, final ContextManager contextManager) {
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
         ShardingSpherePreconditions.checkNotNull(targetDatabaseName, MissingRequiredTargetDatabaseException::new);
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");

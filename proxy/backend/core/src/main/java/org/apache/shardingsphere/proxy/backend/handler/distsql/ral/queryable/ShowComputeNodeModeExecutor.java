@@ -23,8 +23,8 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComput
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,7 +44,7 @@ public final class ShowComputeNodeModeExecutor implements InstanceContextAwareQu
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodeModeStatement sqlStatement, final ShardingSphereMetaData metaData) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodeModeStatement sqlStatement, final ContextManager contextManager) {
         PersistRepositoryConfiguration repositoryConfig = instanceContext.getModeConfiguration().getRepository();
         String modeType = instanceContext.getModeConfiguration().getType();
         String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();

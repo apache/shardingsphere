@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,7 +46,7 @@ public final class ShowComputeNodesExecutor implements InstanceContextAwareQuery
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodesStatement sqlStatement, final ShardingSphereMetaData metaData) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodesStatement sqlStatement, final ContextManager contextManager) {
         String modeType = instanceContext.getModeConfiguration().getType();
         if ("Standalone".equals(modeType)) {
             return Collections.singleton(buildRow(instanceContext.getInstance(), modeType));

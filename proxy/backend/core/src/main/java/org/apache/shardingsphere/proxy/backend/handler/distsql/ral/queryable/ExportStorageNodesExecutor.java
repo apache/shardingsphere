@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNode;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNodes;
@@ -51,9 +52,9 @@ public final class ExportStorageNodesExecutor implements QueryableRALExecutor<Ex
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ExportStorageNodesStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        checkSQLStatement(metaData, sqlStatement);
-        String exportedData = generateExportData(metaData, sqlStatement);
+    public Collection<LocalDataQueryResultRow> getRows(final ExportStorageNodesStatement sqlStatement, final ContextManager contextManager) {
+        checkSQLStatement(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
+        String exportedData = generateExportData(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
             ExportUtils.exportToFile(filePath, exportedData);

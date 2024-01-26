@@ -31,6 +31,7 @@ import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExe
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.CheckMigrationStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -45,7 +46,7 @@ public final class CheckMigrationJobExecutor implements UpdatableRALExecutor<Che
     private final PipelineJobType migrationJobType = new MigrationJobType();
     
     @Override
-    public void executeUpdate(final CheckMigrationStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final CheckMigrationStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         AlgorithmSegment typeStrategy = sqlStatement.getTypeStrategy();
         String algorithmTypeName = null == typeStrategy ? null : typeStrategy.getName();
         Properties algorithmProps = null == typeStrategy ? null : typeStrategy.getProps();

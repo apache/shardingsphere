@@ -19,9 +19,9 @@ package org.apache.shardingsphere.distsql.handler.type.ral.query;
 
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
 
@@ -44,10 +44,10 @@ public interface QueryableRALExecutor<T extends QueryableRALStatement> extends T
      * Get query result rows.
      *
      * @param sqlStatement SQL statement
-     * @param metaData ShardingSphere meta data
+     * @param contextManager context manager
      * @return query result rows
      */
-    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ShardingSphereMetaData metaData);
+    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ContextManager contextManager);
     
     @Override
     Class<T> getType();

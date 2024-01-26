@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueExcepti
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
@@ -46,7 +47,7 @@ import java.util.Properties;
 public final class SetDistVariableExecutor implements UpdatableRALExecutor<SetDistVariableStatement> {
     
     @Override
-    public void executeUpdate(final SetDistVariableStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final SetDistVariableStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         Enum<?> enumType = getEnumType(sqlStatement.getName());
         ShardingSpherePreconditions.checkState(enumType instanceof TypedPropertyKey, () -> new UnsupportedVariableException(sqlStatement.getName()));
         handleConfigurationProperty((TypedPropertyKey) enumType, sqlStatement.getValue());

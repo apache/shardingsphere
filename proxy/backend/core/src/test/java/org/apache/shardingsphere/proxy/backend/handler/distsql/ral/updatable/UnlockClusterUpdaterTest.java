@@ -38,10 +38,8 @@ class UnlockClusterUpdaterTest {
     
     @Test
     void assertExecuteWithNotClusterMode() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        UnlockClusterExecutor updater = new UnlockClusterExecutor();
-        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate(new UnlockClusterStatement()));
+        UnlockClusterExecutor executor = new UnlockClusterExecutor();
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new UnlockClusterStatement(), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
@@ -50,7 +48,7 @@ class UnlockClusterUpdaterTest {
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        UnlockClusterExecutor updater = new UnlockClusterExecutor();
-        assertThrows(IllegalStateException.class, () -> updater.executeUpdate(new UnlockClusterStatement()));
+        UnlockClusterExecutor executor = new UnlockClusterExecutor();
+        assertThrows(IllegalStateException.class, () -> executor.executeUpdate(new UnlockClusterStatement(), contextManager));
     }
 }

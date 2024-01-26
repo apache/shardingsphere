@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 
@@ -41,7 +42,7 @@ public final class LockClusterExecutor implements UpdatableRALExecutor<LockClust
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void executeUpdate(final LockClusterStatement sqlStatement) {
+    public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkMode();
         checkState();
         checkAlgorithm(sqlStatement);

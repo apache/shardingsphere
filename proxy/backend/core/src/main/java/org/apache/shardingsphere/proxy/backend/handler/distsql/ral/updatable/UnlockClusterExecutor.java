@@ -36,10 +36,9 @@ public final class UnlockClusterExecutor implements UpdatableRALExecutor<UnlockC
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void executeUpdate(final UnlockClusterStatement sqlStatement) {
+    public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkMode();
         checkState();
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         LockContext lockContext = contextManager.getInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
         if (lockContext.tryLock(lockDefinition, 3000L)) {

@@ -71,7 +71,7 @@ public abstract class QueryableRALExecuteEngine {
         if (executor instanceof ConnectionSizeAwareQueryableRALExecutor) {
             ((ConnectionSizeAwareQueryableRALExecutor) executor).setConnectionSize(getConnectionSize());
         }
-        return executor.getRows(sqlStatement, contextManager.getMetaDataContexts().getMetaData());
+        return executor.getRows(sqlStatement, contextManager);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);

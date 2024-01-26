@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -49,7 +50,7 @@ public final class ImportMetaDataExecutor implements UpdatableRALExecutor<Import
     private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
     @Override
-    public void executeUpdate(final ImportMetaDataStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         String jsonMetaDataConfig;
         if (sqlStatement.getFilePath().isPresent()) {
             File file = new File(sqlStatement.getFilePath().get());

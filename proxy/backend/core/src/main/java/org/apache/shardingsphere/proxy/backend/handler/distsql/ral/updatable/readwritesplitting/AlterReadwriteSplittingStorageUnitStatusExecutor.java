@@ -61,9 +61,8 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements D
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement) {
+    public void executeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement, final ContextManager contextManager) {
         String toBeUpdatedStorageUnit = sqlStatement.getStorageUnitName();
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         checkModeAndPersistRepository(contextManager);
         checkReadwriteSplittingRule();
         Map<String, String> replicaStorageUnits = getReplicaResources();

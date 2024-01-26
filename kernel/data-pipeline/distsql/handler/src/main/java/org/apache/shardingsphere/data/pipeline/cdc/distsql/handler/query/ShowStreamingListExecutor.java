@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreamingListStatement;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreamingListStatement;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +39,7 @@ public final class ShowStreamingListExecutor implements QueryableRALExecutor<Sho
     private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new CDCJobType());
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement, final ShardingSphereMetaData metaData) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement, final ContextManager contextManager) {
         return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
                 each.getDatabaseName(), each.getTableName(),
                 each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),

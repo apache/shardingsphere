@@ -121,7 +121,7 @@ class ImportDatabaseConfigurationUpdaterTest {
     
     private void assertExecute(final String databaseName, final String filePath) throws SQLException {
         init(databaseName);
-        importDatabaseConfigUpdater.executeUpdate(new ImportDatabaseConfigurationStatement(ImportDatabaseConfigurationUpdaterTest.class.getResource(filePath).getPath()));
+        importDatabaseConfigUpdater.executeUpdate(new ImportDatabaseConfigurationStatement(ImportDatabaseConfigurationUpdaterTest.class.getResource(filePath).getPath()), mock(ContextManager.class));
     }
     
     @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})

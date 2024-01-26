@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -40,7 +41,7 @@ public final class ResourceDefinitionBackendHandler implements DistSQLBackendHan
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        executor.execute(sqlStatement);
+        executor.execute(sqlStatement, ProxyContext.getInstance().getContextManager());
         return new UpdateResponseHeader(sqlStatement);
     }
 }

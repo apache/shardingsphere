@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.RegisterMigrationSourceStorageUnitStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public final class RegisterMigrationSourceStorageUnitExecutor implements Updatab
     private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
     
     @Override
-    public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
+    public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
         ShardingSpherePreconditions.checkState(dataSources.stream().noneMatch(HostnameAndPortBasedDataSourceSegment.class::isInstance),
                 () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));

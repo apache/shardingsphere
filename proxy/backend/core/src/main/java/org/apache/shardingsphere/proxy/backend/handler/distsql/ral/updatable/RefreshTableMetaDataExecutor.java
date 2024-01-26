@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -42,8 +41,7 @@ public final class RefreshTableMetaDataExecutor implements DatabaseAwareUpdatabl
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement) throws SQLException {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+    public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         checkStorageUnit(contextManager.getStorageUnits(database.getName()), sqlStatement);
         String schemaName = getSchemaName(sqlStatement);
         if (sqlStatement.getStorageUnitName().isPresent()) {

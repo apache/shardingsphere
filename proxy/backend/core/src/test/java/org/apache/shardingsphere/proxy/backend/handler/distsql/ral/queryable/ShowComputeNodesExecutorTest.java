@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +63,7 @@ class ShowComputeNodesExecutorTest {
     void assertExecuteWithStandaloneMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         executor.setInstanceContext(createStandaloneInstanceContext());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ShardingSphereMetaData.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));
@@ -81,7 +81,7 @@ class ShowComputeNodesExecutorTest {
     void assertExecuteWithClusterMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         executor.setInstanceContext(createClusterInstanceContext());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ShardingSphereMetaData.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));
