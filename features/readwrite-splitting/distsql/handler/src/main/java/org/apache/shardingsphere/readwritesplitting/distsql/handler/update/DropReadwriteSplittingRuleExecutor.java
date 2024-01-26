@@ -19,13 +19,14 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.ReadwriteSplittingRuleStatementChecker;
@@ -132,6 +133,11 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     public boolean hasAnyOneToBeDropped(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getDataSources().stream()
                 .map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getNames()).isEmpty();
+    }
+    
+    @Override
+    public void operate(final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) {
+        database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class).ifPresent(optional -> sqlStatement.getNames().forEach(optional::cleanStorageNodeDataSource));
     }
     
     @Override

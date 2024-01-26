@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.globalclock.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
 

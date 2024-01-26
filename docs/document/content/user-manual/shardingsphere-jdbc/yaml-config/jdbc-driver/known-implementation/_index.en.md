@@ -11,11 +11,11 @@ by implementing the SPI of `org.apache.shardingsphere.driver.jdbc.core.driver.Sh
 allows YAML configuration files to be fetched from multiple sources and File Systems and parsed into ShardingSphere.
 
 After parsing and loading the YAML file into ShardingSphere's metadata,
-The next behavior will be determined again through the relevant configuration of [Mode Configuration](../../../java-api/mode.cn.md). Discuss two situations:
+The next behavior will be determined again through the relevant configuration of [Mode Configuration](../../../java-api/mode). Discuss two situations:
 1. ShardingSphere’s metadata does not exist in the metadata persistence warehouse, and local metadata will be stored in the metadata persistence warehouse.
 2. Metadata of ShardingSphere that is different from local metadata already exists in the metadata persistence warehouse, and the local metadata will be overwritten by the metadata of the metadata persistence warehouse.
 
-For the configuration of the metadata persistence warehouse, please refer to [Metadata Persistence Warehouse](../../../../common-config/builtin-algorithm/metadata-repository.cn.md).
+For the configuration of the metadata persistence warehouse, please refer to [Metadata Persistence Warehouse](../../../../common-config/builtin-algorithm/metadata-repository).
 
 ## URL configuration
 

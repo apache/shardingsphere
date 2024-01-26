@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database;
+package org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.database;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.execute.DatabaseRuleRDLExecuteEngineFactory;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Optional;
 
 /**
- * Database rule updater.
+ * Database rule definition execute engine.
  */
 @RequiredArgsConstructor
-public final class DatabaseRuleUpdater {
+public final class DatabaseRuleDefinitionExecuteEngine {
     
     private final RuleDefinitionStatement sqlStatement;
     
-    private final ConnectionSession connectionSession;
+    private final ContextManager contextManager;
+    
+    private final ShardingSphereDatabase database;
     
     @SuppressWarnings("rawtypes")
     private final DatabaseRuleDefinitionExecutor executor;
@@ -48,13 +47,12 @@ public final class DatabaseRuleUpdater {
      */
     @SuppressWarnings("unchecked")
     public void executeUpdate() {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession));
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         if (getRefreshStatus(currentRuleConfig)) {
-            ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
-                    .switchActiveVersion(DatabaseRuleRDLExecuteEngineFactory.newInstance(executor).execute(sqlStatement, database, currentRuleConfig));
+            contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
+                    .switchActiveVersion(DatabaseRuleOperatorFactory.newInstance(contextManager, executor).operate(sqlStatement, database, currentRuleConfig));
         }
     }
     
