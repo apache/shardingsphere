@@ -104,6 +104,6 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Rule
      * @param sqlStatement SQL statement
      * @param database database
      */
-    default void operate(final T sqlStatement, final ShardingSphereDatabase database){
+    default void operate(final T sqlStatement, final ShardingSphereDatabase database) {
     }
 }
