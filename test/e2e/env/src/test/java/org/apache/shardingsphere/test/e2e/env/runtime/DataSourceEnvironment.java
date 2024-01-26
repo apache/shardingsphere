@@ -61,7 +61,7 @@ public final class DataSourceEnvironment {
                 return "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=Root@123";
             case "MySQL":
                 return String.format("jdbc:mysql://%s:%s?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"
-                        + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true", host, port);
+                        + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true", host, port);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/?ssl=on&sslmode=prefer", host, port);
             case "openGauss":

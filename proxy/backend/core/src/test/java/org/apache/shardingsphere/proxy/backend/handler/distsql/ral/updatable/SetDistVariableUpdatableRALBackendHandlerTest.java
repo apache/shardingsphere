@@ -41,7 +41,7 @@ class SetDistVariableUpdatableRALBackendHandlerTest {
     
     @Test
     void assertNotSupportedVariable() {
-        UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("unsupported", "XXX"), connectionSession);
+        UpdatableRALBackendHandler handler = new UpdatableRALBackendHandler(new SetDistVariableStatement("unsupported", "XXX"), connectionSession);
         assertThrows(UnsupportedVariableException.class, handler::execute);
     }
 }

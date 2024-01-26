@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
 import lombok.Getter;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.aware.StaticDataSourceContainedRuleAwareStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.type.DropRuleStatement;
 
 import java.util.Collection;
@@ -26,7 +27,7 @@ import java.util.Collection;
  * Drop readwrite-splitting rule statement.
  */
 @Getter
-public final class DropReadwriteSplittingRuleStatement extends DropRuleStatement {
+public final class DropReadwriteSplittingRuleStatement extends DropRuleStatement implements StaticDataSourceContainedRuleAwareStatement {
     
     private final Collection<String> names;
     
