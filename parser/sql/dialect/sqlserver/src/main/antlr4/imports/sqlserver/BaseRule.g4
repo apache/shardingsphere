@@ -120,7 +120,7 @@ unreservedWord
     | DATA_RETENTION | TEMPORAL_HISTORY_RETENTION | EDITION | MIXED_PAGE_ALLOCATION | DISABLED | ALLOWED | HADR | MULTI_USER | RESTRICTED_USER | SINGLE_USER | OFFLINE | EMERGENCY | SUSPEND | DATE_CORRELATION_OPTIMIZATION
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
-    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | INPUT
+    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | YEAR | INPUT
     ;
 
 databaseName
@@ -295,7 +295,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | specialFunction | regularFunction 
+    : aggregationFunction | specialFunction | regularFunction
     ;
 
 aggregationFunction
@@ -311,7 +311,7 @@ distinct
     ;
 
 specialFunction
-    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction
     ;
 
 conversionFunction
@@ -389,7 +389,7 @@ caseElse
     ;
 
 privateExprOfDb
-    : windowedFunction | atTimeZoneExpr | castExpr | convertExpr
+    : windowFunction | atTimeZoneExpr | castExpr | convertExpr
     ;
 
 orderByClause
@@ -424,8 +424,12 @@ convertExpr
     : CONVERT (dataType (LP_ NUMBER_ RP_)? COMMA_ expr (COMMA_ NUMBER_)?)
     ;
 
-windowedFunction
-    : functionCall overClause
+windowFunction
+    : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
+    ;
+
+nullTreatment
+    : (RESPECT | IGNORE) NULLS
     ;
 
 overClause

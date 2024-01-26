@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dat
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DelimitedIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExecContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FunctionCallContext;
@@ -63,21 +64,23 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ide
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertDefaultValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertExecClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertSelectClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonArrayFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonKeyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonNullClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonObjectFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertSelectClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertValuesClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenJsonFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenRowSetFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClauseContext;
@@ -87,11 +90,13 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Out
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProcedureNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularIdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SampleOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ScriptVariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectClauseContext;
@@ -100,9 +105,13 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Set
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SpecialFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StatisticsOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StatisticsOptionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StatisticsWithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableFactorContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintLimitedContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferenceContext;
@@ -110,20 +119,12 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TopContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateStatisticsContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StatisticsWithClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StatisticsOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StatisticsOptionsContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SampleOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertExecClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExecContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProcedureNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenJsonFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintLimitedContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenRowSetFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConversionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
@@ -192,8 +193,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.TableHintLimitedSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -205,6 +204,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherL
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.TableHintLimitedSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.json.JsonNullClauseSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerUpdateStatisticsStatement;
@@ -674,6 +675,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.jsonFunction()) {
             return visit(ctx.jsonFunction());
         }
+        if (null != ctx.windowFunction()) {
+            return visit(ctx.windowFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
     
@@ -686,6 +690,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return visit(ctx.convertFunction());
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        return result;
     }
     
     @Override
@@ -942,15 +953,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     private SQLServerSelectStatement visitOrderBy(final SQLServerSelectStatement selectStatement, final OrderByClauseContext ctx) {
-        Collection<OrderByItemSegment> items = new LinkedList<>();
-        int orderByStartIndex = ctx.start.getStartIndex();
-        int orderByStopIndex = ctx.start.getStartIndex();
-        for (OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
-            orderByStopIndex = each.stop.getStopIndex();
-        }
-        OrderBySegment orderBySegment = new OrderBySegment(orderByStartIndex, orderByStopIndex, items);
-        selectStatement.setOrderBy(orderBySegment);
+        selectStatement.setOrderBy(getOrderBySegment(ctx));
+        selectStatement.setLimit(getLimitSegment(ctx));
+        return selectStatement;
+    }
+    
+    private LimitSegment getLimitSegment(final OrderByClauseContext ctx) {
         PaginationValueSegment offset = null;
         PaginationValueSegment rowcount = null;
         LimitSegment limitSegment = null;
@@ -975,8 +983,19 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != offset) {
             limitSegment = new LimitSegment(ctx.OFFSET().getSymbol().getStartIndex(), ctx.stop.getStopIndex(), offset, rowcount);
         }
-        selectStatement.setLimit(limitSegment);
-        return selectStatement;
+        return limitSegment;
+    }
+    
+    private OrderBySegment getOrderBySegment(final OrderByClauseContext ctx) {
+        Collection<OrderByItemSegment> items = new LinkedList<>();
+        int orderByStartIndex = ctx.start.getStartIndex();
+        int orderByStopIndex = ctx.start.getStartIndex();
+        for (OrderByItemContext each : ctx.orderByItem()) {
+            items.add((OrderByItemSegment) visit(each));
+            orderByStopIndex = each.stop.getStopIndex();
+        }
+        OrderBySegment orderBySegment = new OrderBySegment(orderByStartIndex, orderByStopIndex, items);
+        return orderBySegment;
     }
     
     private boolean isDistinct(final SelectClauseContext ctx) {
