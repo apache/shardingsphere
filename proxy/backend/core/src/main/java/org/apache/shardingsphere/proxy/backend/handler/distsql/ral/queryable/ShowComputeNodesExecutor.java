@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.InstanceContextAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -35,10 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Show compute nodes executor.
  */
-@Setter
-public final class ShowComputeNodesExecutor implements InstanceContextAwareQueryableRALExecutor<ShowComputeNodesStatement> {
-    
-    private InstanceContext instanceContext;
+public final class ShowComputeNodesExecutor implements QueryableRALExecutor<ShowComputeNodesStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -47,11 +42,11 @@ public final class ShowComputeNodesExecutor implements InstanceContextAwareQuery
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodesStatement sqlStatement, final ContextManager contextManager) {
-        String modeType = instanceContext.getModeConfiguration().getType();
+        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
         if ("Standalone".equals(modeType)) {
-            return Collections.singleton(buildRow(instanceContext.getInstance(), modeType));
+            return Collections.singleton(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
-        Collection<ComputeNodeInstance> instances = instanceContext.getAllClusterInstances();
+        Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getAllClusterInstances();
         return instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     

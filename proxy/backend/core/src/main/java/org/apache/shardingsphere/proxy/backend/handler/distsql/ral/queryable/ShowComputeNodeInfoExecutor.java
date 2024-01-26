@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.InstanceContextAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -34,10 +32,7 @@ import java.util.Collections;
 /**
  * Show compute node info executor.
  */
-@Setter
-public final class ShowComputeNodeInfoExecutor implements InstanceContextAwareQueryableRALExecutor<ShowComputeNodeInfoStatement> {
-    
-    private InstanceContext instanceContext;
+public final class ShowComputeNodeInfoExecutor implements QueryableRALExecutor<ShowComputeNodeInfoStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -46,9 +41,9 @@ public final class ShowComputeNodeInfoExecutor implements InstanceContextAwareQu
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowComputeNodeInfoStatement sqlStatement, final ContextManager contextManager) {
-        ComputeNodeInstance instance = instanceContext.getInstance();
+        ComputeNodeInstance instance = contextManager.getInstanceContext().getInstance();
         InstanceMetaData instanceMetaData = instance.getMetaData();
-        String modeType = instanceContext.getModeConfiguration().getType();
+        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
         return Collections.singletonList(new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
                 instance.getState().getCurrentState().name(), modeType, instance.getWorkerId(), String.join(",", instance.getLabels()),
