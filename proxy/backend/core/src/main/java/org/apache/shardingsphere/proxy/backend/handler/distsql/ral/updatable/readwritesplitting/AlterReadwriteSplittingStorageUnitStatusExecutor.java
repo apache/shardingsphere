@@ -20,8 +20,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.re
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareUpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -53,7 +54,7 @@ import java.util.stream.Collectors;
  */
 // TODO move to readwritesplitting module
 @Setter
-public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements DatabaseAwareUpdatableRALExecutor<AlterReadwriteSplittingStorageUnitStatusStatement> {
+public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements UpdatableRALExecutor<AlterReadwriteSplittingStorageUnitStatusStatement>, DistSQLExecutorDatabaseAware {
     
     private static final String DISABLE = "DISABLE";
     
