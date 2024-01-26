@@ -75,9 +75,8 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.setDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase("readwrite_db"));
-        executor.setMetaDataContexts(contextManager.getMetaDataContexts());
         Collection<LocalDataQueryResultRow> actual = executor.getRows(
-                new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null));
+                new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null), contextManager);
         assertTrue(actual.isEmpty());
     }
     

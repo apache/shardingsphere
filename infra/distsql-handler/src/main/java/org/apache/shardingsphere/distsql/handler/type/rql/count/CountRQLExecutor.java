@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +46,7 @@ public final class CountRQLExecutor implements DatabaseAwareRQLExecutor<CountRul
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final CountRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final CountRuleStatement sqlStatement, final ContextManager contextManager) {
         Optional<CountResultRowBuilder> rowBuilder = TypedSPILoader.findService(CountResultRowBuilder.class, sqlStatement.getType());
         if (!rowBuilder.isPresent()) {
             return Collections.emptyList();

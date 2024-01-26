@@ -21,6 +21,7 @@ import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfigura
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class ShowGlobalClockRuleExecutorTest {
         GlobalClockRule rule = mock(GlobalClockRule.class);
         when(rule.getConfiguration()).thenReturn(new GlobalClockRuleConfiguration("TSO", "local", false, PropertiesBuilder.build(new Property("key", "value"))));
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowGlobalClockRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowGlobalClockRuleStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

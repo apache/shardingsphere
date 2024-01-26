@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.distsql.handler.query;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
@@ -40,7 +41,7 @@ public final class ShowDefaultSingleTableStorageUnitExecutor implements Database
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowDefaultSingleTableStorageUnitStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowDefaultSingleTableStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         return Collections.singleton(new LocalDataQueryResultRow(rule.getConfiguration().getDefaultDataSource().orElse("RANDOM")));
     }
     

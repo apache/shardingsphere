@@ -24,6 +24,7 @@ import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +44,7 @@ public final class ShowGlobalClockRuleExecutor implements GlobalRuleAwareRQLExec
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement, final ContextManager contextManager) {
         GlobalClockRuleConfiguration ruleConfig = rule.getConfiguration();
         return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(),
                 String.valueOf(ruleConfig.isEnabled()), PropertiesConverter.convert(ruleConfig.getProps())));

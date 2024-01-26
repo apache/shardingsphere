@@ -20,6 +20,7 @@ package org.apache.shardingsphere.parser.distsql.handler.query;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -42,7 +43,7 @@ public final class ShowSQLParserRuleExecutor implements GlobalRuleAwareRQLExecut
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLParserRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLParserRuleStatement sqlStatement, final ContextManager contextManager) {
         SQLParserRuleConfiguration ruleConfig = rule.getConfiguration();
         return Collections.singleton(new LocalDataQueryResultRow(null != ruleConfig.getParseTreeCache() ? ruleConfig.getParseTreeCache().toString() : "",
                 null != ruleConfig.getSqlStatementCache() ? ruleConfig.getSqlStatementCache().toString() : ""));

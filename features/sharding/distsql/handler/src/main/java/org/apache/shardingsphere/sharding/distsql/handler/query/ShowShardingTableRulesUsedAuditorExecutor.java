@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedAuditorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -42,7 +43,7 @@ public final class ShowShardingTableRulesUsedAuditorExecutor implements Database
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedAuditorStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedAuditorStatement sqlStatement, final ContextManager contextManager) {
         if (!sqlStatement.getAuditorName().isPresent()) {
             return Collections.emptyList();
         }

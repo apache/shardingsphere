@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAuditorsStatement;
@@ -45,7 +46,7 @@ public final class ShowUnusedShardingAuditorsExecutor implements DatabaseRuleAwa
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingAuditorsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingAuditorsStatement sqlStatement, final ContextManager contextManager) {
         ShardingRuleConfiguration shardingRuleConfig = rule.getConfiguration();
         Collection<String> inUsedAuditors = getUsedAuditors(shardingRuleConfig);
         return shardingRuleConfig.getAuditors().entrySet().stream().filter(entry -> !inUsedAuditors.contains(entry.getKey()))

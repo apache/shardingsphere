@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableReferenceRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -41,7 +42,7 @@ public final class ShowShardingTableReferenceRuleExecutor implements DatabaseRul
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableReferenceRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableReferenceRulesStatement sqlStatement, final ContextManager contextManager) {
         return rule.getConfiguration().getBindingTableGroups().stream().filter(each -> null == sqlStatement.getRuleName() || each.getName().equalsIgnoreCase(sqlStatement.getRuleName()))
                 .map(each -> new LocalDataQueryResultRow(each.getName(), each.getReference())).collect(Collectors.toList());
     }

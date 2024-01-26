@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -52,7 +53,7 @@ public final class ShowUnloadedSingleTableExecutor implements DatabaseRuleAwareR
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowUnloadedSingleTableStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnloadedSingleTableStatement sqlStatement, final ContextManager contextManager) {
         Map<String, Collection<DataNode>> actualDataNodes = getActualDataNodes(database);
         for (String each : rule.getLogicTableMapper().getTableNames()) {
             actualDataNodes.remove(each.toLowerCase());

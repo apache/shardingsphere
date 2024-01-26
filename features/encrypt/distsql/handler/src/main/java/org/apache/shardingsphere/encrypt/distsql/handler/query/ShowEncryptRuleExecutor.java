@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +51,7 @@ public final class ShowEncryptRuleExecutor implements DatabaseRuleAwareRQLExecut
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptRulesStatement sqlStatement, final ContextManager contextManager) {
         EncryptRuleConfiguration ruleConfig = (EncryptRuleConfiguration) rule.getConfiguration();
         return buildData(ruleConfig, sqlStatement);
     }

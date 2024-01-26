@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +62,7 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertGetRowData() {
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowLogicalTablesStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowLogicalTablesStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -72,7 +73,7 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertRowDataWithLike() {
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowLogicalTablesStatement("t_order_%", null));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowLogicalTablesStatement("t_order_%", null), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         assertThat(iterator.next().getCell(1), is("t_order_item"));

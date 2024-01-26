@@ -22,6 +22,7 @@ import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableR
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,7 +42,7 @@ public final class ShowBroadcastTableRuleExecutor implements DatabaseRuleAwareRQ
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowBroadcastTableRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowBroadcastTableRulesStatement sqlStatement, final ContextManager contextManager) {
         return rule.getConfiguration().getTables().stream().map(LocalDataQueryResultRow::new).collect(Collectors.toList());
     }
     

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -42,7 +43,7 @@ public final class ShowShardingTableRulesUsedKeyGeneratorExecutor implements Dat
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedKeyGeneratorStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedKeyGeneratorStatement sqlStatement, final ContextManager contextManager) {
         if (!sqlStatement.getKeyGeneratorName().isPresent()) {
             return Collections.emptyList();
         }

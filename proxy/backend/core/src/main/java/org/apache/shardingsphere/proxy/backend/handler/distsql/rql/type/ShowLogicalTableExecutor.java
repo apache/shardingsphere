@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Collection;
@@ -45,7 +46,7 @@ public final class ShowLogicalTableExecutor implements DatabaseAwareRQLExecutor<
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowLogicalTablesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowLogicalTablesStatement sqlStatement, final ContextManager contextManager) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
         String schemaName = dialectDatabaseMetaData.getDefaultSchema().orElse(database.getName());
         if (null == database.getSchema(schemaName)) {

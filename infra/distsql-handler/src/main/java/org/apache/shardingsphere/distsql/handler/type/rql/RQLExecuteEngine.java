@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.MetaDataAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -69,11 +68,8 @@ public abstract class RQLExecuteEngine {
         if (executor instanceof GlobalRuleAwareRQLExecutor) {
             setUpGlobalRuleAwareExecutor((GlobalRuleAwareRQLExecutor) executor);
         }
-        if (executor instanceof MetaDataAwareRQLExecutor) {
-            ((MetaDataAwareRQLExecutor<?>) executor).setMetaDataContexts(contextManager.getMetaDataContexts());
-        }
         if (null == rows) {
-            rows = executor.getRows(sqlStatement);
+            rows = executor.getRows(sqlStatement, contextManager);
         }
     }
     

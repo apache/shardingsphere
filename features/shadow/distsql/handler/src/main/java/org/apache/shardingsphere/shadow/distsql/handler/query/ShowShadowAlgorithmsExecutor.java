@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
@@ -43,7 +44,7 @@ public final class ShowShadowAlgorithmsExecutor implements DatabaseRuleAwareRQLE
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
         String defaultAlgorithm = rule.getConfiguration().getDefaultShadowAlgorithmName();
         return rule.getConfiguration().getShadowAlgorithms().entrySet().stream()
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(),

@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -47,7 +48,7 @@ public final class ShowSingleTableExecutor implements DatabaseRuleAwareRQLExecut
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowSingleTableStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSingleTableStatement sqlStatement, final ContextManager contextManager) {
         Collection<DataNode> resultDataNodes = getPattern(sqlStatement)
                 .map(optional -> getDataNodesWithLikePattern(rule.getSingleTableDataNodes(), optional)).orElseGet(() -> getDataNodes(rule.getSingleTableDataNodes(), sqlStatement));
         Collection<DataNode> sortedDataNodes = resultDataNodes.stream().sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());

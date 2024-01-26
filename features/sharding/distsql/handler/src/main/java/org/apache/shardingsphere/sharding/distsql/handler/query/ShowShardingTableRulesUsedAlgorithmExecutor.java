@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedAlgorithmStatement;
@@ -44,7 +45,7 @@ public final class ShowShardingTableRulesUsedAlgorithmExecutor implements Databa
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedAlgorithmStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedAlgorithmStatement sqlStatement, final ContextManager contextManager) {
         if (!sqlStatement.getShardingAlgorithmName().isPresent()) {
             return Collections.emptyList();
         }

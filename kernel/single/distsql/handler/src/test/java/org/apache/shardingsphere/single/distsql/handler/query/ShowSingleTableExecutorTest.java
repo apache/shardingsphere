@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class ShowSingleTableExecutorTest {
     void assertGetRowData() {
         ShowSingleTableExecutor executor = new ShowSingleTableExecutor();
         executor.setRule(mockSingleRule());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSingleTableStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSingleTableStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -56,7 +57,7 @@ class ShowSingleTableExecutorTest {
         ShowSingleTableExecutor executor = new ShowSingleTableExecutor();
         executor.setRule(mockSingleRule());
         ShowSingleTableStatement statement = new ShowSingleTableStatement(null, "%item", null);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement, mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

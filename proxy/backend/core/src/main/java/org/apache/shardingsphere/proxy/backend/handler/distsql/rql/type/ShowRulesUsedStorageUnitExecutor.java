@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -67,7 +68,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements DatabaseAwareRQLE
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowRulesUsedStorageUnitStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowRulesUsedStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         String resourceName = sqlStatement.getStorageUnitName().orElse(null);
         if (database.getResourceMetaData().getStorageUnits().containsKey(resourceName)) {

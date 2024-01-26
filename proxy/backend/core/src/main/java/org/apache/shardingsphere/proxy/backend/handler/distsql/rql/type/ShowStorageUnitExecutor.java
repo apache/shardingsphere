@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -56,7 +57,7 @@ public final class ShowStorageUnitExecutor implements DatabaseAwareRQLExecutor<S
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowStorageUnitsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStorageUnitsStatement sqlStatement, final ContextManager contextManager) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, StorageUnit> entry : getToBeShownStorageUnits(database, sqlStatement).entrySet()) {
             ConnectionProperties connectionProps = entry.getValue().getConnectionProperties();

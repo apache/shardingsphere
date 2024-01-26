@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwar
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAlgorithmsStatement;
@@ -49,7 +50,7 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements DatabaseRuleA
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingAlgorithmsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
         ShardingRuleConfiguration shardingRuleConfig = rule.getConfiguration();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<String> inUsedAlgorithms = getUsedShardingAlgorithms(shardingRuleConfig);

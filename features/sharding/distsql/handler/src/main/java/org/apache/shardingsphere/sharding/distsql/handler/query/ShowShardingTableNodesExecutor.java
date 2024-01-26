@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -44,7 +45,7 @@ public final class ShowShardingTableNodesExecutor implements DatabaseRuleAwareRQ
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableNodesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableNodesStatement sqlStatement, final ContextManager contextManager) {
         String tableName = sqlStatement.getTableName();
         return null == tableName
                 ? rule.getTableRules().entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), getTableNodes(entry.getValue()))).collect(Collectors.toList())

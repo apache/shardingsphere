@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwar
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStatement;
@@ -49,7 +50,7 @@ public final class ShowShadowRuleExecutor implements DatabaseRuleAwareRQLExecuto
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowRulesStatement sqlStatement, final ContextManager contextManager) {
         Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(rule.getConfiguration().getTables());
         Collection<ShadowDataSourceConfiguration> specifiedConfigs = isSpecified(sqlStatement)
                 ? rule.getConfiguration().getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())
