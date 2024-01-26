@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.distsql.handler.type.rql.count;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -35,7 +36,7 @@ import java.util.Optional;
  * Count RQL executor.
  */
 @Setter
-public final class CountRQLExecutor implements DatabaseAwareRQLExecutor<CountRuleStatement> {
+public final class CountRQLExecutor implements RQLExecutor<CountRuleStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     

@@ -19,7 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.readwri
 
 import com.google.common.base.Strings;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
@@ -53,7 +54,7 @@ import java.util.stream.Collectors;
  */
 // TODO move to readwritesplitting module
 @Setter
-public final class ShowStatusFromReadwriteSplittingRulesExecutor implements DatabaseAwareRQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement> {
+public final class ShowStatusFromReadwriteSplittingRulesExecutor implements RQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     

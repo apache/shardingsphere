@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.type.rql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
@@ -62,8 +62,8 @@ public abstract class RQLExecuteEngine {
     public void executeQuery() throws SQLException {
         RQLExecutor executor = TypedSPILoader.getService(RQLExecutor.class, sqlStatement.getClass());
         columnNames = executor.getColumnNames();
-        if (executor instanceof DatabaseAwareRQLExecutor) {
-            setUpDatabaseAwareExecutor((DatabaseAwareRQLExecutor) executor);
+        if (executor instanceof DistSQLExecutorDatabaseAware) {
+            setUpDatabaseAwareExecutor((DistSQLExecutorDatabaseAware) executor);
         }
         if (executor instanceof GlobalRuleAwareRQLExecutor) {
             setUpGlobalRuleAwareExecutor((GlobalRuleAwareRQLExecutor) executor);
@@ -74,9 +74,9 @@ public abstract class RQLExecuteEngine {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void setUpDatabaseAwareExecutor(final DatabaseAwareRQLExecutor executor) {
+    private void setUpDatabaseAwareExecutor(final DistSQLExecutorDatabaseAware executor) {
         ShardingSphereDatabase database = getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName));
-        ((DatabaseAwareRQLExecutor<?>) executor).setDatabase(database);
+        executor.setDatabase(database);
         if (executor instanceof DatabaseRuleAwareRQLExecutor) {
             Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(((DatabaseRuleAwareRQLExecutor) executor).getRuleClass());
             if (rule.isPresent()) {
