@@ -1471,4 +1471,149 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_cross_apply_join_with_sys_dm_exec_function">
+        <projections start-index="7" stop-index="130">
+            <column-projection name="memory_object_address" start-index="7" stop-index="30">
+                <owner name="cp" start-index="7" stop-index="8"/>
+            </column-projection>
+            <column-projection name="objtype" start-index="33" stop-index="42">
+                <owner name="cp" start-index="33" stop-index="34"/>
+            </column-projection>
+            <column-projection name="refcounts" start-index="45" stop-index="53"/>
+            <column-projection name="usecounts" start-index="56" stop-index="64"/>
+            <column-projection name="query_plan_hash" start-index="67" stop-index="84">
+                <owner name="qs" start-index="67" stop-index="68"/>
+            </column-projection>
+            <column-projection name="query_hash" start-index="87" stop-index="99">
+                <owner name="qs" start-index="87" stop-index="88"/>
+            </column-projection>
+            <column-projection name="plan_handle" start-index="102" stop-index="115">
+                <owner name="qs" start-index="102" stop-index="103"/>
+            </column-projection>
+            <column-projection name="sql_handle" start-index="118" stop-index="130">
+                <owner name="qs" start-index="118" stop-index="119"/>
+            </column-projection>
+        </projections>
+        <from start-index="137" stop-index="344">
+            <join-table join-type="INNER">
+                <on-condition>
+                    <binary-operation-expression start-index="314" stop-index="344">
+                        <left>
+                            <column name="plan_handle" start-index="314" stop-index="327">
+                                <owner name="qs" start-index="314" stop-index="315"/>
+                            </column>
+                        </left>
+                        <right>
+                            <column name="plan_handle" start-index="331" stop-index="344">
+                                <owner name="cp" start-index="331" stop-index="332"/>
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+                <left>
+                    <join-table join-type="CROSS">
+                        <left>
+                            <join-table join-type="CROSS">
+                                <left>
+                                    <simple-table name="dm_exec_cached_plans" start-index="137" stop-index="166" alias="cp">
+                                        <owner name="sys" start-index="137" stop-index="139"/>
+                                    </simple-table>
+                                </left>
+                                <right>
+                                    <function-table start-index="180" stop-index="216">
+                                        <table-function function-name="sys.dm_exec_sql_text" text="sys.dm_exec_sql_text (cp.plan_handle)">
+                                            <parameter>
+                                                <column name="plan_handle" start-index="202" stop-index="215">
+                                                    <owner name="cp" start-index="2023" stop-index="203"/>
+                                                </column>
+                                            </parameter>
+                                        </table-function>
+                                    </function-table>
+                                </right>
+                            </join-table>
+                        </left>
+                        <right>
+                            <function-table start-index="230" stop-index="268">
+                                <table-function text="sys.dm_exec_query_plan (cp.plan_handle)" function-name="sys.dm_exec_query_plan">
+                                    <parameter>
+                                        <column name="plan_handle" start-index="254" stop-index="267">
+                                            <owner name="cp" start-index="254" stop-index="255"/>
+                                        </column>
+                                    </parameter>
+                                </table-function>
+                            </function-table>
+                        </right>
+                    </join-table>
+                </left>
+                <right>
+                    <simple-table name="dm_exec_query_stats" start-index="281" stop-index="309" alias="qs">
+                        <owner name="sys" start-index="281" stop-index="283"/>
+                    </simple-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="346" stop-index="384">
+            <expr>
+                <binary-operation-expression start-index="352" stop-index="384">
+                    <left>
+                        <column name="text" start-index="352" stop-index="355"/>
+                    </left>
+                    <right>
+                        <list-expression start-index="362" stop-index="384">
+                            <items>
+                                <literal-expression value="%usp_SalesByCustomer%" start-index="362" stop-index="384"/>
+                            </items>
+                        </list-expression>
+                    </right>
+                    <operator>LIKE</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_cross_apply_join_with_like_nchar">
+        <projections start-index="7" stop-index="26">
+            <column-projection name="plan_handle" start-index="7" stop-index="17"/>
+            <column-projection name="text" start-index="20" stop-index="26">
+                <owner name="st" start-index="20" stop-index="21"/>
+            </column-projection>
+        </projections>
+        <from start-index="33" stop-index="108">
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="dm_exec_cached_plans" start-index="33" stop-index="56">
+                        <owner name="sys" start-index="33" stop-index="35"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table start-index="70" stop-index="102" table-alias="st">
+                        <table-function text="sys.dm_exec_sql_text(plan_handle)" function-name="sys.dm_exec_sql_text">
+                            <parameter>
+                                <column name="plan_handle" start-index="91" stop-index="101"/>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="110" stop-index="157">
+            <expr>
+                <binary-operation-expression start-index="116" stop-index="157">
+                    <left>
+                        <column name="text" start-index="116" stop-index="119"/>
+                    </left>
+                    <right>
+                        <list-expression start-index="126" stop-index="157">
+                            <items>
+                                <literal-expression value="SELECT * FROM Person.Address%" start-index="126" stop-index="157"/>
+                            </items>
+                        </list-expression>
+                    </right>
+                    <operator>LIKE</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

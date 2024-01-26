@@ -152,7 +152,7 @@ sequenceName
     ;
 
 tableName
-    : (databaseName DOT_ (owner DOT_)? | (owner DOT_)?) name
+    : (databaseName DOT_)? (owner? DOT_)? name
     ;
 
 queueName
@@ -208,7 +208,7 @@ collationName
     ;
 
 alias
-    : identifier | STRING_
+    : identifier | STRING_ | NCHAR_TEXT
     ;
 
 dataTypeLength
@@ -286,7 +286,7 @@ simpleExpr
     | columnName
     | variableName
     | simpleExpr OR_ simpleExpr
-    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY | DOLLAR_) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
@@ -311,7 +311,27 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction | convertFunction | openJsonFunction
+    : castFunction  | charFunction | convertFunction | openJsonFunction | jsonFunction | openRowSetFunction
+    ;
+
+jsonFunction
+    : jsonObjectFunction | jsonArrayFunction
+    ;
+
+jsonObjectFunction
+    : JSON_OBJECT LP_ (jsonKeyValue (COMMA_ jsonKeyValue)* jsonNullClause?)?  RP_
+    ;
+
+jsonArrayFunction
+    : JSON_ARRAY LP_ expr (COMMA_ expr)* jsonNullClause? RP_
+    ;
+
+jsonKeyValue
+    :  expr COLON_ expr
+    ;
+
+jsonNullClause
+    : NULL ON NULL | ABSENT ON NULL
     ;
 
 castFunction
@@ -336,6 +356,11 @@ openJsonWithclause
 
 jsonColumnDefinition
     : columnName dataType expr? (AS JSON)?
+    ;
+
+openRowSetFunction
+    : OPENROWSET LP_ expr COMMA_ ((expr SEMI_ expr SEMI_ expr) | expr) COMMA_ (tableName | expr) RP_
+    | OPENROWSET LP_ BULK expr (COMMA_ expr)* RP_
     ;
 
 regularFunction

@@ -29,11 +29,9 @@ public final class GroupedDataRecord {
     
     private final String tableName;
     
-    private final Collection<DataRecord> batchInsertDataRecords;
+    private final Collection<DataRecord> insertDataRecords;
     
-    private final Collection<DataRecord> batchUpdateDataRecords;
+    private final Collection<DataRecord> updateDataRecords;
     
-    private final Collection<DataRecord> batchDeleteDataRecords;
-    
-    private final Collection<DataRecord> nonBatchRecords;
+    private final Collection<DataRecord> deleteDataRecords;
 }

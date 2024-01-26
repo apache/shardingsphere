@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 class CreateBroadcastTableRuleStatementUpdaterTest {
     
-    private final CreateBroadcastTableRuleStatementUpdater updater = new CreateBroadcastTableRuleStatementUpdater();
+    private final CreateBroadcastTableRuleExecutor executor = new CreateBroadcastTableRuleExecutor();
     
     @Test
     void assertCheckSQLStatementWithEmptyStorageUnit() {
@@ -46,7 +46,7 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        assertThrows(EmptyStorageUnitException.class, () -> updater.checkSQLStatement(database, statement, currentConfig));
+        assertThrows(EmptyStorageUnitException.class, () -> executor.checkSQLStatement(database, statement, currentConfig));
     }
     
     @Test
@@ -54,19 +54,19 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(mockShardingSphereDatabase(), statement, currentConfig));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkSQLStatement(mockShardingSphereDatabase(), statement, currentConfig));
     }
     
     @Test
     void assertBuildToBeCreatedRuleConfiguration() {
         BroadcastRuleConfiguration currentConfig = new BroadcastRuleConfiguration(new LinkedList<>());
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        updater.checkSQLStatement(mockShardingSphereDatabase(), statement, currentConfig);
-        BroadcastRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, statement);
-        updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        executor.checkSQLStatement(mockShardingSphereDatabase(), statement, currentConfig);
+        BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, statement);
+        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getTables().size(), is(1));
         assertThat(currentConfig.getTables().iterator().next(), is("t_address"));
-        updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
     }
     
     private ShardingSphereDatabase mockShardingSphereDatabase() {

@@ -272,6 +272,6 @@ class StatementAdapterTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setExecutionContext(final ShardingSphereStatement statement, final ExecutionContext executionContext) {
-        Plugins.getMemberAccessor().set(statement.getClass().getDeclaredField("executionContexts"), statement, Collections.singleton(executionContext));
+        Plugins.getMemberAccessor().set(statement.getClass().getDeclaredField("executionContext"), statement, executionContext);
     }
 }

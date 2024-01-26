@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.distsql.statement.rul.sql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rul.SQLRULStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 
 /**
  * Format statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class FormatStatement extends SQLRULStatement {
+public final class FormatStatement extends RULStatement {
     
-    public FormatStatement(final String sql) {
-        super(sql);
-    }
+    private final String sql;
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -29,8 +29,8 @@ import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.ConnectionSizeAwareQueryableRALExecutor;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -102,7 +102,7 @@ public final class ShowDistVariableExecutor implements ConnectionSizeAwareQuerya
     }
     
     private String getConnectionSize(final String variableName) {
-        ShardingSpherePreconditions.checkState(VariableEnum.CACHED_CONNECTIONS == VariableEnum.getValueOf(variableName), () -> new UnsupportedVariableException(variableName));
+        ShardingSpherePreconditions.checkState(DistSQLVariable.CACHED_CONNECTIONS == DistSQLVariable.getValueOf(variableName), () -> new UnsupportedVariableException(variableName));
         return String.valueOf(connectionSize);
     }
     

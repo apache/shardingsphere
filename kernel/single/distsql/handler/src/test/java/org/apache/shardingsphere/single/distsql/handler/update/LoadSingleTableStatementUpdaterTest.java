@@ -51,7 +51,7 @@ class LoadSingleTableStatementUpdaterTest {
     
     private ShardingSphereSchema schema;
     
-    private final LoadSingleTableStatementUpdater updater = new LoadSingleTableStatementUpdater();
+    private final LoadSingleTableExecutor executor = new LoadSingleTableExecutor();
     
     @BeforeEach
     void setUp() {
@@ -67,20 +67,20 @@ class LoadSingleTableStatementUpdaterTest {
         when(database.getName()).thenReturn("foo_db");
         when(schema.containsTable("foo")).thenReturn(true);
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
-        assertThrows(TableExistsException.class, () -> updater.checkSQLStatement(database, sqlStatement, mock(SingleRuleConfiguration.class)));
+        assertThrows(TableExistsException.class, () -> executor.checkSQLStatement(database, sqlStatement, mock(SingleRuleConfiguration.class)));
     }
     
     @Test
     void assertCheckWithInvalidStorageUnit() {
         when(database.getName()).thenReturn("foo_db");
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> updater.checkSQLStatement(database, sqlStatement, mock(SingleRuleConfiguration.class)));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkSQLStatement(database, sqlStatement, mock(SingleRuleConfiguration.class)));
     }
     
     @Test
     void assertBuild() {
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
-        SingleRuleConfiguration actual = updater.buildToBeCreatedRuleConfiguration(mock(SingleRuleConfiguration.class), sqlStatement);
+        SingleRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(mock(SingleRuleConfiguration.class), sqlStatement);
         assertThat(actual.getTables().iterator().next(), is("ds_0.foo"));
     }
     
@@ -88,8 +88,9 @@ class LoadSingleTableStatementUpdaterTest {
     void assertUpdate() {
         Collection<String> currentTables = new LinkedList<>(Collections.singletonList("ds_0.foo"));
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration(currentTables, null);
-        SingleRuleConfiguration toBeCreatedRuleConfig = new SingleRuleConfiguration(Collections.singletonList("ds_0.bar"), null);
-        updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "bar")));
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, sqlStatement);
+        executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         Iterator<String> iterator = currentConfig.getTables().iterator();
         assertThat(iterator.next(), is("ds_0.foo"));
         assertThat(iterator.next(), is("ds_0.bar"));

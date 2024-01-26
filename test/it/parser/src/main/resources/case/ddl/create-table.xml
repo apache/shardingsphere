@@ -2337,4 +2337,16 @@
             <primary-key-column name="BS_COL01" start-delimiter="&quot;" end-delimiter="&quot;" start-index="102" stop-index="111" />
         </constraint-definition>
     </create-table>
+    
+    <create-table sql-case-id="create_table_cluster_with_select1">
+        <table name="dept_10" start-index="13" stop-index="19" />
+    </create-table>
+    
+    <create-table sql-case-id="create_table_cluster_with_select2">
+        <table name="dept_20" start-index="13" stop-index="19" />
+    </create-table>
+    
+    <create-table sql-case-id="create_table_cluster_with_select3">
+        <table name="customers_demo" start-index="13" stop-index="26" />
+    </create-table>
 </sql-parser-test-cases>

@@ -728,50 +728,54 @@ NOLOCK
     : N O L O C K
     ;
 
-NOLOCK
-: N O L O C K
-;
-
 NOWAIT
-: N O W A I T
-;
+    : N O W A I T
+    ;
 
 PAGLOCK
-: P A G L O C K
-;
+    : P A G L O C K
+    ;
 
 READCOMMITTED
-: R E A D C O M M I T T E D
-;
+    : R E A D C O M M I T T E D
+    ;
 
 READCOMMITTEDLOCK
-: R E A D C O M M I T T E D L O C K
-;
+    : R E A D C O M M I T T E D L O C K
+    ;
 
 READPAST
-: R E A D P A S T
-;
+    : R E A D P A S T
+    ;
 
 REPEATABLEREAD
-: R E P E A T A B L E R E A D
-;
+    : R E P E A T A B L E R E A D
+    ;
 
 ROWLOCK
-: R O W L O C K
-;
+    : R O W L O C K
+    ;
 
 TABLOCK
-: T A B L O C K
-;
+    : T A B L O C K
+    ;
 
 TABLOCKX
-: T A B L O C K X
-;
+    : T A B L O C K X
+    ;
 
 UPDLOCK
-: U P D L O C K
-;
+    : U P D L O C K
+    ;
 
 XLOCK
-: X L O C K
-;
+    : X L O C K
+    ;
+
+JSON_OBJECT
+    : J S O N UL_ O B J E C T
+    ;
+
+JSON_ARRAY
+    : J S O N UL_ A R R A Y
+    ;

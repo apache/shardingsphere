@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -52,23 +52,10 @@ import static org.mockito.Mockito.when;
 class ShowTableMetaDataExecutorTest {
     
     @Test
-    void assertGetColumnNames() {
-        ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(5));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("database_name"));
-        assertThat(iterator.next(), is("table_name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("value"));
-    }
-    
-    @Test
     void assertExecute() {
         ShardingSphereDatabase database = mockDatabase();
         ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
-        executor.setCurrentDatabase(database);
+        executor.setDatabase(database);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createSqlStatement(), mock(ShardingSphereMetaData.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();

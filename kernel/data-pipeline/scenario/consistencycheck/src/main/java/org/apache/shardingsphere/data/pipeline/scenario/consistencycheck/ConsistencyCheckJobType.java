@@ -60,7 +60,7 @@ public final class ConsistencyCheckJobType implements PipelineJobType {
     
     @Override
     public PipelineJobInfo getJobInfo(final String jobId) {
-        throw new UnsupportedOperationException();
+        return null;
     }
     
     @Override

@@ -25,18 +25,18 @@ columnDefinition ::=
   '(' 'NAME' '=' columnName ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
 
 encryptAlgorithmDefinition ::=
-  'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
+  'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 assistedQueryAlgorithmDefinition ::=
-  'ASSISTED_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
+  'ASSISTED_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 likeQueryAlgorithmDefinition ::=
-  'LIKE_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
+  'LIKE_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
   'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
-tableName ::=
+ruleName ::=
   identifier
 
 columnName ::=
@@ -51,7 +51,7 @@ assistedQueryColumnName ::=
 likeQueryColumnName ::=
   identifier
 
-encryptAlgorithmType ::=
+algorithmType ::=
   string
 
 key ::=
@@ -69,7 +69,7 @@ value ::=
 ### Supplement
 
 - `CIPHER` specifies the cipher column, `ASSISTED_QUERY` specifies the assisted query column，`LIKE_QUERY` specifies the like query column;
-- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/);
+- `algorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/);
 - Duplicate `ruleName` will not be created;
 - `ifNotExists` clause used for avoid `Duplicate encrypt rule` error.
 

@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -30,53 +29,48 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Show unused sharding key generator executor.
  */
-public final class ShowUnusedShardingKeyGeneratorExecutor implements RQLExecutor<ShowUnusedShardingKeyGeneratorsStatement> {
+@Setter
+public final class ShowUnusedShardingKeyGeneratorExecutor implements DatabaseRuleAwareRQLExecutor<ShowUnusedShardingKeyGeneratorsStatement, ShardingRule> {
     
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingKeyGeneratorsStatement sqlStatement) {
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!rule.isPresent()) {
-            return Collections.emptyList();
-        }
-        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) rule.get().getConfiguration();
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(shardingRuleConfig);
-        for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getKeyGenerators().entrySet()) {
-            if (!inUsedKeyGenerators.contains(entry.getKey())) {
-                result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), buildProps(entry.getValue().getProps())));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        shardingRuleConfig.getAutoTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        KeyGenerateStrategyConfiguration keyGenerateStrategy = shardingRuleConfig.getDefaultKeyGenerateStrategy();
-        if (null != keyGenerateStrategy && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
-            result.add(keyGenerateStrategy.getKeyGeneratorName());
-        }
-        return result;
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "type", "props");
     }
     
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingKeyGeneratorsStatement sqlStatement) {
+        Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(rule.getConfiguration());
+        return rule.getConfiguration().getKeyGenerators().entrySet().stream().filter(entry -> !inUsedKeyGenerators.contains(entry.getKey()))
+                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), buildProps(entry.getValue().getProps()))).collect(Collectors.toList());
+    }
+    
+    private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration ruleConfig) {
+        Collection<String> result = new LinkedHashSet<>();
+        ruleConfig.getTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        ruleConfig.getAutoTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        KeyGenerateStrategyConfiguration keyGenerateStrategy = ruleConfig.getDefaultKeyGenerateStrategy();
+        if (null != keyGenerateStrategy && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
+            result.add(keyGenerateStrategy.getKeyGeneratorName());
+        }
+        return result;
+    }
+    
     private String buildProps(final Properties props) {
         return null == props ? "" : PropertiesConverter.convert(props);
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

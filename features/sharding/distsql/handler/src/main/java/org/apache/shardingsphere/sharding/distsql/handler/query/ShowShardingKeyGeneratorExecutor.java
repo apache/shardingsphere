@@ -17,46 +17,39 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Show sharding key generator executor.
  */
-public final class ShowShardingKeyGeneratorExecutor implements RQLExecutor<ShowShardingKeyGeneratorsStatement> {
+@Setter
+public final class ShowShardingKeyGeneratorExecutor implements DatabaseRuleAwareRQLExecutor<ShowShardingKeyGeneratorsStatement, ShardingRule> {
     
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingKeyGeneratorsStatement sqlStatement) {
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!rule.isPresent()) {
-            return Collections.emptyList();
-        }
-        Iterator<Entry<String, AlgorithmConfiguration>> data = ((ShardingRuleConfiguration) rule.get().getConfiguration()).getKeyGenerators().entrySet().iterator();
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (data.hasNext()) {
-            Entry<String, AlgorithmConfiguration> entry = data.next();
-            result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), PropertiesConverter.convert(entry.getValue().getProps())));
-        }
-        return result;
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "type", "props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingKeyGeneratorsStatement sqlStatement) {
+        return rule.getConfiguration().getKeyGenerators().entrySet().stream()
+                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), PropertiesConverter.convert(entry.getValue().getProps()))).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

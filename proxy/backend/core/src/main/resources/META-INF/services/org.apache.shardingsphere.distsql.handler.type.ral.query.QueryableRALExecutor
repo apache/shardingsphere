@@ -24,7 +24,6 @@ org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ExportStor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ConvertYamlConfigurationExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowDistVariableExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowDistVariablesExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowStatusFromReadwriteSplittingRulesExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTableMetaDataExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowMigrationRuleExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowServiceProviderImplementationsExecutor

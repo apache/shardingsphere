@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowKeyGenerateAlgorithmImplementationsStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowKeyGenerateAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.jupiter.api.Test;
@@ -43,16 +43,5 @@ class ShowKeyGenerateAlgorithmImplementationsExecutorTest {
         assertThat(row.getCell(1), is("DistSQLKeyGenerateAlgorithmImplementationsFixture"));
         assertThat(row.getCell(2), is("DISTSQL.IMPLEMENTATIONS.FIXTURE"));
         assertThat(row.getCell(3), is("org.apache.shardingsphere.proxy.backend.handler.distsql.fixture.DistSQLKeyGenerateAlgorithmImplementationsFixture"));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        QueryableRALExecutor<ShowKeyGenerateAlgorithmImplementationsStatement> executor = new ShowKeyGenerateAlgorithmImplementationsExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("class_path"));
     }
 }

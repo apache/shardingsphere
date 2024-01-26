@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
@@ -28,16 +28,10 @@ import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStat
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
-import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
-import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.AlterComputeNodeStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.AlterGlobalClockRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.AlterReadwriteSplittingStorageUnitStatusStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.AlterSQLParserRuleStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.AlterTrafficRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.ImportDatabaseConfigurationStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.ImportMetaDataStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.LabelComputeNodeStatementAssert;
@@ -47,10 +41,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.r
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable.UnlabelComputeNodeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterComputeNodeStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterGlobalClockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterReadwriteSplittingStorageUnitStatusStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterSQLParserRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ImportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ImportMetaDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.LabelComputeNodeStatementTestCase;
@@ -58,8 +49,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.RefreshTableMetaDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.SetDistVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.UnlabelComputeNodeStatementTestCase;
-import org.apache.shardingsphere.traffic.distsql.statement.updatable.AlterTrafficRuleStatement;
-import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 
 /**
  * Updatable RAL statement assert.
@@ -85,23 +74,15 @@ public final class UpdatableRALStatementAssert {
             SetDistVariableStatementAssert.assertIs(assertContext, (SetDistVariableStatement) actual, (SetDistVariableStatementTestCase) expected);
         } else if (actual instanceof RefreshTableMetaDataStatement) {
             RefreshTableMetaDataStatementAssert.assertIs(assertContext, (RefreshTableMetaDataStatement) actual, (RefreshTableMetaDataStatementTestCase) expected);
-        } else if (actual instanceof AlterSQLParserRuleStatement) {
-            AlterSQLParserRuleStatementAssert.assertIs(assertContext, (AlterSQLParserRuleStatement) actual, (AlterSQLParserRuleStatementTestCase) expected);
-        } else if (actual instanceof AlterTrafficRuleStatement) {
-            AlterTrafficRuleStatementAssert.assertIs(assertContext, (AlterTrafficRuleStatement) actual, (AlterTrafficRuleStatementTestCase) expected);
         } else if (actual instanceof ImportDatabaseConfigurationStatement) {
             ImportDatabaseConfigurationStatementAssert.assertIs(assertContext, (ImportDatabaseConfigurationStatement) actual, (ImportDatabaseConfigurationStatementTestCase) expected);
         } else if (actual instanceof ImportMetaDataStatement) {
             ImportMetaDataStatementAssert.assertIs(assertContext, (ImportMetaDataStatement) actual, (ImportMetaDataStatementTestCase) expected);
-        } else if (actual instanceof AlterTransactionRuleStatement) {
-            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof AlterReadwriteSplittingStorageUnitStatusStatement) {
             AlterReadwriteSplittingStorageUnitStatusStatementAssert.assertIs(assertContext,
                     (AlterReadwriteSplittingStorageUnitStatusStatement) actual, (AlterReadwriteSplittingStorageUnitStatusStatementTestCase) expected);
         } else if (actual instanceof LockClusterStatement) {
             LockClusterStatementAssert.assertIs(assertContext, (LockClusterStatement) actual, (LockClusterStatementTestCase) expected);
-        } else if (actual instanceof AlterGlobalClockRuleStatement) {
-            AlterGlobalClockRuleStatementAssert.assertIs(assertContext, (AlterGlobalClockRuleStatement) actual, (AlterGlobalClockRuleStatementTestCase) expected);
         }
     }
 }

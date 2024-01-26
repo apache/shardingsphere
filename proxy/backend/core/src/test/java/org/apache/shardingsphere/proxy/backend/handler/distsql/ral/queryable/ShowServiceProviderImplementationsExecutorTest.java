@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowServiceProviderImplementationsStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowServiceProviderImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.jupiter.api.Test;
@@ -46,16 +46,5 @@ class ShowServiceProviderImplementationsExecutorTest {
         assertThat(row.getCell(1), is("HikariDataSourcePoolActiveDetector"));
         assertThat(row.getCell(2), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(row.getCell(3), is("org.apache.shardingsphere.infra.datasource.pool.hikari.detector.HikariDataSourcePoolActiveDetector"));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        QueryableRALExecutor<ShowServiceProviderImplementationsStatement> executor = new ShowServiceProviderImplementationsExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("class_path"));
     }
 }

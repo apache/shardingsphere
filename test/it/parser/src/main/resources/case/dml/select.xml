@@ -8175,6 +8175,19 @@
         </where>
     </select>
 
+    <select sql-case-id="select_with_default_schema">
+        <projections start-index="7" stop-index="44">
+            <column-projection name="has_backup_checksums" start-index="7" stop-index="26"/>
+            <column-projection name="database_name" start-index="29" stop-index="41"/>
+            <shorthand-projection start-index="44" stop-index="44"/>
+        </projections>
+        <from start-index="51" stop-index="65">
+            <simple-table name="backupset" start-index="51" stop-index="65">
+                <owner name="msdb" start-index="51" stop-index="54"/>
+            </simple-table>
+        </from>
+    </select>
+
     <select sql-case-id="select_from_dbms_table">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>

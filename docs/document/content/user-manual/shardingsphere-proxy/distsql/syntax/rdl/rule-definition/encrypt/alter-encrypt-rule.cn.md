@@ -22,18 +22,18 @@ columnDefinition ::=
   '(' 'NAME' '=' columnName ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
 
 encryptAlgorithmDefinition ::=
-  'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
+  'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 assistedQueryAlgorithmDefinition ::=
-  'ASSISTED_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
+  'ASSISTED_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 likeQueryAlgorithmDefinition ::=
-  'LIKE_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
+  'LIKE_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
   'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
-tableName ::=
+ruleName ::=
   identifier
 
 columnName ::=
@@ -48,7 +48,7 @@ assistedQueryColumnName ::=
 likeQueryColumnName ::=
   identifier
 
-encryptAlgorithmType ::=
+algorithmType ::=
   string
 
 key ::=
@@ -66,7 +66,7 @@ value ::=
 ### 补充说明
 
 - `CIPHER` 指定密文数据列，`ASSISTED_QUERY` 指定辅助查询列，`LIKE_QUERY` 指定模糊查询列；
-- `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)；
+- `algorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)；
 - 重复的 `ruleName` 将无法被创建。
 
 ### 示例

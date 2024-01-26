@@ -21,6 +21,7 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -76,7 +77,11 @@ class ShowDatabasesExecutorTest {
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
         ShowDatabasesExecutor executor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
         executor.execute(mockConnectionSession());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+        QueryResultMetaData queryResultMetaData = executor.getQueryResultMetaData();
+        assertThat(queryResultMetaData.getColumnCount(), is(1));
+        assertThat(queryResultMetaData.getTableName(1), is("SCHEMATA"));
+        assertThat(queryResultMetaData.getColumnLabel(1), is("Database"));
+        assertThat(queryResultMetaData.getColumnName(1), is("SCHEMA_NAME"));
         assertThat(getActual(executor), is(getExpected()));
     }
     

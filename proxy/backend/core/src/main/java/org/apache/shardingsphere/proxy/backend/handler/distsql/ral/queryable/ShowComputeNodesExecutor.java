@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.InstanceContextAwareQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodesStatement;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.InstanceContextAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -52,7 +52,7 @@ public final class ShowComputeNodesExecutor implements InstanceContextAwareQuery
             return Collections.singleton(buildRow(instanceContext.getInstance(), modeType));
         }
         Collection<ComputeNodeInstance> instances = instanceContext.getAllClusterInstances();
-        return instances.isEmpty() ? Collections.emptyList() : instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
+        return instances.stream().map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {

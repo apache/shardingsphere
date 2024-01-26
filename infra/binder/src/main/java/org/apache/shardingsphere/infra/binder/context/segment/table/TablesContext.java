@@ -56,7 +56,6 @@ public final class TablesContext {
     
     private final Collection<SimpleTableSegment> simpleTableSegments = new LinkedList<>();
     
-    @Getter
     private final Collection<String> tableNames = new CaseInsensitiveSet<>();
     
     private final Collection<String> schemaNames = new CaseInsensitiveSet<>();

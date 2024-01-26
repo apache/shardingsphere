@@ -42,7 +42,7 @@ import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabase
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.RULBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -226,7 +226,7 @@ class ProxyBackendHandlerFactoryTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SHOW TRANSACTION RULE;";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
+        assertThat(actual, instanceOf(RQLBackendHandler.class));
     }
     
     @Test
@@ -242,7 +242,7 @@ class ProxyBackendHandlerFactoryTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(SQLRULBackendHandler.class));
+        assertThat(actual, instanceOf(RULBackendHandler.class));
     }
     
     private static class TCLTestCaseArgumentsProvider implements ArgumentsProvider {

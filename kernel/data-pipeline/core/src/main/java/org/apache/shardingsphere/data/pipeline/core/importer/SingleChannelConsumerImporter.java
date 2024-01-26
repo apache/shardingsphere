@@ -22,14 +22,12 @@ import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Single channel consumer importer.
@@ -50,7 +48,7 @@ public final class SingleChannelConsumerImporter extends AbstractPipelineLifecyc
     @Override
     protected void runBlocking() {
         while (isRunning()) {
-            List<Record> records = channel.fetch(batchSize, timeoutMillis).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
+            List<Record> records = channel.fetch(batchSize, timeoutMillis);
             if (records.isEmpty()) {
                 continue;
             }

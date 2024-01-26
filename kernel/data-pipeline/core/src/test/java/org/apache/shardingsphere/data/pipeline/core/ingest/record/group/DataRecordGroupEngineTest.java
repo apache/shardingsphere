@@ -18,149 +18,210 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.record.group;
 
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineUnexpectedDataRecordOrderException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataRecordGroupEngineTest {
     
+    private final DataRecordGroupEngine groupEngine = new DataRecordGroupEngine();
+    
+    @Test
+    void assertInsertBeforeInsert() {
+        DataRecord beforeDataRecord = mockInsertDataRecord(1, 1, 1);
+        DataRecord afterDataRecord = mockInsertDataRecord(1, 1, 1);
+        assertThrows(PipelineUnexpectedDataRecordOrderException.class, () -> groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
+    }
+    
+    @Test
+    void assertUpdateBeforeInsert() {
+        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 2, 2);
+        DataRecord afterDataRecord = mockInsertDataRecord(1, 1, 1);
+        assertThrows(PipelineUnexpectedDataRecordOrderException.class, () -> groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
+    }
+    
     @Test
     void assertDeleteBeforeInsert() {
-        DataRecord beforeDataRecord = mockDeleteDataRecord(1, 2, 2);
-        DataRecord afterDataRecord = mockInsertDataRecord(1, 1, 1);
-        Collection<GroupedDataRecord> actual = new DataRecordGroupEngine().group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord beforeDataRecord = mockDeleteDataRecord(1, 10, 50);
+        DataRecord afterDataRecord = mockInsertDataRecord(1, 10, 100);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThat(actual.iterator().next(), sameInstance(afterDataRecord));
     }
     
     @Test
     void assertInsertBeforeUpdate() {
-        DataRecord beforeDataRecord = mockInsertDataRecord(1, 1, 1);
-        DataRecord afterDataRecord = mockUpdateDataRecord(1, 2, 2);
-        Collection<GroupedDataRecord> actual = new DataRecordGroupEngine().group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord beforeDataRecord = mockInsertDataRecord(1, 10, 50);
+        DataRecord afterDataRecord = mockUpdateDataRecord(1, 10, 200);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord dataRecord = actual.iterator().next();
+        assertThat(dataRecord.getType(), is(PipelineSQLOperationType.INSERT));
+        assertThat(dataRecord.getTableName(), is("order"));
+        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", null, 1, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", null, 10, true, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", null, 200, true, false));
+    }
+    
+    private void assertColumnsMatched(final Column actual, final Column expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getOldValue(), is(expected.getOldValue()));
+        assertThat(actual.getValue(), is(expected.getValue()));
+        assertThat(actual.isUpdated(), is(expected.isUpdated()));
+        assertThat(actual.isUniqueKey(), is(expected.isUniqueKey()));
     }
     
     @Test
     void assertInsertBeforeUpdatePrimaryKey() {
-        DataRecord beforeDataRecord = mockInsertDataRecord(1, 1, 1);
-        DataRecord afterDataRecord = mockUpdateDataRecord(1, 1, 2, 2);
-        Collection<GroupedDataRecord> actual = new DataRecordGroupEngine().group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord beforeDataRecord = mockInsertDataRecord(1, 10, 50);
+        DataRecord afterDataRecord = mockUpdateDataRecord(1, 2, 10, 50);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord dataRecord = actual.iterator().next();
+        assertThat(dataRecord.getType(), is(PipelineSQLOperationType.INSERT));
+        assertThat(dataRecord.getTableName(), is("order"));
+        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", null, 2, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", null, 10, true, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", null, 50, true, false));
     }
     
     @Test
     void assertUpdateBeforeUpdate() {
-        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 1, 1);
-        DataRecord afterDataRecord = mockUpdateDataRecord(1, 2, 2);
-        Collection<GroupedDataRecord> actual = new DataRecordGroupEngine().group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 1, 10, 100);
+        DataRecord afterDataRecord = mockUpdateDataRecord(1, 1, 10, 200);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord dataRecord = actual.iterator().next();
+        assertThat(dataRecord.getType(), is(PipelineSQLOperationType.UPDATE));
+        assertThat(dataRecord.getTableName(), is("order"));
+        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, 1, false, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, 10, false, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, 200, true, false));
     }
     
     @Test
     void assertUpdateBeforeUpdatePrimaryKey() {
-        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 1, 1);
-        DataRecord afterDataRecord = mockUpdateDataRecord(1, 2, 2, 2);
-        Collection<GroupedDataRecord> actual = new DataRecordGroupEngine().group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 10, 50);
+        DataRecord afterDataRecord = mockUpdateDataRecord(1, 2, 10, 200);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.iterator().next().getBatchUpdateDataRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord dataRecord = actual.iterator().next();
+        assertThat(dataRecord.getType(), is(PipelineSQLOperationType.UPDATE));
+        assertThat(dataRecord.getTableName(), is("order"));
+        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, 2, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, 10, false, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, 200, true, false));
+    }
+    
+    @Test
+    void assertUpdatePrimaryKeyBeforeUpdate() {
+        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 2, 10, 50);
+        DataRecord afterDataRecord = mockUpdateDataRecord(2, 10, 200);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThat(actual.size(), is(1));
+        DataRecord dataRecord = actual.iterator().next();
+        assertThat(dataRecord.getType(), is(PipelineSQLOperationType.UPDATE));
+        assertThat(dataRecord.getTableName(), is("order"));
+        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, 2, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, 10, false, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, 200, true, false));
     }
     
     @Test
     void assertUpdatePrimaryKeyBeforeUpdatePrimaryKey() {
-        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 2, 1, 1);
-        DataRecord afterDataRecord = mockUpdateDataRecord(2, 3, 2, 2);
-        Collection<GroupedDataRecord> actual = new DataRecordGroupEngine().group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 2, 10, 50);
+        DataRecord afterDataRecord = mockUpdateDataRecord(2, 3, 10, 50);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        GroupedDataRecord actualGroupedDataRecord = actual.iterator().next();
-        assertThat(actualGroupedDataRecord.getBatchUpdateDataRecords().size(), is(2));
-        Iterator<DataRecord> batchUpdateDataRecords = actualGroupedDataRecord.getBatchUpdateDataRecords().iterator();
-        DataRecord actualDataRecord1 = batchUpdateDataRecords.next();
-        assertThat(actualDataRecord1.getType(), is(PipelineSQLOperationType.UPDATE));
-        assertThat(actualDataRecord1.getTableName(), is("order"));
-        assertThat(actualDataRecord1.getColumn(0).getOldValue(), is(1));
-        assertThat(actualDataRecord1.getColumn(0).getValue(), is(2));
-        assertThat(actualDataRecord1.getColumn(1).getValue(), is(1));
-        assertThat(actualDataRecord1.getColumn(2).getValue(), is(1));
-        DataRecord actualDataRecord2 = batchUpdateDataRecords.next();
-        assertThat(actualDataRecord2.getType(), is(PipelineSQLOperationType.UPDATE));
-        assertThat(actualDataRecord2.getTableName(), is("order"));
-        assertThat(actualDataRecord2.getColumn(0).getOldValue(), is(2));
-        assertThat(actualDataRecord2.getColumn(0).getValue(), is(3));
-        assertThat(actualDataRecord2.getColumn(1).getValue(), is(2));
-        assertThat(actualDataRecord2.getColumn(2).getValue(), is(2));
+        DataRecord dataRecord = actual.iterator().next();
+        assertThat(dataRecord.getType(), is(PipelineSQLOperationType.UPDATE));
+        assertThat(dataRecord.getTableName(), is("order"));
+        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, 3, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, 10, false, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, 50, false, false));
+    }
+    
+    @Test
+    void assertDeleteBeforeUpdate() {
+        DataRecord beforeDataRecord = mockDeleteDataRecord(1, 10, 50);
+        DataRecord afterDataRecord = mockUpdateDataRecord(1, 20, 200);
+        assertThrows(UnsupportedSQLOperationException.class, () -> groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
     @Test
     void assertInsertBeforeDelete() {
-        DataRecord beforeDataRecord = mockInsertDataRecord(1, 1, 1);
-        DataRecord afterDataRecord = mockDeleteDataRecord(1, 1, 1);
-        Collection<GroupedDataRecord> actual = new DataRecordGroupEngine().group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord beforeDataRecord = mockInsertDataRecord(1, 10, 50);
+        DataRecord afterDataRecord = mockDeleteDataRecord(1, 10, 50);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThat(actual.iterator().next(), sameInstance(afterDataRecord));
     }
     
     @Test
     void assertUpdateBeforeDelete() {
-        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 1, 1);
-        DataRecord afterDataRecord = mockDeleteDataRecord(1, 1, 1);
-        Collection<GroupedDataRecord> actual = new DataRecordGroupEngine().group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 10, 50);
+        DataRecord afterDataRecord = mockDeleteDataRecord(1, 10, 50);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThat(actual.iterator().next(), sameInstance(afterDataRecord));
     }
     
     @Test
     void assertUpdatePrimaryKeyBeforeDelete() {
-        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 2, 1, 1);
-        DataRecord afterDataRecord = mockDeleteDataRecord(2, 1, 1);
-        Collection<GroupedDataRecord> actual = new DataRecordGroupEngine().group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord beforeDataRecord = mockUpdateDataRecord(1, 2, 10, 50);
+        DataRecord afterDataRecord = mockDeleteDataRecord(2, 10, 50);
+        Collection<DataRecord> actual = groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        DataRecord dataRecord = actual.iterator().next();
+        assertThat(dataRecord.getType(), is(PipelineSQLOperationType.DELETE));
+        assertThat(dataRecord.getTableName(), is("order"));
+        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, null, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, null, true, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, null, true, false));
     }
     
-    private void assertDataRecordsMatched(final Collection<DataRecord> actualRecords, final List<DataRecord> expectedRecords) {
-        for (int i = 0; i < actualRecords.size(); i++) {
-            assertThat(actualRecords.iterator().next(), sameInstance(expectedRecords.get(0)));
-        }
+    @Test
+    void assertDeleteBeforeDelete() {
+        DataRecord beforeDataRecord = mockDeleteDataRecord(1, 1, 1);
+        DataRecord afterDataRecord = mockDeleteDataRecord(1, 1, 1);
+        assertThrows(PipelineUnexpectedDataRecordOrderException.class, () -> groupEngine.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
     @Test
     void assertGroup() {
-        List<DataRecord> dataRecords = Arrays.asList(
+        List<DataRecord> dataRecords = mockDataRecords();
+        List<GroupedDataRecord> groupedDataRecords = groupEngine.group(dataRecords);
+        assertThat(groupedDataRecords.size(), is(2));
+        assertThat(groupedDataRecords.get(0).getTableName(), is("t1"));
+        assertThat(groupedDataRecords.get(1).getTableName(), is("t2"));
+        assertThat(groupedDataRecords.get(0).getInsertDataRecords().size(), is(1));
+        assertThat(groupedDataRecords.get(0).getUpdateDataRecords().size(), is(1));
+        assertThat(groupedDataRecords.get(0).getDeleteDataRecords().size(), is(1));
+    }
+    
+    private List<DataRecord> mockDataRecords() {
+        return Arrays.asList(
                 mockInsertDataRecord("t1", 1, 1, 1),
                 mockUpdateDataRecord("t1", 1, 2, 1),
                 mockUpdateDataRecord("t1", 1, 2, 2),
                 mockUpdateDataRecord("t1", 2, 1, 1),
                 mockUpdateDataRecord("t1", 2, 2, 1),
                 mockUpdateDataRecord("t1", 2, 2, 2),
-                mockInsertDataRecord("t1", 10, 10, 10),
                 mockDeleteDataRecord("t1", 3, 1, 1),
                 mockInsertDataRecord("t2", 1, 1, 1));
-        Collection<GroupedDataRecord> groupedDataRecords = new DataRecordGroupEngine().group(dataRecords);
-        assertThat(groupedDataRecords.size(), is(2));
-        Iterator<GroupedDataRecord> groupedDataRecordsIterator = groupedDataRecords.iterator();
-        GroupedDataRecord actualGroupedDataRecord1 = groupedDataRecordsIterator.next();
-        assertThat(actualGroupedDataRecord1.getTableName(), is("t1"));
-        assertThat(actualGroupedDataRecord1.getBatchInsertDataRecords().size(), is(1));
-        assertThat(actualGroupedDataRecord1.getBatchUpdateDataRecords().size(), is(0));
-        assertThat(actualGroupedDataRecord1.getBatchDeleteDataRecords().size(), is(1));
-        assertThat(actualGroupedDataRecord1.getNonBatchRecords().size(), is(6));
-        GroupedDataRecord actualGroupedDataRecord2 = groupedDataRecordsIterator.next();
-        assertThat(actualGroupedDataRecord2.getTableName(), is("t2"));
-        assertThat(actualGroupedDataRecord2.getBatchInsertDataRecords().size(), is(1));
     }
     
     private DataRecord mockInsertDataRecord(final int id, final int userId, final int totalPrice) {
@@ -176,7 +237,7 @@ class DataRecordGroupEngineTest {
     }
     
     private DataRecord mockUpdateDataRecord(final int id, final int userId, final int totalPrice) {
-        return mockUpdateDataRecord("order", null, id, userId, totalPrice);
+        return mockUpdateDataRecord("order", id, id, userId, totalPrice);
     }
     
     private DataRecord mockUpdateDataRecord(final Integer oldId, final int id, final int userId, final int totalPrice) {
@@ -184,14 +245,14 @@ class DataRecordGroupEngineTest {
     }
     
     private DataRecord mockUpdateDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        return mockUpdateDataRecord(tableName, null, id, userId, totalPrice);
+        return mockUpdateDataRecord(tableName, id, id, userId, totalPrice);
     }
     
     private DataRecord mockUpdateDataRecord(final String tableName, final Integer oldId, final int id, final int userId, final int totalPrice) {
         DataRecord result = new DataRecord(PipelineSQLOperationType.UPDATE, tableName, new IngestPlaceholderPosition(), 3);
-        result.addColumn(new Column("id", oldId, id, null != oldId, true));
-        result.addColumn(new Column("user_id", userId, true, false));
-        result.addColumn(new Column("total_price", totalPrice, true, false));
+        result.addColumn(new Column("id", oldId, id, !Objects.deepEquals(oldId, id), true));
+        result.addColumn(new Column("user_id", userId, userId, false, false));
+        result.addColumn(new Column("total_price", 50, totalPrice, 50 != totalPrice, false));
         return result;
     }
     

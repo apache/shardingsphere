@@ -19,15 +19,24 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowTablesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.statement.rql.resource.ShowTablesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
+import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowRulesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowStorageUnitsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowTablesStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowTrafficRulesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.traffic.ShowTrafficRulesStatementTestCase;
+import org.apache.shardingsphere.traffic.distsql.statement.queryable.ShowTrafficRulesStatement;
+import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 
 /**
  * RQL statement assert.
@@ -43,14 +52,24 @@ public final class RQLStatementAssert {
      * @param expected expected RQL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RQLStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof ShowRulesStatement) {
-            ShowRulesStatementAssert.assertIs(assertContext, (ShowRulesStatement) actual, expected);
-        }
-        if (actual instanceof ShowTablesStatement) {
+        if (actual instanceof ShowDatabaseRulesStatement) {
+            ShowRulesStatementAssert.assertIs(assertContext, (ShowDatabaseRulesStatement) actual, expected);
+        } else if (actual instanceof ShowTablesStatement) {
             ShowTablesStatementAssert.assertIs(assertContext, (ShowTablesStatement) actual, expected);
-        }
-        if (actual instanceof ShowStorageUnitsStatement) {
+        } else if (actual instanceof ShowStorageUnitsStatement) {
             ShowStorageUnitsStatementAssert.assertIs(assertContext, (ShowStorageUnitsStatement) actual, expected);
+        } else if (actual instanceof ShowAuthorityRuleStatement) {
+            ExistingAssert.assertIs(assertContext, actual, expected);
+        } else if (actual instanceof ShowTransactionRuleStatement) {
+            ExistingAssert.assertIs(assertContext, actual, expected);
+        } else if (actual instanceof ShowTrafficRulesStatement) {
+            ShowTrafficRulesStatementAssert.assertIs(assertContext, (ShowTrafficRulesStatement) actual, (ShowTrafficRulesStatementTestCase) expected);
+        } else if (actual instanceof ShowSQLParserRuleStatement) {
+            ExistingAssert.assertIs(assertContext, actual, expected);
+        } else if (actual instanceof ShowSQLTranslatorRuleStatement) {
+            ExistingAssert.assertIs(assertContext, actual, expected);
+        } else if (actual instanceof ShowStatusFromReadwriteSplittingRulesStatement) {
+            ExistingAssert.assertIs(assertContext, actual, expected);
         }
     }
 }

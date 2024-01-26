@@ -30,11 +30,11 @@ services:
 
 ## 前提条件
 
-1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 17 对应的 `GraalVM Community Edition`
+1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 21 对应的 `GraalVM Community Edition`
    或 `GraalVM Community Edition` 的下游发行版。若使用 `SDKMAN!`，
 
 ```shell
-sdk install java 17.0.9-graalce
+sdk install java 21.0.2-graalce
 ```
 
 2. 根据 https://www.graalvm.org/jdk17/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
@@ -82,7 +82,7 @@ sdk install java 17.0.9-graalce
 - 通过命令行构建 GraalVM Native Image。
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
 ```
 
 3. 通过命令行启动 Native Image, 需要带上 4 个参数。
@@ -97,7 +97,7 @@ sdk install java 17.0.9-graalce
 4. 如果需要构建 Docker Image, 在添加存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令。
 
 ```shell
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native,docker.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,docker.native -DskipTests clean package
 ```
 
 - 假设存在包含`server.yaml` 的 `conf` 文件夹为 `./custom/conf`，可通过如下的 `docker-compose.yml` 文件启动 GraalVM Native
@@ -124,16 +124,16 @@ services:
 
 ## 可观察性
 
-- 针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
-  https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
+针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
+https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
 
-- 你可以使用 https://www.graalvm.org/jdk17/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
-  并根据其要求使用 VSCode 完成调试工作。如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，你可以关注
-  https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
-  及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的
-  https://github.com/oracle/graal/issues/5648 。
+你可以使用 https://www.graalvm.org/jdk17/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
+并根据其要求使用 VSCode 完成调试工作。如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，你可以关注
+https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
+及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的
+https://github.com/oracle/graal/issues/5648 。
 
-- 对于使用 `ShardingSphere Agent` 等 Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
-  Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065 。
+对于使用 `ShardingSphere Agent` 等 Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
+Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065 。
 
-- 若用户期望在 ShardingSphere Proxy Native 下使用 OpenTelemetry Java Agent，则需要关注 https://github.com/oracle/graal/pull/8077 涉及的变动。
+若用户期望在 ShardingSphere Proxy Native 下使用这类 Java Agent，则需要关注 https://github.com/oracle/graal/pull/8077 涉及的变动。

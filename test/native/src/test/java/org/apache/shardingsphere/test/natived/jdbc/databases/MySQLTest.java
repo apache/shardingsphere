@@ -45,13 +45,15 @@ import java.util.Properties;
  */
 class MySQLTest {
     
+    private static final Integer MYSQL_PORT_ON_HOST = 60107;
+    
     private static final String USERNAME = "root";
     
     private static final String PASSWORD = "123456";
     
     private static final String DATABASE = "test";
     
-    private static final String JDBC_URL = "jdbc:mysql://localhost:65107/" + DATABASE;
+    private static final String JDBC_URL = "jdbc:mysql://localhost:" + MYSQL_PORT_ON_HOST + "/" + DATABASE;
     
     private TestShardingService testShardingService;
     
@@ -63,7 +65,8 @@ class MySQLTest {
                 GenericContainer<?> mySQLContainer = new GenericContainer<>(DockerImageName.parse("mysql:8.2.0-oracle"))
                         .withEnv("MYSQL_DATABASE", DATABASE)
                         .withEnv("MYSQL_ROOT_PASSWORD", PASSWORD)
-                        .withCreateContainerCmdModifier(cmd -> cmd.withHostConfig(new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(65107), new ExposedPort(3306)))))) {
+                        .withCreateContainerCmdModifier(
+                                cmd -> cmd.withHostConfig(new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(MYSQL_PORT_ON_HOST), new ExposedPort(3306)))))) {
             mySQLContainer.start();
             beforeAll();
             DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/mysql.yaml"));

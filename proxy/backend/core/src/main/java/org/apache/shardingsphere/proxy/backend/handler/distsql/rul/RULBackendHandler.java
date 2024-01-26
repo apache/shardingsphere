@@ -17,31 +17,75 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware.ConnectionSessionAwareRULExecutor;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * RUL backend handler.
- * 
- * @param <T> type of SQL statement
  */
-@Getter
-public abstract class RULBackendHandler<T extends RULStatement> implements DistSQLBackendHandler {
+@RequiredArgsConstructor
+public final class RULBackendHandler implements DistSQLBackendHandler {
     
-    private T sqlStatement;
+    private final RULStatement sqlStatement;
     
-    private ConnectionSession connectionSession;
+    private final ConnectionSession connectionSession;
     
-    /**
-     * Initialize.
-     *
-     * @param sqlStatement SQL statement
-     * @param connectionSession connection session
-     */
-    public final void init(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = (T) sqlStatement;
-        this.connectionSession = connectionSession;
+    private List<QueryHeader> queryHeaders;
+    
+    private MergedResult mergedResult;
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ResponseHeader execute() throws SQLException {
+        RULExecutor<RULStatement> executor = TypedSPILoader.getService(RULExecutor.class, sqlStatement.getClass());
+        queryHeaders = createQueryHeader(executor);
+        mergedResult = createMergedResult(executor);
+        return new QueryResponseHeader(queryHeaders);
+    }
+    
+    private List<QueryHeader> createQueryHeader(final RULExecutor<RULStatement> executor) {
+        return executor.getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
+    }
+    
+    private MergedResult createMergedResult(final RULExecutor<RULStatement> executor) throws SQLException {
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+        if (executor instanceof ConnectionSessionAwareRULExecutor) {
+            ((ConnectionSessionAwareRULExecutor<RULStatement>) executor).setConnectionSession(connectionSession);
+        }
+        return new LocalDataMergedResult(executor.getRows(metaData, sqlStatement));
+    }
+    
+    @Override
+    public boolean next() throws SQLException {
+        return null != mergedResult && mergedResult.next();
+    }
+    
+    @Override
+    public QueryResponseRow getRowData() throws SQLException {
+        List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
+        for (int i = 0; i < queryHeaders.size(); i++) {
+            cells.add(new QueryResponseCell(queryHeaders.get(i).getColumnType(), mergedResult.getValue(i + 1, Object.class)));
+        }
+        return new QueryResponseRow(cells);
     }
 }

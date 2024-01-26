@@ -54,8 +54,10 @@ public final class InventoryTask implements PipelineTask {
     @Override
     public Collection<CompletableFuture<?>> start() {
         Collection<CompletableFuture<?>> result = new LinkedList<>();
-        result.add(inventoryDumperExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
-        result.add(inventoryImporterExecuteEngine.submit(importer, new TaskExecuteCallback(this)));
+        synchronized (inventoryDumperExecuteEngine) {
+            result.add(inventoryDumperExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
+            result.add(inventoryImporterExecuteEngine.submit(importer, new TaskExecuteCallback(this)));
+        }
         return result;
     }
     

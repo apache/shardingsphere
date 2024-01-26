@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.logging.file;
 
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 /**
@@ -27,6 +28,7 @@ public final class FileLoggingPluginLifecycleService implements PluginLifecycleS
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
+        PluginContext.getInstance().setEnhancedForProxy(isEnhancedForProxy);
     }
     
     @Override

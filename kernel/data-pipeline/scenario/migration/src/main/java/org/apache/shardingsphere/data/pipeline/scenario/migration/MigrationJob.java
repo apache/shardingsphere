@@ -55,6 +55,10 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
     
+    public MigrationJob(final String jobId) {
+        super(jobId);
+    }
+    
     @Override
     protected MigrationJobItemContext buildJobItemContext(final MigrationJobConfiguration jobConfig,
                                                           final int shardingItem, final TransmissionJobItemProgress jobItemProgress, final TransmissionProcessContext jobProcessContext) {

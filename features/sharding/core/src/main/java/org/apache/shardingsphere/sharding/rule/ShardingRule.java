@@ -23,7 +23,6 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -53,6 +52,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.cache.ShardingCache;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateSharingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -77,6 +77,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -89,7 +90,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
-    private final RuleConfiguration configuration;
+    private final ShardingRuleConfiguration configuration;
     
     private final Collection<String> dataSourceNames;
     
@@ -129,6 +130,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         ruleConfig.getAuditors().forEach((key, value) -> auditors.put(key, TypedSPILoader.getService(ShardingAuditAlgorithm.class, value.getType(), value.getProps())));
         tableRules.putAll(createTableRules(ruleConfig.getTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(ruleConfig.getAutoTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
+        validateUniqueActualDataNodesInTableRules();
         bindingTableRules.putAll(createBindingTableRules(ruleConfig.getBindingTableGroups()));
         defaultDatabaseShardingStrategyConfig = createDefaultDatabaseShardingStrategyConfig(ruleConfig);
         defaultTableShardingStrategyConfig = createDefaultTableShardingStrategyConfig(ruleConfig);
@@ -148,6 +150,16 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
         logicalTableMapper = createLogicalTableMapper();
         actualTableMapper = createActualTableMapper();
+    }
+    
+    private void validateUniqueActualDataNodesInTableRules() {
+        Set<DataNode> uniqueActualDataNodes = new HashSet<>(tableRules.size(), 1L);
+        tableRules.forEach((key, value) -> {
+            DataNode sampleActualDataNode = value.getActualDataNodes().iterator().next();
+            ShardingSpherePreconditions.checkState(!uniqueActualDataNodes.contains(sampleActualDataNode),
+                    () -> new DuplicateSharingActualDataNodeException(key, sampleActualDataNode.getDataSourceName(), sampleActualDataNode.getTableName()));
+            uniqueActualDataNodes.add(sampleActualDataNode);
+        });
     }
     
     private ShardingStrategyConfiguration createDefaultDatabaseShardingStrategyConfig(final ShardingRuleConfiguration ruleConfig) {

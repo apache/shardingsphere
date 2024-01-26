@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.distsql.handler.type.rql.count;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.distsql.statement.rql.show.CountRuleStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -32,7 +33,10 @@ import java.util.Optional;
 /**
  * Count RQL executor.
  */
-public final class CountRQLExecutor implements RQLExecutor<CountRuleStatement> {
+@Setter
+public final class CountRQLExecutor implements DatabaseAwareRQLExecutor<CountRuleStatement> {
+    
+    private ShardingSphereDatabase database;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -41,10 +45,13 @@ public final class CountRQLExecutor implements RQLExecutor<CountRuleStatement> {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountRuleStatement sqlStatement) {
-        CountResultRowBuilder rowBuilder = TypedSPILoader.getService(CountResultRowBuilder.class, sqlStatement.getType());
-        Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(rowBuilder.getRuleClass());
-        return rule.isPresent() ? rowBuilder.generateRows(rule.get(), database.getName()) : Collections.emptyList();
+    public Collection<LocalDataQueryResultRow> getRows(final CountRuleStatement sqlStatement) {
+        Optional<CountResultRowBuilder> rowBuilder = TypedSPILoader.findService(CountResultRowBuilder.class, sqlStatement.getType());
+        if (!rowBuilder.isPresent()) {
+            return Collections.emptyList();
+        }
+        Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(rowBuilder.get().getRuleClass());
+        return rule.isPresent() ? rowBuilder.get().generateRows(rule.get(), database.getName()) : Collections.emptyList();
     }
     
     @Override

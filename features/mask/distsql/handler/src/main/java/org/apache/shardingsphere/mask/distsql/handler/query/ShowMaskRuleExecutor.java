@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -31,42 +30,40 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Show mask rule executor.
  */
-public final class ShowMaskRuleExecutor implements RQLExecutor<ShowMaskRulesStatement> {
+@Setter
+public final class ShowMaskRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowMaskRulesStatement, MaskRule> {
+    
+    private MaskRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowMaskRulesStatement sqlStatement) {
-        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        if (rule.isPresent()) {
-            result = buildData((MaskRuleConfiguration) rule.get().getConfiguration(), sqlStatement);
-        }
-        return result;
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("table", "column", "algorithm_type", "algorithm_props");
     }
     
-    private Collection<LocalDataQueryResultRow> buildData(final MaskRuleConfiguration ruleConfig, final ShowMaskRulesStatement sqlStatement) {
-        return ruleConfig.getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
-                .map(each -> buildColumnData(each, ruleConfig.getMaskAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMaskRulesStatement sqlStatement) {
+        return rule.getConfiguration().getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
+                .map(each -> buildColumnData(each, rule.getConfiguration().getMaskAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Collection<LocalDataQueryResultRow> buildColumnData(final MaskTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> algorithmMap) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         tableRuleConfig.getColumns().forEach(each -> {
             AlgorithmConfiguration maskAlgorithmConfig = algorithmMap.get(each.getMaskAlgorithm());
-            result.add(new LocalDataQueryResultRow(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(),
-                    maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps()))));
+            result.add(new LocalDataQueryResultRow(
+                    Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(), maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps()))));
         });
         return result;
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("table", "column", "algorithm_type", "algorithm_props");
+    public Class<MaskRule> getRuleClass() {
+        return MaskRule.class;
     }
     
     @Override

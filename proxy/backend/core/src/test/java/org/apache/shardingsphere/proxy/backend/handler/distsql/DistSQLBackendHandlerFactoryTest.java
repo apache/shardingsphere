@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.drop.UnregisterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;

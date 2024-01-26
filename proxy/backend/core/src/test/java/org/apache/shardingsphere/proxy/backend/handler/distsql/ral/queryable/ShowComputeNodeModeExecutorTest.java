@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodeModeStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -49,17 +49,6 @@ class ShowComputeNodeModeExecutorTest {
         assertThat(row.getCell(1), is("Cluster"));
         assertThat(row.getCell(2), is("ZooKeeper"));
         assertThat(row.getCell(3), is("{\"key\":\"value1,value2\"}"));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("repository"));
-        assertThat(iterator.next(), is("props"));
     }
     
     private InstanceContext createInstanceContext() {

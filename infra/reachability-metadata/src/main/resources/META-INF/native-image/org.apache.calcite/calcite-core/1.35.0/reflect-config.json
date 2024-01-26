@@ -1,11 +1,6 @@
 [
 {
   "condition":{"typeReachable":"org.apache.calcite.linq4j.tree.Types"},
-  "name":"java.lang.Boolean",
-  "fields":[{"name":"FALSE"}, {"name":"TRUE"}]
-},
-{
-  "condition":{"typeReachable":"org.apache.calcite.linq4j.tree.Types"},
   "name":"org.apache.calcite.DataContext",
   "methods":[{"name":"get","parameterTypes":["java.lang.String"] }, {"name":"getQueryProvider","parameterTypes":[] }, {"name":"getRootSchema","parameterTypes":[] }]
 },
