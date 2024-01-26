@@ -163,7 +163,7 @@ class UnregisterStorageUnitExecutorTest {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true, false);
         executor.setDatabase(database);
-        executor.execute(unregisterStorageUnitStatement, mock(ContextManager.class));
+        executor.execute(unregisterStorageUnitStatement, contextManager);
         verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
@@ -171,7 +171,7 @@ class UnregisterStorageUnitExecutorTest {
     void assertExecuteWithIfExists() throws SQLException {
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
         executor.setDatabase(database);
-        executor.execute(unregisterStorageUnitStatement, mock(ContextManager.class));
+        executor.execute(unregisterStorageUnitStatement, contextManager);
         verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
@@ -181,6 +181,6 @@ class UnregisterStorageUnitExecutorTest {
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
         executor.setDatabase(database);
-        assertThrows(DistSQLException.class, () -> executor.execute(unregisterStorageUnitStatement, mock(ContextManager.class)));
+        assertThrows(DistSQLException.class, () -> executor.execute(unregisterStorageUnitStatement, contextManager));
     }
 }
