@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.ral.query.aware;
+package org.apache.shardingsphere.distsql.handler.aware;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * Database Aware queryable RAL executor.
- * 
- * @param <T> type of queryable RAL statement
+ * DistSQL executor database Aware.
  */
-public interface DatabaseAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
+public interface DistSQLExecutorDatabaseAware {
     
     /**
      * Set database.

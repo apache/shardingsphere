@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.DatabaseAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
  * Show table meta data executor.
  */
 @Setter
-public final class ShowTableMetaDataExecutor implements DatabaseAwareQueryableRALExecutor<ShowTableMetaDataStatement> {
+public final class ShowTableMetaDataExecutor implements QueryableRALExecutor<ShowTableMetaDataStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
