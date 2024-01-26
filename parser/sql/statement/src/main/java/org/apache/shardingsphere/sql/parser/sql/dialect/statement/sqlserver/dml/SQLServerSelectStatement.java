@@ -58,6 +58,7 @@ public final class SQLServerSelectStatement extends SelectStatement implements S
     
     /**
      * Get into segment.
+     *
      * @return into segment
      */
     public Optional<TableSegment> getIntoSegment() {

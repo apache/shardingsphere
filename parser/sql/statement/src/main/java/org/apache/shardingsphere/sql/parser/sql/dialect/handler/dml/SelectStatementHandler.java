@@ -115,7 +115,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     
     /**
      * Set lock segment.
-     * 
+     *
      * @param selectStatement select statement
      * @param lockSegment lock segment
      */
@@ -192,7 +192,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     
     /**
      * Set with segment.
-     * 
+     *
      * @param selectStatement select statement
      * @param withSegment with segment
      */
@@ -223,7 +223,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     
     /**
      * Set model segment.
-     * 
+     *
      * @param selectStatement select statement
      * @param modelSegment model segment
      */
@@ -235,6 +235,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     
     /**
      * Get into segment.
+     *
      * @param selectStatement select statement
      * @return into table segment
      */
@@ -247,6 +248,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     
     /**
      * Set into segment.
+     *
      * @param selectStatement select statement
      * @param intoSegment table into segment
      */
