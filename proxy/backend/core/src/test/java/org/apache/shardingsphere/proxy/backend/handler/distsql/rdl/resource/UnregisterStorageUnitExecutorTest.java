@@ -112,7 +112,7 @@ class UnregisterStorageUnitExecutorTest {
         when(database.getRuleMetaData().getInUsedStorageUnitNameAndRulesMap()).thenReturn(Collections.emptyMap());
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false);
         executor.setDatabase(database);
-        executor.execute(unregisterStorageUnitStatement, mock(ContextManager.class));
+        executor.execute(unregisterStorageUnitStatement, contextManager);
         verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
