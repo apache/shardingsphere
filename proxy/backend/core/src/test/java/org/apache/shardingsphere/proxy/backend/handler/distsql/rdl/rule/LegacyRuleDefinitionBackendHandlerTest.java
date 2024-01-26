@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import io.netty.util.DefaultAttributeMap;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.fixture.CreateFixtureRuleStatement;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyRuleDefinitionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyDatabaseRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -55,7 +56,7 @@ class LegacyRuleDefinitionBackendHandlerTest {
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        ResponseHeader response = new LegacyRuleDefinitionBackendHandler(new CreateFixtureRuleStatement(), connectionSession).execute();
+        ResponseHeader response = new LegacyDatabaseRuleUpdater(new CreateFixtureRuleStatement(), connectionSession, mock(DatabaseRuleDefinitionExecutor.class)).executeUpdate();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }

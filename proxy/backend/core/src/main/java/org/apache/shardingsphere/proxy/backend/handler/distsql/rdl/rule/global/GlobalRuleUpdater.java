@@ -43,10 +43,9 @@ public final class GlobalRuleUpdater {
      */
     @SuppressWarnings("unchecked")
     public void executeUpdate() {
-        Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
+        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, executor.getRuleConfigurationClass());
         executor.checkSQLStatement(currentRuleConfig, sqlStatement);
         contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, currentRuleConfig));
     }

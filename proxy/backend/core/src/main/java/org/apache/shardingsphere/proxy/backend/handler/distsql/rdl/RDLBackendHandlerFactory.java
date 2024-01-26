@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.ResourceDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyRuleDefinitionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyDatabaseRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 
@@ -51,7 +51,7 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof ResourceDefinitionStatement) {
             return getResourceBackendHandler((ResourceDefinitionStatement) sqlStatement, connectionSession);
         }
-        return getRuleBackendHandler((RuleDefinitionStatement) sqlStatement, connectionSession);
+        return new RuleDefinitionBackendHandler((RuleDefinitionStatement) sqlStatement, connectionSession);
     }
     
     @SuppressWarnings("rawtypes")
@@ -61,14 +61,5 @@ public final class RDLBackendHandlerFactory {
             ((DatabaseAwareResourceDefinitionExecutor<?>) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
         }
         return new ResourceDefinitionBackendHandler(sqlStatement, executor);
-    }
-    
-    private static DistSQLBackendHandler getRuleBackendHandler(final RuleDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
-        // TODO Remove when metadata structure adjustment completed. #25485
-        String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
-        if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
-            return new RuleDefinitionBackendHandler(sqlStatement, connectionSession);
-        }
-        return new LegacyRuleDefinitionBackendHandler(sqlStatement, connectionSession);
     }
 }

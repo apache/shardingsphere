@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -51,17 +50,21 @@ import java.util.stream.Collectors;
  * Legacy rule definition backend handler.
  */
 @RequiredArgsConstructor
-public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendHandler {
+public final class LegacyDatabaseRuleUpdater {
     
     private final RuleDefinitionStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Override
-    public ResponseHeader execute() {
+    @SuppressWarnings("rawtypes")
+    private final DatabaseRuleDefinitionExecutor executor;
+    
+    /**
+     * Execute update.
+     */
+    @SuppressWarnings("unchecked")
+    public ResponseHeader executeUpdate() {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession));
-        DatabaseRuleDefinitionExecutor executor = TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);

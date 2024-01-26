@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.database.DatabaseRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.global.GlobalRuleUpdater;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyDatabaseRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.legacy.LegacyGlobalRuleUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -48,16 +49,33 @@ public final class RuleDefinitionBackendHandler implements DistSQLBackendHandler
     public ResponseHeader execute() {
         Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
         if (databaseExecutor.isPresent()) {
-            new DatabaseRuleUpdater(sqlStatement, connectionSession, databaseExecutor.get()).executeUpdate();
+            executeDatabaseRule(databaseExecutor.get());
         } else {
-            String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
-            GlobalRuleDefinitionExecutor globalExecutor = TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass());
-            if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
-                new GlobalRuleUpdater(sqlStatement, globalExecutor).executeUpdate();
-            } else {
-                new LegacyGlobalRuleUpdater(sqlStatement).executeUpdate();
-            }
+            executeGlobalRule(TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass()));
         }
         return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private void executeDatabaseRule(final DatabaseRuleDefinitionExecutor databaseExecutor) {
+        if (isNormalRuleUpdater()) {
+            new DatabaseRuleUpdater(sqlStatement, connectionSession, databaseExecutor).executeUpdate();
+        } else {
+            new LegacyDatabaseRuleUpdater(sqlStatement, connectionSession, databaseExecutor).executeUpdate();
+        }
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private void executeGlobalRule(final GlobalRuleDefinitionExecutor globalExecutor) {
+        if (isNormalRuleUpdater()) {
+            new GlobalRuleUpdater(sqlStatement, globalExecutor).executeUpdate();
+        } else {
+            new LegacyGlobalRuleUpdater(sqlStatement, globalExecutor).executeUpdate();
+        }
+    }
+    
+    private boolean isNormalRuleUpdater() {
+        String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
+        return "Cluster".equals(modeType) || "Standalone".equals(modeType);
     }
 }
