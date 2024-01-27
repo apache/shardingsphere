@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
@@ -57,16 +58,16 @@ public final class ExportMetaDataExecutor implements QueryableRALExecutor<Export
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ExportMetaDataStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        String exportedData = generateExportData(metaData);
+    public Collection<LocalDataQueryResultRow> getRows(final ExportMetaDataStatement sqlStatement, final ContextManager contextManager) {
+        String exportedData = generateExportData(contextManager.getMetaDataContexts().getMetaData());
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
             ExportUtils.exportToFile(filePath, exportedData);
-            return Collections.singleton(new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
+            return Collections.singleton(new LocalDataQueryResultRow(contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
                     String.format("Successfully exported to：'%s'", filePath)));
         }
         return Collections.singleton(new LocalDataQueryResultRow(
-                ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), Base64.encodeBase64String(exportedData.getBytes())));
+                contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), Base64.encodeBase64String(exportedData.getBytes())));
     }
     
     private String generateExportData(final ShardingSphereMetaData metaData) {

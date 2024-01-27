@@ -29,7 +29,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
@@ -37,7 +36,6 @@ class LabelComputeNodeUpdaterTest {
     
     @Test
     void assertWithStandaloneMode() {
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        assertThrows(UnsupportedSQLOperationException.class, () -> new LabelComputeNodeExecutor().executeUpdate(mock(LabelComputeNodeStatement.class)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> new LabelComputeNodeExecutor().executeUpdate(mock(LabelComputeNodeStatement.class), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
     }
 }

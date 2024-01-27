@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareR
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.distsql.statement.queryable.ShowTrafficRulesStatement;
@@ -45,7 +46,7 @@ public final class ShowTrafficRuleExecutor implements GlobalRuleAwareRQLExecutor
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowTrafficRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowTrafficRulesStatement sqlStatement, final ContextManager contextManager) {
         TrafficRuleConfiguration ruleConfig = rule.getConfiguration();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         ruleConfig.getTrafficStrategies().stream().filter(each -> null == sqlStatement.getRuleName() || each.getName().equals(sqlStatement.getRuleName()))

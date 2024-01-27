@@ -19,9 +19,8 @@ package org.apache.shardingsphere.distsql.handler.type.ral.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.ConnectionSizeAwareQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.DatabaseAwareQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.InstanceContextAwareQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -62,16 +61,13 @@ public abstract class QueryableRALExecuteEngine {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<LocalDataQueryResultRow> getRows(final QueryableRALExecutor executor) {
-        if (executor instanceof InstanceContextAwareQueryableRALExecutor) {
-            ((InstanceContextAwareQueryableRALExecutor) executor).setInstanceContext(contextManager.getInstanceContext());
-        }
-        if (executor instanceof DatabaseAwareQueryableRALExecutor) {
-            ((DatabaseAwareQueryableRALExecutor) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
+        if (executor instanceof DistSQLExecutorDatabaseAware) {
+            ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
         if (executor instanceof ConnectionSizeAwareQueryableRALExecutor) {
             ((ConnectionSizeAwareQueryableRALExecutor) executor).setConnectionSize(getConnectionSize());
         }
-        return executor.getRows(sqlStatement, contextManager.getMetaDataContexts().getMetaData());
+        return executor.getRows(sqlStatement, contextManager);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);

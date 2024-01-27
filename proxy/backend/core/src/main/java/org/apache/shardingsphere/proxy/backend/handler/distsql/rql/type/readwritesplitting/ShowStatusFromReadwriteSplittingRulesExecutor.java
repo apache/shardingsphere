@@ -19,7 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.readwri
 
 import com.google.common.base.Strings;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
@@ -31,10 +32,9 @@ import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.MetaDataAwareRQLExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 
 import java.util.Arrays;
@@ -54,14 +54,9 @@ import java.util.stream.Collectors;
  */
 // TODO move to readwritesplitting module
 @Setter
-public final class ShowStatusFromReadwriteSplittingRulesExecutor
-        implements
-            DatabaseAwareRQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement>,
-            MetaDataAwareRQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement> {
+public final class ShowStatusFromReadwriteSplittingRulesExecutor implements RQLExecutor<ShowStatusFromReadwriteSplittingRulesStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
-    
-    private MetaDataContexts metaDataContexts;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -69,9 +64,9 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement, final ContextManager contextManager) {
         Collection<String> allReadResources = getAllReadResources(sqlStatement.getGroupName());
-        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(database.getName(), metaDataContexts.getPersistService());
+        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(database.getName(), contextManager.getMetaDataContexts().getPersistService());
         return buildRows(allReadResources, persistentReadResources);
     }
     

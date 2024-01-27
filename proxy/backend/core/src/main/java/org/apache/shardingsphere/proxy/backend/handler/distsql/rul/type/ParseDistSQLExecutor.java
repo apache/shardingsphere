@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware.ConnectionSessionAwareRULExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -45,8 +46,8 @@ public final class ParseDistSQLExecutor implements ConnectionSessionAwareRULExec
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ParseStatement sqlStatement) {
-        SQLStatement parsedSqlStatement = parseSQL(metaData, sqlStatement);
+    public Collection<LocalDataQueryResultRow> getRows(final ParseStatement sqlStatement, final ContextManager contextManager) {
+        SQLStatement parsedSqlStatement = parseSQL(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         return Collections.singleton(new LocalDataQueryResultRow(parsedSqlStatement.getClass().getSimpleName(), JsonUtils.toJsonString(parsedSqlStatement)));
     }
     

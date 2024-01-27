@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
 
@@ -43,9 +44,10 @@ public interface RQLExecutor<T extends RQLStatement> extends TypedSPI {
      * Get query result rows.
      * 
      * @param sqlStatement SQL statement
+     * @param contextManager context manager
      * @return query result rows
      */
-    Collection<LocalDataQueryResultRow> getRows(T sqlStatement);
+    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ContextManager contextManager);
     
     @Override
     Class<T> getType();

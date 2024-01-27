@@ -19,12 +19,14 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import com.google.common.base.Joiner;
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadwriteSplittingRulesStatement;
@@ -41,7 +43,7 @@ import java.util.Optional;
  * Show readwrite-splitting rule executor.
  */
 @Setter
-public final class ShowReadwriteSplittingRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowReadwriteSplittingRulesStatement, ReadwriteSplittingRule> {
+public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<ShowReadwriteSplittingRulesStatement>, DatabaseRuleAwareRQLExecutor<ReadwriteSplittingRule> {
     
     private ReadwriteSplittingRule rule;
     
@@ -51,7 +53,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements DatabaseRuleAwa
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowReadwriteSplittingRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowReadwriteSplittingRulesStatement sqlStatement, final ContextManager contextManager) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Map<String, Map<String, String>> exportableDataSourceMap = getExportableDataSourceMap(rule);
         ReadwriteSplittingRuleConfiguration ruleConfig = rule.getConfiguration();

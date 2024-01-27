@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -42,7 +43,7 @@ public final class ShowTransactionRuleExecutor implements GlobalRuleAwareRQLExec
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowTransactionRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowTransactionRuleStatement sqlStatement, final ContextManager contextManager) {
         return Collections.singleton(new LocalDataQueryResultRow(rule.getDefaultType().name(), null != rule.getProviderType() ? rule.getProviderType() : "",
                 rule.getProps().isEmpty() ? "" : PropertiesConverter.convert(rule.getProps())));
     }

@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
  * Show sharding auditors executor.
  */
 @Setter
-public final class ShowShardingAuditorsExecutor implements DatabaseRuleAwareRQLExecutor<ShowShardingAuditorsStatement, ShardingRule> {
+public final class ShowShardingAuditorsExecutor implements RQLExecutor<ShowShardingAuditorsStatement>, DatabaseRuleAwareRQLExecutor<ShardingRule> {
     
     private ShardingRule rule;
     
@@ -42,7 +44,7 @@ public final class ShowShardingAuditorsExecutor implements DatabaseRuleAwareRQLE
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingAuditorsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingAuditorsStatement sqlStatement, final ContextManager contextManager) {
         return rule.getConfiguration().getAuditors().entrySet().stream()
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), PropertiesConverter.convert(entry.getValue().getProps()))).collect(Collectors.toList());
     }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManag
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StopMigrationStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Stop migration executor.
@@ -30,7 +31,7 @@ public final class StopMigrationExecutor implements UpdatableRALExecutor<StopMig
     private final PipelineJobManager jobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public void executeUpdate(final StopMigrationStatement sqlStatement) {
+    public void executeUpdate(final StopMigrationStatement sqlStatement, final ContextManager contextManager) {
         jobManager.stop(sqlStatement.getJobId());
     }
     

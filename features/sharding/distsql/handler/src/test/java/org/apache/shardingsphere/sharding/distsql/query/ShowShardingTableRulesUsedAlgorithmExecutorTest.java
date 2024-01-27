@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -52,14 +53,14 @@ class ShowShardingTableRulesUsedAlgorithmExecutorTest {
         executor.setRule(rule);
         ShowShardingTableRulesUsedAlgorithmStatement statement = mock(ShowShardingTableRulesUsedAlgorithmStatement.class);
         when(statement.getShardingAlgorithmName()).thenReturn(Optional.of("t_order_inline"));
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement, mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("table"));
         assertThat(row.getCell(2), is("t_order"));
         when(statement.getShardingAlgorithmName()).thenReturn(Optional.of("auto_mod"));
-        actual = executor.getRows(statement);
+        actual = executor.getRows(statement, mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         iterator = actual.iterator();
         row = iterator.next();

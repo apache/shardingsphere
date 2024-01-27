@@ -19,9 +19,11 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingKeyGeneratorsStatement;
@@ -37,7 +39,7 @@ import java.util.stream.Collectors;
  * Show unused sharding key generator executor.
  */
 @Setter
-public final class ShowUnusedShardingKeyGeneratorExecutor implements DatabaseRuleAwareRQLExecutor<ShowUnusedShardingKeyGeneratorsStatement, ShardingRule> {
+public final class ShowUnusedShardingKeyGeneratorExecutor implements RQLExecutor<ShowUnusedShardingKeyGeneratorsStatement>, DatabaseRuleAwareRQLExecutor<ShardingRule> {
     
     private ShardingRule rule;
     
@@ -47,7 +49,7 @@ public final class ShowUnusedShardingKeyGeneratorExecutor implements DatabaseRul
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingKeyGeneratorsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingKeyGeneratorsStatement sqlStatement, final ContextManager contextManager) {
         Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(rule.getConfiguration());
         return rule.getConfiguration().getKeyGenerators().entrySet().stream().filter(entry -> !inUsedKeyGenerators.contains(entry.getKey()))
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), buildProps(entry.getValue().getProps()))).collect(Collectors.toList());

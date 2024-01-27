@@ -26,7 +26,6 @@ import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -40,8 +39,7 @@ import java.util.Optional;
 public final class LabelComputeNodeExecutor implements UpdatableRALExecutor<LabelComputeNodeStatement> {
     
     @Override
-    public void executeUpdate(final LabelComputeNodeStatement sqlStatement) throws SQLException {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+    public void executeUpdate(final LabelComputeNodeStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         ShardingSpherePreconditions.checkState(null != persistService && null != persistService.getRepository() && persistService.getRepository() instanceof ClusterPersistRepository,
                 () -> new UnsupportedSQLOperationException("Labels can only be added in cluster mode"));

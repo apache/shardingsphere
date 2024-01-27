@@ -17,31 +17,30 @@
 
 package org.apache.shardingsphere.distsql.handler.type.rql.aware;
 
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
  * Database rule aware RQL executor.
  * 
- * @param <T> type of SQL statement
- * @param <R> type of ShardingSphere rule
+ * @param <T> type of ShardingSphere rule
  */
-public interface DatabaseRuleAwareRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> extends DatabaseAwareRQLExecutor<T> {
+public interface DatabaseRuleAwareRQLExecutor<T extends ShardingSphereRule> extends DistSQLExecutorDatabaseAware {
     
     /**
      * Set ShardingSphere rule.
      *
      * @param rule rule
      */
-    void setRule(R rule);
+    void setRule(T rule);
     
     /**
      * Get rule class.
      * 
      * @return rule class
      */
-    Class<R> getRuleClass();
+    Class<T> getRuleClass();
     
     @Override
     default void setDatabase(ShardingSphereDatabase database) {

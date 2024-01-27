@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowServiceProviderImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -39,7 +39,7 @@ class ShowServiceProviderImplementationsExecutorTest {
         QueryableRALExecutor<ShowServiceProviderImplementationsStatement> executor = new ShowServiceProviderImplementationsExecutor();
         ShowServiceProviderImplementationsStatement statement = mock(ShowServiceProviderImplementationsStatement.class);
         when(statement.getServiceProviderInterface()).thenReturn("org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolActiveDetector");
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement, mock(ShardingSphereMetaData.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement, mock(ContextManager.class));
         assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

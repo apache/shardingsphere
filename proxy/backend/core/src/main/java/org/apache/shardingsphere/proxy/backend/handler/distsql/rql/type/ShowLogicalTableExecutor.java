@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Collection;
@@ -35,7 +37,7 @@ import java.util.stream.Collectors;
  * Show logical table executor.
  */
 @Setter
-public final class ShowLogicalTableExecutor implements DatabaseAwareRQLExecutor<ShowLogicalTablesStatement> {
+public final class ShowLogicalTableExecutor implements RQLExecutor<ShowLogicalTablesStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
@@ -45,7 +47,7 @@ public final class ShowLogicalTableExecutor implements DatabaseAwareRQLExecutor<
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowLogicalTablesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowLogicalTablesStatement sqlStatement, final ContextManager contextManager) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
         String schemaName = dialectDatabaseMetaData.getDefaultSchema().orElse(database.getName());
         if (null == database.getSchema(schemaName)) {

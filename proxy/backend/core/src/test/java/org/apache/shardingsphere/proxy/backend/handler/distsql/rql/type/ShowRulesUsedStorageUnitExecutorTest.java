@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -62,7 +63,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
         executor.setDatabase(mockDatabase());
         ShowRulesUsedStorageUnitStatement sqlStatement = mock(ShowRulesUsedStorageUnitStatement.class);
         when(sqlStatement.getStorageUnitName()).thenReturn(Optional.of("foo_ds"));
-        Collection<LocalDataQueryResultRow> rowData = executor.getRows(sqlStatement);
+        Collection<LocalDataQueryResultRow> rowData = executor.getRows(sqlStatement, mock(ContextManager.class));
         assertThat(rowData.size(), is(7));
         Iterator<LocalDataQueryResultRow> actual = rowData.iterator();
         LocalDataQueryResultRow row = actual.next();
@@ -147,7 +148,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
         executor.setDatabase(mockEmptyDatabase());
         ShowRulesUsedStorageUnitStatement sqlStatement = mock(ShowRulesUsedStorageUnitStatement.class);
         when(sqlStatement.getStorageUnitName()).thenReturn(Optional.of("empty_ds"));
-        Collection<LocalDataQueryResultRow> rowData = executor.getRows(sqlStatement);
+        Collection<LocalDataQueryResultRow> rowData = executor.getRows(sqlStatement, mock(ContextManager.class));
         assertTrue(rowData.isEmpty());
     }
     

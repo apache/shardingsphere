@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareUpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -37,13 +37,12 @@ import java.util.Map;
  * Refresh table meta data executor.
  */
 @Setter
-public final class RefreshTableMetaDataExecutor implements DatabaseAwareUpdatableRALExecutor<RefreshTableMetaDataStatement> {
+public final class RefreshTableMetaDataExecutor implements UpdatableRALExecutor<RefreshTableMetaDataStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement) throws SQLException {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+    public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         checkStorageUnit(contextManager.getStorageUnits(database.getName()), sqlStatement);
         String schemaName = getSchemaName(sqlStatement);
         if (sqlStatement.getStorageUnitName().isPresent()) {

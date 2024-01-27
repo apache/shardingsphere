@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +38,7 @@ import java.util.stream.Collectors;
  * Show mask rule executor.
  */
 @Setter
-public final class ShowMaskRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowMaskRulesStatement, MaskRule> {
+public final class ShowMaskRuleExecutor implements RQLExecutor<ShowMaskRulesStatement>, DatabaseRuleAwareRQLExecutor<MaskRule> {
     
     private MaskRule rule;
     
@@ -46,7 +48,7 @@ public final class ShowMaskRuleExecutor implements DatabaseRuleAwareRQLExecutor<
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMaskRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMaskRulesStatement sqlStatement, final ContextManager contextManager) {
         return rule.getConfiguration().getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
                 .map(each -> buildColumnData(each, rule.getConfiguration().getMaskAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
     }

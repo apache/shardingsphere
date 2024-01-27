@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -115,7 +116,7 @@ class ShowStorageUnitExecutorTest {
         nameMap.put(0, "ds_2");
         nameMap.put(1, "ds_1");
         nameMap.put(2, "ds_0");
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(showStorageUnitsStatement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(showStorageUnitsStatement, mock(ContextManager.class));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         assertThat(actual.size(), is(3));
         int index = 0;
@@ -142,7 +143,7 @@ class ShowStorageUnitExecutorTest {
         ShowStorageUnitExecutor executor = new ShowStorageUnitExecutor();
         executor.setDatabase(database);
         ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), 0);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(showStorageUnitsStatement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(showStorageUnitsStatement, mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         LocalDataQueryResultRow data = rowData.next();
