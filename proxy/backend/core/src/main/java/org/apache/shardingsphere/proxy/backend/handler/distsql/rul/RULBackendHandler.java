@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.rul.RULExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -93,13 +92,8 @@ public final class RULBackendHandler extends RULExecuteEngine implements DistSQL
     }
     
     @Override
-    protected DatabaseType getDatabaseProtocolType() {
-        return connectionSession.getProtocolType();
-    }
-    
-    @Override
     protected DistSQLConnectionContext getDistSQLConnectionContext() {
-        return new DistSQLConnectionContext(connectionSession.getConnectionContext(),
-                connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
+        return new DistSQLConnectionContext(connectionSession.getConnectionContext(), connectionSession.getDatabaseConnectionManager().getConnectionSize(),
+                connectionSession.getProtocolType(), connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
     }
 }

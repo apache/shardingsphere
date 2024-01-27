@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -53,7 +54,8 @@ class ShowDistVariablesExecutorTest {
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
                 .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
-        executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1, mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
+        executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1,
+                mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDistVariablesStatement.class), contextManager);
         assertThat(actual.size(), is(21));
         LocalDataQueryResultRow row = actual.iterator().next();
@@ -69,7 +71,8 @@ class ShowDistVariablesExecutorTest {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new RuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
-        executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1, mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
+        executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1,
+                mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement("sql_%"), contextManager);
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();

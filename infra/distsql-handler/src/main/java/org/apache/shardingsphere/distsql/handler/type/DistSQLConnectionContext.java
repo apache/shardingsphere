@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.handler.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -33,6 +34,8 @@ public final class DistSQLConnectionContext {
     private final ConnectionContext connectionContext;
     
     private final int connectionSize;
+    
+    private final DatabaseType protocolType;
     
     @SuppressWarnings("rawtypes")
     private final DatabaseConnectionManager databaseConnectionManager;

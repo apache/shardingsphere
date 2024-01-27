@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -47,7 +48,8 @@ class ShowDistVariableExecutorTest {
     @Test
     void assertShowCachedConnections() {
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1, mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
+        executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1,
+                mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("CACHED_CONNECTIONS"), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
