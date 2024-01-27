@@ -76,7 +76,6 @@ public abstract class DistSQLQueryExecuteEngine {
         if (null == rows) {
             rows = executor.getRows(sqlStatement, contextManager);
         }
-        rows = executor.getRows(sqlStatement, contextManager);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
