@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.ral.query.aware;
-
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+package org.apache.shardingsphere.distsql.handler.aware;
 
 /**
  * Connection size aware queryable RAL executor.
- * 
- * @param <T> type of SQL statement
  */
-public interface ConnectionSizeAwareQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
+public interface DistSQLExecutorConnectionSizeAware {
     
     /**
      * Set connection size.
