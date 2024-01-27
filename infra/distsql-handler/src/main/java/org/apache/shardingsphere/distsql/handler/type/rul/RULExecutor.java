@@ -17,14 +17,9 @@
 
 package org.apache.shardingsphere.distsql.handler.type.rul;
 
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * RUL executor.
@@ -32,25 +27,5 @@ import java.util.Collection;
  * @param <T> type of RUL statement
  */
 @SingletonSPI
-public interface RULExecutor<T extends RULStatement> extends TypedSPI {
-    
-    /**
-     * Get column names.
-     *
-     * @return column names
-     */
-    Collection<String> getColumnNames();
-    
-    /**
-     * Get query result rows.
-     *
-     * @param sqlStatement SQL statement
-     * @param contextManager context manager
-     * @return query result rows
-     * @throws SQLException SQL exception
-     */
-    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ContextManager contextManager) throws SQLException;
-    
-    @Override
-    Class<T> getType();
+public interface RULExecutor<T extends RULStatement> extends DistSQLQueryExecutor<T> {
 }
