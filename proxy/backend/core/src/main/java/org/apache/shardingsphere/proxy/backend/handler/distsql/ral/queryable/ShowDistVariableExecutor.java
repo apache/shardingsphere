@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionSizeAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -44,9 +45,9 @@ import java.util.Properties;
  * Show dist variable executor.
  */
 @Setter
-public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<ShowDistVariableStatement>, DistSQLExecutorConnectionSizeAware {
+public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<ShowDistVariableStatement>, DistSQLExecutorConnectionContextAware {
     
-    private int connectionSize;
+    private DistSQLConnectionContext connectionContext;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -103,7 +104,7 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     
     private String getConnectionSize(final String variableName) {
         ShardingSpherePreconditions.checkState(DistSQLVariable.CACHED_CONNECTIONS == DistSQLVariable.getValueOf(variableName), () -> new UnsupportedVariableException(variableName));
-        return String.valueOf(connectionSize);
+        return String.valueOf(connectionContext.getConnectionSize());
     }
     
     private String getStringResult(final Object value) {

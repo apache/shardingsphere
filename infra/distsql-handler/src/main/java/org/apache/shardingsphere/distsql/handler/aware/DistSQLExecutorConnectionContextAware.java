@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.aware;
 
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 
 /**
  * DistSQL executor connection context aware.
@@ -27,25 +25,9 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 public interface DistSQLExecutorConnectionContextAware {
     
     /**
-     * Set connection context.
+     * Set DistSQL connection context.
      *
      * @param connectionContext connection context
      */
-    void setConnectionContext(ConnectionContext connectionContext);
-    
-    /**
-     * Set database connection manager.
-     * 
-     * @param databaseConnectionManager database connection manager
-     */
-    @SuppressWarnings("rawtypes")
-    void setDatabaseConnectionManager(DatabaseConnectionManager databaseConnectionManager);
-    
-    /**
-     * Set executor statement manager.
-     * 
-     * @param executorStatementManager executor statement manager
-     */
-    @SuppressWarnings("rawtypes")
-    void setStatementManager(ExecutorStatementManager executorStatementManager);
+    void setConnectionContext(DistSQLConnectionContext connectionContext);
 }

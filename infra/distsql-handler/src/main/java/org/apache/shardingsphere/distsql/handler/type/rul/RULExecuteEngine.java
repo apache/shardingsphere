@@ -22,15 +22,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -71,9 +69,7 @@ public abstract class RULExecuteEngine {
             ((DistSQLExecutorDatabaseProtocolTypeAware) executor).setDatabaseProtocolType(getDatabaseProtocolType());
         }
         if (executor instanceof DistSQLExecutorConnectionContextAware) {
-            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(getConnectionContext());
-            ((DistSQLExecutorConnectionContextAware) executor).setDatabaseConnectionManager(getDatabaseConnectionManager());
-            ((DistSQLExecutorConnectionContextAware) executor).setStatementManager(getStatementManager());
+            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(getDistSQLConnectionContext());
         }
         rows = executor.getRows(sqlStatement, contextManager);
     }
@@ -82,11 +78,5 @@ public abstract class RULExecuteEngine {
     
     protected abstract DatabaseType getDatabaseProtocolType();
     
-    protected abstract ConnectionContext getConnectionContext();
-    
-    @SuppressWarnings("rawtypes")
-    protected abstract DatabaseConnectionManager getDatabaseConnectionManager();
-    
-    @SuppressWarnings("rawtypes")
-    protected abstract ExecutorStatementManager getStatementManager();
+    protected abstract DistSQLConnectionContext getDistSQLConnectionContext();
 }
