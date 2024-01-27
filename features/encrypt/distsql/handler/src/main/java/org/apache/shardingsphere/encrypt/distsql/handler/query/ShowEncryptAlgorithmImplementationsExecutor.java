@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Show encrypt algorithm implementations executor.
  */
-public final class ShowEncryptAlgorithmImplementationsExecutor implements QueryableRALExecutor<ShowEncryptAlgorithmImplementationsStatement> {
+public final class ShowEncryptAlgorithmImplementationsExecutor implements DistSQLQueryExecutor<ShowEncryptAlgorithmImplementationsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {

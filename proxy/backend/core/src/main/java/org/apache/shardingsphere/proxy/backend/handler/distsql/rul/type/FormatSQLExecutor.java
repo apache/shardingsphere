@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
-import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -35,7 +35,7 @@ import java.util.Properties;
  * Format SQL executor.
  */
 @Setter
-public final class FormatSQLExecutor implements RULExecutor<FormatStatement>, DistSQLExecutorDatabaseProtocolTypeAware {
+public final class FormatSQLExecutor implements DistSQLQueryExecutor<FormatStatement>, DistSQLExecutorDatabaseProtocolTypeAware {
     
     private DatabaseType databaseProtocolType;
     

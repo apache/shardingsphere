@@ -22,8 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
-import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
@@ -42,7 +43,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public abstract class RULExecuteEngine {
     
-    private final RULStatement sqlStatement;
+    private final DistSQLStatement sqlStatement;
     
     private final String currentDatabaseName;
     
@@ -61,7 +62,7 @@ public abstract class RULExecuteEngine {
      */
     @SuppressWarnings("unchecked")
     public void executeQuery() throws SQLException {
-        RULExecutor<RULStatement> executor = TypedSPILoader.getService(RULExecutor.class, sqlStatement.getClass());
+        DistSQLQueryExecutor<DistSQLStatement> executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
         columnNames = executor.getColumnNames();
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));

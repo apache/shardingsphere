@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.ral.query;
+package org.apache.shardingsphere.distsql.handler.type;
 
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Queryable RAL executor.
- * 
- * @param <T> type of queryable RAL statement
+ * DistSQL query executor.
+ *
+ * @param <T> type of DistSQL statement
  */
 @SingletonSPI
-public interface QueryableRALExecutor<T extends QueryableRALStatement> extends TypedSPI {
+public interface DistSQLQueryExecutor<T extends DistSQLStatement> extends TypedSPI {
     
     /**
      * Get column names.
-     * 
+     *
      * @return column names
      */
     Collection<String> getColumnNames();
@@ -43,11 +44,12 @@ public interface QueryableRALExecutor<T extends QueryableRALStatement> extends T
     /**
      * Get query result rows.
      *
-     * @param sqlStatement SQL statement
+     * @param sqlStatement DistSQL statement
      * @param contextManager context manager
      * @return query result rows
+     * @throws SQLException SQL exception
      */
-    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ContextManager contextManager);
+    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ContextManager contextManager) throws SQLException;
     
     @Override
     Class<T> getType();

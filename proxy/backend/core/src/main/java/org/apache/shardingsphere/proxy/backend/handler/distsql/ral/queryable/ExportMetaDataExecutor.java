@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportMetaDataStatement;
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
@@ -50,7 +50,7 @@ import java.util.Properties;
 /**
  * Export metadata executor.
  */
-public final class ExportMetaDataExecutor implements QueryableRALExecutor<ExportMetaDataStatement> {
+public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<ExportMetaDataStatement> {
     
     @Override
     public Collection<String> getColumnNames() {

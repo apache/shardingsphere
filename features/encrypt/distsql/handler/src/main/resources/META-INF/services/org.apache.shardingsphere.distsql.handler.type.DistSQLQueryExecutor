@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.encrypt.distsql.handler.query.ShowEncryptRuleExecutor
+org.apache.shardingsphere.encrypt.distsql.handler.query.ShowEncryptAlgorithmImplementationsExecutor

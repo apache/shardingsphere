@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mask.distsql.handler.query.ShowMaskRuleExecutor
+org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ShowReadwriteSplittingRuleExecutor
+org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor

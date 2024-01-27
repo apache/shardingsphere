@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskAlgorithmImplementationsStatement;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Show mask algorithm implementations executor.
  */
-public final class ShowMaskAlgorithmImplementationsExecutor implements QueryableRALExecutor<ShowMaskAlgorithmImplementationsStatement> {
+public final class ShowMaskAlgorithmImplementationsExecutor implements DistSQLQueryExecutor<ShowMaskAlgorithmImplementationsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {

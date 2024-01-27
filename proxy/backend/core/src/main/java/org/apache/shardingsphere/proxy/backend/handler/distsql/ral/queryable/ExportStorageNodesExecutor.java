@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportStorageNodesStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
@@ -43,7 +43,7 @@ import java.util.Map.Entry;
 /**
  * Export storage nodes executor.
  */
-public final class ExportStorageNodesExecutor implements QueryableRALExecutor<ExportStorageNodesStatement> {
+public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<ExportStorageNodesStatement> {
     
     @Override
     public Collection<String> getColumnNames() {

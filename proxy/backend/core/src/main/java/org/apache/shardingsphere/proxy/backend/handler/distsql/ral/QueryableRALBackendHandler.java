@@ -55,7 +55,7 @@ public final class QueryableRALBackendHandler extends QueryableRALExecuteEngine 
     }
     
     @Override
-    public ResponseHeader execute() {
+    public ResponseHeader execute() throws SQLException {
         executeQuery();
         mergedResult = new LocalDataMergedResult(getRows());
         queryHeaders = createQueryHeader(getColumnNames());

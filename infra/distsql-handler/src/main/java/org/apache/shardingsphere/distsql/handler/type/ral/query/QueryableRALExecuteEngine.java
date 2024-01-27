@@ -19,15 +19,17 @@ package org.apache.shardingsphere.distsql.handler.type.ral.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionSizeAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -36,7 +38,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public abstract class QueryableRALExecuteEngine {
     
-    private final QueryableRALStatement sqlStatement;
+    private final DistSQLStatement sqlStatement;
     
     private final String currentDatabaseName;
     
@@ -51,16 +53,17 @@ public abstract class QueryableRALExecuteEngine {
     /**
      * Execute query.
      * 
+     * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void executeQuery() {
-        QueryableRALExecutor executor = TypedSPILoader.getService(QueryableRALExecutor.class, sqlStatement.getClass());
+    public void executeQuery() throws SQLException {
+        DistSQLQueryExecutor executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
         rows = getRows(executor);
         columnNames = executor.getColumnNames();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<LocalDataQueryResultRow> getRows(final QueryableRALExecutor executor) {
+    private Collection<LocalDataQueryResultRow> getRows(final DistSQLQueryExecutor executor) throws SQLException {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }

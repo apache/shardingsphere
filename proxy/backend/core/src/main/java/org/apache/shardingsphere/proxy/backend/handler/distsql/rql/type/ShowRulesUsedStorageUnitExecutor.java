@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * Show rules used storage unit executor.
  */
 @Setter
-public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowRulesUsedStorageUnitStatement>, DistSQLExecutorDatabaseAware {
+public final class ShowRulesUsedStorageUnitExecutor implements DistSQLQueryExecutor<ShowRulesUsedStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private static final String SHARDING = "sharding";
     

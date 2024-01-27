@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationListStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Show migration list executor.
  */
-public final class ShowMigrationListExecutor implements QueryableRALExecutor<ShowMigrationListStatement> {
+public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<ShowMigrationListStatement> {
     
     private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new MigrationJobType());
     
