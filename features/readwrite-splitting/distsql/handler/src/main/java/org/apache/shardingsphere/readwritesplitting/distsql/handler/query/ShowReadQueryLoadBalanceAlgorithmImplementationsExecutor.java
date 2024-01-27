@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Show read query load balance algorithm implementations executor.
  */
-public final class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor implements QueryableRALExecutor<ShowReadQueryLoadBalanceAlgorithmImplementationsStatement> {
+public final class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor implements DistSQLQueryExecutor<ShowReadQueryLoadBalanceAlgorithmImplementationsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {

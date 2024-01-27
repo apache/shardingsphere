@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ShowReadwriteSplittingRuleExecutor
+org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor

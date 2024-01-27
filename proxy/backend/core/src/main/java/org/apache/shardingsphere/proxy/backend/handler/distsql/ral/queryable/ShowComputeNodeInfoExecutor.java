@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -32,7 +32,7 @@ import java.util.Collections;
 /**
  * Show compute node info executor.
  */
-public final class ShowComputeNodeInfoExecutor implements QueryableRALExecutor<ShowComputeNodeInfoStatement> {
+public final class ShowComputeNodeInfoExecutor implements DistSQLQueryExecutor<ShowComputeNodeInfoStatement> {
     
     @Override
     public Collection<String> getColumnNames() {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowServiceProviderImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -36,7 +35,7 @@ class ShowServiceProviderImplementationsExecutorTest {
     
     @Test
     void assertGetRowData() {
-        QueryableRALExecutor<ShowServiceProviderImplementationsStatement> executor = new ShowServiceProviderImplementationsExecutor();
+        ShowServiceProviderImplementationsExecutor executor = new ShowServiceProviderImplementationsExecutor();
         ShowServiceProviderImplementationsStatement statement = mock(ShowServiceProviderImplementationsStatement.class);
         when(statement.getServiceProviderInterface()).thenReturn("org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolActiveDetector");
         Collection<LocalDataQueryResultRow> actual = executor.getRows(statement, mock(ContextManager.class));

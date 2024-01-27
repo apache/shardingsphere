@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowKeyGenerateAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Show key generate algorithm implementations executor.
  */
-public final class ShowKeyGenerateAlgorithmImplementationsExecutor implements QueryableRALExecutor<ShowKeyGenerateAlgorithmImplementationsStatement> {
+public final class ShowKeyGenerateAlgorithmImplementationsExecutor implements DistSQLQueryExecutor<ShowKeyGenerateAlgorithmImplementationsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {

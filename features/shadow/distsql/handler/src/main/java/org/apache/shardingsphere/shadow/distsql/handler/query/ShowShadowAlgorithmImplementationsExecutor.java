@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Show shadow algorithm implementations executor.
  */
-public final class ShowShadowAlgorithmImplementationsExecutor implements QueryableRALExecutor<ShowShadowAlgorithmImplementationsStatement> {
+public final class ShowShadowAlgorithmImplementationsExecutor implements DistSQLQueryExecutor<ShowShadowAlgorithmImplementationsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {

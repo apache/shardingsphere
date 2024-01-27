@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreamingListStatement;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Show streaming list executor.
  */
-public final class ShowStreamingListExecutor implements QueryableRALExecutor<ShowStreamingListStatement> {
+public final class ShowStreamingListExecutor implements DistSQLQueryExecutor<ShowStreamingListStatement> {
     
     private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new CDCJobType());
     
