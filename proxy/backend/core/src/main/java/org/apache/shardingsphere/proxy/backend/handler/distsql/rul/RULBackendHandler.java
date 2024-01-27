@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
-import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
-import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
+import org.apache.shardingsphere.distsql.handler.type.rul.RULExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -39,16 +39,14 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * RUL backend handler.
  */
-@RequiredArgsConstructor
-public final class RULBackendHandler implements DistSQLBackendHandler {
-    
-    private final RULStatement sqlStatement;
+public final class RULBackendHandler extends RULExecuteEngine implements DistSQLBackendHandler {
     
     private final ConnectionSession connectionSession;
     
@@ -56,32 +54,25 @@ public final class RULBackendHandler implements DistSQLBackendHandler {
     
     private MergedResult mergedResult;
     
-    @SuppressWarnings("unchecked")
+    public RULBackendHandler(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
+        super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
+        this.connectionSession = connectionSession;
+    }
+    
     @Override
     public ResponseHeader execute() throws SQLException {
-        RULExecutor<RULStatement> executor = TypedSPILoader.getService(RULExecutor.class, sqlStatement.getClass());
-        queryHeaders = createQueryHeader(executor);
-        mergedResult = createMergedResult(executor);
+        executeQuery();
+        queryHeaders = createQueryHeader(getColumnNames());
+        mergedResult = createMergedResult(getRows());
         return new QueryResponseHeader(queryHeaders);
     }
     
-    private List<QueryHeader> createQueryHeader(final RULExecutor<RULStatement> executor) {
-        return executor.getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
+    private List<QueryHeader> createQueryHeader(final Collection<String> columnNames) {
+        return columnNames.stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
     }
     
-    private MergedResult createMergedResult(final RULExecutor<RULStatement> executor) throws SQLException {
-        if (executor instanceof DistSQLExecutorDatabaseAware) {
-            ((DistSQLExecutorDatabaseAware) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession.getDatabaseName())));
-        }
-        if (executor instanceof DistSQLExecutorDatabaseProtocolTypeAware) {
-            ((DistSQLExecutorDatabaseProtocolTypeAware) executor).setDatabaseProtocolType(connectionSession.getProtocolType());
-        }
-        if (executor instanceof DistSQLExecutorConnectionContextAware) {
-            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(connectionSession.getConnectionContext());
-            ((DistSQLExecutorConnectionContextAware) executor).setDatabaseConnectionManager(connectionSession.getDatabaseConnectionManager());
-            ((DistSQLExecutorConnectionContextAware) executor).setStatementManager(connectionSession.getStatementManager());
-        }
-        return new LocalDataMergedResult(executor.getRows(sqlStatement, ProxyContext.getInstance().getContextManager()));
+    private MergedResult createMergedResult(final Collection<LocalDataQueryResultRow> rows) {
+        return new LocalDataMergedResult(rows);
     }
     
     @Override
@@ -96,5 +87,32 @@ public final class RULBackendHandler implements DistSQLBackendHandler {
             cells.add(new QueryResponseCell(queryHeaders.get(i).getColumnType(), mergedResult.getValue(i + 1, Object.class)));
         }
         return new QueryResponseRow(cells);
+    }
+    
+    @Override
+    protected ShardingSphereDatabase getDatabase(final String databaseName) {
+        return ProxyContext.getInstance().getDatabase(databaseName);
+    }
+    
+    @Override
+    protected DatabaseType getDatabaseProtocolType() {
+        return connectionSession.getProtocolType();
+    }
+    
+    @Override
+    protected ConnectionContext getConnectionContext() {
+        return connectionSession.getConnectionContext();
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @Override
+    protected DatabaseConnectionManager getDatabaseConnectionManager() {
+        return connectionSession.getDatabaseConnectionManager();
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @Override
+    protected ExecutorStatementManager getStatementManager() {
+        return connectionSession.getStatementManager();
     }
 }
