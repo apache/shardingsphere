@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.Consist
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.DropMigrationCheckStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Drop migration check executor.
@@ -30,7 +31,7 @@ public final class DropMigrationCheckExecutor implements UpdatableRALExecutor<Dr
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
     @Override
-    public void executeUpdate(final DropMigrationCheckStatement sqlStatement) {
+    public void executeUpdate(final DropMigrationCheckStatement sqlStatement, final ContextManager contextManager) {
         jobAPI.drop(sqlStatement.getJobId());
     }
     

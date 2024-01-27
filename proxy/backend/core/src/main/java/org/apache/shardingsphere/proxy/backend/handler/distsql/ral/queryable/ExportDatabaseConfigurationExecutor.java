@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.DatabaseAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
 
 import java.util.Collection;
@@ -32,7 +33,7 @@ import java.util.Collections;
  * Export database configuration executor.
  */
 @Setter
-public final class ExportDatabaseConfigurationExecutor implements DatabaseAwareQueryableRALExecutor<ExportDatabaseConfigurationStatement> {
+public final class ExportDatabaseConfigurationExecutor implements DistSQLQueryExecutor<ExportDatabaseConfigurationStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
@@ -42,7 +43,7 @@ public final class ExportDatabaseConfigurationExecutor implements DatabaseAwareQ
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ExportDatabaseConfigurationStatement sqlStatement, final ShardingSphereMetaData metaData) {
+    public Collection<LocalDataQueryResultRow> getRows(final ExportDatabaseConfigurationStatement sqlStatement, final ContextManager contextManager) {
         String exportedData = ExportUtils.generateExportDatabaseData(database);
         if (!sqlStatement.getFilePath().isPresent()) {
             return Collections.singleton(new LocalDataQueryResultRow(exportedData));

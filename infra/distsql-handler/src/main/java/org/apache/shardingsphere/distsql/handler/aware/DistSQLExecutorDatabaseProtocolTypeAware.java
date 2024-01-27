@@ -15,35 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rql.aware;
+package org.apache.shardingsphere.distsql.handler.aware;
 
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
- * Database rule aware RQL executor.
- * 
- * @param <T> type of SQL statement
- * @param <R> type of ShardingSphere rule
+ * DistSQL executor database protocol type Aware.
  */
-public interface DatabaseRuleAwareRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> extends DatabaseAwareRQLExecutor<T> {
+public interface DistSQLExecutorDatabaseProtocolTypeAware {
     
     /**
-     * Set ShardingSphere rule.
-     *
-     * @param rule rule
-     */
-    void setRule(R rule);
-    
-    /**
-     * Get rule class.
+     * Set database protocol type.
      * 
-     * @return rule class
+     * @param protocolType database protocol type
      */
-    Class<R> getRuleClass();
-    
-    @Override
-    default void setDatabase(ShardingSphereDatabase database) {
-    }
+    void setDatabaseProtocolType(DatabaseType protocolType);
 }

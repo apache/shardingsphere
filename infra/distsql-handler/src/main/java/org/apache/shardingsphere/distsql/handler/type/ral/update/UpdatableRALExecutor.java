@@ -20,6 +20,7 @@ package org.apache.shardingsphere.distsql.handler.type.ral.update;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 
@@ -35,9 +36,10 @@ public interface UpdatableRALExecutor<T extends UpdatableRALStatement> extends T
      * Execute update.
      *
      * @param sqlStatement updatable RAL statement
+     * @param contextManager context manager
      * @throws SQLException SQL exception
      */
-    void executeUpdate(T sqlStatement) throws SQLException;
+    void executeUpdate(T sqlStatement, ContextManager contextManager) throws SQLException;
     
     @Override
     Class<T> getType();

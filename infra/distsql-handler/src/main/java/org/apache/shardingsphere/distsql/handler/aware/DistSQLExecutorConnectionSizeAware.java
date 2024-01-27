@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.resource.aware;
-
-import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+package org.apache.shardingsphere.distsql.handler.aware;
 
 /**
- * Database aware resource definition executor.
- * 
- * @param <T> type of resource definition statement
+ * DistSQL executor connection size aware.
  */
-public interface DatabaseAwareResourceDefinitionExecutor<T extends ResourceDefinitionStatement> extends ResourceDefinitionExecutor<T> {
+public interface DistSQLExecutorConnectionSizeAware {
     
     /**
-     * Set database.
+     * Set connection size.
      *
-     * @param database database
+     * @param connectionSize connection size
      */
-    void setDatabase(ShardingSphereDatabase database);
+    void setConnectionSize(int connectionSize);
 }

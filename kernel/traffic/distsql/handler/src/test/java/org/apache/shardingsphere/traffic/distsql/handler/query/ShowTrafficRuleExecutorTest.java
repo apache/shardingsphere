@@ -19,6 +19,7 @@ package org.apache.shardingsphere.traffic.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -46,7 +47,7 @@ class ShowTrafficRuleExecutorTest {
         TrafficRule rule = mock(TrafficRule.class);
         when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowTrafficRulesStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowTrafficRulesStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

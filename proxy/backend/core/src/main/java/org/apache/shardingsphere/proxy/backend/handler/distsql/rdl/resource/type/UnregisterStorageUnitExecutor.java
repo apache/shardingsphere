@@ -20,17 +20,18 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.typ
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.resource.aware.DatabaseAwareResourceDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.sql.SQLException;
@@ -46,15 +47,15 @@ import java.util.stream.Collectors;
  */
 @Setter
 @Slf4j
-public final class UnregisterStorageUnitExecutor implements DatabaseAwareResourceDefinitionExecutor<UnregisterStorageUnitStatement> {
+public final class UnregisterStorageUnitExecutor implements ResourceDefinitionExecutor<UnregisterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
     @Override
-    public void execute(final UnregisterStorageUnitStatement sqlStatement) {
+    public void execute(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         checkSQLStatement(sqlStatement);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
+            contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Unregister storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));

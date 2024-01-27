@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.ral.query;
+package org.apache.shardingsphere.distsql.handler.type.rul;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionSizeAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -33,10 +38,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Queryable RAL execute engine.
+ * RUL execute engine.
  */
 @RequiredArgsConstructor
-public abstract class QueryableRALExecuteEngine {
+public abstract class RULExecuteEngine {
     
     private final DistSQLStatement sqlStatement;
     
@@ -52,28 +57,36 @@ public abstract class QueryableRALExecuteEngine {
     
     /**
      * Execute query.
-     * 
+     *
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public void executeQuery() throws SQLException {
-        DistSQLQueryExecutor executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
-        rows = getRows(executor);
+        DistSQLQueryExecutor<DistSQLStatement> executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
         columnNames = executor.getColumnNames();
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<LocalDataQueryResultRow> getRows(final DistSQLQueryExecutor executor) throws SQLException {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
-        if (executor instanceof DistSQLExecutorConnectionSizeAware) {
-            ((DistSQLExecutorConnectionSizeAware) executor).setConnectionSize(getConnectionSize());
+        if (executor instanceof DistSQLExecutorDatabaseProtocolTypeAware) {
+            ((DistSQLExecutorDatabaseProtocolTypeAware) executor).setDatabaseProtocolType(getDatabaseProtocolType());
         }
-        return executor.getRows(sqlStatement, contextManager);
+        if (executor instanceof DistSQLExecutorConnectionContextAware) {
+            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(getConnectionContext());
+            ((DistSQLExecutorConnectionContextAware) executor).setDatabaseConnectionManager(getDatabaseConnectionManager());
+            ((DistSQLExecutorConnectionContextAware) executor).setStatementManager(getStatementManager());
+        }
+        rows = executor.getRows(sqlStatement, contextManager);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);
     
-    protected abstract int getConnectionSize();
+    protected abstract DatabaseType getDatabaseProtocolType();
+    
+    protected abstract ConnectionContext getConnectionContext();
+    
+    @SuppressWarnings("rawtypes")
+    protected abstract DatabaseConnectionManager getDatabaseConnectionManager();
+    
+    @SuppressWarnings("rawtypes")
+    protected abstract ExecutorStatementManager getStatementManager();
 }

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.event.compute.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
  * Set instance status executor.
@@ -32,8 +31,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 public final class SetInstanceStatusExecutor implements UpdatableRALExecutor<SetInstanceStatusStatement> {
     
     @Override
-    public void executeUpdate(final SetInstanceStatusStatement sqlStatement) {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+    public void executeUpdate(final SetInstanceStatusStatement sqlStatement, final ContextManager contextManager) {
         ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
         String instanceId = sqlStatement.getInstanceId();
         boolean isDisable = "DISABLE".equals(sqlStatement.getStatus());

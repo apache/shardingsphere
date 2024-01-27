@@ -23,10 +23,10 @@ import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreami
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,12 +36,12 @@ import java.util.stream.Collectors;
 /**
  * Show streaming job status executor.
  */
-public final class ShowStreamingJobStatusExecutor implements QueryableRALExecutor<ShowStreamingStatusStatement> {
+public final class ShowStreamingJobStatusExecutor implements DistSQLQueryExecutor<ShowStreamingStatusStatement> {
     
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingStatusStatement sqlStatement, final ShardingSphereMetaData metaData) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingStatusStatement sqlStatement, final ContextManager contextManager) {
         Collection<CDCJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
         return jobItemInfos.stream().map(each -> getRow(each, currentTimeMillis)).collect(Collectors.toList());

@@ -20,8 +20,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.re
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareUpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,7 +37,6 @@ import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
@@ -54,16 +54,15 @@ import java.util.stream.Collectors;
  */
 // TODO move to readwritesplitting module
 @Setter
-public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements DatabaseAwareUpdatableRALExecutor<AlterReadwriteSplittingStorageUnitStatusStatement> {
+public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements UpdatableRALExecutor<AlterReadwriteSplittingStorageUnitStatusStatement>, DistSQLExecutorDatabaseAware {
     
     private static final String DISABLE = "DISABLE";
     
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement) {
+    public void executeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement, final ContextManager contextManager) {
         String toBeUpdatedStorageUnit = sqlStatement.getStorageUnitName();
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         checkModeAndPersistRepository(contextManager);
         checkReadwriteSplittingRule();
         Map<String, String> replicaStorageUnits = getReplicaResources();
@@ -78,10 +77,10 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements D
         Collection<String> groupNames = getGroupNames(toBeUpdatedStorageUnit, replicaStorageUnits, disabledStorageUnits, autoAwareResources);
         String groupName = sqlStatement.getGroupName();
         if (Strings.isNullOrEmpty(groupName)) {
-            updateStatus(database.getName(), groupNames, toBeUpdatedStorageUnit, isDisable);
+            updateStatus(contextManager, database.getName(), groupNames, toBeUpdatedStorageUnit, isDisable);
         } else {
             checkGroupName(groupNames, groupName);
-            updateStatus(database.getName(), Collections.singleton(groupName), toBeUpdatedStorageUnit, isDisable);
+            updateStatus(contextManager, database.getName(), Collections.singleton(groupName), toBeUpdatedStorageUnit, isDisable);
         }
     }
     
@@ -169,10 +168,10 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements D
         return Splitter.on(",").splitToList(groupNames);
     }
     
-    private void updateStatus(final String databaseName, final Collection<String> groupNames, final String toBeDisableStorageUnit, final boolean isDisable) {
+    private void updateStatus(final ContextManager contextManager, final String databaseName, final Collection<String> groupNames, final String toBeDisableStorageUnit, final boolean isDisable) {
         groupNames.forEach(each -> {
             StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? DataSourceState.DISABLED : DataSourceState.ENABLED);
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext()
+            contextManager.getInstanceContext().getEventBusContext()
                     .post(new DataSourceDisabledEvent(databaseName, each, toBeDisableStorageUnit, storageNodeDataSource));
         });
     }

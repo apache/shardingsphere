@@ -54,8 +54,8 @@ class RefreshTableMetaDataUpdaterTest {
     @Test
     void assertEmptyResource() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStorageUnits("foo_db")).thenReturn(Collections.emptyMap());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(contextManager.getStorageUnits("foo_db")).thenReturn(Collections.emptyMap());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);

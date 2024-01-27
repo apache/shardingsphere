@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.queryable.ShowSQLFederationRuleStatement;
@@ -40,7 +41,7 @@ class ShowSQLFederationRuleExecutorTest {
         SQLFederationRule rule = mock(SQLFederationRule.class);
         when(rule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, true, new CacheOption(2000, 65535L)));
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSQLFederationRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowSQLFederationRuleStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

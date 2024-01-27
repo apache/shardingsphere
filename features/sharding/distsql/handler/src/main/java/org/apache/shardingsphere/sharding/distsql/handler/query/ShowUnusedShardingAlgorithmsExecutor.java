@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAlgorithmsStatement;
@@ -39,7 +41,7 @@ import java.util.Properties;
  * Show unused sharding algorithms executor.
  */
 @Setter
-public final class ShowUnusedShardingAlgorithmsExecutor implements DatabaseRuleAwareRQLExecutor<ShowUnusedShardingAlgorithmsStatement, ShardingRule> {
+public final class ShowUnusedShardingAlgorithmsExecutor implements DistSQLQueryExecutor<ShowUnusedShardingAlgorithmsStatement>, DistSQLExecutorRuleAware<ShardingRule> {
     
     private ShardingRule rule;
     
@@ -49,7 +51,7 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements DatabaseRuleA
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingAlgorithmsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
         ShardingRuleConfiguration shardingRuleConfig = rule.getConfiguration();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<String> inUsedAlgorithms = getUsedShardingAlgorithms(shardingRuleConfig);

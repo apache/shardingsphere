@@ -36,7 +36,7 @@ public final class UpdatableRALBackendHandler extends UpdatableRALExecuteEngine 
     private final UpdatableRALStatement sqlStatement;
     
     public UpdatableRALBackendHandler(final UpdatableRALStatement sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, connectionSession.getDatabaseName());
+        super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
         this.sqlStatement = sqlStatement;
     }
     

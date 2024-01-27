@@ -80,20 +80,20 @@ class ImportMetaDataUpdaterTest {
     void assertCheckImportEmptyMetaData() {
         init(null);
         assertThrows(MissingRequiredDataSourcesException.class, () -> importMetaDataUpdater.executeUpdate(
-                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath())));
+                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath()), mock(ContextManager.class)));
     }
     
     @Test
     void assertImportMetaDataFromJsonValue() {
         init(EMPTY);
-        assertThrows(NullPointerException.class, () -> importMetaDataUpdater.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null)));
+        assertThrows(NullPointerException.class, () -> importMetaDataUpdater.executeUpdate(new ImportMetaDataStatement(METADATA_VALUE, null), mock(ContextManager.class)));
     }
     
     @Test
     void assertImportExistedMetaDataFromFile() {
         init(EMPTY);
         assertThrows(UnsupportedSQLOperationException.class, () -> importMetaDataUpdater.executeUpdate(
-                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath())));
+                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath()), mock(ContextManager.class)));
     }
     
     private void init(final String feature) {

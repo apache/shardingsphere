@@ -19,9 +19,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.typ
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.resource.aware.DatabaseAwareResourceDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsConverter;
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,18 +47,18 @@ import java.util.stream.Collectors;
  */
 @Setter
 @Slf4j
-public final class RegisterStorageUnitExecutor implements DatabaseAwareResourceDefinitionExecutor<RegisterStorageUnitStatement> {
+public final class RegisterStorageUnitExecutor implements ResourceDefinitionExecutor<RegisterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
     
     private ShardingSphereDatabase database;
     
     @Override
-    public void execute(final RegisterStorageUnitStatement sqlStatement) {
-        checkSQLStatement(sqlStatement);
+    public void execute(final RegisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        checkSQLStatement(contextManager, sqlStatement);
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
         if (sqlStatement.isIfNotExists()) {
-            Collection<String> currentStorageUnits = getCurrentStorageUnitNames();
+            Collection<String> currentStorageUnits = getCurrentStorageUnitNames(contextManager);
             Collection<String> logicalDataSourceNames = getLogicalDataSourceNames();
             propsMap.keySet().removeIf(currentStorageUnits::contains);
             propsMap.keySet().removeIf(logicalDataSourceNames::contains);
@@ -67,25 +68,25 @@ public final class RegisterStorageUnitExecutor implements DatabaseAwareResourceD
         }
         validateHandler.validate(propsMap);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(database.getName(), propsMap);
+            contextManager.getInstanceContext().getModeContextManager().registerStorageUnits(database.getName(), propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             log.error("Register storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
     }
     
-    private void checkSQLStatement(final RegisterStorageUnitStatement sqlStatement) {
+    private void checkSQLStatement(final ContextManager contextManager, final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getStorageUnits().size());
         if (!sqlStatement.isIfNotExists()) {
-            checkDuplicatedDataSourceNames(dataSourceNames, sqlStatement);
+            checkDuplicatedDataSourceNames(contextManager, dataSourceNames, sqlStatement);
             checkDuplicatedLogicalDataSourceNames(dataSourceNames);
         }
     }
     
-    private void checkDuplicatedDataSourceNames(final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
+    private void checkDuplicatedDataSourceNames(final ContextManager contextManager, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> duplicatedDataSourceNames = new HashSet<>(sqlStatement.getStorageUnits().size(), 1F);
         for (DataSourceSegment each : sqlStatement.getStorageUnits()) {
-            if (dataSourceNames.contains(each.getName()) || getCurrentStorageUnitNames().contains(each.getName())) {
+            if (dataSourceNames.contains(each.getName()) || getCurrentStorageUnitNames(contextManager).contains(each.getName())) {
                 duplicatedDataSourceNames.add(each.getName());
             }
             dataSourceNames.add(each.getName());
@@ -103,8 +104,8 @@ public final class RegisterStorageUnitExecutor implements DatabaseAwareResourceD
                 () -> new InvalidStorageUnitsException(Collections.singleton(String.format("%s already existed in rule", duplicatedDataSourceNames))));
     }
     
-    private Collection<String> getCurrentStorageUnitNames() {
-        return ProxyContext.getInstance().getContextManager().getStorageUnits(database.getName()).keySet();
+    private Collection<String> getCurrentStorageUnitNames(final ContextManager contextManager) {
+        return contextManager.getStorageUnits(database.getName()).keySet();
     }
     
     private Collection<String> getLogicalDataSourceNames() {

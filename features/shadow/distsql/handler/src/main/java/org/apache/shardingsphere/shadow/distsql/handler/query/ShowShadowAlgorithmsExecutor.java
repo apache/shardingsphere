@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
  * Show shadow algorithms executor.
  */
 @Setter
-public final class ShowShadowAlgorithmsExecutor implements DatabaseRuleAwareRQLExecutor<ShowShadowAlgorithmsStatement, ShadowRule> {
+public final class ShowShadowAlgorithmsExecutor implements DistSQLQueryExecutor<ShowShadowAlgorithmsStatement>, DistSQLExecutorRuleAware<ShadowRule> {
     
     private ShadowRule rule;
     
@@ -43,7 +45,7 @@ public final class ShowShadowAlgorithmsExecutor implements DatabaseRuleAwareRQLE
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
         String defaultAlgorithm = rule.getConfiguration().getDefaultShadowAlgorithmName();
         return rule.getConfiguration().getShadowAlgorithms().entrySet().stream()
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(),

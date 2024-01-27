@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -40,7 +41,7 @@ class ShowDefaultSingleTableStorageUnitExecutorTest {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDefaultSingleTableStorageUnitStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDefaultSingleTableStorageUnitStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         String defaultSingleTableStorageUnit = (String) rowData.next().getCell(1);

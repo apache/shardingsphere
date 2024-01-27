@@ -23,22 +23,24 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequire
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.DatabaseAwareUpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Migrate table executor.
  */
 @Setter
-public final class MigrateTableExecutor implements DatabaseAwareUpdatableRALExecutor<MigrateTableStatement> {
+public final class MigrateTableExecutor implements UpdatableRALExecutor<MigrateTableStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final MigrateTableStatement sqlStatement) {
+    public void executeUpdate(final MigrateTableStatement sqlStatement, final ContextManager contextManager) {
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
         ShardingSpherePreconditions.checkNotNull(targetDatabaseName, MissingRequiredTargetDatabaseException::new);
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");

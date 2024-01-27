@@ -15,37 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rql;
+package org.apache.shardingsphere.distsql.handler.type;
 
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * RQL executor.
- * 
- * @param <T> type of RQL statement
+ * DistSQL query executor.
+ *
+ * @param <T> type of DistSQL statement
  */
 @SingletonSPI
-public interface RQLExecutor<T extends RQLStatement> extends TypedSPI {
+public interface DistSQLQueryExecutor<T extends DistSQLStatement> extends TypedSPI {
     
     /**
      * Get column names.
-     * 
+     *
      * @return column names
      */
     Collection<String> getColumnNames();
     
     /**
      * Get query result rows.
-     * 
-     * @param sqlStatement SQL statement
+     *
+     * @param sqlStatement DistSQL statement
+     * @param contextManager context manager
      * @return query result rows
+     * @throws SQLException SQL exception
      */
-    Collection<LocalDataQueryResultRow> getRows(T sqlStatement);
+    Collection<LocalDataQueryResultRow> getRows(T sqlStatement, ContextManager contextManager) throws SQLException;
     
     @Override
     Class<T> getType();

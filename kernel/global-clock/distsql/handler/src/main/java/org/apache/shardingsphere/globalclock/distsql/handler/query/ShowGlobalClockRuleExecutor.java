@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.globalclock.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +35,7 @@ import java.util.Collections;
  * Show global clock rule executor.
  */
 @Setter
-public final class ShowGlobalClockRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowGlobalClockRuleStatement, GlobalClockRule> {
+public final class ShowGlobalClockRuleExecutor implements DistSQLQueryExecutor<ShowGlobalClockRuleStatement>, DistSQLExecutorRuleAware<GlobalClockRule> {
     
     private GlobalClockRule rule;
     
@@ -43,7 +45,7 @@ public final class ShowGlobalClockRuleExecutor implements GlobalRuleAwareRQLExec
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement, final ContextManager contextManager) {
         GlobalClockRuleConfiguration ruleConfig = rule.getConfiguration();
         return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(),
                 String.valueOf(ruleConfig.isEnabled()), PropertiesConverter.convert(ruleConfig.getProps())));

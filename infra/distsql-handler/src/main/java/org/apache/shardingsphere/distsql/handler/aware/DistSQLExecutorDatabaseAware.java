@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rql.aware;
+package org.apache.shardingsphere.distsql.handler.aware;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * Database aware RQL executor.
- * 
- * @param <T> type of SQL statement
+ * DistSQL executor database Aware.
  */
-public interface DatabaseAwareRQLExecutor<T extends RQLStatement> extends RQLExecutor<T> {
+public interface DistSQLExecutorDatabaseAware {
     
     /**
      * Set database.
-     *
+     * 
      * @param database database
      */
     void setDatabase(ShardingSphereDatabase database);

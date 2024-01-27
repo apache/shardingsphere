@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -45,7 +47,7 @@ import java.util.Properties;
  * Show storage unit executor.
  */
 @Setter
-public final class ShowStorageUnitExecutor implements DatabaseAwareRQLExecutor<ShowStorageUnitsStatement> {
+public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowStorageUnitsStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
@@ -56,7 +58,7 @@ public final class ShowStorageUnitExecutor implements DatabaseAwareRQLExecutor<S
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowStorageUnitsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStorageUnitsStatement sqlStatement, final ContextManager contextManager) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, StorageUnit> entry : getToBeShownStorageUnits(database, sqlStatement).entrySet()) {
             ConnectionProperties connectionProps = entry.getValue().getConnectionProperties();
