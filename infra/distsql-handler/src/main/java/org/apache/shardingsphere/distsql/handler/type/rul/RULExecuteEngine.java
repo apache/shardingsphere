@@ -21,12 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -65,9 +63,6 @@ public abstract class RULExecuteEngine {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
-        if (executor instanceof DistSQLExecutorDatabaseProtocolTypeAware) {
-            ((DistSQLExecutorDatabaseProtocolTypeAware) executor).setDatabaseProtocolType(getDatabaseProtocolType());
-        }
         if (executor instanceof DistSQLExecutorConnectionContextAware) {
             ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(getDistSQLConnectionContext());
         }
@@ -75,8 +70,6 @@ public abstract class RULExecuteEngine {
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);
-    
-    protected abstract DatabaseType getDatabaseProtocolType();
     
     protected abstract DistSQLConnectionContext getDistSQLConnectionContext();
 }

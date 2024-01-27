@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
@@ -37,9 +37,9 @@ import java.util.Collections;
  * Parse DistSQL executor.
  */
 @Setter
-public final class ParseDistSQLExecutor implements DistSQLQueryExecutor<ParseStatement>, DistSQLExecutorDatabaseProtocolTypeAware {
+public final class ParseDistSQLExecutor implements DistSQLQueryExecutor<ParseStatement>, DistSQLExecutorConnectionContextAware {
     
-    private DatabaseType databaseProtocolType;
+    private DistSQLConnectionContext connectionContext;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -54,7 +54,7 @@ public final class ParseDistSQLExecutor implements DistSQLQueryExecutor<ParseSta
     
     private SQLStatement parseSQL(final ShardingSphereMetaData metaData, final ParseStatement sqlStatement) {
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(databaseProtocolType).parse(sqlStatement.getSql(), false);
+        return sqlParserRule.getSQLParserEngine(connectionContext.getProtocolType()).parse(sqlStatement.getSql(), false);
     }
     
     @Override

@@ -88,7 +88,7 @@ public final class QueryableRALBackendHandler extends QueryableRALExecuteEngine 
     
     @Override
     protected DistSQLConnectionContext getDistSQLConnectionContext() {
-        return new DistSQLConnectionContext(connectionSession.getConnectionContext(),
-                connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
+        return new DistSQLConnectionContext(connectionSession.getConnectionContext(), connectionSession.getDatabaseConnectionManager().getConnectionSize(),
+                connectionSession.getProtocolType(), connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
     }
 }
