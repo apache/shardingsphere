@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import com.google.common.base.Strings;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Show unused sharding key generator executor.
  */
 @Setter
-public final class ShowUnusedShardingKeyGeneratorExecutor implements RQLExecutor<ShowUnusedShardingKeyGeneratorsStatement>, DistSQLExecutorRuleAware<ShardingRule> {
+public final class ShowUnusedShardingKeyGeneratorExecutor implements DistSQLQueryExecutor<ShowUnusedShardingKeyGeneratorsStatement>, DistSQLExecutorRuleAware<ShardingRule> {
     
     private ShardingRule rule;
     

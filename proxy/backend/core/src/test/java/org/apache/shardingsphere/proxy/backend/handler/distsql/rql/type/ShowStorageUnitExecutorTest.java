@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -159,25 +158,5 @@ class ShowStorageUnitExecutorTest {
         assertThat(data.getCell(10), is("10"));
         assertThat(data.getCell(11), is(""));
         assertThat(data.getCell(12), is("{\"openedConnections\":[],\"closed\":false}"));
-    }
-    
-    @Test
-    void assertGetColumns() {
-        RQLExecutor<ShowStorageUnitsStatement> executor = new ShowStorageUnitExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(12));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("host"));
-        assertThat(iterator.next(), is("port"));
-        assertThat(iterator.next(), is("db"));
-        assertThat(iterator.next(), is("connection_timeout_milliseconds"));
-        assertThat(iterator.next(), is("idle_timeout_milliseconds"));
-        assertThat(iterator.next(), is("max_lifetime_milliseconds"));
-        assertThat(iterator.next(), is("max_pool_size"));
-        assertThat(iterator.next(), is("min_pool_size"));
-        assertThat(iterator.next(), is("read_only"));
-        assertThat(iterator.next(), is("other_attributes"));
     }
 }

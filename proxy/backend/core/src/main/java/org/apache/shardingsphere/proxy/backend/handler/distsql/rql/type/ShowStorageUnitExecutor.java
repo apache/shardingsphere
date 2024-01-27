@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -47,7 +47,7 @@ import java.util.Properties;
  * Show storage unit executor.
  */
 @Setter
-public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUnitsStatement>, DistSQLExecutorDatabaseAware {
+public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowStorageUnitsStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
@@ -37,7 +37,7 @@ import java.util.LinkedList;
  * Show traffic rule executor.
  */
 @Setter
-public final class ShowTrafficRuleExecutor implements RQLExecutor<ShowTrafficRulesStatement>, DistSQLExecutorRuleAware<TrafficRule> {
+public final class ShowTrafficRuleExecutor implements DistSQLQueryExecutor<ShowTrafficRulesStatement>, DistSQLExecutorRuleAware<TrafficRule> {
     
     private TrafficRule rule;
     

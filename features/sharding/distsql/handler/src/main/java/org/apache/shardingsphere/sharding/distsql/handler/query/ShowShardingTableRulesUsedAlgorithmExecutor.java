@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -36,7 +36,7 @@ import java.util.LinkedList;
  * Show sharding table rules used algorithm executor.
  */
 @Setter
-public final class ShowShardingTableRulesUsedAlgorithmExecutor implements RQLExecutor<ShowShardingTableRulesUsedAlgorithmStatement>, DistSQLExecutorRuleAware<ShardingRule> {
+public final class ShowShardingTableRulesUsedAlgorithmExecutor implements DistSQLQueryExecutor<ShowShardingTableRulesUsedAlgorithmStatement>, DistSQLExecutorRuleAware<ShardingRule> {
     
     private ShardingRule rule;
     

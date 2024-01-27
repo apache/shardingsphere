@@ -15,6 +15,10 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.ShowStorageUnitExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.ShowRulesUsedStorageUnitExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.ShowLogicalTableExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.readwritesplitting.ShowStatusFromReadwriteSplittingRulesExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type.FormatSQLExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type.ParseDistSQLExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type.PreviewExecutor

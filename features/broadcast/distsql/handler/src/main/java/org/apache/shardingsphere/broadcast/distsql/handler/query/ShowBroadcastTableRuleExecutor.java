@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * Show broadcast table rule executor.
  */
 @Setter
-public final class ShowBroadcastTableRuleExecutor implements RQLExecutor<ShowBroadcastTableRulesStatement>, DistSQLExecutorRuleAware<BroadcastRule> {
+public final class ShowBroadcastTableRuleExecutor implements DistSQLQueryExecutor<ShowBroadcastTableRulesStatement>, DistSQLExecutorRuleAware<BroadcastRule> {
     
     private BroadcastRule rule;
     
