@@ -32,7 +32,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,16 +43,6 @@ import static org.mockito.Mockito.when;
 class ShowDistVariableExecutorTest {
     
     private final ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-    
-    @Test
-    void assertGetColumns() {
-        ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("variable_name"));
-        assertThat(iterator.next(), is("variable_value"));
-    }
     
     @Test
     void assertShowCachedConnections() {

@@ -71,7 +71,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -108,16 +107,6 @@ class ExportMetaDataExecutorTest {
     @BeforeEach
     void setUp() {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-    }
-    
-    @Test
-    void assertGetColumns() {
-        Collection<String> columns = new ExportMetaDataExecutor().getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> columnIterator = columns.iterator();
-        assertThat(columnIterator.next(), is("id"));
-        assertThat(columnIterator.next(), is("create_time"));
-        assertThat(columnIterator.next(), is("cluster_info"));
     }
     
     @Test

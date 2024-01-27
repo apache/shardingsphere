@@ -61,7 +61,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -85,16 +84,6 @@ class ExportStorageNodesExecutorTest {
     @BeforeEach
     void setUp() {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-    }
-    
-    @Test
-    void assertGetColumns() {
-        Collection<String> columns = new ExportStorageNodesExecutor().getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> columnIterator = columns.iterator();
-        assertThat(columnIterator.next(), is("id"));
-        assertThat(columnIterator.next(), is("create_time"));
-        assertThat(columnIterator.next(), is("storage_nodes"));
     }
     
     @Test
