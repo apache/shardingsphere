@@ -58,8 +58,10 @@ class ShowComputeNodeInfoExecutorTest {
     @Test
     void assertExecute() {
         ShowComputeNodeInfoExecutor executor = new ShowComputeNodeInfoExecutor();
-        executor.setInstanceContext(createInstanceContext());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodeInfoStatement.class), mock(ContextManager.class));
+        ContextManager contextManager = mock(ContextManager.class);
+        InstanceContext instanceContext = createInstanceContext();
+        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodeInfoStatement.class), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));

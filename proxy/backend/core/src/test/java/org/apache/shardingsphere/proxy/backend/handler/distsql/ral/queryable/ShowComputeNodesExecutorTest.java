@@ -62,8 +62,10 @@ class ShowComputeNodesExecutorTest {
     @Test
     void assertExecuteWithStandaloneMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
-        executor.setInstanceContext(createStandaloneInstanceContext());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ContextManager.class));
+        ContextManager contextManager = mock(ContextManager.class);
+        InstanceContext instanceContext = createStandaloneInstanceContext();
+        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));
@@ -80,8 +82,10 @@ class ShowComputeNodesExecutorTest {
     @Test
     void assertExecuteWithClusterMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
-        executor.setInstanceContext(createClusterInstanceContext());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ContextManager.class));
+        ContextManager contextManager = mock(ContextManager.class);
+        InstanceContext instanceContext = createClusterInstanceContext();
+        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));
