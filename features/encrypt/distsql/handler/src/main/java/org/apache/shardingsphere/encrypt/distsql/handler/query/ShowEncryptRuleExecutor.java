@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
  * Show encrypt rule executor.
  */
 @Setter
-public final class ShowEncryptRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowEncryptRulesStatement, EncryptRule> {
+public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRulesStatement>, DatabaseRuleAwareRQLExecutor<EncryptRule> {
     
     private EncryptRule rule;
     

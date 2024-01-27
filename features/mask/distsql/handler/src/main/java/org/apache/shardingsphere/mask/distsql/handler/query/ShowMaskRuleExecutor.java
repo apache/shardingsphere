@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
  * Show mask rule executor.
  */
 @Setter
-public final class ShowMaskRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowMaskRulesStatement, MaskRule> {
+public final class ShowMaskRuleExecutor implements RQLExecutor<ShowMaskRulesStatement>, DatabaseRuleAwareRQLExecutor<MaskRule> {
     
     private MaskRule rule;
     

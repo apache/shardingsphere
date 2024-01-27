@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
  * Show shadow rule executor.
  */
 @Setter
-public final class ShowShadowRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowShadowRulesStatement, ShadowRule> {
+public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRulesStatement>, DatabaseRuleAwareRQLExecutor<ShadowRule> {
     
     private ShadowRule rule;
     

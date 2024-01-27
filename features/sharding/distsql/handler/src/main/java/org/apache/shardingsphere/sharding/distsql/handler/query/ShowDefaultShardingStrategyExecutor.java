@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -37,7 +38,7 @@ import java.util.LinkedList;
  * Show default sharding strategy executor.
  */
 @Setter
-public final class ShowDefaultShardingStrategyExecutor implements DatabaseRuleAwareRQLExecutor<ShowDefaultShardingStrategyStatement, ShardingRule> {
+public final class ShowDefaultShardingStrategyExecutor implements RQLExecutor<ShowDefaultShardingStrategyStatement>, DatabaseRuleAwareRQLExecutor<ShardingRule> {
     
     private ShardingRule rule;
     

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  * Show sharding table reference rules executor.
  */
 @Setter
-public final class ShowShardingTableReferenceRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowShardingTableReferenceRulesStatement, ShardingRule> {
+public final class ShowShardingTableReferenceRuleExecutor implements RQLExecutor<ShowShardingTableReferenceRulesStatement>, DatabaseRuleAwareRQLExecutor<ShardingRule> {
     
     private ShardingRule rule;
     
