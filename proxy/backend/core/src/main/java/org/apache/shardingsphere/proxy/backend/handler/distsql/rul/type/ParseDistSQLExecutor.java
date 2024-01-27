@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
+import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware.ConnectionSessionAwareRULExecutor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -36,9 +37,9 @@ import java.util.Collections;
  * Parse DistSQL executor.
  */
 @Setter
-public final class ParseDistSQLExecutor implements ConnectionSessionAwareRULExecutor<ParseStatement> {
+public final class ParseDistSQLExecutor implements RULExecutor<ParseStatement>, DistSQLExecutorDatabaseProtocolTypeAware {
     
-    private ConnectionSession connectionSession;
+    private DatabaseType databaseProtocolType;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -53,7 +54,7 @@ public final class ParseDistSQLExecutor implements ConnectionSessionAwareRULExec
     
     private SQLStatement parseSQL(final ShardingSphereMetaData metaData, final ParseStatement sqlStatement) {
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(connectionSession.getProtocolType()).parse(sqlStatement.getSql(), false);
+        return sqlParserRule.getSQLParserEngine(databaseProtocolType).parse(sqlStatement.getSql(), false);
     }
     
     @Override

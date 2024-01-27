@@ -18,14 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
 import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
+import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware.ConnectionSessionAwareRULExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -67,8 +70,16 @@ public final class RULBackendHandler implements DistSQLBackendHandler {
     }
     
     private MergedResult createMergedResult(final RULExecutor<RULStatement> executor) throws SQLException {
-        if (executor instanceof ConnectionSessionAwareRULExecutor) {
-            ((ConnectionSessionAwareRULExecutor<RULStatement>) executor).setConnectionSession(connectionSession);
+        if (executor instanceof DistSQLExecutorDatabaseAware) {
+            ((DistSQLExecutorDatabaseAware) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession.getDatabaseName())));
+        }
+        if (executor instanceof DistSQLExecutorDatabaseProtocolTypeAware) {
+            ((DistSQLExecutorDatabaseProtocolTypeAware) executor).setDatabaseProtocolType(connectionSession.getProtocolType());
+        }
+        if (executor instanceof DistSQLExecutorConnectionContextAware) {
+            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(connectionSession.getConnectionContext());
+            ((DistSQLExecutorConnectionContextAware) executor).setDatabaseConnectionManager(connectionSession.getDatabaseConnectionManager());
+            ((DistSQLExecutorConnectionContextAware) executor).setStatementManager(connectionSession.getStatementManager());
         }
         return new LocalDataMergedResult(executor.getRows(sqlStatement, ProxyContext.getInstance().getContextManager()));
     }

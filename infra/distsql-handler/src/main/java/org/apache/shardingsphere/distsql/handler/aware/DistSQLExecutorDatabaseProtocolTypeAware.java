@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware;
+package org.apache.shardingsphere.distsql.handler.aware;
 
-import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
-import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
- * Connection session aware RUL executor.
- * 
- * @param <T> type of RUL statement
+ * DistSQL executor database protocol type Aware.
  */
-public interface ConnectionSessionAwareRULExecutor<T extends RULStatement> extends RULExecutor<T> {
+public interface DistSQLExecutorDatabaseProtocolTypeAware {
     
     /**
-     * Set connection session.
+     * Set database protocol type.
      * 
-     * @param connectionSession connection session
+     * @param protocolType database protocol type
      */
-    void setConnectionSession(ConnectionSession connectionSession);
+    void setDatabaseProtocolType(DatabaseType protocolType);
 }
