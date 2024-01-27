@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRep
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,22 +37,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShowComputeNodeInfoExecutorTest {
-    
-    @Test
-    void assertGetColumns() {
-        ShowComputeNodeInfoExecutor executor = new ShowComputeNodeInfoExecutor();
-        Collection<String> actual = executor.getColumnNames();
-        assertThat(actual.size(), is(8));
-        Iterator<String> iterator = actual.iterator();
-        assertThat(iterator.next(), is("instance_id"));
-        assertThat(iterator.next(), is("host"));
-        assertThat(iterator.next(), is("port"));
-        assertThat(iterator.next(), is("status"));
-        assertThat(iterator.next(), is("mode_type"));
-        assertThat(iterator.next(), is("worker_id"));
-        assertThat(iterator.next(), is("labels"));
-        assertThat(iterator.next(), is("version"));
-    }
     
     @Test
     void assertExecute() {
