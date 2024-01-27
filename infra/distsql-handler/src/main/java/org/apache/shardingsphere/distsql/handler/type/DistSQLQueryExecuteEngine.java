@@ -24,8 +24,6 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAw
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -85,13 +83,7 @@ public abstract class DistSQLQueryExecuteEngine {
             executor.setRule(globalRule.get());
             return;
         }
-        ShardingSphereDatabase database;
-        try {
-            database = getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName));
-        } catch (final NoDatabaseSelectedException | UnknownDatabaseException ignored) {
-            rows = Collections.emptyList();
-            return;
-        }
+        ShardingSphereDatabase database = getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName));
         Optional<ShardingSphereRule> databaseRule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
         if (databaseRule.isPresent()) {
             executor.setRule(databaseRule.get());
