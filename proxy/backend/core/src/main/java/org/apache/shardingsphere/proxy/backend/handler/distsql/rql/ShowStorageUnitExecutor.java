@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;

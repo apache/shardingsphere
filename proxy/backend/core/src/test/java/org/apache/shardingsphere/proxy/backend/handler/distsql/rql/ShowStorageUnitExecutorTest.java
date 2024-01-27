@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;

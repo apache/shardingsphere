@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;

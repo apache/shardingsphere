@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;

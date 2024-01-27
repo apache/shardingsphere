@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -163,19 +162,19 @@ class DistSQLBackendHandlerFactoryTest {
     @Test
     void assertExecuteShowShadowRulesContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowShadowRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryBackendHandler(mock(ShowShadowRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteShowShadowTableRulesContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowShadowTableRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryBackendHandler(mock(ShowShadowTableRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteShowShadowAlgorithmsContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowShadowAlgorithmsStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryBackendHandler(mock(ShowShadowAlgorithmsStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
@@ -206,7 +205,7 @@ class DistSQLBackendHandlerFactoryTest {
     
     @Test
     void assertExecuteShowResourceContext() throws SQLException {
-        assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowStorageUnitsStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryBackendHandler(mock(ShowStorageUnitsStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     private void mockRuleMetaData() {

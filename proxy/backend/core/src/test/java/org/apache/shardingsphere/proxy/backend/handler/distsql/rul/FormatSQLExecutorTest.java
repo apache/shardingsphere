@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
