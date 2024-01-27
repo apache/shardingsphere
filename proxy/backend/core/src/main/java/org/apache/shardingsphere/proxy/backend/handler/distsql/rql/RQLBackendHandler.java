@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
@@ -42,7 +43,9 @@ import java.util.stream.Collectors;
 /**
  * RQL backend handler.
  */
-public final class RQLBackendHandler extends RQLExecuteEngine implements DistSQLBackendHandler {
+public final class RQLBackendHandler extends DistSQLQueryExecuteEngine implements DistSQLBackendHandler {
+    
+    private final ConnectionSession connectionSession;
     
     private List<QueryHeader> queryHeaders;
     
@@ -50,6 +53,7 @@ public final class RQLBackendHandler extends RQLExecuteEngine implements DistSQL
     
     public RQLBackendHandler(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
+        this.connectionSession = connectionSession;
     }
     
     @Override
@@ -85,5 +89,11 @@ public final class RQLBackendHandler extends RQLExecuteEngine implements DistSQL
     @Override
     protected ShardingSphereDatabase getDatabase(final String databaseName) {
         return ProxyContext.getInstance().getDatabase(databaseName);
+    }
+    
+    @Override
+    protected DistSQLConnectionContext getDistSQLConnectionContext() {
+        return new DistSQLConnectionContext(connectionSession.getConnectionContext(), connectionSession.getDatabaseConnectionManager().getConnectionSize(),
+                connectionSession.getProtocolType(), connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
     }
 }
