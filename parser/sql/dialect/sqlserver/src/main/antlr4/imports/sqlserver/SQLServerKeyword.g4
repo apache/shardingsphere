@@ -1950,3 +1950,11 @@ OPENJSON
 OPENROWSET
     : O P E N R O W S E T
     ;
+
+TRY_CAST
+    : T R Y UL_ C A S T
+    ;
+
+TRY_CONVERT
+    : T R Y UL_ C O N V E R T
+    ;

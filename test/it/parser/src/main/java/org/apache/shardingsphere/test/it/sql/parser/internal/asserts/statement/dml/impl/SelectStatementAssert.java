@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -77,6 +78,7 @@ public final class SelectStatementAssert {
         assertWithClause(assertContext, actual, expected);
         assertCombineClause(assertContext, actual, expected);
         assertModelClause(assertContext, actual, expected);
+        assertIntoClause(assertContext, actual, expected);
     }
     
     private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
@@ -200,6 +202,16 @@ public final class SelectStatementAssert {
         } else {
             assertTrue(modelSegment.isPresent(), assertContext.getText("Actual model segment should exist."));
             ModelClauseAssert.assertIs(assertContext, modelSegment.get(), expected.getModelClause());
+        }
+    }
+    
+    private static void assertIntoClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        Optional<TableSegment> intoSegment = SelectStatementHandler.getIntoSegment(actual);
+        if (null == expected.getIntoClause()) {
+            assertFalse(intoSegment.isPresent(), assertContext.getText("Actual into segment should not exist."));
+        } else {
+            assertTrue(intoSegment.isPresent(), assertContext.getText("Actual into segment should exist."));
+            TableAssert.assertIs(assertContext, intoSegment.get(), expected.getIntoClause());
         }
     }
 }

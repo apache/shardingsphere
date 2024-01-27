@@ -120,7 +120,7 @@ unreservedWord
     | DATA_RETENTION | TEMPORAL_HISTORY_RETENTION | EDITION | MIXED_PAGE_ALLOCATION | DISABLED | ALLOWED | HADR | MULTI_USER | RESTRICTED_USER | SINGLE_USER | OFFLINE | EMERGENCY | SUSPEND | DATE_CORRELATION_OPTIMIZATION
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
-    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH
+    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | INPUT
     ;
 
 databaseName
@@ -311,7 +311,20 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction | convertFunction | openJsonFunction | jsonFunction | openRowSetFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction
+    ;
+
+conversionFunction
+    : castFunction
+    | convertFunction
+    ;
+
+castFunction
+    : (CAST | TRY_CAST) LP_ expr AS dataType RP_
+    ;
+
+convertFunction
+    : (CONVERT | TRY_CONVERT) LP_ dataType COMMA_ expr (COMMA_ NUMBER_)? RP_
     ;
 
 jsonFunction
@@ -332,14 +345,6 @@ jsonKeyValue
 
 jsonNullClause
     : NULL ON NULL | ABSENT ON NULL
-    ;
-
-castFunction
-    : CAST LP_ expr AS dataType RP_
-    ;
-
-convertFunction
-    : CONVERT LP_ dataType COMMA_ expr (COMMA_ NUMBER_)? RP_
     ;
 
 charFunction

@@ -910,4 +910,18 @@
             <expression-item expression="DATEPART(yyyy,OrderDate)" order-direction="ASC" start-index="197" stop-index="220" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_from_input_table">
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" expression="count(*)" start-index="7" stop-index="14"/>
+        </projections>
+        <from start-index="21" stop-index="25">
+            <simple-table name="input" start-index="21" stop-index="25"/>
+        </from>
+        <group-by>
+            <column-item name="PartitionId" order-direction="ASC" start-index="36" stop-index="46"/>
+            <column-item name="clusterid" order-direction="ASC" start-index="49" stop-index="57"/>
+            <column-item name="tumblingwindow" order-direction="ASC" start-index="60" stop-index="73"/>
+        </group-by>
+    </select>
 </sql-parser-test-cases>

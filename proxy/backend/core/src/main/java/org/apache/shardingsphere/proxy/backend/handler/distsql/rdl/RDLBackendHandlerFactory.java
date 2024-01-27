@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.resource.aware.DatabaseAwareResourceDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.ResourceDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.DatabaseNameUtils;
 
 /**
  * RDL backend handler factory.
@@ -56,7 +56,8 @@ public final class RDLBackendHandlerFactory {
     private static ResourceDefinitionBackendHandler getResourceBackendHandler(final ResourceDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
         ResourceDefinitionExecutor executor = TypedSPILoader.getService(ResourceDefinitionExecutor.class, sqlStatement.getClass());
         if (executor instanceof DatabaseAwareResourceDefinitionExecutor) {
-            ((DatabaseAwareResourceDefinitionExecutor<?>) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession)));
+            ((DatabaseAwareResourceDefinitionExecutor<?>) executor).setDatabase(
+                    ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession.getDatabaseName())));
         }
         return new ResourceDefinitionBackendHandler(sqlStatement, executor);
     }
