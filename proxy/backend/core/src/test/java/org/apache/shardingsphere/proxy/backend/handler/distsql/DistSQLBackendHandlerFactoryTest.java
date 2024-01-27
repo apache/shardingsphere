@@ -49,6 +49,7 @@ import org.apache.shardingsphere.shadow.distsql.statement.DropShadowRuleStatemen
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesStatement;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -63,6 +64,7 @@ import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -214,6 +216,9 @@ class DistSQLBackendHandlerFactoryTest {
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         ShadowRuleConfiguration ruleConfig = mockShadowRuleConfiguration();
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(ruleConfig));
+        ShadowRule rule = mock(ShadowRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        when(ruleMetaData.findSingleRule(ShadowRule.class)).thenReturn(Optional.of(rule));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
     }
