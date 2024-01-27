@@ -47,7 +47,7 @@ public final class ShowUnusedShardingKeyGeneratorExecutor implements RQLExecutor
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "type", "props");
     }
-     
+    
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingKeyGeneratorsStatement sqlStatement, final ContextManager contextManager) {
         Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(rule.getConfiguration());
