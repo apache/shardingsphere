@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.handler.type.ral.query;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.ConnectionSizeAwareQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionSizeAware;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -64,8 +64,8 @@ public abstract class QueryableRALExecuteEngine {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
-        if (executor instanceof ConnectionSizeAwareQueryableRALExecutor) {
-            ((ConnectionSizeAwareQueryableRALExecutor) executor).setConnectionSize(getConnectionSize());
+        if (executor instanceof DistSQLExecutorConnectionSizeAware) {
+            ((DistSQLExecutorConnectionSizeAware) executor).setConnectionSize(getConnectionSize());
         }
         return executor.getRows(sqlStatement, contextManager);
     }

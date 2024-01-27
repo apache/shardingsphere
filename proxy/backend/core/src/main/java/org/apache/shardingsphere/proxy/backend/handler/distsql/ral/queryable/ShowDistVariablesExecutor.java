@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionSizeAware;
+import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
@@ -29,7 +31,6 @@ import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.aware.ConnectionSizeAwareQueryableRALExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Arrays;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
  * Show dist variables executor.
  */
 @Setter
-public final class ShowDistVariablesExecutor implements ConnectionSizeAwareQueryableRALExecutor<ShowDistVariablesStatement> {
+public final class ShowDistVariablesExecutor implements QueryableRALExecutor<ShowDistVariablesStatement>, DistSQLExecutorConnectionSizeAware {
     
     private int connectionSize;
     
