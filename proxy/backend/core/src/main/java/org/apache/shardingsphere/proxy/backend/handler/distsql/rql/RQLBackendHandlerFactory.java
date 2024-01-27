@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -37,6 +38,6 @@ public final class RQLBackendHandlerFactory {
      * @return RDL backend handler
      */
     public static ProxyBackendHandler newInstance(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        return new RQLBackendHandler(sqlStatement, connectionSession);
+        return new DistSQLQueryBackendHandler(sqlStatement, connectionSession);
     }
 }

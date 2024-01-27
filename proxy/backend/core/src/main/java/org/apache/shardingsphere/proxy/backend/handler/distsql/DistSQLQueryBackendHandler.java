@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
+package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
 import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecuteEngine;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -41,9 +39,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * RQL backend handler.
+ * DistSQL query backend handler.
  */
-public final class RQLBackendHandler extends DistSQLQueryExecuteEngine implements DistSQLBackendHandler {
+public final class DistSQLQueryBackendHandler extends DistSQLQueryExecuteEngine implements DistSQLBackendHandler {
     
     private final ConnectionSession connectionSession;
     
@@ -51,7 +49,7 @@ public final class RQLBackendHandler extends DistSQLQueryExecuteEngine implement
     
     private MergedResult mergedResult;
     
-    public RQLBackendHandler(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    public DistSQLQueryBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
         this.connectionSession = connectionSession;
     }
@@ -60,16 +58,12 @@ public final class RQLBackendHandler extends DistSQLQueryExecuteEngine implement
     public ResponseHeader execute() throws SQLException {
         executeQuery();
         queryHeaders = createQueryHeader(getColumnNames());
-        mergedResult = null == mergedResult ? createMergedResult(getRows()) : mergedResult;
+        mergedResult = new LocalDataMergedResult(getRows());
         return new QueryResponseHeader(queryHeaders);
     }
     
     private List<QueryHeader> createQueryHeader(final Collection<String> columnNames) {
         return columnNames.stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
-    }
-    
-    private MergedResult createMergedResult(final Collection<LocalDataQueryResultRow> rows) {
-        return new LocalDataMergedResult(rows);
     }
     
     @Override

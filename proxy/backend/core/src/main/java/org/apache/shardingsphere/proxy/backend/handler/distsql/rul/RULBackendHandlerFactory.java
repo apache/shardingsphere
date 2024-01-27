@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -37,6 +38,6 @@ public final class RULBackendHandlerFactory {
      * @return created instance
      */
     public static ProxyBackendHandler newInstance(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
-        return new RULBackendHandler(sqlStatement, connectionSession);
+        return new DistSQLQueryBackendHandler(sqlStatement, connectionSession);
     }
 }
