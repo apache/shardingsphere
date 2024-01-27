@@ -19,7 +19,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -40,7 +42,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -48,16 +52,12 @@ import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware.ConnectionSessionAwareRULExecutor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
@@ -76,9 +76,17 @@ import java.util.stream.Collectors;
  * Preview executor.
  */
 @Setter
-public final class PreviewExecutor implements ConnectionSessionAwareRULExecutor<PreviewStatement> {
+public final class PreviewExecutor implements RULExecutor<PreviewStatement>, DistSQLExecutorDatabaseAware, DistSQLExecutorConnectionContextAware {
     
-    private ConnectionSession connectionSession;
+    private ShardingSphereDatabase database;
+    
+    private ConnectionContext connectionContext;
+    
+    @SuppressWarnings("rawtypes")
+    private DatabaseConnectionManager databaseConnectionManager;
+    
+    @SuppressWarnings("rawtypes")
+    private ExecutorStatementManager statementManager;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -88,7 +96,6 @@ public final class PreviewExecutor implements ConnectionSessionAwareRULExecutor<
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final PreviewStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession.getDatabaseName()));
         String toBePreviewedSQL = SQLHintUtils.removeHint(sqlStatement.getSql());
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sqlStatement.getSql()).orElseGet(HintValueContext::new);
         SQLStatement toBePreviewedStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType()).parse(toBePreviewedSQL, false);
@@ -101,11 +108,11 @@ public final class PreviewExecutor implements ConnectionSessionAwareRULExecutor<
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName()));
         SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(),
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext()));
+                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionContext));
         Collection<ExecutionUnit> executionUnits = federationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())
-                ? getFederationExecutionUnits(queryContext, metaData, database, federationEngine)
+                ? getFederationExecutionUnits(queryContext, metaData, federationEngine)
                 : new KernelProcessor().generateExecutionContext(
-                        queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connectionSession.getConnectionContext()).getExecutionUnits();
+                        queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connectionContext).getExecutionUnits();
         return executionUnits.stream().map(each -> new LocalDataQueryResultRow(each.getDataSourceName(), each.getSqlUnit().getSql())).collect(Collectors.toList());
     }
     
@@ -114,24 +121,23 @@ public final class PreviewExecutor implements ConnectionSessionAwareRULExecutor<
             return;
         }
         String cursorName = ((CursorAvailable) toBePreviewedStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
-        CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionSession.getConnectionContext().getCursorContext().getCursorDefinitions().get(cursorName);
+        CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionContext.getCursorContext().getCursorDefinitions().get(cursorName);
         Preconditions.checkNotNull(cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorDefinitionAware) toBePreviewedStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
     
-    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData,
-                                                                  final ShardingSphereDatabase database, final SQLFederationEngine federationEngine) {
+    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData, final SQLFederationEngine federationEngine) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         // TODO move dialect MySQLInsertStatement into database type module @zhangliang
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaData.getProps(), database);
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaData.getProps());
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaData);
-        federationEngine.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData(), sqlStatement), context);
+        federationEngine.executeQuery(prepareEngine, createPreviewFederationCallback(sqlStatement), context);
         return context.getExecutionUnits();
     }
     
-    private JDBCExecutorCallback<ExecuteResult> createPreviewFederationCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement) {
-        return new JDBCExecutorCallback<ExecuteResult>(protocolType, resourceMetaData, sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()) {
+    private JDBCExecutorCallback<ExecuteResult> createPreviewFederationCallback(final SQLStatement sqlStatement) {
+        return new JDBCExecutorCallback<ExecuteResult>(database.getProtocolType(), database.getResourceMetaData(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()) {
             
             @Override
             protected ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
@@ -145,11 +151,10 @@ public final class PreviewExecutor implements ConnectionSessionAwareRULExecutor<
         };
     }
     
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys,
-                                                                                                           final ConfigurationProperties props, final ShardingSphereDatabase database) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final ConfigurationProperties props) {
         int maxConnectionsSizePerQuery = props.<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery,
-                connectionSession.getDatabaseConnectionManager(), (JDBCBackendStatement) connectionSession.getStatementManager(),
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, databaseConnectionManager, statementManager,
                 new StatementOption(isReturnGeneratedKeys), database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
     }
     

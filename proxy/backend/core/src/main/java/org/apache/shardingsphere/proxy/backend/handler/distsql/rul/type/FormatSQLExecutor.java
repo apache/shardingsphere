@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
+import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.aware.ConnectionSessionAwareRULExecutor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLFormatEngine;
 
@@ -35,9 +35,9 @@ import java.util.Properties;
  * Format SQL executor.
  */
 @Setter
-public final class FormatSQLExecutor implements ConnectionSessionAwareRULExecutor<FormatStatement> {
+public final class FormatSQLExecutor implements RULExecutor<FormatStatement>, DistSQLExecutorDatabaseProtocolTypeAware {
     
-    private ConnectionSession connectionSession;
+    private DatabaseType databaseProtocolType;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -46,7 +46,7 @@ public final class FormatSQLExecutor implements ConnectionSessionAwareRULExecuto
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final FormatStatement sqlStatement, final ContextManager contextManager) {
-        return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sqlStatement.getSql(), connectionSession.getProtocolType())));
+        return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sqlStatement.getSql(), databaseProtocolType)));
     }
     
     private Object formatSQL(final String sql, final DatabaseType databaseType) {
