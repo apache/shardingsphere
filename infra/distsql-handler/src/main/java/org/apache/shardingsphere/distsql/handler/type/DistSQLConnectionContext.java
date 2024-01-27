@@ -15,17 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.aware;
+package org.apache.shardingsphere.distsql.handler.type;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 
 /**
- * DistSQL executor connection size aware.
+ * DistSQL connection context.
  */
-public interface DistSQLExecutorConnectionSizeAware {
+@RequiredArgsConstructor
+@Getter
+public final class DistSQLConnectionContext {
     
-    /**
-     * Set connection size.
-     *
-     * @param connectionSize connection size
-     */
-    void setConnectionSize(int connectionSize);
+    private final ConnectionContext connectionContext;
+    
+    private final int connectionSize;
+    
+    @SuppressWarnings("rawtypes")
+    private final DatabaseConnectionManager databaseConnectionManager;
+    
+    @SuppressWarnings("rawtypes")
+    private final ExecutorStatementManager executorStatementManager;
 }

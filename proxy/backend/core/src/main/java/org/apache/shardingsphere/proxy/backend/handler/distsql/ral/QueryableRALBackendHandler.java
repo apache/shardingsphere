@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -86,7 +87,8 @@ public final class QueryableRALBackendHandler extends QueryableRALExecuteEngine 
     }
     
     @Override
-    protected int getConnectionSize() {
-        return connectionSession.getDatabaseConnectionManager().getConnectionSize();
+    protected DistSQLConnectionContext getDistSQLConnectionContext() {
+        return new DistSQLConnectionContext(connectionSession.getConnectionContext(),
+                connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
     }
 }

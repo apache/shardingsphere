@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
@@ -42,9 +43,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -52,7 +51,6 @@ import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -80,13 +78,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     
     private ShardingSphereDatabase database;
     
-    private ConnectionContext connectionContext;
-    
-    @SuppressWarnings("rawtypes")
-    private DatabaseConnectionManager databaseConnectionManager;
-    
-    @SuppressWarnings("rawtypes")
-    private ExecutorStatementManager statementManager;
+    private DistSQLConnectionContext connectionContext;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -108,11 +100,11 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName()));
         SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(),
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionContext));
+                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionContext.getConnectionContext()));
         Collection<ExecutionUnit> executionUnits = federationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())
                 ? getFederationExecutionUnits(queryContext, metaData, federationEngine)
                 : new KernelProcessor().generateExecutionContext(
-                        queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connectionContext).getExecutionUnits();
+                        queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connectionContext.getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(each -> new LocalDataQueryResultRow(each.getDataSourceName(), each.getSqlUnit().getSql())).collect(Collectors.toList());
     }
     
@@ -121,7 +113,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
             return;
         }
         String cursorName = ((CursorAvailable) toBePreviewedStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
-        CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionContext.getCursorContext().getCursorDefinitions().get(cursorName);
+        CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionContext.getConnectionContext().getCursorContext().getCursorDefinitions().get(cursorName);
         Preconditions.checkNotNull(cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorDefinitionAware) toBePreviewedStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
@@ -154,8 +146,8 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     @SuppressWarnings({"unchecked", "rawtypes"})
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final ConfigurationProperties props) {
         int maxConnectionsSizePerQuery = props.<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, databaseConnectionManager, statementManager,
-                new StatementOption(isReturnGeneratedKeys), database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionContext.getDatabaseConnectionManager(),
+                connectionContext.getExecutorStatementManager(), new StatementOption(isReturnGeneratedKeys), database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
     }
     
     @Override

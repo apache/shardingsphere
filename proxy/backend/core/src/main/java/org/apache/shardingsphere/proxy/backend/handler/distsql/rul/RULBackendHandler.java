@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.rul.RULExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -100,19 +98,8 @@ public final class RULBackendHandler extends RULExecuteEngine implements DistSQL
     }
     
     @Override
-    protected ConnectionContext getConnectionContext() {
-        return connectionSession.getConnectionContext();
-    }
-    
-    @SuppressWarnings("rawtypes")
-    @Override
-    protected DatabaseConnectionManager getDatabaseConnectionManager() {
-        return connectionSession.getDatabaseConnectionManager();
-    }
-    
-    @SuppressWarnings("rawtypes")
-    @Override
-    protected ExecutorStatementManager getStatementManager() {
-        return connectionSession.getStatementManager();
+    protected DistSQLConnectionContext getDistSQLConnectionContext() {
+        return new DistSQLConnectionContext(connectionSession.getConnectionContext(),
+                connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
     }
 }
