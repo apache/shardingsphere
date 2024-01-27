@@ -29,10 +29,8 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.type.RegisterStorageUnitExecutor;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,7 +51,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class RegisterStorageUnitExecutorTest {
     
@@ -99,9 +96,8 @@ class RegisterStorageUnitExecutorTest {
         DataSourceContainedRule rule = mock(DataSourceContainedRule.class);
         when(rule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(rule));
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.setDatabase(database);
-        assertThrows(InvalidStorageUnitsException.class, () -> executor.execute(createRegisterStorageUnitStatement(), mock(ContextManager.class)));
+        assertThrows(InvalidStorageUnitsException.class, () -> executor.execute(createRegisterStorageUnitStatement(), contextManager));
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {
