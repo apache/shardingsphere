@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.aware;
 
 /**
- * Connection size aware queryable RAL executor.
+ * DistSQL executor connection size aware.
  */
 public interface DistSQLExecutorConnectionSizeAware {
     

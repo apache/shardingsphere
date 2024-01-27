@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rql.aware;
+package org.apache.shardingsphere.distsql.handler.aware;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Global rule aware RQL executor.
+ * DistSQL executor rule aware.
  * 
- * @param <T> type of SQL statement
- * @param <R> type of ShardingSphere rule
+ * @param <T> type of ShardingSphere rule
  */
-public interface GlobalRuleAwareRQLExecutor<T extends RQLStatement, R extends ShardingSphereRule> extends RQLExecutor<T> {
+public interface DistSQLExecutorRuleAware<T extends ShardingSphereRule> {
     
     /**
-     * Set ShardingSphere rule.
+     * Set rule.
      *
      * @param rule rule
      */
-    void setRule(R rule);
+    void setRule(T rule);
     
     /**
      * Get rule class.
      * 
      * @return rule class
      */
-    Class<R> getRuleClass();
+    Class<T> getRuleClass();
 }
