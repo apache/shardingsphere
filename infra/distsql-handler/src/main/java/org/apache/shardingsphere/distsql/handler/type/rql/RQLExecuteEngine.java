@@ -20,10 +20,11 @@ package org.apache.shardingsphere.distsql.handler.type.rql;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -63,10 +64,10 @@ public abstract class RQLExecuteEngine {
         RQLExecutor executor = TypedSPILoader.getService(RQLExecutor.class, sqlStatement.getClass());
         columnNames = executor.getColumnNames();
         if (executor instanceof DistSQLExecutorDatabaseAware) {
-            setUpDatabaseAwareExecutor((DistSQLExecutorDatabaseAware) executor);
+            ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
-        if (executor instanceof GlobalRuleAwareRQLExecutor) {
-            setUpGlobalRuleAwareExecutor((GlobalRuleAwareRQLExecutor) executor);
+        if (executor instanceof DistSQLExecutorRuleAware) {
+            setRule((DistSQLExecutorRuleAware) executor);
         }
         if (null == rows) {
             rows = executor.getRows(sqlStatement, contextManager);
@@ -74,27 +75,25 @@ public abstract class RQLExecuteEngine {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void setUpDatabaseAwareExecutor(final DistSQLExecutorDatabaseAware executor) {
-        ShardingSphereDatabase database = getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName));
-        executor.setDatabase(database);
-        if (executor instanceof DatabaseRuleAwareRQLExecutor) {
-            Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(((DatabaseRuleAwareRQLExecutor) executor).getRuleClass());
-            if (rule.isPresent()) {
-                ((DatabaseRuleAwareRQLExecutor) executor).setRule(rule.get());
-            } else {
-                rows = Collections.emptyList();
-            }
+    private void setRule(final DistSQLExecutorRuleAware executor) {
+        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
+        if (globalRule.isPresent()) {
+            executor.setRule(globalRule.get());
+            return;
         }
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void setUpGlobalRuleAwareExecutor(final GlobalRuleAwareRQLExecutor executor) {
-        Optional<ShardingSphereRule> rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
-        if (rule.isPresent()) {
-            executor.setRule(rule.get());
-        } else {
+        ShardingSphereDatabase database;
+        try {
+            database = getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName));
+        } catch (final NoDatabaseSelectedException | UnknownDatabaseException ignored) {
             rows = Collections.emptyList();
+            return;
         }
+        Optional<ShardingSphereRule> databaseRule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
+        if (databaseRule.isPresent()) {
+            executor.setRule(databaseRule.get());
+            return;
+        }
+        rows = Collections.emptyList();
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);

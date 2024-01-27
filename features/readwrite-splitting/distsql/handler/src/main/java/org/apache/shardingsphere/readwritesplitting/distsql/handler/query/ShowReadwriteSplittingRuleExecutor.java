@@ -19,8 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import com.google.common.base.Joiner;
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
@@ -43,7 +43,7 @@ import java.util.Optional;
  * Show readwrite-splitting rule executor.
  */
 @Setter
-public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<ShowReadwriteSplittingRulesStatement>, DatabaseRuleAwareRQLExecutor<ReadwriteSplittingRule> {
+public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<ShowReadwriteSplittingRulesStatement>, DistSQLExecutorRuleAware<ReadwriteSplittingRule> {
     
     private ReadwriteSplittingRule rule;
     

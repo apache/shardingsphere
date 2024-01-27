@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.parser.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -33,7 +34,7 @@ import java.util.Collections;
  * Show SQL parser rule executor.
  */
 @Setter
-public final class ShowSQLParserRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowSQLParserRuleStatement, SQLParserRule> {
+public final class ShowSQLParserRuleExecutor implements RQLExecutor<ShowSQLParserRuleStatement>, DistSQLExecutorRuleAware<SQLParserRule> {
     
     private SQLParserRule rule;
     

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * Show shadow table rules executor.
  */
 @Setter
-public final class ShowShadowTableRulesExecutor implements RQLExecutor<ShowShadowTableRulesStatement>, DatabaseRuleAwareRQLExecutor<ShadowRule> {
+public final class ShowShadowTableRulesExecutor implements RQLExecutor<ShowShadowTableRulesStatement>, DistSQLExecutorRuleAware<ShadowRule> {
     
     private static final String SHADOW_TABLE = "shadow_table";
     

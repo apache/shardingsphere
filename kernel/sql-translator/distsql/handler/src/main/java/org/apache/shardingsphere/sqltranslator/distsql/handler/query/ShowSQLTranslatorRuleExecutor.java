@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.sqltranslator.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -34,7 +35,7 @@ import java.util.Collections;
  * Show SQL translator rule executor.
  */
 @Setter
-public final class ShowSQLTranslatorRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowSQLTranslatorRuleStatement, SQLTranslatorRule> {
+public final class ShowSQLTranslatorRuleExecutor implements RQLExecutor<ShowSQLTranslatorRuleStatement>, DistSQLExecutorRuleAware<SQLTranslatorRule> {
     
     private SQLTranslatorRule rule;
     

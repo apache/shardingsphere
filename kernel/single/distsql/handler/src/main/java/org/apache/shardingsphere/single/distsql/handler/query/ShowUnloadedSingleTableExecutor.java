@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.single.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
  * Show unloaded single table executor.
  */
 @Setter
-public final class ShowUnloadedSingleTableExecutor implements RQLExecutor<ShowUnloadedSingleTableStatement>, DatabaseRuleAwareRQLExecutor<SingleRule> {
+public final class ShowUnloadedSingleTableExecutor implements RQLExecutor<ShowUnloadedSingleTableStatement>, DistSQLExecutorDatabaseAware, DistSQLExecutorRuleAware<SingleRule> {
     
     private ShardingSphereDatabase database;
     
