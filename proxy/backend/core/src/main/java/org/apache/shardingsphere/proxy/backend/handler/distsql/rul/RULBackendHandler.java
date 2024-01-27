@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.type.rul.RULExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * RUL backend handler.
  */
-public final class RULBackendHandler extends RULExecuteEngine implements DistSQLBackendHandler {
+public final class RULBackendHandler extends DistSQLQueryExecuteEngine implements DistSQLBackendHandler {
     
     private final ConnectionSession connectionSession;
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Queryable RAL backend handler.
  */
-public final class QueryableRALBackendHandler extends QueryableRALExecuteEngine implements DistSQLBackendHandler {
+public final class QueryableRALBackendHandler extends DistSQLQueryExecuteEngine implements DistSQLBackendHandler {
     
     private final ConnectionSession connectionSession;
     
