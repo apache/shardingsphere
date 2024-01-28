@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
-     * Check SQL statement.
+     * Check before update.
      *
      * @param database database
      * @param sqlStatement SQL statement
