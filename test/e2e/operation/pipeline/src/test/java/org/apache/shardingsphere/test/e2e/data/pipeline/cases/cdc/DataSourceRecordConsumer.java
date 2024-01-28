@@ -134,10 +134,6 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                         preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumn));
                     }
                     preparedStatement.setObject(ingestedRecord.getAfterCount() + 1, convertValueFromAny(tableMetaData, afterMap.get("order_id")));
-                    int updateCount = preparedStatement.executeUpdate();
-                    if (1 != updateCount) {
-                        log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}", updateCount, sql, afterMap.keySet());
-                    }
                     break;
                 case DELETE:
                     TableColumn orderId = ingestedRecord.getBeforeList().stream().filter(each -> "order_id".equals(each.getName())).findFirst()
@@ -147,7 +143,10 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                     break;
                 default:
             }
-            preparedStatement.execute();
+            int updateCount = preparedStatement.executeUpdate();
+            if (1 != updateCount) {
+                log.warn("executeUpdate failed, update count: {}, sql: {}, updated columns: {}", updateCount, sql, afterMap.keySet());
+            }
         }
     }
     
