@@ -61,10 +61,23 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements U
     private ShardingSphereDatabase database;
     
     @Override
-    public void executeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement, final ContextManager contextManager) {
-        String toBeUpdatedStorageUnit = sqlStatement.getStorageUnitName();
+    public void checkBeforeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement, final ContextManager contextManager) {
         checkModeAndPersistRepository(contextManager);
         checkReadwriteSplittingRule();
+    }
+    
+    private void checkModeAndPersistRepository(final ContextManager contextManager) {
+        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`"));
+    }
+    
+    private void checkReadwriteSplittingRule() {
+        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        ShardingSpherePreconditions.checkState(rule.isPresent(), () -> new UnsupportedSQLOperationException("The current database has no read_write splitting rules"));
+    }
+    
+    @Override
+    public void executeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement, final ContextManager contextManager) {
+        String toBeUpdatedStorageUnit = sqlStatement.getStorageUnitName();
         Map<String, String> replicaStorageUnits = getReplicaResources();
         Map<String, String> disabledStorageUnits = getDisabledResources(contextManager);
         Map<String, String> autoAwareResources = getAutoAwareResources();
@@ -82,15 +95,6 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements U
             checkGroupName(groupNames, groupName);
             updateStatus(contextManager, database.getName(), Collections.singleton(groupName), toBeUpdatedStorageUnit, isDisable);
         }
-    }
-    
-    private void checkModeAndPersistRepository(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`"));
-    }
-    
-    private void checkReadwriteSplittingRule() {
-        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        ShardingSpherePreconditions.checkState(rule.isPresent(), () -> new UnsupportedSQLOperationException("The current database has no read_write splitting rules"));
     }
     
     private Map<String, String> getReplicaResources() {

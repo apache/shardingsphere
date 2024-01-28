@@ -31,6 +31,10 @@ import java.sql.SQLException;
 public final class RollbackMigrationExecutor implements UpdatableRALExecutor<RollbackMigrationStatement> {
     
     @Override
+    public void checkBeforeUpdate(final RollbackMigrationStatement sqlStatement, final ContextManager contextManager) {
+    }
+    
+    @Override
     public void executeUpdate(final RollbackMigrationStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").rollback(sqlStatement.getJobId());
     }

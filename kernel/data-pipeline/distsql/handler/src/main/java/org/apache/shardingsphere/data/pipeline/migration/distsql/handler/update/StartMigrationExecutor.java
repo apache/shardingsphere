@@ -31,6 +31,10 @@ public final class StartMigrationExecutor implements UpdatableRALExecutor<StartM
     private final PipelineJobManager jobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
+    public void checkBeforeUpdate(final StartMigrationStatement sqlStatement, final ContextManager contextManager) {
+    }
+    
+    @Override
     public void executeUpdate(final StartMigrationStatement sqlStatement, final ContextManager contextManager) {
         jobManager.resume(sqlStatement.getJobId());
     }

@@ -34,6 +34,10 @@ public final class UnregisterMigrationSourceStorageUnitExecutor implements Updat
     private final MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
     
     @Override
+    public void checkBeforeUpdate(final UnregisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+    }
+    
+    @Override
     public void executeUpdate(final UnregisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         jobAPI.dropMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), sqlStatement.getNames());
     }

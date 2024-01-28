@@ -34,6 +34,10 @@ public final class DropStreamingExecutor implements UpdatableRALExecutor<DropStr
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
     @Override
+    public void checkBeforeUpdate(final DropStreamingStatement sqlStatement, final ContextManager contextManager) {
+    }
+    
+    @Override
     public void executeUpdate(final DropStreamingStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         jobAPI.drop(sqlStatement.getJobId());
     }

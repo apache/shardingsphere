@@ -31,6 +31,10 @@ public final class DropMigrationCheckExecutor implements UpdatableRALExecutor<Dr
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
     @Override
+    public void checkBeforeUpdate(final DropMigrationCheckStatement sqlStatement, final ContextManager contextManager) {
+    }
+    
+    @Override
     public void executeUpdate(final DropMigrationCheckStatement sqlStatement, final ContextManager contextManager) {
         jobAPI.drop(sqlStatement.getJobId());
     }

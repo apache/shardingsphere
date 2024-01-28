@@ -50,6 +50,7 @@ public abstract class UpdatableRALExecuteEngine {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
+        executor.checkBeforeUpdate(sqlStatement, contextManager);
         executor.executeUpdate(sqlStatement, contextManager);
     }
     

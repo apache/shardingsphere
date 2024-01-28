@@ -37,6 +37,10 @@ public final class ImportDatabaseConfigurationExecutor implements UpdatableRALEx
     private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
     @Override
+    public void checkBeforeUpdate(final ImportDatabaseConfigurationStatement sqlStatement, final ContextManager contextManager) {
+    }
+    
+    @Override
     public void executeUpdate(final ImportDatabaseConfigurationStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         File file = new File(sqlStatement.getFilePath());
         YamlProxyDatabaseConfiguration yamlConfig;

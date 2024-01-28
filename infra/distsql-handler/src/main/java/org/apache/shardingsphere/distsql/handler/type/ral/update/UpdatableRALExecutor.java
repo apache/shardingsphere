@@ -33,6 +33,14 @@ import java.sql.SQLException;
 public interface UpdatableRALExecutor<T extends UpdatableRALStatement> extends TypedSPI {
     
     /**
+     * Check before update.
+     *
+     * @param sqlStatement SQL statement
+     * @param contextManager context manager
+     */
+    void checkBeforeUpdate(T sqlStatement, ContextManager contextManager);
+    
+    /**
      * Execute update.
      *
      * @param sqlStatement updatable RAL statement

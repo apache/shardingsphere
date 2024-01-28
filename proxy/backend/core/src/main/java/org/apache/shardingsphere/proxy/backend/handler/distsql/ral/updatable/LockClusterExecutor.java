@@ -40,26 +40,14 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 public final class LockClusterExecutor implements UpdatableRALExecutor<LockClusterStatement> {
     
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
+    public void checkBeforeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
         checkMode(contextManager);
         checkState(contextManager);
         checkAlgorithm(sqlStatement);
-        LockContext lockContext = contextManager.getInstanceContext().getLockContext();
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
-        if (lockContext.tryLock(lockDefinition, 3000L)) {
-            try {
-                checkState(contextManager);
-                TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
-            } finally {
-                lockContext.unlock(lockDefinition);
-            }
-        }
     }
     
     private void checkMode(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(),
-                () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
+        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
     }
     
     private void checkState(final ContextManager contextManager) {
@@ -74,6 +62,21 @@ public final class LockClusterExecutor implements UpdatableRALExecutor<LockClust
     
     private boolean isStrategyDefinitionExists(final LockClusterStatement sqlStatement) {
         return null != sqlStatement.getLockStrategy();
+    }
+    
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
+        LockContext lockContext = contextManager.getInstanceContext().getLockContext();
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
+        if (lockContext.tryLock(lockDefinition, 3000L)) {
+            try {
+                checkState(contextManager);
+                TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
+            } finally {
+                lockContext.unlock(lockDefinition);
+            }
+        }
     }
     
     @Override

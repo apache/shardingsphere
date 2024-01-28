@@ -49,6 +49,10 @@ public final class ImportMetaDataExecutor implements UpdatableRALExecutor<Import
     private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
     @Override
+    public void checkBeforeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) {
+    }
+    
+    @Override
     public void executeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         String jsonMetaDataConfig;
         if (sqlStatement.getFilePath().isPresent()) {

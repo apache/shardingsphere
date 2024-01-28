@@ -31,6 +31,10 @@ public final class StopMigrationCheckExecutor implements UpdatableRALExecutor<St
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
     @Override
+    public void checkBeforeUpdate(final StopMigrationCheckStatement sqlStatement, final ContextManager contextManager) {
+    }
+    
+    @Override
     public void executeUpdate(final StopMigrationCheckStatement sqlStatement, final ContextManager contextManager) {
         jobAPI.stop(sqlStatement.getJobId());
     }
