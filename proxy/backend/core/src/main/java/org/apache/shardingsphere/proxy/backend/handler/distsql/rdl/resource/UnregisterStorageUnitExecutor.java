@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAw
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 @Setter
 @Slf4j
-public final class UnregisterStorageUnitExecutor implements ResourceDefinitionExecutor<UnregisterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
+public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecutor<UnregisterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     

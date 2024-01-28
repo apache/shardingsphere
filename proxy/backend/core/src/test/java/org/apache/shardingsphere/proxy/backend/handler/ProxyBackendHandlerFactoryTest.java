@@ -40,7 +40,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -128,7 +128,7 @@ class ProxyBackendHandlerFactoryTest {
     void assertNewInstanceWithDistSQL() throws SQLException {
         String sql = "set dist variable sql_show='true'";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(UpdatableRALBackendHandler.class));
+        assertThat(actual, instanceOf(DistSQLUpdateBackendHandler.class));
         sql = "show dist variable where name = sql_show";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
         assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));

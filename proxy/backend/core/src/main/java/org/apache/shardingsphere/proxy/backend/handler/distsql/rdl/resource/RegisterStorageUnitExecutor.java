@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsConverter;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 @Setter
 @Slf4j
-public final class RegisterStorageUnitExecutor implements ResourceDefinitionExecutor<RegisterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
+public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<RegisterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
     

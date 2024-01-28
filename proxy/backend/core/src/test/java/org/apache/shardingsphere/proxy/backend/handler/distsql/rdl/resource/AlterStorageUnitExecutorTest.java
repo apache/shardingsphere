@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.type.AlterStorageUnitExecutor;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +66,7 @@ class AlterStorageUnitExecutorTest {
     }
     
     @Test
-    void assertExecute() {
+    void assertCheckBeforeUpdate() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         ConnectionProperties connectionProperties = mockConnectionProperties("ds_0");
@@ -75,13 +74,13 @@ class AlterStorageUnitExecutorTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         executor.setDatabase(database);
-        assertDoesNotThrow(() -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(createAlterStorageUnitStatement("ds_0"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
     }
     
     @Test
-    void assertExecuteWithDuplicateStorageUnitNames() {
+    void assertCheckBeforeUpdateWithDuplicateStorageUnitNames() {
         executor.setDatabase(database);
-        assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createAlterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.checkBeforeUpdate(createAlterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
     @Test

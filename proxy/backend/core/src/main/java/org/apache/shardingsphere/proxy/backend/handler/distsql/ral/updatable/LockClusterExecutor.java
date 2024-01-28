@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
  * Lock cluster executor.
  */
 @DistSQLExecutorClusterModeRequired
-public final class LockClusterExecutor implements UpdatableRALExecutor<LockClusterStatement> {
+public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClusterStatement> {
     
     @Override
     public void checkBeforeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -34,7 +34,7 @@ import java.util.Optional;
  * Unlabel compute node executor.
  */
 @DistSQLExecutorClusterModeRequired
-public final class UnlabelComputeNodeExecutor implements UpdatableRALExecutor<UnlabelComputeNodeStatement> {
+public final class UnlabelComputeNodeExecutor implements DistSQLUpdateExecutor<UnlabelComputeNodeStatement> {
     
     @Override
     public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement, final ContextManager contextManager) {
