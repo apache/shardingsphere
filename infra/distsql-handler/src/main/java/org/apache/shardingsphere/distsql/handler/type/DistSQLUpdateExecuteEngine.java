@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.ral.update;
+package org.apache.shardingsphere.distsql.handler.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -31,12 +31,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.sql.SQLException;
 
 /**
- * Updatable RAL execute engine.
+ * DistSQL update execute engine.
  */
 @RequiredArgsConstructor
-public abstract class UpdatableRALExecuteEngine {
+public abstract class DistSQLUpdateExecuteEngine {
     
-    private final UpdatableRALStatement sqlStatement;
+    private final DistSQLStatement sqlStatement;
     
     private final String currentDatabaseName;
     
@@ -49,7 +49,7 @@ public abstract class UpdatableRALExecuteEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate() throws SQLException {
-        UpdatableRALExecutor executor = TypedSPILoader.getService(UpdatableRALExecutor.class, sqlStatement.getClass());
+        DistSQLUpdateExecutor executor = TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
@@ -58,7 +58,7 @@ public abstract class UpdatableRALExecuteEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void checkBeforeUpdate(final UpdatableRALExecutor executor) {
+    private void checkBeforeUpdate(final DistSQLUpdateExecutor executor) {
         if (null != executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)) {
             ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
         }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
  * Unlock cluster executor.
  */
 @DistSQLExecutorClusterModeRequired
-public final class UnlockClusterExecutor implements UpdatableRALExecutor<UnlockClusterStatement> {
+public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<UnlockClusterStatement> {
     
     @Override
     public void checkBeforeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) {

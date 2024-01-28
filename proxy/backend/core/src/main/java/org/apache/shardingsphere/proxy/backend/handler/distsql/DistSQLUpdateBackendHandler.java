@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
+package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecuteEngine;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -29,13 +28,13 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import java.sql.SQLException;
 
 /**
- * Updatable RAL backend handler.
+ * DistSQL update backend handler.
  */
-public final class UpdatableRALBackendHandler extends UpdatableRALExecuteEngine implements DistSQLBackendHandler {
+public final class DistSQLUpdateBackendHandler extends DistSQLUpdateExecuteEngine implements DistSQLBackendHandler {
     
-    private final UpdatableRALStatement sqlStatement;
+    private final DistSQLStatement sqlStatement;
     
-    public UpdatableRALBackendHandler(final UpdatableRALStatement sqlStatement, final ConnectionSession connectionSession) {
+    public DistSQLUpdateBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
         this.sqlStatement = sqlStatement;
     }

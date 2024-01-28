@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
@@ -43,7 +43,7 @@ import java.util.Properties;
 /**
  * Set dist variable statement executor.
  */
-public final class SetDistVariableExecutor implements UpdatableRALExecutor<SetDistVariableStatement> {
+public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetDistVariableStatement> {
     
     @Override
     public void checkBeforeUpdate(final SetDistVariableStatement sqlStatement, final ContextManager contextManager) {

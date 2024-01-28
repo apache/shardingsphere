@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.resource;
+package org.apache.shardingsphere.distsql.handler.type;
 
-import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.sql.SQLException;
+
 /**
- * Resource definition executor.
+ * DistSQL update executor.
  * 
- * @param <T> type of resource definition statement
+ * @param <T> type of DistSQL statement
  */
 @SingletonSPI
-public interface ResourceDefinitionExecutor<T extends ResourceDefinitionStatement> extends TypedSPI {
+public interface DistSQLUpdateExecutor<T extends DistSQLStatement> extends TypedSPI {
     
     /**
      * Check before update.
@@ -36,15 +38,17 @@ public interface ResourceDefinitionExecutor<T extends ResourceDefinitionStatemen
      * @param sqlStatement SQL statement
      * @param contextManager context manager
      */
-    void checkBeforeUpdate(T sqlStatement, ContextManager contextManager);
+    default void checkBeforeUpdate(T sqlStatement, ContextManager contextManager) {
+    }
     
     /**
      * Execute update.
-     * 
-     * @param sqlStatement SQL statement
+     *
+     * @param sqlStatement DistSQL statement
      * @param contextManager context manager
+     * @throws SQLException SQL exception
      */
-    void executeUpdate(T sqlStatement, ContextManager contextManager);
+    void executeUpdate(T sqlStatement, ContextManager contextManager) throws SQLException;
     
     @Override
     Class<T> getType();
