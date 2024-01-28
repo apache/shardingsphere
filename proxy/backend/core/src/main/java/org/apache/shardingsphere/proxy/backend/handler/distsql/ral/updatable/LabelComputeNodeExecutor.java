@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -36,13 +33,11 @@ import java.util.Optional;
 /**
  * Label compute node executor.
  */
+@DistSQLExecutorClusterModeRequired
 public final class LabelComputeNodeExecutor implements UpdatableRALExecutor<LabelComputeNodeStatement> {
     
     @Override
     public void executeUpdate(final LabelComputeNodeStatement sqlStatement, final ContextManager contextManager) throws SQLException {
-        MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
-        ShardingSpherePreconditions.checkState(null != persistService && null != persistService.getRepository() && persistService.getRepository() instanceof ClusterPersistRepository,
-                () -> new UnsupportedSQLOperationException("Labels can only be added in cluster mode"));
         String instanceId = sqlStatement.getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {

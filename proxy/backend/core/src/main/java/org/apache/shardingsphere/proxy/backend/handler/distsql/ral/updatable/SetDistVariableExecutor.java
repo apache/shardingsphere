@@ -46,10 +46,13 @@ import java.util.Properties;
 public final class SetDistVariableExecutor implements UpdatableRALExecutor<SetDistVariableStatement> {
     
     @Override
+    public void checkBeforeUpdate(final SetDistVariableStatement sqlStatement, final ContextManager contextManager) {
+        ShardingSpherePreconditions.checkState(getEnumType(sqlStatement.getName()) instanceof TypedPropertyKey, () -> new UnsupportedVariableException(sqlStatement.getName()));
+    }
+    
+    @Override
     public void executeUpdate(final SetDistVariableStatement sqlStatement, final ContextManager contextManager) throws SQLException {
-        Enum<?> enumType = getEnumType(sqlStatement.getName());
-        ShardingSpherePreconditions.checkState(enumType instanceof TypedPropertyKey, () -> new UnsupportedVariableException(sqlStatement.getName()));
-        handleConfigurationProperty(contextManager, (TypedPropertyKey) enumType, sqlStatement.getValue());
+        handleConfigurationProperty(contextManager, (TypedPropertyKey) getEnumType(sqlStatement.getName()), sqlStatement.getValue());
     }
     
     private Enum<?> getEnumType(final String name) {
