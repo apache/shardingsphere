@@ -31,6 +31,14 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 public interface ResourceDefinitionExecutor<T extends ResourceDefinitionStatement> extends TypedSPI {
     
     /**
+     * Check before update.
+     *
+     * @param sqlStatement SQL statement
+     * @param contextManager context manager
+     */
+    void checkBeforeUpdate(T sqlStatement, ContextManager contextManager);
+    
+    /**
      * Execute update.
      * 
      * @param sqlStatement SQL statement
