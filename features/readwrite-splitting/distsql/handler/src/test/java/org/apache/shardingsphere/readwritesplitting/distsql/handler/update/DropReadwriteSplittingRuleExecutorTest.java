@@ -51,7 +51,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DropReadwriteSplittingRuleStatementUpdaterTest {
+class DropReadwriteSplittingRuleExecutorTest {
     
     private final DropReadwriteSplittingRuleExecutor executor = new DropReadwriteSplittingRuleExecutor();
     

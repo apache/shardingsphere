@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(TypedSPILoader.class)
-class CreateReadwriteSplittingRuleStatementUpdaterTest {
+class CreateReadwriteSplittingRuleExecutorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
