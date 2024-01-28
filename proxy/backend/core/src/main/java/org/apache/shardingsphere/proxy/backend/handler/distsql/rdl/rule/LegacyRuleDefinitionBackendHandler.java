@@ -64,7 +64,8 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
         DatabaseRuleDefinitionExecutor executor = TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
-        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
+        executor.setDatabase(database);
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
         if (getRefreshStatus(sqlStatement, currentRuleConfig, executor)) {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager()
                     .alterRuleConfiguration(database.getName(), processSQLStatement(database, sqlStatement, executor, currentRuleConfig));

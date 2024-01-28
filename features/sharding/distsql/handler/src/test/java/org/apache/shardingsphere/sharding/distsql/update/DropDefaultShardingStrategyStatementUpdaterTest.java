@@ -24,11 +24,8 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultShardingStrategyExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.DropDefaultShardingStrategyStatement;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,29 +37,32 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
 class DropDefaultShardingStrategyStatementUpdaterTest {
     
     private final DropDefaultShardingStrategyExecutor executor = new DropDefaultShardingStrategyExecutor();
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, new DropDefaultShardingStrategyStatement(false, "TABLE"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new DropDefaultShardingStrategyStatement(false, "TABLE"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutExistedAlgorithm() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("table"), new ShardingRuleConfiguration()));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("table"), new ShardingRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithIfExists() {
-        executor.checkBeforeUpdate(database, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
-        executor.checkBeforeUpdate(database, new DropDefaultShardingStrategyStatement(true, "table"), null);
+        executor.checkBeforeUpdate(new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
+        executor.checkBeforeUpdate(new DropDefaultShardingStrategyStatement(true, "table"), null);
     }
     
     @Test

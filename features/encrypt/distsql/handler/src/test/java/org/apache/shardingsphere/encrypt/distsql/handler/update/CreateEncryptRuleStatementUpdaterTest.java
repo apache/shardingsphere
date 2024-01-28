@@ -31,11 +31,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,35 +44,38 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
 class CreateEncryptRuleStatementUpdaterTest {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
     
     private final CreateEncryptRuleExecutor executor = new CreateEncryptRuleExecutor();
     
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
+    
     @Test
     void assertCheckSQLStatementWithDuplicateEncryptRule() {
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig()));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "INVALID_TYPE"), null));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithConflictColumnNames() {
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(database, createConflictColumnNameSQLStatement(), getCurrentRuleConfig()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createConflictColumnNameSQLStatement(), getCurrentRuleConfig()));
     }
     
     @Test
     void assertCreateEncryptRuleWithIfNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
-        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
         EncryptRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
@@ -129,7 +129,7 @@ class CreateEncryptRuleStatementUpdaterTest {
     void assertCreateAESEncryptRuleWithPropertiesNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createWrongAESEncryptorSQLStatement();
-        assertThrows(EncryptAlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig));
+        assertThrows(EncryptAlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(sqlStatement, currentRuleConfig));
     }
     
     private CreateEncryptRuleStatement createWrongAESEncryptorSQLStatement() {

@@ -49,10 +49,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -68,14 +64,11 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class CreateShardingTableRuleStatementUpdaterTest {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
     
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
@@ -83,16 +76,18 @@ class CreateShardingTableRuleStatementUpdaterTest {
     
     @BeforeEach
     void before() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("schema");
         ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSource());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new MockDataSourceContainedRule())));
+        executor.setDatabase(database);
     }
     
     @Test
     void assertUpdate() {
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
-        executor.checkBeforeUpdate(database, statement, currentRuleConfig);
+        executor.checkBeforeUpdate(statement, currentRuleConfig);
         ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
@@ -137,7 +132,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='6')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        executor.checkBeforeUpdate(database, distSQLStatement, null);
+        executor.checkBeforeUpdate(distSQLStatement, null);
     }
     
     @Test
@@ -148,7 +143,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(DistSQLException.class, () -> executor.checkBeforeUpdate(database, distSQLStatement, null));
+        assertThrows(DistSQLException.class, () -> executor.checkBeforeUpdate(distSQLStatement, null));
     }
     
     @Test
@@ -159,7 +154,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        executor.checkBeforeUpdate(database, distSQLStatement, null);
+        executor.checkBeforeUpdate(distSQLStatement, null);
     }
     
     @Test
@@ -170,7 +165,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> executor.checkBeforeUpdate(database, distSQLStatement, null));
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> executor.checkBeforeUpdate(distSQLStatement, null));
     }
     
     @Test
@@ -181,7 +176,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='NONE')"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        executor.checkBeforeUpdate(database, distSQLStatement, null);
+        executor.checkBeforeUpdate(distSQLStatement, null);
     }
     
     @Test
@@ -192,7 +187,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='NONE')"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> executor.checkBeforeUpdate(database, distSQLStatement, null));
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> executor.checkBeforeUpdate(distSQLStatement, null));
     }
     
     @Test
@@ -201,7 +196,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
         segments.add(createCompleteAutoTableRule());
         segments.add(createCompleteTableRule());
         CreateShardingTableRuleStatement statementWithIfNotExists = new CreateShardingTableRuleStatement(true, segments);
-        executor.checkBeforeUpdate(database, statementWithIfNotExists, currentRuleConfig);
+        executor.checkBeforeUpdate(statementWithIfNotExists, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, statementWithIfNotExists));
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();

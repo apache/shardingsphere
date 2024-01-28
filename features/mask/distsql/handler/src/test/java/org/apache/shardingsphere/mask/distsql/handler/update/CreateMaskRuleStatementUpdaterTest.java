@@ -26,11 +26,8 @@ import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.CreateMaskRuleStatement;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,30 +39,33 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
 class CreateMaskRuleStatementUpdaterTest {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
     
     private final CreateMaskRuleExecutor executor = new CreateMaskRuleExecutor();
     
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
+    
     @Test
     void assertCheckSQLStatementWithDuplicateMaskRule() {
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, createDuplicatedSQLStatement(false, "MD5"), getCurrentRuleConfig()));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createDuplicatedSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
     @Test
     void assertCheckSQLStatementWithInvalidAlgorithm() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "INVALID_TYPE"), null));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test
     void assertCreateMaskRule() {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
-        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
         MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(4));
@@ -77,11 +77,11 @@ class CreateMaskRuleStatementUpdaterTest {
     void assertCreateMaskRuleWithIfNotExists() {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
-        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
         MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         sqlStatement = createSQLStatement(true, "MD5");
-        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
         toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(4));

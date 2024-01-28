@@ -35,7 +35,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -50,14 +49,13 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AlterShadowRuleStatementUpdaterTest {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
     
     @Mock
     private ResourceMetaData resourceMetaData;
@@ -68,30 +66,32 @@ class AlterShadowRuleStatementUpdaterTest {
     private final AlterShadowRuleExecutor executor = new AlterShadowRuleExecutor();
     
     @BeforeEach
-    void before() {
+    void setUp() {
         Collection<ShadowDataSourceConfiguration> shadowDataSource = new LinkedList<>();
         shadowDataSource.add(new ShadowDataSourceConfiguration("initRuleName1", "ds1", "ds_shadow1"));
         shadowDataSource.add(new ShadowDataSourceConfiguration("initRuleName2", "ds2", "ds_shadow2"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(currentConfig.getDataSources()).thenReturn(shadowDataSource);
+        executor.setDatabase(database);
     }
     
     @Test
     void assertExecuteWithoutCurrentConfiguration() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment)), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment)), null));
     }
     
     @Test
     void assertExecuteWithDuplicateRuleName() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment)), currentConfig));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment)), currentConfig));
     }
     
     @Test
     void assertExecuteWithRuleNameNotInMetaData() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, new AlterShadowRuleStatement(Collections.singleton(ruleSegment)), currentConfig));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new AlterShadowRuleStatement(Collections.singleton(ruleSegment)), currentConfig));
     }
     
     @Test
@@ -99,7 +99,7 @@ class AlterShadowRuleStatementUpdaterTest {
         List<String> dataSources = Arrays.asList("ds", "ds0");
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(dataSources);
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Collections.singleton(new ShadowRuleSegment("initRuleName1", "ds3", null, null)));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, currentConfig));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(sqlStatement, currentConfig));
     }
     
     @Test
@@ -108,7 +108,7 @@ class AlterShadowRuleStatementUpdaterTest {
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment)))));
-        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, currentConfig));
+        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(sqlStatement, currentConfig));
     }
     
     @Test
@@ -117,7 +117,7 @@ class AlterShadowRuleStatementUpdaterTest {
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment)))));
-        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, currentConfig));
+        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(sqlStatement, currentConfig));
     }
     
     @Test
@@ -128,7 +128,7 @@ class AlterShadowRuleStatementUpdaterTest {
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment2)))));
-        executor.checkBeforeUpdate(database, sqlStatement, currentConfig);
+        executor.checkBeforeUpdate(sqlStatement, currentConfig);
     }
     
     @Test
@@ -138,6 +138,6 @@ class AlterShadowRuleStatementUpdaterTest {
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment2)))));
-        executor.checkBeforeUpdate(database, sqlStatement, currentConfig);
+        executor.checkBeforeUpdate(sqlStatement, currentConfig);
     }
 }

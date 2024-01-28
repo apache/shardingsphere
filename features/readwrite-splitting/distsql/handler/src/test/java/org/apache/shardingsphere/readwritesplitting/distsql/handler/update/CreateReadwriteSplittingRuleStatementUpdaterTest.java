@@ -65,27 +65,28 @@ class CreateReadwriteSplittingRuleStatementUpdaterTest {
     private final CreateReadwriteSplittingRuleExecutor executor = new CreateReadwriteSplittingRuleExecutor();
     
     @BeforeEach
-    void before() {
+    void setUp() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.emptyList());
+        executor.setDatabase(database);
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateRuleNames() {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("TEST"), createCurrentRuleConfiguration()));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateResource() {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("write_ds", null));
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithoutExistedResources() {
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("TEST"), null));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(createSQLStatement("TEST"), null));
     }
     
     @Test
@@ -95,37 +96,38 @@ class CreateReadwriteSplittingRuleStatementUpdaterTest {
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(dataSourceContainedRule));
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("duplicate_ds", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"),
                 new AlgorithmSegment(null, new Properties()));
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(false, ruleSegment), null));
+        executor.setDatabase(database);
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, ruleSegment), null));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() {
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkBeforeUpdate(database, createSQLStatementWithDuplicateWriteResourceNames("write_ds_0", "write_ds_1", "TEST"), null));
+                () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateWriteResourceNames("write_ds_0", "write_ds_1", "TEST"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateWriteResourceNames() {
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkBeforeUpdate(database, createSQLStatement("readwrite_ds_1", "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration()));
+                () -> executor.checkBeforeUpdate(createSQLStatement("readwrite_ds_1", "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() {
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(database, createSQLStatementWithDuplicateReadResourceNames("write_ds_0", "write_ds_1", "TEST"), null));
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateReadResourceNames("write_ds_0", "write_ds_1", "TEST"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateReadResourceNames() {
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkBeforeUpdate(database, createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration()));
+                () -> executor.checkBeforeUpdate(createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithIfNotExists() {
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("readwrite_ds_0", "write_ds_0", Arrays.asList("read_ds_2", "read_ds_3"),
                 new AlgorithmSegment(null, new Properties()));
-        executor.checkBeforeUpdate(database, createSQLStatement(true, staticSegment), createCurrentRuleConfiguration());
+        executor.checkBeforeUpdate(createSQLStatement(true, staticSegment), createCurrentRuleConfiguration());
     }
     
     @Test
@@ -136,7 +138,8 @@ class CreateReadwriteSplittingRuleStatementUpdaterTest {
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"),
                 new AlgorithmSegment("TEST", new Properties()));
         CreateReadwriteSplittingRuleStatement statement = createSQLStatement(false, staticSegment);
-        executor.checkBeforeUpdate(database, statement, null);
+        executor.setDatabase(database);
+        executor.checkBeforeUpdate(statement, null);
         ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
         ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);

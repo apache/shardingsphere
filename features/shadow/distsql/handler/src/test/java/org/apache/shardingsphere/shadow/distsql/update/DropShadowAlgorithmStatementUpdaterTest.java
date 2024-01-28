@@ -23,35 +23,34 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowAlgorithmExecutor;
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowAlgorithmStatement;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
 class DropShadowAlgorithmStatementUpdaterTest {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
     
     private final DropShadowAlgorithmExecutor executor = new DropShadowAlgorithmExecutor();
     
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
+    
     @Test
     void assertExecuteWithoutAlgorithmNameInMetaData() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("ruleSegment"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("ruleSegment"), null));
     }
     
     @Test
     void assertExecuteWithIfExists() {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement(true, "ruleSegment");
-        executor.checkBeforeUpdate(database, sqlStatement, mock(ShadowRuleConfiguration.class));
+        executor.checkBeforeUpdate(sqlStatement, mock(ShadowRuleConfiguration.class));
     }
     
     @Test
@@ -59,7 +58,7 @@ class DropShadowAlgorithmStatementUpdaterTest {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement("shadow_algorithm");
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getShadowAlgorithms().put("shadow_algorithm", new AlgorithmConfiguration("type", null));
-        executor.checkBeforeUpdate(database, sqlStatement, ruleConfig);
+        executor.checkBeforeUpdate(sqlStatement, ruleConfig);
         executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
         assertTrue(ruleConfig.getShadowAlgorithms().isEmpty());
     }
