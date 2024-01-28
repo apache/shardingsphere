@@ -25,11 +25,8 @@ import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceCo
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleExecutor;
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowRuleStatement;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,36 +37,39 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
 class DropShadowRuleStatementUpdaterTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
+    private final DropShadowRuleExecutor executor = new DropShadowRuleExecutor();
+    
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
     
     @Test
     void assertCheckWithNullConfiguration() {
-        assertThrows(MissingRequiredRuleException.class, () -> new DropShadowRuleExecutor().checkBeforeUpdate(database, createSQLStatement("anyRuleName"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("anyRuleName"), null));
     }
     
     @Test
     void assertCheckWithRuleNotExisted() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new DropShadowRuleExecutor().checkBeforeUpdate(database, createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class)));
+                () -> executor.checkBeforeUpdate(createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class)));
     }
     
     @Test
     void assertCheckWithIfExists() {
-        new DropShadowRuleExecutor().checkBeforeUpdate(database, createSQLStatement(true, "notExistedRuleName"), mock(ShadowRuleConfiguration.class));
+        executor.checkBeforeUpdate(createSQLStatement(true, "notExistedRuleName"), mock(ShadowRuleConfiguration.class));
     }
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithUnusedAlgorithms() {
         DropShadowRuleStatement sqlStatement = createSQLStatement("shadow_group");
         ShadowRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
-        DropShadowRuleExecutor executor = new DropShadowRuleExecutor();
-        executor.checkBeforeUpdate(database, sqlStatement, ruleConfig);
+        executor.checkBeforeUpdate(sqlStatement, ruleConfig);
         assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
         assertTrue(ruleConfig.getDataSources().isEmpty());
         assertTrue(ruleConfig.getTables().isEmpty());
@@ -80,8 +80,7 @@ class DropShadowRuleStatementUpdaterTest {
     void assertUpdateMultipleCurrentRuleConfigurationWithInUsedAlgorithms() {
         DropShadowRuleStatement sqlStatement = createSQLStatement("shadow_group");
         ShadowRuleConfiguration ruleConfig = createMultipleCurrentRuleConfiguration();
-        DropShadowRuleExecutor executor = new DropShadowRuleExecutor();
-        executor.checkBeforeUpdate(database, sqlStatement, ruleConfig);
+        executor.checkBeforeUpdate(sqlStatement, ruleConfig);
         assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
         assertTrue(ruleConfig.getDataSources().isEmpty());
         assertTrue(ruleConfig.getTables().isEmpty());

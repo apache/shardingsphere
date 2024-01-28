@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Strings;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
@@ -35,32 +36,33 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding key generator executor.
  */
+@Setter
 public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropExecutor<DropShardingKeyGeneratorStatement, ShardingRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig && sqlStatement.isIfExists()) {
             return;
         }
-        String databaseName = database.getName();
         Collection<String> keyGeneratorNames = new LinkedList<>(sqlStatement.getNames());
-        checkExist(databaseName, keyGeneratorNames, currentRuleConfig, sqlStatement);
-        checkInUsed(databaseName, keyGeneratorNames, currentRuleConfig);
+        checkExist(keyGeneratorNames, currentRuleConfig, sqlStatement);
+        checkInUsed(keyGeneratorNames, currentRuleConfig);
     }
     
-    private void checkExist(final String databaseName, final Collection<String> keyGeneratorNames,
-                            final ShardingRuleConfiguration currentRuleConfig, final DropShardingKeyGeneratorStatement sqlStatement) {
+    private void checkExist(final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig, final DropShardingKeyGeneratorStatement sqlStatement) {
         if (sqlStatement.isIfExists()) {
             return;
         }
         Collection<String> notExistKeyGenerators = keyGeneratorNames.stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistKeyGenerators.isEmpty(), () -> new MissingRequiredAlgorithmException("Key generator", databaseName, notExistKeyGenerators));
+        ShardingSpherePreconditions.checkState(notExistKeyGenerators.isEmpty(), () -> new MissingRequiredAlgorithmException("Key generator", database.getName(), notExistKeyGenerators));
     }
     
-    private void checkInUsed(final String databaseName, final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkInUsed(final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> usedKeyGenerators = getUsedKeyGenerators(currentRuleConfig);
         Collection<String> inUsedNames = keyGeneratorNames.stream().filter(usedKeyGenerators::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Key generator", databaseName, inUsedNames));
+        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Key generator", database.getName(), inUsedNames));
     }
     
     private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {

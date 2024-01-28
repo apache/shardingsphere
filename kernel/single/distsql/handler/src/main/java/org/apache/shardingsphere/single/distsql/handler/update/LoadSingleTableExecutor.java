@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
@@ -48,17 +49,20 @@ import java.util.stream.Collectors;
 /**
  * Load single table statement executor.
  */
+@Setter
 public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor<LoadSingleTableStatement, SingleRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
-        checkDuplicatedTables(database, sqlStatement, defaultSchemaName);
-        checkStorageUnits(database, sqlStatement);
-        checkActualTableExist(database, sqlStatement, defaultSchemaName);
+        checkDuplicatedTables(sqlStatement, defaultSchemaName);
+        checkStorageUnits(sqlStatement);
+        checkActualTableExist(sqlStatement, defaultSchemaName);
     }
     
-    private void checkDuplicatedTables(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
+    private void checkDuplicatedTables(final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
         Collection<SingleTableSegment> tableSegments = sqlStatement.getTables();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
         boolean isSchemaSupportedDatabaseType = dialectDatabaseMetaData.getDefaultSchema().isPresent();
@@ -97,7 +101,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
                 .filter(each -> !SingleTableConstants.ASTERISK.equals(each)).collect(Collectors.toSet());
     }
     
-    private void checkStorageUnits(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement) {
+    private void checkStorageUnits(final LoadSingleTableStatement sqlStatement) {
         Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);
         if (requiredDataSources.isEmpty()) {
             return;
@@ -108,7 +112,7 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }
     
-    private void checkActualTableExist(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
+    private void checkActualTableExist(final LoadSingleTableStatement sqlStatement, final String defaultSchemaName) {
         Collection<String> requiredDataSources = getRequiredDataSources(sqlStatement);
         if (requiredDataSources.isEmpty()) {
             return;

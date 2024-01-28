@@ -35,34 +35,33 @@ import static org.mockito.Mockito.when;
 
 class DropBroadcastTableRuleStatementUpdaterTest {
     
-    private ShardingSphereDatabase database;
-    
     private final DropBroadcastTableRuleExecutor executor = new DropBroadcastTableRuleExecutor();
     
     @BeforeEach
     void setUp() {
-        database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("sharding_db");
+        executor.setDatabase(database);
     }
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, statement, null));
+        DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement, null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
-        DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, statement, new BroadcastRuleConfiguration(Collections.emptyList())));
+        DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement, new BroadcastRuleConfiguration(Collections.emptyList())));
     }
     
     @Test
     void assertUpdateCurrentRuleConfiguration() {
         BroadcastRuleConfiguration config = new BroadcastRuleConfiguration(new LinkedList<>());
         config.getTables().add("t_address");
-        DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertTrue(executor.updateCurrentRuleConfiguration(statement, config));
+        DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, config));
         assertTrue(config.getTables().isEmpty());
     }
 }

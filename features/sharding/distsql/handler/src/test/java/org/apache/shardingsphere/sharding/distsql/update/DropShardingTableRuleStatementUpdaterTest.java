@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTab
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
@@ -51,37 +52,39 @@ import static org.mockito.Mockito.mock;
 
 class DropShardingTableRuleStatementUpdaterTest {
     
+    private final DropShardingTableRuleExecutor executor = new DropShardingTableRuleExecutor();
+    
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS));
+    }
+    
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        assertThrows(MissingRequiredRuleException.class,
-                () -> new DropShardingTableRuleExecutor().checkBeforeUpdate(
-                        mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), new DropShardingTableRuleStatement(false, Collections.emptyList()), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new DropShardingTableRuleStatement(false, Collections.emptyList()), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutExistedTableRule() throws RuleDefinitionViolationException {
-        assertThrows(MissingRequiredRuleException.class,
-                () -> new DropShardingTableRuleExecutor().checkBeforeUpdate(
-                        mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), createSQLStatement("t_order"), new ShardingRuleConfiguration()));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order"), new ShardingRuleConfiguration()));
         
     }
     
     @Test
     void assertCheckSQLStatementIfExistsWithNullCurrentRuleConfiguration() throws RuleDefinitionViolationException {
         DropShardingTableRuleStatement statement = new DropShardingTableRuleStatement(true, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue("t_order_if_exists"))));
-        new DropShardingTableRuleExecutor().checkBeforeUpdate(mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), statement, null);
+        executor.checkBeforeUpdate(statement, null);
     }
     
     @Test
     void assertCheckSQLStatementIfExists() throws RuleDefinitionViolationException {
         DropShardingTableRuleStatement statement = new DropShardingTableRuleStatement(true, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue("t_order_if_exists"))));
-        new DropShardingTableRuleExecutor().checkBeforeUpdate(mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), statement, new ShardingRuleConfiguration());
+        executor.checkBeforeUpdate(statement, new ShardingRuleConfiguration());
     }
     
     @Test
     void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
-        assertThrows(RuleInUsedException.class, () -> new DropShardingTableRuleExecutor().checkBeforeUpdate(
-                mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), createSQLStatement("t_order_item"), createCurrentRuleConfiguration()));
+        assertThrows(RuleInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order_item"), createCurrentRuleConfiguration()));
     }
     
     @Test

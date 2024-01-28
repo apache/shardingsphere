@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
@@ -38,16 +39,18 @@ import java.util.Optional;
 /**
  * Create default sharding strategy executor.
  */
+@Setter
 public final class CreateDefaultShardingStrategyExecutor implements DatabaseRuleCreateExecutor<CreateDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        String databaseName = database.getName();
+    public void checkBeforeUpdate(final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (!"none".equalsIgnoreCase(sqlStatement.getStrategyType())) {
             checkAlgorithm(sqlStatement);
         }
         if (!sqlStatement.isIfNotExists()) {
-            checkExist(databaseName, sqlStatement, currentRuleConfig);
+            checkExist(sqlStatement, currentRuleConfig);
         }
     }
     
@@ -62,13 +65,13 @@ public final class CreateDefaultShardingStrategyExecutor implements DatabaseRule
         return null != sqlStatement.getAlgorithmSegment();
     }
     
-    private void checkExist(final String databaseName, final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkExist(final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig) {
             return;
         }
         Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
         ShardingSpherePreconditions.checkState(!strategyConfig.isPresent(),
-                () -> new DuplicateRuleException(String.format("default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), databaseName));
+                () -> new DuplicateRuleException(String.format("default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), database.getName()));
     }
     
     private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final ShardingRuleConfiguration currentRuleConfig, final String type) {

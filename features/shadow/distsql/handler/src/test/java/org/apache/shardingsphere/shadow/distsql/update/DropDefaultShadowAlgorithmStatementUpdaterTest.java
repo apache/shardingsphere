@@ -23,37 +23,40 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropDefaultShadowAlgorithmExecutor;
 import org.apache.shardingsphere.shadow.distsql.statement.DropDefaultShadowAlgorithmStatement;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class DropDefaultShadowAlgorithmStatementUpdaterTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
+    private final DropDefaultShadowAlgorithmExecutor executor = new DropDefaultShadowAlgorithmExecutor();
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
     
-    private final DropDefaultShadowAlgorithmExecutor executor = new DropDefaultShadowAlgorithmExecutor();
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
     
     @Test
     void assertCheckWithoutDefaultAlgorithm() {
-        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkBeforeUpdate(database, new DropDefaultShadowAlgorithmStatement(false), currentConfig));
+        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(false), currentConfig));
     }
     
     @Test
     void assertCheckWithIfExists() {
-        executor.checkBeforeUpdate(database, new DropDefaultShadowAlgorithmStatement(true), currentConfig);
-        executor.checkBeforeUpdate(database, new DropDefaultShadowAlgorithmStatement(true), null);
+        executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true), currentConfig);
+        executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true), null);
     }
     
     @Test
@@ -62,7 +65,7 @@ class DropDefaultShadowAlgorithmStatementUpdaterTest {
         ruleConfig.setDefaultShadowAlgorithmName("default");
         ruleConfig.getShadowAlgorithms().put(ruleConfig.getDefaultShadowAlgorithmName(), mock(AlgorithmConfiguration.class));
         DropDefaultShadowAlgorithmStatement statement = new DropDefaultShadowAlgorithmStatement(false);
-        executor.checkBeforeUpdate(database, new DropDefaultShadowAlgorithmStatement(true), ruleConfig);
+        executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true), ruleConfig);
         assertTrue(executor.hasAnyOneToBeDropped(statement, ruleConfig));
         executor.updateCurrentRuleConfiguration(statement, ruleConfig);
         assertNull(ruleConfig.getDefaultShadowAlgorithmName());

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -30,21 +31,24 @@ import java.util.Collections;
 /**
  * Drop default shadow algorithm executor.
  */
+@Setter
 public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDropExecutor<DropDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }
         ShadowRuleStatementChecker.checkRuleConfigurationExists(database.getName(), currentRuleConfig);
-        checkAlgorithm(database.getName(), sqlStatement, currentRuleConfig);
+        checkAlgorithm(sqlStatement, currentRuleConfig);
     }
     
-    private void checkAlgorithm(final String databaseName, final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    private void checkAlgorithm(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfExists()) {
             ShardingSpherePreconditions.checkNotNull(currentRuleConfig.getDefaultShadowAlgorithmName(),
-                    () -> new MissingRequiredAlgorithmException("shadow", databaseName, Collections.singleton("default")));
+                    () -> new MissingRequiredAlgorithmException("shadow", database.getName(), Collections.singleton("default")));
         }
     }
     

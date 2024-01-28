@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -38,23 +39,25 @@ import java.util.stream.Collectors;
 /**
  * Alter mask rule executor.
  */
+@Setter
 public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<AlterMaskRuleStatement, MaskRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        String databaseName = database.getName();
-        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
-        checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
+    public void checkBeforeUpdate(final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+        checkCurrentRuleConfiguration(currentRuleConfig);
+        checkToBeAlteredRules(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final MaskRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Mask", databaseName));
+    private void checkCurrentRuleConfiguration(final MaskRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Mask", database.getName()));
     }
     
-    private void checkToBeAlteredRules(final String databaseName, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    private void checkToBeAlteredRules(final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         Collection<String> currentMaskTableNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedMaskTableNames = getToBeAlteredMaskTableNames(sqlStatement).stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedMaskTableNames.isEmpty(), () -> new MissingRequiredRuleException("Mask", databaseName, notExistedMaskTableNames));
+        ShardingSpherePreconditions.checkState(notExistedMaskTableNames.isEmpty(), () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedMaskTableNames));
     }
     
     private Collection<String> getToBeAlteredMaskTableNames(final AlterMaskRuleStatement sqlStatement) {

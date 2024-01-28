@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import com.google.common.base.Strings;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.DuplicateAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
@@ -39,10 +40,13 @@ import java.util.stream.Stream;
 /**
  * Create default shadow algorithm statement executor.
  */
+@Setter
 public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleCreateExecutor<CreateDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfNotExists()) {
             checkExisted(database.getName(), currentRuleConfig);
         }

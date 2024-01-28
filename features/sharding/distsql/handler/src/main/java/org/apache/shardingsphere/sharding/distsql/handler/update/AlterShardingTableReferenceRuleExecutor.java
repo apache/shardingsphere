@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
@@ -40,54 +41,34 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding table reference rule executor.
  */
+@Setter
 public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRuleAlterExecutor<AlterShardingTableReferenceRuleStatement, ShardingRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        String databaseName = database.getName();
-        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
-        checkToBeAlteredRulesExisted(databaseName, sqlStatement, currentRuleConfig);
-        checkDuplicatedTablesInShardingTableReferenceRules(databaseName, sqlStatement, currentRuleConfig);
-        checkToBeReferencedShardingTablesExisted(databaseName, sqlStatement, currentRuleConfig);
+    public void checkBeforeUpdate(final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        checkCurrentRuleConfiguration(currentRuleConfig);
+        checkToBeAlteredRulesExisted(sqlStatement, currentRuleConfig);
+        checkDuplicatedTablesInShardingTableReferenceRules(sqlStatement, currentRuleConfig);
+        checkToBeReferencedShardingTablesExisted(sqlStatement, currentRuleConfig);
         checkShardingTableReferenceRulesValid(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", databaseName));
+    private void checkCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", database.getName()));
     }
     
-    private void checkToBeAlteredRulesExisted(final String databaseName, final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkToBeAlteredRulesExisted(final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> currentRuleNames = currentRuleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Sharding table reference", databaseName, notExistedRuleNames));
+        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Sharding table reference", database.getName(), notExistedRuleNames));
     }
     
-    private void checkDuplicatedTablesInShardingTableReferenceRules(final String databaseName,
-                                                                    final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkDuplicatedTablesInShardingTableReferenceRules(final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> currentReferencedTableNames = getReferencedTableNames(currentRuleConfig, getToBeAlteredRuleNames(sqlStatement));
         Collection<String> duplicatedTableNames = sqlStatement.getTableNames().stream().filter(currentReferencedTableNames::contains).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicatedTableNames.isEmpty(), () -> new DuplicateRuleException("sharding table reference", databaseName, duplicatedTableNames));
-    }
-    
-    private Collection<String> getToBeAlteredRuleNames(final AlterShardingTableReferenceRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).collect(Collectors.toSet());
-    }
-    
-    private Collection<String> getToBeAlteredRuleNames(final ShardingRuleConfiguration ruleConfig) {
-        return ruleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
-    }
-    
-    private void checkToBeReferencedShardingTablesExisted(final String databaseName, final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> existedShardingTables = getCurrentShardingTables(currentRuleConfig);
-        Collection<String> notExistedShardingTables = sqlStatement.getTableNames().stream().filter(each -> !containsIgnoreCase(existedShardingTables, each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistedShardingTables.isEmpty(), () -> new MissingRequiredRuleException("Sharding", databaseName, notExistedShardingTables));
-    }
-    
-    private void checkShardingTableReferenceRulesValid(final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<ShardingTableReferenceRuleConfiguration> toBeAlteredShardingTableReferenceRules = buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement).getBindingTableGroups();
-        Collection<String> ruleNames = toBeAlteredShardingTableReferenceRules.stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(ShardingTableRuleStatementChecker.isValidBindingTableGroups(toBeAlteredShardingTableReferenceRules, currentRuleConfig),
-                () -> new InvalidRuleConfigurationException("sharding table", ruleNames, Collections.singleton("invalid sharding table reference.")));
+        ShardingSpherePreconditions.checkState(duplicatedTableNames.isEmpty(), () -> new DuplicateRuleException("sharding table reference", database.getName(), duplicatedTableNames));
     }
     
     private Collection<String> getReferencedTableNames(final ShardingRuleConfiguration currentRuleConfig, final Collection<String> getToBeAlteredRuleNames) {
@@ -100,6 +81,20 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
         return result;
     }
     
+    private Collection<String> getToBeAlteredRuleNames(final AlterShardingTableReferenceRuleStatement sqlStatement) {
+        return sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).collect(Collectors.toSet());
+    }
+    
+    private Collection<String> getToBeAlteredRuleNames(final ShardingRuleConfiguration ruleConfig) {
+        return ruleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
+    }
+    
+    private void checkToBeReferencedShardingTablesExisted(final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> existedShardingTables = getCurrentShardingTables(currentRuleConfig);
+        Collection<String> notExistedShardingTables = sqlStatement.getTableNames().stream().filter(each -> !containsIgnoreCase(existedShardingTables, each)).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(notExistedShardingTables.isEmpty(), () -> new MissingRequiredRuleException("Sharding", database.getName(), notExistedShardingTables));
+    }
+    
     private Collection<String> getCurrentShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> result = new HashSet<>();
         result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
@@ -109,6 +104,13 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
     
     private boolean containsIgnoreCase(final Collection<String> currentRules, final String ruleName) {
         return currentRules.stream().anyMatch(each -> each.equalsIgnoreCase(ruleName));
+    }
+    
+    private void checkShardingTableReferenceRulesValid(final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<ShardingTableReferenceRuleConfiguration> toBeAlteredShardingTableReferenceRules = buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement).getBindingTableGroups();
+        Collection<String> ruleNames = toBeAlteredShardingTableReferenceRules.stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkState(ShardingTableRuleStatementChecker.isValidBindingTableGroups(toBeAlteredShardingTableReferenceRules, currentRuleConfig),
+                () -> new InvalidRuleConfigurationException("sharding table", ruleNames, Collections.singleton("invalid sharding table reference.")));
     }
     
     @Override

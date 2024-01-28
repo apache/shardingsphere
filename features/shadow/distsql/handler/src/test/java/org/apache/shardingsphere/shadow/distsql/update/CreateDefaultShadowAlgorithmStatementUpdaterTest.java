@@ -26,32 +26,35 @@ import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.statement.CreateDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
+    private final CreateDefaultShadowAlgorithmExecutor executor = new CreateDefaultShadowAlgorithmExecutor();
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
     
-    private final CreateDefaultShadowAlgorithmExecutor executor = new CreateDefaultShadowAlgorithmExecutor();
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
     
     @Test
     void assertExecuteWithInvalidAlgorithm() {
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
         when(statement.getShadowAlgorithmSegment()).thenReturn(new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", PropertiesBuilder.build(new Property("type", "value")))));
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(database, statement, currentConfig));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(statement, currentConfig));
     }
     
     @Test
@@ -59,13 +62,13 @@ class CreateDefaultShadowAlgorithmStatementUpdaterTest {
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
         when(statement.getShadowAlgorithmSegment()).thenReturn(
                 new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
-        executor.checkBeforeUpdate(database, statement, currentConfig);
+        executor.checkBeforeUpdate(statement, currentConfig);
     }
     
     @Test
     void assertExecuteWithIfNotExists() {
         ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
         CreateDefaultShadowAlgorithmStatement statement = new CreateDefaultShadowAlgorithmStatement(true, shadowAlgorithmSegment);
-        executor.checkBeforeUpdate(database, statement, currentConfig);
+        executor.checkBeforeUpdate(statement, currentConfig);
     }
 }

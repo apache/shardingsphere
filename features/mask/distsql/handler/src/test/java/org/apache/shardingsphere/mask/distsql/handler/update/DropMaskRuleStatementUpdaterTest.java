@@ -23,11 +23,8 @@ import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,25 +35,27 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
 class DropMaskRuleStatementUpdaterTest {
     
     private final DropMaskRuleExecutor executor = new DropMaskRuleExecutor();
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "t_mask"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "t_mask"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "t_mask"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkBeforeUpdate(createSQLStatement(false, "t_mask"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
@@ -71,7 +70,7 @@ class DropMaskRuleStatementUpdaterTest {
     void assertUpdateCurrentRuleConfigurationWithIfExists() {
         MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropMaskRuleStatement statement = createSQLStatement(true, "t_user");
-        executor.checkBeforeUpdate(database, statement, mock(MaskRuleConfiguration.class));
+        executor.checkBeforeUpdate(statement, mock(MaskRuleConfiguration.class));
         assertFalse(executor.updateCurrentRuleConfiguration(statement, ruleConfig));
         assertThat(ruleConfig.getTables().size(), is(1));
     }

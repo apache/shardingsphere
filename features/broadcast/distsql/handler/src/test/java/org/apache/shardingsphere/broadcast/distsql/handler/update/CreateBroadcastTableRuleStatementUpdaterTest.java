@@ -43,26 +43,29 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
     void assertCheckSQLStatementWithEmptyStorageUnit() {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
-        CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(database, statement, currentConfig));
+        executor.setDatabase(database);
+        assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(sqlStatement, currentConfig));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateBroadcastRule() {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
-        CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(mockShardingSphereDatabase(), statement, currentConfig));
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        executor.setDatabase(mockShardingSphereDatabase());
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement, currentConfig));
     }
     
     @Test
     void assertBuildToBeCreatedRuleConfiguration() {
         BroadcastRuleConfiguration currentConfig = new BroadcastRuleConfiguration(new LinkedList<>());
-        CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        executor.checkBeforeUpdate(mockShardingSphereDatabase(), statement, currentConfig);
-        BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, statement);
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        executor.setDatabase(mockShardingSphereDatabase());
+        executor.checkBeforeUpdate(sqlStatement, currentConfig);
+        BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getTables().size(), is(1));
         assertThat(currentConfig.getTables().iterator().next(), is("t_address"));

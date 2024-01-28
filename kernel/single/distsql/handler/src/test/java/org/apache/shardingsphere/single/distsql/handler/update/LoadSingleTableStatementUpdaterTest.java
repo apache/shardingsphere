@@ -67,14 +67,16 @@ class LoadSingleTableStatementUpdaterTest {
         when(database.getName()).thenReturn("foo_db");
         when(schema.containsTable("foo")).thenReturn(true);
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
-        assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, mock(SingleRuleConfiguration.class)));
+        executor.setDatabase(database);
+        assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement, mock(SingleRuleConfiguration.class)));
     }
     
     @Test
     void assertCheckWithInvalidStorageUnit() {
-        when(database.getName()).thenReturn("foo_db");
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, mock(SingleRuleConfiguration.class)));
+        when(database.getName()).thenReturn("foo_db");
+        executor.setDatabase(database);
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(sqlStatement, mock(SingleRuleConfiguration.class)));
     }
     
     @Test
