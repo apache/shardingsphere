@@ -46,12 +46,8 @@ import java.util.Properties;
 public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetDistVariableStatement> {
     
     @Override
-    public void checkBeforeUpdate(final SetDistVariableStatement sqlStatement, final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(getEnumType(sqlStatement.getName()) instanceof TypedPropertyKey, () -> new UnsupportedVariableException(sqlStatement.getName()));
-    }
-    
-    @Override
     public void executeUpdate(final SetDistVariableStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+        ShardingSpherePreconditions.checkState(getEnumType(sqlStatement.getName()) instanceof TypedPropertyKey, () -> new UnsupportedVariableException(sqlStatement.getName()));
         handleConfigurationProperty(contextManager, (TypedPropertyKey) getEnumType(sqlStatement.getName()), sqlStatement.getValue());
     }
     

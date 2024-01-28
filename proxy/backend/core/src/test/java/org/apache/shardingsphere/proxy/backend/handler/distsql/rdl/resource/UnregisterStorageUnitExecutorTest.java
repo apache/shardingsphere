@@ -116,15 +116,15 @@ class UnregisterStorageUnitExecutorTest {
     }
     
     @Test
-    void assertStorageUnitNameNotExistedExecute() {
+    void assertExecuteUpdateWithhStorageUnitNameNotExisted() {
         when(ProxyContext.getInstance().getDatabase("foo_db").getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         executor.setDatabase(database);
         assertThrows(MissingRequiredStorageUnitsException.class,
-                () -> executor.checkBeforeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
+                () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
-    void assertStorageUnitNameInUseExecute() {
+    void assertExecuteUpdateWithStorageUnitNameInUse() {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(shadowRule)));
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
@@ -132,11 +132,11 @@ class UnregisterStorageUnitExecutorTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         executor.setDatabase(database);
-        assertThrows(StorageUnitInUsedException.class, () -> executor.checkBeforeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
+        assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
-    void assertStorageUnitNameInUseWithoutIgnoreSingleTables() {
+    void assertExecuteUpdateWithStorageUnitNameInUseWithoutIgnoreSingleTables() {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(singleRule)));
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
@@ -146,7 +146,7 @@ class UnregisterStorageUnitExecutorTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         executor.setDatabase(database);
-        assertThrows(StorageUnitInUsedException.class, () -> executor.checkBeforeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
+        assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
@@ -175,11 +175,11 @@ class UnregisterStorageUnitExecutorTest {
     }
     
     @Test
-    void assertStorageUnitNameInUseWithIfExists() {
+    void assertExecuteUpdateWithStorageUnitNameInUseWithIfExists() {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(shadowRule)));
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
         executor.setDatabase(database);
-        assertThrows(DistSQLException.class, () -> executor.checkBeforeUpdate(unregisterStorageUnitStatement, contextManager));
+        assertThrows(DistSQLException.class, () -> executor.executeUpdate(unregisterStorageUnitStatement, contextManager));
     }
 }

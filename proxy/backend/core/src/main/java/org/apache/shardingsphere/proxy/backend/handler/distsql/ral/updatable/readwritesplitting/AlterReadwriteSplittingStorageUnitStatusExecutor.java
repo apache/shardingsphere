@@ -77,9 +77,9 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
         Map<String, String> autoAwareResources = getAutoAwareResources(exportedData);
         boolean isDisable = DISABLE.equals(sqlStatement.getStatus());
         if (isDisable) {
-            checkDisable(contextManager, database.getName(), disabledStorageUnits.keySet(), toBeUpdatedStorageUnit, replicaStorageUnits);
+            checkDisable(disabledStorageUnits.keySet(), toBeUpdatedStorageUnit, replicaStorageUnits);
         } else {
-            checkEnable(contextManager, database.getName(), disabledStorageUnits, toBeUpdatedStorageUnit);
+            checkEnable(disabledStorageUnits, toBeUpdatedStorageUnit);
         }
         Collection<String> groupNames = getGroupNames(toBeUpdatedStorageUnit, replicaStorageUnits, disabledStorageUnits, autoAwareResources);
         String groupName = sqlStatement.getGroupName();
@@ -130,9 +130,8 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
         return result;
     }
     
-    private void checkDisable(final ContextManager contextManager, final String databaseName, final Collection<String> disabledStorageUnits, final String toBeDisabledStorageUnit,
-                              final Map<String, String> replicaResources) {
-        checkResourceExists(contextManager, databaseName, toBeDisabledStorageUnit);
+    private void checkDisable(final Collection<String> disabledStorageUnits, final String toBeDisabledStorageUnit, final Map<String, String> replicaResources) {
+        checkResourceExists(toBeDisabledStorageUnit);
         checkIsDisabled(replicaResources, disabledStorageUnits, toBeDisabledStorageUnit);
         checkIsReplicaResource(replicaResources, toBeDisabledStorageUnit);
     }
@@ -153,15 +152,14 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
                 () -> new UnsupportedSQLOperationException(String.format("The current database does not exist the group `%s`", groupName)));
     }
     
-    private void checkEnable(final ContextManager contextManager, final String databaseName, final Map<String, String> disabledResources, final String toBeEnabledResource) {
-        checkResourceExists(contextManager, databaseName, toBeEnabledResource);
+    private void checkEnable(final Map<String, String> disabledResources, final String toBeEnabledResource) {
+        checkResourceExists(toBeEnabledResource);
         checkIsNotDisabled(disabledResources.keySet(), toBeEnabledResource);
     }
     
-    private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) {
-        Collection<String> notExistedResources = contextManager
-                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getNotExistedDataSources(Collections.singleton(toBeDisabledResource));
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singleton(toBeDisabledResource)));
+    private void checkResourceExists(final String toBeDisabledResource) {
+        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(Collections.singleton(toBeDisabledResource));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(toBeDisabledResource)));
     }
     
     private void checkIsNotDisabled(final Collection<String> disabledResources, final String toBeEnabledResource) {

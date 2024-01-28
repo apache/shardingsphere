@@ -63,28 +63,22 @@ public abstract class DistSQLUpdateExecuteEngine {
         executor.executeUpdate(sqlStatement, contextManager);
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private void checkBeforeUpdate(final DistSQLUpdateExecutor executor) {
+    private void checkBeforeUpdate(final DistSQLUpdateExecutor<?> executor) {
         if (null != executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)) {
             ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
         }
-        executor.checkBeforeUpdate(sqlStatement, contextManager);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void setRule(final DistSQLExecutorRuleAware executor) {
-        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
-        if (globalRule.isPresent()) {
-            executor.setRule(globalRule.get());
-            return;
-        }
-        ShardingSphereDatabase database = getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName));
-        Optional<ShardingSphereRule> databaseRule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
-        if (databaseRule.isPresent()) {
-            executor.setRule(databaseRule.get());
-            return;
-        }
-        throw new UnsupportedSQLOperationException(String.format("The current database has no `%s` rules", executor.getRuleClass()));
+    private void setRule(final DistSQLExecutorRuleAware executor) throws UnsupportedSQLOperationException {
+        Optional<ShardingSphereRule> rule = findRule(executor.getRuleClass());
+        ShardingSpherePreconditions.checkState(rule.isPresent(), () -> new UnsupportedSQLOperationException(String.format("The current database has no `%s` rules", executor.getRuleClass())));
+        executor.setRule(rule.get());
+    }
+    
+    private Optional<ShardingSphereRule> findRule(final Class<ShardingSphereRule> ruleClass) {
+        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
+        return globalRule.isPresent() ? globalRule : getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)).getRuleMetaData().findSingleRule(ruleClass);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);

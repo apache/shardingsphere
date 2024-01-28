@@ -50,19 +50,19 @@ public final class RegisterMigrationSourceStorageUnitExecutor implements DistSQL
     private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
     
     @Override
-    public void checkBeforeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(sqlStatement.getDataSources().stream().noneMatch(HostnameAndPortBasedDataSourceSegment.class::isInstance),
-                () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
-    }
-    
-    @Override
     public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        checkDataSource(sqlStatement);
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeFactory.get(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
         validateHandler.validate(propsMap);
         jobAPI.addMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), propsMap);
+    }
+    
+    private void checkDataSource(final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
+        ShardingSpherePreconditions.checkState(sqlStatement.getDataSources().stream().noneMatch(HostnameAndPortBasedDataSourceSegment.class::isInstance),
+                () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
     }
     
     @Override

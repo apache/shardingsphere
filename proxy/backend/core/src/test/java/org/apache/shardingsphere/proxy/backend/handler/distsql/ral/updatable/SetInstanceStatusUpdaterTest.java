@@ -31,26 +31,26 @@ import static org.mockito.Mockito.when;
 class SetInstanceStatusUpdaterTest {
     
     @Test
-    void assertCheckBeforeUpdateWithNotExistsInstanceID() {
+    void assertExecuteUpdateWithNotExistsInstanceID() {
         SetInstanceStatusExecutor executor = new SetInstanceStatusExecutor();
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.checkBeforeUpdate(new SetInstanceStatusStatement("ENABLE", "instanceID"), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("ENABLE", "instanceID"), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
-    void assertCheckBeforeUpdateWithCurrentUsingInstance() {
+    void assertExecuteUpdateWithCurrentUsingInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("instanceID");
         SetInstanceStatusExecutor executor = new SetInstanceStatusExecutor();
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.checkBeforeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
     }
     
     @Test
-    void assertCheckBeforeUpdateWithAlreadyDisableInstance() {
+    void assertExecuteUpdateWithAlreadyDisableInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("currentInstance");
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").isPresent()).thenReturn(true);
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(InstanceState.CIRCUIT_BREAK);
         SetInstanceStatusExecutor executor = new SetInstanceStatusExecutor();
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.checkBeforeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
     }
 }

@@ -78,18 +78,17 @@ public abstract class DistSQLQueryExecuteEngine {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void setRule(final DistSQLExecutorRuleAware executor) {
-        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
-        if (globalRule.isPresent()) {
-            executor.setRule(globalRule.get());
-            return;
+        Optional<ShardingSphereRule> rule = findRule(executor.getRuleClass());
+        if (rule.isPresent()) {
+            executor.setRule(rule.get());
+        } else {
+            rows = Collections.emptyList();
         }
-        ShardingSphereDatabase database = getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName));
-        Optional<ShardingSphereRule> databaseRule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
-        if (databaseRule.isPresent()) {
-            executor.setRule(databaseRule.get());
-            return;
-        }
-        rows = Collections.emptyList();
+    }
+    
+    private Optional<ShardingSphereRule> findRule(final Class<ShardingSphereRule> ruleClass) {
+        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
+        return globalRule.isPresent() ? globalRule : getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)).getRuleMetaData().findSingleRule(ruleClass);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);

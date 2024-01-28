@@ -54,7 +54,28 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
     private ShardingSphereDatabase database;
     
     @Override
-    public void checkBeforeUpdate(final RegisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+    public void executeUpdate(final RegisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        checkDataSource(sqlStatement, contextManager);
+        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
+        if (sqlStatement.isIfNotExists()) {
+            Collection<String> currentStorageUnits = getCurrentStorageUnitNames(contextManager);
+            Collection<String> logicalDataSourceNames = getLogicalDataSourceNames();
+            propsMap.keySet().removeIf(currentStorageUnits::contains);
+            propsMap.keySet().removeIf(logicalDataSourceNames::contains);
+        }
+        if (propsMap.isEmpty()) {
+            return;
+        }
+        validateHandler.validate(propsMap);
+        try {
+            contextManager.getInstanceContext().getModeContextManager().registerStorageUnits(database.getName(), propsMap);
+        } catch (final SQLException | ShardingSphereExternalException ex) {
+            log.error("Register storage unit failed", ex);
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
+        }
+    }
+    
+    private void checkDataSource(final RegisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         if (!sqlStatement.isIfNotExists()) {
             Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getStorageUnits().size());
             checkDuplicatedDataSourceNames(contextManager, dataSourceNames, sqlStatement);
@@ -89,27 +110,6 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
     
     private Collection<String> getLogicalDataSourceNames() {
         return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream().map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toList());
-    }
-    
-    @Override
-    public void executeUpdate(final RegisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
-        if (sqlStatement.isIfNotExists()) {
-            Collection<String> currentStorageUnits = getCurrentStorageUnitNames(contextManager);
-            Collection<String> logicalDataSourceNames = getLogicalDataSourceNames();
-            propsMap.keySet().removeIf(currentStorageUnits::contains);
-            propsMap.keySet().removeIf(logicalDataSourceNames::contains);
-        }
-        if (propsMap.isEmpty()) {
-            return;
-        }
-        validateHandler.validate(propsMap);
-        try {
-            contextManager.getInstanceContext().getModeContextManager().registerStorageUnits(database.getName(), propsMap);
-        } catch (final SQLException | ShardingSphereExternalException ex) {
-            log.error("Register storage unit failed", ex);
-            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
-        }
     }
     
     @Override
