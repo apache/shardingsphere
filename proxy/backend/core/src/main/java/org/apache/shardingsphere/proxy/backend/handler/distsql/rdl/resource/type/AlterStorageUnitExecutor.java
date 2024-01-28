@@ -60,19 +60,7 @@ public final class AlterStorageUnitExecutor implements ResourceDefinitionExecuto
     private ShardingSphereDatabase database;
     
     @Override
-    public void execute(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        checkSQLStatement(sqlStatement);
-        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
-        validateHandler.validate(propsMap);
-        try {
-            contextManager.getInstanceContext().getModeContextManager().alterStorageUnits(database.getName(), propsMap);
-        } catch (final SQLException | ShardingSphereExternalException ex) {
-            log.error("Alter storage unit failed", ex);
-            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
-        }
-    }
-    
-    private void checkSQLStatement(final AlterStorageUnitStatement sqlStatement) {
+    public void checkBeforeUpdate(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         Collection<String> toBeAlteredStorageUnitNames = getToBeAlteredStorageUnitNames(sqlStatement);
         checkDuplicatedStorageUnitNames(toBeAlteredStorageUnitNames);
         checkStorageUnitNameExisted(toBeAlteredStorageUnitNames);
@@ -123,6 +111,18 @@ public final class AlterStorageUnitExecutor implements ResourceDefinitionExecuto
         ConnectionProperties connectionProperties = storageUnit.getConnectionProperties();
         return Objects.equals(hostName, connectionProperties.getHostname()) && Objects.equals(port, String.valueOf(connectionProperties.getPort()))
                 && Objects.equals(database, connectionProperties.getCatalog());
+    }
+    
+    @Override
+    public void executeUpdate(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
+        validateHandler.validate(propsMap);
+        try {
+            contextManager.getInstanceContext().getModeContextManager().alterStorageUnits(database.getName(), propsMap);
+        } catch (final SQLException | ShardingSphereExternalException ex) {
+            log.error("Alter storage unit failed", ex);
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
+        }
     }
     
     @Override

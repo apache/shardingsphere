@@ -72,13 +72,13 @@ class RegisterStorageUnitExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         executor.setDatabase(database);
-        assertDoesNotThrow(() -> executor.execute(createRegisterStorageUnitStatement(), contextManager));
+        assertDoesNotThrow(() -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
     @Test
     void assertExecuteWithDuplicateStorageUnitNamesInStatement() {
         executor.setDatabase(database);
-        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
     @Test
@@ -86,7 +86,7 @@ class RegisterStorageUnitExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStorageUnits("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
         executor.setDatabase(database);
-        assertThrows(DuplicateStorageUnitException.class, () -> executor.execute(createRegisterStorageUnitStatement(), contextManager));
+        assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
     @Test
@@ -97,7 +97,7 @@ class RegisterStorageUnitExecutorTest {
         when(rule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(rule));
         executor.setDatabase(database);
-        assertThrows(InvalidStorageUnitsException.class, () -> executor.execute(createRegisterStorageUnitStatement(), contextManager));
+        assertThrows(InvalidStorageUnitsException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {

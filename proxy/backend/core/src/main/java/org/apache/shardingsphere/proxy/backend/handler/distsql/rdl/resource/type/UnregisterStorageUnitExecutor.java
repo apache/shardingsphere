@@ -52,17 +52,7 @@ public final class UnregisterStorageUnitExecutor implements ResourceDefinitionEx
     private ShardingSphereDatabase database;
     
     @Override
-    public void execute(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        checkSQLStatement(sqlStatement);
-        try {
-            contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
-        } catch (final SQLException | ShardingSphereServerException ex) {
-            log.error("Unregister storage unit failed", ex);
-            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
-        }
-    }
-    
-    private void checkSQLStatement(final UnregisterStorageUnitStatement sqlStatement) {
+    public void checkBeforeUpdate(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         if (!sqlStatement.isIfExists()) {
             checkExisted(sqlStatement.getStorageUnitNames());
         }
@@ -108,6 +98,16 @@ public final class UnregisterStorageUnitExecutor implements ResourceDefinitionEx
             Collection<Class<? extends ShardingSphereRule>> inUsedRules = inUsedStorageUnits.get(each);
             ignoreShardingSphereRules.forEach(inUsedRules::remove);
             ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new StorageUnitInUsedException(each, inUsedRules));
+        }
+    }
+    
+    @Override
+    public void executeUpdate(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        try {
+            contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
+        } catch (final SQLException | ShardingSphereServerException ex) {
+            log.error("Unregister storage unit failed", ex);
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
     }
     

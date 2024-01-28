@@ -41,7 +41,8 @@ public final class ResourceDefinitionBackendHandler implements DistSQLBackendHan
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        executor.execute(sqlStatement, ProxyContext.getInstance().getContextManager());
+        executor.checkBeforeUpdate(sqlStatement, ProxyContext.getInstance().getContextManager());
+        executor.executeUpdate(sqlStatement, ProxyContext.getInstance().getContextManager());
         return new UpdateResponseHeader(sqlStatement);
     }
 }

@@ -53,11 +53,16 @@ public abstract class UpdatableRALExecuteEngine {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
+        checkBeforeUpdate(executor);
+        executor.executeUpdate(sqlStatement, contextManager);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void checkBeforeUpdate(final UpdatableRALExecutor executor) {
         if (null != executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)) {
             ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
         }
         executor.checkBeforeUpdate(sqlStatement, contextManager);
-        executor.executeUpdate(sqlStatement, contextManager);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);
