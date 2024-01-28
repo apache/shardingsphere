@@ -51,8 +51,8 @@ import java.util.stream.Collectors;
 /**
  * Alter storage unit executor.
  */
-@Slf4j
 @Setter
+@Slf4j
 public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<AlterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
@@ -60,36 +60,38 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
     private ShardingSphereDatabase database;
     
     @Override
-    public void checkBeforeUpdate(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        Collection<String> toBeAlteredStorageUnitNames = getToBeAlteredStorageUnitNames(sqlStatement);
+    public void executeUpdate(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        checkBefore(sqlStatement);
+        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
+        validateHandler.validate(propsMap);
+        try {
+            contextManager.getInstanceContext().getModeContextManager().alterStorageUnits(database.getName(), propsMap);
+        } catch (final SQLException | ShardingSphereExternalException ex) {
+            log.error("Alter storage unit failed", ex);
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
+        }
+    }
+    
+    private void checkBefore(final AlterStorageUnitStatement sqlStatement) {
+        Collection<String> toBeAlteredStorageUnitNames = sqlStatement.getStorageUnits().stream().map(DataSourceSegment::getName).collect(Collectors.toList());
         checkDuplicatedStorageUnitNames(toBeAlteredStorageUnitNames);
         checkStorageUnitNameExisted(toBeAlteredStorageUnitNames);
         checkDatabase(sqlStatement);
     }
     
-    private Collection<String> getToBeAlteredStorageUnitNames(final AlterStorageUnitStatement sqlStatement) {
-        return sqlStatement.getStorageUnits().stream().map(DataSourceSegment::getName).collect(Collectors.toList());
-    }
-    
     private void checkDuplicatedStorageUnitNames(final Collection<String> storageUnitNames) {
-        Collection<String> duplicatedStorageUnitNames = getDuplicatedStorageUnitNames(storageUnitNames);
+        Collection<String> duplicatedStorageUnitNames = storageUnitNames.stream().filter(each -> storageUnitNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedStorageUnitNames));
     }
     
-    private Collection<String> getDuplicatedStorageUnitNames(final Collection<String> storageUnitNames) {
-        return storageUnitNames.stream().filter(each -> storageUnitNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
-    }
-    
     private void checkStorageUnitNameExisted(final Collection<String> storageUnitNames) {
-        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
-        Collection<String> notExistedStorageUnitNames = storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toList());
+        Collection<String> notExistedStorageUnitNames = storageUnitNames.stream().filter(each -> !database.getResourceMetaData().getStorageUnits().containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedStorageUnitNames.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedStorageUnitNames));
     }
     
     private void checkDatabase(final AlterStorageUnitStatement sqlStatement) {
-        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         Collection<String> invalidStorageUnitNames = sqlStatement.getStorageUnits().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
-                .filter(each -> !isSameDatabase(each.getValue(), storageUnits.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
+                .filter(each -> !isSameDatabase(each.getValue(), database.getResourceMetaData().getStorageUnits().get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(),
                 () -> new InvalidStorageUnitsException(Collections.singleton(String.format("Can not alter the database of %s", invalidStorageUnitNames))));
     }
@@ -108,21 +110,8 @@ public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<Alt
             port = String.valueOf(segmentJdbcUrl.getPort());
             database = segmentJdbcUrl.getDatabase();
         }
-        ConnectionProperties connectionProperties = storageUnit.getConnectionProperties();
-        return Objects.equals(hostName, connectionProperties.getHostname()) && Objects.equals(port, String.valueOf(connectionProperties.getPort()))
-                && Objects.equals(database, connectionProperties.getCatalog());
-    }
-    
-    @Override
-    public void executeUpdate(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
-        validateHandler.validate(propsMap);
-        try {
-            contextManager.getInstanceContext().getModeContextManager().alterStorageUnits(database.getName(), propsMap);
-        } catch (final SQLException | ShardingSphereExternalException ex) {
-            log.error("Alter storage unit failed", ex);
-            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
-        }
+        ConnectionProperties connectionProps = storageUnit.getConnectionProperties();
+        return Objects.equals(hostName, connectionProps.getHostname()) && Objects.equals(port, String.valueOf(connectionProps.getPort())) && Objects.equals(database, connectionProps.getCatalog());
     }
     
     @Override
