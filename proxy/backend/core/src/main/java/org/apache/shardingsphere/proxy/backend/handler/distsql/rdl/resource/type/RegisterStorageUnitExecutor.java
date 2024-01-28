@@ -54,7 +54,7 @@ public final class RegisterStorageUnitExecutor implements ResourceDefinitionExec
     private ShardingSphereDatabase database;
     
     @Override
-    public void execute(final RegisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+    public void executeUpdate(final RegisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         checkSQLStatement(contextManager, sqlStatement);
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
         if (sqlStatement.isIfNotExists()) {

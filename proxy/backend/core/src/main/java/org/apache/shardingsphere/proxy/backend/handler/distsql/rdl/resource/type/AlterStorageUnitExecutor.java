@@ -60,7 +60,7 @@ public final class AlterStorageUnitExecutor implements ResourceDefinitionExecuto
     private ShardingSphereDatabase database;
     
     @Override
-    public void execute(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+    public void executeUpdate(final AlterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         checkSQLStatement(sqlStatement);
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(database.getProtocolType(), sqlStatement.getStorageUnits());
         validateHandler.validate(propsMap);

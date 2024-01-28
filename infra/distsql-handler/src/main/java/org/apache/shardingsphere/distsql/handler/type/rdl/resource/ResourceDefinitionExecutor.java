@@ -36,7 +36,7 @@ public interface ResourceDefinitionExecutor<T extends ResourceDefinitionStatemen
      * @param sqlStatement SQL statement
      * @param contextManager context manager
      */
-    void execute(T sqlStatement, ContextManager contextManager);
+    void executeUpdate(T sqlStatement, ContextManager contextManager);
     
     @Override
     Class<T> getType();

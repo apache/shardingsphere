@@ -52,7 +52,7 @@ public final class UnregisterStorageUnitExecutor implements ResourceDefinitionEx
     private ShardingSphereDatabase database;
     
     @Override
-    public void execute(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+    public void executeUpdate(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         checkSQLStatement(sqlStatement);
         try {
             contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
