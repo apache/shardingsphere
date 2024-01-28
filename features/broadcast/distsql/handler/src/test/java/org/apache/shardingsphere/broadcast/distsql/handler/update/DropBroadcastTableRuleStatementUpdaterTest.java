@@ -41,6 +41,7 @@ class DropBroadcastTableRuleStatementUpdaterTest {
     void setUp() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("sharding_db");
+        executor.setDatabase(database);
     }
     
     @Test
