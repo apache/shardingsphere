@@ -19,16 +19,19 @@ package org.apache.shardingsphere.distsql.handler.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * DistSQL update execute engine.
@@ -53,6 +56,9 @@ public abstract class DistSQLUpdateExecuteEngine {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
+        if (executor instanceof DistSQLExecutorRuleAware) {
+            setRule((DistSQLExecutorRuleAware) executor);
+        }
         checkBeforeUpdate(executor);
         executor.executeUpdate(sqlStatement, contextManager);
     }
@@ -63,6 +69,22 @@ public abstract class DistSQLUpdateExecuteEngine {
             ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
         }
         executor.checkBeforeUpdate(sqlStatement, contextManager);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void setRule(final DistSQLExecutorRuleAware executor) {
+        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
+        if (globalRule.isPresent()) {
+            executor.setRule(globalRule.get());
+            return;
+        }
+        ShardingSphereDatabase database = getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName));
+        Optional<ShardingSphereRule> databaseRule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
+        if (databaseRule.isPresent()) {
+            executor.setRule(databaseRule.get());
+            return;
+        }
+        throw new UnsupportedSQLOperationException(String.format("The current database has no `%s` rules", executor.getRuleClass()));
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);
