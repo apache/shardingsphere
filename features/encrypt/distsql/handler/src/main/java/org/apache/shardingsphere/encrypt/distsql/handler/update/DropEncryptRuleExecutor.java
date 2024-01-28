@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         checkToBeDroppedEncryptTableNames(database.getName(), sqlStatement, currentRuleConfig);
     }
     

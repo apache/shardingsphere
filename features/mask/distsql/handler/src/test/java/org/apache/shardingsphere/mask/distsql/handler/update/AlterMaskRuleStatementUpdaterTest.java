@@ -52,18 +52,18 @@ class AlterMaskRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement("MD5"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("MD5"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredRules() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkSQLStatement(database, createSQLStatement("MD5"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkBeforeUpdate(database, createSQLStatement("MD5"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredAlgorithm() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfig()));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfig()));
     }
     
     @Test
@@ -71,7 +71,7 @@ class AlterMaskRuleStatementUpdaterTest {
         MaskColumnSegment columnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment("test", new Properties()));
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_mask", Collections.singleton(columnSegment));
         AlterMaskRuleStatement statement = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, statement, createCurrentRuleConfig()));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, statement, createCurrentRuleConfig()));
     }
     
     @Test

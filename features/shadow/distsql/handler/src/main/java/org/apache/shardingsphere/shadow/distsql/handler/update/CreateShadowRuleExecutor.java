@@ -41,7 +41,7 @@ import java.util.Map;
 public final class CreateShadowRuleExecutor implements DatabaseRuleCreateExecutor<CreateShadowRuleStatement, ShadowRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         checkDuplicatedRules(database, sqlStatement, currentRuleConfig);
         String databaseName = database.getName();
         checkStorageUnits(database, sqlStatement.getRules());

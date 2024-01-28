@@ -51,18 +51,18 @@ class DropDefaultShardingStrategyStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(false, "TABLE"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, new DropDefaultShardingStrategyStatement(false, "TABLE"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutExistedAlgorithm() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement("table"), new ShardingRuleConfiguration()));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("table"), new ShardingRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithIfExists() {
-        executor.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
-        executor.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), null);
+        executor.checkBeforeUpdate(database, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
+        executor.checkBeforeUpdate(database, new DropDefaultShardingStrategyStatement(true, "table"), null);
     }
     
     @Test

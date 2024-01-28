@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<AlterMaskRuleStatement, MaskRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);

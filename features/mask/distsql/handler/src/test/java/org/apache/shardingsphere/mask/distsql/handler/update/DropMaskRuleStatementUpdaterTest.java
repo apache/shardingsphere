@@ -50,13 +50,13 @@ class DropMaskRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement(false, "t_mask"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "t_mask"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkSQLStatement(database, createSQLStatement(false, "t_mask"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "t_mask"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
@@ -71,7 +71,7 @@ class DropMaskRuleStatementUpdaterTest {
     void assertUpdateCurrentRuleConfigurationWithIfExists() {
         MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropMaskRuleStatement statement = createSQLStatement(true, "t_user");
-        executor.checkSQLStatement(database, statement, mock(MaskRuleConfiguration.class));
+        executor.checkBeforeUpdate(database, statement, mock(MaskRuleConfiguration.class));
         assertFalse(executor.updateCurrentRuleConfiguration(statement, ruleConfig));
         assertThat(ruleConfig.getTables().size(), is(1));
     }

@@ -57,23 +57,23 @@ class AlterEncryptRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement("MD5"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("MD5"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredRules() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkSQLStatement(database, createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkBeforeUpdate(database, createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredEncryptors() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithConflictColumnNames() {
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkSQLStatement(database, createConflictColumnNameSQLStatement(), createCurrentRuleConfiguration()));
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(database, createConflictColumnNameSQLStatement(), createCurrentRuleConfiguration()));
     }
     
     @Test

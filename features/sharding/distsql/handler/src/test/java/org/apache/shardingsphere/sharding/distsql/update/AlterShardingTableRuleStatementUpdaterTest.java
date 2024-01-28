@@ -77,7 +77,7 @@ class AlterShardingTableRuleStatementUpdaterTest {
     @Test
     void assertUpdate() {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order_item"), createCompleteTableRule("t_order")));
-        executor.checkSQLStatement(database, statement, currentRuleConfig);
+        executor.checkBeforeUpdate(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, statement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
@@ -102,7 +102,7 @@ class AlterShardingTableRuleStatementUpdaterTest {
     @Test
     void assertUpdateWithDifferentCase() {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("T_ORDER_ITEM"), createCompleteTableRule("T_ORDER")));
-        executor.checkSQLStatement(database, statement, currentRuleConfig);
+        executor.checkBeforeUpdate(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, statement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
@@ -127,7 +127,7 @@ class AlterShardingTableRuleStatementUpdaterTest {
     @Test
     void assertUpdateTableType() {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order"), createCompleteTableRule("t_order_item")));
-        executor.checkSQLStatement(database, statement, currentRuleConfig);
+        executor.checkBeforeUpdate(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, statement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));

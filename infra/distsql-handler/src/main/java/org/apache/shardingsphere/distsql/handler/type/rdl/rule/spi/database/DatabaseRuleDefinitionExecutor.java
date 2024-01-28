@@ -39,7 +39,7 @@ public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extend
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration
      */
-    void checkSQLStatement(ShardingSphereDatabase database, T sqlStatement, R currentRuleConfig);
+    void checkBeforeUpdate(ShardingSphereDatabase database, T sqlStatement, R currentRuleConfig);
     
     /**
      * Get rule configuration class.

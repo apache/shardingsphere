@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAlterExecutor<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         ReadwriteSplittingRuleStatementChecker.checkAlteration(database, sqlStatement.getRules(), currentRuleConfig);
     }
     

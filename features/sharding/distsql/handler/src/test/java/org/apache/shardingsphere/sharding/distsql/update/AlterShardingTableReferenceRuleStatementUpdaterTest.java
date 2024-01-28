@@ -46,19 +46,19 @@ class AlterShardingTableReferenceRuleStatementUpdaterTest {
     @Test
     void assertCheckWithoutCurrentRuleConfig() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new AlterShardingTableReferenceRuleExecutor().checkSQLStatement(database, createSQLStatement("foo", "t_order,t_order_item"), null));
+                () -> new AlterShardingTableReferenceRuleExecutor().checkBeforeUpdate(database, createSQLStatement("foo", "t_order,t_order_item"), null));
     }
     
     @Test
     void assertCheckWithNotExistedRule() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new AlterShardingTableReferenceRuleExecutor().checkSQLStatement(database, createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration()));
+                () -> new AlterShardingTableReferenceRuleExecutor().checkBeforeUpdate(database, createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckWithNotExistedTables() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new AlterShardingTableReferenceRuleExecutor().checkSQLStatement(database, createSQLStatement("reference_0", "t_3,t_4"), createCurrentRuleConfiguration()));
+                () -> new AlterShardingTableReferenceRuleExecutor().checkBeforeUpdate(database, createSQLStatement("reference_0", "t_3,t_4"), createCurrentRuleConfiguration()));
     }
     
     @Test

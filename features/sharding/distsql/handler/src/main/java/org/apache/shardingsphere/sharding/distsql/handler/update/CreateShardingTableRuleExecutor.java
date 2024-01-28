@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreateExecutor<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), sqlStatement.isIfNotExists(), currentRuleConfig);
     }
     

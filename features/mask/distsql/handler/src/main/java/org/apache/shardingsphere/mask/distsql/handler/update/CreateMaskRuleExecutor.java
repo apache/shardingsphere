@@ -43,7 +43,7 @@ public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<
     private boolean ifNotExists;
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         ifNotExists = sqlStatement.isIfNotExists();
         if (!ifNotExists) {
             checkDuplicatedRuleNames(database.getName(), sqlStatement, currentRuleConfig);

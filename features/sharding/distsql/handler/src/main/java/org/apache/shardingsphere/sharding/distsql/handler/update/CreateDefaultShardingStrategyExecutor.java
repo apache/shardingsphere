@@ -41,7 +41,7 @@ import java.util.Optional;
 public final class CreateDefaultShardingStrategyExecutor implements DatabaseRuleCreateExecutor<CreateDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         if (!"none".equalsIgnoreCase(sqlStatement.getStrategyType())) {
             checkAlgorithm(sqlStatement);

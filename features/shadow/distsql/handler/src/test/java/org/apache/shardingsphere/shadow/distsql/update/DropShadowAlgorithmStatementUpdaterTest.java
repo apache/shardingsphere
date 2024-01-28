@@ -45,13 +45,13 @@ class DropShadowAlgorithmStatementUpdaterTest {
     
     @Test
     void assertExecuteWithoutAlgorithmNameInMetaData() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement("ruleSegment"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("ruleSegment"), null));
     }
     
     @Test
     void assertExecuteWithIfExists() {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement(true, "ruleSegment");
-        executor.checkSQLStatement(database, sqlStatement, mock(ShadowRuleConfiguration.class));
+        executor.checkBeforeUpdate(database, sqlStatement, mock(ShadowRuleConfiguration.class));
     }
     
     @Test
@@ -59,7 +59,7 @@ class DropShadowAlgorithmStatementUpdaterTest {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement("shadow_algorithm");
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getShadowAlgorithms().put("shadow_algorithm", new AlgorithmConfiguration("type", null));
-        executor.checkSQLStatement(database, sqlStatement, ruleConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, ruleConfig);
         executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
         assertTrue(ruleConfig.getShadowAlgorithms().isEmpty());
     }
