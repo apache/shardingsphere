@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -40,7 +41,7 @@ public final class RALBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
         return sqlStatement instanceof QueryableRALStatement
-                ? new QueryableRALBackendHandler((QueryableRALStatement) sqlStatement, connectionSession)
+                ? new DistSQLQueryBackendHandler(sqlStatement, connectionSession)
                 : new UpdatableRALBackendHandler((UpdatableRALStatement) sqlStatement, connectionSession);
     }
 }

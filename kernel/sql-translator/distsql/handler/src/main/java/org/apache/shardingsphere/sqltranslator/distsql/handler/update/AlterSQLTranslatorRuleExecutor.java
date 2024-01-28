@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 public final class AlterSQLTranslatorRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLTranslatorRuleStatement, SQLTranslatorRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final SQLTranslatorRuleConfiguration currentRuleConfig, final AlterSQLTranslatorRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final SQLTranslatorRuleConfiguration currentRuleConfig, final AlterSQLTranslatorRuleStatement sqlStatement) {
         TypedSPILoader.checkService(SQLTranslator.class, sqlStatement.getProvider().getName(), sqlStatement.getProvider().getProps());
     }
     

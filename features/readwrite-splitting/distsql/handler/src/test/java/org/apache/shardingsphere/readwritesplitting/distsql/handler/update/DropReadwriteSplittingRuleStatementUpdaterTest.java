@@ -59,20 +59,20 @@ class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement(), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
         assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkSQLStatement(database, createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkBeforeUpdate(database, createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
     void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
-        executor.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
+        executor.checkBeforeUpdate(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
                 new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        executor.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
+        executor.checkBeforeUpdate(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
     }
     
     @Test
@@ -83,7 +83,7 @@ class DropReadwriteSplittingRuleStatementUpdaterTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getAllDataNodes()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton(new DataNode("readwrite_ds.tbl"))));
         when(database.getRuleMetaData().findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(dataNodeContainedRule));
-        assertThrows(RuleInUsedException.class, () -> executor.checkSQLStatement(database, createSQLStatement(), createCurrentRuleConfiguration()));
+        assertThrows(RuleInUsedException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(), createCurrentRuleConfiguration()));
     }
     
     @Test

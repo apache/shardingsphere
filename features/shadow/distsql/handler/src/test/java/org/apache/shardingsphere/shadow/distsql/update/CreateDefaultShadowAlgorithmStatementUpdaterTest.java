@@ -51,7 +51,7 @@ class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     void assertExecuteWithInvalidAlgorithm() {
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
         when(statement.getShadowAlgorithmSegment()).thenReturn(new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", PropertiesBuilder.build(new Property("type", "value")))));
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkSQLStatement(database, statement, currentConfig));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(database, statement, currentConfig));
     }
     
     @Test
@@ -59,13 +59,13 @@ class CreateDefaultShadowAlgorithmStatementUpdaterTest {
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
         when(statement.getShadowAlgorithmSegment()).thenReturn(
                 new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
-        executor.checkSQLStatement(database, statement, currentConfig);
+        executor.checkBeforeUpdate(database, statement, currentConfig);
     }
     
     @Test
     void assertExecuteWithIfNotExists() {
         ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
         CreateDefaultShadowAlgorithmStatement statement = new CreateDefaultShadowAlgorithmStatement(true, shadowAlgorithmSegment);
-        executor.checkSQLStatement(database, statement, currentConfig);
+        executor.checkBeforeUpdate(database, statement, currentConfig);
     }
 }

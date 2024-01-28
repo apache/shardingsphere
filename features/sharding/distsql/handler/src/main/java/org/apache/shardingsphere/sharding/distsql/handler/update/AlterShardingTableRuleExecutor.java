@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public final class AlterShardingTableRuleExecutor implements DatabaseRuleAlterExecutor<AlterShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", database.getName()));
         ShardingTableRuleStatementChecker.checkAlteration(database, sqlStatement.getRules(), currentRuleConfig);
     }

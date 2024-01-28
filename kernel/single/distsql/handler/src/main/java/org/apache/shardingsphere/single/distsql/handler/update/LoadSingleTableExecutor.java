@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor<LoadSingleTableStatement, SingleRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
         checkDuplicatedTables(database, sqlStatement, defaultSchemaName);
         checkStorageUnits(database, sqlStatement);

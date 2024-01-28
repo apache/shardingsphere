@@ -48,13 +48,13 @@ class DropBroadcastTableRuleStatementUpdaterTest {
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
         DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, statement, null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, statement, null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
         DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, statement, new BroadcastRuleConfiguration(Collections.emptyList())));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, statement, new BroadcastRuleConfiguration(Collections.emptyList())));
     }
     
     @Test

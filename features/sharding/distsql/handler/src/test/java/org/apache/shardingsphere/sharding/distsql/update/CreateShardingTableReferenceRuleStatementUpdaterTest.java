@@ -50,7 +50,7 @@ class CreateShardingTableReferenceRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutCurrentTableRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), new ShardingRuleConfiguration()));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "foo", "t_order,t_order_item"), new ShardingRuleConfiguration()));
     }
     
     private CreateShardingTableReferenceRuleStatement createSQLStatement(final boolean ifNotExists, final String name, final String reference) {
@@ -61,14 +61,14 @@ class CreateShardingTableReferenceRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithDuplicateTables() {
-        assertThrows(DuplicateRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), getCurrentRuleConfig()));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "foo", "t_order,t_order_item"), getCurrentRuleConfig()));
     }
     
     @Test
     void assertUpdateWithIfNotExists() {
         CreateShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "foo", "t_order,t_order_item");
         ShardingRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
-        executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
         ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         Collection<ShardingTableReferenceRuleConfiguration> referenceRuleConfigs = currentRuleConfig.getBindingTableGroups();

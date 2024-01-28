@@ -15,28 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.ral.query;
+package org.apache.shardingsphere.distsql.handler.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionSizeAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
- * Queryable RAL execute engine.
+ * DistSQL query execute engine.
  */
 @RequiredArgsConstructor
-public abstract class QueryableRALExecuteEngine {
+public abstract class DistSQLQueryExecuteEngine {
     
     private final DistSQLStatement sqlStatement;
     
@@ -52,28 +55,44 @@ public abstract class QueryableRALExecuteEngine {
     
     /**
      * Execute query.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeQuery() throws SQLException {
-        DistSQLQueryExecutor executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
-        rows = getRows(executor);
+        DistSQLQueryExecutor<DistSQLStatement> executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
         columnNames = executor.getColumnNames();
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<LocalDataQueryResultRow> getRows(final DistSQLQueryExecutor executor) throws SQLException {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
-        if (executor instanceof DistSQLExecutorConnectionSizeAware) {
-            ((DistSQLExecutorConnectionSizeAware) executor).setConnectionSize(getConnectionSize());
+        if (executor instanceof DistSQLExecutorConnectionContextAware) {
+            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(getDistSQLConnectionContext());
         }
-        return executor.getRows(sqlStatement, contextManager);
+        if (executor instanceof DistSQLExecutorRuleAware) {
+            setRule((DistSQLExecutorRuleAware) executor);
+        }
+        if (null == rows) {
+            rows = executor.getRows(sqlStatement, contextManager);
+        }
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void setRule(final DistSQLExecutorRuleAware executor) {
+        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(executor.getRuleClass());
+        if (globalRule.isPresent()) {
+            executor.setRule(globalRule.get());
+            return;
+        }
+        ShardingSphereDatabase database = getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName));
+        Optional<ShardingSphereRule> databaseRule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
+        if (databaseRule.isPresent()) {
+            executor.setRule(databaseRule.get());
+            return;
+        }
+        rows = Collections.emptyList();
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);
     
-    protected abstract int getConnectionSize();
+    protected abstract DistSQLConnectionContext getDistSQLConnectionContext();
 }

@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleCreateExecutor<CreateDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfNotExists()) {
             checkExisted(database.getName(), currentRuleConfig);
         }

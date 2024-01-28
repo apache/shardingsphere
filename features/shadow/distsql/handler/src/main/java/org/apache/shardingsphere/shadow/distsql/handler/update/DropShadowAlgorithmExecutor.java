@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecutor<DropShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }

@@ -19,8 +19,11 @@ package org.apache.shardingsphere.distsql.handler.type.ral.update;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -50,6 +53,10 @@ public abstract class UpdatableRALExecuteEngine {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
         }
+        if (null != executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)) {
+            ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
+        }
+        executor.checkBeforeUpdate(sqlStatement, contextManager);
         executor.executeUpdate(sqlStatement, contextManager);
     }
     

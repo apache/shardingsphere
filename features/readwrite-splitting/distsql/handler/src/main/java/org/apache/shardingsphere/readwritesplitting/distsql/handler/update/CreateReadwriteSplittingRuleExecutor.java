@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleCreateExecutor<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         ReadwriteSplittingRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), currentRuleConfig, sqlStatement.isIfNotExists());
     }
     

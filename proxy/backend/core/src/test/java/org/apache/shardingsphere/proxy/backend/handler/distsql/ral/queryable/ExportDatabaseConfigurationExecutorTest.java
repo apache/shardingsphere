@@ -62,13 +62,6 @@ class ExportDatabaseConfigurationExecutorTest {
     private final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
     
     @Test
-    void assertGetColumns() {
-        Collection<String> columns = new ExportDatabaseConfigurationExecutor().getColumnNames();
-        assertThat(columns.size(), is(1));
-        assertThat(columns.iterator().next(), is("result"));
-    }
-    
-    @Test
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
         Map<String, StorageUnit> storageUnits = createStorageUnits();

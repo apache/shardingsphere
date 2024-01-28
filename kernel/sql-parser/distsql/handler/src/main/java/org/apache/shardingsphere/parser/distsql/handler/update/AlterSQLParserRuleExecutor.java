@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 public final class AlterSQLParserRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLParserRuleStatement, SQLParserRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final SQLParserRuleConfiguration currentRuleConfig, final AlterSQLParserRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final SQLParserRuleConfiguration currentRuleConfig, final AlterSQLParserRuleStatement sqlStatement) {
     }
     
     @Override

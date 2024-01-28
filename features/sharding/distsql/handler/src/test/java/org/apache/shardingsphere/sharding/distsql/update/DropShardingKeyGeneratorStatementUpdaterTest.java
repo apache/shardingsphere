@@ -41,13 +41,13 @@ class DropShardingKeyGeneratorStatementUpdaterTest {
     void assertExecuteWithNotExist() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(false, Collections.singleton("uuid_key_generator"));
         assertThrows(MissingRequiredAlgorithmException.class,
-                () -> new DropShardingKeyGeneratorExecutor().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration()));
+                () -> new DropShardingKeyGeneratorExecutor().checkBeforeUpdate(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration()));
     }
     
     @Test
     void assertExecuteWithNotExistWithIfExists() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(true, Collections.singleton("uuid_key_generator"));
-        new DropShardingKeyGeneratorExecutor().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration());
+        new DropShardingKeyGeneratorExecutor().checkBeforeUpdate(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration());
     }
     
     @Test
@@ -65,7 +65,7 @@ class DropShardingKeyGeneratorStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));
         currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());
-        assertThrows(AlgorithmInUsedException.class, () -> new DropShardingKeyGeneratorExecutor().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, currentRuleConfig));
+        assertThrows(AlgorithmInUsedException.class, () -> new DropShardingKeyGeneratorExecutor().checkBeforeUpdate(mock(ShardingSphereDatabase.class), sqlStatement, currentRuleConfig));
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {

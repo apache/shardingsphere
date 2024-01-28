@@ -65,25 +65,25 @@ class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, createSQLStatement("TEST"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("TEST"), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredRules() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkSQLStatement(database, createSQLStatement("TEST"), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+                () -> executor.checkBeforeUpdate(database, createSQLStatement("TEST"), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
     void assertCheckSQLStatementWithoutExistedResources() {
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Collections.singleton("read_ds_0"));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration()));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredLoadBalancers() {
         when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
     }
     
     @Test
@@ -91,7 +91,7 @@ class AlterReadwriteSplittingRuleStatementUpdaterTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkSQLStatement(database,
+                () -> executor.checkBeforeUpdate(database,
                         createSQLStatementWithDuplicateWriteResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules()));
     }
     
@@ -100,7 +100,7 @@ class AlterReadwriteSplittingRuleStatementUpdaterTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkSQLStatement(database,
+                () -> executor.checkBeforeUpdate(database,
                         createSQLStatement("readwrite_ds_0", "ds_write_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules()));
     }
     
@@ -109,7 +109,7 @@ class AlterReadwriteSplittingRuleStatementUpdaterTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkSQLStatement(database,
+                () -> executor.checkBeforeUpdate(database,
                         createSQLStatementWithDuplicateReadResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules()));
     }
     
@@ -118,7 +118,7 @@ class AlterReadwriteSplittingRuleStatementUpdaterTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkSQLStatement(database,
+                () -> executor.checkBeforeUpdate(database,
                         createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0_0", "read_ds_0_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules()));
     }
     

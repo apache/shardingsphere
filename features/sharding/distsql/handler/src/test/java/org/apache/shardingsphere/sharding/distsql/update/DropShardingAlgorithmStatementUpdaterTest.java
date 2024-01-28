@@ -52,33 +52,33 @@ class DropShardingAlgorithmStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkSQLStatement(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null));
+        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkBeforeUpdate(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null));
     }
     
     @Test
     void assertCheckSQLStatementWithoutCurrentRuleWithIfExists() throws RuleDefinitionViolationException {
         DropShardingAlgorithmStatement dropShardingAlgorithmStatement = new DropShardingAlgorithmStatement(true, Collections.emptyList());
-        executor.checkSQLStatement(database, dropShardingAlgorithmStatement, null);
+        executor.checkBeforeUpdate(database, dropShardingAlgorithmStatement, null);
     }
     
     @Test
     void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
-        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration()));
+        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("t_order"), new ShardingRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithoutExistedAlgorithmWithIfExists() throws RuleDefinitionViolationException {
-        executor.checkSQLStatement(database, createSQLStatementWithIfExists("t_order"), new ShardingRuleConfiguration());
+        executor.checkBeforeUpdate(database, createSQLStatementWithIfExists("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test
     void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
-        assertThrows(AlgorithmInUsedException.class, () -> executor.checkSQLStatement(database, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration()));
+        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionViolationException {
-        assertThrows(AlgorithmInUsedException.class, () -> executor.checkSQLStatement(database, createSQLStatementWithIfExists("t_order_tb_inline"), createCurrentRuleConfiguration()));
+        assertThrows(AlgorithmInUsedException.class, () -> executor.checkBeforeUpdate(database, createSQLStatementWithIfExists("t_order_tb_inline"), createCurrentRuleConfiguration()));
     }
     
     @Test

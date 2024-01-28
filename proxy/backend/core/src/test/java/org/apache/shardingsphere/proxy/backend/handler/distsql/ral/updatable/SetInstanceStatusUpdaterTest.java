@@ -18,56 +18,39 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
-import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
 class SetInstanceStatusUpdaterTest {
     
     @Test
-    void assertExecuteWithNotNotClusterMode() {
+    void assertCheckBeforeUpdateWithNotExistsInstanceID() {
         SetInstanceStatusExecutor executor = new SetInstanceStatusExecutor();
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("ENABLE", "instanceID"), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.checkBeforeUpdate(new SetInstanceStatusStatement("ENABLE", "instanceID"), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
-    void assertExecuteWithNotExistsInstanceID() {
+    void assertCheckBeforeUpdateWithCurrentUsingInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        SetInstanceStatusExecutor executor = new SetInstanceStatusExecutor();
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("ENABLE", "instanceID"), contextManager));
-    }
-    
-    @Test
-    void assertExecuteWithCurrentUsingInstance() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("instanceID");
         SetInstanceStatusExecutor executor = new SetInstanceStatusExecutor();
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.checkBeforeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
     }
     
     @Test
-    void assertExecuteWithAlreadyDisableInstance() {
+    void assertCheckBeforeUpdateWithAlreadyDisableInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("currentInstance");
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").isPresent()).thenReturn(true);
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(InstanceState.CIRCUIT_BREAK);
         SetInstanceStatusExecutor executor = new SetInstanceStatusExecutor();
-        assertThrows(UnsupportedSQLOperationException.class, () -> executor.executeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
+        assertThrows(UnsupportedSQLOperationException.class, () -> executor.checkBeforeUpdate(new SetInstanceStatusStatement("DISABLE", "instanceID"), contextManager));
     }
 }

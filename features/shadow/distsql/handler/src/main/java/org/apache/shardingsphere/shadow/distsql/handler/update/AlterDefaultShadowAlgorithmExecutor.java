@@ -62,7 +62,7 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAl
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         ShadowRuleStatementChecker.checkRuleConfigurationExists(database.getName(), currentRuleConfig);
         checkAlgorithms(database.getName(), sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment(), currentRuleConfig);
     }

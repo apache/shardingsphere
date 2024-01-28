@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecutor<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
         }

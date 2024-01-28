@@ -63,7 +63,7 @@ public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         ShadowRuleStatementChecker.checkRuleConfigurationExists(databaseName, currentRuleConfig);
         checkRuleNames(databaseName, sqlStatement.getRules(), currentRuleConfig);

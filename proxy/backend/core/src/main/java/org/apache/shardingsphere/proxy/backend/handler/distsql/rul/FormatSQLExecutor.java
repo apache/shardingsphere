@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseProtocolTypeAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -35,9 +36,9 @@ import java.util.Properties;
  * Format SQL executor.
  */
 @Setter
-public final class FormatSQLExecutor implements DistSQLQueryExecutor<FormatStatement>, DistSQLExecutorDatabaseProtocolTypeAware {
+public final class FormatSQLExecutor implements DistSQLQueryExecutor<FormatStatement>, DistSQLExecutorConnectionContextAware {
     
-    private DatabaseType databaseProtocolType;
+    private DistSQLConnectionContext connectionContext;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -46,7 +47,7 @@ public final class FormatSQLExecutor implements DistSQLQueryExecutor<FormatState
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final FormatStatement sqlStatement, final ContextManager contextManager) {
-        return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sqlStatement.getSql(), databaseProtocolType)));
+        return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sqlStatement.getSql(), connectionContext.getProtocolType())));
     }
     
     private Object formatSQL(final String sql, final DatabaseType databaseType) {

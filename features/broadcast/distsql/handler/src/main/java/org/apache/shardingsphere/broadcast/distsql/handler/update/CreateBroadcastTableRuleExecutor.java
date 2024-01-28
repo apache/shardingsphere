@@ -34,7 +34,7 @@ import java.util.LinkedHashSet;
 public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreateExecutor<CreateBroadcastTableRuleStatement, BroadcastRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicate(sqlStatement, currentRuleConfig);

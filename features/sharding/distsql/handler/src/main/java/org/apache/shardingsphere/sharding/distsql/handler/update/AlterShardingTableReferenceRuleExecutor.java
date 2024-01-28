@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRuleAlterExecutor<AlterShardingTableReferenceRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRulesExisted(databaseName, sqlStatement, currentRuleConfig);

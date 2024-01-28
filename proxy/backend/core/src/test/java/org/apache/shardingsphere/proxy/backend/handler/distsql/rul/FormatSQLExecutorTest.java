@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.RULBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -45,7 +45,7 @@ class FormatSQLExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     @Test
@@ -53,7 +53,7 @@ class FormatSQLExecutorTest {
         String sql = "SELECT * FROM t_order WHERE order_id=1";
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        RULBackendHandler handler = new RULBackendHandler(new FormatStatement(sql), connectionSession);
+        DistSQLQueryBackendHandler handler = new DistSQLQueryBackendHandler(new FormatStatement(sql), connectionSession);
         handler.execute();
         handler.next();
         assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("SELECT * \n"

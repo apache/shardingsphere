@@ -50,10 +50,14 @@ public final class RegisterMigrationSourceStorageUnitExecutor implements Updatab
     private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
     
     @Override
+    public void checkBeforeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        ShardingSpherePreconditions.checkState(sqlStatement.getDataSources().stream().noneMatch(HostnameAndPortBasedDataSourceSegment.class::isInstance),
+                () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
+    }
+    
+    @Override
     public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
-        ShardingSpherePreconditions.checkState(dataSources.stream().noneMatch(HostnameAndPortBasedDataSourceSegment.class::isInstance),
-                () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeFactory.get(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);

@@ -34,7 +34,7 @@ import java.util.Collections;
 public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleCreateExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         checkStorageUnitExist(database, sqlStatement);
     }
     

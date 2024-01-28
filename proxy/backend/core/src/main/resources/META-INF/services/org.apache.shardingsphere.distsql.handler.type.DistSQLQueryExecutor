@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.ShowStorageUnitExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.ShowRulesUsedStorageUnitExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.ShowLogicalTableExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.readwritesplitting.ShowStatusFromReadwriteSplittingRulesExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.ShowStorageUnitExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.ShowRulesUsedStorageUnitExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.ShowLogicalTableExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.readwritesplitting.ShowStatusFromReadwriteSplittingRulesExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodesExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodeInfoExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodeModeExecutor
@@ -32,6 +32,6 @@ org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTableM
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowMigrationRuleExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowServiceProviderImplementationsExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowKeyGenerateAlgorithmImplementationsExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type.FormatSQLExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type.ParseDistSQLExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rul.type.PreviewExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rul.FormatSQLExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rul.ParseDistSQLExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rul.PreviewExecutor

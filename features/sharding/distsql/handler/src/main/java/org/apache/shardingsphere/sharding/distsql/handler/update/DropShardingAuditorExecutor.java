@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecutor<DropShardingAuditorStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig && sqlStatement.isIfExists()) {
             return;
         }

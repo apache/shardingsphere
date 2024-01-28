@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,23 +40,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShowComputeNodesExecutorTest {
-    
-    @Test
-    void assertGetColumns() {
-        ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(9));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("instance_id"));
-        assertThat(iterator.next(), is("instance_type"));
-        assertThat(iterator.next(), is("host"));
-        assertThat(iterator.next(), is("port"));
-        assertThat(iterator.next(), is("status"));
-        assertThat(iterator.next(), is("mode_type"));
-        assertThat(iterator.next(), is("worker_id"));
-        assertThat(iterator.next(), is("labels"));
-        assertThat(iterator.next(), is("version"));
-    }
     
     @Test
     void assertExecuteWithStandaloneMode() {

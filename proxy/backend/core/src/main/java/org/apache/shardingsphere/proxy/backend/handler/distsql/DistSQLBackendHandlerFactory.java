@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.RULBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -47,17 +45,14 @@ public final class DistSQLBackendHandlerFactory {
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static ProxyBackendHandler newInstance(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        if (sqlStatement instanceof RQLStatement) {
-            return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
+        if (sqlStatement instanceof RQLStatement || sqlStatement instanceof RULStatement) {
+            return new DistSQLQueryBackendHandler(sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RDLStatement) {
             return RDLBackendHandlerFactory.newInstance((RDLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
             return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof RULStatement) {
-            return RULBackendHandlerFactory.newInstance((RULStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }

@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
+package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecuteEngine;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecuteEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -39,9 +39,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Queryable RAL backend handler.
+ * DistSQL query backend handler.
  */
-public final class QueryableRALBackendHandler extends QueryableRALExecuteEngine implements DistSQLBackendHandler {
+public final class DistSQLQueryBackendHandler extends DistSQLQueryExecuteEngine implements DistSQLBackendHandler {
     
     private final ConnectionSession connectionSession;
     
@@ -49,7 +49,7 @@ public final class QueryableRALBackendHandler extends QueryableRALExecuteEngine 
     
     private MergedResult mergedResult;
     
-    public QueryableRALBackendHandler(final QueryableRALStatement sqlStatement, final ConnectionSession connectionSession) {
+    public DistSQLQueryBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
         this.connectionSession = connectionSession;
     }
@@ -57,8 +57,8 @@ public final class QueryableRALBackendHandler extends QueryableRALExecuteEngine 
     @Override
     public ResponseHeader execute() throws SQLException {
         executeQuery();
-        mergedResult = new LocalDataMergedResult(getRows());
         queryHeaders = createQueryHeader(getColumnNames());
+        mergedResult = new LocalDataMergedResult(getRows());
         return new QueryResponseHeader(queryHeaders);
     }
     
@@ -86,7 +86,8 @@ public final class QueryableRALBackendHandler extends QueryableRALExecuteEngine 
     }
     
     @Override
-    protected int getConnectionSize() {
-        return connectionSession.getDatabaseConnectionManager().getConnectionSize();
+    protected DistSQLConnectionContext getDistSQLConnectionContext() {
+        return new DistSQLConnectionContext(connectionSession.getConnectionContext(), connectionSession.getDatabaseConnectionManager().getConnectionSize(),
+                connectionSession.getProtocolType(), connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
     }
 }

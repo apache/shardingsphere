@@ -40,28 +40,13 @@ import static org.mockito.Mockito.when;
 class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
     
     @Test
-    void assertWithStandaloneMode() {
-        AlterReadwriteSplittingStorageUnitStatusExecutor executor = new AlterReadwriteSplittingStorageUnitStatusExecutor();
-        assertThrows(UnsupportedSQLOperationException.class,
-                () -> executor.executeUpdate(new AlterReadwriteSplittingStorageUnitStatusStatement(
-                        new DatabaseSegment(1, 1, new IdentifierValue("foo_db")), "group", "read_ds", "ENABLE"), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
-    }
-    
-    @Test
-    void assertWithNoReadwriteSplittingRule() {
-        ContextManager contextManager = mockContextManager();
+    void assertCheckBeforeUpdateWithNoReadwriteSplittingRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         AlterReadwriteSplittingStorageUnitStatusExecutor executor = new AlterReadwriteSplittingStorageUnitStatusExecutor();
         executor.setDatabase(database);
         assertThrows(UnsupportedSQLOperationException.class,
-                () -> executor.executeUpdate(new AlterReadwriteSplittingStorageUnitStatusStatement(
-                        new DatabaseSegment(1, 1, new IdentifierValue("foo_db")), "group", "read_ds", "ENABLE"), contextManager));
-    }
-    
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getInstanceContext().isCluster()).thenReturn(true);
-        return result;
+                () -> executor.checkBeforeUpdate(new AlterReadwriteSplittingStorageUnitStatusStatement(
+                        new DatabaseSegment(1, 1, new IdentifierValue("foo_db")), "group", "read_ds", "ENABLE"), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
     }
 }

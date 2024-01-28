@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.aware;
+package org.apache.shardingsphere.distsql.handler.required;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * DistSQL executor database protocol type Aware.
+ * DistSQL executor cluster mode required.
  */
-public interface DistSQLExecutorDatabaseProtocolTypeAware {
-    
-    /**
-     * Set database protocol type.
-     * 
-     * @param protocolType database protocol type
-     */
-    void setDatabaseProtocolType(DatabaseType protocolType);
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DistSQLExecutorClusterModeRequired {
 }
