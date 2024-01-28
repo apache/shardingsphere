@@ -36,6 +36,7 @@ import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -62,7 +63,7 @@ class QueryableRALBackendHandlerTest {
     @Test
     void assertExecuteWithNoDatabase() {
         when(ProxyContext.getInstance().getDatabase(null)).thenThrow(NoDatabaseSelectedException.class);
-        assertThrows(NoDatabaseSelectedException.class, () -> new QueryableRALBackendHandler(mock(ExportDatabaseConfigurationStatement.class), mock(ConnectionSession.class)).execute());
+        assertThrows(NoDatabaseSelectedException.class, () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), mock(ConnectionSession.class)).execute());
     }
     
     @Test
@@ -74,12 +75,12 @@ class QueryableRALBackendHandlerTest {
         when(ProxyContext.getInstance().getDatabase("unknown")).thenThrow(UnknownDatabaseException.class);
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(UnknownDatabaseException.class, () -> new QueryableRALBackendHandler(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute());
+        assertThrows(UnknownDatabaseException.class, () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute());
     }
     
     @Test
     void assertExecuteWithAbstractStatement() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> new QueryableRALBackendHandler(mock(QueryableRALStatement.class), mock(ConnectionSession.class)).execute());
+        assertThrows(ServiceProviderNotFoundException.class, () -> new DistSQLQueryBackendHandler(mock(QueryableRALStatement.class), mock(ConnectionSession.class)).execute());
     }
     
     @Test
@@ -89,7 +90,7 @@ class QueryableRALBackendHandlerTest {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_db")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        assertDoesNotThrow(() -> new QueryableRALBackendHandler(createSqlStatement(), mock(ConnectionSession.class)).execute());
+        assertDoesNotThrow(() -> new DistSQLQueryBackendHandler(createSqlStatement(), mock(ConnectionSession.class)).execute());
     }
     
     private Map<String, ShardingSphereTable> createTableMap() {

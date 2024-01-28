@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.type.readwritesplitting;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.readwritesplitting;
 
 import com.google.common.base.Strings;
 import lombok.Setter;
