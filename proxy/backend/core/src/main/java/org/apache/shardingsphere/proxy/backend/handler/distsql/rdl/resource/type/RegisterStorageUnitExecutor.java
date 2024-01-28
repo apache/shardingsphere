@@ -55,12 +55,11 @@ public final class RegisterStorageUnitExecutor implements ResourceDefinitionExec
     
     @Override
     public void checkBeforeUpdate(final RegisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        if (sqlStatement.isIfNotExists()) {
-            return;
+        if (!sqlStatement.isIfNotExists()) {
+            Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getStorageUnits().size());
+            checkDuplicatedDataSourceNames(contextManager, dataSourceNames, sqlStatement);
+            checkDuplicatedLogicalDataSourceNames(dataSourceNames);
         }
-        Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getStorageUnits().size());
-        checkDuplicatedDataSourceNames(contextManager, dataSourceNames, sqlStatement);
-        checkDuplicatedLogicalDataSourceNames(dataSourceNames);
     }
     
     private void checkDuplicatedDataSourceNames(final ContextManager contextManager, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
