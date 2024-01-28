@@ -52,11 +52,17 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
     private ShardingSphereDatabase database;
     
     @Override
-    public void checkBeforeUpdate(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+    public void executeUpdate(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         if (!sqlStatement.isIfExists()) {
             checkExisted(sqlStatement.getStorageUnitNames());
         }
         checkInUsed(sqlStatement);
+        try {
+            contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
+        } catch (final SQLException | ShardingSphereServerException ex) {
+            log.error("Unregister storage unit failed", ex);
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
+        }
     }
     
     private void checkExisted(final Collection<String> storageUnitNames) {
@@ -91,23 +97,12 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         return result;
     }
     
-    private void checkInUsedIgnoreTables(final Collection<String> inUsedResourceNames,
-                                         final Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits,
+    private void checkInUsedIgnoreTables(final Collection<String> inUsedResourceNames, final Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits,
                                          final Collection<Class<? extends ShardingSphereRule>> ignoreShardingSphereRules) {
         for (String each : inUsedResourceNames) {
             Collection<Class<? extends ShardingSphereRule>> inUsedRules = inUsedStorageUnits.get(each);
             ignoreShardingSphereRules.forEach(inUsedRules::remove);
             ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new StorageUnitInUsedException(each, inUsedRules));
-        }
-    }
-    
-    @Override
-    public void executeUpdate(final UnregisterStorageUnitStatement sqlStatement, final ContextManager contextManager) {
-        try {
-            contextManager.getInstanceContext().getModeContextManager().unregisterStorageUnits(database.getName(), sqlStatement.getStorageUnitNames());
-        } catch (final SQLException | ShardingSphereServerException ex) {
-            log.error("Unregister storage unit failed", ex);
-            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
     }
     

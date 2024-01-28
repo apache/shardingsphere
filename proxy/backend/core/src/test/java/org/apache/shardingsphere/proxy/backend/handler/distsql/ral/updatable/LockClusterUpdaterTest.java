@@ -40,18 +40,18 @@ import static org.mockito.Mockito.when;
 class LockClusterUpdaterTest {
     
     @Test
-    void assertCheckBeforeUpdateWithLockedCluster() {
+    void assertExecuteUpdateWithLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.UNAVAILABLE);
         LockClusterExecutor executor = new LockClusterExecutor();
-        assertThrows(IllegalStateException.class, () -> executor.checkBeforeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
+        assertThrows(IllegalStateException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
     }
     
     @Test
-    void assertCheckBeforeUpdateWithWrongAlgorithm() {
+    void assertExecuteUpdateWithWrongAlgorithm() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.OK);
         LockClusterExecutor executor = new LockClusterExecutor();
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties())), contextManager));
     }
 }

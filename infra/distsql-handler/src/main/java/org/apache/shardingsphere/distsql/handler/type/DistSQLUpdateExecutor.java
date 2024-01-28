@@ -33,15 +33,6 @@ import java.sql.SQLException;
 public interface DistSQLUpdateExecutor<T extends DistSQLStatement> extends TypedSPI {
     
     /**
-     * Check before update.
-     *
-     * @param sqlStatement SQL statement
-     * @param contextManager context manager
-     */
-    default void checkBeforeUpdate(T sqlStatement, ContextManager contextManager) {
-    }
-    
-    /**
      * Execute update.
      *
      * @param sqlStatement DistSQL statement

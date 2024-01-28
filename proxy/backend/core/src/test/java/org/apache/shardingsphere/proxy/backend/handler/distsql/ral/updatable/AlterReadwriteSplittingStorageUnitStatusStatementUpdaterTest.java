@@ -40,13 +40,13 @@ import static org.mockito.Mockito.when;
 class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
     
     @Test
-    void assertCheckBeforeUpdateWithNoReadwriteSplittingRule() {
+    void assertExecuteUpdateWithNoReadwriteSplittingRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         AlterReadwriteSplittingStorageUnitStatusExecutor executor = new AlterReadwriteSplittingStorageUnitStatusExecutor();
         executor.setDatabase(database);
         assertThrows(UnsupportedSQLOperationException.class,
-                () -> executor.checkBeforeUpdate(new AlterReadwriteSplittingStorageUnitStatusStatement(
+                () -> executor.executeUpdate(new AlterReadwriteSplittingStorageUnitStatusStatement(
                         new DatabaseSegment(1, 1, new IdentifierValue("foo_db")), "group", "read_ds", "ENABLE"), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
     }
 }

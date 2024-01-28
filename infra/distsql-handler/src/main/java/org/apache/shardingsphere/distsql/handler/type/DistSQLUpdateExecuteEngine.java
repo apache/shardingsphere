@@ -63,12 +63,10 @@ public abstract class DistSQLUpdateExecuteEngine {
         executor.executeUpdate(sqlStatement, contextManager);
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private void checkBeforeUpdate(final DistSQLUpdateExecutor executor) {
+    private void checkBeforeUpdate(final DistSQLUpdateExecutor<?> executor) {
         if (null != executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)) {
             ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
         }
-        executor.checkBeforeUpdate(sqlStatement, contextManager);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

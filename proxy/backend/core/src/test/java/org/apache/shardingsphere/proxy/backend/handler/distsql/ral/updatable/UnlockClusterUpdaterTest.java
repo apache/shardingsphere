@@ -36,11 +36,11 @@ import static org.mockito.Mockito.when;
 class UnlockClusterUpdaterTest {
     
     @Test
-    void assertCheckBeforeUpdateWithNotLockedCluster() {
+    void assertExecuteUpdateWithNotLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         UnlockClusterExecutor executor = new UnlockClusterExecutor();
-        assertThrows(IllegalStateException.class, () -> executor.checkBeforeUpdate(new UnlockClusterStatement(), contextManager));
+        assertThrows(IllegalStateException.class, () -> executor.executeUpdate(new UnlockClusterStatement(), contextManager));
     }
 }

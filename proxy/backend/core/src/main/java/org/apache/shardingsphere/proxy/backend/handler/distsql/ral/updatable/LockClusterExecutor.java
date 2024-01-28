@@ -37,28 +37,10 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClusterStatement> {
     
     @Override
-    public void checkBeforeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
-        checkState(contextManager);
-        checkAlgorithm(sqlStatement);
-    }
-    
-    private void checkState(final ContextManager contextManager) {
-        ClusterState currentState = contextManager.getClusterStateContext().getCurrentState();
-        ShardingSpherePreconditions.checkState(ClusterState.OK == currentState, () -> new IllegalStateException("Cluster is already locked"));
-    }
-    
-    private void checkAlgorithm(final LockClusterStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(isStrategyDefinitionExists(sqlStatement), MissingRequiredAlgorithmException::new);
-        TypedSPILoader.checkService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName(), sqlStatement.getLockStrategy().getProps());
-    }
-    
-    private boolean isStrategyDefinitionExists(final LockClusterStatement sqlStatement) {
-        return null != sqlStatement.getLockStrategy();
-    }
-    
-    @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
+        checkState(contextManager);
+        checkAlgorithm(sqlStatement);
         LockContext lockContext = contextManager.getInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
         if (lockContext.tryLock(lockDefinition, 3000L)) {
@@ -69,6 +51,16 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
                 lockContext.unlock(lockDefinition);
             }
         }
+    }
+    
+    private void checkState(final ContextManager contextManager) {
+        ClusterState currentState = contextManager.getClusterStateContext().getCurrentState();
+        ShardingSpherePreconditions.checkState(ClusterState.OK == currentState, () -> new IllegalStateException("Cluster is already locked"));
+    }
+    
+    private void checkAlgorithm(final LockClusterStatement sqlStatement) {
+        ShardingSpherePreconditions.checkNotNull(sqlStatement.getLockStrategy(), MissingRequiredAlgorithmException::new);
+        TypedSPILoader.checkService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName(), sqlStatement.getLockStrategy().getProps());
     }
     
     @Override

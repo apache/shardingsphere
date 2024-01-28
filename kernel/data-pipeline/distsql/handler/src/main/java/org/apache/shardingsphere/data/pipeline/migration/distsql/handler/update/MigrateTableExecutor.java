@@ -40,16 +40,16 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
     private ShardingSphereDatabase database;
     
     @Override
-    public void checkBeforeUpdate(final MigrateTableStatement sqlStatement, final ContextManager contextManager) {
-        String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
-        ShardingSpherePreconditions.checkNotNull(targetDatabaseName, MissingRequiredTargetDatabaseException::new);
-    }
-    
-    @Override
     public void executeUpdate(final MigrateTableStatement sqlStatement, final ContextManager contextManager) {
+        checkTargetDatabase(sqlStatement);
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
         jobAPI.start(new PipelineContextKey(InstanceType.PROXY), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
+    }
+    
+    private void checkTargetDatabase(final MigrateTableStatement sqlStatement) {
+        String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
+        ShardingSpherePreconditions.checkNotNull(targetDatabaseName, MissingRequiredTargetDatabaseException::new);
     }
     
     @Override
