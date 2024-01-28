@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -28,11 +29,11 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 /**
  * Set instance status executor.
  */
+@DistSQLExecutorClusterModeRequired
 public final class SetInstanceStatusExecutor implements UpdatableRALExecutor<SetInstanceStatusStatement> {
     
     @Override
     public void checkBeforeUpdate(final SetInstanceStatusStatement sqlStatement, final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
         if ("DISABLE".equals(sqlStatement.getStatus())) {
             checkDisablingIsValid(contextManager, sqlStatement.getInstanceId());
         } else {

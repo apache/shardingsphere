@@ -31,10 +31,6 @@ public final class StopMigrationExecutor implements UpdatableRALExecutor<StopMig
     private final PipelineJobManager jobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public void checkBeforeUpdate(final StopMigrationStatement sqlStatement, final ContextManager contextManager) {
-    }
-    
-    @Override
     public void executeUpdate(final StopMigrationStatement sqlStatement, final ContextManager contextManager) {
         jobManager.stop(sqlStatement.getJobId());
     }

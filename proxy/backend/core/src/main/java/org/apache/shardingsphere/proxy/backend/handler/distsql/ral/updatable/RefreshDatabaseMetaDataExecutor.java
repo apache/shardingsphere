@@ -35,10 +35,6 @@ import java.util.Optional;
 public final class RefreshDatabaseMetaDataExecutor implements UpdatableRALExecutor<RefreshDatabaseMetaDataStatement> {
     
     @Override
-    public void checkBeforeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement, final ContextManager contextManager) {
-    }
-    
-    @Override
     public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         Optional<String> toBeRefreshedDatabaseName = sqlStatement.getDatabaseName();
         Map<String, ShardingSphereDatabase> databases = toBeRefreshedDatabaseName.map(optional -> Collections.singletonMap(optional, ProxyContext.getInstance().getDatabase(optional)))

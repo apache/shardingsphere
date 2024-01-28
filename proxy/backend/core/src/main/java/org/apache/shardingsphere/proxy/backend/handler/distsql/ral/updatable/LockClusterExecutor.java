@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -35,19 +33,13 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 /**
  * Lock cluster executor.
  */
-@RequiredArgsConstructor
-@Setter
+@DistSQLExecutorClusterModeRequired
 public final class LockClusterExecutor implements UpdatableRALExecutor<LockClusterStatement> {
     
     @Override
     public void checkBeforeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
-        checkMode(contextManager);
         checkState(contextManager);
         checkAlgorithm(sqlStatement);
-    }
-    
-    private void checkMode(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
     }
     
     private void checkState(final ContextManager contextManager) {

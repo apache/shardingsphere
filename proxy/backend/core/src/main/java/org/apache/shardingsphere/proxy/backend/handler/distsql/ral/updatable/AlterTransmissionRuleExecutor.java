@@ -36,10 +36,6 @@ public final class AlterTransmissionRuleExecutor implements UpdatableRALExecutor
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
     @Override
-    public void checkBeforeUpdate(final AlterTransmissionRuleStatement sqlStatement, final ContextManager contextManager) {
-    }
-    
-    @Override
     public void executeUpdate(final AlterTransmissionRuleStatement sqlStatement, final ContextManager contextManager) {
         PipelineProcessConfiguration processConfig = TransmissionProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
         String jobType = TypedSPILoader.getService(PipelineJobType.class, sqlStatement.getJobTypeName()).getType();

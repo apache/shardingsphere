@@ -38,7 +38,8 @@ public interface UpdatableRALExecutor<T extends UpdatableRALStatement> extends T
      * @param sqlStatement SQL statement
      * @param contextManager context manager
      */
-    void checkBeforeUpdate(T sqlStatement, ContextManager contextManager);
+    default void checkBeforeUpdate(T sqlStatement, ContextManager contextManager) {
+    }
     
     /**
      * Execute update.

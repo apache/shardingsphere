@@ -46,10 +46,6 @@ public final class CheckMigrationJobExecutor implements UpdatableRALExecutor<Che
     private final PipelineJobType migrationJobType = new MigrationJobType();
     
     @Override
-    public void checkBeforeUpdate(final CheckMigrationStatement sqlStatement, final ContextManager contextManager) {
-    }
-    
-    @Override
     public void executeUpdate(final CheckMigrationStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         AlgorithmSegment typeStrategy = sqlStatement.getTypeStrategy();
         String algorithmTypeName = null == typeStrategy ? null : typeStrategy.getName();

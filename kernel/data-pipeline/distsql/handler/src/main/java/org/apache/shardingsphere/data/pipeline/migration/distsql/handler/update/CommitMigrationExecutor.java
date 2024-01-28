@@ -31,10 +31,6 @@ import java.sql.SQLException;
 public final class CommitMigrationExecutor implements UpdatableRALExecutor<CommitMigrationStatement> {
     
     @Override
-    public void checkBeforeUpdate(final CommitMigrationStatement sqlStatement, final ContextManager contextManager) {
-    }
-    
-    @Override
     public void executeUpdate(final CommitMigrationStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").commit(sqlStatement.getJobId());
     }
