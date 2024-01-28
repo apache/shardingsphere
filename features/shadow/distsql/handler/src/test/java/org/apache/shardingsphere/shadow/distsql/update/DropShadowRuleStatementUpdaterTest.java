@@ -50,18 +50,18 @@ class DropShadowRuleStatementUpdaterTest {
     
     @Test
     void assertCheckWithNullConfiguration() {
-        assertThrows(MissingRequiredRuleException.class, () -> new DropShadowRuleExecutor().checkSQLStatement(database, createSQLStatement("anyRuleName"), null));
+        assertThrows(MissingRequiredRuleException.class, () -> new DropShadowRuleExecutor().checkBeforeUpdate(database, createSQLStatement("anyRuleName"), null));
     }
     
     @Test
     void assertCheckWithRuleNotExisted() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> new DropShadowRuleExecutor().checkSQLStatement(database, createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class)));
+                () -> new DropShadowRuleExecutor().checkBeforeUpdate(database, createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class)));
     }
     
     @Test
     void assertCheckWithIfExists() {
-        new DropShadowRuleExecutor().checkSQLStatement(database, createSQLStatement(true, "notExistedRuleName"), mock(ShadowRuleConfiguration.class));
+        new DropShadowRuleExecutor().checkBeforeUpdate(database, createSQLStatement(true, "notExistedRuleName"), mock(ShadowRuleConfiguration.class));
     }
     
     @Test
@@ -69,7 +69,7 @@ class DropShadowRuleStatementUpdaterTest {
         DropShadowRuleStatement sqlStatement = createSQLStatement("shadow_group");
         ShadowRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropShadowRuleExecutor executor = new DropShadowRuleExecutor();
-        executor.checkSQLStatement(database, sqlStatement, ruleConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, ruleConfig);
         assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
         assertTrue(ruleConfig.getDataSources().isEmpty());
         assertTrue(ruleConfig.getTables().isEmpty());
@@ -81,7 +81,7 @@ class DropShadowRuleStatementUpdaterTest {
         DropShadowRuleStatement sqlStatement = createSQLStatement("shadow_group");
         ShadowRuleConfiguration ruleConfig = createMultipleCurrentRuleConfiguration();
         DropShadowRuleExecutor executor = new DropShadowRuleExecutor();
-        executor.checkSQLStatement(database, sqlStatement, ruleConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, ruleConfig);
         assertTrue(executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
         assertTrue(ruleConfig.getDataSources().isEmpty());
         assertTrue(ruleConfig.getTables().isEmpty());

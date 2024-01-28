@@ -46,7 +46,7 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        assertThrows(EmptyStorageUnitException.class, () -> executor.checkSQLStatement(database, statement, currentConfig));
+        assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(database, statement, currentConfig));
     }
     
     @Test
@@ -54,14 +54,14 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(DuplicateRuleException.class, () -> executor.checkSQLStatement(mockShardingSphereDatabase(), statement, currentConfig));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(mockShardingSphereDatabase(), statement, currentConfig));
     }
     
     @Test
     void assertBuildToBeCreatedRuleConfiguration() {
         BroadcastRuleConfiguration currentConfig = new BroadcastRuleConfiguration(new LinkedList<>());
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        executor.checkSQLStatement(mockShardingSphereDatabase(), statement, currentConfig);
+        executor.checkBeforeUpdate(mockShardingSphereDatabase(), statement, currentConfig);
         BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, statement);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getTables().size(), is(1));

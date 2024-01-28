@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<DropMaskRuleStatement, MaskRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         checkToBeDroppedMaskTableNames(database.getName(), sqlStatement, currentRuleConfig);
     }
     

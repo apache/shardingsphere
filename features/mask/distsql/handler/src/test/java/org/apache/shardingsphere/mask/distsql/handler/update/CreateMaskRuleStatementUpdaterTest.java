@@ -53,19 +53,19 @@ class CreateMaskRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithDuplicateMaskRule() {
-        assertThrows(DuplicateRuleException.class, () -> executor.checkSQLStatement(database, createDuplicatedSQLStatement(false, "MD5"), getCurrentRuleConfig()));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, createDuplicatedSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
     @Test
     void assertCheckSQLStatementWithInvalidAlgorithm() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test
     void assertCreateMaskRule() {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
-        executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
         MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(4));
@@ -77,11 +77,11 @@ class CreateMaskRuleStatementUpdaterTest {
     void assertCreateMaskRuleWithIfNotExists() {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
-        executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
         MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         sqlStatement = createSQLStatement(true, "MD5");
-        executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
         toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(4));

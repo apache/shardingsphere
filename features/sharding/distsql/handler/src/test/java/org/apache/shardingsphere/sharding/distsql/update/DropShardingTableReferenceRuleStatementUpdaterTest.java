@@ -50,22 +50,22 @@ class DropShardingTableReferenceRuleStatementUpdaterTest {
     
     @Test
     void assertCheckWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkSQLStatement(database, new DropShardingTableReferenceRuleStatement(false, Collections.singleton("notExisted")), null));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(database, new DropShardingTableReferenceRuleStatement(false, Collections.singleton("notExisted")), null));
     }
     
     @Test
     void assertCheckWithNotExistedShardingTableReferenceRule() {
         assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkSQLStatement(database, new DropShardingTableReferenceRuleStatement(false, Collections.singleton("notExisted")), new ShardingRuleConfiguration()));
+                () -> executor.checkBeforeUpdate(database, new DropShardingTableReferenceRuleStatement(false, Collections.singleton("notExisted")), new ShardingRuleConfiguration()));
     }
     
     @Test
     void assertCheckWithIfExists() {
         DropShardingTableReferenceRuleStatement statement = new DropShardingTableReferenceRuleStatement(true, Collections.singleton("notExisted"));
-        executor.checkSQLStatement(database, statement, null);
+        executor.checkBeforeUpdate(database, statement, null);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setBindingTableGroups(Collections.singleton(new ShardingTableReferenceRuleConfiguration("foo", "t_3,t_4")));
-        executor.checkSQLStatement(database, statement, shardingRuleConfig);
+        executor.checkBeforeUpdate(database, statement, shardingRuleConfig);
     }
     
     @Test
@@ -95,7 +95,7 @@ class DropShardingTableReferenceRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_1", "t_1,t_2"));
         DropShardingTableReferenceRuleStatement sqlStatement = new DropShardingTableReferenceRuleStatement(false, Collections.singleton("reference_1"));
-        executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
         assertThat(currentRuleConfig.getBindingTableGroups().iterator().next().getReference(), is("t_order,t_order_item"));
@@ -106,7 +106,7 @@ class DropShardingTableReferenceRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_1", "t_1,t_2,t_3"));
         DropShardingTableReferenceRuleStatement sqlStatement = new DropShardingTableReferenceRuleStatement(false, Arrays.asList("reference_0", "reference_1"));
-        executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertTrue(currentRuleConfig.getBindingTableGroups().isEmpty());
     }

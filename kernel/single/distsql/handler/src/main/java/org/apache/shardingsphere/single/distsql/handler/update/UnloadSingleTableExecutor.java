@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecutor<UnloadSingleTableStatement, SingleRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         checkCurrentRuleConfig(database.getName(), currentRuleConfig);
         checkTables(database, sqlStatement, currentRuleConfig);
     }

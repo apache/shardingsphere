@@ -76,14 +76,14 @@ class CreateShadowRuleStatementUpdaterTest {
     @Test
     void assertExecuteWithDuplicateRuleName() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        assertThrows(DuplicateRuleException.class, () -> executor.checkSQLStatement(database, new CreateShadowRuleStatement(false, Arrays.asList(ruleSegment, ruleSegment)), null));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, new CreateShadowRuleStatement(false, Arrays.asList(ruleSegment, ruleSegment)), null));
     }
     
     @Test
     void assertExecuteWithDuplicateRuleNameInMetaData() {
         when(currentConfig.getDataSources()).thenReturn(Collections.singleton(new ShadowDataSourceConfiguration("ruleName", "ds", "ds_shadow")));
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        assertThrows(DuplicateRuleException.class, () -> executor.checkSQLStatement(database, new CreateShadowRuleStatement(false, Collections.singleton(ruleSegment)), currentConfig));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, new CreateShadowRuleStatement(false, Collections.singleton(ruleSegment)), currentConfig));
     }
     
     @Test
@@ -92,14 +92,14 @@ class CreateShadowRuleStatementUpdaterTest {
         when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("duplicate_ds", Collections.singleton("ds_0")));
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(dataSourceContainedRule));
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("duplicate_ds", null, null, null);
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkSQLStatement(database, new CreateShadowRuleStatement(false, Collections.singleton(ruleSegment)), null));
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(database, new CreateShadowRuleStatement(false, Collections.singleton(ruleSegment)), null));
     }
     
     @Test
     void assertExecuteWithNotExistResource() {
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Arrays.asList("ds0", "ds1"));
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false, Collections.singleton(new ShadowRuleSegment("ruleName", "ds1", null, null)));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkSQLStatement(database, sqlStatement, currentConfig));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, currentConfig));
     }
     
     @Test
@@ -108,7 +108,7 @@ class CreateShadowRuleStatementUpdaterTest {
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false, Arrays.asList(
                 new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("ruleName", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment)))));
-        assertThrows(DuplicateRuleException.class, () -> executor.checkSQLStatement(database, sqlStatement, currentConfig));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, currentConfig));
     }
     
     @Test
@@ -117,7 +117,7 @@ class CreateShadowRuleStatementUpdaterTest {
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false, Arrays.asList(
                 new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("ruleName1", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment)))));
-        assertThrows(DuplicateRuleException.class, () -> executor.checkSQLStatement(database, sqlStatement, null));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, null));
     }
     
     @Test
@@ -125,7 +125,7 @@ class CreateShadowRuleStatementUpdaterTest {
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("type", PropertiesBuilder.build(new Property("type", "value"))));
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false,
                 Collections.singleton(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment)))));
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkSQLStatement(database, sqlStatement, currentConfig));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(database, sqlStatement, currentConfig));
     }
     
     @Test
@@ -133,7 +133,7 @@ class CreateShadowRuleStatementUpdaterTest {
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", null));
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false,
                 Collections.singleton(new ShadowRuleSegment("initRuleNameWithoutProps", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment)))));
-        executor.checkSQLStatement(database, sqlStatement, currentConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, currentConfig);
     }
     
     @Test
@@ -141,6 +141,6 @@ class CreateShadowRuleStatementUpdaterTest {
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(true,
                 Collections.singleton(new ShadowRuleSegment("initRuleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment)))));
-        executor.checkSQLStatement(database, sqlStatement, currentConfig);
+        executor.checkBeforeUpdate(database, sqlStatement, currentConfig);
     }
 }

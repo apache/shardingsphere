@@ -34,7 +34,7 @@ import java.util.Optional;
 public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDropExecutor<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final DropDefaultShardingStrategyStatement sqlStatement,
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropDefaultShardingStrategyStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) {
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;

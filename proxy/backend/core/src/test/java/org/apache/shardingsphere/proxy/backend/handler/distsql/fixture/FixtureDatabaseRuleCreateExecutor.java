@@ -32,7 +32,7 @@ public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCrea
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
     }
     
     @Override

@@ -41,7 +41,7 @@ class SetDefaultSingleTableStorageUnitStatementUpdaterTest {
     @Test
     void assertCheckWithInvalidResource() {
         assertThrows(MissingRequiredStorageUnitsException.class,
-                () -> executor.checkSQLStatement(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), new SetDefaultSingleTableStorageUnitStatement("bar_ds"), mock(SingleRuleConfiguration.class)));
+                () -> executor.checkBeforeUpdate(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), new SetDefaultSingleTableStorageUnitStatement("bar_ds"), mock(SingleRuleConfiguration.class)));
     }
     
     @Test
