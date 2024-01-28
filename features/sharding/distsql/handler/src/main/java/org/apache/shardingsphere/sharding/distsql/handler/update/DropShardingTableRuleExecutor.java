@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Splitter;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
@@ -38,35 +39,37 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding table rule executor.
  */
+@Setter
 public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExecutor<DropShardingTableRuleStatement, ShardingRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
-        String databaseName = database.getName();
-        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
-        checkToBeDroppedShardingTableNames(databaseName, sqlStatement, currentRuleConfig);
-        checkBindingTables(databaseName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(currentRuleConfig);
+        checkToBeDroppedShardingTableNames(sqlStatement, currentRuleConfig);
+        checkBindingTables(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", databaseName));
+    private void checkCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", database.getName()));
     }
     
     private Collection<String> getToBeDroppedShardingTableNames(final DropShardingTableRuleStatement sqlStatement) {
         return sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
     
-    private void checkToBeDroppedShardingTableNames(final String databaseName, final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkToBeDroppedShardingTableNames(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists()) {
             return;
         }
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames(currentRuleConfig);
         Collection<String> notExistedTableNames =
                 getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> !containsIgnoreCase(currentShardingTableNames, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("sharding", databaseName, notExistedTableNames));
+        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("sharding", database.getName(), notExistedTableNames));
     }
     
     private boolean containsIgnoreCase(final Collection<String> collection, final String str) {
@@ -80,11 +83,11 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
         return result;
     }
     
-    private void checkBindingTables(final String databaseName, final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkBindingTables(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> bindingTables = getBindingTables(currentRuleConfig);
         Collection<String> usedTableNames = getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> containsIgnoreCase(bindingTables, each)).collect(Collectors.toList());
         if (!usedTableNames.isEmpty()) {
-            throw new RuleInUsedException("Sharding", databaseName, usedTableNames, "sharding table reference");
+            throw new RuleInUsedException("Sharding", database.getName(), usedTableNames, "sharding table reference");
         }
     }
     

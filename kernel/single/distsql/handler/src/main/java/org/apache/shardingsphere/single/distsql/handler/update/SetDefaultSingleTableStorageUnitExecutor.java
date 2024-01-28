@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import com.google.common.base.Strings;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -31,14 +32,17 @@ import java.util.Collections;
 /**
  * Set default single table storage unit executor.
  */
+@Setter
 public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleCreateExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
-        checkStorageUnitExist(database, sqlStatement);
+    public void checkBeforeUpdate(final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+        checkStorageUnitExist(sqlStatement);
     }
     
-    private void checkStorageUnitExist(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
+    private void checkStorageUnitExist(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         if (!Strings.isNullOrEmpty(sqlStatement.getDefaultStorageUnit())) {
             Collection<String> storageUnitNames = database.getResourceMetaData().getStorageUnits().keySet();
             ShardingSpherePreconditions.checkState(storageUnitNames.contains(sqlStatement.getDefaultStorageUnit()),

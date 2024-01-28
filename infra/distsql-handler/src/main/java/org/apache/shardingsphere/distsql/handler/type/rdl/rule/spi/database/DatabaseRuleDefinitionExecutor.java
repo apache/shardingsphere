@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database;
 
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -30,16 +30,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * @param <R> type of rule configuration
  */
 @SingletonSPI
-public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI, DistSQLExecutorDatabaseAware {
     
     /**
      * Check before update.
      *
-     * @param database database
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration
      */
-    void checkBeforeUpdate(ShardingSphereDatabase database, T sqlStatement, R currentRuleConfig);
+    void checkBeforeUpdate(T sqlStatement, R currentRuleConfig);
     
     /**
      * Get rule configuration class.

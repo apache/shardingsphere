@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -38,21 +39,24 @@ import java.util.stream.Collectors;
 /**
  * Drop encrypt rule executor.
  */
+@Setter
 public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        checkToBeDroppedEncryptTableNames(database.getName(), sqlStatement, currentRuleConfig);
+    public void checkBeforeUpdate(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+        checkToBeDroppedEncryptTableNames(sqlStatement, currentRuleConfig);
     }
     
-    private void checkToBeDroppedEncryptTableNames(final String databaseName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    private void checkToBeDroppedEncryptTableNames(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists()) {
             return;
         }
-        ShardingSpherePreconditions.checkState(isExistRuleConfig(currentRuleConfig), () -> new MissingRequiredRuleException("Encrypt", databaseName));
+        ShardingSpherePreconditions.checkState(isExistRuleConfig(currentRuleConfig), () -> new MissingRequiredRuleException("Encrypt", database.getName()));
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Encrypt", databaseName, notExistedTableNames));
+        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Encrypt", database.getName(), notExistedTableNames));
     }
     
     @Override

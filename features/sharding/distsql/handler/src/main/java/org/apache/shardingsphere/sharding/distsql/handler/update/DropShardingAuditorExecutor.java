@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
@@ -34,31 +35,33 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding auditor statement executor.
  */
+@Setter
 public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecutor<DropShardingAuditorStatement, ShardingRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig && sqlStatement.isIfExists()) {
             return;
         }
-        String databaseName = database.getName();
         Collection<String> auditorNames = new LinkedList<>(sqlStatement.getNames());
-        checkExist(databaseName, auditorNames, currentRuleConfig, sqlStatement);
-        checkInUsed(databaseName, auditorNames, currentRuleConfig);
+        checkExist(auditorNames, currentRuleConfig, sqlStatement);
+        checkInUsed(auditorNames, currentRuleConfig);
     }
     
-    private void checkExist(final String databaseName, final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig, final DropShardingAuditorStatement sqlStatement) {
+    private void checkExist(final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig, final DropShardingAuditorStatement sqlStatement) {
         if (sqlStatement.isIfExists()) {
             return;
         }
         Collection<String> notExistAuditors = auditorNames.stream().filter(each -> !currentRuleConfig.getAuditors().containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new MissingRequiredAlgorithmException("Sharding auditor", databaseName, notExistAuditors));
+        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new MissingRequiredAlgorithmException("Sharding auditor", database.getName(), notExistAuditors));
     }
     
-    private void checkInUsed(final String databaseName, final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkInUsed(final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> usedAuditors = getUsedAuditors(currentRuleConfig);
         Collection<String> inUsedNames = auditorNames.stream().filter(usedAuditors::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Sharding auditor", databaseName, inUsedNames));
+        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Sharding auditor", database.getName(), inUsedNames));
     }
     
     private Collection<String> getUsedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {

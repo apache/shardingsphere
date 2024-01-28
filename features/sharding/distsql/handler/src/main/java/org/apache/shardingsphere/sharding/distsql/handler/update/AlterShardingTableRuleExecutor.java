@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -34,10 +35,13 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding table rule executor.
  */
+@Setter
 public final class AlterShardingTableRuleExecutor implements DatabaseRuleAlterExecutor<AlterShardingTableRuleStatement, ShardingRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", database.getName()));
         ShardingTableRuleStatementChecker.checkAlteration(database, sqlStatement.getRules(), currentRuleConfig);
     }

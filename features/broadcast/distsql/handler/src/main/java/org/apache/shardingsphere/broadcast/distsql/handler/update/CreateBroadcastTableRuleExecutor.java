@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
@@ -31,10 +32,13 @@ import java.util.LinkedHashSet;
 /**
  * Create broadcast table rule executor.
  */
+@Setter
 public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreateExecutor<CreateBroadcastTableRuleStatement, BroadcastRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicate(sqlStatement, currentRuleConfig);
