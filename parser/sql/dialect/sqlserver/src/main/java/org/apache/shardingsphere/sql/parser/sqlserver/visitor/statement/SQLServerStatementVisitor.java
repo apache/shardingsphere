@@ -926,7 +926,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setHaving((HavingSegment) visit(ctx.havingClause()));
         }
         if (null != ctx.orderByClause()) {
-            visitOrderBy(result, ctx.orderByClause());
+            result.setOrderBy(getOrderBySegment(ctx.orderByClause()));
+            result.setLimit(getLimitSegment(ctx.orderByClause()));
         }
         return result;
     }
@@ -954,16 +955,10 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
     }
     
-    private SQLServerSelectStatement visitOrderBy(final SQLServerSelectStatement selectStatement, final OrderByClauseContext ctx) {
-        selectStatement.setOrderBy(getOrderBySegment(ctx));
-        selectStatement.setLimit(getLimitSegment(ctx));
-        return selectStatement;
-    }
-    
     private LimitSegment getLimitSegment(final OrderByClauseContext ctx) {
+        LimitSegment result = null;
         PaginationValueSegment offset = null;
         PaginationValueSegment rowcount = null;
-        LimitSegment limitSegment = null;
         if (null != ctx.OFFSET()) {
             ASTNode astNode = visit(ctx.expr(0));
             if (astNode instanceof LiteralExpressionSegment && ((LiteralExpressionSegment) astNode).getLiterals() instanceof Number) {
@@ -983,9 +978,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             }
         }
         if (null != offset) {
-            limitSegment = new LimitSegment(ctx.OFFSET().getSymbol().getStartIndex(), ctx.stop.getStopIndex(), offset, rowcount);
+            result = new LimitSegment(ctx.OFFSET().getSymbol().getStartIndex(), ctx.stop.getStopIndex(), offset, rowcount);
         }
-        return limitSegment;
+        return result;
     }
     
     private OrderBySegment getOrderBySegment(final OrderByClauseContext ctx) {
@@ -996,8 +991,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             items.add((OrderByItemSegment) visit(each));
             orderByStopIndex = each.stop.getStopIndex();
         }
-        OrderBySegment orderBySegment = new OrderBySegment(orderByStartIndex, orderByStopIndex, items);
-        return orderBySegment;
+        return new OrderBySegment(orderByStartIndex, orderByStopIndex, items);
     }
     
     private boolean isDistinct(final SelectClauseContext ctx) {
