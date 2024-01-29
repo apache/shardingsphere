@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -38,6 +39,7 @@ import java.util.Map;
 /**
  * Alter default shadow algorithm executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Shadow")
 @Setter
 public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
@@ -47,7 +49,6 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAl
     
     @Override
     public void checkBeforeUpdate(final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        ShadowRuleStatementChecker.checkRuleConfigurationExists(database.getName(), currentRuleConfig);
         checkAlgorithms(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment(), currentRuleConfig);
     }
     

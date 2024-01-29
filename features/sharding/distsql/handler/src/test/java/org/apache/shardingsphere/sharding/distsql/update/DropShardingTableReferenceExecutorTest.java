@@ -49,11 +49,6 @@ class DropShardingTableReferenceExecutorTest {
     }
     
     @Test
-    void assertCheckWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new DropShardingTableReferenceRuleStatement(false, Collections.singleton("notExisted")), null));
-    }
-    
-    @Test
     void assertCheckWithNotExistedShardingTableReferenceRule() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> executor.checkBeforeUpdate(new DropShardingTableReferenceRuleStatement(false, Collections.singleton("notExisted")), new ShardingRuleConfiguration()));

@@ -46,12 +46,7 @@ class AlterShardingTableReferenceRuleExecutorTest {
     }
     
     @Test
-    void assertCheckWithoutCurrentRuleConfig() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("foo", "t_order,t_order_item"), null));
-    }
-    
-    @Test
-    void assertCheckWithNotExistedRule() {
+    void assertCheckBeforeUpdateWithNotExistedRule() {
         assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration()));
     }
     

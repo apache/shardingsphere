@@ -50,11 +50,6 @@ class DropShadowRuleExecutorTest {
     }
     
     @Test
-    void assertCheckWithNullConfiguration() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("anyRuleName"), null));
-    }
-    
-    @Test
     void assertCheckWithRuleNotExisted() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class)));
