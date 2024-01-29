@@ -66,7 +66,7 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
     }
     
     @Override
-    public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final DropMaskRuleStatement sqlStatement) {
+    public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         Collection<MaskTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new LinkedHashMap<>();
         for (String each : sqlStatement.getTables()) {

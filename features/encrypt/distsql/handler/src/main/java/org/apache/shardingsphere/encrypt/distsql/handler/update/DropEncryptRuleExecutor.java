@@ -66,7 +66,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final DropEncryptRuleStatement sqlStatement) {
+    public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         Collection<EncryptTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
         for (String each : sqlStatement.getTables()) {

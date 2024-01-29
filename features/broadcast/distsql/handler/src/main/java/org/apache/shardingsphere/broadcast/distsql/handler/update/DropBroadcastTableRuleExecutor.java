@@ -69,7 +69,7 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     }
     
     @Override
-    public BroadcastRuleConfiguration buildToBeAlteredRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final DropBroadcastTableRuleStatement sqlStatement) {
+    public BroadcastRuleConfiguration buildToBeAlteredRuleConfiguration(final DropBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         BroadcastRuleConfiguration result = new BroadcastRuleConfiguration(new HashSet<>(currentRuleConfig.getTables()));
         result.getTables().removeIf(each -> containsIgnoreCase(sqlStatement.getTables(), each));
         return result;

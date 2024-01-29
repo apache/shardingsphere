@@ -76,7 +76,7 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingAuditorStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getAuditors().put(each, currentRuleConfig.getAuditors().get(each));
