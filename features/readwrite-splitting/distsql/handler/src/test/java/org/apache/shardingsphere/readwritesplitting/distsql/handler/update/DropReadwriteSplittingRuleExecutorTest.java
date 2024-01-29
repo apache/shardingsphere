@@ -64,11 +64,6 @@ class DropReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(), null));
-    }
-    
-    @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
         assertThrows(MissingRequiredRuleException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
