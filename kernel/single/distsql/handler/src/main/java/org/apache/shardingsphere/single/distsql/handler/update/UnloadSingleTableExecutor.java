@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import com.google.common.base.Splitter;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -39,19 +40,22 @@ import java.util.stream.Collectors;
 /**
  * Unload single table statement executor.
  */
+@Setter
 public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecutor<UnloadSingleTableStatement, SingleRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkBeforeUpdate(final ShardingSphereDatabase database, final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
-        checkCurrentRuleConfig(database.getName(), currentRuleConfig);
-        checkTables(database, sqlStatement, currentRuleConfig);
+    public void checkBeforeUpdate(final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+        checkCurrentRuleConfig(currentRuleConfig);
+        checkTables(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfig(final String databaseName, final SingleRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkState(null != currentRuleConfig, () -> new MissingRequiredRuleException("Single", databaseName));
+    private void checkCurrentRuleConfig(final SingleRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkState(null != currentRuleConfig, () -> new MissingRequiredRuleException("Single", database.getName()));
     }
     
-    private void checkTables(final ShardingSphereDatabase database, final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    private void checkTables(final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isUnloadAllTables()) {
             return;
         }
@@ -65,17 +69,17 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
         }
     }
     
+    private Collection<String> getAllTableNames(final ShardingSphereDatabase database) {
+        String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
+        return database.getSchema(defaultSchemaName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
+    }
+    
     private void checkTableExist(final Collection<String> allTables, final String tableName) {
         ShardingSpherePreconditions.checkState(allTables.contains(tableName), () -> new NoSuchTableException(tableName));
     }
     
     private void checkIsSingleTable(final Collection<String> singleTables, final String tableName) {
         ShardingSpherePreconditions.checkState(singleTables.contains(tableName), () -> new SingleTableNotFoundException(tableName));
-    }
-    
-    private Collection<String> getAllTableNames(final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
-        return database.getSchema(defaultSchemaName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
     }
     
     private void checkTableRuleExist(final String databaseName, final DatabaseType databaseType, final SingleRuleConfiguration currentRuleConfig,

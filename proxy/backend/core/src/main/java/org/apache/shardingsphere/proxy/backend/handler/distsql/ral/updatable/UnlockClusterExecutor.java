@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
@@ -32,22 +32,12 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
  * Unlock cluster executor.
  */
 @DistSQLExecutorClusterModeRequired
-public final class UnlockClusterExecutor implements UpdatableRALExecutor<UnlockClusterStatement> {
-    
-    @Override
-    public void checkBeforeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) {
-        checkState(contextManager);
-    }
-    
-    private void checkState(final ContextManager contextManager) {
-        ClusterState currentState = contextManager.getClusterStateContext().getCurrentState();
-        ShardingSpherePreconditions.checkState(ClusterState.OK != currentState, () -> new IllegalStateException("Cluster is not locked"));
-    }
+public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<UnlockClusterStatement> {
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) {
-        
+        checkState(contextManager);
         LockContext lockContext = contextManager.getInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
         if (lockContext.tryLock(lockDefinition, 3000L)) {
@@ -59,6 +49,10 @@ public final class UnlockClusterExecutor implements UpdatableRALExecutor<UnlockC
                 lockContext.unlock(lockDefinition);
             }
         }
+    }
+    
+    private void checkState(final ContextManager contextManager) {
+        ShardingSpherePreconditions.checkState(ClusterState.OK != contextManager.getClusterStateContext().getCurrentState(), () -> new IllegalStateException("Cluster is not locked"));
     }
     
     @Override

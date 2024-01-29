@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
@@ -34,31 +34,13 @@ import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
  * Lock cluster executor.
  */
 @DistSQLExecutorClusterModeRequired
-public final class LockClusterExecutor implements UpdatableRALExecutor<LockClusterStatement> {
-    
-    @Override
-    public void checkBeforeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
-        checkState(contextManager);
-        checkAlgorithm(sqlStatement);
-    }
-    
-    private void checkState(final ContextManager contextManager) {
-        ClusterState currentState = contextManager.getClusterStateContext().getCurrentState();
-        ShardingSpherePreconditions.checkState(ClusterState.OK == currentState, () -> new IllegalStateException("Cluster is already locked"));
-    }
-    
-    private void checkAlgorithm(final LockClusterStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(isStrategyDefinitionExists(sqlStatement), MissingRequiredAlgorithmException::new);
-        TypedSPILoader.checkService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName(), sqlStatement.getLockStrategy().getProps());
-    }
-    
-    private boolean isStrategyDefinitionExists(final LockClusterStatement sqlStatement) {
-        return null != sqlStatement.getLockStrategy();
-    }
+public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClusterStatement> {
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
+        checkState(contextManager);
+        checkAlgorithm(sqlStatement);
         LockContext lockContext = contextManager.getInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
         if (lockContext.tryLock(lockDefinition, 3000L)) {
@@ -69,6 +51,16 @@ public final class LockClusterExecutor implements UpdatableRALExecutor<LockClust
                 lockContext.unlock(lockDefinition);
             }
         }
+    }
+    
+    private void checkState(final ContextManager contextManager) {
+        ClusterState currentState = contextManager.getClusterStateContext().getCurrentState();
+        ShardingSpherePreconditions.checkState(ClusterState.OK == currentState, () -> new IllegalStateException("Cluster is already locked"));
+    }
+    
+    private void checkAlgorithm(final LockClusterStatement sqlStatement) {
+        ShardingSpherePreconditions.checkNotNull(sqlStatement.getLockStrategy(), MissingRequiredAlgorithmException::new);
+        TypedSPILoader.checkService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName(), sqlStatement.getLockStrategy().getProps());
     }
     
     @Override

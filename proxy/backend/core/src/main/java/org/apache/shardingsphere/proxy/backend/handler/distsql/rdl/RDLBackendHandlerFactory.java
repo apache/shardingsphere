@@ -19,16 +19,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.type.rdl.resource.ResourceDefinitionExecutor;
-import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.ResourceDefinitionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -47,17 +42,8 @@ public final class RDLBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof ResourceDefinitionStatement) {
-            return getResourceBackendHandler((ResourceDefinitionStatement) sqlStatement, connectionSession);
+            return new DistSQLUpdateBackendHandler(sqlStatement, connectionSession);
         }
         return new RuleDefinitionBackendHandler((RuleDefinitionStatement) sqlStatement, connectionSession);
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private static ResourceDefinitionBackendHandler getResourceBackendHandler(final ResourceDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
-        ResourceDefinitionExecutor executor = TypedSPILoader.getService(ResourceDefinitionExecutor.class, sqlStatement.getClass());
-        if (executor instanceof DistSQLExecutorDatabaseAware) {
-            ((DistSQLExecutorDatabaseAware) executor).setDatabase(ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession.getDatabaseName())));
-        }
-        return new ResourceDefinitionBackendHandler(sqlStatement, executor);
     }
 }

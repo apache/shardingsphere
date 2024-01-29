@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.DropStreamingStatement;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.DropStreamingStatement;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -29,7 +29,7 @@ import java.sql.SQLException;
 /**
  * Drop streaming executor.
  */
-public final class DropStreamingExecutor implements UpdatableRALExecutor<DropStreamingStatement> {
+public final class DropStreamingExecutor implements DistSQLUpdateExecutor<DropStreamingStatement> {
     
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     

@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -37,26 +37,13 @@ import java.util.Map;
  * Refresh table meta data executor.
  */
 @Setter
-public final class RefreshTableMetaDataExecutor implements UpdatableRALExecutor<RefreshTableMetaDataStatement>, DistSQLExecutorDatabaseAware {
+public final class RefreshTableMetaDataExecutor implements DistSQLUpdateExecutor<RefreshTableMetaDataStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
     @Override
-    public void checkBeforeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) {
-        checkStorageUnit(contextManager.getStorageUnits(database.getName()), sqlStatement);
-    }
-    
-    private void checkStorageUnit(final Map<String, StorageUnit> storageUnits, final RefreshTableMetaDataStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(!storageUnits.isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
-        if (sqlStatement.getStorageUnitName().isPresent()) {
-            String storageUnitName = sqlStatement.getStorageUnitName().get();
-            ShardingSpherePreconditions.checkState(
-                    storageUnits.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(storageUnitName)));
-        }
-    }
-    
-    @Override
     public void executeUpdate(final RefreshTableMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
+        checkStorageUnit(contextManager.getStorageUnits(database.getName()), sqlStatement);
         String schemaName = getSchemaName(sqlStatement);
         if (sqlStatement.getStorageUnitName().isPresent()) {
             if (sqlStatement.getTableName().isPresent()) {
@@ -70,6 +57,15 @@ public final class RefreshTableMetaDataExecutor implements UpdatableRALExecutor<
             contextManager.reloadTable(database, schemaName, sqlStatement.getTableName().get());
         } else {
             contextManager.refreshTableMetaData(database);
+        }
+    }
+    
+    private void checkStorageUnit(final Map<String, StorageUnit> storageUnits, final RefreshTableMetaDataStatement sqlStatement) {
+        ShardingSpherePreconditions.checkState(!storageUnits.isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
+        if (sqlStatement.getStorageUnitName().isPresent()) {
+            String storageUnitName = sqlStatement.getStorageUnitName().get();
+            ShardingSpherePreconditions.checkState(
+                    storageUnits.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(storageUnitName)));
         }
     }
     

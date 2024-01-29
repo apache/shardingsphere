@@ -21,9 +21,10 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -47,7 +48,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -56,33 +56,30 @@ import java.util.stream.Collectors;
 // TODO move to readwritesplitting module
 @DistSQLExecutorClusterModeRequired
 @Setter
-public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements UpdatableRALExecutor<AlterReadwriteSplittingStorageUnitStatusStatement>, DistSQLExecutorDatabaseAware {
+public final class AlterReadwriteSplittingStorageUnitStatusExecutor
+        implements
+            DistSQLUpdateExecutor<AlterReadwriteSplittingStorageUnitStatusStatement>,
+            DistSQLExecutorDatabaseAware,
+            DistSQLExecutorRuleAware<ReadwriteSplittingRule> {
     
     private static final String DISABLE = "DISABLE";
     
     private ShardingSphereDatabase database;
     
-    @Override
-    public void checkBeforeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement, final ContextManager contextManager) {
-        checkReadwriteSplittingRule();
-    }
-    
-    private void checkReadwriteSplittingRule() {
-        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        ShardingSpherePreconditions.checkState(rule.isPresent(), () -> new UnsupportedSQLOperationException("The current database has no read_write splitting rules"));
-    }
+    private ReadwriteSplittingRule rule;
     
     @Override
     public void executeUpdate(final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement, final ContextManager contextManager) {
         String toBeUpdatedStorageUnit = sqlStatement.getStorageUnitName();
-        Map<String, String> replicaStorageUnits = getReplicaResources();
+        Map<String, Map<String, String>> exportedData = getExportedData();
+        Map<String, String> replicaStorageUnits = getReplicaResources(exportedData);
         Map<String, String> disabledStorageUnits = getDisabledResources(contextManager);
-        Map<String, String> autoAwareResources = getAutoAwareResources();
+        Map<String, String> autoAwareResources = getAutoAwareResources(exportedData);
         boolean isDisable = DISABLE.equals(sqlStatement.getStatus());
         if (isDisable) {
-            checkDisable(contextManager, database.getName(), disabledStorageUnits.keySet(), toBeUpdatedStorageUnit, replicaStorageUnits);
+            checkDisable(disabledStorageUnits.keySet(), toBeUpdatedStorageUnit, replicaStorageUnits);
         } else {
-            checkEnable(contextManager, database.getName(), disabledStorageUnits, toBeUpdatedStorageUnit);
+            checkEnable(disabledStorageUnits, toBeUpdatedStorageUnit);
         }
         Collection<String> groupNames = getGroupNames(toBeUpdatedStorageUnit, replicaStorageUnits, disabledStorageUnits, autoAwareResources);
         String groupName = sqlStatement.getGroupName();
@@ -94,23 +91,25 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements U
         }
     }
     
-    private Map<String, String> getReplicaResources() {
-        Map<String, String> result = new HashMap<>();
-        getExportedReadwriteSplittingRules().entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).forEach(entry -> addReplicaResource(result, entry));
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Map<String, Map<String, String>> getExportedData() {
+        Map<String, Map<String, String>> result = new HashMap<>();
+        Map<String, Object> exportedData = new RuleExportEngine(rule).export(
+                Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE));
+        result.putAll((Map) exportedData.getOrDefault(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, Collections.emptyMap()));
+        result.putAll((Map) exportedData.getOrDefault(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, Collections.emptyMap()));
         return result;
     }
     
-    private Map<String, Map<String, String>> getExportedReadwriteSplittingRules() {
-        Map<String, Map<String, String>> result = new HashMap<>();
-        database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)
-                .filter(each -> new RuleExportEngine(each)
-                        .containExportableKey(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
-                .map(each -> new RuleExportEngine(each).export(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
-                .ifPresent(optional -> {
-                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, Collections.emptyMap()));
-                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, Collections.emptyMap()));
-                });
+    private Map<String, String> getReplicaResources(final Map<String, Map<String, String>> exportedData) {
+        Map<String, String> result = new HashMap<>();
+        exportedData.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).forEach(entry -> addReplicaResource(result, entry));
         return result;
+    }
+    
+    private void addReplicaResource(final Map<String, String> replicaStorageUnits, final Entry<String, Map<String, String>> exportedData) {
+        exportedData.getValue().entrySet().stream().filter(entry -> ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES.equals(entry.getKey()))
+                .map(entry -> Arrays.asList(entry.getValue().split(","))).flatMap(Collection::stream).forEach(each -> put(replicaStorageUnits, each, exportedData.getKey()));
     }
     
     private Map<String, String> getDisabledResources(final ContextManager contextManager) {
@@ -118,36 +117,21 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements U
                 .collect(Collectors.toMap(QualifiedDatabase::getDataSourceName, QualifiedDatabase::getGroupName, (value1, value2) -> String.join(",", value1, value2)));
     }
     
-    private Map<String, String> getAutoAwareResources() {
+    private Collection<QualifiedDatabase> getDisabledStorageNodes(final MetaDataBasedPersistService persistService) {
+        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService(persistService.getRepository()).loadStorageNodes();
+        return storageNodes.entrySet().stream().filter(each -> DataSourceState.DISABLED == each.getValue().getStatus())
+                .map(each -> new QualifiedDatabase(each.getKey())).filter(each -> database.getName().equalsIgnoreCase(each.getDatabaseName())).collect(Collectors.toList());
+    }
+    
+    private Map<String, String> getAutoAwareResources(final Map<String, Map<String, String>> exportedData) {
         Map<String, String> result = new HashMap<>();
-        getExportedReadwriteSplittingRules().values().stream().filter(each -> each.containsKey(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME)).forEach(each -> Splitter.on(",")
+        exportedData.values().stream().filter(each -> each.containsKey(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME)).forEach(each -> Splitter.on(",")
                 .splitToList(each.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES)).forEach(each1 -> put(result, each1, each.get(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME))));
         return result;
     }
     
-    private void checkGroupName(final Collection<String> groupNames, final String groupName) {
-        ShardingSpherePreconditions.checkState(groupNames.contains(groupName),
-                () -> new UnsupportedSQLOperationException(String.format("The current database does not exist the group `%s`", groupName)));
-    }
-    
-    private void checkEnable(final ContextManager contextManager, final String databaseName, final Map<String, String> disabledResources, final String toBeEnabledResource) {
-        checkResourceExists(contextManager, databaseName, toBeEnabledResource);
-        checkIsNotDisabled(disabledResources.keySet(), toBeEnabledResource);
-    }
-    
-    private void checkIsNotDisabled(final Collection<String> disabledResources, final String toBeEnabledResource) {
-        ShardingSpherePreconditions.checkState(disabledResources.contains(toBeEnabledResource), () -> new UnsupportedSQLOperationException(String.format("`%s` is not disabled", toBeEnabledResource)));
-    }
-    
-    private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) {
-        Collection<String> notExistedResources = contextManager
-                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getNotExistedDataSources(Collections.singleton(toBeDisabledResource));
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singleton(toBeDisabledResource)));
-    }
-    
-    private void checkDisable(final ContextManager contextManager, final String databaseName, final Collection<String> disabledStorageUnits, final String toBeDisabledStorageUnit,
-                              final Map<String, String> replicaResources) {
-        checkResourceExists(contextManager, databaseName, toBeDisabledStorageUnit);
+    private void checkDisable(final Collection<String> disabledStorageUnits, final String toBeDisabledStorageUnit, final Map<String, String> replicaResources) {
+        checkResourceExists(toBeDisabledStorageUnit);
         checkIsDisabled(replicaResources, disabledStorageUnits, toBeDisabledStorageUnit);
         checkIsReplicaResource(replicaResources, toBeDisabledStorageUnit);
     }
@@ -161,6 +145,25 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements U
     private void checkIsReplicaResource(final Map<String, String> replicaStorageUnits, final String toBeDisabledStorageUnit) {
         ShardingSpherePreconditions.checkState(replicaStorageUnits.containsKey(toBeDisabledStorageUnit),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` is not used as a read storage unit by any read-write separation rules,cannot be disabled", toBeDisabledStorageUnit)));
+    }
+    
+    private void checkGroupName(final Collection<String> groupNames, final String groupName) {
+        ShardingSpherePreconditions.checkState(groupNames.contains(groupName),
+                () -> new UnsupportedSQLOperationException(String.format("The current database does not exist the group `%s`", groupName)));
+    }
+    
+    private void checkEnable(final Map<String, String> disabledResources, final String toBeEnabledResource) {
+        checkResourceExists(toBeEnabledResource);
+        checkIsNotDisabled(disabledResources.keySet(), toBeEnabledResource);
+    }
+    
+    private void checkResourceExists(final String toBeDisabledResource) {
+        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(Collections.singleton(toBeDisabledResource));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(toBeDisabledResource)));
+    }
+    
+    private void checkIsNotDisabled(final Collection<String> disabledResources, final String toBeEnabledResource) {
+        ShardingSpherePreconditions.checkState(disabledResources.contains(toBeEnabledResource), () -> new UnsupportedSQLOperationException(String.format("`%s` is not disabled", toBeEnabledResource)));
     }
     
     private Collection<String> getGroupNames(final String toBeDisableStorageUnit, final Map<String, String> replicaStorageUnits,
@@ -177,19 +180,13 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor implements U
         });
     }
     
-    private Collection<QualifiedDatabase> getDisabledStorageNodes(final MetaDataBasedPersistService persistService) {
-        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService(persistService.getRepository()).loadStorageNodes();
-        return storageNodes.entrySet().stream().filter(each -> DataSourceState.DISABLED == each.getValue().getStatus())
-                .map(each -> new QualifiedDatabase(each.getKey())).filter(each -> database.getName().equalsIgnoreCase(each.getDatabaseName())).collect(Collectors.toList());
-    }
-    
-    private void addReplicaResource(final Map<String, String> replicaStorageUnits, final Entry<String, Map<String, String>> readwriteSplittingRule) {
-        readwriteSplittingRule.getValue().entrySet().stream().filter(entry -> ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES.equals(entry.getKey()))
-                .map(entry -> Arrays.asList(entry.getValue().split(","))).flatMap(Collection::stream).forEach(each -> put(replicaStorageUnits, each, readwriteSplittingRule.getKey()));
-    }
-    
     private void put(final Map<String, String> map, final String key, final String value) {
         map.put(key, map.containsKey(key) ? String.join(",", map.get(key), value) : value);
+    }
+    
+    @Override
+    public Class<ReadwriteSplittingRule> getRuleClass() {
+        return ReadwriteSplittingRule.class;
     }
     
     @Override

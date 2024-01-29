@@ -61,7 +61,8 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     public void executeUpdate() {
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
-        executor.checkBeforeUpdate(database, sqlStatement, currentRuleConfig);
+        executor.setDatabase(database);
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
         if (getRefreshStatus(sqlStatement, currentRuleConfig, executor)) {
             contextManager.getInstanceContext().getModeContextManager()
                     .alterRuleConfiguration(database.getName(), processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
