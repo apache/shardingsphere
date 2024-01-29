@@ -779,3 +779,11 @@ JSON_OBJECT
 JSON_ARRAY
     : J S O N UL_ A R R A Y
     ;
+
+FIRST_VALUE
+    :F I R S T UL_ V A L U E
+    ;
+
+LAST_VALUE
+    :L A S T UL_ V A L U E
+    ;

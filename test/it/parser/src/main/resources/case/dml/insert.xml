@@ -3443,4 +3443,18 @@
             </value>
         </values>
     </insert>
+    
+    <insert sql-case-id="insert_with_exec_prediction_results">
+        <table name="prediction_results" start-index="12" stop-index="29" />
+        <columns start-index="31" stop-index="127">
+            <column name="tipped_Pred" start-index="32" stop-index="42" />
+            <column name="payment_type" start-index="44" stop-index="55" />
+            <column name="tipped" start-index="57" stop-index="62" />
+            <column name="passenger_count" start-index="64" stop-index="78" />
+            <column name="trip_distance" start-index="80" stop-index="92" />
+            <column name="trip_time_in_secs" start-index="94" stop-index="110" />
+            <column name="direct_distance" start-index="112" stop-index="126" />
+        </columns>
+        <exec name="predict_per_partition" start-index="129" stop-index="159" start-delimiter="[" end-delimiter="]" />
+    </insert>
 </sql-parser-test-cases>
