@@ -47,7 +47,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     
     @Test
     void assertBuild() {
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(mock(SingleRuleConfiguration.class), new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"), mock(SingleRuleConfiguration.class));
         assertTrue(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
         assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
     }
@@ -55,7 +55,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     @Test
     void assertUpdate() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"), currentConfig);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertTrue(currentConfig.getDefaultDataSource().isPresent());
         assertThat(currentConfig.getDefaultDataSource().get(), is("foo_ds"));
@@ -64,7 +64,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     @Test
     void assertRandom() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement(null));
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement(null), currentConfig);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertFalse(currentConfig.getDefaultDataSource().isPresent());
     }

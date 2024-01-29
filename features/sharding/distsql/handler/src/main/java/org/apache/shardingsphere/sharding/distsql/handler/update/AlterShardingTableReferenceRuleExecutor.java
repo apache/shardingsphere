@@ -107,14 +107,14 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
     }
     
     private void checkShardingTableReferenceRulesValid(final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<ShardingTableReferenceRuleConfiguration> toBeAlteredShardingTableReferenceRules = buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement).getBindingTableGroups();
+        Collection<ShardingTableReferenceRuleConfiguration> toBeAlteredShardingTableReferenceRules = buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig).getBindingTableGroups();
         Collection<String> ruleNames = toBeAlteredShardingTableReferenceRules.stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(ShardingTableRuleStatementChecker.isValidBindingTableGroups(toBeAlteredShardingTableReferenceRules, currentRuleConfig),
                 () -> new InvalidRuleConfigurationException("sharding table", ruleNames, Collections.singleton("invalid sharding table reference.")));
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final AlterShardingTableReferenceRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         sqlStatement.getRules().forEach(each -> result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration(each.getName(), each.getReference())));
         return result;

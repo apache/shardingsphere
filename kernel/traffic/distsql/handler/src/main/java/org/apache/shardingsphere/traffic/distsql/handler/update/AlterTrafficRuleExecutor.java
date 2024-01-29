@@ -42,17 +42,17 @@ import java.util.stream.Collectors;
 public final class AlterTrafficRuleExecutor implements GlobalRuleDefinitionExecutor<AlterTrafficRuleStatement, TrafficRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
-        checkRuleNames(currentRuleConfig, sqlStatement);
+    public void checkBeforeUpdate(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentRuleConfig) {
+        checkRuleNames(sqlStatement, currentRuleConfig);
         checkAlgorithmNames(sqlStatement);
     }
     
-    private void checkRuleNames(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
-        Collection<String> notExistRuleNames = getNotExistRuleNames(currentRuleConfig, sqlStatement);
+    private void checkRuleNames(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentRuleConfig) {
+        Collection<String> notExistRuleNames = getNotExistRuleNames(sqlStatement, currentRuleConfig);
         ShardingSpherePreconditions.checkState(notExistRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Traffic", notExistRuleNames));
     }
     
-    private Collection<String> getNotExistRuleNames(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
+    private Collection<String> getNotExistRuleNames(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentRuleConfig) {
         Collection<String> currentRuleNames = currentRuleConfig.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
         return sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
     }
@@ -67,7 +67,7 @@ public final class AlterTrafficRuleExecutor implements GlobalRuleDefinitionExecu
     }
     
     @Override
-    public TrafficRuleConfiguration buildAlteredRuleConfiguration(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
+    public TrafficRuleConfiguration buildAlteredRuleConfiguration(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentRuleConfig) {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
         TrafficRuleConfiguration configFromSQLStatement = TrafficRuleConverter.convert(sqlStatement.getSegments());
         result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(currentRuleConfig, configFromSQLStatement));

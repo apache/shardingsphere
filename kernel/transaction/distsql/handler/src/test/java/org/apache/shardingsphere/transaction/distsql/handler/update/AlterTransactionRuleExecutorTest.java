@@ -48,8 +48,9 @@ class AlterTransactionRuleExecutorTest {
     void assertExecuteWithXA() {
         when(ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
         AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
-        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("XA",
-                new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")))));
+        AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement(
+                "XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts"))));
+        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement, createTransactionRuleConfiguration());
         assertThat(actual.getDefaultType(), is("XA"));
         assertThat(actual.getProviderType(), is("Atomikos"));
         assertFalse(actual.getProps().isEmpty());
@@ -61,8 +62,8 @@ class AlterTransactionRuleExecutorTest {
     @Test
     void assertExecuteWithLocal() {
         AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
-        TransactionRuleConfiguration actual =
-                executor.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
+        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(
+                new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())), createTransactionRuleConfiguration());
         assertThat(actual.getDefaultType(), is("LOCAL"));
         assertThat(actual.getProviderType(), is(""));
     }

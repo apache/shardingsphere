@@ -75,7 +75,7 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropShadowRuleStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getDataSources().add(new ShadowDataSourceConfiguration(each, null, null));
@@ -93,7 +93,7 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropShadowRuleStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
         Collection<String> toBeDroppedDataSourceNames = sqlStatement.getNames();
         for (Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {

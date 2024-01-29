@@ -917,4 +917,74 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_dm_exec_sessions_with_json_object_function">
+        <projections start-index="7"  stop-index="109">
+            <column-projection name="session_id" start-index="7" stop-index="18">
+                <owner name="s" start-index="7" stop-index="7" />
+            </column-projection>
+            <expression-projection text="JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status)" alias="info" start-index="21" stop-index="109">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status)" start-index="21" stop-index="101">
+                        <parameter>
+                            <key-value text="'security_id':s.security_id" start-index="33" stop-index="59">
+                                <key>
+                                    <literal-expression value="security_id" start-index="33" stop-index="45"/>
+                                </key>
+                                <value>
+                                    <column name="security_id" start-index="47" stop-index="59">
+                                        <owner name="s" start-index="47" stop-index="47" />
+                                    </column>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="'login':s.login_name" start-index="62" stop-index="81">
+                                <key>
+                                    <literal-expression value="login" start-index="62" stop-index="68" />
+                                </key>
+                                <value>
+                                    <column name="login_name" start-index="70" stop-index="81">
+                                        <owner name="s" start-index="70" stop-index="70" />
+                                    </column>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status)" start-index="84" stop-index="100">
+                                <key>
+                                    <literal-expression value="status" start-index="84" stop-index="91" />
+                                </key>
+                                <value>
+                                    <column name="status" start-index="93" stop-index="100">
+                                        <owner name="s" start-index="93" stop-index="93" />
+                                    </column>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="116" stop-index="140">
+            <simple-table name="dm_exec_sessions" alias="s" start-index="116" stop-index="140">
+                <owner name="sys" start-index="116" stop-index="118" />
+            </simple-table>
+        </from>
+        <where start-index="142" stop-index="168">
+            <expr>
+                <binary-operation-expression start-index="148" stop-index="168" text="s.is_user_process = 1">
+                    <left>
+                        <column name="is_user_process" start-index="148" stop-index="164">
+                            <owner name="s" start-index="148" stop-index="148" />
+                        </column>
+                    </left>
+                    <right>
+                        <literal-expression value="1" start-index="168" stop-index="168" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

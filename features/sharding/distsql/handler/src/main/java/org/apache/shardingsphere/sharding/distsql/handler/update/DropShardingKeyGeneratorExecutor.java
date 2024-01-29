@@ -77,7 +77,7 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingKeyGeneratorStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getKeyGenerators().put(each, currentRuleConfig.getKeyGenerators().get(each));

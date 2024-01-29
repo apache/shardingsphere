@@ -97,7 +97,7 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingAlgorithmStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getShardingAlgorithms().put(each, currentRuleConfig.getShardingAlgorithms().get(each));

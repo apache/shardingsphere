@@ -76,7 +76,7 @@ public final class CreateShadowRuleExecutor implements DatabaseRuleCreateExecuto
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final CreateShadowRuleStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<ShadowRuleSegment> segments = sqlStatement.getRules();
         if (sqlStatement.isIfNotExists()) {
             Collection<String> toBeCreatedRuleNames = ShadowRuleStatementSupporter.getRuleNames(sqlStatement.getRules());

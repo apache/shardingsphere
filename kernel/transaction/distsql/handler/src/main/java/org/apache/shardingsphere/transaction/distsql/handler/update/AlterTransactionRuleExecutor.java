@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionExecutor<AlterTransactionRuleStatement, TransactionRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final TransactionRuleConfiguration currentRuleConfig, final AlterTransactionRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final AlterTransactionRuleStatement sqlStatement, final TransactionRuleConfiguration currentRuleConfig) {
         checkTransactionType(sqlStatement);
         TransactionType transactionType = TransactionType.valueOf(sqlStatement.getDefaultType().toUpperCase());
         if (TransactionType.LOCAL == transactionType) {
@@ -69,7 +69,7 @@ public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionE
     }
     
     @Override
-    public TransactionRuleConfiguration buildAlteredRuleConfiguration(final TransactionRuleConfiguration currentRuleConfig, final AlterTransactionRuleStatement sqlStatement) {
+    public TransactionRuleConfiguration buildAlteredRuleConfiguration(final AlterTransactionRuleStatement sqlStatement, final TransactionRuleConfiguration currentRuleConfig) {
         return new TransactionRuleConfiguration(sqlStatement.getDefaultType(), sqlStatement.getProvider().getProviderType(), sqlStatement.getProvider().getProps());
     }
     
