@@ -126,4 +126,8 @@
     <sql-case id="insert_into_table_get_date" value="INSERT INTO #Test VALUES (N'OC', N'Ounces', GETDATE())" db-types="SQLServer"/>
     <sql-case id="insert_into_table_from_table" value="INSERT INTO #Test SELECT * FROM Production.UnitMeasure" db-types="SQLServer"/>
     <sql-case id="insert_into_production_location" value="INSERT INTO AdventureWorks2022.Production.Location(Name, CostRate, Availability, ModifiedDate) VALUES (NEWID(), .5, 5.2, GETDATE())" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table" value="INSERT INTO #SampleTempTable VALUES (null, 'hello')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_2" value="INSERT INTO #SampleTempTable VALUES (10, null)" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_3" value="INSERT INTO #SampleTempTable VALUES (17, 'abc')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_4" value="INSERT INTO #SampleTempTable VALUES (17, 'yes')" db-types="SQLServer"/>
 </sql-cases>

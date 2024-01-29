@@ -779,3 +779,15 @@ JSON_OBJECT
 JSON_ARRAY
     : J S O N UL_ A R R A Y
     ;
+
+APPROX_PERCENTILE_CONT
+    : A P P R O X UL_ P E R C E N T I L E UL_ C O N T
+    ;
+
+APPROX_PERCENTILE_DISC
+    : A P P R O X UL_ P E R C E N T I L E UL_ D I S C
+    ;
+
+WITHIN
+    : W I T H I N
+    ;
