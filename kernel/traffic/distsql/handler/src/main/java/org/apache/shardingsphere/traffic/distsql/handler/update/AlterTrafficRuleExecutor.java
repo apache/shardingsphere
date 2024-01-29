@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.Global
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.distsql.handler.convert.TrafficRuleConverter;
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 public final class AlterTrafficRuleExecutor implements GlobalRuleDefinitionExecutor<AlterTrafficRuleStatement, TrafficRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentRuleConfig, final ContextManager contextManager) {
+    public void checkBeforeUpdate(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentRuleConfig) {
         checkRuleNames(sqlStatement, currentRuleConfig);
         checkAlgorithmNames(sqlStatement);
     }

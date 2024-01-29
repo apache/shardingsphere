@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatem
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Global rule definition executor.
@@ -37,9 +36,8 @@ public interface GlobalRuleDefinitionExecutor<T extends RuleDefinitionStatement,
      *
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration
-     * @param contextManager context manager
      */
-    default void checkBeforeUpdate(T sqlStatement, R currentRuleConfig, ContextManager contextManager) {
+    default void checkBeforeUpdate(T sqlStatement, R currentRuleConfig) {
     }
     
     /**
