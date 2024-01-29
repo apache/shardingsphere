@@ -46,7 +46,7 @@ public interface GlobalRuleDefinitionExecutor<T extends RuleDefinitionStatement,
      * @param sqlStatement SQL statement
      * @return built altered rule configuration
      */
-    RuleConfiguration buildAlteredRuleConfiguration(R currentRuleConfig, T sqlStatement);
+    RuleConfiguration buildAlteredRuleConfiguration(T sqlStatement, R currentRuleConfig);
     
     /**
      * Get rule configuration class.

@@ -31,7 +31,7 @@ public final class AlterGlobalClockRuleExecutor implements GlobalRuleDefinitionE
     }
     
     @Override
-    public GlobalClockRuleConfiguration buildAlteredRuleConfiguration(final GlobalClockRuleConfiguration currentRuleConfig, final AlterGlobalClockRuleStatement sqlStatement) {
+    public GlobalClockRuleConfiguration buildAlteredRuleConfiguration(final AlterGlobalClockRuleStatement sqlStatement, final GlobalClockRuleConfiguration currentRuleConfig) {
         return new GlobalClockRuleConfiguration(sqlStatement.getType(), sqlStatement.getProvider(), sqlStatement.isEnabled(), sqlStatement.getProps());
     }
     

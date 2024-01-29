@@ -52,8 +52,8 @@ public final class LegacyGlobalRuleDefinitionExecuteEngine {
         contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, executor, currentRuleConfig));
     }
     
-    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (RuleConfiguration each : ruleConfigurations) {
+    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs, final Class<? extends RuleConfiguration> ruleConfigClass) {
+        for (RuleConfiguration each : ruleConfigs) {
             if (ruleConfigClass.isAssignableFrom(each.getClass())) {
                 return each;
             }
@@ -62,11 +62,11 @@ public final class LegacyGlobalRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<RuleConfiguration> processUpdate(final Collection<RuleConfiguration> ruleConfigurations,
+    private Collection<RuleConfiguration> processUpdate(final Collection<RuleConfiguration> ruleConfigs,
                                                         final RuleDefinitionStatement sqlStatement, final GlobalRuleDefinitionExecutor globalRuleUpdater, final RuleConfiguration currentRuleConfig) {
-        Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigurations);
+        Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigs);
         result.remove(currentRuleConfig);
-        result.add(globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement));
+        result.add(globalRuleUpdater.buildAlteredRuleConfiguration(sqlStatement, currentRuleConfig));
         return result;
     }
 }
