@@ -36,11 +36,11 @@ public final class OpenGaussSelectStatement extends SelectStatement implements O
     private LimitSegment limit;
     
     private LockSegment lock;
-
+    
     private WindowSegment window;
-
+    
     private TableSegment intoSegment;
-
+    
     /**
      * Get order by segment.
      *
@@ -67,7 +67,7 @@ public final class OpenGaussSelectStatement extends SelectStatement implements O
     public Optional<WindowSegment> getWindow() {
         return Optional.ofNullable(window);
     }
-
+    
     /**
      * Get into segment.
      *

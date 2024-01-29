@@ -38,9 +38,9 @@ public final class PostgreSQLSelectStatement extends SelectStatement implements 
     private LockSegment lock;
     
     private WindowSegment window;
-
+    
     private TableSegment intoSegment;
-
+    
     /**
      * Get order by segment.
      *
@@ -67,7 +67,7 @@ public final class PostgreSQLSelectStatement extends SelectStatement implements 
     public Optional<WindowSegment> getWindow() {
         return Optional.ofNullable(window);
     }
-
+    
     /**
      * Get into segment.
      *
@@ -76,5 +76,5 @@ public final class PostgreSQLSelectStatement extends SelectStatement implements 
     public Optional<TableSegment> getIntoSegment() {
         return Optional.ofNullable(intoSegment);
     }
-
+    
 }

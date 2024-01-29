@@ -1024,12 +1024,12 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitIntoClause(final IntoClauseContext ctx) {
         return visit(ctx.optTempTableName().qualifiedName());
     }
-
+    
     @Override
     public ASTNode visitHavingClause(final HavingClauseContext ctx) {
         ExpressionSegment expr = (ExpressionSegment) visit(ctx.aExpr());
