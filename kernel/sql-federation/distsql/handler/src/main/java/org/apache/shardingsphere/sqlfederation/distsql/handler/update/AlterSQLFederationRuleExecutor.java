@@ -29,10 +29,6 @@ import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.Alter
 public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLFederationRuleStatement, SQLFederationRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final AlterSQLFederationRuleStatement sqlStatement, final SQLFederationRuleConfiguration currentRuleConfig) {
-    }
-    
-    @Override
     public SQLFederationRuleConfiguration buildAlteredRuleConfiguration(final AlterSQLFederationRuleStatement sqlStatement, final SQLFederationRuleConfiguration currentRuleConfig) {
         boolean sqlFederationEnabled = null == sqlStatement.getSqlFederationEnabled() ? currentRuleConfig.isSqlFederationEnabled() : sqlStatement.getSqlFederationEnabled();
         boolean allQueryUseSQLFederation = null == sqlStatement.getAllQueryUseSQLFederation() ? currentRuleConfig.isAllQueryUseSQLFederation() : sqlStatement.getAllQueryUseSQLFederation();

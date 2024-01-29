@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredR
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -37,6 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 class AlterTrafficRuleExecutorTest {
     
@@ -46,7 +48,7 @@ class AlterTrafficRuleExecutorTest {
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
         assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkBeforeUpdate(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), createTrafficRuleConfiguration()));
+                () -> executor.checkBeforeUpdate(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), createTrafficRuleConfiguration(), mock(ContextManager.class)));
     }
     
     @Test
@@ -55,7 +57,7 @@ class AlterTrafficRuleExecutorTest {
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
         assertThrows(ServiceProviderNotFoundException.class,
-                () -> executor.checkBeforeUpdate(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), createTrafficRuleConfiguration()));
+                () -> executor.checkBeforeUpdate(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), createTrafficRuleConfiguration(), mock(ContextManager.class)));
     }
     
     @Test

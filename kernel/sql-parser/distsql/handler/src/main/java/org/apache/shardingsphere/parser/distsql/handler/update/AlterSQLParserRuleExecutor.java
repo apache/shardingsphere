@@ -29,10 +29,6 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 public final class AlterSQLParserRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLParserRuleStatement, SQLParserRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final AlterSQLParserRuleStatement sqlStatement, final SQLParserRuleConfiguration currentRuleConfig) {
-    }
-    
-    @Override
     public SQLParserRuleConfiguration buildAlteredRuleConfiguration(final AlterSQLParserRuleStatement sqlStatement, final SQLParserRuleConfiguration currentRuleConfig) {
         CacheOption parseTreeCache = null == sqlStatement.getParseTreeCache()
                 ? currentRuleConfig.getParseTreeCache()

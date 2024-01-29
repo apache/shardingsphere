@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfi
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
@@ -35,7 +36,7 @@ import java.util.Optional;
 public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionExecutor<AlterTransactionRuleStatement, TransactionRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final AlterTransactionRuleStatement sqlStatement, final TransactionRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final AlterTransactionRuleStatement sqlStatement, final TransactionRuleConfiguration currentRuleConfig, final ContextManager contextManager) {
         checkTransactionType(sqlStatement);
         TransactionType transactionType = TransactionType.valueOf(sqlStatement.getDefaultType().toUpperCase());
         if (TransactionType.LOCAL == transactionType) {

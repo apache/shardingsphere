@@ -46,7 +46,7 @@ public final class GlobalRuleDefinitionExecuteEngine {
     public void executeUpdate() {
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, executor.getRuleConfigurationClass());
-        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig, contextManager);
         contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, currentRuleConfig));
     }
     
