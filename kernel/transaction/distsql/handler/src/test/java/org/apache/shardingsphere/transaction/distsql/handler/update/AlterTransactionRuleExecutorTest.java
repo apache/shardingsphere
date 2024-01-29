@@ -27,6 +27,7 @@ import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration
 import org.apache.shardingsphere.transaction.distsql.handler.fixture.ShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.distsql.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -50,7 +52,9 @@ class AlterTransactionRuleExecutorTest {
         AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
         AlterTransactionRuleStatement sqlStatement = new AlterTransactionRuleStatement(
                 "XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts"))));
-        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement, createTransactionRuleConfiguration());
+        TransactionRule rule = mock(TransactionRule.class);
+        executor.setRule(rule);
+        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getDefaultType(), is("XA"));
         assertThat(actual.getProviderType(), is("Atomikos"));
         assertFalse(actual.getProps().isEmpty());
@@ -62,13 +66,10 @@ class AlterTransactionRuleExecutorTest {
     @Test
     void assertExecuteWithLocal() {
         AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
-        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(
-                new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())), createTransactionRuleConfiguration());
+        TransactionRule rule = mock(TransactionRule.class);
+        executor.setRule(rule);
+        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
         assertThat(actual.getDefaultType(), is("LOCAL"));
         assertThat(actual.getProviderType(), is(""));
-    }
-    
-    private TransactionRuleConfiguration createTransactionRuleConfiguration() {
-        return new TransactionRuleConfiguration("BASE", null, new Properties());
     }
 }

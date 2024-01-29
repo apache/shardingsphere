@@ -20,12 +20,15 @@ package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AlterSQLFederationRuleExecutorTest {
     
@@ -33,7 +36,10 @@ class AlterSQLFederationRuleExecutorTest {
     void assertExecute() {
         AlterSQLFederationRuleExecutor executor = new AlterSQLFederationRuleExecutor();
         AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(true, true, new CacheOptionSegment(64, 512L));
-        SQLFederationRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement, getSQLFederationRuleConfiguration());
+        SQLFederationRule rule = mock(SQLFederationRule.class);
+        when(rule.getConfiguration()).thenReturn(getSQLFederationRuleConfiguration());
+        executor.setRule(rule);
+        SQLFederationRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement);
         assertTrue(actual.isSqlFederationEnabled());
         assertTrue(actual.isAllQueryUseSQLFederation());
         assertThat(actual.getExecutionPlanCache().getInitialCapacity(), is(64));
