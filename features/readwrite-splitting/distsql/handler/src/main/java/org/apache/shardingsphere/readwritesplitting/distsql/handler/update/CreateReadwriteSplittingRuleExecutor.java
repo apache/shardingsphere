@@ -46,7 +46,8 @@ public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleC
     
     @Override
     public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(
-            final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+                                                                                 final CreateReadwriteSplittingRuleStatement sqlStatement,
+                                                                                 final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Collection<ReadwriteSplittingRuleSegment> segments = sqlStatement.getRules();
         if (sqlStatement.isIfNotExists()) {
             Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(currentRuleConfig, sqlStatement.getRules());
