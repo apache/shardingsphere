@@ -77,12 +77,6 @@ class AlterShadowRuleExecutorTest {
     }
     
     @Test
-    void assertExecuteWithoutCurrentConfiguration() {
-        ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment)), null));
-    }
-    
-    @Test
     void assertExecuteWithDuplicateRuleName() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment)), currentConfig));
