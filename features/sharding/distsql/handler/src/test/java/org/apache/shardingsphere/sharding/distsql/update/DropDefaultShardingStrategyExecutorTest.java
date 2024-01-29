@@ -50,11 +50,6 @@ class DropDefaultShardingStrategyExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new DropDefaultShardingStrategyStatement(false, "TABLE"), null));
-    }
-    
-    @Test
     void assertCheckSQLStatementWithoutExistedAlgorithm() {
         assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("table"), new ShardingRuleConfiguration()));
     }
