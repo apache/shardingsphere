@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding algorithm executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Sharding")
 @Setter
 public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExecutor<DropShardingAlgorithmStatement, ShardingRuleConfiguration> {
     
@@ -41,22 +43,13 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     
     @Override
     public void checkBeforeUpdate(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (null == currentRuleConfig && sqlStatement.isIfExists()) {
-            return;
+        if (!sqlStatement.isIfExists()) {
+            checkToBeDroppedShardingAlgorithms(sqlStatement, currentRuleConfig);
         }
-        checkCurrentRuleConfiguration(currentRuleConfig);
-        checkToBeDroppedShardingAlgorithms(sqlStatement, currentRuleConfig);
         checkShardingAlgorithmsInUsed(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredAlgorithmException("Sharding", database.getName()));
-    }
-    
     private void checkToBeDroppedShardingAlgorithms(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.isIfExists()) {
-            return;
-        }
         Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms(currentRuleConfig);
         Collection<String> notExistedAlgorithms = sqlStatement.getNames().stream().filter(each -> !currentShardingAlgorithms.contains(each)).collect(Collectors.toList());
         if (!notExistedAlgorithms.isEmpty()) {
