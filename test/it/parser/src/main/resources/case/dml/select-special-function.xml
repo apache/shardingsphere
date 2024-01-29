@@ -988,6 +988,114 @@
         </where>
     </select>
     
+    <select sql-case-id="select_first_last_value_function">
+        <projections start-index="7" stop-index="493">
+            <column-projection name="BusinessEntityID" start-index="7" stop-index="22" />
+            <expression-projection text="DATEPART(QUARTER, QuotaDate)" alias="Quarter" start-index="25" stop-index="63">
+                <expr>
+                    <function function-name="DATEPART" text="DATEPART(QUARTER, QuotaDate)" start-index="25" stop-index="52">
+                        <parameter>
+                            <column name="QUARTER" start-index="34" stop-index="40" />
+                        </parameter>
+                        <parameter>
+                            <column name="QuotaDate" start-index="43" stop-index="51" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="YEAR(QuotaDate)" start-index="66" stop-index="93" alias="SalesYear">
+                <expr>
+                    <function function-name="YEAR" text="YEAR(QuotaDate)" start-index="66" stop-index="80">
+                        <parameter>
+                            <column name="QuotaDate" start-index="71" stop-index="79" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="SalesQuota" alias="QuotaThisQuarter" start-index="96" stop-index="125" />
+            <expression-projection text="SalesQuota - FIRST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate))" alias="DifferenceFromFirstQuarter" start-index="128" stop-index="285">
+                <expr>
+                    <binary-operation-expression start-index="128" stop-index="255">
+                        <left>
+                            <column name="SalesQuota" start-index="128" stop-index="137" />
+                        </left>
+                        <right>
+                            <function function-name="FIRST_VALUE" text="FIRST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate))" start-index="141" stop-index="255">
+                                <parameter>
+                                    <column name="SalesQuota" start-index="153" stop-index="162" />
+                                </parameter>
+                            </function>
+                        </right>
+                        <operator>-</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="288" stop-index="493" text="SalesQuota - LAST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate) RANGE BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)" alias="DifferenceFromLastQuarter">
+                <expr>
+                    <binary-operation-expression start-index="288" stop-index="464">
+                        <left>
+                            <column name="SalesQuota" start-index="288" stop-index="297" />
+                        </left>
+                        <right>
+                            <function function-name="LAST_VALUE" text="LAST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate) RANGE BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)" start-index="301" stop-index="464">
+                                <parameter>
+                                    <column name="SalesQuota" start-index="312" stop-index="321" />
+                                </parameter>
+                            </function>
+                        </right>
+                        <operator>-</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesPersonQuotaHistory" start-index="500" stop-index="528">
+                <owner name="Sales" start-index="500" stop-index="504" />
+            </simple-table>
+        </from>
+        <where start-index="530" stop-index="598">
+            <expr>
+                <binary-operation-expression start-index="536" stop-index="598" text="YEAR(QuotaDate) > 2005 AND BusinessEntityID BETWEEN 274 AND 275">
+                    <left>
+                        <binary-operation-expression start-index="536" stop-index="557" text="YEAR(QuotaDate) > 2005">
+                            <left>
+                                <function function-name="YEAR" text="YEAR(QuotaDate)" start-index="536" stop-index="550">
+                                    <parameter>
+                                        <column name="QuotaDate" start-index="541" stop-index="549" />
+                                    </parameter>
+                                </function>
+                            </left>
+                            <right>
+                                <literal-expression value="2005" start-index="554" stop-index="557" />
+                            </right>
+                            <operator>></operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <between-expression start-index="563" stop-index="598">
+                            <not>false</not>
+                            <left>
+                                <column name="BusinessEntityID" start-index="563" stop-index="578" />
+                            </left>
+                            <between-expr>
+                                <literal-expression value="274" start-index="588" stop-index="590" />
+                            </between-expr>
+                            <and-expr>
+                                <literal-expression value="275" start-index="596" stop-index="598" />
+                            </and-expr>
+                        </between-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="BusinessEntityID" order-direction="ASC" start-index="609" stop-index="624" />
+            <column-item name="SalesYear" order-direction="ASC" start-index="627" stop-index="635" />
+            <column-item name="Quarter" order-direction="ASC" start-index="638" stop-index="644" />
+        </order-by>
+    </select>
+    
     <select sql-case-id="select_approx_percentile_cont_function">
         <projections start-index="7" stop-index="148">
             <column-projection start-index="7" stop-index="12" name="DeptId" />

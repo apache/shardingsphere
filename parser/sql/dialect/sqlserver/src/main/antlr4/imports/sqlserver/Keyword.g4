@@ -780,6 +780,14 @@ JSON_ARRAY
     : J S O N UL_ A R R A Y
     ;
 
+FIRST_VALUE
+    :F I R S T UL_ V A L U E
+    ;
+
+LAST_VALUE
+    :L A S T UL_ V A L U E
+    ;
+
 APPROX_PERCENTILE_CONT
     : A P P R O X UL_ P E R C E N T I L E UL_ C O N T
     ;
