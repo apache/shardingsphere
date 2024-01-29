@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.Alter
 public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLFederationRuleStatement, SQLFederationRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final SQLFederationRuleConfiguration currentRuleConfig, final AlterSQLFederationRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final AlterSQLFederationRuleStatement sqlStatement, final SQLFederationRuleConfiguration currentRuleConfig) {
     }
     
     @Override

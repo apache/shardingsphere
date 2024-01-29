@@ -27,7 +27,7 @@ import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGl
 public final class AlterGlobalClockRuleExecutor implements GlobalRuleDefinitionExecutor<AlterGlobalClockRuleStatement, GlobalClockRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final GlobalClockRuleConfiguration currentRuleConfig, final AlterGlobalClockRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final AlterGlobalClockRuleStatement sqlStatement, final GlobalClockRuleConfiguration currentRuleConfig) {
     }
     
     @Override
