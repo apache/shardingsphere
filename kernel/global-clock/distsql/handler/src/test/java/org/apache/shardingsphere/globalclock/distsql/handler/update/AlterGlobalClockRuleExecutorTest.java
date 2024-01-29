@@ -40,7 +40,7 @@ class AlterGlobalClockRuleExecutorTest {
         GlobalClockRule rule = mock(GlobalClockRule.class);
         when(rule.getConfiguration()).thenReturn(getSQLParserRuleConfiguration());
         executor.setRule(rule);
-        GlobalClockRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement);
+        GlobalClockRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getType(), is("TSO"));
         assertThat(actual.getProvider(), is("redis"));
         assertTrue(actual.isEnabled());

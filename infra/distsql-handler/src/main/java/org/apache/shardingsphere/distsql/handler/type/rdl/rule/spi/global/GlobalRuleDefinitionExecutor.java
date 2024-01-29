@@ -42,12 +42,12 @@ public interface GlobalRuleDefinitionExecutor<T extends RuleDefinitionStatement,
     }
     
     /**
-     * Build altered rule configuration.
+     * Build to be altered rule configuration.
      *
      * @param sqlStatement SQL statement
-     * @return built altered rule configuration
+     * @return built to be altered rule configuration
      */
-    RuleConfiguration buildAlteredRuleConfiguration(T sqlStatement);
+    RuleConfiguration buildToBeAlteredRuleConfiguration(T sqlStatement);
     
     @Override
     Class<T> getType();

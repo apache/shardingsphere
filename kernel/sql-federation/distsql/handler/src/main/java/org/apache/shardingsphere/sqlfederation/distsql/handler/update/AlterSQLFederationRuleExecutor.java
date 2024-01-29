@@ -34,7 +34,7 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
     private SQLFederationRule rule;
     
     @Override
-    public SQLFederationRuleConfiguration buildAlteredRuleConfiguration(final AlterSQLFederationRuleStatement sqlStatement) {
+    public SQLFederationRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterSQLFederationRuleStatement sqlStatement) {
         boolean sqlFederationEnabled = null == sqlStatement.getSqlFederationEnabled() ? rule.getConfiguration().isSqlFederationEnabled() : sqlStatement.getSqlFederationEnabled();
         boolean allQueryUseSQLFederation = null == sqlStatement.getAllQueryUseSQLFederation() ? rule.getConfiguration().isAllQueryUseSQLFederation() : sqlStatement.getAllQueryUseSQLFederation();
         CacheOption executionPlanCache = null == sqlStatement.getExecutionPlanCache()

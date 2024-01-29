@@ -54,7 +54,7 @@ class AlterTransactionRuleExecutorTest {
                 "XA", new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts"))));
         TransactionRule rule = mock(TransactionRule.class);
         executor.setRule(rule);
-        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement);
+        TransactionRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getDefaultType(), is("XA"));
         assertThat(actual.getProviderType(), is("Atomikos"));
         assertFalse(actual.getProps().isEmpty());
@@ -68,7 +68,7 @@ class AlterTransactionRuleExecutorTest {
         AlterTransactionRuleExecutor executor = new AlterTransactionRuleExecutor();
         TransactionRule rule = mock(TransactionRule.class);
         executor.setRule(rule);
-        TransactionRuleConfiguration actual = executor.buildAlteredRuleConfiguration(new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
+        TransactionRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
         assertThat(actual.getDefaultType(), is("LOCAL"));
         assertThat(actual.getProviderType(), is(""));
     }

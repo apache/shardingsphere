@@ -39,7 +39,7 @@ class AlterSQLFederationRuleExecutorTest {
         SQLFederationRule rule = mock(SQLFederationRule.class);
         when(rule.getConfiguration()).thenReturn(getSQLFederationRuleConfiguration());
         executor.setRule(rule);
-        SQLFederationRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement);
+        SQLFederationRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertTrue(actual.isSqlFederationEnabled());
         assertTrue(actual.isAllQueryUseSQLFederation());
         assertThat(actual.getExecutionPlanCache().getInitialCapacity(), is(64));
