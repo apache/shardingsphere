@@ -83,7 +83,7 @@ class LoadSingleTableExecutorTest {
     @Test
     void assertBuild() {
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
-        SingleRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(mock(SingleRuleConfiguration.class), sqlStatement);
+        SingleRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement, mock(SingleRuleConfiguration.class));
         assertThat(actual.getTables().iterator().next(), is("ds_0.foo"));
     }
     
@@ -92,7 +92,7 @@ class LoadSingleTableExecutorTest {
         Collection<String> currentTables = new LinkedList<>(Collections.singletonList("ds_0.foo"));
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration(currentTables, null);
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "bar")));
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, sqlStatement);
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentConfig);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         Iterator<String> iterator = currentConfig.getTables().iterator();
         assertThat(iterator.next(), is("ds_0.foo"));

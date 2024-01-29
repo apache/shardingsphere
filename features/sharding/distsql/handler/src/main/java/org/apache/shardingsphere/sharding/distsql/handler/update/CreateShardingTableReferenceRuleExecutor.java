@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding table reference rule executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Sharding")
 @Setter
 public final class CreateShardingTableReferenceRuleExecutor implements DatabaseRuleCreateExecutor<CreateShardingTableReferenceRuleStatement, ShardingRuleConfiguration> {
     
@@ -48,17 +50,12 @@ public final class CreateShardingTableReferenceRuleExecutor implements DatabaseR
     
     @Override
     public void checkBeforeUpdate(final CreateShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        checkCurrentRuleConfiguration(currentRuleConfig);
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicatedRuleNames(sqlStatement, currentRuleConfig);
         }
         checkDuplicatedTablesInShardingTableReferenceRules(sqlStatement, currentRuleConfig);
         checkToBeReferencedShardingTablesExisted(sqlStatement, currentRuleConfig);
         checkShardingTableReferenceRulesValid(sqlStatement, currentRuleConfig);
-    }
-    
-    private void checkCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", database.getName()));
     }
     
     private void checkDuplicatedRuleNames(final CreateShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
@@ -86,7 +83,7 @@ public final class CreateShardingTableReferenceRuleExecutor implements DatabaseR
     }
     
     private void checkShardingTableReferenceRulesValid(final CreateShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement).getBindingTableGroups();
+        Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig).getBindingTableGroups();
         Collection<String> names = bindingTableGroups.stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(ShardingTableRuleStatementChecker.isValidBindingTableGroups(bindingTableGroups, currentRuleConfig),
                 () -> new InvalidRuleConfigurationException("sharding table", names, Collections.singleton("invalid sharding table reference.")));
@@ -101,7 +98,7 @@ public final class CreateShardingTableReferenceRuleExecutor implements DatabaseR
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final CreateShardingTableReferenceRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<TableReferenceRuleSegment> segments = sqlStatement.getRules();
         if (sqlStatement.isIfNotExists()) {
             Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);

@@ -54,17 +54,6 @@ class DropShardingAlgorithmExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkBeforeUpdate(new DropShardingAlgorithmStatement(false, Collections.emptyList()), null));
-    }
-    
-    @Test
-    void assertCheckSQLStatementWithoutCurrentRuleWithIfExists() throws RuleDefinitionViolationException {
-        DropShardingAlgorithmStatement dropShardingAlgorithmStatement = new DropShardingAlgorithmStatement(true, Collections.emptyList());
-        executor.checkBeforeUpdate(dropShardingAlgorithmStatement, null);
-    }
-    
-    @Test
     void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
         assertThrows(MissingRequiredAlgorithmException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order"), new ShardingRuleConfiguration()));
     }

@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -41,6 +42,7 @@ import java.util.Map;
 /**
  * Alter shadow rule executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Shadow")
 @Setter
 public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<AlterShadowRuleStatement, ShadowRuleConfiguration> {
     
@@ -48,7 +50,6 @@ public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<
     
     @Override
     public void checkBeforeUpdate(final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        ShadowRuleStatementChecker.checkRuleConfigurationExists(database.getName(), currentRuleConfig);
         checkRuleNames(sqlStatement.getRules(), currentRuleConfig);
         ShadowRuleStatementChecker.checkStorageUnitsExist(ShadowRuleStatementSupporter.getStorageUnitNames(sqlStatement.getRules()), database);
         checkAlgorithms(sqlStatement.getRules());
@@ -73,7 +74,7 @@ public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final AlterShadowRuleStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         return ShadowRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

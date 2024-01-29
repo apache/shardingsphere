@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -29,12 +30,12 @@ import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAuditorS
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
  * Drop sharding auditor statement executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Sharding auditor")
 @Setter
 public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecutor<DropShardingAuditorStatement, ShardingRuleConfiguration> {
     
@@ -42,25 +43,20 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     
     @Override
     public void checkBeforeUpdate(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (null == currentRuleConfig && sqlStatement.isIfExists()) {
-            return;
+        if (!sqlStatement.isIfExists()) {
+            checkExist(sqlStatement, currentRuleConfig);
         }
-        Collection<String> auditorNames = new LinkedList<>(sqlStatement.getNames());
-        checkExist(auditorNames, currentRuleConfig, sqlStatement);
-        checkInUsed(auditorNames, currentRuleConfig);
+        checkInUsed(sqlStatement, currentRuleConfig);
     }
     
-    private void checkExist(final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig, final DropShardingAuditorStatement sqlStatement) {
-        if (sqlStatement.isIfExists()) {
-            return;
-        }
-        Collection<String> notExistAuditors = auditorNames.stream().filter(each -> !currentRuleConfig.getAuditors().containsKey(each)).collect(Collectors.toList());
+    private void checkExist(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> notExistAuditors = sqlStatement.getNames().stream().filter(each -> !currentRuleConfig.getAuditors().containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new MissingRequiredAlgorithmException("Sharding auditor", database.getName(), notExistAuditors));
     }
     
-    private void checkInUsed(final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkInUsed(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> usedAuditors = getUsedAuditors(currentRuleConfig);
-        Collection<String> inUsedNames = auditorNames.stream().filter(usedAuditors::contains).collect(Collectors.toList());
+        Collection<String> inUsedNames = sqlStatement.getNames().stream().filter(usedAuditors::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Sharding auditor", database.getName(), inUsedNames));
     }
     
@@ -76,7 +72,7 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingAuditorStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getAuditors().put(each, currentRuleConfig.getAuditors().get(each));

@@ -75,7 +75,7 @@ class CreateShardingTableRuleExecutorTest {
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
     @BeforeEach
-    void before() {
+    void setUp() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("schema");
         ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSource());
@@ -88,7 +88,7 @@ class CreateShardingTableRuleExecutorTest {
     void assertUpdate() {
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
         executor.checkBeforeUpdate(statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
@@ -197,7 +197,7 @@ class CreateShardingTableRuleExecutorTest {
         segments.add(createCompleteTableRule());
         CreateShardingTableRuleStatement statementWithIfNotExists = new CreateShardingTableRuleStatement(true, segments);
         executor.checkBeforeUpdate(statementWithIfNotExists, currentRuleConfig);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, statementWithIfNotExists));
+        executor.updateCurrentRuleConfiguration(currentRuleConfig, executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists, currentRuleConfig));
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
         ShardingTableRuleConfiguration tableRule = tableRuleIterator.next();

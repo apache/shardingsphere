@@ -46,7 +46,7 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
     }
     
     @Override
-    public BroadcastRuleConfiguration buildToBeCreatedRuleConfiguration(final BroadcastRuleConfiguration currentRuleConfig, final CreateBroadcastTableRuleStatement sqlStatement) {
+    public BroadcastRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         Collection<String> tables = sqlStatement.getTables();
         if (sqlStatement.isIfNotExists()) {
             Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);

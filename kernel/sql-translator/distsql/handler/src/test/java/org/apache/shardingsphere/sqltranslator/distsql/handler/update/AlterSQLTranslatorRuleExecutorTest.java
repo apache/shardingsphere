@@ -37,8 +37,8 @@ class AlterSQLTranslatorRuleExecutorTest {
     @Test
     void assertExecute() {
         AlterSQLTranslatorRuleExecutor executor = new AlterSQLTranslatorRuleExecutor();
-        SQLTranslatorRuleConfiguration actual = executor.buildAlteredRuleConfiguration(createSQLTranslatorRuleConfiguration(),
-                new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("JOOQ", PropertiesBuilder.build(new Property("foo", "bar"))), null));
+        SQLTranslatorRuleConfiguration actual = executor.buildAlteredRuleConfiguration(
+                new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("JOOQ", PropertiesBuilder.build(new Property("foo", "bar"))), null), createSQLTranslatorRuleConfiguration());
         assertThat(actual.getType(), is("JOOQ"));
         assertFalse(actual.getProps().isEmpty());
         String props = PropertiesConverter.convert(actual.getProps());

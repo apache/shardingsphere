@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Alter readwrite-splitting rule executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Readwrite-splitting")
 @Setter
 public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAlterExecutor<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
@@ -50,7 +52,7 @@ public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAl
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeAlteredRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final AlterReadwriteSplittingRuleStatement sqlStatement) {
+    public ReadwriteSplittingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         return ReadwriteSplittingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

@@ -65,7 +65,7 @@ class CreateBroadcastTableRuleExecutorTest {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         executor.setDatabase(mockShardingSphereDatabase());
         executor.checkBeforeUpdate(sqlStatement, currentConfig);
-        BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentConfig, sqlStatement);
+        BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentConfig);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getTables().size(), is(1));
         assertThat(currentConfig.getTables().iterator().next(), is("t_address"));

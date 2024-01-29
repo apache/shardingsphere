@@ -78,7 +78,6 @@ public final class ReadwriteSplittingRuleStatementChecker {
      */
     public static void checkAlteration(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
-        checkRuleConfigurationExist(database, currentRuleConfig);
         checkDuplicateRuleNamesWithSelf(databaseName, segments);
         checkRuleNamesExist(segments, currentRuleConfig, databaseName);
         checkDataSourcesExist(databaseName, segments, database);

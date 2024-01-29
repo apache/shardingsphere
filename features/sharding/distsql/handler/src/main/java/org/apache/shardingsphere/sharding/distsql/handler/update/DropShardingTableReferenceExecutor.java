@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding table reference executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Sharding")
 @Setter
 public final class DropShardingTableReferenceExecutor implements DatabaseRuleDropExecutor<DropShardingTableReferenceRuleStatement, ShardingRuleConfiguration> {
     
@@ -39,22 +41,17 @@ public final class DropShardingTableReferenceExecutor implements DatabaseRuleDro
     
     @Override
     public void checkBeforeUpdate(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
-            return;
+        if (!sqlStatement.isIfExists()) {
+            checkCurrentRuleConfiguration(currentRuleConfig);
+            checkToBeDroppedShardingTableReferenceRules(sqlStatement, currentRuleConfig);
         }
-        checkCurrentRuleConfiguration(currentRuleConfig);
-        checkToBeDroppedShardingTableReferenceRules(sqlStatement, currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkState(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(),
-                () -> new MissingRequiredRuleException("Sharding table reference", database.getName()));
+        ShardingSpherePreconditions.checkState(!currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new MissingRequiredRuleException("Sharding table reference", database.getName()));
     }
     
     private void checkToBeDroppedShardingTableReferenceRules(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.isIfExists()) {
-            return;
-        }
         Collection<String> currentRuleNames = getCurrentShardingTableReferenceRuleNames(currentRuleConfig);
         Collection<String> notExistedRuleNames = sqlStatement.getNames().stream().filter(each -> !containsIgnoreCase(currentRuleNames, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Sharding table reference", database.getName(), notExistedRuleNames));
@@ -69,7 +66,7 @@ public final class DropShardingTableReferenceExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingTableReferenceRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration(each, ""));
