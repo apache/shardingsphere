@@ -20,7 +20,6 @@ package org.apache.shardingsphere.distsql.statement.ral.updatable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
 
 /**
  * Lock cluster statement.

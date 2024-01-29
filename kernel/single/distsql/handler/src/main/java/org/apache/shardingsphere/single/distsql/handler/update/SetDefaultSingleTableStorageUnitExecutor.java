@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import com.google.common.base.Strings;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
@@ -31,14 +32,17 @@ import java.util.Collections;
 /**
  * Set default single table storage unit executor.
  */
-public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleRDLCreateExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRuleConfiguration> {
+@Setter
+public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleCreateExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRuleConfiguration> {
+    
+    private ShardingSphereDatabase database;
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
-        checkStorageUnitExist(database, sqlStatement);
+    public void checkBeforeUpdate(final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+        checkStorageUnitExist(sqlStatement);
     }
     
-    private void checkStorageUnitExist(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
+    private void checkStorageUnitExist(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         if (!Strings.isNullOrEmpty(sqlStatement.getDefaultStorageUnit())) {
             Collection<String> storageUnitNames = database.getResourceMetaData().getStorageUnits().keySet();
             ShardingSpherePreconditions.checkState(storageUnitNames.contains(sqlStatement.getDefaultStorageUnit()),
@@ -50,6 +54,7 @@ public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseR
     public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         result.setDefaultDataSource(sqlStatement.getDefaultStorageUnit());
+        result.getTables().addAll(currentRuleConfig.getTables());
         return result;
     }
     

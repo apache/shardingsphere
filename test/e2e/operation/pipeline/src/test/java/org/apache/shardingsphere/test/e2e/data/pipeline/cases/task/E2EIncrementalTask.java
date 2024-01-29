@@ -40,6 +40,8 @@ import java.time.OffsetDateTime;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -79,16 +81,20 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
             primaryKeys.add(each[0]);
             insertOrder(each);
         }
+        Iterator<Object> primaryKeysIterator = primaryKeys.iterator();
+        Iterator<List<IncrementalAction>> incrementalActionsIterator = Arrays.asList(
+                Arrays.asList(IncrementalAction.PLAIN_UPDATE, IncrementalAction.UPDATE_NULL), Arrays.asList(IncrementalAction.UPDATE_NULL, IncrementalAction.PLAIN_UPDATE),
+                Arrays.asList(IncrementalAction.PLAIN_UPDATE, IncrementalAction.DELETE), Arrays.asList(IncrementalAction.UPDATE_NULL, IncrementalAction.DELETE),
+                Collections.singletonList(IncrementalAction.PLAIN_UPDATE), Collections.singletonList(IncrementalAction.UPDATE_NULL), Collections.singletonList(IncrementalAction.DELETE)).iterator();
+        while (primaryKeysIterator.hasNext() && incrementalActionsIterator.hasNext()) {
+            doIncrementalChanges(primaryKeysIterator.next(), incrementalActionsIterator.next());
+        }
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        for (int i = 0; i < Math.max(1, loopCount / 3); i++) {
-            // TODO 0000-00-00 00:00:00 now will cause consistency check failed of MySQL.
-            // DataSourceUtil.execute(dataSource, String.format("UPDATE %s SET t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", orderTableName)
-            updateOrderById(primaryKeys.get(random.nextInt(0, primaryKeys.size())));
+        while (primaryKeysIterator.hasNext()) {
+            doIncrementalChanges(primaryKeysIterator.next(), Collections.singletonList(IncrementalAction.values()[random.nextInt(0, IncrementalAction.values().length)]));
         }
-        for (int i = 0; i < Math.max(1, loopCount / 3); i++) {
-            setNullToAllFields(primaryKeys.get(random.nextInt(0, primaryKeys.size())));
-            deleteOrderById(primaryKeys.remove(random.nextInt(0, primaryKeys.size())));
-        }
+        // TODO 0000-00-00 00:00:00 now will cause consistency check failed of MySQL.
+        // DataSourceUtil.execute(dataSource, String.format("UPDATE %s SET t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", orderTableName)
         log.info("increment task runnable execute successfully.");
     }
     
@@ -104,6 +110,24 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
             throw new UnsupportedOperationException();
         }
         DataSourceExecuteUtils.execute(dataSource, sql, orderInsertData);
+    }
+    
+    private void doIncrementalChanges(final Object orderId, final List<IncrementalAction> actions) {
+        for (IncrementalAction each : actions) {
+            switch (each) {
+                case PLAIN_UPDATE:
+                    updateOrderById(orderId);
+                    break;
+                case UPDATE_NULL:
+                    setNullToAllFields(orderId);
+                    break;
+                case DELETE:
+                    deleteOrderById(orderId);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
     }
     
     private void updateOrderById(final Object orderId) {
@@ -159,5 +183,9 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
             log.info("update sql: {}", sql);
             DataSourceExecuteUtils.execute(dataSource, sql, new Object[]{orderId});
         }
+    }
+    
+    private enum IncrementalAction {
+        PLAIN_UPDATE, UPDATE_NULL, DELETE
     }
 }

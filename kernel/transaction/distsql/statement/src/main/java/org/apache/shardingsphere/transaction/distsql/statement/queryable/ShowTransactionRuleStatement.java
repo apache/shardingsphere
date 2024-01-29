@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.transaction.distsql.statement.queryable;
 
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.global.ShowGlobalRulesStatement;
 
 /**
  * Show transaction rule statement.
  */
-public final class ShowTransactionRuleStatement extends RQLStatement {
+public final class ShowTransactionRuleStatement extends ShowGlobalRulesStatement {
 }

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -39,25 +40,28 @@ import java.util.stream.Collectors;
 /**
  * Drop shadow rule executor.
  */
-public final class DropShadowRuleExecutor implements DatabaseRuleRDLDropExecutor<DropShadowRuleStatement, ShadowRuleConfiguration> {
+@Setter
+public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<DropShadowRuleStatement, ShadowRuleConfiguration> {
+    
+    private ShardingSphereDatabase database;
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }
-        checkConfigurationExisted(database.getName(), currentRuleConfig);
-        checkRuleExisted(database.getName(), sqlStatement, currentRuleConfig);
+        checkConfigurationExisted(currentRuleConfig);
+        checkRuleExisted(sqlStatement, currentRuleConfig);
     }
     
-    private void checkConfigurationExisted(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Shadow", databaseName));
+    private void checkConfigurationExisted(final ShadowRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Shadow", database.getName()));
     }
     
-    private void checkRuleExisted(final String databaseName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    private void checkRuleExisted(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfExists()) {
             ShadowRuleStatementChecker.checkExisted(sqlStatement.getNames(), getDataSourceNames(currentRuleConfig),
-                    notExistedRuleNames -> new MissingRequiredRuleException("Shadow", databaseName, notExistedRuleNames));
+                    notExistedRuleNames -> new MissingRequiredRuleException("Shadow", database.getName(), notExistedRuleNames));
         }
     }
     

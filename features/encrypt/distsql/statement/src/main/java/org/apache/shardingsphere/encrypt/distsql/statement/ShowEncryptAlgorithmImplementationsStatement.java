@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
  * Show encrypt algorithm implementations statement.

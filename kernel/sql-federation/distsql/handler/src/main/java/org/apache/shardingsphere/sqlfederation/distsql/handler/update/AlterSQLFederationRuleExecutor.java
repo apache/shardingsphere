@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
@@ -26,10 +26,10 @@ import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.Alter
 /**
  * Alter SQL federation rule executor.
  */
-public final class AlterSQLFederationRuleExecutor implements GlobalRuleRDLExecutor<AlterSQLFederationRuleStatement, SQLFederationRuleConfiguration> {
+public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLFederationRuleStatement, SQLFederationRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final SQLFederationRuleConfiguration currentRuleConfig, final AlterSQLFederationRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final SQLFederationRuleConfiguration currentRuleConfig, final AlterSQLFederationRuleStatement sqlStatement) {
     }
     
     @Override

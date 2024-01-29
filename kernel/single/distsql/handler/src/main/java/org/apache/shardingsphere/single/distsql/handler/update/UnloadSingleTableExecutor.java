@@ -18,42 +18,44 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
 import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Unload single table statement executor.
  */
-public final class UnloadSingleTableExecutor implements DatabaseRuleRDLAlterExecutor<UnloadSingleTableStatement, SingleRuleConfiguration> {
+@Setter
+public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecutor<UnloadSingleTableStatement, SingleRuleConfiguration> {
+    
+    private ShardingSphereDatabase database;
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
-        checkCurrentRuleConfig(database.getName(), currentRuleConfig);
-        checkTables(database, sqlStatement, currentRuleConfig);
+    public void checkBeforeUpdate(final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+        checkCurrentRuleConfig(currentRuleConfig);
+        checkTables(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfig(final String databaseName, final SingleRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkState(null != currentRuleConfig, () -> new MissingRequiredRuleException("Single", databaseName));
+    private void checkCurrentRuleConfig(final SingleRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkState(null != currentRuleConfig, () -> new MissingRequiredRuleException("Single", database.getName()));
     }
     
-    private void checkTables(final ShardingSphereDatabase database, final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    private void checkTables(final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isUnloadAllTables()) {
             return;
         }
@@ -67,17 +69,17 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleRDLAlterExec
         }
     }
     
+    private Collection<String> getAllTableNames(final ShardingSphereDatabase database) {
+        String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
+        return database.getSchema(defaultSchemaName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
+    }
+    
     private void checkTableExist(final Collection<String> allTables, final String tableName) {
         ShardingSpherePreconditions.checkState(allTables.contains(tableName), () -> new NoSuchTableException(tableName));
     }
     
     private void checkIsSingleTable(final Collection<String> singleTables, final String tableName) {
         ShardingSpherePreconditions.checkState(singleTables.contains(tableName), () -> new SingleTableNotFoundException(tableName));
-    }
-    
-    private Collection<String> getAllTableNames(final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
-        return database.getSchema(defaultSchemaName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
     }
     
     private void checkTableRuleExist(final String databaseName, final DatabaseType databaseType, final SingleRuleConfiguration currentRuleConfig,
@@ -88,19 +90,20 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleRDLAlterExec
     }
     
     @Override
-    public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final UnloadSingleTableStatement sqlStatement) {
+    public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final UnloadSingleTableStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
-        result.getTables().addAll(sqlStatement.isUnloadAllTables() ? Collections.singletonList(SingleTableConstants.ASTERISK) : sqlStatement.getTables());
+        currentRuleConfig.getDefaultDataSource().ifPresent(result::setDefaultDataSource);
+        if (!sqlStatement.isUnloadAllTables()) {
+            result.getTables().addAll(currentRuleConfig.getTables());
+            result.getTables().removeIf(each -> sqlStatement.getTables().contains(extractTableName(each)));
+        }
         return result;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeAlteredRuleConfig) {
-        if (toBeAlteredRuleConfig.getTables().contains(SingleTableConstants.ASTERISK)) {
-            currentRuleConfig.getTables().clear();
-        } else {
-            currentRuleConfig.getTables().removeIf(each -> toBeAlteredRuleConfig.getTables().contains(extractTableName(each)));
-        }
+        currentRuleConfig.getTables().clear();
+        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
     }
     
     private String extractTableName(final String tableNode) {

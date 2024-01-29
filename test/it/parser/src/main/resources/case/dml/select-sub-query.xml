@@ -702,4 +702,152 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_sub_query_with_cast_function">
+        <projections start-index="7" stop-index="125">
+            <column-projection name="BusinessEntityID" start-delimiter="[" end-delimiter="]" start-index="7" stop-index="53" alias="BusinessEntityID">
+                <owner name="T1_1" start-delimiter="[" end-delimiter="]" start-index="7" stop-index="12"/>
+            </column-projection>
+            <column-projection name="rowguid" start-delimiter="[" end-delimiter="]" start-index="56" stop-index="84" alias="rowguid">
+                <owner name="T1_1" start-delimiter="[" end-delimiter="]" start-index="56" stop-index="61"/>
+            </column-projection>
+            <column-projection name="ModifiedDate" start-delimiter="[" end-delimiter="]" start-index="87" stop-index="125" alias="ModifiedDate">
+                <owner name="T1_1" start-delimiter="[" end-delimiter="]" start-index="87" stop-index="92"/>
+            </column-projection>
+        </projections>
+        <from start-index="133" stop-index="378">
+            <subquery-table alias="T1_1">
+                <subquery start-index="133" stop-index="378">
+                    <select>
+                        <projections start-index="141" stop-index="259">
+                            <column-projection name="BusinessEntityID" start-delimiter="[" end-delimiter="]" start-index="141" stop-index="187" alias="BusinessEntityID">
+                                <owner name="T2_1" start-delimiter="[" end-delimiter="]" start-index="141" stop-index="146"/>
+                            </column-projection>
+                            <column-projection name="rowguid" start-delimiter="[" end-delimiter="]" start-index="190" stop-index="218" alias="rowguid">
+                                <owner name="T2_1" start-delimiter="[" end-delimiter="]" start-index="190" stop-index="195"/>
+                            </column-projection>
+                            <column-projection name="ModifiedDate" start-delimiter="[" end-delimiter="]" start-index="221" stop-index="259" alias="ModifiedDate">
+                                <owner name="T2_1" start-delimiter="[" end-delimiter="]" start-index="221" stop-index="226"/>
+                            </column-projection>
+                        </projections>
+                        <from start-index="266" stop-index="319">
+                            <simple-table name="BusinessEntity" start-delimiter="[" end-delimiter="]" start-index="266" stop-index="319" alias="T2_1">
+                                <owner name="Person" start-delimiter="[" end-delimiter="]" start-index="287" stop-index="294">
+                                    <owner name="AdventureWorks2022" start-delimiter="[" end-delimiter="]" start-index="266" stop-index="285"/>
+                                </owner>
+                            </simple-table>
+                        </from>
+                        <where start-index="321" stop-index="377">
+                            <expr>
+                                <binary-operation-expression start-index="328" stop-index="376">
+                                    <left>
+                                        <column name="BusinessEntityID" start-delimiter="[" end-delimiter="]" start-index="328" stop-index="352">
+                                            <owner name="T2_1" start-delimiter="[" end-delimiter="]" start-index="328" stop-index="333"/>
+                                        </column>
+                                    </left>
+                                    <right>
+                                        <function function-name="CAST" text="CAST ((17907) AS INT)" start-index="356" stop-index="376">
+                                            <parameter>
+                                                <literal-expression value="17907" start-index="363" stop-index="367"/>
+                                            </parameter>
+                                            <parameter>
+                                                <data-type value="INT" start-index="373" stop-index="375"/>
+                                            </parameter>
+                                        </function>
+                                    </right>
+                                    <operator>=</operator>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_sub_query_with_inner_join">
+        <projections start-index="7" stop-index="88">
+            <column-projection name="BusinessEntityID" start-delimiter="[" end-delimiter="]" start-index="7" stop-index="53" alias="BusinessEntityID">
+                <owner name="T1_1" start-index="7" stop-index="12" start-delimiter="[" end-delimiter="]"/>
+            </column-projection>
+            <column-projection name="AddressID" start-index="56" stop-index="88" start-delimiter="[" end-delimiter="]" alias="AddressID">
+                <owner name="T1_1" start-index="56" stop-index="61" start-delimiter="[" end-delimiter="]"/>
+            </column-projection>
+         </projections>
+        <from>
+            <subquery-table alias="T1_1">
+                <subquery start-index="95" stop-index="377">
+                    <select>
+                        <projections start-index="103" stop-index="184">
+                            <column-projection name="BusinessEntityID" start-index="103" stop-index="149" start-delimiter="[" end-delimiter="]" alias="BusinessEntityID">
+                                <owner name="T2_2" start-index="103" stop-index="108" start-delimiter="[" end-delimiter="]"/>
+                            </column-projection>
+                            <column-projection name="AddressID" start-index="152" stop-index="184" start-delimiter="[" end-delimiter="]" alias="AddressID">
+                                <owner name="T2_1" start-index="152" stop-index="157" start-delimiter="[" end-delimiter="]"/>
+                            </column-projection>
+                        </projections>
+                        <from>
+                            <join-table join-type="INNER">
+                                <left>
+                                    <simple-table name="BusinessEntityAddress" start-index="191" stop-index="251" start-delimiter="[" end-delimiter="]" alias="T2_1">
+                                        <owner name="Person" start-index="212" stop-index="219" start-delimiter="[" end-delimiter="]">
+                                            <owner name="AdventureWorks2022" start-index="191" stop-index="210" start-delimiter="[" end-delimiter="]"/>
+                                        </owner>
+                                    </simple-table>
+                                </left>
+                                <right>
+                                    <simple-table name="BusinessEntity" start-index="264" stop-index="317" start-delimiter="[" end-delimiter="]" alias="T2_2">
+                                        <owner name="Person" start-index="285" stop-index="292" start-delimiter="[" end-delimiter="]">
+                                            <owner name="AdventureWorks2022" start-index="264" stop-index="283" start-delimiter="[" end-delimiter="]"/>
+                                        </owner>
+                                    </simple-table>
+                                </right>
+                                <on-condition>
+                                    <binary-operation-expression start-index="323" stop-index="375">
+                                        <left>
+                                            <column name="BusinessEntityID" start-index="323" stop-index="347" start-delimiter="[" end-delimiter="]">
+                                                <owner name="T2_1" start-index="323" stop-index="328" start-delimiter="[" end-delimiter="]"/>
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <column name="BusinessEntityID" start-index="351" stop-index="375" start-delimiter="[" end-delimiter="]">
+                                                <owner name="T2_2" start-index="351" stop-index="356" start-delimiter="[" end-delimiter="]"/>
+                                            </column>
+                                        </right>
+                                    </binary-operation-expression>
+                                </on-condition>
+                            </join-table>
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_sub_query_with_sum">
+        <projections start-index="7" stop-index="27">
+            <column-projection name="col" start-index="7" stop-index="27" start-delimiter="[" end-delimiter="]" alias="col">
+                <owner name="T1_1" start-index="7" stop-index="12" start-delimiter="[" end-delimiter="]"/>
+            </column-projection>
+        </projections>
+        <from>
+            <subquery-table alias="T1_1">
+                <subquery>
+                    <select>
+                        <projections start-index="42" stop-index="72">
+                            <aggregation-projection expression="SUM([T2_1].[Quantity])" type="SUM" start-index="42" stop-index="63" alias="col"/>
+                        </projections>
+                        <from>
+                            <simple-table name="ProductInventory" start-index="79" stop-index="138" start-delimiter="[" end-delimiter="]" alias="T2_1">
+                                <owner name="Production" start-index="100" stop-index="111" start-delimiter="[" end-delimiter="]">
+                                    <owner name="AdventureWorks2022" start-index="79" stop-index="98" start-delimiter="[" end-delimiter="]"/>
+                                </owner>
+                            </simple-table>
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

@@ -19,10 +19,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -39,8 +40,6 @@ public final class RALBackendHandlerFactory {
      * @return created instance
      */
     public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
-        return sqlStatement instanceof QueryableRALStatement
-                ? new QueryableRALBackendHandler<>((QueryableRALStatement) sqlStatement, connectionSession)
-                : new UpdatableRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
+        return sqlStatement instanceof QueryableRALStatement ? new DistSQLQueryBackendHandler(sqlStatement, connectionSession) : new DistSQLUpdateBackendHandler(sqlStatement, connectionSession);
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.type.rql.count.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
@@ -33,7 +32,7 @@ public final class ShardingCountResultRowBuilder implements CountResultRowBuilde
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final ShardingRule rule, final String databaseName) {
         return Arrays.asList(new LocalDataQueryResultRow("sharding_table", databaseName, rule.getTableRules().size()),
-                new LocalDataQueryResultRow("sharding_table_reference", databaseName, ((ShardingRuleConfiguration) rule.getConfiguration()).getBindingTableGroups().size()));
+                new LocalDataQueryResultRow("sharding_table_reference", databaseName, rule.getConfiguration().getBindingTableGroups().size()));
     }
     
     @Override

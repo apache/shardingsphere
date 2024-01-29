@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -31,26 +32,31 @@ import java.util.Optional;
 /**
  * Drop default sharding strategy executor.
  */
-public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleRDLDropExecutor<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
+@Setter
+public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDropExecutor<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
+    
+    private ShardingSphereDatabase database;
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final DropDefaultShardingStrategyStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
-        String databaseName = database.getName();
-        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
-        checkExist(databaseName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(currentRuleConfig);
+        checkExist(sqlStatement, currentRuleConfig);
     }
     
-    private void checkExist(final String databaseName, final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", database.getName()));
+    }
+    
+    private void checkExist(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists()) {
             return;
         }
         Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
         ShardingSpherePreconditions.checkState(strategyConfig.isPresent(), () -> new MissingRequiredRuleException(
-                String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), databaseName));
+                String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), database.getName()));
     }
     
     private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final ShardingRuleConfiguration currentRuleConfig, final String type) {
@@ -58,10 +64,6 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleRD
                 ? currentRuleConfig.getDefaultTableShardingStrategy()
                 : currentRuleConfig.getDefaultDatabaseShardingStrategy();
         return Optional.ofNullable(result);
-    }
-    
-    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", databaseName));
     }
     
     @Override

@@ -31,6 +31,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -53,7 +54,7 @@ public final class PluginJarLoader {
         Collection<JarFile> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new JarFile(each, true));
-            LOGGER.info(String.format("Loaded jar: %s", each.getName()));
+            LOGGER.log(Level.INFO, "Loaded jar: {0}", new String[]{each.getName()});
         }
         return result;
     }

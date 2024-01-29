@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.CommitMigrationStatement;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 
 /**
  * Commit migration executor.
  */
-public final class CommitMigrationExecutor implements UpdatableRALExecutor<CommitMigrationStatement> {
+public final class CommitMigrationExecutor implements DistSQLUpdateExecutor<CommitMigrationStatement> {
     
     @Override
-    public void executeUpdate(final CommitMigrationStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final CommitMigrationStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").commit(sqlStatement.getJobId());
     }
     

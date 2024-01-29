@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -47,7 +48,7 @@ class ShowDefaultShardingStrategyExecutorTest {
         when(rule1.getConfiguration()).thenReturn(createRuleConfiguration1());
         ShowDefaultShardingStrategyExecutor executor = new ShowDefaultShardingStrategyExecutor();
         executor.setRule(rule1);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDefaultShardingStrategyStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDefaultShardingStrategyStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -68,7 +69,7 @@ class ShowDefaultShardingStrategyExecutorTest {
         when(rule2.getConfiguration()).thenReturn(createRuleConfiguration2());
         executor = new ShowDefaultShardingStrategyExecutor();
         executor.setRule(rule2);
-        actual = executor.getRows(mock(ShowDefaultShardingStrategyStatement.class));
+        actual = executor.getRows(mock(ShowDefaultShardingStrategyStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(2));
         iterator = actual.iterator();
         row = iterator.next();

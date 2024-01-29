@@ -19,18 +19,17 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportMetaDataStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportStorageNodesStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodeInfoStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodeModeStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodesStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariableStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariablesStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowTableMetaDataStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.convert.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportStorageNodesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeInfoStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeModeStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ConvertYamlConfigurationStatementAssert;
@@ -62,8 +61,6 @@ public final class QueryableRALStatementAssert {
         } else if (actual instanceof ShowDistVariablesStatement) {
             ShowDistVariablesStatementAssert.assertIs(assertContext, (ShowDistVariablesStatement) actual, (ShowDistVariablesStatementTestCase) expected);
         } else if (actual instanceof ShowComputeNodesStatement) {
-            ExistingAssert.assertIs(assertContext, actual, expected);
-        } else if (actual instanceof ShowStatusFromReadwriteSplittingRulesStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowTableMetaDataStatement) {
             ShowTableMetaDataStatementAssert.assertIs(assertContext, (ShowTableMetaDataStatement) actual, (ShowTableMetaDataStatementTestCase) expected);

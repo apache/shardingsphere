@@ -17,39 +17,35 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 
 /**
  * Lock cluster executor.
  */
-@RequiredArgsConstructor
-@Setter
-public final class LockClusterExecutor implements UpdatableRALExecutor<LockClusterStatement> {
+@DistSQLExecutorClusterModeRequired
+public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClusterStatement> {
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void executeUpdate(final LockClusterStatement sqlStatement) {
-        checkMode();
-        checkState();
+    public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) {
+        checkState(contextManager);
         checkAlgorithm(sqlStatement);
-        LockContext lockContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext();
+        LockContext lockContext = contextManager.getInstanceContext().getLockContext();
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
         if (lockContext.tryLock(lockDefinition, 3000L)) {
             try {
-                checkState();
+                checkState(contextManager);
                 TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
             } finally {
                 lockContext.unlock(lockDefinition);
@@ -57,23 +53,14 @@ public final class LockClusterExecutor implements UpdatableRALExecutor<LockClust
         }
     }
     
-    private void checkMode() {
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster(),
-                () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
-    }
-    
-    private void checkState() {
-        ClusterState currentState = ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState();
+    private void checkState(final ContextManager contextManager) {
+        ClusterState currentState = contextManager.getClusterStateContext().getCurrentState();
         ShardingSpherePreconditions.checkState(ClusterState.OK == currentState, () -> new IllegalStateException("Cluster is already locked"));
     }
     
     private void checkAlgorithm(final LockClusterStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(isStrategyDefinitionExists(sqlStatement), MissingRequiredAlgorithmException::new);
+        ShardingSpherePreconditions.checkNotNull(sqlStatement.getLockStrategy(), MissingRequiredAlgorithmException::new);
         TypedSPILoader.checkService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName(), sqlStatement.getLockStrategy().getProps());
-    }
-    
-    private boolean isStrategyDefinitionExists(final LockClusterStatement sqlStatement) {
-        return null != sqlStatement.getLockStrategy();
     }
     
     @Override

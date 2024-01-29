@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
-public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleRDLCreateExecutor<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
+public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCreateExecutor<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
+    
+    @Override
+    public void checkBeforeUpdate(final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
+    }
     
     @Override
     public FixtureRuleConfiguration buildToBeCreatedRuleConfiguration(final FixtureRuleConfiguration currentRuleConfig, final CreateFixtureRuleStatement sqlStatement) {
@@ -32,10 +36,6 @@ public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleRDLC
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
-    }
-    
-    @Override
     public Class<FixtureRuleConfiguration> getRuleConfigurationClass() {
         return FixtureRuleConfiguration.class;
     }
@@ -43,5 +43,9 @@ public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleRDLC
     @Override
     public Class<CreateFixtureRuleStatement> getType() {
         return CreateFixtureRuleStatement.class;
+    }
+    
+    @Override
+    public void setDatabase(final ShardingSphereDatabase database) {
     }
 }

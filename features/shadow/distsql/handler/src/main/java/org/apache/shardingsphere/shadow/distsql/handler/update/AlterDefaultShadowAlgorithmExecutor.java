@@ -18,32 +18,56 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import com.google.common.base.Strings;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.database.DatabaseRuleRDLAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.statement.AlterDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 /**
  * Alter default shadow algorithm executor.
  */
-public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleRDLAlterExecutor<AlterDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
+@Setter
+public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
     private static final String DEFAULT_ALGORITHM_NAME = "default_shadow_algorithm";
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShadowAlgorithmStatement sqlStatement) {
+    public void checkBeforeUpdate(final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+        ShadowRuleStatementChecker.checkRuleConfigurationExists(database.getName(), currentRuleConfig);
+        checkAlgorithms(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment(), currentRuleConfig);
+    }
+    
+    private void checkAlgorithms(final AlgorithmSegment algorithmSegment, final ShadowRuleConfiguration currentRuleConfig) {
+        checkAlgorithmCompleteness(algorithmSegment);
+        checkAlgorithmType(algorithmSegment);
+        ShadowRuleStatementChecker.checkExisted(Collections.singleton(DEFAULT_ALGORITHM_NAME),
+                currentRuleConfig.getShadowAlgorithms().keySet(), notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", database.getName(), notExistedAlgorithms));
+    }
+    
+    private void checkAlgorithmCompleteness(final AlgorithmSegment algorithmSegment) {
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(algorithmSegment.getName()), () -> new InvalidAlgorithmConfigurationException("shadow"));
+    }
+    
+    private void checkAlgorithmType(final AlgorithmSegment algorithmSegment) {
+        TypedSPILoader.checkService(ShadowAlgorithm.class, algorithmSegment.getName(), algorithmSegment.getProps());
+    }
+    
+    @Override
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final AlterDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
         result.setDefaultShadowAlgorithmName(DEFAULT_ALGORITHM_NAME);
@@ -59,29 +83,6 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleRD
     public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeAlteredRuleConfig) {
         currentRuleConfig.getShadowAlgorithms().putAll(toBeAlteredRuleConfig.getShadowAlgorithms());
         currentRuleConfig.setDefaultShadowAlgorithmName(toBeAlteredRuleConfig.getDefaultShadowAlgorithmName());
-    }
-    
-    @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        ShadowRuleStatementChecker.checkRuleConfigurationExists(database.getName(), currentRuleConfig);
-        checkAlgorithms(database.getName(), sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment(), currentRuleConfig);
-    }
-    
-    private void checkAlgorithms(final String databaseName, final AlgorithmSegment algorithmSegment, final ShadowRuleConfiguration currentRuleConfig) {
-        checkAlgorithmCompleteness(algorithmSegment);
-        checkAlgorithmType(algorithmSegment);
-        Collection<String> requiredAlgorithmNames = Collections.singleton(DEFAULT_ALGORITHM_NAME);
-        ShadowRuleStatementChecker.checkExisted(requiredAlgorithmNames,
-                currentRuleConfig.getShadowAlgorithms().keySet(), notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", databaseName, notExistedAlgorithms));
-    }
-    
-    private void checkAlgorithmCompleteness(final AlgorithmSegment algorithmSegment) {
-        boolean isCompleteAlgorithm = !Strings.isNullOrEmpty(algorithmSegment.getName());
-        ShardingSpherePreconditions.checkState(isCompleteAlgorithm, () -> new InvalidAlgorithmConfigurationException("shadow"));
-    }
-    
-    private void checkAlgorithmType(final AlgorithmSegment algorithmSegment) {
-        TypedSPILoader.checkService(ShadowAlgorithm.class, algorithmSegment.getName(), algorithmSegment.getProps());
     }
     
     @Override

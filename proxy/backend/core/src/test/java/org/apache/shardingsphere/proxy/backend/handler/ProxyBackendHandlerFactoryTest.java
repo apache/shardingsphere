@@ -39,10 +39,8 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.RULBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -130,13 +128,13 @@ class ProxyBackendHandlerFactoryTest {
     void assertNewInstanceWithDistSQL() throws SQLException {
         String sql = "set dist variable sql_show='true'";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(UpdatableRALBackendHandler.class));
+        assertThat(actual, instanceOf(DistSQLUpdateBackendHandler.class));
         sql = "show dist variable where name = sql_show";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
+        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
         sql = "show dist variables";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
+        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -226,7 +224,7 @@ class ProxyBackendHandlerFactoryTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SHOW TRANSACTION RULE;";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(RQLBackendHandler.class));
+        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
     }
     
     @Test
@@ -234,7 +232,7 @@ class ProxyBackendHandlerFactoryTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(RQLBackendHandler.class));
+        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
     }
     
     @Test
@@ -242,7 +240,7 @@ class ProxyBackendHandlerFactoryTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(RULBackendHandler.class));
+        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
     }
     
     private static class TCLTestCaseArgumentsProvider implements ArgumentsProvider {

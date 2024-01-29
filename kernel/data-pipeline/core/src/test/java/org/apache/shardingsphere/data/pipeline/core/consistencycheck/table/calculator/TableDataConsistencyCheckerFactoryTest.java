@@ -25,8 +25,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class TableDataConsistencyCheckerFactoryTest {
     
@@ -41,6 +42,6 @@ class TableDataConsistencyCheckerFactoryTest {
     void assertNewInstancesDifferent() {
         TableDataConsistencyChecker actual1 = TableDataConsistencyCheckerFactory.newInstance("DATA_MATCH", new Properties());
         TableDataConsistencyChecker actual2 = TableDataConsistencyCheckerFactory.newInstance("DATA_MATCH", new Properties());
-        assertNotEquals(actual1, actual2);
+        assertThat(actual1, not(actual2));
     }
 }

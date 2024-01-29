@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -71,12 +72,12 @@ public final class PluginLifecycleServiceManager {
     
     private static void start(final PluginConfiguration pluginConfig, final PluginLifecycleService pluginLifecycleService, final boolean isEnhancedForProxy) {
         try {
-            LOGGER.info(String.format("Start plugin: %s", pluginLifecycleService.getType()));
+            LOGGER.log(Level.INFO, "Start plugin: {0}", new String[]{pluginLifecycleService.getType()});
             pluginLifecycleService.start(pluginConfig, isEnhancedForProxy);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.severe(String.format("Failed to start service %s.", ex.getMessage()));
+            LOGGER.log(Level.SEVERE, "Failed to start service {0}.", new String[]{ex.getMessage()});
         }
     }
     
@@ -86,7 +87,7 @@ public final class PluginLifecycleServiceManager {
             try {
                 each.close();
             } catch (final IOException ex) {
-                LOGGER.severe(String.format("Failed to close jar file %s.", ex.getMessage()));
+                LOGGER.log(Level.SEVERE, "Failed to close jar file {0}.", new String[]{ex.getMessage()});
             }
         });
     }

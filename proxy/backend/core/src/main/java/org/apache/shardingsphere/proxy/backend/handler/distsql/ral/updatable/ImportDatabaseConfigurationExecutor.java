@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
@@ -31,12 +32,12 @@ import java.sql.SQLException;
 /**
  * Import database configuration executor.
  */
-public final class ImportDatabaseConfigurationExecutor implements UpdatableRALExecutor<ImportDatabaseConfigurationStatement> {
+public final class ImportDatabaseConfigurationExecutor implements DistSQLUpdateExecutor<ImportDatabaseConfigurationStatement> {
     
     private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
     @Override
-    public void executeUpdate(final ImportDatabaseConfigurationStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final ImportDatabaseConfigurationStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         File file = new File(sqlStatement.getFilePath());
         YamlProxyDatabaseConfiguration yamlConfig;
         try {

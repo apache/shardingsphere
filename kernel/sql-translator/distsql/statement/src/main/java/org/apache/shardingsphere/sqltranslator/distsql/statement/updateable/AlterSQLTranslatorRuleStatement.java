@@ -20,14 +20,14 @@ package org.apache.shardingsphere.sqltranslator.distsql.statement.updateable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.AlterRuleStatement;
 
 /**
  * Alter SQL translator rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterSQLTranslatorRuleStatement extends RuleDefinitionStatement {
+public final class AlterSQLTranslatorRuleStatement extends AlterRuleStatement {
     
     private final AlgorithmSegment provider;
     

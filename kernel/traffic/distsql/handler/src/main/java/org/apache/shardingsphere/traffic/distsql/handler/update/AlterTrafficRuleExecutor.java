@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.global.GlobalRuleRDLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -39,10 +39,10 @@ import java.util.stream.Collectors;
 /**
  * Alter traffic rule executor.
  */
-public final class AlterTrafficRuleExecutor implements GlobalRuleRDLExecutor<AlterTrafficRuleStatement, TrafficRuleConfiguration> {
+public final class AlterTrafficRuleExecutor implements GlobalRuleDefinitionExecutor<AlterTrafficRuleStatement, TrafficRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
         checkRuleNames(currentRuleConfig, sqlStatement);
         checkAlgorithmNames(sqlStatement);
     }

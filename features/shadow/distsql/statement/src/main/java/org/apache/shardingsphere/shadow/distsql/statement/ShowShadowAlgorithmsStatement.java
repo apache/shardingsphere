@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.shadow.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show shadow algorithms statement.
  */
 @Getter
-public final class ShowShadowAlgorithmsStatement extends ShowRulesStatement {
+public final class ShowShadowAlgorithmsStatement extends ShowDatabaseRulesStatement {
     
     public ShowShadowAlgorithmsStatement(final DatabaseSegment database) {
         super(database);

@@ -20,10 +20,17 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
-import org.apache.shardingsphere.distsql.statement.rul.SQLRULStatement;
+import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
+import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
+import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.impl.SQLRULStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.type.FormatSQLStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.type.ParseStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.type.PreviewStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.FormatSQLStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.ParseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.PreviewStatementTestCase;
 
 /**
  * RUL statement assert.
@@ -39,8 +46,12 @@ public final class RULStatementAssert {
      * @param expected expected RUL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RULStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof SQLRULStatement) {
-            SQLRULStatementAssert.assertIs(assertContext, (SQLRULStatement) actual, expected);
+        if (actual instanceof PreviewStatement) {
+            PreviewStatementAssert.assertIs(assertContext, (PreviewStatement) actual, (PreviewStatementTestCase) expected);
+        } else if (actual instanceof ParseStatement) {
+            ParseStatementAssert.assertIs(assertContext, (ParseStatement) actual, (ParseStatementTestCase) expected);
+        } else if (actual instanceof FormatStatement) {
+            FormatSQLStatementAssert.assertIs(assertContext, (FormatStatement) actual, (FormatSQLStatementTestCase) expected);
         }
     }
 }

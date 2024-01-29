@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.sharding.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show sharding table nodes statement.
  */
 @Getter
-public final class ShowShardingTableNodesStatement extends ShowRulesStatement {
+public final class ShowShardingTableNodesStatement extends ShowDatabaseRulesStatement {
     
     private final String tableName;
     

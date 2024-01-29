@@ -17,32 +17,30 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.event.compute.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
  * Set instance status executor.
  */
-public final class SetInstanceStatusExecutor implements UpdatableRALExecutor<SetInstanceStatusStatement> {
+@DistSQLExecutorClusterModeRequired
+public final class SetInstanceStatusExecutor implements DistSQLUpdateExecutor<SetInstanceStatusStatement> {
     
     @Override
-    public void executeUpdate(final SetInstanceStatusStatement sqlStatement) {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
-        String instanceId = sqlStatement.getInstanceId();
-        boolean isDisable = "DISABLE".equals(sqlStatement.getStatus());
-        if (isDisable) {
-            checkDisablingIsValid(contextManager, instanceId);
+    public void executeUpdate(final SetInstanceStatusStatement sqlStatement, final ContextManager contextManager) {
+        if ("DISABLE".equals(sqlStatement.getStatus())) {
+            checkDisablingIsValid(contextManager, sqlStatement.getInstanceId());
         } else {
-            checkEnablingIsValid(contextManager, instanceId);
+            checkEnablingIsValid(contextManager, sqlStatement.getInstanceId());
         }
-        contextManager.getInstanceContext().getEventBusContext().post(new ComputeNodeStatusChangedEvent(instanceId, isDisable ? InstanceState.CIRCUIT_BREAK : InstanceState.OK));
+        contextManager.getInstanceContext().getEventBusContext().post(
+                new ComputeNodeStatusChangedEvent(sqlStatement.getInstanceId(), "DISABLE".equals(sqlStatement.getStatus()) ? InstanceState.CIRCUIT_BREAK : InstanceState.OK));
     }
     
     private void checkEnablingIsValid(final ContextManager contextManager, final String instanceId) {

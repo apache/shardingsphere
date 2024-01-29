@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.distsql.handler.type.rql.count;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseAwareRQLExecutor;
-import org.apache.shardingsphere.distsql.statement.rql.show.CountRuleStatement;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +36,7 @@ import java.util.Optional;
  * Count RQL executor.
  */
 @Setter
-public final class CountRQLExecutor implements DatabaseAwareRQLExecutor<CountRuleStatement> {
+public final class CountRQLExecutor implements DistSQLQueryExecutor<CountRuleStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
@@ -45,7 +47,7 @@ public final class CountRQLExecutor implements DatabaseAwareRQLExecutor<CountRul
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final CountRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final CountRuleStatement sqlStatement, final ContextManager contextManager) {
         Optional<CountResultRowBuilder> rowBuilder = TypedSPILoader.findService(CountResultRowBuilder.class, sqlStatement.getType());
         if (!rowBuilder.isPresent()) {
             return Collections.emptyList();
