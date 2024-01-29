@@ -752,6 +752,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.getParameters().add((ColumnSegment) exprSegment);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        } else if (exprSegment instanceof FunctionSegment) {
+            result.getParameters().add((FunctionSegment) exprSegment);
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         return result;

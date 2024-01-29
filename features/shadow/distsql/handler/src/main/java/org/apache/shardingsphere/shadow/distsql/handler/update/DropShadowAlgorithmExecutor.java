@@ -83,7 +83,7 @@ public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecut
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropShadowAlgorithmStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getShadowAlgorithms().put(each, currentRuleConfig.getShadowAlgorithms().get(each));

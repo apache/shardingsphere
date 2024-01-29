@@ -77,7 +77,7 @@ class ShardingRuleStatementCheckerTest {
     private final ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSource());
     
     @BeforeEach
-    void before() {
+    void setUp() {
         when(database.getName()).thenReturn("schema");
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));

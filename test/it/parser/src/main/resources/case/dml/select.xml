@@ -3997,6 +3997,9 @@
                 <expr>
                     <function function-name="CAST" text="CAST(GETDATE() AS NVARCHAR(30))" start-index="41" stop-index="71">
                         <parameter>
+                            <function function-name="GETDATE" text="GETDATE()" start-index="46" stop-index="54" />
+                        </parameter>
+                        <parameter>
                             <data-type value="NVARCHAR" start-index="59" stop-index="70" />
                         </parameter>
                     </function>
@@ -8093,51 +8096,7 @@
             </expr>
         </where>
     </select>
-
-    <select sql-case-id="select_with_database_files">
-        <from start-index="108" stop-index="125">
-            <simple-table name="database_files" start-index="108" stop-index="125">
-                <owner name="sys" start-index="108" stop-index="110"/>
-            </simple-table>
-        </from>
-        <projections start-index="7" stop-index="101">
-            <column-projection name="name" start-index="7" stop-index="10" />
-            <expression-projection text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0" alias="AvailableSpaceInMB" start-index="13" stop-index="101">
-                <expr>
-                    <binary-operation-expression text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0" start-index="13" stop-index="79">
-                        <left>
-                            <binary-operation-expression text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="13" stop-index="71">
-                                <left>
-                                    <column name="size" start-index="13" stop-index="16" />
-                                </left>
-                                <operator>/</operator>
-                                <right>
-                                    <binary-operation-expression text="128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="20" stop-index="71">
-                                        <left>
-                                            <literal-expression value="128.0" start-index="20" stop-index="24" />
-                                        </left>
-                                        <operator>-</operator>
-                                        <right>
-                                            <function function-name="CAST" text="CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="28" stop-index="71">
-                                                <parameter>
-                                                    <data-type value="INT" start-index="68" stop-index="70"/>
-                                                </parameter>
-                                            </function>
-                                        </right>
-                                    </binary-operation-expression>
-                                </right>
-                            </binary-operation-expression>
-                        </left>
-                        <operator>/</operator>
-                        <right>
-                            <literal-expression value="128.0" start-index="75" stop-index="79" />
-                        </right>
-                    </binary-operation-expression>
-                </expr>
-            </expression-projection>
-        </projections>
-    </select>
-
+    
     <select sql-case-id="select_with_contains_function">
         <projections start-index="7" stop-index="16">
             <column-projection name="product_id" start-index="7" stop-index="16"/>
@@ -8173,6 +8132,74 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+    
+    <select sql-case-id="select_from_database_files">
+        <projections start-index="7" stop-index="101">
+            <column-projection name="name" start-index="7" stop-index="10" />
+            <expression-projection text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0" alias="AvailableSpaceInMB" start-index="13" stop-index="101">
+                <expr>
+                    <binary-operation-expression text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0" start-index="13" stop-index="79">
+                        <left>
+                            <binary-operation-expression text="size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="13" stop-index="71">
+                                <left>
+                                    <column name="size" start-index="13" stop-index="16" />
+                                </left>
+                                <right>
+                                   <binary-operation-expression text="128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="20" stop-index="71">
+                                       <left>
+                                           <literal-expression value="128.0" start-index="20" stop-index="24" />
+                                       </left>
+                                       <right>
+                                           <function function-name="CAST" text="CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT)" start-index="28" stop-index="71">
+                                               <parameter>
+                                                   <function function-name="FILEPROPERTY" text="FILEPROPERTY(name, 'SpaceUsed')" start-index="33" stop-index="63">
+                                                       <parameter>
+                                                           <column name="name" start-index="46" stop-index="49" />
+                                                       </parameter>
+                                                       <parameter>
+                                                           <literal-expression value="SpaceUsed" start-index="52" stop-index="62" />
+                                                       </parameter>
+                                                   </function>
+                                               </parameter>
+                                               <parameter>
+                                                   <data-type value="INT" start-index="68" stop-index="70" />
+                                               </parameter>
+                                           </function>
+                                       </right>
+                                       <operator>-</operator>
+                                   </binary-operation-expression>
+                                </right>
+                                <operator>/</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <literal-expression value="128.0" start-index="75" stop-index="79" />
+                        </right>
+                        <operator>/</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="database_files" start-index="108" stop-index="125">
+                <owner name="sys" start-index="108" stop-index="110" />
+            </simple-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_trim_2">
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="TRIM( '     test    ')" alias="Result" start-index="7" stop-index="38">
+                <expr>
+                    <function function-name="TRIM" text="TRIM( '     test    ')" start-index="7" stop-index="28">
+                        <parameter>
+                            <literal-expression value="     test    " start-index="13" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 
     <select sql-case-id="select_with_default_schema">

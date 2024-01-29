@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredR
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
@@ -39,21 +38,22 @@ public final class LegacyGlobalRuleDefinitionExecuteEngine {
     
     private final ContextManager contextManager;
     
+    @SuppressWarnings("rawtypes")
+    private final GlobalRuleDefinitionExecutor executor;
+    
     /**
      * Execute update.
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public void executeUpdate() {
-        GlobalRuleDefinitionExecutor executor = TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass());
-        Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
-        executor.checkBeforeUpdate(currentRuleConfig, sqlStatement);
+        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, executor.getRuleConfigurationClass());
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
         contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, executor, currentRuleConfig));
     }
     
-    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (RuleConfiguration each : ruleConfigurations) {
+    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs, final Class<? extends RuleConfiguration> ruleConfigClass) {
+        for (RuleConfiguration each : ruleConfigs) {
             if (ruleConfigClass.isAssignableFrom(each.getClass())) {
                 return each;
             }
@@ -62,11 +62,11 @@ public final class LegacyGlobalRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<RuleConfiguration> processUpdate(final Collection<RuleConfiguration> ruleConfigurations,
+    private Collection<RuleConfiguration> processUpdate(final Collection<RuleConfiguration> ruleConfigs,
                                                         final RuleDefinitionStatement sqlStatement, final GlobalRuleDefinitionExecutor globalRuleUpdater, final RuleConfiguration currentRuleConfig) {
-        Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigurations);
+        Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigs);
         result.remove(currentRuleConfig);
-        result.add(globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement));
+        result.add(globalRuleUpdater.buildAlteredRuleConfiguration(sqlStatement, currentRuleConfig));
         return result;
     }
 }

@@ -52,7 +52,7 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
             return Collections.emptyList();
         }
         ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
-        RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(currentRuleConfig, sqlStatement);
+        RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement, currentRuleConfig);
         // TODO remove updateCurrentRuleConfiguration after update refactor completed.
         if (executor.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig) && ((DatabaseRuleConfiguration) currentRuleConfig).isEmpty()) {
             modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
@@ -66,7 +66,7 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
             // TODO refactor to new metadata refresh way
         }
         modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
-        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
+        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
         return modeContextManager.alterRuleConfiguration(database.getName(), toBeAlteredRuleConfig);
     }
 }

@@ -32,7 +32,7 @@ class AlterSQLParserRuleExecutorTest {
     void assertExecute() {
         AlterSQLParserRuleExecutor executor = new AlterSQLParserRuleExecutor();
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
-        SQLParserRuleConfiguration actual = executor.buildAlteredRuleConfiguration(getSQLParserRuleConfiguration(), sqlStatement);
+        SQLParserRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement, getSQLParserRuleConfiguration());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
