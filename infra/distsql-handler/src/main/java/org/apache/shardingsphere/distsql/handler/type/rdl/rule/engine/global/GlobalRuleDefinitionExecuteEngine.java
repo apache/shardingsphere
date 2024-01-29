@@ -44,9 +44,8 @@ public final class GlobalRuleDefinitionExecuteEngine {
      */
     @SuppressWarnings("unchecked")
     public void executeUpdate() {
-        Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
+        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, executor.getRuleConfigurationClass());
         executor.checkBeforeUpdate(currentRuleConfig, sqlStatement);
         contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, currentRuleConfig));
     }
