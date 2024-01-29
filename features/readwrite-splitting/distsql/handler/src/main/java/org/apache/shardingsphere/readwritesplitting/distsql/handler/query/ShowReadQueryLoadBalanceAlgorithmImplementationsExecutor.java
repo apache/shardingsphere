@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadQueryLoadBalanceAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Show read query load balance algorithm implementations executor.
  */
-public final class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor implements QueryableRALExecutor<ShowReadQueryLoadBalanceAlgorithmImplementationsStatement> {
+public final class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor implements DistSQLQueryExecutor<ShowReadQueryLoadBalanceAlgorithmImplementationsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -39,7 +39,7 @@ public final class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor impl
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowReadQueryLoadBalanceAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowReadQueryLoadBalanceAlgorithmImplementationsStatement sqlStatement, final ContextManager contextManager) {
         Collection<ReadQueryLoadBalanceAlgorithm> loadBalanceAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ReadQueryLoadBalanceAlgorithm.class);
         return loadBalanceAlgorithms.stream().map(each -> new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName())).collect(Collectors.toList());
     }

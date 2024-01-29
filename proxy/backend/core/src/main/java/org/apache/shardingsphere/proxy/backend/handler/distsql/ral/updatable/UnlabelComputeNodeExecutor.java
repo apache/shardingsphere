@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,15 +33,12 @@ import java.util.Optional;
 /**
  * Unlabel compute node executor.
  */
-public final class UnlabelComputeNodeExecutor implements UpdatableRALExecutor<UnlabelComputeNodeStatement> {
+@DistSQLExecutorClusterModeRequired
+public final class UnlabelComputeNodeExecutor implements DistSQLUpdateExecutor<UnlabelComputeNodeStatement> {
     
     @Override
-    public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement) {
-        MetaDataBasedPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        ShardingSpherePreconditions.checkState(persistService.getRepository() instanceof ClusterPersistRepository,
-                () -> new UnsupportedSQLOperationException("Labels can only be removed in cluster mode."));
+    public void executeUpdate(final UnlabelComputeNodeStatement sqlStatement, final ContextManager contextManager) {
         String instanceId = sqlStatement.getInstanceId();
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {
             Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());

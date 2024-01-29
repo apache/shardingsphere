@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -52,7 +53,7 @@ class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
         executor.setRule(rule);
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = mock(ShowShardingTableRulesUsedKeyGeneratorStatement.class);
         when(statement.getKeyGeneratorName()).thenReturn(Optional.of("snowflake"));
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement, mock(ContextManager.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

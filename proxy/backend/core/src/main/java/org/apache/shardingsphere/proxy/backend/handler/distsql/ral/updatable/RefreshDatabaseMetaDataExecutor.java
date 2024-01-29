@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.SQLException;
@@ -31,16 +32,16 @@ import java.util.Optional;
 /**
  * Refresh database meta data executor.
  */
-public final class RefreshDatabaseMetaDataExecutor implements UpdatableRALExecutor<RefreshDatabaseMetaDataStatement> {
+public final class RefreshDatabaseMetaDataExecutor implements DistSQLUpdateExecutor<RefreshDatabaseMetaDataStatement> {
     
     @Override
-    public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         Optional<String> toBeRefreshedDatabaseName = sqlStatement.getDatabaseName();
         Map<String, ShardingSphereDatabase> databases = toBeRefreshedDatabaseName.map(optional -> Collections.singletonMap(optional, ProxyContext.getInstance().getDatabase(optional)))
-                .orElseGet(() -> ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases());
+                .orElseGet(() -> contextManager.getMetaDataContexts().getMetaData().getDatabases());
         for (ShardingSphereDatabase each : databases.values()) {
             if (!SystemSchemaUtils.isSystemSchema(each)) {
-                ProxyContext.getInstance().getContextManager().refreshDatabaseMetaData(each, sqlStatement.isForce());
+                contextManager.refreshDatabaseMetaData(each, sqlStatement.isForce());
             }
         }
     }

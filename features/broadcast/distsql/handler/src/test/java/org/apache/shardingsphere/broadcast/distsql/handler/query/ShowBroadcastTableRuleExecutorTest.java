@@ -21,6 +21,7 @@ import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration
 import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -38,7 +39,7 @@ class ShowBroadcastTableRuleExecutorTest {
     void assertGetRowData() {
         ShowBroadcastTableRuleExecutor executor = new ShowBroadcastTableRuleExecutor();
         executor.setRule(mockBroadcastRule());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowBroadcastTableRulesStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowBroadcastTableRulesStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

@@ -17,25 +17,26 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter.TransmissionProcessConfigurationSegmentConverter;
 
 /**
  * Alter transmission rule executor.
  */
-public final class AlterTransmissionRuleExecutor implements UpdatableRALExecutor<AlterTransmissionRuleStatement> {
+public final class AlterTransmissionRuleExecutor implements DistSQLUpdateExecutor<AlterTransmissionRuleStatement> {
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
     @Override
-    public void executeUpdate(final AlterTransmissionRuleStatement sqlStatement) {
+    public void executeUpdate(final AlterTransmissionRuleStatement sqlStatement, final ContextManager contextManager) {
         PipelineProcessConfiguration processConfig = TransmissionProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
         String jobType = TypedSPILoader.getService(PipelineJobType.class, sqlStatement.getJobTypeName()).getType();
         processConfigPersistService.persist(new PipelineContextKey(InstanceType.PROXY), jobType, processConfig);

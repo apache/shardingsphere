@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sqltranslator.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -33,7 +35,7 @@ import java.util.Collections;
  * Show SQL translator rule executor.
  */
 @Setter
-public final class ShowSQLTranslatorRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowSQLTranslatorRuleStatement, SQLTranslatorRule> {
+public final class ShowSQLTranslatorRuleExecutor implements DistSQLQueryExecutor<ShowSQLTranslatorRuleStatement>, DistSQLExecutorRuleAware<SQLTranslatorRule> {
     
     private SQLTranslatorRule rule;
     
@@ -43,7 +45,7 @@ public final class ShowSQLTranslatorRuleExecutor implements GlobalRuleAwareRQLEx
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLTranslatorRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLTranslatorRuleStatement sqlStatement, final ContextManager contextManager) {
         SQLTranslatorRuleConfiguration ruleConfig = rule.getConfiguration();
         return Collections.singleton(new LocalDataQueryResultRow(null == ruleConfig.getType() ? "" : ruleConfig.getType(),
                 PropertiesConverter.convert(ruleConfig.getProps()), String.valueOf(ruleConfig.isUseOriginalSQLWhenTranslatingFailed())));

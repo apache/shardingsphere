@@ -61,7 +61,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -88,22 +87,12 @@ class ExportStorageNodesExecutorTest {
     }
     
     @Test
-    void assertGetColumns() {
-        Collection<String> columns = new ExportStorageNodesExecutor().getColumnNames();
-        assertThat(columns.size(), is(3));
-        Iterator<String> columnIterator = columns.iterator();
-        assertThat(columnIterator.next(), is("id"));
-        assertThat(columnIterator.next(), is("create_time"));
-        assertThat(columnIterator.next(), is("storage_nodes"));
-    }
-    
-    @Test
     void assertExecuteWithWrongDatabaseName() {
         ContextManager contextManager = mockEmptyContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         ExportStorageNodesStatement sqlStatement = new ExportStorageNodesStatement("foo", null);
-        assertThrows(IllegalArgumentException.class, () -> new ExportStorageNodesExecutor().getRows(sqlStatement, contextManager.getMetaDataContexts().getMetaData()));
+        assertThrows(IllegalArgumentException.class, () -> new ExportStorageNodesExecutor().getRows(sqlStatement, contextManager));
     }
     
     @Test
@@ -112,7 +101,7 @@ class ExportStorageNodesExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         ExportStorageNodesStatement sqlStatement = new ExportStorageNodesStatement(null, null);
-        Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(sqlStatement, contextManager.getMetaDataContexts().getMetaData());
+        Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(sqlStatement, contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is("{\"storage_nodes\":{}}"));
@@ -134,7 +123,7 @@ class ExportStorageNodesExecutorTest {
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(new ExportStorageNodesStatement(null, null), contextManager.getMetaDataContexts().getMetaData());
+        Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(new ExportStorageNodesStatement(null, null), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is(loadExpectedRow()));
@@ -148,7 +137,7 @@ class ExportStorageNodesExecutorTest {
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(new ExportStorageNodesStatement("normal_db", null), contextManager.getMetaDataContexts().getMetaData());
+        Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(new ExportStorageNodesStatement("normal_db", null), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is(loadExpectedRow()));

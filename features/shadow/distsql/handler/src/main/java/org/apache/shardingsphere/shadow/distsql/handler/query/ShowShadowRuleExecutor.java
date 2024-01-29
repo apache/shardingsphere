@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStatement;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
  * Show shadow rule executor.
  */
 @Setter
-public final class ShowShadowRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowShadowRulesStatement, ShadowRule> {
+public final class ShowShadowRuleExecutor implements DistSQLQueryExecutor<ShowShadowRulesStatement>, DistSQLExecutorRuleAware<ShadowRule> {
     
     private ShadowRule rule;
     
@@ -49,7 +51,7 @@ public final class ShowShadowRuleExecutor implements DatabaseRuleAwareRQLExecuto
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowRulesStatement sqlStatement, final ContextManager contextManager) {
         Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(rule.getConfiguration().getTables());
         Collection<ShadowDataSourceConfiguration> specifiedConfigs = isSpecified(sqlStatement)
                 ? rule.getConfiguration().getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())

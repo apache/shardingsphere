@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableNodesExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
@@ -66,7 +67,7 @@ class ShowShardingTableNodesExecutorTest {
     private void assertOrder(final ShardingRule rule) {
         ShowShardingTableNodesExecutor executor = new ShowShardingTableNodesExecutor();
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableNodesStatement("t_order", null));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableNodesStatement("t_order", null), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -77,7 +78,7 @@ class ShowShardingTableNodesExecutorTest {
     private void assertOrderItem(final ShardingRule rule) {
         ShowShardingTableNodesExecutor executor = new ShowShardingTableNodesExecutor();
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableNodesStatement("t_order_item", null));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableNodesStatement("t_order_item", null), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -88,7 +89,7 @@ class ShowShardingTableNodesExecutorTest {
     private void assertAll(final ShardingRule rule) {
         ShowShardingTableNodesExecutor executor = new ShowShardingTableNodesExecutor();
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableNodesStatement(null, null));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingTableNodesStatement(null, null), mock(ContextManager.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

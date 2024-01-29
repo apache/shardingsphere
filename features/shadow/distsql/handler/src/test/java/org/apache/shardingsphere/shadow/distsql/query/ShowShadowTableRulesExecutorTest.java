@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.query.ShowShadowTableRulesExecutor;
@@ -46,7 +47,7 @@ class ShowShadowTableRulesExecutorTest {
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShadowTableRulesStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShadowTableRulesStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.type.UnregisterStorageUnitExecutor;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -112,19 +111,20 @@ class UnregisterStorageUnitExecutorTest {
         when(database.getRuleMetaData().getInUsedStorageUnitNameAndRulesMap()).thenReturn(Collections.emptyMap());
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false);
         executor.setDatabase(database);
-        executor.execute(unregisterStorageUnitStatement);
+        executor.executeUpdate(unregisterStorageUnitStatement, contextManager);
         verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
     @Test
-    void assertStorageUnitNameNotExistedExecute() {
+    void assertExecuteUpdateWithhStorageUnitNameNotExisted() {
         when(ProxyContext.getInstance().getDatabase("foo_db").getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         executor.setDatabase(database);
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.execute(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false)));
+        assertThrows(MissingRequiredStorageUnitsException.class,
+                () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
-    void assertStorageUnitNameInUseExecute() {
+    void assertExecuteUpdateWithStorageUnitNameInUse() {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(shadowRule)));
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
@@ -132,11 +132,11 @@ class UnregisterStorageUnitExecutorTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         executor.setDatabase(database);
-        assertThrows(StorageUnitInUsedException.class, () -> executor.execute(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false)));
+        assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
-    void assertStorageUnitNameInUseWithoutIgnoreSingleTables() {
+    void assertExecuteUpdateWithStorageUnitNameInUseWithoutIgnoreSingleTables() {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(singleRule)));
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
@@ -146,7 +146,7 @@ class UnregisterStorageUnitExecutorTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         executor.setDatabase(database);
-        assertThrows(StorageUnitInUsedException.class, () -> executor.execute(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false)));
+        assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
@@ -162,7 +162,7 @@ class UnregisterStorageUnitExecutorTest {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true, false);
         executor.setDatabase(database);
-        executor.execute(unregisterStorageUnitStatement);
+        executor.executeUpdate(unregisterStorageUnitStatement, contextManager);
         verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
@@ -170,16 +170,16 @@ class UnregisterStorageUnitExecutorTest {
     void assertExecuteWithIfExists() throws SQLException {
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
         executor.setDatabase(database);
-        executor.execute(unregisterStorageUnitStatement);
+        executor.executeUpdate(unregisterStorageUnitStatement, contextManager);
         verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
     @Test
-    void assertStorageUnitNameInUseWithIfExists() {
+    void assertExecuteUpdateWithStorageUnitNameInUseWithIfExists() {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(shadowRule)));
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
         executor.setDatabase(database);
-        assertThrows(DistSQLException.class, () -> executor.execute(unregisterStorageUnitStatement));
+        assertThrows(DistSQLException.class, () -> executor.executeUpdate(unregisterStorageUnitStatement, contextManager));
     }
 }

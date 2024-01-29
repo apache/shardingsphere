@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
@@ -42,26 +43,28 @@ import java.util.stream.Collectors;
 /**
  * Alter encrypt rule executor.
  */
+@Setter
 public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        String databaseName = database.getName();
-        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
-        checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
+    public void checkBeforeUpdate(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+        checkCurrentRuleConfiguration(currentRuleConfig);
+        checkToBeAlteredRules(sqlStatement, currentRuleConfig);
         checkColumnNames(sqlStatement);
         checkToBeAlteredEncryptors(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final EncryptRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Encrypt", databaseName));
+    private void checkCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Encrypt", database.getName()));
     }
     
-    private void checkToBeAlteredRules(final String databaseName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    private void checkToBeAlteredRules(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistEncryptTableNames = getToBeAlteredEncryptTableNames(sqlStatement).stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistEncryptTableNames.isEmpty()) {
-            throw new MissingRequiredRuleException("Encrypt", databaseName, notExistEncryptTableNames);
+            throw new MissingRequiredRuleException("Encrypt", database.getName(), notExistEncryptTableNames);
         }
     }
     

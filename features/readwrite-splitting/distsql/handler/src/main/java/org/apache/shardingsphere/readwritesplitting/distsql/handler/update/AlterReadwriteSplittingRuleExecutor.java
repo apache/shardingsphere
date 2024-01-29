@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -38,10 +39,13 @@ import java.util.stream.Collectors;
 /**
  * Alter readwrite-splitting rule executor.
  */
+@Setter
 public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAlterExecutor<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         ReadwriteSplittingRuleStatementChecker.checkAlteration(database, sqlStatement.getRules(), currentRuleConfig);
     }
     

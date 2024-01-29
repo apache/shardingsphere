@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -44,7 +45,7 @@ class ShowTransactionRuleExecutorTest {
         TransactionRule rule = new TransactionRule(createTransactionRuleConfiguration(TransactionType.XA.name(), "Atomikos",
                 PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts"))), Collections.emptyMap());
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowTransactionRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowTransactionRuleStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -60,7 +61,7 @@ class ShowTransactionRuleExecutorTest {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
         TransactionRule rule = new TransactionRule(createTransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties()), Collections.emptyMap());
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowTransactionRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowTransactionRuleStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

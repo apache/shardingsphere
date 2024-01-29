@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StartMigrationStatement;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Start migration executor.
  */
-public final class StartMigrationExecutor implements UpdatableRALExecutor<StartMigrationStatement> {
+public final class StartMigrationExecutor implements DistSQLUpdateExecutor<StartMigrationStatement> {
     
     private final PipelineJobManager jobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public void executeUpdate(final StartMigrationStatement sqlStatement) {
+    public void executeUpdate(final StartMigrationStatement sqlStatement, final ContextManager contextManager) {
         jobManager.resume(sqlStatement.getJobId());
     }
     
