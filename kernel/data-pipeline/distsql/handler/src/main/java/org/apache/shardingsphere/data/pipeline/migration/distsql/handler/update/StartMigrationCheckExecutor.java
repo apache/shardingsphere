@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StartMigrationCheckStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StartMigrationCheckStatement;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Start migration check executor.
  */
-public final class StartMigrationCheckExecutor implements UpdatableRALExecutor<StartMigrationCheckStatement> {
+public final class StartMigrationCheckExecutor implements DistSQLUpdateExecutor<StartMigrationCheckStatement> {
     
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
     @Override
-    public void executeUpdate(final StartMigrationCheckStatement sqlStatement) {
+    public void executeUpdate(final StartMigrationCheckStatement sqlStatement, final ContextManager contextManager) {
         jobAPI.resume(sqlStatement.getJobId());
     }
     

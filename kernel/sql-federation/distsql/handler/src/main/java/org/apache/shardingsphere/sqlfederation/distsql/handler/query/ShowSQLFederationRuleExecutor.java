@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.sqlfederation.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.GlobalRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.queryable.ShowSQLFederationRuleStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
@@ -32,7 +34,7 @@ import java.util.Collections;
  * Show SQL federation rule executor.
  */
 @Setter
-public final class ShowSQLFederationRuleExecutor implements GlobalRuleAwareRQLExecutor<ShowSQLFederationRuleStatement, SQLFederationRule> {
+public final class ShowSQLFederationRuleExecutor implements DistSQLQueryExecutor<ShowSQLFederationRuleStatement>, DistSQLExecutorRuleAware<SQLFederationRule> {
     
     private SQLFederationRule rule;
     
@@ -42,7 +44,7 @@ public final class ShowSQLFederationRuleExecutor implements GlobalRuleAwareRQLEx
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLFederationRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLFederationRuleStatement sqlStatement, final ContextManager contextManager) {
         SQLFederationRuleConfiguration ruleConfig = rule.getConfiguration();
         String sqlFederationEnabled = String.valueOf(ruleConfig.isSqlFederationEnabled());
         String allQueryUseSQLFederation = String.valueOf(ruleConfig.isAllQueryUseSQLFederation());

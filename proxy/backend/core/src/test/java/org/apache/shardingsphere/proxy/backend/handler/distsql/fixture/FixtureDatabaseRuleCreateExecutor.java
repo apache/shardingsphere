@@ -23,16 +23,16 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCreateExecutor<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
     
     @Override
+    public void checkBeforeUpdate(final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
+    }
+    
+    @Override
     public FixtureRuleConfiguration buildToBeCreatedRuleConfiguration(final FixtureRuleConfiguration currentRuleConfig, final CreateFixtureRuleStatement sqlStatement) {
         return new FixtureRuleConfiguration();
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final FixtureRuleConfiguration currentRuleConfig, final FixtureRuleConfiguration toBeCreatedRuleConfig) {
-    }
-    
-    @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
     }
     
     @Override
@@ -43,5 +43,9 @@ public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCrea
     @Override
     public Class<CreateFixtureRuleStatement> getType() {
         return CreateFixtureRuleStatement.class;
+    }
+    
+    @Override
+    public void setDatabase(final ShardingSphereDatabase database) {
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
@@ -42,17 +43,32 @@ import java.util.stream.Collectors;
 /**
  * Create encrypt rule executor.
  */
+@Setter
 public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecutor<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfNotExists()) {
-            checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
+            checkDuplicateRuleNames(sqlStatement, currentRuleConfig);
         }
         checkColumnNames(sqlStatement);
         checkAlgorithmTypes(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
-        checkDataSources(database);
+        checkDataSources();
+    }
+    
+    private void checkColumnNames(final CreateEncryptRuleStatement sqlStatement) {
+        for (EncryptRuleSegment each : sqlStatement.getRules()) {
+            ShardingSpherePreconditions.checkState(isColumnNameNotConflicts(each),
+                    () -> new InvalidRuleConfigurationException("encrypt", "assisted query column or like query column conflicts with logic column"));
+        }
+    }
+    
+    private boolean isColumnNameNotConflicts(final EncryptRuleSegment rule) {
+        return rule.getColumns().stream().noneMatch(each -> null != each.getLikeQuery() && each.getName().equals(each.getLikeQuery().getName())
+                || null != each.getAssistedQuery() && each.getName().equals(each.getAssistedQuery().getName()));
     }
     
     private void checkAlgorithmTypes(final CreateEncryptRuleStatement sqlStatement) {
@@ -88,9 +104,9 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
                 () -> new InvalidAlgorithmConfigurationException("assisted encrypt", encryptAlgorithm.getType()));
     }
     
-    private void checkDuplicateRuleNames(final String databaseName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    private void checkDuplicateRuleNames(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
-        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("encrypt", databaseName, duplicatedRuleNames));
+        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("encrypt", database.getName(), duplicatedRuleNames));
     }
     
     private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
@@ -99,18 +115,6 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
             currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
         }
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toSet());
-    }
-    
-    private void checkColumnNames(final CreateEncryptRuleStatement sqlStatement) {
-        for (EncryptRuleSegment each : sqlStatement.getRules()) {
-            ShardingSpherePreconditions.checkState(isColumnNameNotConflicts(each),
-                    () -> new InvalidRuleConfigurationException("encrypt", "assisted query column or like query column conflicts with logic column"));
-        }
-    }
-    
-    private boolean isColumnNameNotConflicts(final EncryptRuleSegment rule) {
-        return rule.getColumns().stream().noneMatch(each -> null != each.getLikeQuery() && each.getName().equals(each.getLikeQuery().getName())
-                || null != each.getAssistedQuery() && each.getName().equals(each.getAssistedQuery().getName()));
     }
     
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
@@ -127,7 +131,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
         encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
     }
     
-    private void checkDataSources(final ShardingSphereDatabase database) {
+    private void checkDataSources() {
         ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
     }
     

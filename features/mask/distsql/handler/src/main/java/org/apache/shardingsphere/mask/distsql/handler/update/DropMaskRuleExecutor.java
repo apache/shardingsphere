@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -38,21 +39,24 @@ import java.util.stream.Collectors;
 /**
  * Drop mask rule statement executor.
  */
+@Setter
 public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<DropMaskRuleStatement, MaskRuleConfiguration> {
     
+    private ShardingSphereDatabase database;
+    
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        checkToBeDroppedMaskTableNames(database.getName(), sqlStatement, currentRuleConfig);
+    public void checkBeforeUpdate(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+        checkToBeDroppedMaskTableNames(sqlStatement, currentRuleConfig);
     }
     
-    private void checkToBeDroppedMaskTableNames(final String databaseName, final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    private void checkToBeDroppedMaskTableNames(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists()) {
             return;
         }
-        ShardingSpherePreconditions.checkState(isExistRuleConfig(currentRuleConfig), () -> new MissingRequiredRuleException("Mask", databaseName));
+        ShardingSpherePreconditions.checkState(isExistRuleConfig(currentRuleConfig), () -> new MissingRequiredRuleException("Mask", database.getName()));
         Collection<String> currentMaskTableNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Mask", databaseName, notExistedTableNames));
+        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedTableNames));
     }
     
     @Override

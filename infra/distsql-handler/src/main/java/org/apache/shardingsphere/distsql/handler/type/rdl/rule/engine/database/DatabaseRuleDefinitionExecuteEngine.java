@@ -49,7 +49,8 @@ public final class DatabaseRuleDefinitionExecuteEngine {
     public void executeUpdate() {
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
-        executor.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        executor.setDatabase(database);
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
         if (getRefreshStatus(currentRuleConfig)) {
             contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
                     .switchActiveVersion(DatabaseRuleOperatorFactory.newInstance(contextManager, executor).operate(sqlStatement, database, currentRuleConfig));

@@ -22,13 +22,12 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -40,26 +39,12 @@ import static org.mockito.Mockito.when;
 class ShowComputeNodeInfoExecutorTest {
     
     @Test
-    void assertGetColumns() {
-        ShowComputeNodeInfoExecutor executor = new ShowComputeNodeInfoExecutor();
-        Collection<String> actual = executor.getColumnNames();
-        assertThat(actual.size(), is(8));
-        Iterator<String> iterator = actual.iterator();
-        assertThat(iterator.next(), is("instance_id"));
-        assertThat(iterator.next(), is("host"));
-        assertThat(iterator.next(), is("port"));
-        assertThat(iterator.next(), is("status"));
-        assertThat(iterator.next(), is("mode_type"));
-        assertThat(iterator.next(), is("worker_id"));
-        assertThat(iterator.next(), is("labels"));
-        assertThat(iterator.next(), is("version"));
-    }
-    
-    @Test
     void assertExecute() {
         ShowComputeNodeInfoExecutor executor = new ShowComputeNodeInfoExecutor();
-        executor.setInstanceContext(createInstanceContext());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodeInfoStatement.class), mock(ShardingSphereMetaData.class));
+        ContextManager contextManager = mock(ContextManager.class);
+        InstanceContext instanceContext = createInstanceContext();
+        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodeInfoStatement.class), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));

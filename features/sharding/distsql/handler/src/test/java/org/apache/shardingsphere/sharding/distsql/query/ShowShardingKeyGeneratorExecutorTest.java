@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingKeyGeneratorExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
@@ -43,7 +44,7 @@ class ShowShardingKeyGeneratorExecutorTest {
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
         ShowShardingKeyGeneratorExecutor executor = new ShowShardingKeyGeneratorExecutor();
         executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingKeyGeneratorsStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingKeyGeneratorsStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();

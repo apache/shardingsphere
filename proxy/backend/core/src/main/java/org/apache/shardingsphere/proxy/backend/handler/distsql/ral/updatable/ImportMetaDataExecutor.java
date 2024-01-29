@@ -19,15 +19,15 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
@@ -42,14 +42,14 @@ import java.util.Collection;
 /**
  * Import meta data executor.
  */
-public final class ImportMetaDataExecutor implements UpdatableRALExecutor<ImportMetaDataStatement> {
+public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<ImportMetaDataStatement> {
     
     private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     
     private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
     @Override
-    public void executeUpdate(final ImportMetaDataStatement sqlStatement) throws SQLException {
+    public void executeUpdate(final ImportMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         String jsonMetaDataConfig;
         if (sqlStatement.getFilePath().isPresent()) {
             File file = new File(sqlStatement.getFilePath().get());
@@ -63,18 +63,18 @@ public final class ImportMetaDataExecutor implements UpdatableRALExecutor<Import
         }
         ExportedClusterInfo exportedClusterInfo = JsonUtils.fromJsonString(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();
-        importServerConfig(exportedMetaData);
+        importServerConfig(contextManager, exportedMetaData);
         importDatabase(exportedMetaData);
     }
     
-    private void importServerConfig(final ExportedMetaData exportedMetaData) {
+    private void importServerConfig(final ContextManager contextManager, final ExportedMetaData exportedMetaData) {
         YamlProxyServerConfiguration yamlServerConfig = YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
         if (null == yamlServerConfig) {
             return;
         }
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(rules);
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterProperties(yamlServerConfig.getProps());
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(rules);
+        contextManager.getInstanceContext().getModeContextManager().alterProperties(yamlServerConfig.getProps());
     }
     
     private void importDatabase(final ExportedMetaData exportedMetaData) {

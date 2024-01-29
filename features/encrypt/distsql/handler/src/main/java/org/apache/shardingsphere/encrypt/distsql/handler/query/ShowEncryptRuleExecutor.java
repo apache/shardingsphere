@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.type.rql.aware.DatabaseRuleAwareRQLExecutor;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
  * Show encrypt rule executor.
  */
 @Setter
-public final class ShowEncryptRuleExecutor implements DatabaseRuleAwareRQLExecutor<ShowEncryptRulesStatement, EncryptRule> {
+public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowEncryptRulesStatement>, DistSQLExecutorRuleAware<EncryptRule> {
     
     private EncryptRule rule;
     
@@ -50,7 +52,7 @@ public final class ShowEncryptRuleExecutor implements DatabaseRuleAwareRQLExecut
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptRulesStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptRulesStatement sqlStatement, final ContextManager contextManager) {
         EncryptRuleConfiguration ruleConfig = (EncryptRuleConfiguration) rule.getConfiguration();
         return buildData(ruleConfig, sqlStatement);
     }

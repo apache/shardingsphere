@@ -32,12 +32,12 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 public interface GlobalRuleDefinitionExecutor<T extends RuleDefinitionStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
-     * Check SQL statement.
+     * Check before update.
      *
      * @param currentRuleConfig current rule configuration
      * @param sqlStatement SQL statement
      */
-    void checkSQLStatement(R currentRuleConfig, T sqlStatement);
+    void checkBeforeUpdate(R currentRuleConfig, T sqlStatement);
     
     /**
      * Build altered rule configuration.

@@ -19,8 +19,9 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.RegisterMigrationSourceStorageUnitStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.distsql.handler.type.ral.update.UpdatableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
@@ -33,7 +34,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.RegisterMigrationSourceStorageUnitStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,22 +43,26 @@ import java.util.Map;
 /**
  * Register migration source storage unit executor.
  */
-public final class RegisterMigrationSourceStorageUnitExecutor implements UpdatableRALExecutor<RegisterMigrationSourceStorageUnitStatement> {
+public final class RegisterMigrationSourceStorageUnitExecutor implements DistSQLUpdateExecutor<RegisterMigrationSourceStorageUnitStatement> {
     
     private final MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
     
     private final DataSourcePoolPropertiesValidator validateHandler = new DataSourcePoolPropertiesValidator();
     
     @Override
-    public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
+    public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        checkDataSource(sqlStatement);
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
-        ShardingSpherePreconditions.checkState(dataSources.stream().noneMatch(HostnameAndPortBasedDataSourceSegment.class::isInstance),
-                () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeFactory.get(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
         validateHandler.validate(propsMap);
         jobAPI.addMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), propsMap);
+    }
+    
+    private void checkDataSource(final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
+        ShardingSpherePreconditions.checkState(sqlStatement.getDataSources().stream().noneMatch(HostnameAndPortBasedDataSourceSegment.class::isInstance),
+                () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
     }
     
     @Override
