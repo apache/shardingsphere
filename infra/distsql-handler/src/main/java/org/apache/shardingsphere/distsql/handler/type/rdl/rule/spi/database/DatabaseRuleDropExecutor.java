@@ -36,22 +36,22 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Rule
      * TODO Remove temporary default implementation
      * Build to be dropped rule configuration.
      *
-     * @param currentRuleConfig current rule configuration to be updated
      * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration to be updated
      * @return to be dropped rule configuration
      */
-    default R buildToBeDroppedRuleConfiguration(final R currentRuleConfig, final T sqlStatement) {
+    default R buildToBeDroppedRuleConfiguration(final T sqlStatement, final R currentRuleConfig) {
         return null;
     }
     
     /**
      * Build to be altered rule configuration.
      *
-     * @param currentRuleConfig current rule configuration to be updated
      * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration to be updated
      * @return to be altered rule configuration
      */
-    default R buildToBeAlteredRuleConfiguration(final R currentRuleConfig, final T sqlStatement) {
+    default R buildToBeAlteredRuleConfiguration(final T sqlStatement, final R currentRuleConfig) {
         return null;
     }
     

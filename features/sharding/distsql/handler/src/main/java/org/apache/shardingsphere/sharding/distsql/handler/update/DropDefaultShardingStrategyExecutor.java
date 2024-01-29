@@ -75,7 +75,7 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDr
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropDefaultShardingStrategyStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
             result.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
