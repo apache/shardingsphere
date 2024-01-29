@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi;
+package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,21 +29,19 @@ import java.nio.charset.StandardCharsets;
 /**
  * Classpath URL provider.
  */
-public final class ClasspathURLProvider implements ShardingSphereURLProvider {
+public final class ClasspathURLProvider extends AbstractClasspathURLProvider {
     
-    private static final String CLASSPATH_TYPE = "classpath:";
+    private static final String TYPE_PREFIX = "classpath:";
     
     @Override
     public boolean accept(final String url) {
-        return !Strings.isNullOrEmpty(url) && url.contains(CLASSPATH_TYPE);
+        return !Strings.isNullOrEmpty(url) && url.contains(TYPE_PREFIX);
     }
     
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
-        String file = configuredFile.substring(CLASSPATH_TYPE.length());
-        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere URL.");
+        String file = getConfigurationFile(url, urlPrefix, TYPE_PREFIX);
         try (
                 InputStream stream = getResourceAsStream(file);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
@@ -58,14 +54,5 @@ public final class ClasspathURLProvider implements ShardingSphereURLProvider {
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);
         }
-    }
-    
-    private InputStream getResourceAsStream(final String resource) {
-        InputStream result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
-        result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
-        if (null != result) {
-            return result;
-        }
-        throw new IllegalArgumentException(String.format("Can not find configuration file `%s`.", resource));
     }
 }
