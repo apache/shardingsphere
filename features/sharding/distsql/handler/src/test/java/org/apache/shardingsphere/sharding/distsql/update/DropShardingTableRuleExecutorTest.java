@@ -62,7 +62,6 @@ class DropShardingTableRuleExecutorTest {
     @Test
     void assertCheckSQLStatementWithoutExistedTableRule() throws RuleDefinitionViolationException {
         assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order"), new ShardingRuleConfiguration()));
-        
     }
     
     @Test
