@@ -137,11 +137,11 @@ class CreateReadwriteSplittingRuleExecutorTest {
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(dataSourceContainedRule));
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"),
                 new AlgorithmSegment("TEST", new Properties()));
-        CreateReadwriteSplittingRuleStatement statement = createSQLStatement(false, staticSegment);
+        CreateReadwriteSplittingRuleStatement sqlStatement = createSQLStatement(false, staticSegment);
         executor.setDatabase(database);
-        executor.checkBeforeUpdate(statement, null);
+        executor.checkBeforeUpdate(sqlStatement, null);
         ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
-        ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
+        ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getDataSources().size(), is(1));
     }
