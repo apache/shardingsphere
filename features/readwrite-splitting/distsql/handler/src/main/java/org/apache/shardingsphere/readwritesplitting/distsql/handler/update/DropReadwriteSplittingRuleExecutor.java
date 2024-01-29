@@ -98,7 +98,7 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final DropReadwriteSplittingRuleStatement sqlStatement) {
+    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> toBeDroppedDataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> toBeDroppedLoadBalancers = new HashMap<>();
         for (String each : sqlStatement.getNames()) {

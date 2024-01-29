@@ -34,7 +34,7 @@ class AlterGlobalClockRuleExecutorTest {
     void assertExecute() {
         AlterGlobalClockRuleExecutor executor = new AlterGlobalClockRuleExecutor();
         AlterGlobalClockRuleStatement sqlStatement = new AlterGlobalClockRuleStatement("TSO", "redis", Boolean.TRUE, PropertiesBuilder.build(new Property("host", "127.0.0.1")));
-        GlobalClockRuleConfiguration actual = executor.buildAlteredRuleConfiguration(getSQLParserRuleConfiguration(), sqlStatement);
+        GlobalClockRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement, getSQLParserRuleConfiguration());
         assertThat(actual.getType(), is("TSO"));
         assertThat(actual.getProvider(), is("redis"));
         assertTrue(actual.isEnabled());

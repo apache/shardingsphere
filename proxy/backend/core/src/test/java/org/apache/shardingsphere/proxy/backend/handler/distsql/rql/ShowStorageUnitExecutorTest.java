@@ -61,7 +61,7 @@ class ShowStorageUnitExecutorTest {
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    void before() {
+    void setUp() {
         ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSources());
         RuleMetaData metaData = new RuleMetaData(Collections.singleton(createShardingRule()));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);

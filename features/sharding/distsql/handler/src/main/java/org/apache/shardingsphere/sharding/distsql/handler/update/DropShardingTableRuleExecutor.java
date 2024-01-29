@@ -109,7 +109,7 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingTableRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Collection<String> toBeDroppedShardingTableNames = getToBeDroppedShardingTableNames(sqlStatement);
         for (String each : toBeDroppedShardingTableNames) {

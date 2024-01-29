@@ -66,7 +66,7 @@ class CreateMaskRuleExecutorTest {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
         executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
-        MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
+        MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(4));
         assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
@@ -78,11 +78,11 @@ class CreateMaskRuleExecutorTest {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
         executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
-        MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
+        MaskRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         sqlStatement = createSQLStatement(true, "MD5");
         executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
-        toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
+        toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(4));
         assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));

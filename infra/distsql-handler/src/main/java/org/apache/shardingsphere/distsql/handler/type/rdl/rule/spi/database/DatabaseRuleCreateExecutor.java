@@ -31,11 +31,11 @@ public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends Ru
     /**
      * Build to be created rule configuration.
      *
-     * @param currentRuleConfig current rule configuration to be updated
      * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration to be updated
      * @return to be created rule configuration
      */
-    R buildToBeCreatedRuleConfiguration(R currentRuleConfig, T sqlStatement);
+    R buildToBeCreatedRuleConfiguration(T sqlStatement, R currentRuleConfig);
     
     /**
      * Update current rule configuration.

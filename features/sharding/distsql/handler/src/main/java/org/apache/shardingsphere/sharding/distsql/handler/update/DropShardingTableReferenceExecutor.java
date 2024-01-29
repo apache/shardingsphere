@@ -69,7 +69,7 @@ public final class DropShardingTableReferenceExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final DropShardingTableReferenceRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration(each, ""));
