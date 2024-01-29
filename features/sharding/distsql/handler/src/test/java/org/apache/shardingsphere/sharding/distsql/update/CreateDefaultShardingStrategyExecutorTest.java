@@ -46,7 +46,7 @@ class CreateDefaultShardingStrategyExecutorTest {
     private final CreateDefaultShardingStrategyExecutor executor = new CreateDefaultShardingStrategyExecutor();
     
     @BeforeEach
-    void before() {
+    void setUp() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         executor.setDatabase(database);
