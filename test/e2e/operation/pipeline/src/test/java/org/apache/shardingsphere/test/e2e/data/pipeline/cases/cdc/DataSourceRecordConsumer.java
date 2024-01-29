@@ -20,8 +20,6 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.cdc;
 import com.google.common.base.Strings;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.ProtobufAnyValueConverter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.DataChangeType;
@@ -29,6 +27,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.SQLBuilderUtils;
 
@@ -41,7 +41,6 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -119,13 +118,18 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         MetaData metaData = ingestedRecord.getMetaData();
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            Map<String, TableColumn> afterMap = new LinkedHashMap<>(ingestedRecord.getBeforeList().size(), 1F);
-            ingestedRecord.getAfterList().forEach(each -> afterMap.put(each.getName(), each));
+            Object orderId;
+            int updateCount;
             switch (ingestedRecord.getDataChangeType()) {
                 case INSERT:
                     for (int i = 0; i < ingestedRecord.getAfterCount(); i++) {
                         TableColumn tableColumn = ingestedRecord.getAfterList().get(i);
                         preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumn));
+                    }
+                    updateCount = preparedStatement.executeUpdate();
+                    if (1 != updateCount) {
+                        log.warn("Execute insert failed, update count: {}, sql: {}, values: {}", updateCount, sql,
+                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).collect(Collectors.toList()));
                     }
                     break;
                 case UPDATE:
@@ -133,19 +137,23 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                         TableColumn tableColumn = ingestedRecord.getAfterList().get(i);
                         preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumn));
                     }
-                    preparedStatement.setObject(ingestedRecord.getAfterCount() + 1, convertValueFromAny(tableMetaData, afterMap.get("order_id")));
+                    orderId = convertValueFromAny(tableMetaData, getOrderIdTableColumn(ingestedRecord.getAfterList()));
+                    preparedStatement.setObject(ingestedRecord.getAfterCount() + 1, orderId);
+                    updateCount = preparedStatement.executeUpdate();
+                    if (1 != updateCount) {
+                        log.warn("Execute update failed, update count: {}, sql: {}, orderId: {}, updated columns: {}", updateCount, sql, orderId,
+                                ingestedRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList()));
+                    }
                     break;
                 case DELETE:
-                    TableColumn orderId = ingestedRecord.getBeforeList().stream().filter(each -> "order_id".equals(each.getName())).findFirst()
-                            .orElseThrow(() -> new UnsupportedOperationException("No primary key found in the t_order"));
-                    preparedStatement.setObject(1, convertValueFromAny(tableMetaData, orderId));
-                    preparedStatement.execute();
+                    orderId = convertValueFromAny(tableMetaData, getOrderIdTableColumn(ingestedRecord.getBeforeList()));
+                    preparedStatement.setObject(1, orderId);
+                    updateCount = preparedStatement.executeUpdate();
+                    if (1 != updateCount) {
+                        log.warn("Execute delete failed, update count: {}, sql: {}, orderId: {}", updateCount, sql, orderId);
+                    }
                     break;
                 default:
-            }
-            int updateCount = preparedStatement.executeUpdate();
-            if (1 != updateCount) {
-                log.warn("executeUpdate failed, update count: {}, sql: {}, updated columns: {}", updateCount, sql, afterMap.keySet());
             }
         }
     }
@@ -178,6 +186,11 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+    
+    private TableColumn getOrderIdTableColumn(final List<TableColumn> tableColumns) {
+        return tableColumns.stream().filter(each -> "order_id".equals(each.getName())).findFirst()
+                .orElseThrow(() -> new UnsupportedOperationException("No primary key found in the t_order"));
     }
     
     private Object convertValueFromAny(final PipelineTableMetaData tableMetaData, final TableColumn tableColumn) {
