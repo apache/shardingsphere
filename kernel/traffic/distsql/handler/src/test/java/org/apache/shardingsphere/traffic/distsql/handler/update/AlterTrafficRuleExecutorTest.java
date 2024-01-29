@@ -46,7 +46,7 @@ class AlterTrafficRuleExecutorTest {
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
         assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkBeforeUpdate(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
+                () -> executor.checkBeforeUpdate(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), createTrafficRuleConfiguration()));
     }
     
     @Test
@@ -55,7 +55,7 @@ class AlterTrafficRuleExecutorTest {
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         AlterTrafficRuleExecutor executor = new AlterTrafficRuleExecutor();
         assertThrows(ServiceProviderNotFoundException.class,
-                () -> executor.checkBeforeUpdate(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
+                () -> executor.checkBeforeUpdate(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), createTrafficRuleConfiguration()));
     }
     
     @Test

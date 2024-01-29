@@ -34,10 +34,10 @@ public interface GlobalRuleDefinitionExecutor<T extends RuleDefinitionStatement,
     /**
      * Check before update.
      *
-     * @param currentRuleConfig current rule configuration
      * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration
      */
-    void checkBeforeUpdate(R currentRuleConfig, T sqlStatement);
+    void checkBeforeUpdate(T sqlStatement, R currentRuleConfig);
     
     /**
      * Build altered rule configuration.

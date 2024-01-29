@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public final class AlterTrafficRuleExecutor implements GlobalRuleDefinitionExecutor<AlterTrafficRuleStatement, TrafficRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentRuleConfig) {
         checkRuleNames(currentRuleConfig, sqlStatement);
         checkAlgorithmNames(sqlStatement);
     }
