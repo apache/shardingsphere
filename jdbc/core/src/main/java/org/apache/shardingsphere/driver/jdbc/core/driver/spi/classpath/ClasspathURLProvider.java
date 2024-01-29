@@ -31,17 +31,17 @@ import java.nio.charset.StandardCharsets;
  */
 public final class ClasspathURLProvider extends AbstractClasspathURLProvider {
     
-    private static final String TYPE_PREFIX = "classpath:";
+    private static final String PATH_TYPE = "classpath:";
     
     @Override
     public boolean accept(final String url) {
-        return !Strings.isNullOrEmpty(url) && url.contains(TYPE_PREFIX);
+        return !Strings.isNullOrEmpty(url) && url.contains(PATH_TYPE);
     }
     
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = getConfigurationFile(url, urlPrefix, TYPE_PREFIX);
+        String file = getConfigurationFile(url, urlPrefix, PATH_TYPE);
         try (
                 InputStream stream = getResourceAsStream(file);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
