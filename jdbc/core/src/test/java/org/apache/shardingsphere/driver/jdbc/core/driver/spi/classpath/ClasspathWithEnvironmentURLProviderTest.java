@@ -35,7 +35,6 @@ public class ClasspathWithEnvironmentURLProviderTest {
         when(spy.getEnvironmentVariables("FIXTURE_USERNAME")).thenReturn("sa");
         byte[] actual = spy.getContent("jdbc:shardingsphere:classpath-environment:config/driver/foo-driver-environment-variables-fixture.yaml", urlPrefix);
         byte[] actualOrigin = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
-        assertThat(actual.length, is(999));
         assertThat(actual, is(actualOrigin));
     }
 }
