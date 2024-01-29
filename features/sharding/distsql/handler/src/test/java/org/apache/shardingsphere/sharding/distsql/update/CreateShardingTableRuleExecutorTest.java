@@ -75,7 +75,7 @@ class CreateShardingTableRuleExecutorTest {
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
     @BeforeEach
-    void before() {
+    void setUp() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("schema");
         ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSource());

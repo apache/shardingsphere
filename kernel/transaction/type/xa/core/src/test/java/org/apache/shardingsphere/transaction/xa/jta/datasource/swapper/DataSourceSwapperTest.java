@@ -41,7 +41,7 @@ class DataSourceSwapperTest {
     private XADataSourceDefinition xaDataSourceDefinition;
     
     @BeforeEach
-    void before() {
+    void setUp() {
         when(xaDataSourceDefinition.getXADriverClassNames()).thenReturn(ImmutableList.of("org.h2.jdbcx.JdbcDataSource"));
     }
     
