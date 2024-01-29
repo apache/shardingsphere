@@ -90,7 +90,7 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     }
     
     @Override
-    public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final UnloadSingleTableStatement sqlStatement) {
+    public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         currentRuleConfig.getDefaultDataSource().ifPresent(result::setDefaultDataSource);
         if (!sqlStatement.isUnloadAllTables()) {

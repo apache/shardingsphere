@@ -81,7 +81,7 @@ class AlterMaskRuleExecutorTest {
                 new AlgorithmSegment("MD5", new Properties()));
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_order", Collections.singleton(columnSegment));
         AlterMaskRuleStatement sqlStatement = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
-        MaskRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
+        MaskRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getMaskAlgorithms().size(), is(1));
         assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_order_order_id_md5"));
