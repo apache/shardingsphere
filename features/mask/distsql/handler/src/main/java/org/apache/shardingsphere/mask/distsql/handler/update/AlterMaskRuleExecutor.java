@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Alter mask rule executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Mask")
 @Setter
 public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<AlterMaskRuleStatement, MaskRuleConfiguration> {
     
@@ -46,12 +48,7 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
     
     @Override
     public void checkBeforeUpdate(final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        checkCurrentRuleConfiguration(currentRuleConfig);
         checkToBeAlteredRules(sqlStatement, currentRuleConfig);
-    }
-    
-    private void checkCurrentRuleConfiguration(final MaskRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Mask", database.getName()));
     }
     
     private void checkToBeAlteredRules(final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
