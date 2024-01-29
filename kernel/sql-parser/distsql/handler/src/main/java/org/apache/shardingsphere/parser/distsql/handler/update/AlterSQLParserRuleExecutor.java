@@ -33,7 +33,7 @@ public final class AlterSQLParserRuleExecutor implements GlobalRuleDefinitionExe
     }
     
     @Override
-    public SQLParserRuleConfiguration buildAlteredRuleConfiguration(final SQLParserRuleConfiguration currentRuleConfig, final AlterSQLParserRuleStatement sqlStatement) {
+    public SQLParserRuleConfiguration buildAlteredRuleConfiguration(final AlterSQLParserRuleStatement sqlStatement, final SQLParserRuleConfiguration currentRuleConfig) {
         CacheOption parseTreeCache = null == sqlStatement.getParseTreeCache()
                 ? currentRuleConfig.getParseTreeCache()
                 : createCacheOption(currentRuleConfig.getParseTreeCache(), sqlStatement.getParseTreeCache());

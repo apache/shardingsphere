@@ -33,7 +33,7 @@ class AlterSQLFederationRuleExecutorTest {
     void assertExecute() {
         AlterSQLFederationRuleExecutor executor = new AlterSQLFederationRuleExecutor();
         AlterSQLFederationRuleStatement sqlStatement = new AlterSQLFederationRuleStatement(true, true, new CacheOptionSegment(64, 512L));
-        SQLFederationRuleConfiguration actual = executor.buildAlteredRuleConfiguration(getSQLFederationRuleConfiguration(), sqlStatement);
+        SQLFederationRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement, getSQLFederationRuleConfiguration());
         assertTrue(actual.isSqlFederationEnabled());
         assertTrue(actual.isAllQueryUseSQLFederation());
         assertThat(actual.getExecutionPlanCache().getInitialCapacity(), is(64));

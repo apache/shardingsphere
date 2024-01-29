@@ -61,7 +61,7 @@ public final class GlobalRuleDefinitionExecuteEngine {
     
     @SuppressWarnings("unchecked")
     private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigs, final RuleDefinitionStatement sqlStatement, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration result = executor.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
+        RuleConfiguration result = executor.buildAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
         ruleConfigs.remove(currentRuleConfig);
         ruleConfigs.add(result);
         return result;
