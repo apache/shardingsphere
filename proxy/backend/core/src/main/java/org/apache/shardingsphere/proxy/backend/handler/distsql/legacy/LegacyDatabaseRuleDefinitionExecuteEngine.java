@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.legacy;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.legacy;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;

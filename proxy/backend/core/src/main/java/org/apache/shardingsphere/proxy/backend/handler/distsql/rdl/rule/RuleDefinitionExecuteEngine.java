@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.legacy.LegacyDatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.legacy.LegacyGlobalRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
@@ -29,10 +28,12 @@ import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatem
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.legacy.LegacyDatabaseRuleDefinitionExecuteEngine;
 
 import java.util.Optional;
 
 /**
+ *  // TODO Remove this to distsql-handler module.
  * Rule definition execute engine.
  */
 @RequiredArgsConstructor
