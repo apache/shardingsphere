@@ -69,5 +69,8 @@ ds_1:
     password:
 ```
 
+Example:
+- `jdbc:shardingsphere:classpath-environment:config.yaml`
+
 ### Other implementations
 For details, please refer to https://github.com/apache/shardingsphere-plugin .

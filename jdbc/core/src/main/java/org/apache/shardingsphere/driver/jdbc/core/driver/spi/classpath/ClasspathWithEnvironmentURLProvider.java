@@ -66,22 +66,20 @@ public final class ClasspathWithEnvironmentURLProvider extends AbstractClasspath
     
     private String replaceEnvironmentVariables(final String line) {
         Matcher matcher = PATTERN.matcher(line);
-        if (matcher.find()) {
-            StringBuffer modifiedLine = new StringBuffer();
-            String[] envNameAndDefaultValue = matcher.group(1).split(KEY_VALUE_SEPARATOR, 2);
-            String envName = envNameAndDefaultValue[0];
-            String envValue = getEnvironmentVariables(envName);
-            if (Strings.isNullOrEmpty(envValue) && envNameAndDefaultValue[1].isEmpty()) {
-                matcher.appendReplacement(modifiedLine, "");
-                return modifiedLine.substring(0, modifiedLine.length() - 1);
-            }
-            if (Strings.isNullOrEmpty(envValue)) {
-                envValue = envNameAndDefaultValue[1];
-            }
-            matcher.appendReplacement(modifiedLine, envValue);
-            return modifiedLine.toString();
+        if (!matcher.find()) {
+            return line;
         }
-        return line;
+        String[] envNameAndDefaultValue = matcher.group(1).split(KEY_VALUE_SEPARATOR, 2);
+        String envName = envNameAndDefaultValue[0];
+        String envValue = getEnvironmentVariables(envName);
+        if (Strings.isNullOrEmpty(envValue) && envNameAndDefaultValue[1].isEmpty()) {
+            String modifiedLineWithSpace = matcher.replaceAll("");
+            return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
+        }
+        if (Strings.isNullOrEmpty(envValue)) {
+            envValue = envNameAndDefaultValue[1];
+        }
+        return matcher.replaceAll(envValue);
     }
     
     /**
