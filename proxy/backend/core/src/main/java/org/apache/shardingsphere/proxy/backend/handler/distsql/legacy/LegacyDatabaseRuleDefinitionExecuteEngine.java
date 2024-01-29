@@ -18,13 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.legacy;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.DropRuleStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -62,7 +66,7 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.setDatabase(database);
-        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+        checkBeforeUpdate(currentRuleConfig);
         if (getRefreshStatus(sqlStatement, currentRuleConfig, executor)) {
             contextManager.getInstanceContext().getModeContextManager()
                     .alterRuleConfiguration(database.getName(), processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
@@ -71,6 +75,19 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     
     private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {
         return database.getRuleMetaData().getConfigurations().stream().filter(each -> ruleConfigClass.isAssignableFrom(each.getClass())).findFirst();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void checkBeforeUpdate(final RuleConfiguration currentRuleConfig) {
+        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(currentRuleConfig, optional));
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+    }
+    
+    private void checkCurrentRule(final RuleConfiguration currentRuleConfig, final DistSQLExecutorCurrentRuleRequired currentRuleRequired) {
+        if (sqlStatement instanceof DropRuleStatement && ((DropRuleStatement) sqlStatement).isIfExists()) {
+            return;
+        }
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException(currentRuleRequired.value(), database.getName()));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
