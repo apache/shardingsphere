@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
  * Create encrypt rule executor.
  */
 public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecutor<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
+    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfNotExists()) {

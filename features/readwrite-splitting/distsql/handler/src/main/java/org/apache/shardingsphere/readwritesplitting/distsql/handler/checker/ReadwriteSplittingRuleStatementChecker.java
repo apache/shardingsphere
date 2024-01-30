@@ -51,6 +51,7 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingRuleStatementChecker {
+    
     /**
      * Check create readwrite-splitting rule statement.
      *
