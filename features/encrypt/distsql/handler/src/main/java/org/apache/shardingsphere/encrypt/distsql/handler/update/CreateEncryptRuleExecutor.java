@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegment;
+import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -122,16 +123,18 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
         Collection<AlgorithmSegment> encryptors = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> {
-            encryptors.add(column.getCipher().getEncryptor());
-            if (null != column.getAssistedQuery()) {
-                encryptors.add(column.getAssistedQuery().getEncryptor());
-            }
-            if (null != column.getLikeQuery()) {
-                encryptors.add(column.getLikeQuery().getEncryptor());
-            }
-        }));
+        sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> addToEncryptors(column, encryptors)));
         encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
+    }
+    
+    private void addToEncryptors(final EncryptColumnSegment column, final Collection<AlgorithmSegment> result) {
+        result.add(column.getCipher().getEncryptor());
+        if (null != column.getAssistedQuery()) {
+            result.add(column.getAssistedQuery().getEncryptor());
+        }
+        if (null != column.getLikeQuery()) {
+            result.add(column.getLikeQuery().getEncryptor());
+        }
     }
     
     private void checkDataSources() {

@@ -56,7 +56,6 @@ class CreateDefaultShadowAlgorithmExecutorTest {
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
         when(statement.getShadowAlgorithmSegment()).thenReturn(new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", PropertiesBuilder.build(new Property("type", "value")))));
         ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
         assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(statement));
     }
@@ -67,7 +66,6 @@ class CreateDefaultShadowAlgorithmExecutorTest {
         when(sqlStatement.getShadowAlgorithmSegment()).thenReturn(
                 new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
     }

@@ -58,13 +58,13 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
     }
     
     /**
-     * TODO remove this method after remove Compatible_Cluster mode
      * Update current rule configuration.
      *
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration to be updated
      * @return current rule configuration is empty or not
      */
+    // TODO remove this method after remove Compatible_Cluster mode
     boolean updateCurrentRuleConfiguration(T sqlStatement, C currentRuleConfig);
     
     /**

@@ -23,12 +23,10 @@ import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.Data
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.aware.StaticDataSourceContainedRuleAwareStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
@@ -53,13 +51,6 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         }
         ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement, currentRuleConfig);
-        // TODO remove updateCurrentRuleConfiguration after update refactor completed.
-        if (executor.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig) && ((DatabaseRuleConfiguration) currentRuleConfig).isEmpty()) {
-            modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
-            new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(currentRuleConfig)).values().stream().findFirst()
-                    .ifPresent(optional -> modeContextManager.removeRuleConfiguration(database.getName(), optional.getRuleTagName().toLowerCase()));
-            return Collections.emptyList();
-        }
         if (sqlStatement instanceof StaticDataSourceContainedRuleAwareStatement) {
             database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)
                     .ifPresent(optional -> ((StaticDataSourceContainedRuleAwareStatement) sqlStatement).getNames().forEach(optional::cleanStorageNodeDataSource));

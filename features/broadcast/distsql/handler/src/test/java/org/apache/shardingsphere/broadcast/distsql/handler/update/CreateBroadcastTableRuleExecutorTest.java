@@ -56,11 +56,9 @@ class CreateBroadcastTableRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithDuplicateBroadcastRule() {
-        BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
-        when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
         executor.setDatabase(mockShardingSphereDatabase());
         BroadcastRule rule = mock(BroadcastRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
+        when(rule.getTables()).thenReturn(Collections.singleton("t_address"));
         executor.setRule(rule);
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
