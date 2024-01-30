@@ -49,7 +49,6 @@ public final class AlterDatabaseRuleOperator implements DatabaseRuleOperator {
     @SuppressWarnings("unchecked")
     public Collection<MetaDataVersion> operate(final RuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
