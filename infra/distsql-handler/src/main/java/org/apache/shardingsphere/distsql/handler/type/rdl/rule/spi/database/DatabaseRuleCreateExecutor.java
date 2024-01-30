@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Database rule create executor.
  *
  * @param <T> type of SQL statement
- * @param <R> type of rule configuration
+ * @param <R> type of rule
+ * @param <C> type of rule configuration
  */
-public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
+public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends ShardingSphereRule, C extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
     
     /**
      * Build to be created rule configuration.
@@ -35,7 +37,7 @@ public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends Ru
      * @param currentRuleConfig current rule configuration to be updated
      * @return to be created rule configuration
      */
-    R buildToBeCreatedRuleConfiguration(T sqlStatement, R currentRuleConfig);
+    C buildToBeCreatedRuleConfiguration(T sqlStatement, C currentRuleConfig);
     
     /**
      * Update current rule configuration.
@@ -43,5 +45,5 @@ public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends Ru
      * @param currentRuleConfig current rule configuration to be updated
      * @param toBeCreatedRuleConfig to be created rule configuration
      */
-    void updateCurrentRuleConfiguration(R currentRuleConfig, R toBeCreatedRuleConfig);
+    void updateCurrentRuleConfiguration(C currentRuleConfig, C toBeCreatedRuleConfig);
 }

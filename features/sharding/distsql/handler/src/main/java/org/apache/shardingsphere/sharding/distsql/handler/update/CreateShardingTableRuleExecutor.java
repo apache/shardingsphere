@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableR
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,13 +38,15 @@ import java.util.stream.Collectors;
  * Create sharding table rule executor.
  */
 @Setter
-public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreateExecutor<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
+public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreateExecutor<CreateShardingTableRuleStatement, ShardingRule, ShardingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShardingRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), sqlStatement.isIfNotExists(), currentRuleConfig);
+    public void checkBeforeUpdate(final CreateShardingTableRuleStatement sqlStatement) {
+        ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), sqlStatement.isIfNotExists(), rule.getConfiguration());
     }
     
     @Override
@@ -78,8 +81,8 @@ public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreate
     }
     
     @Override
-    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
-        return ShardingRuleConfiguration.class;
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

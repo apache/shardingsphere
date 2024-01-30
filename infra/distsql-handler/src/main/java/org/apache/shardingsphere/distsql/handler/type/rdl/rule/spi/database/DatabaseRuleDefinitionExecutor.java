@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database;
 
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -27,25 +28,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * Database rule definition executor.
  * 
  * @param <T> type of SQL statement
- * @param <R> type of rule configuration
+ * @param <R> type of rule
  */
 @SingletonSPI
-public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI, DistSQLExecutorDatabaseAware {
+public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extends ShardingSphereRule> extends TypedSPI, DistSQLExecutorDatabaseAware, DistSQLExecutorRuleAware<R> {
     
     /**
      * Check before update.
      *
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration
      */
-    void checkBeforeUpdate(T sqlStatement, R currentRuleConfig);
-    
-    /**
-     * Get rule configuration class.
-     * 
-     * @return rule configuration class
-     */
-    Class<R> getRuleConfigurationClass();
+    void checkBeforeUpdate(T sqlStatement);
     
     @Override
     Class<T> getType();

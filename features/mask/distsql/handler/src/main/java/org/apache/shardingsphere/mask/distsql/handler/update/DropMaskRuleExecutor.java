@@ -22,12 +22,13 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredR
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,19 +43,21 @@ import java.util.stream.Collectors;
  */
 @DistSQLExecutorCurrentRuleRequired("Mask")
 @Setter
-public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<DropMaskRuleStatement, MaskRuleConfiguration> {
+public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<DropMaskRuleStatement, MaskRule, MaskRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private MaskRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropMaskRuleStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkToBeDroppedMaskTableNames(sqlStatement, currentRuleConfig);
+            checkToBeDroppedMaskTableNames(sqlStatement);
         }
     }
     
-    private void checkToBeDroppedMaskTableNames(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        Collection<String> currentMaskTableNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+    private void checkToBeDroppedMaskTableNames(final DropMaskRuleStatement sqlStatement) {
+        Collection<String> currentMaskTableNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Mask", database.getName(), notExistedTableNames));
     }
@@ -100,8 +103,8 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
     }
     
     @Override
-    public Class<MaskRuleConfiguration> getRuleConfigurationClass() {
-        return MaskRuleConfiguration.class;
+    public Class<MaskRule> getRuleClass() {
+        return MaskRule.class;
     }
     
     @Override

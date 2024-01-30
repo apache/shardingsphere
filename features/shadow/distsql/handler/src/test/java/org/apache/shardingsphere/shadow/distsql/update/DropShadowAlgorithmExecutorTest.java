@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowAlgorithmExecutor;
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowAlgorithmStatement;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +31,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DropShadowAlgorithmExecutorTest {
     
@@ -43,15 +45,21 @@ class DropShadowAlgorithmExecutorTest {
     @Test
     void assertExecuteWithIfExists() {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement(true, "ruleSegment");
-        executor.checkBeforeUpdate(sqlStatement, mock(ShadowRuleConfiguration.class));
+        ShadowRule rule = mock(ShadowRule.class);
+        when(rule.getConfiguration()).thenReturn(new ShadowRuleConfiguration());
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(sqlStatement);
     }
     
     @Test
     void assertUpdate() {
-        DropShadowAlgorithmStatement sqlStatement = createSQLStatement("shadow_algorithm");
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getShadowAlgorithms().put("shadow_algorithm", new AlgorithmConfiguration("type", null));
-        executor.checkBeforeUpdate(sqlStatement, ruleConfig);
+        ShadowRule rule = mock(ShadowRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        executor.setRule(rule);
+        DropShadowAlgorithmStatement sqlStatement = createSQLStatement("shadow_algorithm");
+        executor.checkBeforeUpdate(sqlStatement);
         executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
         assertTrue(ruleConfig.getShadowAlgorithms().isEmpty());
     }

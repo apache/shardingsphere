@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DropMaskRuleExecutorTest {
     
@@ -49,8 +51,10 @@ class DropMaskRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
-        assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkBeforeUpdate(createSQLStatement(false, "t_mask"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "t_mask")));
     }
     
     @Test
@@ -63,9 +67,14 @@ class DropMaskRuleExecutorTest {
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithIfExists() {
-        MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropMaskRuleStatement statement = createSQLStatement(true, "t_user");
-        executor.checkBeforeUpdate(statement, mock(MaskRuleConfiguration.class));
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(statement);
+        MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        executor.setRule(rule);
         assertFalse(executor.updateCurrentRuleConfiguration(statement, ruleConfig));
         assertThat(ruleConfig.getTables().size(), is(1));
     }

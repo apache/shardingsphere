@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mask.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mask.distsql.handler.converter.MaskRuleStatemen
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.CreateMaskRuleStatement;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
@@ -40,24 +41,26 @@ import java.util.stream.Collectors;
  * Create mask rule executor.
  */
 @Setter
-public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<CreateMaskRuleStatement, MaskRuleConfiguration> {
+public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<CreateMaskRuleStatement, MaskRule, MaskRuleConfiguration> {
     
     private ShardingSphereDatabase database;
+    
+    private MaskRule rule;
     
     private boolean ifNotExists;
     
     @Override
-    public void checkBeforeUpdate(final CreateMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final CreateMaskRuleStatement sqlStatement) {
         ifNotExists = sqlStatement.isIfNotExists();
         if (!ifNotExists) {
-            checkDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+            checkDuplicatedRuleNames(sqlStatement);
         }
         checkAlgorithms(sqlStatement);
     }
     
-    private void checkDuplicatedRuleNames(final CreateMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        if (null != currentRuleConfig) {
-            Collection<String> currentRuleNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+    private void checkDuplicatedRuleNames(final CreateMaskRuleStatement sqlStatement) {
+        if (null != rule) {
+            Collection<String> currentRuleNames = rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> duplicatedRuleNames = sqlStatement.getRules().stream().map(MaskRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
             ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("mask", database.getName(), duplicatedRuleNames));
         }
@@ -67,11 +70,6 @@ public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<
         Collection<MaskColumnSegment> columns = new LinkedList<>();
         sqlStatement.getRules().forEach(each -> columns.addAll(each.getColumns()));
         columns.forEach(each -> TypedSPILoader.checkService(MaskAlgorithm.class, each.getAlgorithm().getName(), each.getAlgorithm().getProps()));
-    }
-    
-    @Override
-    public Class<MaskRuleConfiguration> getRuleConfigurationClass() {
-        return MaskRuleConfiguration.class;
     }
     
     @Override
@@ -104,6 +102,11 @@ public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<
         });
         toBeCreatedRuleConfig.getTables().removeIf(each -> toBeRemovedTables.contains(each.getName()));
         toBeCreatedRuleConfig.getMaskAlgorithms().keySet().removeIf(toBeRemovedAlgorithms::contains);
+    }
+    
+    @Override
+    public Class<MaskRule> getRuleClass() {
+        return MaskRule.class;
     }
     
     @Override

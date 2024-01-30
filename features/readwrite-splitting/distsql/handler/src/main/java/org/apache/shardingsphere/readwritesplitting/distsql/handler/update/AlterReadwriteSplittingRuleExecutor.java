@@ -28,6 +28,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.ReadwriteSplittingRuleStatementChecker;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,13 +43,15 @@ import java.util.stream.Collectors;
  */
 @DistSQLExecutorCurrentRuleRequired("Readwrite-splitting")
 @Setter
-public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAlterExecutor<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
+public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAlterExecutor<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRule, ReadwriteSplittingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ReadwriteSplittingRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        ReadwriteSplittingRuleStatementChecker.checkAlteration(database, sqlStatement.getRules(), currentRuleConfig);
+    public void checkBeforeUpdate(final AlterReadwriteSplittingRuleStatement sqlStatement) {
+        ReadwriteSplittingRuleStatementChecker.checkAlteration(database, sqlStatement.getRules(), rule.getConfiguration());
     }
     
     @Override
@@ -93,8 +96,8 @@ public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAl
     }
     
     @Override
-    public Class<ReadwriteSplittingRuleConfiguration> getRuleConfigurationClass() {
-        return ReadwriteSplittingRuleConfiguration.class;
+    public Class<ReadwriteSplittingRule> getRuleClass() {
+        return ReadwriteSplittingRule.class;
     }
     
     @Override

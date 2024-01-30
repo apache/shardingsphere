@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelType;
 import org.apache.shardingsphere.sharding.distsql.statement.DropDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Optional;
 
@@ -35,27 +36,29 @@ import java.util.Optional;
  */
 @DistSQLExecutorCurrentRuleRequired("Sharding")
 @Setter
-public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDropExecutor<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
+public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDropExecutor<DropDefaultShardingStrategyStatement, ShardingRule, ShardingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShardingRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropDefaultShardingStrategyStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkExist(sqlStatement, currentRuleConfig);
+            checkExist(sqlStatement);
         }
     }
     
-    private void checkExist(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
+    private void checkExist(final DropDefaultShardingStrategyStatement sqlStatement) {
+        Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(sqlStatement.getDefaultType());
         ShardingSpherePreconditions.checkState(strategyConfig.isPresent(), () -> new MissingRequiredRuleException(
                 String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), database.getName()));
     }
     
-    private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final ShardingRuleConfiguration currentRuleConfig, final String type) {
+    private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final String type) {
         ShardingStrategyConfiguration result = type.equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())
-                ? currentRuleConfig.getDefaultTableShardingStrategy()
-                : currentRuleConfig.getDefaultDatabaseShardingStrategy();
+                ? rule.getConfiguration().getDefaultTableShardingStrategy()
+                : rule.getConfiguration().getDefaultDatabaseShardingStrategy();
         return Optional.ofNullable(result);
     }
     
@@ -93,8 +96,8 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDr
     }
     
     @Override
-    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
-        return ShardingRuleConfiguration.class;
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

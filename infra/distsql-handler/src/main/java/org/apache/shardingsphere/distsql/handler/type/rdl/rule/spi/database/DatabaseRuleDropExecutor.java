@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -26,11 +27,12 @@ import java.util.stream.Collectors;
 
 /**
  * Database rule drop executor.
- * 
+ *
  * @param <T> type of SQL statement
- * @param <R> type of rule configuration
+ * @param <R> type of rule
+ * @param <C> type of rule configuration
  */
-public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
+public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends ShardingSphereRule, C extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
     
     /**
      * TODO Remove temporary default implementation
@@ -40,7 +42,7 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Rule
      * @param currentRuleConfig current rule configuration to be updated
      * @return to be dropped rule configuration
      */
-    default R buildToBeDroppedRuleConfiguration(final T sqlStatement, final R currentRuleConfig) {
+    default C buildToBeDroppedRuleConfiguration(final T sqlStatement, final C currentRuleConfig) {
         return null;
     }
     
@@ -51,7 +53,7 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Rule
      * @param currentRuleConfig current rule configuration to be updated
      * @return to be altered rule configuration
      */
-    default R buildToBeAlteredRuleConfiguration(final T sqlStatement, final R currentRuleConfig) {
+    default C buildToBeAlteredRuleConfiguration(final T sqlStatement, final C currentRuleConfig) {
         return null;
     }
     
@@ -63,7 +65,7 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Rule
      * @param currentRuleConfig current rule configuration to be updated
      * @return current rule configuration is empty or not
      */
-    boolean updateCurrentRuleConfiguration(T sqlStatement, R currentRuleConfig);
+    boolean updateCurrentRuleConfiguration(T sqlStatement, C currentRuleConfig);
     
     /**
      * Whether there is configuration.
@@ -71,7 +73,7 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Rule
      * @param currentRuleConfig current rule configuration 
      * @return configuration exists or does not exist
      */
-    default boolean isExistRuleConfig(final R currentRuleConfig) {
+    default boolean isExistRuleConfig(final C currentRuleConfig) {
         return null != currentRuleConfig;
     }
     
@@ -82,7 +84,7 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Rule
      * @param currentRuleConfig current rule configuration
      * @return dropped data exists or does not exist
      */
-    default boolean hasAnyOneToBeDropped(final T sqlStatement, final R currentRuleConfig) {
+    default boolean hasAnyOneToBeDropped(final T sqlStatement, final C currentRuleConfig) {
         return true;
     }
     

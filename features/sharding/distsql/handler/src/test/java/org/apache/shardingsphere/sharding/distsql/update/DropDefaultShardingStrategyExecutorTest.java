@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultShardingStrategyExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.DropDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DropDefaultShardingStrategyExecutorTest {
     
@@ -51,13 +53,20 @@ class DropDefaultShardingStrategyExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithoutExistedAlgorithm() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("table"), new ShardingRuleConfiguration()));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("table")));
     }
     
     @Test
     void assertCheckSQLStatementWithIfExists() {
-        executor.checkBeforeUpdate(new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
-        executor.checkBeforeUpdate(new DropDefaultShardingStrategyStatement(true, "table"), null);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(new DropDefaultShardingStrategyStatement(true, "table"));
+        executor.setRule(null);
+        executor.checkBeforeUpdate(new DropDefaultShardingStrategyStatement(true, "table"));
     }
     
     @Test

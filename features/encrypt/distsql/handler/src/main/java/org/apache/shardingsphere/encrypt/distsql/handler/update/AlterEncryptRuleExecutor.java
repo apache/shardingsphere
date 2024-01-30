@@ -30,9 +30,10 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -46,19 +47,22 @@ import java.util.stream.Collectors;
  */
 @DistSQLExecutorCurrentRuleRequired("Encrypt")
 @Setter
-public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
+public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor<AlterEncryptRuleStatement, EncryptRule, EncryptRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private EncryptRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        checkToBeAlteredRules(sqlStatement, currentRuleConfig);
+    public void checkBeforeUpdate(final AlterEncryptRuleStatement sqlStatement) {
+        checkToBeAlteredRules(sqlStatement);
         checkColumnNames(sqlStatement);
         checkToBeAlteredEncryptors(sqlStatement);
     }
     
-    private void checkToBeAlteredRules(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+    private void checkToBeAlteredRules(final AlterEncryptRuleStatement sqlStatement) {
+        Collection<String> currentEncryptTableNames = ((EncryptRuleConfiguration) rule.getConfiguration()).getTables()
+                .stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistEncryptTableNames = getToBeAlteredEncryptTableNames(sqlStatement).stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistEncryptTableNames.isEmpty()) {
             throw new MissingRequiredRuleException("Encrypt", database.getName(), notExistEncryptTableNames);
@@ -134,8 +138,8 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     }
     
     @Override
-    public Class<EncryptRuleConfiguration> getRuleConfigurationClass() {
-        return EncryptRuleConfiguration.class;
+    public Class<EncryptRule> getRuleClass() {
+        return EncryptRule.class;
     }
     
     @Override

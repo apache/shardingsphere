@@ -48,20 +48,22 @@ import java.util.stream.Collectors;
  */
 @DistSQLExecutorCurrentRuleRequired("Readwrite-splitting")
 @Setter
-public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDropExecutor<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
+public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDropExecutor<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRule, ReadwriteSplittingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ReadwriteSplittingRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropReadwriteSplittingRuleStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkToBeDroppedRuleNames(sqlStatement, currentRuleConfig);
+            checkToBeDroppedRuleNames(sqlStatement);
         }
         checkToBeDroppedInUsed(sqlStatement);
     }
     
-    private void checkToBeDroppedRuleNames(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+    private void checkToBeDroppedRuleNames(final DropReadwriteSplittingRuleStatement sqlStatement) {
+        Collection<String> currentRuleNames = rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Readwrite-splitting", database.getName(), sqlStatement.getNames()));
     }
@@ -140,8 +142,8 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public Class<ReadwriteSplittingRuleConfiguration> getRuleConfigurationClass() {
-        return ReadwriteSplittingRuleConfiguration.class;
+    public Class<ReadwriteSplittingRule> getRuleClass() {
+        return ReadwriteSplittingRule.class;
     }
     
     @Override

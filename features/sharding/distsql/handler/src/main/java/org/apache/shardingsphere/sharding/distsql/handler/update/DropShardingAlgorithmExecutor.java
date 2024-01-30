@@ -22,11 +22,12 @@ import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmIn
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAlgorithmStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -37,35 +38,37 @@ import java.util.stream.Collectors;
  */
 @DistSQLExecutorCurrentRuleRequired("Sharding")
 @Setter
-public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExecutor<DropShardingAlgorithmStatement, ShardingRuleConfiguration> {
+public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExecutor<DropShardingAlgorithmStatement, ShardingRule, ShardingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShardingRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropShardingAlgorithmStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkToBeDroppedShardingAlgorithms(sqlStatement, currentRuleConfig);
+            checkToBeDroppedShardingAlgorithms(sqlStatement);
         }
-        checkShardingAlgorithmsInUsed(sqlStatement, currentRuleConfig);
+        checkShardingAlgorithmsInUsed(sqlStatement);
     }
     
-    private void checkToBeDroppedShardingAlgorithms(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms(currentRuleConfig);
+    private void checkToBeDroppedShardingAlgorithms(final DropShardingAlgorithmStatement sqlStatement) {
+        Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms();
         Collection<String> notExistedAlgorithms = sqlStatement.getNames().stream().filter(each -> !currentShardingAlgorithms.contains(each)).collect(Collectors.toList());
         if (!notExistedAlgorithms.isEmpty()) {
             throw new MissingRequiredAlgorithmException(database.getName(), notExistedAlgorithms);
         }
     }
     
-    private void checkShardingAlgorithmsInUsed(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> allInUsed = getAllOfAlgorithmsInUsed(currentRuleConfig);
+    private void checkShardingAlgorithmsInUsed(final DropShardingAlgorithmStatement sqlStatement) {
+        Collection<String> allInUsed = getAllOfAlgorithmsInUsed();
         Collection<String> usedAlgorithms = sqlStatement.getNames().stream().filter(allInUsed::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(usedAlgorithms.isEmpty(), () -> new AlgorithmInUsedException("Sharding", database.getName(), usedAlgorithms));
     }
     
-    private Collection<String> getAllOfAlgorithmsInUsed(final ShardingRuleConfiguration shardingRuleConfig) {
+    private Collection<String> getAllOfAlgorithmsInUsed() {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().forEach(each -> {
+        rule.getConfiguration().getTables().forEach(each -> {
             if (null != each.getDatabaseShardingStrategy()) {
                 result.add(each.getDatabaseShardingStrategy().getShardingAlgorithmName());
             }
@@ -73,20 +76,20 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
                 result.add(each.getTableShardingStrategy().getShardingAlgorithmName());
             }
         });
-        shardingRuleConfig.getAutoTables().stream().filter(each -> null != each.getShardingStrategy()).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
-        ShardingStrategyConfiguration tableShardingStrategy = shardingRuleConfig.getDefaultTableShardingStrategy();
+        rule.getConfiguration().getAutoTables().stream().filter(each -> null != each.getShardingStrategy()).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
+        ShardingStrategyConfiguration tableShardingStrategy = rule.getConfiguration().getDefaultTableShardingStrategy();
         if (null != tableShardingStrategy && !tableShardingStrategy.getShardingAlgorithmName().isEmpty()) {
             result.add(tableShardingStrategy.getShardingAlgorithmName());
         }
-        ShardingStrategyConfiguration databaseShardingStrategy = shardingRuleConfig.getDefaultDatabaseShardingStrategy();
+        ShardingStrategyConfiguration databaseShardingStrategy = rule.getConfiguration().getDefaultDatabaseShardingStrategy();
         if (null != databaseShardingStrategy && !databaseShardingStrategy.getShardingAlgorithmName().isEmpty()) {
             result.add(databaseShardingStrategy.getShardingAlgorithmName());
         }
         return result;
     }
     
-    private Collection<String> getCurrentShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
-        return shardingRuleConfig.getShardingAlgorithms().keySet();
+    private Collection<String> getCurrentShardingAlgorithms() {
+        return rule.getConfiguration().getShardingAlgorithms().keySet();
     }
     
     @Override
@@ -101,23 +104,23 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         for (String each : sqlStatement.getNames()) {
-            dropShardingAlgorithm(currentRuleConfig, each);
+            dropShardingAlgorithm(each);
         }
         return false;
     }
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig && !getIdenticalData(getCurrentShardingAlgorithms(currentRuleConfig), sqlStatement.getNames()).isEmpty();
+        return null != currentRuleConfig && !getIdenticalData(getCurrentShardingAlgorithms(), sqlStatement.getNames()).isEmpty();
     }
     
-    private void dropShardingAlgorithm(final ShardingRuleConfiguration currentRuleConfig, final String algorithmName) {
-        getCurrentShardingAlgorithms(currentRuleConfig).removeIf(algorithmName::equalsIgnoreCase);
+    private void dropShardingAlgorithm(final String algorithmName) {
+        getCurrentShardingAlgorithms().removeIf(algorithmName::equalsIgnoreCase);
     }
     
     @Override
-    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
-        return ShardingRuleConfiguration.class;
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

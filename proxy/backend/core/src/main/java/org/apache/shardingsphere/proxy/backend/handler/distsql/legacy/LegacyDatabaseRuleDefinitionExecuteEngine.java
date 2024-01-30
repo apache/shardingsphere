@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDe
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -63,31 +64,27 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
      */
     @SuppressWarnings("unchecked")
     public void executeUpdate() {
-        Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.setDatabase(database);
-        checkBeforeUpdate(currentRuleConfig);
+        Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
+        executor.setRule(rule.orElse(null));
+        checkBeforeUpdate(rule.orElse(null));
+        RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
         if (getRefreshStatus(sqlStatement, currentRuleConfig, executor)) {
-            contextManager.getInstanceContext().getModeContextManager()
-                    .alterRuleConfiguration(database.getName(), processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
+            contextManager.getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
         }
-    }
-    
-    private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        return database.getRuleMetaData().getConfigurations().stream().filter(each -> ruleConfigClass.isAssignableFrom(each.getClass())).findFirst();
     }
     
     @SuppressWarnings("unchecked")
-    private void checkBeforeUpdate(final RuleConfiguration currentRuleConfig) {
-        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(currentRuleConfig, optional));
-        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+    private void checkBeforeUpdate(final ShardingSphereRule rule) {
+        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(rule, optional));
+        executor.checkBeforeUpdate(sqlStatement);
     }
     
-    private void checkCurrentRule(final RuleConfiguration currentRuleConfig, final DistSQLExecutorCurrentRuleRequired currentRuleRequired) {
+    private void checkCurrentRule(final ShardingSphereRule rule, final DistSQLExecutorCurrentRuleRequired currentRuleRequired) {
         if (sqlStatement instanceof DropRuleStatement && ((DropRuleStatement) sqlStatement).isIfExists()) {
             return;
         }
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException(currentRuleRequired.value(), database.getName()));
+        ShardingSpherePreconditions.checkNotNull(rule, () -> new MissingRequiredRuleException(currentRuleRequired.value(), database.getName()));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

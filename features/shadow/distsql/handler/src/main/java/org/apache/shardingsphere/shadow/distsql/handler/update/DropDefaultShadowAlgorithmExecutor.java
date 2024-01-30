@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.statement.DropDefaultShadowAlgorithmStatement;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collections;
 
@@ -33,20 +34,22 @@ import java.util.Collections;
  */
 @DistSQLExecutorCurrentRuleRequired("Shadow")
 @Setter
-public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDropExecutor<DropDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
+public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDropExecutor<DropDefaultShadowAlgorithmStatement, ShadowRule, ShadowRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShadowRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropDefaultShadowAlgorithmStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkAlgorithm(currentRuleConfig);
+            checkAlgorithm();
         }
     }
     
-    private void checkAlgorithm(final ShadowRuleConfiguration currentRuleConfig) {
+    private void checkAlgorithm() {
         ShardingSpherePreconditions.checkNotNull(
-                currentRuleConfig.getDefaultShadowAlgorithmName(), () -> new MissingRequiredAlgorithmException("shadow", database.getName(), Collections.singleton("default")));
+                rule.getConfiguration().getDefaultShadowAlgorithmName(), () -> new MissingRequiredAlgorithmException("shadow", database.getName(), Collections.singleton("default")));
     }
     
     @Override
@@ -71,8 +74,8 @@ public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public Class<ShadowRuleConfiguration> getRuleConfigurationClass() {
-        return ShadowRuleConfiguration.class;
+    public Class<ShadowRule> getRuleClass() {
+        return ShadowRule.class;
     }
     
     @Override

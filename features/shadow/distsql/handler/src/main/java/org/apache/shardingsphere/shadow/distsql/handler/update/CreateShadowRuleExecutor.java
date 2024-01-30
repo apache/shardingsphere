@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStat
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.statement.CreateShadowRuleStatement;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -40,24 +41,26 @@ import java.util.Map;
  * Create shadow rule executor.
  */
 @Setter
-public final class CreateShadowRuleExecutor implements DatabaseRuleCreateExecutor<CreateShadowRuleStatement, ShadowRuleConfiguration> {
+public final class CreateShadowRuleExecutor implements DatabaseRuleCreateExecutor<CreateShadowRuleStatement, ShadowRule, ShadowRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShadowRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        checkDuplicatedRules(sqlStatement, currentRuleConfig);
+    public void checkBeforeUpdate(final CreateShadowRuleStatement sqlStatement) {
+        checkDuplicatedRules(sqlStatement);
         checkStorageUnits(sqlStatement.getRules());
         checkAlgorithms(sqlStatement.getRules());
         checkAlgorithmType(sqlStatement.getRules());
     }
     
-    private void checkDuplicatedRules(final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    private void checkDuplicatedRules(final CreateShadowRuleStatement sqlStatement) {
         Collection<String> toBeCreatedRuleNames = ShadowRuleStatementSupporter.getRuleNames(sqlStatement.getRules());
         ShadowRuleStatementChecker.checkDuplicated(toBeCreatedRuleNames, duplicated -> new DuplicateRuleException("shadow", database.getName(), duplicated));
         ShadowRuleStatementChecker.checkDuplicatedWithLogicDataSource(toBeCreatedRuleNames, database);
         if (!sqlStatement.isIfNotExists()) {
-            toBeCreatedRuleNames.retainAll(ShadowRuleStatementSupporter.getRuleNames(currentRuleConfig));
+            toBeCreatedRuleNames.retainAll(ShadowRuleStatementSupporter.getRuleNames(rule.getConfiguration()));
             ShardingSpherePreconditions.checkState(toBeCreatedRuleNames.isEmpty(), () -> new DuplicateRuleException("shadow", database.getName(), toBeCreatedRuleNames));
         }
     }
@@ -98,8 +101,8 @@ public final class CreateShadowRuleExecutor implements DatabaseRuleCreateExecuto
     }
     
     @Override
-    public Class<ShadowRuleConfiguration> getRuleConfigurationClass() {
-        return ShadowRuleConfiguration.class;
+    public Class<ShadowRule> getRuleClass() {
+        return ShadowRule.class;
     }
     
     @Override

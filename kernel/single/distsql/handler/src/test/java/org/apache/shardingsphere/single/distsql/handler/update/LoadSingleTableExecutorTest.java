@@ -69,7 +69,7 @@ class LoadSingleTableExecutorTest {
         when(schema.containsTable("foo")).thenReturn(true);
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
         executor.setDatabase(database);
-        assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement, mock(SingleRuleConfiguration.class)));
+        assertThrows(TableExistsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
@@ -77,7 +77,7 @@ class LoadSingleTableExecutorTest {
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
         when(database.getName()).thenReturn("foo_db");
         executor.setDatabase(database);
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(sqlStatement, mock(SingleRuleConfiguration.class)));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test

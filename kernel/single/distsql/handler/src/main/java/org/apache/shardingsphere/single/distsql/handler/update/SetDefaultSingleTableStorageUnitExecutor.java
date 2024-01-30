@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,12 +34,12 @@ import java.util.Collections;
  * Set default single table storage unit executor.
  */
 @Setter
-public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleCreateExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRuleConfiguration> {
+public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseRuleCreateExecutor<SetDefaultSingleTableStorageUnitStatement, SingleRule, SingleRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
     @Override
-    public void checkBeforeUpdate(final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         checkStorageUnitExist(sqlStatement);
     }
     
@@ -64,8 +65,12 @@ public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseR
     }
     
     @Override
-    public Class<SingleRuleConfiguration> getRuleConfigurationClass() {
-        return SingleRuleConfiguration.class;
+    public void setRule(final SingleRule rule) {
+    }
+    
+    @Override
+    public Class<SingleRule> getRuleClass() {
+        return SingleRule.class;
     }
     
     @Override

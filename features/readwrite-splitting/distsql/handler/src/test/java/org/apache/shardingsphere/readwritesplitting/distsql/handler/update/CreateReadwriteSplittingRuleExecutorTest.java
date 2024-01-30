@@ -29,6 +29,7 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.CreateReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,19 +75,25 @@ class CreateReadwriteSplittingRuleExecutorTest {
     @Test
     void assertCheckSQLStatementWithDuplicateRuleNames() {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("TEST"), createCurrentRuleConfiguration()));
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("TEST")));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateResource() {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("write_ds", null));
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration()));
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createSQLStatement("write_ds", "TEST")));
     }
     
     @Test
     void assertCheckSQLStatementWithoutExistedResources() {
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(createSQLStatement("TEST"), null));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(createSQLStatement("TEST")));
     }
     
     @Test
@@ -97,37 +104,46 @@ class CreateReadwriteSplittingRuleExecutorTest {
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("duplicate_ds", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"),
                 new AlgorithmSegment(null, new Properties()));
         executor.setDatabase(database);
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, ruleSegment), null));
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, ruleSegment)));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() {
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateWriteResourceNames("write_ds_0", "write_ds_1", "TEST"), null));
+                () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateWriteResourceNames("write_ds_0", "write_ds_1", "TEST")));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateWriteResourceNames() {
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkBeforeUpdate(createSQLStatement("readwrite_ds_1", "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration()));
+                () -> executor.checkBeforeUpdate(createSQLStatement("readwrite_ds_1", "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST")));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() {
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateReadResourceNames("write_ds_0", "write_ds_1", "TEST"), null));
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createSQLStatementWithDuplicateReadResourceNames("write_ds_0", "write_ds_1", "TEST")));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateReadResourceNames() {
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
         assertThrows(InvalidRuleConfigurationException.class,
-                () -> executor.checkBeforeUpdate(createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration()));
+                () -> executor.checkBeforeUpdate(createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST")));
     }
     
     @Test
     void assertCheckSQLStatementWithIfNotExists() {
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("readwrite_ds_0", "write_ds_0", Arrays.asList("read_ds_2", "read_ds_3"),
                 new AlgorithmSegment(null, new Properties()));
-        executor.checkBeforeUpdate(createSQLStatement(true, staticSegment), createCurrentRuleConfiguration());
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(createSQLStatement(true, staticSegment));
     }
     
     @Test
@@ -139,7 +155,7 @@ class CreateReadwriteSplittingRuleExecutorTest {
                 new AlgorithmSegment("TEST", new Properties()));
         CreateReadwriteSplittingRuleStatement sqlStatement = createSQLStatement(false, staticSegment);
         executor.setDatabase(database);
-        executor.checkBeforeUpdate(sqlStatement, null);
+        executor.checkBeforeUpdate(sqlStatement);
         ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
         ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.statement.AlterDefaultShadowAlgorithmStatement;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collections;
@@ -41,22 +42,24 @@ import java.util.Map;
  */
 @DistSQLExecutorCurrentRuleRequired("Shadow")
 @Setter
-public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
+public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShadowAlgorithmStatement, ShadowRule, ShadowRuleConfiguration> {
     
     private static final String DEFAULT_ALGORITHM_NAME = "default_shadow_algorithm";
     
     private ShardingSphereDatabase database;
     
+    private ShadowRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        checkAlgorithms(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment(), currentRuleConfig);
+    public void checkBeforeUpdate(final AlterDefaultShadowAlgorithmStatement sqlStatement) {
+        checkAlgorithms(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment());
     }
     
-    private void checkAlgorithms(final AlgorithmSegment algorithmSegment, final ShadowRuleConfiguration currentRuleConfig) {
+    private void checkAlgorithms(final AlgorithmSegment algorithmSegment) {
         checkAlgorithmCompleteness(algorithmSegment);
         checkAlgorithmType(algorithmSegment);
         ShadowRuleStatementChecker.checkExisted(Collections.singleton(DEFAULT_ALGORITHM_NAME),
-                currentRuleConfig.getShadowAlgorithms().keySet(), notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", database.getName(), notExistedAlgorithms));
+                rule.getConfiguration().getShadowAlgorithms().keySet(), notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", database.getName(), notExistedAlgorithms));
     }
     
     private void checkAlgorithmCompleteness(final AlgorithmSegment algorithmSegment) {
@@ -87,8 +90,8 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAl
     }
     
     @Override
-    public Class<ShadowRuleConfiguration> getRuleConfigurationClass() {
-        return ShadowRuleConfiguration.class;
+    public Class<ShadowRule> getRuleClass() {
+        return ShadowRule.class;
     }
     
     @Override

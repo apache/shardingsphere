@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AlterMaskRuleExecutorTest {
     
@@ -52,13 +54,18 @@ class AlterMaskRuleExecutorTest {
     
     @Test
     void assertCheckBeforeUpdateWithoutToBeAlteredRules() {
-        assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkBeforeUpdate(createSQLStatement("MD5"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("MD5")));
     }
     
     @Test
     void assertCheckBeforeUpdateWithoutToBeAlteredAlgorithm() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("INVALID_TYPE"), createCurrentRuleConfig()));
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfig());
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("INVALID_TYPE")));
     }
     
     @Test
@@ -66,7 +73,10 @@ class AlterMaskRuleExecutorTest {
         MaskColumnSegment columnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment("test", new Properties()));
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_mask", Collections.singleton(columnSegment));
         AlterMaskRuleStatement statement = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(statement, createCurrentRuleConfig()));
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfig());
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(statement));
     }
     
     @Test
