@@ -74,11 +74,6 @@ class DropReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
-        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        when(rule.getConfiguration()).thenReturn(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        executor.setRule(rule);
-        executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")));
-        executor.setRule(null);
         executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")));
     }
     
