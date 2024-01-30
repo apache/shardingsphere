@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -35,22 +36,22 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Rule
      * TODO Remove temporary default implementation
      * Build to be dropped rule configuration.
      *
-     * @param currentRuleConfig current rule configuration to be updated
      * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration to be updated
      * @return to be dropped rule configuration
      */
-    default R buildToBeDroppedRuleConfiguration(final R currentRuleConfig, final T sqlStatement) {
+    default R buildToBeDroppedRuleConfiguration(final T sqlStatement, final R currentRuleConfig) {
         return null;
     }
     
     /**
      * Build to be altered rule configuration.
      *
-     * @param currentRuleConfig current rule configuration to be updated
      * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration to be updated
      * @return to be altered rule configuration
      */
-    default R buildToBeAlteredRuleConfiguration(final R currentRuleConfig, final T sqlStatement) {
+    default R buildToBeAlteredRuleConfiguration(final T sqlStatement, final R currentRuleConfig) {
         return null;
     }
     
@@ -94,5 +95,15 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Rule
      */
     default Collection<String> getIdenticalData(final Collection<String> currentRules, final Collection<String> toBeDroppedRules) {
         return currentRules.stream().filter(each -> toBeDroppedRules.stream().anyMatch(each::equalsIgnoreCase)).collect(Collectors.toSet());
+    }
+    
+    // TODO Remove when metadata structure adjustment completed. #25485
+    /**
+     * Drop rule configuration operate.
+     *
+     * @param sqlStatement SQL statement
+     * @param database database
+     */
+    default void operate(final T sqlStatement, final ShardingSphereDatabase database) {
     }
 }

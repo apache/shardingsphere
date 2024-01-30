@@ -53,11 +53,6 @@ class DropEncryptRuleExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_encrypt"), null));
-    }
-    
-    @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatement("t_encrypt"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));

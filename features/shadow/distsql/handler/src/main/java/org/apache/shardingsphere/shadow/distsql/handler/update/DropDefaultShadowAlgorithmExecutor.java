@@ -19,11 +19,11 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.statement.DropDefaultShadowAlgorithmStatement;
 
 import java.util.Collections;
@@ -31,6 +31,7 @@ import java.util.Collections;
 /**
  * Drop default shadow algorithm executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Shadow")
 @Setter
 public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDropExecutor<DropDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
@@ -38,18 +39,14 @@ public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDro
     
     @Override
     public void checkBeforeUpdate(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.isIfExists() && !isExistRuleConfig(currentRuleConfig)) {
-            return;
+        if (!sqlStatement.isIfExists()) {
+            checkAlgorithm(currentRuleConfig);
         }
-        ShadowRuleStatementChecker.checkRuleConfigurationExists(database.getName(), currentRuleConfig);
-        checkAlgorithm(sqlStatement, currentRuleConfig);
     }
     
-    private void checkAlgorithm(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        if (!sqlStatement.isIfExists()) {
-            ShardingSpherePreconditions.checkNotNull(currentRuleConfig.getDefaultShadowAlgorithmName(),
-                    () -> new MissingRequiredAlgorithmException("shadow", database.getName(), Collections.singleton("default")));
-        }
+    private void checkAlgorithm(final ShadowRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkNotNull(
+                currentRuleConfig.getDefaultShadowAlgorithmName(), () -> new MissingRequiredAlgorithmException("shadow", database.getName(), Collections.singleton("default")));
     }
     
     @Override
@@ -58,7 +55,7 @@ public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropDefaultShadowAlgorithmStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(Collections.singletonMap(currentRuleConfig.getDefaultShadowAlgorithmName(),
                 currentRuleConfig.getShadowAlgorithms().get(currentRuleConfig.getDefaultShadowAlgorithmName())));

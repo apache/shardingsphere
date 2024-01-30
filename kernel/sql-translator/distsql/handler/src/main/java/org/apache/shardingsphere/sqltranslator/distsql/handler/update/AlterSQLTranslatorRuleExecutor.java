@@ -17,31 +17,38 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 /**
  * Alter SQL translator rule executor.
  */
-public final class AlterSQLTranslatorRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLTranslatorRuleStatement, SQLTranslatorRuleConfiguration> {
+@Setter
+public final class AlterSQLTranslatorRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLTranslatorRuleStatement, SQLTranslatorRule> {
+    
+    private SQLTranslatorRule rule;
     
     @Override
-    public void checkBeforeUpdate(final SQLTranslatorRuleConfiguration currentRuleConfig, final AlterSQLTranslatorRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final AlterSQLTranslatorRuleStatement sqlStatement) {
         TypedSPILoader.checkService(SQLTranslator.class, sqlStatement.getProvider().getName(), sqlStatement.getProvider().getProps());
     }
     
     @Override
-    public SQLTranslatorRuleConfiguration buildAlteredRuleConfiguration(final SQLTranslatorRuleConfiguration currentRuleConfig, final AlterSQLTranslatorRuleStatement sqlStatement) {
-        return new SQLTranslatorRuleConfiguration(sqlStatement.getProvider().getName(), sqlStatement.getProvider().getProps(),
-                null == sqlStatement.getUseOriginalSQLWhenTranslatingFailed() ? currentRuleConfig.isUseOriginalSQLWhenTranslatingFailed() : sqlStatement.getUseOriginalSQLWhenTranslatingFailed());
+    public SQLTranslatorRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterSQLTranslatorRuleStatement sqlStatement) {
+        boolean useOriginalSQLWhenTranslatingFailed = null == sqlStatement.getUseOriginalSQLWhenTranslatingFailed()
+                ? rule.getConfiguration().isUseOriginalSQLWhenTranslatingFailed()
+                : sqlStatement.getUseOriginalSQLWhenTranslatingFailed();
+        return new SQLTranslatorRuleConfiguration(sqlStatement.getProvider().getName(), sqlStatement.getProvider().getProps(), useOriginalSQLWhenTranslatingFailed);
     }
     
     @Override
-    public Class<SQLTranslatorRuleConfiguration> getRuleConfigurationClass() {
-        return SQLTranslatorRuleConfiguration.class;
+    public Class<SQLTranslatorRule> getRuleClass() {
+        return SQLTranslatorRule.class;
     }
     
     @Override

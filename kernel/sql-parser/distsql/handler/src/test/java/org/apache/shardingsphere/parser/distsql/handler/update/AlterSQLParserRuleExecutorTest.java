@@ -20,11 +20,14 @@ package org.apache.shardingsphere.parser.distsql.handler.update;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AlterSQLParserRuleExecutorTest {
     
@@ -32,7 +35,10 @@ class AlterSQLParserRuleExecutorTest {
     void assertExecute() {
         AlterSQLParserRuleExecutor executor = new AlterSQLParserRuleExecutor();
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
-        SQLParserRuleConfiguration actual = executor.buildAlteredRuleConfiguration(getSQLParserRuleConfiguration(), sqlStatement);
+        SQLParserRule rule = mock(SQLParserRule.class);
+        when(rule.getConfiguration()).thenReturn(getSQLParserRuleConfiguration());
+        executor.setRule(rule);
+        SQLParserRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));

@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -39,6 +40,7 @@ import java.util.Optional;
 /**
  * Alter default sharding strategy executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Sharding")
 @Setter
 public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
@@ -46,15 +48,10 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleA
     
     @Override
     public void checkBeforeUpdate(final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        checkCurrentRuleConfiguration(currentRuleConfig);
         if (!"none".equalsIgnoreCase(sqlStatement.getStrategyType())) {
             checkAlgorithm(sqlStatement);
         }
         checkExist(sqlStatement, currentRuleConfig);
-    }
-    
-    private void checkCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", database.getName()));
     }
     
     private void checkAlgorithm(final AlterDefaultShardingStrategyStatement sqlStatement) {
@@ -82,7 +79,7 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleA
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final AlterDefaultShardingStrategyStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         if ("none".equalsIgnoreCase(sqlStatement.getStrategyType())) {
             setStrategyConfiguration(result, sqlStatement.getDefaultType(), new NoneShardingStrategyConfiguration());

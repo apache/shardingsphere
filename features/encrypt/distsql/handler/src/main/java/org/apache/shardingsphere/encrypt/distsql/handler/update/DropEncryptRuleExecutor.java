@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Drop encrypt rule executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Encrypt")
 @Setter
 public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
@@ -46,14 +48,12 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     
     @Override
     public void checkBeforeUpdate(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        checkToBeDroppedEncryptTableNames(sqlStatement, currentRuleConfig);
+        if (!sqlStatement.isIfExists()) {
+            checkToBeDroppedEncryptTableNames(sqlStatement, currentRuleConfig);
+        }
     }
     
     private void checkToBeDroppedEncryptTableNames(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.isIfExists()) {
-            return;
-        }
-        ShardingSpherePreconditions.checkState(isExistRuleConfig(currentRuleConfig), () -> new MissingRequiredRuleException("Encrypt", database.getName()));
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Encrypt", database.getName(), notExistedTableNames));
@@ -66,7 +66,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final DropEncryptRuleStatement sqlStatement) {
+    public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         Collection<EncryptTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
         for (String each : sqlStatement.getTables()) {

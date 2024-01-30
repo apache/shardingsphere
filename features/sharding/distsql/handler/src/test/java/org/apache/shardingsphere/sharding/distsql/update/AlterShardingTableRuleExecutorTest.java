@@ -72,9 +72,9 @@ class AlterShardingTableRuleExecutorTest {
     
     @Test
     void assertUpdate() {
-        AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order_item"), createCompleteTableRule("t_order")));
-        executor.checkBeforeUpdate(statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, statement);
+        AlterShardingTableRuleStatement sqlStatement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order_item"), createCompleteTableRule("t_order")));
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfig.getTables().iterator().next();
@@ -97,9 +97,9 @@ class AlterShardingTableRuleExecutorTest {
     
     @Test
     void assertUpdateWithDifferentCase() {
-        AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("T_ORDER_ITEM"), createCompleteTableRule("T_ORDER")));
-        executor.checkBeforeUpdate(statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, statement);
+        AlterShardingTableRuleStatement sqlStatement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("T_ORDER_ITEM"), createCompleteTableRule("T_ORDER")));
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfig.getTables().iterator().next();
@@ -122,9 +122,9 @@ class AlterShardingTableRuleExecutorTest {
     
     @Test
     void assertUpdateTableType() {
-        AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order"), createCompleteTableRule("t_order_item")));
-        executor.checkBeforeUpdate(statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, statement);
+        AlterShardingTableRuleStatement sqlStatement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order"), createCompleteTableRule("t_order_item")));
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfig.getTables().iterator().next();

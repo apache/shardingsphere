@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.legacy;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
@@ -39,34 +38,26 @@ public final class LegacyGlobalRuleDefinitionExecuteEngine {
     
     private final ContextManager contextManager;
     
+    @SuppressWarnings("rawtypes")
+    private final GlobalRuleDefinitionExecutor executor;
+    
     /**
      * Execute update.
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public void executeUpdate() {
-        GlobalRuleDefinitionExecutor executor = TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass());
-        Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
-        Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
-        executor.checkBeforeUpdate(currentRuleConfig, sqlStatement);
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, executor, currentRuleConfig));
-    }
-    
-    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (RuleConfiguration each : ruleConfigurations) {
-            if (ruleConfigClass.isAssignableFrom(each.getClass())) {
-                return each;
-            }
-        }
-        throw new MissingRequiredRuleException(ruleConfigClass.getSimpleName());
+        ShardingSphereRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass());
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(sqlStatement);
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(sqlStatement, executor, rule.getConfiguration()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<RuleConfiguration> processUpdate(final Collection<RuleConfiguration> ruleConfigurations,
-                                                        final RuleDefinitionStatement sqlStatement, final GlobalRuleDefinitionExecutor globalRuleUpdater, final RuleConfiguration currentRuleConfig) {
-        Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigurations);
+    private Collection<RuleConfiguration> processUpdate(final RuleDefinitionStatement sqlStatement, final GlobalRuleDefinitionExecutor executor, final RuleConfiguration currentRuleConfig) {
+        Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
+        Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigs);
         result.remove(currentRuleConfig);
-        result.add(globalRuleUpdater.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement));
+        result.add(executor.buildToBeAlteredRuleConfiguration(sqlStatement));
         return result;
     }
 }

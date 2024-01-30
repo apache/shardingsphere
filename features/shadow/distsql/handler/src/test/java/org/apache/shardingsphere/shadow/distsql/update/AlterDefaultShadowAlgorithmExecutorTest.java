@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -55,13 +54,6 @@ class AlterDefaultShadowAlgorithmExecutorTest {
     @BeforeEach
     void setUp() {
         executor.setDatabase(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
-    }
-    
-    @Test
-    void assertExecuteAlgorithmWithoutConfiguration() {
-        AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
-                new ShadowAlgorithmSegment("sqlHintAlgorithm", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement, null));
     }
     
     @Test

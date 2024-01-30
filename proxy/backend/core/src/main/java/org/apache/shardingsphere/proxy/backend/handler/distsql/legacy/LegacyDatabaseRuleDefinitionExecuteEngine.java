@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.legacy;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.DropRuleStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.update.DropReadwriteSplittingRuleExecutor;
-import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -48,33 +44,50 @@ import java.util.stream.Collectors;
 
 // TODO Remove when metadata structure adjustment completed. #25485
 /**
- * Legacy rule definition backend handler.
+ * Legacy rule definition execute engine.
  */
 @RequiredArgsConstructor
-public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendHandler {
+public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     
     private final RuleDefinitionStatement sqlStatement;
     
-    private final ConnectionSession connectionSession;
+    private final ContextManager contextManager;
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Override
-    public ResponseHeader execute() {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, connectionSession.getDatabaseName()));
-        DatabaseRuleDefinitionExecutor executor = TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
+    private final ShardingSphereDatabase database;
+    
+    @SuppressWarnings("rawtypes")
+    private final DatabaseRuleDefinitionExecutor executor;
+    
+    /**
+     * Execute update.
+     */
+    @SuppressWarnings("unchecked")
+    public void executeUpdate() {
         Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         executor.setDatabase(database);
-        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+        checkBeforeUpdate(currentRuleConfig);
         if (getRefreshStatus(sqlStatement, currentRuleConfig, executor)) {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager()
+            contextManager.getInstanceContext().getModeContextManager()
                     .alterRuleConfiguration(database.getName(), processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
         }
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {
         return database.getRuleMetaData().getConfigurations().stream().filter(each -> ruleConfigClass.isAssignableFrom(each.getClass())).findFirst();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void checkBeforeUpdate(final RuleConfiguration currentRuleConfig) {
+        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(currentRuleConfig, optional));
+        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+    }
+    
+    private void checkCurrentRule(final RuleConfiguration currentRuleConfig, final DistSQLExecutorCurrentRuleRequired currentRuleRequired) {
+        if (sqlStatement instanceof DropRuleStatement && ((DropRuleStatement) sqlStatement).isIfExists()) {
+            return;
+        }
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException(currentRuleRequired.value(), database.getName()));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -106,7 +119,7 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private RuleConfiguration processCreate(final RuleDefinitionStatement sqlStatement, final DatabaseRuleCreateExecutor executor, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
+        RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
         if (null == currentRuleConfig) {
             return toBeCreatedRuleConfig;
         }
@@ -116,7 +129,7 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private RuleConfiguration processAlter(final RuleDefinitionStatement sqlStatement, final DatabaseRuleAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
+        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         return currentRuleConfig;
     }
@@ -130,10 +143,7 @@ public final class LegacyRuleDefinitionBackendHandler implements DistSQLBackendH
         if (executor.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             configs.remove(currentRuleConfig);
         }
-        if (executor instanceof DropReadwriteSplittingRuleExecutor) {
-            database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)
-                    .ifPresent(optional -> ((DropReadwriteSplittingRuleStatement) sqlStatement).getNames().forEach(optional::cleanStorageNodeDataSource));
-        }
+        executor.operate(sqlStatement, database);
     }
     
     @SuppressWarnings("unchecked")

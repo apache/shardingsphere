@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 /**
  * Alter encrypt rule executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Encrypt")
 @Setter
 public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
     
@@ -50,14 +52,9 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     
     @Override
     public void checkBeforeUpdate(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        checkCurrentRuleConfiguration(currentRuleConfig);
         checkToBeAlteredRules(sqlStatement, currentRuleConfig);
         checkColumnNames(sqlStatement);
         checkToBeAlteredEncryptors(sqlStatement);
-    }
-    
-    private void checkCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Encrypt", database.getName()));
     }
     
     private void checkToBeAlteredRules(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
@@ -99,7 +96,7 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeAlteredRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final AlterEncryptRuleStatement sqlStatement) {
+    public EncryptRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

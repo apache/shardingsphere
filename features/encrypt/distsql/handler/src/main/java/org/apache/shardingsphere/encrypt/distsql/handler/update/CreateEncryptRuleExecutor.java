@@ -59,6 +59,19 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
         checkDataSources();
     }
     
+    private void checkDuplicateRuleNames(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("encrypt", database.getName(), duplicatedRuleNames));
+    }
+    
+    private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+        Collection<String> currentRuleNames = new LinkedHashSet<>();
+        if (null != currentRuleConfig) {
+            currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
+        }
+        return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toSet());
+    }
+    
     private void checkColumnNames(final CreateEncryptRuleStatement sqlStatement) {
         for (EncryptRuleSegment each : sqlStatement.getRules()) {
             ShardingSpherePreconditions.checkState(isColumnNameNotConflicts(each),
@@ -104,19 +117,6 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
                 () -> new InvalidAlgorithmConfigurationException("assisted encrypt", encryptAlgorithm.getType()));
     }
     
-    private void checkDuplicateRuleNames(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
-        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("encrypt", database.getName(), duplicatedRuleNames));
-    }
-    
-    private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        Collection<String> currentRuleNames = new LinkedHashSet<>();
-        if (null != currentRuleConfig) {
-            currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
-        }
-        return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toSet());
-    }
-    
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
         Collection<AlgorithmSegment> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> {
@@ -136,7 +136,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final CreateEncryptRuleStatement sqlStatement) {
+    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         Collection<EncryptRuleSegment> segments = sqlStatement.getRules();
         if (sqlStatement.isIfNotExists()) {
             Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);

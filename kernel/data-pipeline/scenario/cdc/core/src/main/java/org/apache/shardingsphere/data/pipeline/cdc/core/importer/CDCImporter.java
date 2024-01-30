@@ -57,7 +57,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     @Getter
     private final String importerId = RandomStringUtils.randomAlphanumeric(8);
     
-    private final List<CDCChannelProgressPair> originalChannelProgressPairs;
+    private final List<CDCChannelProgressPair> channelProgressPairs;
     
     private final int batchSize;
     
@@ -76,7 +76,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     @Override
     protected void runBlocking() {
         CDCImporterManager.putImporter(this);
-        for (CDCChannelProgressPair each : originalChannelProgressPairs) {
+        for (CDCChannelProgressPair each : channelProgressPairs) {
             each.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
         }
         while (isRunning()) {
@@ -85,7 +85,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
             } else {
                 doWithoutSorting();
             }
-            if (originalChannelProgressPairs.isEmpty()) {
+            if (channelProgressPairs.isEmpty()) {
                 break;
             }
         }
@@ -113,8 +113,8 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     private List<CSNRecords> getCsnRecordsList() {
         List<CSNRecords> result = new LinkedList<>();
         CSNRecords firstRecords = null;
-        for (int i = 0, count = originalChannelProgressPairs.size(); i < count; i++) {
-            prepareTransactionRecords(originalChannelProgressPairs);
+        for (int i = 0, count = channelProgressPairs.size(); i < count; i++) {
+            prepareTransactionRecords();
             CSNRecords csnRecords = csnRecordsQueue.peek();
             if (null == csnRecords) {
                 continue;
@@ -133,15 +133,15 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     
     // TODO openGauss CSN should be incremented for every transaction. Currently, CSN might be duplicated in transactions.
     // TODO Use channels watermark depth to improve performance.
-    private void prepareTransactionRecords(final List<CDCChannelProgressPair> channelProgressPairs) {
+    private void prepareTransactionRecords() {
         if (csnRecordsQueue.isEmpty()) {
-            prepareWhenQueueIsEmpty(channelProgressPairs);
+            prepareWhenQueueIsEmpty();
         } else {
-            prepareWhenQueueIsNotEmpty(channelProgressPairs, csnRecordsQueue.peek().getCsn());
+            prepareWhenQueueIsNotEmpty(csnRecordsQueue.peek().getCsn());
         }
     }
     
-    private void prepareWhenQueueIsEmpty(final List<CDCChannelProgressPair> channelProgressPairs) {
+    private void prepareWhenQueueIsEmpty() {
         for (CDCChannelProgressPair each : channelProgressPairs) {
             PipelineChannel channel = each.getChannel();
             List<Record> records = channel.poll();
@@ -156,7 +156,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
         }
     }
     
-    private void prepareWhenQueueIsNotEmpty(final List<CDCChannelProgressPair> channelProgressPairs, final long oldestCSN) {
+    private void prepareWhenQueueIsNotEmpty(final long oldestCSN) {
         for (CDCChannelProgressPair each : channelProgressPairs) {
             PipelineChannel channel = each.getChannel();
             List<Record> records = channel.peek();
@@ -209,13 +209,13 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     }
     
     private void doWithoutSorting() {
-        for (CDCChannelProgressPair each : originalChannelProgressPairs) {
+        for (CDCChannelProgressPair each : channelProgressPairs) {
             doWithoutSorting(each);
         }
     }
     
-    private void doWithoutSorting(final CDCChannelProgressPair progressPair) {
-        PipelineChannel channel = progressPair.getChannel();
+    private void doWithoutSorting(final CDCChannelProgressPair channelProgressPair) {
+        PipelineChannel channel = channelProgressPair.getChannel();
         List<Record> records = channel.fetch(batchSize, timeoutMillis);
         if (records.isEmpty()) {
             return;
@@ -223,9 +223,9 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
         Record lastRecord = records.get(records.size() - 1);
         if (records.stream().noneMatch(DataRecord.class::isInstance)) {
             channel.ack(records);
-            progressPair.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
+            channelProgressPair.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
             if (lastRecord instanceof FinishedRecord) {
-                originalChannelProgressPairs.remove(progressPair);
+                channelProgressPairs.remove(channelProgressPair);
             }
             return;
         }
@@ -233,7 +233,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
             rateLimitAlgorithm.intercept(PipelineSQLOperationType.INSERT, 1);
         }
         String ackId = CDCAckId.build(importerId).marshal();
-        ackCache.put(ackId, Collections.singletonList(Pair.of(progressPair, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
+        ackCache.put(ackId, Collections.singletonList(Pair.of(channelProgressPair, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
         sink.write(ackId, records);
     }
     
@@ -253,7 +253,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
             Record lastRecord = ackPosition.getLastRecord();
             each.getLeft().getChannel().ack(Collections.singletonList(lastRecord));
             if (lastRecord instanceof FinishedRecord) {
-                originalChannelProgressPairs.remove(each.getKey());
+                channelProgressPairs.remove(each.getKey());
             }
             each.getLeft().getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(ackPosition.getDataRecordCount()));
         }

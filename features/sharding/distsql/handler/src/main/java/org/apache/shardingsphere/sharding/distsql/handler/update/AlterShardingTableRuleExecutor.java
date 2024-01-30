@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -35,6 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding table rule executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Sharding")
 @Setter
 public final class AlterShardingTableRuleExecutor implements DatabaseRuleAlterExecutor<AlterShardingTableRuleStatement, ShardingRuleConfiguration> {
     
@@ -42,12 +42,11 @@ public final class AlterShardingTableRuleExecutor implements DatabaseRuleAlterEx
     
     @Override
     public void checkBeforeUpdate(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", database.getName()));
         ShardingTableRuleStatementChecker.checkAlteration(database, sqlStatement.getRules(), currentRuleConfig);
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final AlterShardingTableRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         return ShardingTableRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

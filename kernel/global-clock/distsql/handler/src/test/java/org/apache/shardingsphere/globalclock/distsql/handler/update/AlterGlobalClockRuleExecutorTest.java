@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.globalclock.distsql.handler.update;
 
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.core.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
 import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AlterGlobalClockRuleExecutorTest {
     
@@ -34,7 +37,10 @@ class AlterGlobalClockRuleExecutorTest {
     void assertExecute() {
         AlterGlobalClockRuleExecutor executor = new AlterGlobalClockRuleExecutor();
         AlterGlobalClockRuleStatement sqlStatement = new AlterGlobalClockRuleStatement("TSO", "redis", Boolean.TRUE, PropertiesBuilder.build(new Property("host", "127.0.0.1")));
-        GlobalClockRuleConfiguration actual = executor.buildAlteredRuleConfiguration(getSQLParserRuleConfiguration(), sqlStatement);
+        GlobalClockRule rule = mock(GlobalClockRule.class);
+        when(rule.getConfiguration()).thenReturn(getSQLParserRuleConfiguration());
+        executor.setRule(rule);
+        GlobalClockRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getType(), is("TSO"));
         assertThat(actual.getProvider(), is("redis"));
         assertTrue(actual.isEnabled());

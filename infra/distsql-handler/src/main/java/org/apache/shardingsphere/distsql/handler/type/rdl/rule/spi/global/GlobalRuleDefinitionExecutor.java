@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global;
 
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -26,34 +28,26 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
  * Global rule definition executor.
  * 
  * @param <T> type of rule definition statement
- * @param <R> type of rule configuration
+ * @param <R> type of rule
  */
 @SingletonSPI
-public interface GlobalRuleDefinitionExecutor<T extends RuleDefinitionStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface GlobalRuleDefinitionExecutor<T extends RuleDefinitionStatement, R extends ShardingSphereRule> extends DistSQLExecutorRuleAware<R>, TypedSPI {
     
     /**
      * Check before update.
      *
-     * @param currentRuleConfig current rule configuration
      * @param sqlStatement SQL statement
      */
-    void checkBeforeUpdate(R currentRuleConfig, T sqlStatement);
+    default void checkBeforeUpdate(T sqlStatement) {
+    }
     
     /**
-     * Build altered rule configuration.
+     * Build to be altered rule configuration.
      *
-     * @param currentRuleConfig current rule configuration
      * @param sqlStatement SQL statement
-     * @return built altered rule configuration
+     * @return built to be altered rule configuration
      */
-    RuleConfiguration buildAlteredRuleConfiguration(R currentRuleConfig, T sqlStatement);
-    
-    /**
-     * Get rule configuration class.
-     *
-     * @return rule configuration class
-     */
-    Class<R> getRuleConfigurationClass();
+    RuleConfiguration buildToBeAlteredRuleConfiguration(T sqlStatement);
     
     @Override
     Class<T> getType();

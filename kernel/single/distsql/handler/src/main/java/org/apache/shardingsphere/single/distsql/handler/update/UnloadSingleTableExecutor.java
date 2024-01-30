@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Unload single table statement executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Single")
 @Setter
 public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecutor<UnloadSingleTableStatement, SingleRuleConfiguration> {
     
@@ -47,12 +49,7 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     
     @Override
     public void checkBeforeUpdate(final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
-        checkCurrentRuleConfig(currentRuleConfig);
         checkTables(sqlStatement, currentRuleConfig);
-    }
-    
-    private void checkCurrentRuleConfig(final SingleRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkState(null != currentRuleConfig, () -> new MissingRequiredRuleException("Single", database.getName()));
     }
     
     private void checkTables(final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
@@ -90,7 +87,7 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     }
     
     @Override
-    public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final UnloadSingleTableStatement sqlStatement) {
+    public SingleRuleConfiguration buildToBeAlteredRuleConfiguration(final UnloadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         currentRuleConfig.getDefaultDataSource().ifPresent(result::setDefaultDataSource);
         if (!sqlStatement.isUnloadAllTables()) {

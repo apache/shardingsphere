@@ -51,7 +51,7 @@ class ShowLogicalTableExecutorTest {
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    void before() {
+    void setUp() {
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);

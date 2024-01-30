@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Drop shadow rule executor.
  */
+@DistSQLExecutorCurrentRuleRequired("Shadow")
 @Setter
 public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<DropShadowRuleStatement, ShadowRuleConfiguration> {
     
@@ -47,22 +48,14 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     
     @Override
     public void checkBeforeUpdate(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.isIfExists() && !isExistRuleConfig(currentRuleConfig)) {
-            return;
+        if (!sqlStatement.isIfExists()) {
+            checkRuleExisted(sqlStatement, currentRuleConfig);
         }
-        checkConfigurationExisted(currentRuleConfig);
-        checkRuleExisted(sqlStatement, currentRuleConfig);
-    }
-    
-    private void checkConfigurationExisted(final ShadowRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Shadow", database.getName()));
     }
     
     private void checkRuleExisted(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        if (!sqlStatement.isIfExists()) {
-            ShadowRuleStatementChecker.checkExisted(sqlStatement.getNames(), getDataSourceNames(currentRuleConfig),
-                    notExistedRuleNames -> new MissingRequiredRuleException("Shadow", database.getName(), notExistedRuleNames));
-        }
+        ShadowRuleStatementChecker.checkExisted(sqlStatement.getNames(), getDataSourceNames(currentRuleConfig),
+                notExistedRuleNames -> new MissingRequiredRuleException("Shadow", database.getName(), notExistedRuleNames));
     }
     
     private Collection<String> getDataSourceNames(final ShadowRuleConfiguration currentRuleConfig) {
@@ -75,7 +68,7 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropShadowRuleStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getDataSources().add(new ShadowDataSourceConfiguration(each, null, null));
@@ -93,7 +86,7 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final DropShadowRuleStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
         Collection<String> toBeDroppedDataSourceNames = sqlStatement.getNames();
         for (Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {

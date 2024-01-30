@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -31,13 +32,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AlterSQLTranslatorRuleExecutorTest {
     
     @Test
     void assertExecute() {
         AlterSQLTranslatorRuleExecutor executor = new AlterSQLTranslatorRuleExecutor();
-        SQLTranslatorRuleConfiguration actual = executor.buildAlteredRuleConfiguration(createSQLTranslatorRuleConfiguration(),
+        SQLTranslatorRule rule = mock(SQLTranslatorRule.class);
+        when(rule.getConfiguration()).thenReturn(createSQLTranslatorRuleConfiguration());
+        executor.setRule(rule);
+        SQLTranslatorRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(
                 new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("JOOQ", PropertiesBuilder.build(new Property("foo", "bar"))), null));
         assertThat(actual.getType(), is("JOOQ"));
         assertFalse(actual.getProps().isEmpty());

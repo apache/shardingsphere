@@ -51,23 +51,18 @@ class AlterMaskRuleExecutorTest {
     }
     
     @Test
-    void assertCheckSQLStatementWithoutCurrentRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("MD5"), null));
-    }
-    
-    @Test
-    void assertCheckSQLStatementWithoutToBeAlteredRules() {
+    void assertCheckBeforeUpdateWithoutToBeAlteredRules() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> executor.checkBeforeUpdate(createSQLStatement("MD5"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
-    void assertCheckSQLStatementWithoutToBeAlteredAlgorithm() {
+    void assertCheckBeforeUpdateWithoutToBeAlteredAlgorithm() {
         assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("INVALID_TYPE"), createCurrentRuleConfig()));
     }
     
     @Test
-    void assertCheckSQLStatementWithIncompleteDataType() {
+    void assertCheckBeforeUpdateWithIncompleteDataType() {
         MaskColumnSegment columnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment("test", new Properties()));
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_mask", Collections.singleton(columnSegment));
         AlterMaskRuleStatement statement = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
@@ -81,7 +76,7 @@ class AlterMaskRuleExecutorTest {
                 new AlgorithmSegment("MD5", new Properties()));
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_order", Collections.singleton(columnSegment));
         AlterMaskRuleStatement sqlStatement = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
-        MaskRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
+        MaskRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getMaskAlgorithms().size(), is(1));
         assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_order_order_id_md5"));

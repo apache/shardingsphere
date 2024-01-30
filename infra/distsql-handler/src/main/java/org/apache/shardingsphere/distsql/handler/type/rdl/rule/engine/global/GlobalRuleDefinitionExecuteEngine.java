@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.global;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
@@ -44,25 +44,16 @@ public final class GlobalRuleDefinitionExecuteEngine {
      */
     @SuppressWarnings("unchecked")
     public void executeUpdate() {
-        Class<? extends RuleConfiguration> ruleConfigClass = executor.getRuleConfigurationClass();
-        Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
-        executor.checkBeforeUpdate(currentRuleConfig, sqlStatement);
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, currentRuleConfig));
-    }
-    
-    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (RuleConfiguration each : ruleConfigs) {
-            if (ruleConfigClass.isAssignableFrom(each.getClass())) {
-                return each;
-            }
-        }
-        throw new MissingRequiredRuleException(ruleConfigClass.getSimpleName());
+        ShardingSphereRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass());
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(sqlStatement);
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(sqlStatement, rule.getConfiguration()));
     }
     
     @SuppressWarnings("unchecked")
-    private RuleConfiguration processUpdate(final Collection<RuleConfiguration> ruleConfigs, final RuleDefinitionStatement sqlStatement, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration result = executor.buildAlteredRuleConfiguration(currentRuleConfig, sqlStatement);
+    private RuleConfiguration processUpdate(final RuleDefinitionStatement sqlStatement, final RuleConfiguration currentRuleConfig) {
+        RuleConfiguration result = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
+        Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         ruleConfigs.remove(currentRuleConfig);
         ruleConfigs.add(result);
         return result;

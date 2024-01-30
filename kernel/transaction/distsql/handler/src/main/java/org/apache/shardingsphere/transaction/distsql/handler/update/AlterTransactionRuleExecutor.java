@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import java.util.Collection;
@@ -32,10 +33,10 @@ import java.util.Optional;
 /**
  * Alter transaction rule executor.
  */
-public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionExecutor<AlterTransactionRuleStatement, TransactionRuleConfiguration> {
+public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionExecutor<AlterTransactionRuleStatement, TransactionRule> {
     
     @Override
-    public void checkBeforeUpdate(final TransactionRuleConfiguration currentRuleConfig, final AlterTransactionRuleStatement sqlStatement) {
+    public void checkBeforeUpdate(final AlterTransactionRuleStatement sqlStatement) {
         checkTransactionType(sqlStatement);
         TransactionType transactionType = TransactionType.valueOf(sqlStatement.getDefaultType().toUpperCase());
         if (TransactionType.LOCAL == transactionType) {
@@ -69,13 +70,17 @@ public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionE
     }
     
     @Override
-    public TransactionRuleConfiguration buildAlteredRuleConfiguration(final TransactionRuleConfiguration currentRuleConfig, final AlterTransactionRuleStatement sqlStatement) {
+    public TransactionRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterTransactionRuleStatement sqlStatement) {
         return new TransactionRuleConfiguration(sqlStatement.getDefaultType(), sqlStatement.getProvider().getProviderType(), sqlStatement.getProvider().getProps());
     }
     
     @Override
-    public Class<TransactionRuleConfiguration> getRuleConfigurationClass() {
-        return TransactionRuleConfiguration.class;
+    public void setRule(final TransactionRule rule) {
+    }
+    
+    @Override
+    public Class<TransactionRule> getRuleClass() {
+        return TransactionRule.class;
     }
     
     @Override
