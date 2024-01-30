@@ -34,6 +34,7 @@ import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStat
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.statement.AlterShadowRuleStatement;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -44,20 +45,22 @@ import java.util.Map;
  */
 @DistSQLExecutorCurrentRuleRequired("Shadow")
 @Setter
-public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<AlterShadowRuleStatement, ShadowRuleConfiguration> {
+public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<AlterShadowRuleStatement, ShadowRule, ShadowRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShadowRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        checkRuleNames(sqlStatement.getRules(), currentRuleConfig);
+    public void checkBeforeUpdate(final AlterShadowRuleStatement sqlStatement) {
+        checkRuleNames(sqlStatement.getRules());
         ShadowRuleStatementChecker.checkStorageUnitsExist(ShadowRuleStatementSupporter.getStorageUnitNames(sqlStatement.getRules()), database);
         checkAlgorithms(sqlStatement.getRules());
         checkAlgorithmType(sqlStatement);
     }
     
-    private void checkRuleNames(final Collection<ShadowRuleSegment> segments, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> currentRuleNames = ShadowRuleStatementSupporter.getRuleNames(currentRuleConfig);
+    private void checkRuleNames(final Collection<ShadowRuleSegment> segments) {
+        Collection<String> currentRuleNames = ShadowRuleStatementSupporter.getRuleNames(rule.getConfiguration());
         Collection<String> requiredRuleNames = ShadowRuleStatementSupporter.getRuleNames(segments);
         ShadowRuleStatementChecker.checkDuplicated(requiredRuleNames, duplicated -> new DuplicateRuleException("shadow", database.getName(), duplicated));
         ShadowRuleStatementChecker.checkExisted(requiredRuleNames, currentRuleNames, notExistedRules -> new MissingRequiredRuleException("Shadow", notExistedRules));
@@ -94,8 +97,8 @@ public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<
     }
     
     @Override
-    public Class<ShadowRuleConfiguration> getRuleConfigurationClass() {
-        return ShadowRuleConfiguration.class;
+    public Class<ShadowRule> getRuleClass() {
+        return ShadowRule.class;
     }
     
     @Override

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleSt
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -44,14 +45,16 @@ import java.util.stream.Collectors;
  * Create encrypt rule executor.
  */
 @Setter
-public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecutor<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
+public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecutor<CreateEncryptRuleStatement, EncryptRule, EncryptRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private EncryptRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final CreateEncryptRuleStatement sqlStatement) {
         if (!sqlStatement.isIfNotExists()) {
-            checkDuplicateRuleNames(sqlStatement, currentRuleConfig);
+            checkDuplicateRuleNames(sqlStatement);
         }
         checkColumnNames(sqlStatement);
         checkAlgorithmTypes(sqlStatement);
@@ -59,15 +62,15 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
         checkDataSources();
     }
     
-    private void checkDuplicateRuleNames(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+    private void checkDuplicateRuleNames(final CreateEncryptRuleStatement sqlStatement) {
+        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
         ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("encrypt", database.getName(), duplicatedRuleNames));
     }
     
-    private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement) {
         Collection<String> currentRuleNames = new LinkedHashSet<>();
-        if (null != currentRuleConfig) {
-            currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
+        if (null != rule) {
+            currentRuleNames = ((EncryptRuleConfiguration) rule.getConfiguration()).getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
         }
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toSet());
     }
@@ -139,7 +142,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         Collection<EncryptRuleSegment> segments = sqlStatement.getRules();
         if (sqlStatement.isIfNotExists()) {
-            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
             segments.removeIf(each -> duplicatedRuleNames.contains(each.getTableName()));
         }
         return EncryptRuleStatementConverter.convert(segments);
@@ -152,8 +155,8 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     }
     
     @Override
-    public Class<EncryptRuleConfiguration> getRuleConfigurationClass() {
-        return EncryptRuleConfiguration.class;
+    public Class<EncryptRule> getRuleClass() {
+        return EncryptRule.class;
     }
     
     @Override

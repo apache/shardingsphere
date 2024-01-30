@@ -36,6 +36,7 @@ import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.handler.exception.MissingRequiredSingleTableException;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import javax.sql.DataSource;
@@ -50,12 +51,12 @@ import java.util.stream.Collectors;
  * Load single table statement executor.
  */
 @Setter
-public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor<LoadSingleTableStatement, SingleRuleConfiguration> {
+public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor<LoadSingleTableStatement, SingleRule, SingleRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
     @Override
-    public void checkBeforeUpdate(final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final LoadSingleTableStatement sqlStatement) {
         String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
         checkDuplicatedTables(sqlStatement, defaultSchemaName);
         checkStorageUnits(sqlStatement);
@@ -162,8 +163,12 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     }
     
     @Override
-    public Class<SingleRuleConfiguration> getRuleConfigurationClass() {
-        return SingleRuleConfiguration.class;
+    public void setRule(final SingleRule rule) {
+    }
+    
+    @Override
+    public Class<SingleRule> getRuleClass() {
+        return SingleRule.class;
     }
     
     @Override

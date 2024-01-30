@@ -19,6 +19,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableRuleStatement;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,10 @@ class DropBroadcastTableRuleExecutorTest {
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() {
         DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement, new BroadcastRuleConfiguration(Collections.emptyList())));
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getConfiguration()).thenReturn(new BroadcastRuleConfiguration(Collections.emptyList()));
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test

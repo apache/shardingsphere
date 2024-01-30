@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -38,34 +39,36 @@ import java.util.stream.Collectors;
  */
 @DistSQLExecutorCurrentRuleRequired("Key generator")
 @Setter
-public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropExecutor<DropShardingKeyGeneratorStatement, ShardingRuleConfiguration> {
+public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropExecutor<DropShardingKeyGeneratorStatement, ShardingRule, ShardingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShardingRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropShardingKeyGeneratorStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkExist(sqlStatement, currentRuleConfig);
+            checkExist(sqlStatement);
         }
-        checkInUsed(sqlStatement, currentRuleConfig);
+        checkInUsed(sqlStatement);
     }
     
-    private void checkExist(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> notExistKeyGenerators = sqlStatement.getNames().stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toList());
+    private void checkExist(final DropShardingKeyGeneratorStatement sqlStatement) {
+        Collection<String> notExistKeyGenerators = sqlStatement.getNames().stream().filter(each -> !rule.getConfiguration().getKeyGenerators().containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistKeyGenerators.isEmpty(), () -> new MissingRequiredAlgorithmException("Key generator", database.getName(), notExistKeyGenerators));
     }
     
-    private void checkInUsed(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> usedKeyGenerators = getUsedKeyGenerators(currentRuleConfig);
+    private void checkInUsed(final DropShardingKeyGeneratorStatement sqlStatement) {
+        Collection<String> usedKeyGenerators = getUsedKeyGenerators();
         Collection<String> inUsedNames = sqlStatement.getNames().stream().filter(usedKeyGenerators::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Key generator", database.getName(), inUsedNames));
     }
     
-    private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
+    private Collection<String> getUsedKeyGenerators() {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        shardingRuleConfig.getAutoTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        KeyGenerateStrategyConfiguration keyGenerateStrategy = shardingRuleConfig.getDefaultKeyGenerateStrategy();
+        rule.getConfiguration().getTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        rule.getConfiguration().getAutoTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        KeyGenerateStrategyConfiguration keyGenerateStrategy = rule.getConfiguration().getDefaultKeyGenerateStrategy();
         if (null != keyGenerateStrategy && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
             result.add(keyGenerateStrategy.getKeyGeneratorName());
         }
@@ -93,8 +96,8 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     }
     
     @Override
-    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
-        return ShardingRuleConfiguration.class;
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

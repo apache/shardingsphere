@@ -26,6 +26,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.Read
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.CreateReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,13 +36,15 @@ import java.util.stream.Collectors;
  * Create readwrite-splitting rule executor.
  */
 @Setter
-public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleCreateExecutor<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
+public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleCreateExecutor<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRule, ReadwriteSplittingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ReadwriteSplittingRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        ReadwriteSplittingRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), currentRuleConfig, sqlStatement.isIfNotExists());
+    public void checkBeforeUpdate(final CreateReadwriteSplittingRuleStatement sqlStatement) {
+        ReadwriteSplittingRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), null == rule ? null : rule.getConfiguration(), sqlStatement.isIfNotExists());
     }
     
     @Override
@@ -70,8 +73,8 @@ public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleC
     }
     
     @Override
-    public Class<ReadwriteSplittingRuleConfiguration> getRuleConfigurationClass() {
-        return ReadwriteSplittingRuleConfiguration.class;
+    public Class<ReadwriteSplittingRule> getRuleClass() {
+        return ReadwriteSplittingRule.class;
     }
     
     @Override

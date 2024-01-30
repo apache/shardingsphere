@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DropShardingTableRuleExecutorTest {
     
@@ -61,18 +63,27 @@ class DropShardingTableRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithoutExistedTableRule() throws RuleDefinitionViolationException {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order"), new ShardingRuleConfiguration()));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order")));
     }
     
     @Test
     void assertCheckSQLStatementIfExists() throws RuleDefinitionViolationException {
         DropShardingTableRuleStatement statement = new DropShardingTableRuleStatement(true, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue("t_order_if_exists"))));
-        executor.checkBeforeUpdate(statement, new ShardingRuleConfiguration());
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(statement);
     }
     
     @Test
     void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
-        assertThrows(RuleInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order_item"), createCurrentRuleConfiguration()));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        assertThrows(RuleInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatement("t_order_item")));
     }
     
     @Test

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,15 +66,15 @@ class DropReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
-        assertThrows(MissingRequiredRuleException.class,
-                () -> executor.checkBeforeUpdate(createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement()));
     }
     
     @Test
     void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
-        executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
-                new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
+        executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")));
     }
     
     @Test
@@ -85,7 +86,10 @@ class DropReadwriteSplittingRuleExecutorTest {
         when(dataNodeContainedRule.getAllDataNodes()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton(new DataNode("readwrite_ds.tbl"))));
         when(database.getRuleMetaData().findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(dataNodeContainedRule));
         executor.setDatabase(database);
-        assertThrows(RuleInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatement(), createCurrentRuleConfiguration()));
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        assertThrows(RuleInUsedException.class, () -> executor.checkBeforeUpdate(createSQLStatement()));
     }
     
     @Test

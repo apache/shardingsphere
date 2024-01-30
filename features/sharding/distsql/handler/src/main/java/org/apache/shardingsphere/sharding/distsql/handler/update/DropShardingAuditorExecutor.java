@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAuditorStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -37,34 +38,36 @@ import java.util.stream.Collectors;
  */
 @DistSQLExecutorCurrentRuleRequired("Sharding auditor")
 @Setter
-public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecutor<DropShardingAuditorStatement, ShardingRuleConfiguration> {
+public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecutor<DropShardingAuditorStatement, ShardingRule, ShardingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShardingRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropShardingAuditorStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkExist(sqlStatement, currentRuleConfig);
+            checkExist(sqlStatement);
         }
-        checkInUsed(sqlStatement, currentRuleConfig);
+        checkInUsed(sqlStatement);
     }
     
-    private void checkExist(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> notExistAuditors = sqlStatement.getNames().stream().filter(each -> !currentRuleConfig.getAuditors().containsKey(each)).collect(Collectors.toList());
+    private void checkExist(final DropShardingAuditorStatement sqlStatement) {
+        Collection<String> notExistAuditors = sqlStatement.getNames().stream().filter(each -> !rule.getConfiguration().getAuditors().containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new MissingRequiredAlgorithmException("Sharding auditor", database.getName(), notExistAuditors));
     }
     
-    private void checkInUsed(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> usedAuditors = getUsedAuditors(currentRuleConfig);
+    private void checkInUsed(final DropShardingAuditorStatement sqlStatement) {
+        Collection<String> usedAuditors = getUsedAuditors();
         Collection<String> inUsedNames = sqlStatement.getNames().stream().filter(usedAuditors::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Sharding auditor", database.getName(), inUsedNames));
     }
     
-    private Collection<String> getUsedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {
+    private Collection<String> getUsedAuditors() {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().stream().filter(each -> null != each.getAuditStrategy()).forEach(each -> result.addAll(each.getAuditStrategy().getAuditorNames()));
-        shardingRuleConfig.getAutoTables().stream().filter(each -> null != each.getAuditStrategy()).forEach(each -> result.addAll(each.getAuditStrategy().getAuditorNames()));
-        ShardingAuditStrategyConfiguration auditStrategy = shardingRuleConfig.getDefaultAuditStrategy();
+        rule.getConfiguration().getTables().stream().filter(each -> null != each.getAuditStrategy()).forEach(each -> result.addAll(each.getAuditStrategy().getAuditorNames()));
+        rule.getConfiguration().getAutoTables().stream().filter(each -> null != each.getAuditStrategy()).forEach(each -> result.addAll(each.getAuditStrategy().getAuditorNames()));
+        ShardingAuditStrategyConfiguration auditStrategy = rule.getConfiguration().getDefaultAuditStrategy();
         if (null != auditStrategy && !auditStrategy.getAuditorNames().isEmpty()) {
             result.addAll(auditStrategy.getAuditorNames());
         }
@@ -92,8 +95,8 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     }
     
     @Override
-    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
-        return ShardingRuleConfiguration.class;
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

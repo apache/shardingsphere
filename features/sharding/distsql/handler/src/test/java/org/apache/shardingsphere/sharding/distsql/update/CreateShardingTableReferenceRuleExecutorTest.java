@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableReferenceRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableReferenceRuleStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CreateShardingTableReferenceRuleExecutorTest {
     
@@ -50,7 +52,10 @@ class CreateShardingTableReferenceRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithoutCurrentTableRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "foo", "t_order,t_order_item"), new ShardingRuleConfiguration()));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(new ShardingRuleConfiguration());
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "foo", "t_order,t_order_item")));
     }
     
     private CreateShardingTableReferenceRuleStatement createSQLStatement(final boolean ifNotExists, final String name, final String reference) {
@@ -61,14 +66,20 @@ class CreateShardingTableReferenceRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithDuplicateTables() {
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "foo", "t_order,t_order_item"), getCurrentRuleConfig()));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfig());
+        executor.setRule(rule);
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "foo", "t_order,t_order_item")));
     }
     
     @Test
     void assertUpdateWithIfNotExists() {
         CreateShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "foo", "t_order,t_order_item");
         ShardingRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
-        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         Collection<ShardingTableReferenceRuleConfiguration> referenceRuleConfigs = currentRuleConfig.getBindingTableGroups();

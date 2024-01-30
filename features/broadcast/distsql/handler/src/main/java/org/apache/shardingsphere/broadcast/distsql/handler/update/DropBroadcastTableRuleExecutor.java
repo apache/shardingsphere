@@ -20,6 +20,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableRuleStatement;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
@@ -35,19 +36,21 @@ import java.util.stream.Collectors;
  */
 @DistSQLExecutorCurrentRuleRequired("Broadcast")
 @Setter
-public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExecutor<DropBroadcastTableRuleStatement, BroadcastRuleConfiguration> {
+public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExecutor<DropBroadcastTableRuleStatement, BroadcastRule, BroadcastRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private BroadcastRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final DropBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropBroadcastTableRuleStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkBroadcastTableRuleExist(sqlStatement, currentRuleConfig);
+            checkBroadcastTableRuleExist(sqlStatement);
         }
     }
     
-    private void checkBroadcastTableRuleExist(final DropBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
-        Collection<String> currentRules = currentRuleConfig.getTables();
+    private void checkBroadcastTableRuleExist(final DropBroadcastTableRuleStatement sqlStatement) {
+        Collection<String> currentRules = rule.getConfiguration().getTables();
         Collection<String> notExistRules = sqlStatement.getTables().stream().filter(each -> !containsIgnoreCase(currentRules, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistRules.isEmpty(), () -> new MissingRequiredRuleException("Broadcast", database.getName(), notExistRules));
     }
@@ -75,8 +78,8 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     }
     
     @Override
-    public Class<BroadcastRuleConfiguration> getRuleConfigurationClass() {
-        return BroadcastRuleConfiguration.class;
+    public Class<BroadcastRule> getRuleClass() {
+        return BroadcastRule.class;
     }
     
     @Override

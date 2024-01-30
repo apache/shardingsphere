@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
-public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCreateExecutor<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
+public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCreateExecutor<CreateFixtureRuleStatement, FixtureRule, FixtureRuleConfiguration> {
     
     @Override
-    public void checkBeforeUpdate(final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final CreateFixtureRuleStatement sqlStatement) {
     }
     
     @Override
@@ -36,8 +36,12 @@ public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCrea
     }
     
     @Override
-    public Class<FixtureRuleConfiguration> getRuleConfigurationClass() {
-        return FixtureRuleConfiguration.class;
+    public void setRule(final FixtureRule rule) {
+    }
+    
+    @Override
+    public Class<FixtureRule> getRuleClass() {
+        return FixtureRule.class;
     }
     
     @Override

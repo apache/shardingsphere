@@ -20,6 +20,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 import lombok.Setter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
@@ -27,30 +28,43 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Create broadcast table rule executor.
  */
 @Setter
-public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreateExecutor<CreateBroadcastTableRuleStatement, BroadcastRuleConfiguration> {
+public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreateExecutor<CreateBroadcastTableRuleStatement, BroadcastRule, BroadcastRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private BroadcastRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final CreateBroadcastTableRuleStatement sqlStatement) {
         ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
         if (!sqlStatement.isIfNotExists()) {
-            checkDuplicate(sqlStatement, currentRuleConfig);
+            checkDuplicate(sqlStatement);
         }
+    }
+    
+    private void checkDuplicate(final CreateBroadcastTableRuleStatement sqlStatement) {
+        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
+        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("Broadcast", sqlStatement.getTables()));
+    }
+    
+    private Collection<String> getDuplicatedRuleNames(final CreateBroadcastTableRuleStatement sqlStatement) {
+        Collection<String> result = new HashSet<>(null == rule ? Collections.emptySet() : rule.getTables());
+        result.retainAll(sqlStatement.getTables());
+        return result;
     }
     
     @Override
     public BroadcastRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         Collection<String> tables = sqlStatement.getTables();
         if (sqlStatement.isIfNotExists()) {
-            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
-            tables.removeIf(duplicatedRuleNames::contains);
+            tables.removeIf(getDuplicatedRuleNames(sqlStatement)::contains);
         }
         return new BroadcastRuleConfiguration(tables);
     }
@@ -60,23 +74,9 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
         currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
     }
     
-    private void checkDuplicate(final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
-        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
-        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("Broadcast", sqlStatement.getTables()));
-    }
-    
-    private Collection<String> getDuplicatedRuleNames(final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
-        Collection<String> result = new LinkedHashSet<>();
-        if (null != currentRuleConfig && !currentRuleConfig.getTables().isEmpty()) {
-            result.addAll(currentRuleConfig.getTables());
-        }
-        result.retainAll(sqlStatement.getTables());
-        return result;
-    }
-    
     @Override
-    public Class<BroadcastRuleConfiguration> getRuleConfigurationClass() {
-        return BroadcastRuleConfiguration.class;
+    public Class<BroadcastRule> getRuleClass() {
+        return BroadcastRule.class;
     }
     
     @Override

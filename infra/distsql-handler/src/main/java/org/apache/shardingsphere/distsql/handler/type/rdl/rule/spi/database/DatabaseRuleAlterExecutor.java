@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Database rule alter executor.
  *
  * @param <T> type of SQL statement
- * @param <R> type of rule configuration
+ * @param <R> type of rule
+ * @param <C> type of rule configuration
  */
-public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
+public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends ShardingSphereRule, C extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
     
     /**
      * Build to be altered rule configuration.
@@ -35,7 +37,7 @@ public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends Rul
      * @param currentRuleConfig current rule configuration
      * @return to be altered rule configuration
      */
-    R buildToBeAlteredRuleConfiguration(T sqlStatement, R currentRuleConfig);
+    C buildToBeAlteredRuleConfiguration(T sqlStatement, C currentRuleConfig);
     
     /**
      * TODO Remove temporary default implementation
@@ -45,7 +47,7 @@ public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends Rul
      * @param toBeAlteredRuleConfig new rule configuration to be renewed
      * @return to be dropped rule configuration
      */
-    default R buildToBeDroppedRuleConfiguration(final R currentRuleConfig, final R toBeAlteredRuleConfig) {
+    default C buildToBeDroppedRuleConfiguration(final C currentRuleConfig, final C toBeAlteredRuleConfig) {
         return null;
     }
     
@@ -55,5 +57,5 @@ public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends Rul
      * @param currentRuleConfig current rule configuration to be updated
      * @param toBeAlteredRuleConfig to be altered rule configuration
      */
-    void updateCurrentRuleConfiguration(R currentRuleConfig, R toBeAlteredRuleConfig);
+    void updateCurrentRuleConfiguration(C currentRuleConfig, C toBeAlteredRuleConfig);
 }

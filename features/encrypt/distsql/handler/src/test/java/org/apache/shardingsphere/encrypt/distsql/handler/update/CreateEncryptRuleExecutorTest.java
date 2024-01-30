@@ -27,6 +27,7 @@ import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -46,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CreateEncryptRuleExecutorTest {
     
@@ -58,24 +60,33 @@ class CreateEncryptRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithDuplicateEncryptRule() {
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "MD5"), getCurrentRuleConfig()));
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfig());
+        executor.setRule(rule);
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "MD5")));
     }
     
     @Test
     void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "INVALID_TYPE"), null));
+        assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, "INVALID_TYPE")));
     }
     
     @Test
     void assertCheckSQLStatementWithConflictColumnNames() {
-        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createConflictColumnNameSQLStatement(), getCurrentRuleConfig()));
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfig());
+        executor.setRule(rule);
+        assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(createConflictColumnNameSQLStatement()));
     }
     
     @Test
     void assertCreateEncryptRuleWithIfNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        executor.setRule(rule);
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
-        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
+        executor.checkBeforeUpdate(sqlStatement);
         EncryptRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
@@ -127,9 +138,11 @@ class CreateEncryptRuleExecutorTest {
     
     @Test
     void assertCreateAESEncryptRuleWithPropertiesNotExists() {
-        EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createWrongAESEncryptorSQLStatement();
-        assertThrows(EncryptAlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(sqlStatement, currentRuleConfig));
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(getCurrentRuleConfig());
+        executor.setRule(rule);
+        assertThrows(EncryptAlgorithmInitializationException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     private CreateEncryptRuleStatement createWrongAESEncryptorSQLStatement() {

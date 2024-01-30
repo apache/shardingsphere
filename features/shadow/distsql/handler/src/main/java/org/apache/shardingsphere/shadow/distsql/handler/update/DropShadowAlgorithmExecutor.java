@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowAlgorithmStatement;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -43,26 +44,28 @@ import java.util.stream.Collectors;
  */
 @DistSQLExecutorCurrentRuleRequired("Shadow")
 @Setter
-public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecutor<DropShadowAlgorithmStatement, ShadowRuleConfiguration> {
+public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecutor<DropShadowAlgorithmStatement, ShadowRule, ShadowRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShadowRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final DropShadowAlgorithmStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkAlgorithm(sqlStatement, currentRuleConfig);
+            checkAlgorithm(sqlStatement);
         }
     }
     
-    private void checkAlgorithm(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
+    private void checkAlgorithm(final DropShadowAlgorithmStatement sqlStatement) {
+        Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(rule.getConfiguration());
         Collection<String> requiredAlgorithms = sqlStatement.getNames();
-        String defaultShadowAlgorithmName = currentRuleConfig.getDefaultShadowAlgorithmName();
+        String defaultShadowAlgorithmName = rule.getConfiguration().getDefaultShadowAlgorithmName();
         if (!sqlStatement.isIfExists()) {
             ShadowRuleStatementChecker.checkExisted(
                     requiredAlgorithms, currentAlgorithms, notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", database.getName(), notExistedAlgorithms));
         }
-        checkAlgorithmInUsed(requiredAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException("Shadow", database.getName(), identical));
+        checkAlgorithmInUsed(requiredAlgorithms, getAlgorithmInUse(), identical -> new AlgorithmInUsedException("Shadow", database.getName(), identical));
         ShardingSpherePreconditions.checkState(!requiredAlgorithms.contains(defaultShadowAlgorithmName),
                 () -> new AlgorithmInUsedException("Shadow", database.getName(), Collections.singleton(defaultShadowAlgorithmName)));
     }
@@ -71,8 +74,8 @@ public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecut
         ShadowRuleStatementChecker.checkDuplicated(requiredAlgorithms, currentAlgorithms, thrower);
     }
     
-    private Collection<String> getAlgorithmInUse(final ShadowRuleConfiguration currentRuleConfig) {
-        return currentRuleConfig.getTables().values().stream().filter(each -> !each.getDataSourceNames().isEmpty()).map(ShadowTableConfiguration::getShadowAlgorithmNames)
+    private Collection<String> getAlgorithmInUse() {
+        return rule.getConfiguration().getTables().values().stream().filter(each -> !each.getDataSourceNames().isEmpty()).map(ShadowTableConfiguration::getShadowAlgorithmNames)
                 .flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
@@ -106,8 +109,8 @@ public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecut
     }
     
     @Override
-    public Class<ShadowRuleConfiguration> getRuleConfigurationClass() {
-        return ShadowRuleConfiguration.class;
+    public Class<ShadowRule> getRuleClass() {
+        return ShadowRule.class;
     }
     
     @Override

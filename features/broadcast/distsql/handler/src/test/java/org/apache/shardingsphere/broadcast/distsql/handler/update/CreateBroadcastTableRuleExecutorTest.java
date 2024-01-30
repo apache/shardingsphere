@@ -19,6 +19,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -43,28 +44,37 @@ class CreateBroadcastTableRuleExecutorTest {
     void assertCheckSQLStatementWithEmptyStorageUnit() {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
-        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         executor.setDatabase(database);
-        assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(sqlStatement, currentConfig));
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getConfiguration()).thenReturn(currentConfig);
+        executor.setRule(rule);
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        assertThrows(EmptyStorageUnitException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateBroadcastRule() {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
-        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         executor.setDatabase(mockShardingSphereDatabase());
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement, currentConfig));
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getConfiguration()).thenReturn(currentConfig);
+        executor.setRule(rule);
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
     void assertBuildToBeCreatedRuleConfiguration() {
         BroadcastRuleConfiguration currentConfig = new BroadcastRuleConfiguration(new LinkedList<>());
-        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         executor.setDatabase(mockShardingSphereDatabase());
-        executor.checkBeforeUpdate(sqlStatement, currentConfig);
+        BroadcastRule rule = mock(BroadcastRule.class);
+        when(rule.getConfiguration()).thenReturn(currentConfig);
+        executor.setRule(rule);
+        CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        executor.checkBeforeUpdate(sqlStatement);
         BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentConfig);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getTables().size(), is(1));

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrent
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTabl
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelType;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Optional;
 
@@ -42,16 +43,18 @@ import java.util.Optional;
  */
 @DistSQLExecutorCurrentRuleRequired("Sharding")
 @Setter
-public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
+public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShardingStrategyStatement, ShardingRule, ShardingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     
+    private ShardingRule rule;
+    
     @Override
-    public void checkBeforeUpdate(final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkBeforeUpdate(final AlterDefaultShardingStrategyStatement sqlStatement) {
         if (!"none".equalsIgnoreCase(sqlStatement.getStrategyType())) {
             checkAlgorithm(sqlStatement);
         }
-        checkExist(sqlStatement, currentRuleConfig);
+        checkExist(sqlStatement);
     }
     
     private void checkAlgorithm(final AlterDefaultShardingStrategyStatement sqlStatement) {
@@ -65,16 +68,16 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleA
         return null != sqlStatement.getAlgorithmSegment();
     }
     
-    private void checkExist(final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
+    private void checkExist(final AlterDefaultShardingStrategyStatement sqlStatement) {
+        Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(sqlStatement.getDefaultType());
         ShardingSpherePreconditions.checkState(strategyConfig.isPresent(),
                 () -> new MissingRequiredRuleException(String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), database.getName()));
     }
     
-    private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final ShardingRuleConfiguration currentRuleConfig, final String type) {
+    private Optional<ShardingStrategyConfiguration> getStrategyConfiguration(final String type) {
         ShardingStrategyConfiguration result = type.equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())
-                ? currentRuleConfig.getDefaultTableShardingStrategy()
-                : currentRuleConfig.getDefaultDatabaseShardingStrategy();
+                ? rule.getConfiguration().getDefaultTableShardingStrategy()
+                : rule.getConfiguration().getDefaultDatabaseShardingStrategy();
         return Optional.ofNullable(result);
     }
     
@@ -132,8 +135,8 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleA
     }
     
     @Override
-    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
-        return ShardingRuleConfiguration.class;
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

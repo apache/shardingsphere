@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableReferenceRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableReferenceRuleStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AlterShardingTableReferenceRuleExecutorTest {
     
@@ -47,12 +49,18 @@ class AlterShardingTableReferenceRuleExecutorTest {
     
     @Test
     void assertCheckBeforeUpdateWithNotExistedRule() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration()));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("notExisted", "t_1,t_2")));
     }
     
     @Test
     void assertCheckWithNotExistedTables() {
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("reference_0", "t_3,t_4"), createCurrentRuleConfiguration()));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createCurrentRuleConfiguration());
+        executor.setRule(rule);
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement("reference_0", "t_3,t_4")));
     }
     
     @Test
