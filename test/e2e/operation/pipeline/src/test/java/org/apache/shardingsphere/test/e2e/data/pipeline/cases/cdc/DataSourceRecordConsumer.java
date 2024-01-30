@@ -90,7 +90,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
             return;
         }
         for (Record each : records) {
-            write(each, connection);
+            write(each, connection, records.size() < 5);
         }
     }
     
@@ -113,12 +113,11 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         }
     }
     
-    private void write(final Record ingestedRecord, final Connection connection) throws SQLException {
+    private void write(final Record ingestedRecord, final Connection connection, final boolean printSQL) throws SQLException {
         String sql = buildSQL(ingestedRecord);
         MetaData metaData = ingestedRecord.getMetaData();
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            Object orderId;
             int updateCount;
             switch (ingestedRecord.getDataChangeType()) {
                 case INSERT:
@@ -127,8 +126,8 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                         preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumn));
                     }
                     updateCount = preparedStatement.executeUpdate();
-                    if (1 != updateCount) {
-                        log.warn("Execute insert failed, update count: {}, sql: {}, values: {}", updateCount, sql,
+                    if (1 != updateCount || printSQL) {
+                        log.info("Execute insert, update count: {}, sql: {}, values: {}", updateCount, sql,
                                 ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).collect(Collectors.toList()));
                     }
                     break;
@@ -137,20 +136,19 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                         TableColumn tableColumn = ingestedRecord.getAfterList().get(i);
                         preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumn));
                     }
-                    orderId = convertValueFromAny(tableMetaData, getOrderIdTableColumn(ingestedRecord.getAfterList()));
-                    preparedStatement.setObject(ingestedRecord.getAfterCount() + 1, orderId);
+                    preparedStatement.setObject(ingestedRecord.getAfterCount() + 1, convertValueFromAny(tableMetaData, getOrderIdTableColumn(ingestedRecord.getAfterList())));
                     updateCount = preparedStatement.executeUpdate();
-                    if (1 != updateCount) {
-                        log.warn("Execute update failed, update count: {}, sql: {}, orderId: {}, updated columns: {}", updateCount, sql, orderId,
-                                ingestedRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList()));
+                    if (1 != updateCount || printSQL) {
+                        log.info("Execute update, update count: {}, sql: {}, values: {}", updateCount, sql,
+                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).collect(Collectors.toList()));
                     }
                     break;
                 case DELETE:
-                    orderId = convertValueFromAny(tableMetaData, getOrderIdTableColumn(ingestedRecord.getBeforeList()));
+                    Object orderId = convertValueFromAny(tableMetaData, getOrderIdTableColumn(ingestedRecord.getBeforeList()));
                     preparedStatement.setObject(1, orderId);
                     updateCount = preparedStatement.executeUpdate();
-                    if (1 != updateCount) {
-                        log.warn("Execute delete failed, update count: {}, sql: {}, orderId: {}", updateCount, sql, orderId);
+                    if (1 != updateCount || printSQL) {
+                        log.info("Execute delete, update count: {}, sql: {}, order_id: {}", updateCount, sql, orderId);
                     }
                     break;
                 default:

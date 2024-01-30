@@ -41,7 +41,6 @@ import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgori
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -210,14 +209,12 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     }
     
     private void doWithoutSorting() {
-        Iterator<CDCChannelProgressPair> channelProgressPairIterator = channelProgressPairs.iterator();
-        while (channelProgressPairIterator.hasNext()) {
-            doWithoutSorting(channelProgressPairIterator);
+        for (CDCChannelProgressPair each : channelProgressPairs) {
+            doWithoutSorting(each);
         }
     }
     
-    private void doWithoutSorting(final Iterator<CDCChannelProgressPair> channelProgressPairIterator) {
-        CDCChannelProgressPair channelProgressPair = channelProgressPairIterator.next();
+    private void doWithoutSorting(final CDCChannelProgressPair channelProgressPair) {
         PipelineChannel channel = channelProgressPair.getChannel();
         List<Record> records = channel.fetch(batchSize, timeoutMillis);
         if (records.isEmpty()) {
@@ -228,7 +225,7 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
             channel.ack(records);
             channelProgressPair.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
             if (lastRecord instanceof FinishedRecord) {
-                channelProgressPairIterator.remove();
+                channelProgressPairs.remove(channelProgressPair);
             }
             return;
         }
