@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 public final class FixtureRule implements ShardingSphereRule {
+    
     @Override
     public RuleConfiguration getConfiguration() {
         return new FixtureRuleConfiguration();
