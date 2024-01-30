@@ -46,7 +46,7 @@ public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreate
     
     @Override
     public void checkBeforeUpdate(final CreateShardingTableRuleStatement sqlStatement) {
-        ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), sqlStatement.isIfNotExists(), rule.getConfiguration());
+        ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), sqlStatement.isIfNotExists(), null == rule ? null : rule.getConfiguration());
     }
     
     @Override

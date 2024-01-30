@@ -93,6 +93,9 @@ class DropShardingAlgorithmExecutorTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(3));
         assertTrue(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        executor.setRule(rule);
         executor.updateCurrentRuleConfiguration(createSQLStatement(toBeDroppedAlgorithmName), currentRuleConfig);
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(2));
         assertFalse(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
@@ -105,6 +108,9 @@ class DropShardingAlgorithmExecutorTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(3));
         assertTrue(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        executor.setRule(rule);
         executor.updateCurrentRuleConfiguration(createSQLStatementWithIfExists(toBeDroppedAlgorithmName), currentRuleConfig);
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(2));
         assertFalse(currentRuleConfig.getShardingAlgorithms().containsKey(toBeDroppedAlgorithmName));
