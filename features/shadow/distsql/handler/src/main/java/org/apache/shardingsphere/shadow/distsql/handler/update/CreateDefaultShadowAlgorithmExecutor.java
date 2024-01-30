@@ -63,7 +63,7 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     }
     
     private Collection<String> getDuplicatedRuleNames() {
-        Collection<String> currentAlgorithmNames = null == rule.getConfiguration() ? Collections.emptyList() : rule.getConfiguration().getShadowAlgorithms().keySet();
+        Collection<String> currentAlgorithmNames = null == rule ? Collections.emptyList() : rule.getConfiguration().getShadowAlgorithms().keySet();
         return Stream.of("default_shadow_algorithm").filter(currentAlgorithmNames::contains).collect(Collectors.toSet());
     }
     
