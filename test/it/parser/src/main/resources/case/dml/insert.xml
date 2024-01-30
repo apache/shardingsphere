@@ -3517,4 +3517,31 @@
             </value>
         </values>
     </insert>
+    
+    <insert sql-case-id="insert_with_table_t">
+        <table name="#t" start-index="12" stop-index="13" />
+        <columns start-index="14" stop-index="14" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="99" start-index="23" stop-index="24" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_table_test">
+        <table name="##test" start-index="12" stop-index="17" />
+        <columns start-index="18" stop-index="18" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="27" stop-index="27" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="30" stop-index="30" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

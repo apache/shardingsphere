@@ -251,4 +251,6 @@
     <sql-case id="select_from_dbms_table" value="select * from table(dbms_xplan.display);" db-types="Oracle"/>
     <sql-case id="select_from_database_files" value="SELECT name, size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0 AS AvailableSpaceInMB FROM sys.database_files" db-types="SQLServer"/>
     <sql-case id="select_trim_2" value="SELECT TRIM( '     test    ') AS Result" db-types="SQLServer"/>
+    <sql-case id="select_from_table_test" value="SELECT * FROM ##test" db-types="SQLServer"/>
+    <sql-case id="select_from_table_openrowset" value="SELECT TOP 100 id=CAST(_id as VARBINARY(1000)) FROM OPENROWSET('CosmosDB', 'Your-account;Database=your-database;Key=your-key',HTAP) WITH (_id VARCHAR(1000)) as HTAP" db-types="SQLServer"/>
 </sql-cases>
