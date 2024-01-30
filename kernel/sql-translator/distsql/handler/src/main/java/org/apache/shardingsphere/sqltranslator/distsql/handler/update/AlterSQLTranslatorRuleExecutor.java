@@ -39,7 +39,7 @@ public final class AlterSQLTranslatorRuleExecutor implements GlobalRuleDefinitio
     }
     
     @Override
-    public SQLTranslatorRuleConfiguration buildAlteredRuleConfiguration(final AlterSQLTranslatorRuleStatement sqlStatement) {
+    public SQLTranslatorRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterSQLTranslatorRuleStatement sqlStatement) {
         boolean useOriginalSQLWhenTranslatingFailed = null == sqlStatement.getUseOriginalSQLWhenTranslatingFailed()
                 ? rule.getConfiguration().isUseOriginalSQLWhenTranslatingFailed()
                 : sqlStatement.getUseOriginalSQLWhenTranslatingFailed();

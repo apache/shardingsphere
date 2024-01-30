@@ -61,6 +61,10 @@ public final class DatabaseRuleDefinitionExecuteEngine {
         }
     }
     
+    private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {
+        return database.getRuleMetaData().getConfigurations().stream().filter(each -> ruleConfigClass.isAssignableFrom(each.getClass())).findFirst();
+    }
+    
     @SuppressWarnings("unchecked")
     private void checkBeforeUpdate(final RuleConfiguration currentRuleConfig) {
         Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(currentRuleConfig, optional));
@@ -72,10 +76,6 @@ public final class DatabaseRuleDefinitionExecuteEngine {
             return;
         }
         ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException(currentRuleRequired.value(), database.getName()));
-    }
-    
-    private Optional<RuleConfiguration> findCurrentRuleConfiguration(final ShardingSphereDatabase database, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        return database.getRuleMetaData().getConfigurations().stream().filter(each -> ruleConfigClass.isAssignableFrom(each.getClass())).findFirst();
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

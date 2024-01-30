@@ -72,7 +72,7 @@ public final class AlterTrafficRuleExecutor implements GlobalRuleDefinitionExecu
     }
     
     @Override
-    public TrafficRuleConfiguration buildAlteredRuleConfiguration(final AlterTrafficRuleStatement sqlStatement) {
+    public TrafficRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterTrafficRuleStatement sqlStatement) {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
         TrafficRuleConfiguration configFromSQLStatement = TrafficRuleConverter.convert(sqlStatement.getSegments());
         result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(configFromSQLStatement));

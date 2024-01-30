@@ -57,7 +57,7 @@ public final class LegacyGlobalRuleDefinitionExecuteEngine {
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigs);
         result.remove(currentRuleConfig);
-        result.add(executor.buildAlteredRuleConfiguration(sqlStatement));
+        result.add(executor.buildToBeAlteredRuleConfiguration(sqlStatement));
         return result;
     }
 }

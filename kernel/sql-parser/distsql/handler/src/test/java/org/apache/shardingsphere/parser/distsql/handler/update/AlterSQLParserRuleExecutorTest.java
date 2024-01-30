@@ -38,7 +38,7 @@ class AlterSQLParserRuleExecutorTest {
         SQLParserRule rule = mock(SQLParserRule.class);
         when(rule.getConfiguration()).thenReturn(getSQLParserRuleConfiguration());
         executor.setRule(rule);
-        SQLParserRuleConfiguration actual = executor.buildAlteredRuleConfiguration(sqlStatement);
+        SQLParserRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));

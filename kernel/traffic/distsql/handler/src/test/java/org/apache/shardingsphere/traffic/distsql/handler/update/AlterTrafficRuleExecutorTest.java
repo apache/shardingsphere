@@ -73,7 +73,7 @@ class AlterTrafficRuleExecutorTest {
         TrafficRule rule = mock(TrafficRule.class);
         when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
         executor.setRule(rule);
-        TrafficRuleConfiguration actual = executor.buildAlteredRuleConfiguration(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
+        TrafficRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
         assertThat(actual.getTrafficStrategies().size(), is(2));
         assertThat(actual.getTrafficAlgorithms().size(), is(2));
         assertThat(actual.getLoadBalancers().size(), is(1));
@@ -90,7 +90,7 @@ class AlterTrafficRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
         executor.setRule(rule);
         TrafficRuleConfiguration actual =
-                executor.buildAlteredRuleConfiguration(new AlterTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)));
+                executor.buildToBeAlteredRuleConfiguration(new AlterTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)));
         assertThat(actual.getTrafficStrategies().size(), is(2));
         assertThat(actual.getTrafficAlgorithms().size(), is(2));
         assertThat(actual.getLoadBalancers().size(), is(2));

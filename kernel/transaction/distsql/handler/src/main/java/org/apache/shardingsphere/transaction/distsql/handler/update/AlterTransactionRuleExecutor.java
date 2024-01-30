@@ -70,7 +70,7 @@ public final class AlterTransactionRuleExecutor implements GlobalRuleDefinitionE
     }
     
     @Override
-    public TransactionRuleConfiguration buildAlteredRuleConfiguration(final AlterTransactionRuleStatement sqlStatement) {
+    public TransactionRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterTransactionRuleStatement sqlStatement) {
         return new TransactionRuleConfiguration(sqlStatement.getDefaultType(), sqlStatement.getProvider().getProviderType(), sqlStatement.getProvider().getProps());
     }
     

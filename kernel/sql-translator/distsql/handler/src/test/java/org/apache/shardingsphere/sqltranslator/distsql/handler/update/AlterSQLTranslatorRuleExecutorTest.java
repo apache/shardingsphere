@@ -43,7 +43,7 @@ class AlterSQLTranslatorRuleExecutorTest {
         SQLTranslatorRule rule = mock(SQLTranslatorRule.class);
         when(rule.getConfiguration()).thenReturn(createSQLTranslatorRuleConfiguration());
         executor.setRule(rule);
-        SQLTranslatorRuleConfiguration actual = executor.buildAlteredRuleConfiguration(
+        SQLTranslatorRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(
                 new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("JOOQ", PropertiesBuilder.build(new Property("foo", "bar"))), null));
         assertThat(actual.getType(), is("JOOQ"));
         assertFalse(actual.getProps().isEmpty());
