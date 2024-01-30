@@ -50,10 +50,11 @@ public final class CreateDatabaseRuleOperator implements DatabaseRuleOperator {
     public Collection<MetaDataVersion> operate(final RuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
         ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
-        if (null == currentRuleConfig) {
-            return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
+        // TODO should remove after legacy metadata removed
+        if (null != currentRuleConfig) {
+            executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         }
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        // TODO END
         return modeContextManager.alterRuleConfiguration(database.getName(), decorateRuleConfiguration(database, toBeCreatedRuleConfig));
     }
     

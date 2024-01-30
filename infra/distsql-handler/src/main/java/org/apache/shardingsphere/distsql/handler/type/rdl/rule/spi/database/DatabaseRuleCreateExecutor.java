@@ -45,5 +45,6 @@ public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends Sh
      * @param currentRuleConfig current rule configuration to be updated
      * @param toBeCreatedRuleConfig to be created rule configuration
      */
+    // TODO should remove after legacy metadata removed
     void updateCurrentRuleConfiguration(C currentRuleConfig, C toBeCreatedRuleConfig);
 }
