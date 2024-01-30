@@ -312,7 +312,11 @@ distinct
     ;
 
 specialFunction
-    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction
+    ;
+
+approxFunction
+    : funcName = (APPROX_PERCENTILE_CONT | APPROX_PERCENTILE_DISC) LP_ expr RP_ WITHIN GROUP LP_ ORDER BY expr (ASC | DESC)? RP_
     ;
 
 conversionFunction
