@@ -72,5 +72,15 @@ ds_1:
 Example:
 - `jdbc:shardingsphere:classpath-environment:config.yaml`
 
+### Load configuration file containing environment variables from absolute path
+
+JDBC URL to load the config.yaml configuration file that contains environment variables in absolute path, 
+identified by the `jdbc:shardingsphere:absolutepath-environment:` prefix.
+The configuration file is `xxx.yaml`, and the configuration file format is consistent with `jdbc:shardingsphere:classpath-environment:`.
+The difference from `jdbc:shardingsphere:classpath-environment:` is only where the YAML file is loaded.
+
+Example:
+- `jdbc:shardingsphere:absolutepath-environment:/path/to/config.yaml`
+
 ### Other implementations
 For details, please refer to https://github.com/apache/shardingsphere-plugin .
