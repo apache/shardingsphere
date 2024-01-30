@@ -61,19 +61,14 @@ public final class CreateDefaultShardingStrategyExecutor implements DatabaseRule
         ShardingSpherePreconditions.checkState(ShardingStrategyType.contains(sqlStatement.getStrategyType()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         ShardingSpherePreconditions.checkState(ShardingStrategyType.getValueOf(sqlStatement.getStrategyType())
                 .isValid(sqlStatement.getShardingColumn()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
-        ShardingSpherePreconditions.checkState(isAlgorithmDefinitionExists(sqlStatement), MissingRequiredAlgorithmException::new);
-    }
-    
-    private boolean isAlgorithmDefinitionExists(final CreateDefaultShardingStrategyStatement sqlStatement) {
-        return null != sqlStatement.getAlgorithmSegment();
+        ShardingSpherePreconditions.checkNotNull(sqlStatement.getAlgorithmSegment(), MissingRequiredAlgorithmException::new);
     }
     
     private void checkExist(final CreateDefaultShardingStrategyStatement sqlStatement) {
         if (null == rule) {
             return;
         }
-        Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(sqlStatement.getDefaultType());
-        ShardingSpherePreconditions.checkState(!strategyConfig.isPresent(),
+        ShardingSpherePreconditions.checkState(!getStrategyConfiguration(sqlStatement.getDefaultType()).isPresent(),
                 () -> new DuplicateRuleException(String.format("default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), database.getName()));
     }
     

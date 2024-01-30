@@ -28,7 +28,8 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Create broadcast table rule executor.
@@ -54,10 +55,7 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
     }
     
     private Collection<String> getDuplicatedRuleNames(final CreateBroadcastTableRuleStatement sqlStatement) {
-        Collection<String> result = new LinkedHashSet<>();
-        if (null != rule && !rule.getConfiguration().getTables().isEmpty()) {
-            result.addAll(rule.getConfiguration().getTables());
-        }
+        Collection<String> result = new HashSet<>(null == rule ? Collections.emptySet() : rule.getTables());
         result.retainAll(sqlStatement.getTables());
         return result;
     }
@@ -66,8 +64,7 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
     public BroadcastRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
         Collection<String> tables = sqlStatement.getTables();
         if (sqlStatement.isIfNotExists()) {
-            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
-            tables.removeIf(duplicatedRuleNames::contains);
+            tables.removeIf(getDuplicatedRuleNames(sqlStatement)::contains);
         }
         return new BroadcastRuleConfiguration(tables);
     }
