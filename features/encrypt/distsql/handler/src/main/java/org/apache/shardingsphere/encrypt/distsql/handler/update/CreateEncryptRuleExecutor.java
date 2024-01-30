@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.RuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
  * Create encrypt rule executor.
  */
 public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecutor<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
-    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfNotExists()) {
@@ -52,7 +51,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
         checkColumnNames(sqlStatement);
         checkAlgorithmTypes(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
-        checkDataSources(database);
+        RuleDefinitionExecuteEngine.checkDataSources(database);
     }
     
     private void checkAlgorithmTypes(final CreateEncryptRuleStatement sqlStatement) {
@@ -125,10 +124,6 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
             }
         }));
         encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
-    }
-    
-    private void checkDataSources(final ShardingSphereDatabase database) {
-        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
     }
     
     @Override
