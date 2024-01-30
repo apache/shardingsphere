@@ -55,7 +55,7 @@ public final class CreateBroadcastTableRuleExecutor implements DatabaseRuleCreat
     
     private Collection<String> getDuplicatedRuleNames(final CreateBroadcastTableRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
-        if (null != rule.getConfiguration() && !rule.getConfiguration().getTables().isEmpty()) {
+        if (null != rule && !rule.getConfiguration().getTables().isEmpty()) {
             result.addAll(rule.getConfiguration().getTables());
         }
         result.retainAll(sqlStatement.getTables());
