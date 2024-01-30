@@ -3458,6 +3458,66 @@
         <exec name="predict_per_partition" start-index="129" stop-index="159" start-delimiter="[" end-delimiter="]" />
     </insert>
     
+    <insert sql-case-id="insert_into_sample_temp_table">
+        <table name="#SampleTempTable" start-index="12" stop-index="27" />
+        <columns start-index="28" stop-index="28" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="37" stop-index="40" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="hello" start-index="43" stop-index="49" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_sample_temp_table_2">
+        <table name="#SampleTempTable" start-index="12" stop-index="27" />
+        <columns start-index="28" stop-index="28" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="10" start-index="37" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="41" stop-index="44" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_sample_temp_table_3">
+        <table name="#SampleTempTable" start-index="12" stop-index="27" />
+        <columns start-index="28" stop-index="28" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="17" start-index="37" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="abc" start-index="41" stop-index="45" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_sample_temp_table_4">
+        <table name="#SampleTempTable" start-index="12" stop-index="27" />
+        <columns start-index="28" stop-index="28" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="17" start-index="37" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="yes" start-index="41" stop-index="45" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
     <insert sql-case-id="insert_with_table_t">
         <table name="#t" start-index="12" stop-index="13" />
         <columns start-index="14" stop-index="14" />

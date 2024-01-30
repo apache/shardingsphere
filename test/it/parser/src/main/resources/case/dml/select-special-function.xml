@@ -1095,4 +1095,40 @@
             <column-item name="Quarter" order-direction="ASC" start-index="638" stop-index="644" />
         </order-by>
     </select>
+    
+    <select sql-case-id="select_approx_percentile_cont_function">
+        <projections start-index="7" stop-index="148">
+            <column-projection start-index="7" stop-index="12" name="DeptId" />
+            <expression-projection start-index="14" stop-index="80" text="APPROX_PERCENTILE_CONT(0.10) WITHIN GROUP(ORDER BY Salary)" alias="P10">
+                <expr>
+                    <function function-name="APPROX_PERCENTILE_CONT" text="APPROX_PERCENTILE_CONT(0.10) WITHIN GROUP(ORDER BY Salary)" start-index="14" stop-index="71">
+                        <parameter>
+                            <literal-expression value="0.10" start-index="37" stop-index="40" />
+                        </parameter>
+                        <parameter>
+                            <column name="Salary" start-index="65" stop-index="70" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="APPROX_PERCENTILE_CONT(0.90) WITHIN GROUP(ORDER BY Salary)" start-index="82" stop-index="148" alias="P90">
+                <expr>
+                    <function function-name="APPROX_PERCENTILE_CONT" text="APPROX_PERCENTILE_CONT(0.90) WITHIN GROUP(ORDER BY Salary)" start-index="82" stop-index="139">
+                        <parameter>
+                            <literal-expression value="0.90" start-index="105" stop-index="108" />
+                        </parameter>
+                        <parameter>
+                            <column name="Salary" start-index="133" stop-index="138" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="tblEmployee"  start-index="155" stop-index="165" />
+        </from>
+        <group-by start-index="167" stop-index="181">
+            <column-item name="DeptId" order-direction="ASC" start-index="176" stop-index="181" />
+        </group-by>
+    </select>
 </sql-parser-test-cases>
