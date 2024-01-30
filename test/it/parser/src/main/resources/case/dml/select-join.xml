@@ -1616,4 +1616,277 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_inner_join_dm_tran_session_transactions">
+        <projections start-index="7" stop-index="146">
+            <column-projection name="session_id" start-index="7" stop-index="26" start-delimiter="[" end-delimiter="]">
+                <owner name="s_tst" start-index="7" stop-index="13" start-delimiter="[" end-delimiter="]"/>
+            </column-projection>
+            <expression-projection text="DB_NAME (s_tdt.database_id)" start-index="29" stop-index="73" start-delimiter="[" end-delimiter="]" alias="database_name">
+                <expr>
+                    <function function-name="DB_NAME" text="DB_NAME (s_tdt.database_id)" start-index="47" stop-index="73">
+                        <parameter>
+                            <column name="database_id" start-index="56" stop-index="72">
+                                <owner name="s_tdt" start-index="56" stop-index="60"/>
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="database_transaction_begin_time" start-index="76" stop-index="116" start-delimiter="[" end-delimiter="]">
+                <owner name="s_tdt" start-index="76" stop-index="82" start-delimiter="[" end-delimiter="]"/>
+            </column-projection>
+            <column-projection name="text" start-index="120" stop-index="146" start-delimiter="[" end-delimiter="]" alias="sql_text">
+                <owner name="s_est" start-index="133" stop-index="139" start-delimiter="[" end-delimiter="]"/>
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <join-table join-type="INNER">
+                        <left>
+                            <join-table join-type="INNER">
+                                <left>
+                                    <simple-table name="dm_tran_database_transactions" start-index="153" stop-index="193" alias="s_tdt">
+                                        <owner name="sys" start-index="153" stop-index="155"/>
+                                    </simple-table>
+                                </left>
+                                <right>
+                                    <simple-table name="dm_tran_session_transactions" start-index="206" stop-index="245" alias="s_tst">
+                                        <owner name="sys" start-index="206" stop-index="208"/>
+                                    </simple-table>
+                                </right>
+                                <on-condition>
+                                    <binary-operation-expression start-index="250" stop-index="300">
+                                        <left>
+                                            <column name="transaction_id" start-index="250" stop-index="273" start-delimiter="[" end-delimiter="]">
+                                                <owner name="s_tst" start-index="250" stop-index="256" start-delimiter="[" end-delimiter="]"/>
+                                            </column>
+                                        </left>
+                                        <right>
+                                            <column name="transaction_id" start-index="277" stop-index="300" start-delimiter="[" end-delimiter="]">
+                                                <owner name="s_tdt" start-index="277" stop-index="283" start-delimiter="[" end-delimiter="]"/>
+                                            </column>
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </on-condition>
+                            </join-table>
+                        </left>
+                        <right>
+                            <simple-table name="dm_exec_connections" start-index="313" stop-index="342" alias="s_ec">
+                                <owner name="sys" start-index="313" stop-index="315"/>
+                            </simple-table>
+                        </right>
+                        <on-condition>
+                            <binary-operation-expression start-index="347" stop-index="388">
+                                <left>
+                                    <column name="session_id" start-index="347" stop-index="365" start-delimiter="[" end-delimiter="]">
+                                        <owner name="s_ec" start-index="347" stop-index="352" start-delimiter="[" end-delimiter="]"/>
+                                    </column>
+                                </left>
+                                <right>
+                                    <column name="session_id" start-index="369" stop-index="388" start-delimiter="[" end-delimiter="]">
+                                        <owner name="s_tst" start-index="369" stop-index="375" start-delimiter="[" end-delimiter="]"/>
+                                    </column>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </on-condition>
+                    </join-table>
+                </left>
+                <right>
+                    <function-table start-index="420" stop-index="455" table-alias="s_est">
+                        <table-function text="sys.dm_exec_sql_text ([s_ec].[most_recent_sql_handle])" function-name="sys.dm_exec_sql_text">
+                            <parameter>
+                                <column name="most_recent_sql_handle" start-index="424" stop-index="454" start-delimiter="[" end-delimiter="]">
+                                    <owner name="s_ec" start-index="424" stop-index="429" start-delimiter="[" end-delimiter="]"/>
+                                </column>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_case_when_with_multi_join">
+        <projections start-index="7" stop-index="1335">
+            <column-projection name="session_id" start-index="7" stop-index="20">
+                <owner name="tst" start-index="7" stop-index="9"/>
+            </column-projection>
+            <expression-projection text="db_name(s.database_id)" start-index="23" stop-index="62" alias="database_name">
+                <expr>
+                    <function text="db_name(s.database_id)" start-index="41" stop-index="62" function-name="db_name">
+                        <parameter>
+                            <column name="database_id" start-index="49" stop-index="61">
+                                <owner name="s" start-index="49" stop-index="49"/>
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="transaction_begin_time" start-index="65" stop-index="90">
+                <owner name="tat" start-index="65" stop-index="67"/>
+            </column-projection>
+            <expression-projection text="datediff(s, tat.transaction_begin_time, sysdatetime())" start-index="93" stop-index="171" alias="transaction_duration_s">
+                <expr>
+                    <function text="datediff(s, tat.transaction_begin_time, sysdatetime())" function-name="datediff" start-index="118" stop-index="171">
+                        <parameter>
+                            <column name="s" start-index="127" stop-index="127"/>
+                        </parameter>
+                        <parameter>
+                            <column name="transaction_begin_time" start-index="130" stop-index="155">
+                                <owner name="tat" start-index="130" stop-index="132"/>
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <function text="sysdatetime()" function-name="sysdatetime" start-index="158" stop-index="170"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="CASEtat.transaction_typeWHEN1THEN'Read/write transaction'WHEN2THEN'Read-only transaction'WHEN3THEN'System transaction'WHEN4THEN'Distributed transaction'END" start-index="175" stop-index="367" alias="transaction_type">
+                <expr>
+                    <common-expression literal-text="CASEtat.transaction_typeWHEN1THEN'Read/write transaction'WHEN2THEN'Read-only transaction'WHEN3THEN'System transaction'WHEN4THEN'Distributed transaction'END" start-index="194" stop-index="367"/>
+                </expr>
+            </expression-projection>
+            <column-projection name="event_info" start-index="370" stop-index="397" alias="input_buffer">
+                <owner name="ib" start-index="385" stop-index="386"/>
+            </column-projection>
+            <column-projection name="transaction_uow" start-index="400" stop-index="418">
+                <owner name="tat" start-index="400" stop-index="402"/>
+            </column-projection>
+            <expression-projection text="CASEtat.transaction_stateWHEN0THEN'The transaction has not been completely initialized yet.'WHEN1THEN'The transaction has been initialized but has not started.'WHEN2THEN'The transaction is active - has not been committed or rolled back.'WHEN3THEN'The transaction has ended. This is used for read-only transactions.'WHEN4THEN'The commit process has been initiated on the distributed transaction.'WHEN5THEN'The transaction is in a prepared state and waiting resolution.'WHEN6THEN'The transaction has been committed.'WHEN7THEN'The transaction is being rolled back.'WHEN8THEN'The transaction has been rolled back.'END" alias="transaction_state" start-index="421" stop-index="1092">
+                <expr>
+                    <common-expression literal-text="CASEtat.transaction_stateWHEN0THEN'The transaction has not been completely initialized yet.'WHEN1THEN'The transaction has been initialized but has not started.'WHEN2THEN'The transaction is active - has not been committed or rolled back.'WHEN3THEN'The transaction has ended. This is used for read-only transactions.'WHEN4THEN'The commit process has been initiated on the distributed transaction.'WHEN5THEN'The transaction is in a prepared state and waiting resolution.'WHEN6THEN'The transaction has been committed.'WHEN7THEN'The transaction is being rolled back.'WHEN8THEN'The transaction has been rolled back.'END" start-index="442" stop-index="1092"/>
+                </expr>
+            </expression-projection>
+            <column-projection name="name" start-index="1095" stop-index="1121" alias="transaction_name">
+                <owner name="tat" start-index="1114" stop-index="1116"/>
+            </column-projection>
+            <column-projection name="status" start-index="1124" stop-index="1148" alias="request_status">
+                <owner name="r" start-index="1141" stop-index="1141"/>
+            </column-projection>
+            <column-projection name="is_user_transaction" start-index="1151" stop-index="1173">
+                <owner name="tst" start-index="1151" stop-index="1153"/>
+            </column-projection>
+            <column-projection name="is_local" start-index="1176" stop-index="1187">
+                <owner name="tst" start-index="1176" stop-index="1178"/>
+            </column-projection>
+            <column-projection name="open_transaction_count" start-index="1190" stop-index="1248" alias="session_open_transaction_count">
+                <owner name="tst" start-index="1223" stop-index="1225"/>
+            </column-projection>
+            <column-projection name="host_name" start-index="1251" stop-index="1261">
+                <owner name="s" start-index="1251" stop-index="1251"/>
+            </column-projection>
+            <column-projection name="program_name" start-index="1264" stop-index="1277">
+                <owner name="s" start-index="1264" stop-index="1264"/>
+            </column-projection>
+            <column-projection name="client_interface_name" start-index="1280" stop-index="1302">
+                <owner name="s" start-index="1280" stop-index="1280"/>
+            </column-projection>
+            <column-projection name="login_name" start-index="1305" stop-index="1316">
+                <owner name="s" start-index="1305" stop-index="1305"/>
+            </column-projection>
+            <column-projection name="is_user_process" start-index="1319" stop-index="1335">
+                <owner name="s" start-index="1319" stop-index="1319"/>
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <join-table join-type="LEFT">
+                        <left>
+                            <join-table join-type="INNER">
+                                <left>
+                                    <join-table join-type="INNER">
+                                        <left>
+                                            <simple-table name="dm_tran_active_transactions" start-index="1342" stop-index="1376" alias="tat">
+                                                <owner name="sys" start-index="1342" stop-index="1344"/>
+                                            </simple-table>
+                                        </left>
+                                        <right>
+                                            <simple-table name="dm_tran_session_transactions" start-index="1389" stop-index="1424" alias="tst">
+                                                <owner name="sys" start-index="1389" stop-index="1391"/>
+                                            </simple-table>
+                                        </right>
+                                        <on-condition>
+                                            <binary-operation-expression start-index="1430" stop-index="1468">
+                                                <left>
+                                                    <column name="transaction_id" start-index="1430" stop-index="1447">
+                                                        <owner name="tat" start-index="1430" stop-index="1432"/>
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <column name="transaction_id" start-index="1451" stop-index="1468">
+                                                        <owner name="tst" start-index="1451" stop-index="1453"/>
+                                                    </column>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </on-condition>
+                                    </join-table>
+                                </left>
+                                <right>
+                                    <simple-table name="dm_exec_sessions" start-index="1481" stop-index="1502" alias="s">
+                                        <owner name="Sys" start-index="1481" stop-index="1483"/>
+                                    </simple-table>
+                                </right>
+                                <on-condition>
+                                    <binary-operation-expression start-index="1507" stop-index="1535">
+                                        <left>
+                                            <column name="session_id" start-index="1507" stop-index="1518">
+                                                <owner name="s" start-index="1507" stop-index="1507"/>
+                                            </column>
+                                        </left>
+                                        <right>
+                                            <column name="session_id" start-index="1522" stop-index="1535">
+                                                <owner name="tst" start-index="1522" stop-index="1524"/>
+                                            </column>
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </on-condition>
+                            </join-table>
+                        </left>
+                        <right>
+                            <simple-table name="dm_exec_requests" start-index="1553" stop-index="1574" alias="r">
+                                <owner name="sys" start-index="1553" stop-index="1555"/>
+                            </simple-table>
+                        </right>
+                        <on-condition>
+                            <binary-operation-expression start-index="1579" stop-index="1605">
+                                <left>
+                                    <column name="session_id" start-index="1579" stop-index="1590">
+                                        <owner name="r" start-index="1579" stop-index="1579"/>
+                                    </column>
+                                </left>
+                                <right>
+                                    <column name="session_id" start-index="1594" stop-index="1605">
+                                        <owner name="s" start-index="1594" stop-index="1594"/>
+                                    </column>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </on-condition>
+                    </join-table>
+                </left>
+                <right>
+                    <function-table start-index="1619" stop-index="1662" table-alias="ib">
+                        <table-function text="sys.dm_exec_input_buffer(s.session_id, null)" function-name="sys.dm_exec_input_buffer">
+                            <parameter>
+                                <column name="session_id" start-index="1644" stop-index="1655">
+                                    <owner name="s" start-index="1644" stop-index="1644"/>
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression start-index="1658" stop-index="1661"/>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
