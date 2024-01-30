@@ -70,5 +70,14 @@ ds_1:
 用例：
 - `jdbc:shardingsphere:classpath-environment:config.yaml`
 
+### 从绝对路径中加载包含环境变量的配置文件
+
+加载绝对路径中包含环境变量的 config.yaml 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:absolutepath-environment:` 前缀识别。
+配置文件为 `xxx.yaml`，配置文件格式与`jdbc:shardingsphere:classpath-environment:`一致。
+与 `jdbc:shardingsphere:classpath-environment:` 的区别仅在于 YAML 文件的加载位置。
+
+用例：
+- `jdbc:shardingsphere:absolutepath-environment:/path/to/config.yaml`
+
 ### 其他实现
 具体可参考 https://github.com/apache/shardingsphere-plugin 。
