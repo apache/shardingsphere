@@ -17,29 +17,30 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**
  * Alter SQL parser rule executor.
  */
-public final class AlterSQLParserRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLParserRuleStatement, SQLParserRuleConfiguration> {
+@Setter
+public final class AlterSQLParserRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLParserRuleStatement, SQLParserRule> {
+    
+    private SQLParserRule rule;
     
     @Override
-    public void checkBeforeUpdate(final AlterSQLParserRuleStatement sqlStatement, final SQLParserRuleConfiguration currentRuleConfig) {
-    }
-    
-    @Override
-    public SQLParserRuleConfiguration buildAlteredRuleConfiguration(final AlterSQLParserRuleStatement sqlStatement, final SQLParserRuleConfiguration currentRuleConfig) {
+    public SQLParserRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterSQLParserRuleStatement sqlStatement) {
         CacheOption parseTreeCache = null == sqlStatement.getParseTreeCache()
-                ? currentRuleConfig.getParseTreeCache()
-                : createCacheOption(currentRuleConfig.getParseTreeCache(), sqlStatement.getParseTreeCache());
+                ? rule.getConfiguration().getParseTreeCache()
+                : createCacheOption(rule.getConfiguration().getParseTreeCache(), sqlStatement.getParseTreeCache());
         CacheOption sqlStatementCache = null == sqlStatement.getSqlStatementCache()
-                ? currentRuleConfig.getSqlStatementCache()
-                : createCacheOption(currentRuleConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache());
+                ? rule.getConfiguration().getSqlStatementCache()
+                : createCacheOption(rule.getConfiguration().getSqlStatementCache(), sqlStatement.getSqlStatementCache());
         return new SQLParserRuleConfiguration(parseTreeCache, sqlStatementCache);
     }
     
@@ -50,8 +51,8 @@ public final class AlterSQLParserRuleExecutor implements GlobalRuleDefinitionExe
     }
     
     @Override
-    public Class<SQLParserRuleConfiguration> getRuleConfigurationClass() {
-        return SQLParserRuleConfiguration.class;
+    public Class<SQLParserRule> getRuleClass() {
+        return SQLParserRule.class;
     }
     
     @Override

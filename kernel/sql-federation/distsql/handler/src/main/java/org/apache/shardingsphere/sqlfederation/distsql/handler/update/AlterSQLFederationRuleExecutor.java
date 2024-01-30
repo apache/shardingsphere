@@ -17,28 +17,29 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.updatable.AlterSQLFederationRuleStatement;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
 /**
  * Alter SQL federation rule executor.
  */
-public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLFederationRuleStatement, SQLFederationRuleConfiguration> {
+@Setter
+public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitionExecutor<AlterSQLFederationRuleStatement, SQLFederationRule> {
+    
+    private SQLFederationRule rule;
     
     @Override
-    public void checkBeforeUpdate(final AlterSQLFederationRuleStatement sqlStatement, final SQLFederationRuleConfiguration currentRuleConfig) {
-    }
-    
-    @Override
-    public SQLFederationRuleConfiguration buildAlteredRuleConfiguration(final AlterSQLFederationRuleStatement sqlStatement, final SQLFederationRuleConfiguration currentRuleConfig) {
-        boolean sqlFederationEnabled = null == sqlStatement.getSqlFederationEnabled() ? currentRuleConfig.isSqlFederationEnabled() : sqlStatement.getSqlFederationEnabled();
-        boolean allQueryUseSQLFederation = null == sqlStatement.getAllQueryUseSQLFederation() ? currentRuleConfig.isAllQueryUseSQLFederation() : sqlStatement.getAllQueryUseSQLFederation();
+    public SQLFederationRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterSQLFederationRuleStatement sqlStatement) {
+        boolean sqlFederationEnabled = null == sqlStatement.getSqlFederationEnabled() ? rule.getConfiguration().isSqlFederationEnabled() : sqlStatement.getSqlFederationEnabled();
+        boolean allQueryUseSQLFederation = null == sqlStatement.getAllQueryUseSQLFederation() ? rule.getConfiguration().isAllQueryUseSQLFederation() : sqlStatement.getAllQueryUseSQLFederation();
         CacheOption executionPlanCache = null == sqlStatement.getExecutionPlanCache()
-                ? currentRuleConfig.getExecutionPlanCache()
-                : createCacheOption(currentRuleConfig.getExecutionPlanCache(), sqlStatement.getExecutionPlanCache());
+                ? rule.getConfiguration().getExecutionPlanCache()
+                : createCacheOption(rule.getConfiguration().getExecutionPlanCache(), sqlStatement.getExecutionPlanCache());
         return new SQLFederationRuleConfiguration(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
     }
     
@@ -49,12 +50,12 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
     }
     
     @Override
-    public Class<SQLFederationRuleConfiguration> getRuleConfigurationClass() {
-        return SQLFederationRuleConfiguration.class;
+    public Class<AlterSQLFederationRuleStatement> getType() {
+        return AlterSQLFederationRuleStatement.class;
     }
     
     @Override
-    public Class<AlterSQLFederationRuleStatement> getType() {
-        return AlterSQLFederationRuleStatement.class;
+    public Class<SQLFederationRule> getRuleClass() {
+        return SQLFederationRule.class;
     }
 }
