@@ -8271,4 +8271,42 @@
             </function-table>
         </from>
     </select>
+
+    <select sql-case-id="select_from_with_contains_function">
+        <projections start-index="7" stop-index="24">
+            <column-projection name="candidate_name" start-index="7" stop-index="20"/>
+            <column-projection name="SSN" start-index="22" stop-index="24"/>
+        </projections>
+        <from>
+            <simple-table name="candidates" start-index="31" stop-index="40"/>
+        </from>
+        <where start-index="42" stop-index="120">
+            <expr>
+                <binary-operation-expression start-index="48" stop-index="120">
+                    <left>
+                        <function function-name="CONTAINS" text="CONTAINS(candidate_resume, '&quot;SQL Server&quot;')" start-index="48" stop-index="89">
+                            <parameter>
+                                <column name="candidate_resume" start-index="57" stop-index="72"/>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="&quot;SQL Server&quot;" start-index="75" stop-index="88"/>
+                            </parameter>
+                        </function>
+                    </left>
+                    <right>
+                        <binary-operation-expression start-index="95" stop-index="120">
+                            <left>
+                                <column name="candidate_division" start-index="95" stop-index="112"/>
+                            </left>
+                            <right>
+                                <literal-expression value="DBA" start-index="116" stop-index="120"/>
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

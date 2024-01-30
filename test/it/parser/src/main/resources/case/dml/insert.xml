@@ -3544,4 +3544,14 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_into_with_select_number">
+        <table name="#test" start-index="12" stop-index="16"/>
+        <columns start-index="17" stop-index="17"/>
+        <select>
+            <projections start-index="25" stop-index="25">
+                <expression-projection start-index="25" stop-index="25" text="1"/>
+            </projections>
+        </select>
+    </insert>
 </sql-parser-test-cases>
