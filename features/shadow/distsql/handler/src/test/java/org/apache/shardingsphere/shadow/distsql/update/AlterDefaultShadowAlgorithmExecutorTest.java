@@ -71,9 +71,6 @@ class AlterDefaultShadowAlgorithmExecutorTest {
     
     @Test
     void assertExecuteInvalidAlgorithmType() {
-        ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
-        executor.setRule(rule);
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("NOT_EXIST_SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         assertThrows(ServiceProviderNotFoundException.class, () -> executor.checkBeforeUpdate(sqlStatement));
@@ -81,9 +78,6 @@ class AlterDefaultShadowAlgorithmExecutorTest {
     
     @Test
     void assertExecuteIncompletenessAlgorithm() {
-        ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
-        executor.setRule(rule);
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("", PropertiesBuilder.build(new Property("type", "value")))));
         assertThrows(InvalidAlgorithmConfigurationException.class, () -> executor.checkBeforeUpdate(sqlStatement));

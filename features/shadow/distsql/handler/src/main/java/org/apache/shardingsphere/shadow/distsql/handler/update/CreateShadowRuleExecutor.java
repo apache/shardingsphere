@@ -60,7 +60,7 @@ public final class CreateShadowRuleExecutor implements DatabaseRuleCreateExecuto
         ShadowRuleStatementChecker.checkDuplicated(toBeCreatedRuleNames, duplicated -> new DuplicateRuleException("shadow", database.getName(), duplicated));
         ShadowRuleStatementChecker.checkDuplicatedWithLogicDataSource(toBeCreatedRuleNames, database);
         if (!sqlStatement.isIfNotExists()) {
-            toBeCreatedRuleNames.retainAll(ShadowRuleStatementSupporter.getRuleNames(rule.getConfiguration()));
+            toBeCreatedRuleNames.retainAll(ShadowRuleStatementSupporter.getRuleNames(null == rule ? null : rule.getConfiguration()));
             ShardingSpherePreconditions.checkState(toBeCreatedRuleNames.isEmpty(), () -> new DuplicateRuleException("shadow", database.getName(), toBeCreatedRuleNames));
         }
     }

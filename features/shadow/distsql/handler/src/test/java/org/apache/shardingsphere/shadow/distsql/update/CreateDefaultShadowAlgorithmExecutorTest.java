@@ -76,9 +76,6 @@ class CreateDefaultShadowAlgorithmExecutorTest {
     void assertExecuteWithIfNotExists() {
         ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
         CreateDefaultShadowAlgorithmStatement sqlStatement = new CreateDefaultShadowAlgorithmStatement(true, shadowAlgorithmSegment);
-        ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(currentConfig);
-        executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
     }
 }
