@@ -44,7 +44,7 @@ public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleC
     
     @Override
     public void checkBeforeUpdate(final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        ReadwriteSplittingRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), rule.getConfiguration(), sqlStatement.isIfNotExists());
+        ReadwriteSplittingRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), null == rule ? null : rule.getConfiguration(), sqlStatement.isIfNotExists());
     }
     
     @Override
