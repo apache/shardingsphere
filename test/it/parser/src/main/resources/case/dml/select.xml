@@ -8227,4 +8227,48 @@
             </collection-table>
         </from>
     </select>
+    
+    <select sql-case-id="select_from_table_test">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="##test" start-index="14" stop-index="19" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_from_table_openrowset">
+        <projections start-index="7" stop-index="45">
+            <top-projection start-index="7" stop-index="13">
+                <top-value value="100" start-index="11" stop-index="13" />
+            </top-projection>
+            <expression-projection text="CAST(_id as VARBINARY(1000))" alias="id" start-index="15" stop-index="45">
+                <expr>
+                    <function function-name="CAST" text="CAST(_id as VARBINARY(1000))" start-index="18" stop-index="45">
+                        <parameter>
+                            <column name="_id" start-index="23" stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="VARBINARY" start-index="30" stop-index="44" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="52" stop-index="130">
+            <function-table start-index="52" stop-index="130">
+                <table-function function-name="OPENROWSET" text="OPENROWSET('CosmosDB', 'Your-account;Database=your-database;Key=your-key',HTAP)">
+                    <parameter>
+                        <literal-expression value="CosmosDB" start-index="63" stop-index="72" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="Your-account;Database=your-database;Key=your-key" start-index="75" stop-index="124" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="HTAP" start-index="126" stop-index="129" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

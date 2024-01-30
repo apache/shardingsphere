@@ -242,6 +242,10 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     public static Optional<TableSegment> getIntoSegment(final SelectStatement selectStatement) {
         if (selectStatement instanceof SQLServerSelectStatement) {
             return ((SQLServerSelectStatement) selectStatement).getIntoSegment();
+        } else if (selectStatement instanceof PostgreSQLSelectStatement) {
+            return ((PostgreSQLSelectStatement) selectStatement).getIntoSegment();
+        } else if (selectStatement instanceof OpenGaussSelectStatement) {
+            return ((OpenGaussSelectStatement) selectStatement).getIntoSegment();
         }
         return Optional.empty();
     }
@@ -255,6 +259,10 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     public static void setIntoSegment(final SelectStatement selectStatement, final TableSegment intoSegment) {
         if (selectStatement instanceof SQLServerSelectStatement) {
             ((SQLServerSelectStatement) selectStatement).setIntoSegment(intoSegment);
+        } else if (selectStatement instanceof PostgreSQLSelectStatement) {
+            ((PostgreSQLSelectStatement) selectStatement).setIntoSegment(intoSegment);
+        } else if (selectStatement instanceof OpenGaussSelectStatement) {
+            ((OpenGaussSelectStatement) selectStatement).setIntoSegment(intoSegment);
         }
     }
 }

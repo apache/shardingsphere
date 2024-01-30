@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.legacy;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
@@ -46,27 +46,18 @@ public final class LegacyGlobalRuleDefinitionExecuteEngine {
      */
     @SuppressWarnings("unchecked")
     public void executeUpdate() {
-        Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, executor.getRuleConfigurationClass());
-        executor.checkBeforeUpdate(sqlStatement, currentRuleConfig);
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, executor, currentRuleConfig));
-    }
-    
-    private RuleConfiguration findCurrentRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs, final Class<? extends RuleConfiguration> ruleConfigClass) {
-        for (RuleConfiguration each : ruleConfigs) {
-            if (ruleConfigClass.isAssignableFrom(each.getClass())) {
-                return each;
-            }
-        }
-        throw new MissingRequiredRuleException(ruleConfigClass.getSimpleName());
+        ShardingSphereRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass());
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(sqlStatement);
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(sqlStatement, executor, rule.getConfiguration()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<RuleConfiguration> processUpdate(final Collection<RuleConfiguration> ruleConfigs,
-                                                        final RuleDefinitionStatement sqlStatement, final GlobalRuleDefinitionExecutor globalRuleUpdater, final RuleConfiguration currentRuleConfig) {
+    private Collection<RuleConfiguration> processUpdate(final RuleDefinitionStatement sqlStatement, final GlobalRuleDefinitionExecutor executor, final RuleConfiguration currentRuleConfig) {
+        Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigs);
         result.remove(currentRuleConfig);
-        result.add(globalRuleUpdater.buildAlteredRuleConfiguration(sqlStatement, currentRuleConfig));
+        result.add(executor.buildToBeAlteredRuleConfiguration(sqlStatement));
         return result;
     }
 }

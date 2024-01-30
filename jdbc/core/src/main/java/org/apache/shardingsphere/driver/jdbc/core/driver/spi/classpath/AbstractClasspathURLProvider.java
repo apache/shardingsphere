@@ -15,52 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi;
+package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
 /**
- * Classpath URL provider.
+ * Abstract classpath URL provider.
  */
-public final class ClasspathURLProvider implements ShardingSphereURLProvider {
+public abstract class AbstractClasspathURLProvider implements ShardingSphereURLProvider {
     
-    private static final String CLASSPATH_TYPE = "classpath:";
-    
-    @Override
-    public boolean accept(final String url) {
-        return !Strings.isNullOrEmpty(url) && url.contains(CLASSPATH_TYPE);
-    }
-    
-    @Override
-    @SneakyThrows(IOException.class)
-    public byte[] getContent(final String url, final String urlPrefix) {
+    String getConfigurationFile(final String url, final String urlPrefix, final String pathType) {
         String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
-        String file = configuredFile.substring(CLASSPATH_TYPE.length());
+        String file = configuredFile.substring(pathType.length());
         Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere URL.");
-        try (
-                InputStream stream = getResourceAsStream(file);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#")) {
-                    builder.append(line).append('\n');
-                }
-            }
-            return builder.toString().getBytes(StandardCharsets.UTF_8);
-        }
+        return file;
     }
     
-    private InputStream getResourceAsStream(final String resource) {
+    InputStream getResourceAsStream(final String resource) {
         InputStream result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
         result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
         if (null != result) {

@@ -127,4 +127,10 @@
     <sql-case id="insert_into_table_from_table" value="INSERT INTO #Test SELECT * FROM Production.UnitMeasure" db-types="SQLServer"/>
     <sql-case id="insert_into_production_location" value="INSERT INTO AdventureWorks2022.Production.Location(Name, CostRate, Availability, ModifiedDate) VALUES (NEWID(), .5, 5.2, GETDATE())" db-types="SQLServer"/>
     <sql-case id="insert_with_exec_prediction_results" value="INSERT INTO prediction_results (tipped_Pred,payment_type,tipped,passenger_count,trip_distance,trip_time_in_secs,direct_distance) EXECUTE [predict_per_partition]" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table" value="INSERT INTO #SampleTempTable VALUES (null, 'hello')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_2" value="INSERT INTO #SampleTempTable VALUES (10, null)" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_3" value="INSERT INTO #SampleTempTable VALUES (17, 'abc')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_4" value="INSERT INTO #SampleTempTable VALUES (17, 'yes')" db-types="SQLServer"/>
+    <sql-case id="insert_with_table_t" value="INSERT INTO #t VALUES (99)" db-types="SQLServer"/>
+    <sql-case id="insert_with_table_test" value="INSERT INTO ##test VALUES (1, 1)" db-types="SQLServer"/>
 </sql-cases>

@@ -44,7 +44,7 @@ public final class PluginJarLoader {
     
     /**
      * Load plugin jars.
-     * 
+     *
      * @param agentRootPath agent root path
      * @return plugin jars
      * @throws IOException IO exception
@@ -66,8 +66,9 @@ public final class PluginJarLoader {
             
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
-                if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
-                    result.add(path.toFile());
+                File currentFile = path.toFile();
+                if (currentFile.isFile() && currentFile.getName().endsWith(".jar")) {
+                    result.add(currentFile);
                 }
                 return FileVisitResult.CONTINUE;
             }

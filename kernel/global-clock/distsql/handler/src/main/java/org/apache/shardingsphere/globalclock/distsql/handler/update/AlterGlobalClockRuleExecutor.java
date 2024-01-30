@@ -19,25 +19,26 @@ package org.apache.shardingsphere.globalclock.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
 
 /**
  * Alter global clock rule executor.
  */
-public final class AlterGlobalClockRuleExecutor implements GlobalRuleDefinitionExecutor<AlterGlobalClockRuleStatement, GlobalClockRuleConfiguration> {
+public final class AlterGlobalClockRuleExecutor implements GlobalRuleDefinitionExecutor<AlterGlobalClockRuleStatement, GlobalClockRule> {
     
     @Override
-    public void checkBeforeUpdate(final AlterGlobalClockRuleStatement sqlStatement, final GlobalClockRuleConfiguration currentRuleConfig) {
-    }
-    
-    @Override
-    public GlobalClockRuleConfiguration buildAlteredRuleConfiguration(final AlterGlobalClockRuleStatement sqlStatement, final GlobalClockRuleConfiguration currentRuleConfig) {
+    public GlobalClockRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterGlobalClockRuleStatement sqlStatement) {
         return new GlobalClockRuleConfiguration(sqlStatement.getType(), sqlStatement.getProvider(), sqlStatement.isEnabled(), sqlStatement.getProps());
     }
     
     @Override
-    public Class<GlobalClockRuleConfiguration> getRuleConfigurationClass() {
-        return GlobalClockRuleConfiguration.class;
+    public void setRule(final GlobalClockRule rule) {
+    }
+    
+    @Override
+    public Class<GlobalClockRule> getRuleClass() {
+        return GlobalClockRule.class;
     }
     
     @Override
