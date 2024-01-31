@@ -65,7 +65,7 @@ public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<Al
     }
     
     @Override
-    public MaskRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    public MaskRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

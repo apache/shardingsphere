@@ -55,7 +55,7 @@ public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAl
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public ReadwriteSplittingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterReadwriteSplittingRuleStatement sqlStatement) {
         return ReadwriteSplittingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

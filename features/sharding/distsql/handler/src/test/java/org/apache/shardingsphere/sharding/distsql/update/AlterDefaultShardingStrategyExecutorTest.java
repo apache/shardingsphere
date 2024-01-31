@@ -96,7 +96,7 @@ class AlterDefaultShardingStrategyExecutorTest {
         AlgorithmSegment algorithm = new AlgorithmSegment("order_id_algorithm", new Properties());
         AlterDefaultShardingStrategyStatement sqlStatement = new AlterDefaultShardingStrategyStatement("TABLE", "standard", "order_id", algorithm);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         StandardShardingStrategyConfiguration defaultTableShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
         assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is("default_table_order_id_algorithm"));
@@ -113,7 +113,7 @@ class AlterDefaultShardingStrategyExecutorTest {
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
         AlterDefaultShardingStrategyStatement statement = new AlterDefaultShardingStrategyStatement("DATABASE", "standard", "user_id", databaseAlgorithmSegment);
         executor.checkBeforeUpdate(statement);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(statement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(statement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         StandardShardingStrategyConfiguration defaultDatabaseShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
         assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is("default_database_inline"));
@@ -130,7 +130,7 @@ class AlterDefaultShardingStrategyExecutorTest {
         executor.setRule(rule);
         AlterDefaultShardingStrategyStatement sqlStatement = new AlterDefaultShardingStrategyStatement("TABLE", "none", null, null);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         NoneShardingStrategyConfiguration defaultTableShardingStrategy = (NoneShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
         assertThat(defaultTableShardingStrategy.getType(), is(""));
@@ -146,7 +146,7 @@ class AlterDefaultShardingStrategyExecutorTest {
         executor.setRule(rule);
         AlterDefaultShardingStrategyStatement sqlStatement = new AlterDefaultShardingStrategyStatement("DATABASE", "none", null, null);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         NoneShardingStrategyConfiguration defaultDatabaseShardingStrategy = (NoneShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
         assertThat(defaultDatabaseShardingStrategy.getType(), is(""));
