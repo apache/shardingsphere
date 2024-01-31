@@ -168,7 +168,9 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             return processExecuteFederation(resultSet, metaDataContexts);
         }
         ExecutionContext executionContext = generateExecutionContext();
-        return isNeedImplicitCommitTransaction(executionContext) ? doExecuteWithImplicitCommitTransaction(() -> doExecute(executionContext)) : doExecute(executionContext);
+        return isNeedImplicitCommitTransaction(executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
+                ? doExecuteWithImplicitCommitTransaction(() -> doExecute(executionContext))
+                : doExecute(executionContext);
     }
     
     private ExecutionContext generateExecutionContext() {
@@ -177,7 +179,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
                 databaseConnectionManager.getConnectionSession().getConnectionContext());
     }
     
-    private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
+    private boolean isNeedImplicitCommitTransaction(final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
         if (!databaseConnectionManager.getConnectionSession().isAutoCommit()) {
             return false;
         }
@@ -185,8 +187,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         if (!TransactionType.isDistributedTransaction(transactionStatus.getTransactionType()) || transactionStatus.isInTransaction()) {
             return false;
         }
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        return isWriteDMLStatement(sqlStatement) && executionContext.getExecutionUnits().size() > 1;
+        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
     }
     
     private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
