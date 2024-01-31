@@ -1453,4 +1453,264 @@
             </expr>
         </where>
     </update>
+    
+    <update sql-case-id="update_with_point_type">
+        <table start-index="7" stop-index="16">
+            <simple-table name="Cities" start-index="7" stop-index="16">
+                <owner name="dbo" start-index="7" stop-index="9" />
+            </simple-table>
+        </table>
+        <set start-index="18" stop-index="47">
+            <assignment start-index="22" stop-index="47">
+                <column name="Location" start-index="22" stop-index="29"/>
+                <assignment-value>
+                    <function function-name="SetXY" text="SetXY(23.5, 23.5)" start-index="31" stop-index="47">
+                        <parameter>
+                            <literal-expression value="23.5" start-index="37" stop-index="40" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="23.5" start-index="43" stop-index="46" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="49" stop-index="72">
+            <expr>
+                <binary-operation-expression start-index="55" stop-index="72">
+                    <left>
+                        <column name="Name" start-index="55" stop-index="58" />
+                    </left>
+                    <right>
+                        <literal-expression value="Anchorage" start-index="62" stop-index="72" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+    
+    <update sql-case-id="update_with_table_hint">
+        <table start-index="7" stop-index="24">
+            <simple-table name="Product" start-index="7" stop-index="24">
+                <owner name="Production" start-index="7" stop-index="16" />
+            </simple-table>
+        </table>
+        <table-hints start-index="26" stop-index="39">
+            <table-hint value="TABLOCK" start-index="32" stop-index="38" />
+        </table-hints>
+        <set start-index="41" stop-index="72">
+            <assignment start-index="45" stop-index="72">
+                <column name="ListPrice" start-index="45" stop-index="53" />
+                <assignment-value>
+                    <binary-operation-expression start-index="57" stop-index="72">
+                        <left>
+                            <column name="ListPrice" start-index="57" stop-index="65" />
+                        </left>
+                        <right>
+                            <literal-expression value="1.10" start-index="69" stop-index="72" />
+                        </right>
+                        <operator>*</operator>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="74" stop-index="104">
+            <expr>
+                <binary-operation-expression start-index="80" stop-index="104">
+                    <left>
+                        <column name="ProductNumber" start-index="80" stop-index="92" />
+                    </left>
+                    <right>
+                        <list-expression start-index="99" stop-index="104" >
+                            <items>
+                                <literal-expression value="BK-%" start-index="99" stop-index="104" />
+                            </items>
+                        </list-expression>
+                    </right>
+                    <operator>LIKE</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+    
+    <update sql-case-id="update_with_option_hint">
+        <table start-index="7" stop-index="24">
+            <simple-table name="Product" start-index="7" stop-index="24">
+                <owner name="Production" start-index="7" stop-index="16" />
+            </simple-table>
+        </table>
+        <set start-index="26" stop-index="57">
+            <assignment start-index="30" stop-index="57">
+                <column name="ListPrice" start-index="30" stop-index="38" />
+                <assignment-value>
+                    <binary-operation-expression start-index="42" stop-index="57">
+                        <left>
+                            <column name="ListPrice" start-index="42" stop-index="50" />
+                        </left>
+                        <right>
+                            <literal-expression value="1.10" start-index="54" stop-index="57" />
+                        </right>
+                        <operator>*</operator>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="59" stop-index="91">
+            <expr>
+                <binary-operation-expression start-index="65" stop-index="91">
+                    <left>
+                        <column name="ProductNumber" start-index="65" stop-index="77" />
+                    </left>
+                    <right>
+                        <list-expression start-index="84" stop-index="91">
+                            <items>
+                                <column name="@Product" start-index="84" stop-index="91" />
+                            </items>
+                        </list-expression>
+                    </right>
+                    <operator>LIKE</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <option-hint start-index="93" stop-index="133" text="OPTION (OPTIMIZE FOR (@Product = 'BK-%'))" />
+    </update>
+    
+    <update sql-case-id="update_sales_table_with_subquery">
+        <table start-index="7" stop-index="22">
+            <simple-table name="YearlyTotalSales" start-index="7" stop-index="22" />
+        </table>
+        <set start-index="24" stop-index="151">
+            <assignment start-index="28" stop-index="151">
+                <column name="YearlySalesAmount" start-index="28" stop-index="44" />
+                <assignment-value>
+                    <subquery start-index="46" stop-index="151">
+                        <select>
+                            <projections start-index="54" stop-index="69">
+                                <aggregation-projection type="SUM" expression="SUM(SalesAmount)" start-index="54" stop-index="69">
+                                    <parameter>
+                                        <column name="SalesAmount" start-index="58" stop-index="68" />
+                                    </parameter>
+                                </aggregation-projection>
+                            </projections>
+                            <from start-index="76" stop-index="92">
+                                <simple-table name="FactInternetSales" start-index="76" stop-index="92" />
+                            </from>
+                            <where start-index="94" stop-index="150">
+                                <expr>
+                                    <binary-operation-expression start-index="100" stop-index="150">
+                                        <left>
+                                            <binary-operation-expression start-index="100" stop-index="122">
+                                                <left>
+                                                    <column name="OrderDateKey" start-index="100" stop-index="111" />
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="20040000" start-index="115" stop-index="122" />
+                                                </right>
+                                                <operator>>=</operator>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <right>
+                                            <binary-operation-expression start-index="128" stop-index="150">
+                                                <left>
+                                                    <column name="OrderDateKey" start-index="128" stop-index="139" />
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="20050000" start-index="143" stop-index="150" />
+                                                </right>
+                                                <operator>&lt;</operator>
+                                            </binary-operation-expression>
+                                        </right>
+                                        <operator>AND</operator>
+                                    </binary-operation-expression>
+                                </expr>
+                            </where>
+                        </select>
+                    </subquery>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="153" stop-index="167">
+            <expr>
+                <binary-operation-expression start-index="159" stop-index="167">
+                    <left>
+                        <column name="Year" start-index="159" stop-index="162" />
+                    </left>
+                    <right>
+                        <literal-expression value="2004" start-index="164" stop-index="167" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+    
+    <update sql-case-id="update_with_inner_join_and_database_table_column">
+        <table start-index="7" stop-index="16">
+            <simple-table name="Table2" start-index="7" stop-index="16">
+                <owner name="dbo" start-index="7" stop-index="9" />
+            </simple-table>
+        </table>
+        <set start-index="18" stop-index="150">
+            <assignment start-index="22" stop-index="72">
+                <column name="ColB" start-index="22" stop-index="36">
+                    <owner name="Table2" start-index="26" stop-index="31">
+                        <owner name="dbo" start-index="22" stop-index="24" />
+                    </owner>
+                </column>
+                <assignment-value>
+                    <binary-operation-expression start-index="40" stop-index="72">
+                        <left>
+                            <column name="ColB" start-index="40" stop-index="54">
+                                <owner name="Table2" start-index="44" stop-index="49">
+                                    <owner name="dbo" start-index="40" stop-index="42" />
+                                </owner>
+                            </column>
+                        </left>
+                        <right>
+                            <column name="ColB" start-index="58" stop-index="72">
+                                <owner name="Table1" start-index="62" stop-index="67">
+                                    <owner name="dbo" start-index="58" stop-index="60" />
+                                </owner>
+                            </column>
+                        </right>
+                        <operator>+</operator>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+            <from start-index="80" stop-index="150">
+                <join-table join-type="INNER">
+                    <left>
+                        <simple-table name="Table2" start-index="80" stop-index="89">
+                            <owner name="dbo" start-index="80" stop-index="82" />
+                        </simple-table>
+                    </left>
+                    <right>
+                        <simple-table name="Table1" start-index="102" stop-index="111">
+                            <owner name="dbo" start-index="102" stop-index="104" />
+                        </simple-table>
+                    </right>
+                    <on-condition>
+                        <binary-operation-expression start-index="117" stop-index="149">
+                            <left>
+                                <column name="ColA" start-index="117" stop-index="131">
+                                    <owner name="Table2" start-index="117" stop-index="126">
+                                        <owner name="dbo" start-index="117" stop-index="119" />
+                                    </owner>
+                                </column>
+                            </left>
+                            <right>
+                                <column name="ColA" start-index="135" stop-index="149">
+                                    <owner name="Table1" start-index="135" stop-index="144">
+                                        <owner name="dbo" start-index="135" stop-index="137" />
+                                    </owner>
+                                </column>
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </on-condition>
+                </join-table>
+            </from>
+        </set>
+    </update>
 </sql-parser-test-cases>

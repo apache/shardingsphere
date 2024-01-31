@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Set assignment segment.
- */
+ * Expected option hint.
+ **/
 @RequiredArgsConstructor
 @Getter
-public final class SetAssignmentSegment implements SQLSegment {
+public class ExpectedOptionHint extends AbstractExpectedSQLSegment {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final Collection<ColumnAssignmentSegment> assignments;
-    
-    @Setter
-    private TableSegment from;
+    @XmlAttribute
+    private String text;
 }
