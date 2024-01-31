@@ -157,7 +157,9 @@ class CreateReadwriteSplittingRuleExecutorTest {
         executor.setDatabase(database);
         executor.checkBeforeUpdate(sqlStatement);
         ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
-        ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        executor.setRule(rule);
+        ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getDataSources().size(), is(1));
     }

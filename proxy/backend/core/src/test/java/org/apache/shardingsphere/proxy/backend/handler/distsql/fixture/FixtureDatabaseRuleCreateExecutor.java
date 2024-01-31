@@ -27,7 +27,7 @@ public final class FixtureDatabaseRuleCreateExecutor implements DatabaseRuleCrea
     }
     
     @Override
-    public FixtureRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
+    public FixtureRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateFixtureRuleStatement sqlStatement) {
         return new FixtureRuleConfiguration();
     }
     
