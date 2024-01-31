@@ -47,14 +47,14 @@ public final class GlobalRuleDefinitionExecuteEngine {
         ShardingSphereRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass());
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(sqlStatement, rule.getConfiguration()));
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(sqlStatement, rule));
     }
     
     @SuppressWarnings("unchecked")
-    private RuleConfiguration processUpdate(final RuleDefinitionStatement sqlStatement, final RuleConfiguration currentRuleConfig) {
+    private RuleConfiguration processUpdate(final RuleDefinitionStatement sqlStatement, final ShardingSphereRule rule) {
         RuleConfiguration result = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        ruleConfigs.remove(currentRuleConfig);
+        ruleConfigs.remove(rule.getConfiguration());
         ruleConfigs.add(result);
         return result;
     }
