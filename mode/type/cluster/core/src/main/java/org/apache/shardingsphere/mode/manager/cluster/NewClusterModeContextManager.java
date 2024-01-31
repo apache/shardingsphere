@@ -147,11 +147,6 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
-    public void removeRuleConfiguration(final String databaseName, final String ruleName) {
-        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, ruleName);
-    }
-    
-    @Override
     public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
         contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().persist(globalRuleConfigs);
     }
