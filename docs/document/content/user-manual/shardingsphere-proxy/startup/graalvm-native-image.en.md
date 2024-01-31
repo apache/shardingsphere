@@ -34,10 +34,10 @@ services:
 ## Premise
 
 1. Install and configure `GraalVM Community Edition` or a downstream distribution of `GraalVM Community Edition` for 
-JDK 17 according to https://www.graalvm.org/downloads/. If `SDKMAN!` is used,
+JDK 21 according to https://www.graalvm.org/downloads/. If `SDKMAN!` is used,
 
 ```shell
-sdk install java 17.0.9-graalce
+sdk install java 21.0.2-graalce
 ```
 
 2. Install the local toolchain as required by https://www.graalvm.org/jdk17/reference-manual/native-image/#prerequisites.
@@ -59,7 +59,7 @@ sdk install java 17.0.9-graalce
   Image.
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
 ```
 
 - Scenario 2: It is necessary to use a JAR that has an SPI implementation or a third-party dependent JAR of a LICENSE
@@ -87,7 +87,7 @@ sdk install java 17.0.9-graalce
 - Build GraalVM Native Image via command line.
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
 ```
 
 3. To start Native Image through the command line, you need to bring 4 parameters. The first parameter is the `Port`

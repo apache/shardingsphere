@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingKeyGeneratorsStatement;
@@ -36,11 +38,10 @@ import java.util.stream.Collectors;
 /**
  * Show unused sharding key generator executor.
  */
-public final class ShowUnusedShardingKeyGeneratorExecutor extends RuleAwareRQLExecutor<ShowUnusedShardingKeyGeneratorsStatement, ShardingRule> {
+@Setter
+public final class ShowUnusedShardingKeyGeneratorExecutor implements DistSQLQueryExecutor<ShowUnusedShardingKeyGeneratorsStatement>, DistSQLExecutorRuleAware<ShardingRule> {
     
-    public ShowUnusedShardingKeyGeneratorExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -48,7 +49,7 @@ public final class ShowUnusedShardingKeyGeneratorExecutor extends RuleAwareRQLEx
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingKeyGeneratorsStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingKeyGeneratorsStatement sqlStatement, final ContextManager contextManager) {
         Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(rule.getConfiguration());
         return rule.getConfiguration().getKeyGenerators().entrySet().stream().filter(entry -> !inUsedKeyGenerators.contains(entry.getKey()))
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), buildProps(entry.getValue().getProps()))).collect(Collectors.toList());
@@ -67,6 +68,11 @@ public final class ShowUnusedShardingKeyGeneratorExecutor extends RuleAwareRQLEx
     
     private String buildProps(final Properties props) {
         return null == props ? "" : PropertiesConverter.convert(props);
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

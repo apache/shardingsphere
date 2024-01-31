@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,27 +42,12 @@ import static org.mockito.Mockito.when;
 class ShowComputeNodesExecutorTest {
     
     @Test
-    void assertGetColumns() {
-        ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(9));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("instance_id"));
-        assertThat(iterator.next(), is("instance_type"));
-        assertThat(iterator.next(), is("host"));
-        assertThat(iterator.next(), is("port"));
-        assertThat(iterator.next(), is("status"));
-        assertThat(iterator.next(), is("mode_type"));
-        assertThat(iterator.next(), is("worker_id"));
-        assertThat(iterator.next(), is("labels"));
-        assertThat(iterator.next(), is("version"));
-    }
-    
-    @Test
     void assertExecuteWithStandaloneMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
-        executor.setInstanceContext(createStandaloneInstanceContext());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ShardingSphereMetaData.class));
+        ContextManager contextManager = mock(ContextManager.class);
+        InstanceContext instanceContext = createStandaloneInstanceContext();
+        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));
@@ -80,8 +64,10 @@ class ShowComputeNodesExecutorTest {
     @Test
     void assertExecuteWithClusterMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
-        executor.setInstanceContext(createClusterInstanceContext());
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), mock(ShardingSphereMetaData.class));
+        ContextManager contextManager = mock(ContextManager.class);
+        InstanceContext instanceContext = createClusterInstanceContext();
+        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodesStatement.class), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
-import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -27,8 +28,8 @@ import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptRulesState
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,11 +40,10 @@ import java.util.stream.Collectors;
 /**
  * Show encrypt rule executor.
  */
-public final class ShowEncryptRuleExecutor extends RuleAwareRQLExecutor<ShowEncryptRulesStatement, EncryptRule> {
+@Setter
+public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowEncryptRulesStatement>, DistSQLExecutorRuleAware<EncryptRule> {
     
-    public ShowEncryptRuleExecutor() {
-        super(EncryptRule.class);
-    }
+    private EncryptRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -52,10 +52,8 @@ public final class ShowEncryptRuleExecutor extends RuleAwareRQLExecutor<ShowEncr
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowEncryptRulesStatement sqlStatement, final EncryptRule rule) {
-        EncryptRuleConfiguration ruleConfig = rule.getConfiguration() instanceof CompatibleEncryptRuleConfiguration
-                ? ((CompatibleEncryptRuleConfiguration) rule.getConfiguration()).convertToEncryptRuleConfiguration()
-                : (EncryptRuleConfiguration) rule.getConfiguration();
+    public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptRulesStatement sqlStatement, final ContextManager contextManager) {
+        EncryptRuleConfiguration ruleConfig = (EncryptRuleConfiguration) rule.getConfiguration();
         return buildData(ruleConfig, sqlStatement);
     }
     
@@ -89,6 +87,11 @@ public final class ShowEncryptRuleExecutor extends RuleAwareRQLExecutor<ShowEncr
     
     private Object nullToEmptyString(final Object obj) {
         return null == obj ? "" : obj;
+    }
+    
+    @Override
+    public Class<EncryptRule> getRuleClass() {
+        return EncryptRule.class;
     }
     
     @Override

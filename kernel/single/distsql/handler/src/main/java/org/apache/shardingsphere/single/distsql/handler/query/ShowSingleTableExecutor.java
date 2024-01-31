@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -36,11 +38,10 @@ import java.util.stream.Collectors;
 /**
  * Show single table executor.
  */
-public final class ShowSingleTableExecutor extends RuleAwareRQLExecutor<ShowSingleTableStatement, SingleRule> {
+@Setter
+public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowSingleTableStatement>, DistSQLExecutorRuleAware<SingleRule> {
     
-    public ShowSingleTableExecutor() {
-        super(SingleRule.class);
-    }
+    private SingleRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -48,7 +49,7 @@ public final class ShowSingleTableExecutor extends RuleAwareRQLExecutor<ShowSing
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowSingleTableStatement sqlStatement, final SingleRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSingleTableStatement sqlStatement, final ContextManager contextManager) {
         Collection<DataNode> resultDataNodes = getPattern(sqlStatement)
                 .map(optional -> getDataNodesWithLikePattern(rule.getSingleTableDataNodes(), optional)).orElseGet(() -> getDataNodes(rule.getSingleTableDataNodes(), sqlStatement));
         Collection<DataNode> sortedDataNodes = resultDataNodes.stream().sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
@@ -68,6 +69,11 @@ public final class ShowSingleTableExecutor extends RuleAwareRQLExecutor<ShowSing
     private Collection<DataNode> getDataNodes(final Map<String, Collection<DataNode>> singleTableNodes, final ShowSingleTableStatement sqlStatement) {
         return singleTableNodes.entrySet().stream().filter(entry -> !sqlStatement.getTableName().isPresent() || sqlStatement.getTableName().get().equalsIgnoreCase(entry.getKey()))
                 .map(entry -> entry.getValue().iterator().next()).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Class<SingleRule> getRuleClass() {
+        return SingleRule.class;
     }
     
     @Override

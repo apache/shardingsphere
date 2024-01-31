@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
@@ -32,11 +34,10 @@ import java.util.stream.Collectors;
 /**
  * Show shadow algorithms executor.
  */
-public final class ShowShadowAlgorithmsExecutor extends RuleAwareRQLExecutor<ShowShadowAlgorithmsStatement, ShadowRule> {
+@Setter
+public final class ShowShadowAlgorithmsExecutor implements DistSQLQueryExecutor<ShowShadowAlgorithmsStatement>, DistSQLExecutorRuleAware<ShadowRule> {
     
-    public ShowShadowAlgorithmsExecutor() {
-        super(ShadowRule.class);
-    }
+    private ShadowRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -44,7 +45,7 @@ public final class ShowShadowAlgorithmsExecutor extends RuleAwareRQLExecutor<Sho
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowAlgorithmsStatement sqlStatement, final ShadowRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
         String defaultAlgorithm = rule.getConfiguration().getDefaultShadowAlgorithmName();
         return rule.getConfiguration().getShadowAlgorithms().entrySet().stream()
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(),
@@ -54,6 +55,11 @@ public final class ShowShadowAlgorithmsExecutor extends RuleAwareRQLExecutor<Sho
     
     private String convertToString(final Properties props) {
         return null == props ? "" : PropertiesConverter.convert(props);
+    }
+    
+    @Override
+    public Class<ShadowRule> getRuleClass() {
+        return ShadowRule.class;
     }
     
     @Override

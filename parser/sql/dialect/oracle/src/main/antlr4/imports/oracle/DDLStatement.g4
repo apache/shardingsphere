@@ -894,7 +894,8 @@ commitClause
     ;
 
 physicalProperties
-    : (deferredSegmentCreation? segmentAttributesClause tableCompression? inmemoryTableClause? ilmClause? | deferredSegmentCreation? (organizationClause | externalPartitionClause) | clusterClause)
+    : (deferredSegmentCreation? segmentAttributesClause tableCompression? inmemoryTableClause? ilmClause?
+    | deferredSegmentCreation? (organizationClause | externalPartitionClause) | CLUSTER clusterName columns)
     ;
 
 deferredSegmentCreation
@@ -1328,14 +1329,7 @@ listPartitionsetClause
     ;
 
 attributeClusteringClause
-    : CLUSTERING clusterClause
-    | CLUSTERING clusteringJoin clusterClause
-    | CLUSTERING clusterClause clusteringWhen
-    | CLUSTERING clusteringJoin clusterClause clusteringWhen
-    | CLUSTERING clusterClause zonemapClause
-    | CLUSTERING clusteringJoin clusterClause zonemapClause
-    | CLUSTERING clusterClause clusteringWhen zonemapClause
-    | CLUSTERING clusteringJoin clusterClause clusteringWhen zonemapClause
+    : CLUSTERING clusteringJoin? clusterClause clusteringWhen? zonemapClause?
     ;
 
 clusteringJoin

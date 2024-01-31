@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParamete
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -66,7 +67,9 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer implem
         assertThat(actualUpdateCounts.length, is(this.dataSets.size()));
         int count = 0;
         for (DataSet each : this.dataSets) {
-            assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
+            if (Statement.SUCCESS_NO_INFO != actualUpdateCounts[count]) {
+                assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
+            }
             dataSets.add(each);
             count++;
         }

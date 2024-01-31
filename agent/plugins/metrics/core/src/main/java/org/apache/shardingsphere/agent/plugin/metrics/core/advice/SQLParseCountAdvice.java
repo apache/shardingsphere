@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.SQLStatementUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * SQL parse count advice.
  */
-public final class SQLParseCountAdvice implements InstanceMethodAdvice {
+public final class SQLParseCountAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total",
             MetricCollectorType.COUNTER, "Total count of parsed SQL", Collections.singletonList("type"), Collections.emptyMap());

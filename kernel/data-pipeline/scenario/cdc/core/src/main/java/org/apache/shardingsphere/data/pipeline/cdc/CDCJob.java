@@ -168,7 +168,7 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
             PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, jobItemContext.getShardingItem(), throwable);
             if (jobItemContext.getSink() instanceof PipelineCDCSocketSink) {
                 PipelineCDCSocketSink cdcSink = (PipelineCDCSocketSink) jobItemContext.getSink();
-                cdcSink.getChannel().writeAndFlush(CDCResponseUtils.failed("", "", throwable.getMessage()));
+                cdcSink.getChannel().writeAndFlush(CDCResponseUtils.failed("", "", Optional.ofNullable(throwable.getMessage()).orElse("")));
             }
             PipelineJobRegistry.stop(jobId);
             jobAPI.disable(jobId);

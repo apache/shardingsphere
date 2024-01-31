@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-latest' ]
-        java-version: [ '17.0.9' ]
+        java-version: [ '21.0.2' ]
     steps:
       - uses: actions/checkout@v3
       - uses: graalvm/setup-graalvm@v1

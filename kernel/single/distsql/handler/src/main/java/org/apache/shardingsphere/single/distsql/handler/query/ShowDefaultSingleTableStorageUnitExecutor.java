@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
@@ -29,24 +31,28 @@ import java.util.Collections;
 /**
  * Show default single table storage unit executor.
  */
-public final class ShowDefaultSingleTableStorageUnitExecutor extends RuleAwareRQLExecutor<ShowDefaultSingleTableStorageUnitStatement, SingleRule> {
+@Setter
+public final class ShowDefaultSingleTableStorageUnitExecutor implements DistSQLQueryExecutor<ShowDefaultSingleTableStorageUnitStatement>, DistSQLExecutorRuleAware<SingleRule> {
     
-    public ShowDefaultSingleTableStorageUnitExecutor() {
-        super(SingleRule.class);
-    }
+    private SingleRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singletonList("storage_unit_name");
+        return Collections.singleton("storage_unit_name");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowDefaultSingleTableStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         return Collections.singleton(new LocalDataQueryResultRow(rule.getConfiguration().getDefaultDataSource().orElse("RANDOM")));
     }
     
     @Override
     public Class<ShowDefaultSingleTableStorageUnitStatement> getType() {
         return ShowDefaultSingleTableStorageUnitStatement.class;
+    }
+    
+    @Override
+    public Class<SingleRule> getRuleClass() {
+        return SingleRule.class;
     }
 }

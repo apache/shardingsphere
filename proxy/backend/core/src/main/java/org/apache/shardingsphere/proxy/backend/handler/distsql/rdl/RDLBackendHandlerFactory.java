@@ -20,18 +20,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.StorageUnitDefinitionStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.drop.UnregisterStorageUnitStatement;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.ResourceDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.NewRuleDefinitionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.AlterStorageUnitBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.RegisterStorageUnitBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.UnregisterStorageUnitBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -48,24 +41,9 @@ public final class RDLBackendHandlerFactory {
      * @return RDL backend handler
      */
     public static ProxyBackendHandler newInstance(final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
-        if (sqlStatement instanceof StorageUnitDefinitionStatement) {
-            return getStorageUnitBackendHandler((StorageUnitDefinitionStatement) sqlStatement, connectionSession);
+        if (sqlStatement instanceof ResourceDefinitionStatement) {
+            return new DistSQLUpdateBackendHandler(sqlStatement, connectionSession);
         }
-        // TODO Remove when metadata structure adjustment completed. #25485
-        String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
-        if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
-            return new NewRuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
-        }
-        return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
-    }
-    
-    private static ProxyBackendHandler getStorageUnitBackendHandler(final StorageUnitDefinitionStatement sqlStatement, final ConnectionSession connectionSession) {
-        if (sqlStatement instanceof RegisterStorageUnitStatement) {
-            return new RegisterStorageUnitBackendHandler((RegisterStorageUnitStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof AlterStorageUnitStatement) {
-            return new AlterStorageUnitBackendHandler((AlterStorageUnitStatement) sqlStatement, connectionSession);
-        }
-        return new UnregisterStorageUnitBackendHandler((UnregisterStorageUnitStatement) sqlStatement, connectionSession);
+        return new RuleDefinitionBackendHandler((RuleDefinitionStatement) sqlStatement, connectionSession);
     }
 }

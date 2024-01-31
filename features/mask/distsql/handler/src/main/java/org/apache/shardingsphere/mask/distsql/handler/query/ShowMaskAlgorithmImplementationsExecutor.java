@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Show mask algorithm implementations executor.
  */
-public final class ShowMaskAlgorithmImplementationsExecutor implements QueryableRALExecutor<ShowMaskAlgorithmImplementationsStatement> {
+public final class ShowMaskAlgorithmImplementationsExecutor implements DistSQLQueryExecutor<ShowMaskAlgorithmImplementationsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -40,13 +40,9 @@ public final class ShowMaskAlgorithmImplementationsExecutor implements Queryable
     
     @SuppressWarnings("rawtypes")
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMaskAlgorithmImplementationsStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMaskAlgorithmImplementationsStatement sqlStatement, final ContextManager contextManager) {
         Collection<MaskAlgorithm> maskAlgorithms = ShardingSphereServiceLoader.getServiceInstances(MaskAlgorithm.class);
-        for (MaskAlgorithm each : maskAlgorithms) {
-            result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
-        }
-        return result;
+        return maskAlgorithms.stream().map(each -> new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName())).collect(Collectors.toList());
     }
     
     @Override

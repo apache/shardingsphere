@@ -78,23 +78,12 @@ public final class ReadwriteSplittingRuleStatementChecker {
      */
     public static void checkAlteration(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
-        checkRuleConfigurationExist(database, currentRuleConfig);
         checkDuplicateRuleNamesWithSelf(databaseName, segments);
         checkRuleNamesExist(segments, currentRuleConfig, databaseName);
         checkDataSourcesExist(databaseName, segments, database);
         checkDuplicatedDataSourceNames(databaseName, segments, currentRuleConfig, false);
         checkTransactionalReadQueryStrategy(segments);
         checkLoadBalancers(segments);
-    }
-    
-    /**
-     * Check current rule configuration exist.
-     *
-     * @param database database
-     * @param currentRuleConfig current rule config
-     */
-    public static void checkRuleConfigurationExist(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Readwrite-splitting", database.getName()));
     }
     
     private static void checkRuleNamesExist(final Collection<ReadwriteSplittingRuleSegment> segments, final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String databaseName) {

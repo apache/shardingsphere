@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariableStatement;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -28,9 +31,9 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.ConnectionSizeAwareQueryableRALExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,9 +45,9 @@ import java.util.Properties;
  * Show dist variable executor.
  */
 @Setter
-public final class ShowDistVariableExecutor implements ConnectionSizeAwareQueryableRALExecutor<ShowDistVariableStatement> {
+public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<ShowDistVariableStatement>, DistSQLExecutorConnectionContextAware {
     
-    private int connectionSize;
+    private DistSQLConnectionContext connectionContext;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -52,11 +55,9 @@ public final class ShowDistVariableExecutor implements ConnectionSizeAwareQuerya
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariableStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        return buildSpecifiedRow(metaData, sqlStatement.getName());
-    }
-    
-    private Collection<LocalDataQueryResultRow> buildSpecifiedRow(final ShardingSphereMetaData metaData, final String variableName) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariableStatement sqlStatement, final ContextManager contextManager) {
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        String variableName = sqlStatement.getName();
         if (isConfigurationKey(variableName)) {
             return Collections.singleton(new LocalDataQueryResultRow(variableName.toLowerCase(), getConfigurationValue(metaData, variableName)));
         }
@@ -102,8 +103,8 @@ public final class ShowDistVariableExecutor implements ConnectionSizeAwareQuerya
     }
     
     private String getConnectionSize(final String variableName) {
-        ShardingSpherePreconditions.checkState(VariableEnum.CACHED_CONNECTIONS == VariableEnum.getValueOf(variableName), () -> new UnsupportedVariableException(variableName));
-        return String.valueOf(connectionSize);
+        ShardingSpherePreconditions.checkState(DistSQLVariable.CACHED_CONNECTIONS == DistSQLVariable.getValueOf(variableName), () -> new UnsupportedVariableException(variableName));
+        return String.valueOf(connectionContext.getConnectionSize());
     }
     
     private String getStringResult(final Object value) {

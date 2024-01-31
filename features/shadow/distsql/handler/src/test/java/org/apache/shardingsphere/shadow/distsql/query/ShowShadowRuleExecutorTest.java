@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.shadow.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -37,7 +35,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,8 +42,11 @@ class ShowShadowRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowShadowRulesStatement> executor = new ShowShadowRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShadowRulesStatement.class));
+        ShowShadowRuleExecutor executor = new ShowShadowRuleExecutor();
+        ShadowRule rule = mock(ShadowRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        executor.setRule(rule);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShadowRulesStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -63,28 +63,6 @@ class ShowShadowRuleExecutorTest {
         assertThat(row.getCell(4), is("shadow"));
         assertThat(row.getCell(5), is("REGEX_MATCH"));
         assertThat(row.getCell(6), is(""));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowShadowRulesStatement> executor = new ShowShadowRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(6));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("shadow_table"));
-        assertThat(iterator.next(), is("rule_name"));
-        assertThat(iterator.next(), is("source_name"));
-        assertThat(iterator.next(), is("shadow_name"));
-        assertThat(iterator.next(), is("algorithm_type"));
-        assertThat(iterator.next(), is("algorithm_props"));
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShadowRule rule = mock(ShadowRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        return result;
     }
     
     private ShadowRuleConfiguration createRuleConfiguration() {

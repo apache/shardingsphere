@@ -17,5 +17,3 @@
 
 org.apache.shardingsphere.encrypt.rule.changed.EncryptTableChangedProcessor
 org.apache.shardingsphere.encrypt.rule.changed.EncryptorChangedProcessor
-org.apache.shardingsphere.encrypt.rule.changed.compatible.CompatibleEncryptTableChangedProcessor
-org.apache.shardingsphere.encrypt.rule.changed.compatible.CompatibleEncryptorChangedProcessor

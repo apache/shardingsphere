@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -30,7 +30,7 @@ import java.util.Collections;
 /**
  * Abstract transactions count advice for ShardingSphere-JDBC.
  */
-public abstract class AbstractTransactionsCountAdvice implements InstanceMethodAdvice {
+public abstract class AbstractTransactionsCountAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_transactions_total", MetricCollectorType.COUNTER,
             "Total transactions of ShardingSphere-JDBC", Collections.singletonList("type"));

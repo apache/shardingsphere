@@ -33,13 +33,13 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.GroupedD
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -72,15 +72,14 @@ public final class PipelineDataSourceSink implements PipelineSink {
     
     @Override
     public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
-        Collection<DataRecord> dataRecords = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
+        List<DataRecord> dataRecords = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
         if (dataRecords.isEmpty()) {
             return new PipelineJobProgressUpdatedParameter(0);
         }
         for (GroupedDataRecord each : groupEngine.group(dataRecords)) {
-            batchWrite(each.getBatchDeleteDataRecords());
-            batchWrite(each.getBatchInsertDataRecords());
-            batchWrite(each.getBatchUpdateDataRecords());
-            sequentialWrite(each.getNonBatchRecords());
+            batchWrite(each.getDeleteDataRecords());
+            batchWrite(each.getInsertDataRecords());
+            batchWrite(each.getUpdateDataRecords());
         }
         return new PipelineJobProgressUpdatedParameter((int) dataRecords.stream().filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count());
     }
@@ -93,7 +92,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         }
         for (int i = 0; !Thread.interrupted() && i <= importerConfig.getRetryTimes(); i++) {
             try {
-                doWrite(records);
+                doWrite(records, 0 == i);
                 break;
             } catch (final SQLException ex) {
                 log.error("Flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
@@ -105,66 +104,81 @@ public final class PipelineDataSourceSink implements PipelineSink {
         }
     }
     
-    private void sequentialWrite(final Collection<DataRecord> records) {
-        // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
-        try {
-            for (DataRecord each : records) {
-                doWrite(Collections.singleton(each));
-            }
-        } catch (final SQLException ex) {
-            throw new PipelineImporterJobWriteException(ex);
+    private void doWrite(final Collection<DataRecord> records, final boolean firstTimeRun) throws SQLException {
+        switch (records.iterator().next().getType()) {
+            case INSERT:
+                Optional.ofNullable(importerConfig.getRateLimitAlgorithm()).ifPresent(optional -> optional.intercept(PipelineSQLOperationType.INSERT, 1));
+                executeBatchInsert(records, firstTimeRun);
+                break;
+            case UPDATE:
+                Optional.ofNullable(importerConfig.getRateLimitAlgorithm()).ifPresent(optional -> optional.intercept(PipelineSQLOperationType.UPDATE, 1));
+                executeUpdate(records, firstTimeRun);
+                break;
+            case DELETE:
+                Optional.ofNullable(importerConfig.getRateLimitAlgorithm()).ifPresent(optional -> optional.intercept(PipelineSQLOperationType.DELETE, 1));
+                executeBatchDelete(records);
+                break;
+            default:
+                break;
         }
     }
     
-    private void doWrite(final Collection<DataRecord> records) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            boolean enableTransaction = records.size() > 1;
-            if (enableTransaction) {
-                connection.setAutoCommit(false);
-            }
-            switch (records.iterator().next().getType()) {
-                case INSERT:
-                    Optional.ofNullable(importerConfig.getRateLimitAlgorithm()).ifPresent(optional -> optional.intercept(PipelineSQLOperationType.INSERT, 1));
-                    executeBatchInsert(connection, records);
-                    break;
-                case UPDATE:
-                    Optional.ofNullable(importerConfig.getRateLimitAlgorithm()).ifPresent(optional -> optional.intercept(PipelineSQLOperationType.UPDATE, 1));
-                    executeUpdate(connection, records);
-                    break;
-                case DELETE:
-                    Optional.ofNullable(importerConfig.getRateLimitAlgorithm()).ifPresent(optional -> optional.intercept(PipelineSQLOperationType.DELETE, 1));
-                    executeBatchDelete(connection, records);
-                    break;
-                default:
-                    break;
-            }
-            if (enableTransaction) {
-                connection.commit();
-            }
-        }
-    }
-    
-    private void executeBatchInsert(final Connection connection, final Collection<DataRecord> dataRecords) throws SQLException {
+    private void executeBatchInsert(final Collection<DataRecord> dataRecords, final boolean firstTimeRun) throws SQLException {
         DataRecord dataRecord = dataRecords.iterator().next();
         String sql = importSQLBuilder.buildInsertSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             runningStatement.set(preparedStatement);
-            preparedStatement.setQueryTimeout(30);
-            for (DataRecord each : dataRecords) {
-                for (int i = 0; i < each.getColumnCount(); i++) {
-                    preparedStatement.setObject(i + 1, each.getColumn(i).getValue());
-                }
-                preparedStatement.addBatch();
+            if (firstTimeRun) {
+                executeBatchInsertFirstTime(connection, preparedStatement, dataRecords);
+            } else {
+                retryBatchInsert(preparedStatement, dataRecords);
             }
-            preparedStatement.executeBatch();
         } finally {
             runningStatement.set(null);
         }
     }
     
-    private void executeUpdate(final Connection connection, final Collection<DataRecord> dataRecords) throws SQLException {
+    private void executeBatchInsertFirstTime(final Connection connection, final PreparedStatement preparedStatement, final Collection<DataRecord> dataRecords) throws SQLException {
+        boolean transactionEnabled = dataRecords.size() > 1;
+        if (transactionEnabled) {
+            connection.setAutoCommit(false);
+        }
+        preparedStatement.setQueryTimeout(30);
         for (DataRecord each : dataRecords) {
-            executeUpdate(connection, each);
+            for (int i = 0; i < each.getColumnCount(); i++) {
+                preparedStatement.setObject(i + 1, each.getColumn(i).getValue());
+            }
+            preparedStatement.addBatch();
+        }
+        preparedStatement.executeBatch();
+        if (transactionEnabled) {
+            connection.commit();
+        }
+    }
+    
+    private void retryBatchInsert(final PreparedStatement preparedStatement, final Collection<DataRecord> dataRecords) throws SQLException {
+        for (DataRecord each : dataRecords) {
+            for (int i = 0; i < each.getColumnCount(); i++) {
+                preparedStatement.setObject(i + 1, each.getColumn(i).getValue());
+            }
+            preparedStatement.executeUpdate();
+        }
+    }
+    
+    private void executeUpdate(final Collection<DataRecord> dataRecords, final boolean firstTimeRun) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            boolean transactionEnabled = dataRecords.size() > 1 && firstTimeRun;
+            if (transactionEnabled) {
+                connection.setAutoCommit(false);
+            }
+            for (DataRecord each : dataRecords) {
+                executeUpdate(connection, each);
+            }
+            if (transactionEnabled) {
+                connection.commit();
+            }
         }
     }
     
@@ -190,32 +204,46 @@ public final class PipelineDataSourceSink implements PipelineSink {
             // TODO if table without unique key the conditionColumns before values is null, so update will fail at PostgreSQL
             int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {
-                log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, sql, setColumns, conditionColumns);
+                log.warn("execute update failed, update count: {}, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}",
+                        updateCount, sql, setColumns, JsonUtils.toJsonString(shardingColumns), JsonUtils.toJsonString(conditionColumns));
             }
+        } catch (final SQLException ex) {
+            log.error("execute update failed, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}, error message: {}, data record: {}",
+                    sql, setColumns, JsonUtils.toJsonString(shardingColumns), JsonUtils.toJsonString(conditionColumns), ex.getMessage(), dataRecord);
+            throw ex;
         } finally {
             runningStatement.set(null);
         }
     }
     
-    private void executeBatchDelete(final Connection connection, final Collection<DataRecord> dataRecords) throws SQLException {
+    private void executeBatchDelete(final Collection<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.iterator().next();
         String sql = importSQLBuilder.buildDeleteSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord,
                 RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName())));
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             runningStatement.set(preparedStatement);
+            boolean transactionEnabled = dataRecords.size() > 1;
+            if (transactionEnabled) {
+                connection.setAutoCommit(false);
+            }
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
                 List<Column> conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(dataRecord.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
                     Object oldValue = conditionColumns.get(i).getOldValue();
                     if (null == oldValue) {
-                        log.warn("Record old value is null, record={}", each);
+                        log.warn("Record old value is null, record: {}", each);
                     }
                     preparedStatement.setObject(i + 1, oldValue);
                 }
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
+            if (transactionEnabled) {
+                connection.commit();
+            }
         } finally {
             runningStatement.set(null);
         }

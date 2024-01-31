@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
       - uses: actions/cache@v3
         with:
           path: ~/.sonar/cache

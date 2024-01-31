@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Loc
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -114,7 +115,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     
     /**
      * Set lock segment.
-     * 
+     *
      * @param selectStatement select statement
      * @param lockSegment lock segment
      */
@@ -191,7 +192,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     
     /**
      * Set with segment.
-     * 
+     *
      * @param selectStatement select statement
      * @param withSegment with segment
      */
@@ -222,13 +223,46 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     
     /**
      * Set model segment.
-     * 
+     *
      * @param selectStatement select statement
      * @param modelSegment model segment
      */
     public static void setModelSegment(final SelectStatement selectStatement, final ModelSegment modelSegment) {
         if (selectStatement instanceof OracleSelectStatement) {
             ((OracleSelectStatement) selectStatement).setModelSegment(modelSegment);
+        }
+    }
+    
+    /**
+     * Get into segment.
+     *
+     * @param selectStatement select statement
+     * @return into table segment
+     */
+    public static Optional<TableSegment> getIntoSegment(final SelectStatement selectStatement) {
+        if (selectStatement instanceof SQLServerSelectStatement) {
+            return ((SQLServerSelectStatement) selectStatement).getIntoSegment();
+        } else if (selectStatement instanceof PostgreSQLSelectStatement) {
+            return ((PostgreSQLSelectStatement) selectStatement).getIntoSegment();
+        } else if (selectStatement instanceof OpenGaussSelectStatement) {
+            return ((OpenGaussSelectStatement) selectStatement).getIntoSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Set into segment.
+     *
+     * @param selectStatement select statement
+     * @param intoSegment table into segment
+     */
+    public static void setIntoSegment(final SelectStatement selectStatement, final TableSegment intoSegment) {
+        if (selectStatement instanceof SQLServerSelectStatement) {
+            ((SQLServerSelectStatement) selectStatement).setIntoSegment(intoSegment);
+        } else if (selectStatement instanceof PostgreSQLSelectStatement) {
+            ((PostgreSQLSelectStatement) selectStatement).setIntoSegment(intoSegment);
+        } else if (selectStatement instanceof OpenGaussSelectStatement) {
+            ((OpenGaussSelectStatement) selectStatement).setIntoSegment(intoSegment);
         }
     }
 }

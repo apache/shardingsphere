@@ -23,7 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.join.Oute
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedOuterJoinExpression;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Outer join expression assert.
@@ -39,9 +40,8 @@ public final class OuterJoinExpressionAssert {
      * @param actual actual outer join expression 
      * @param expected expected outer join expression 
      */
-    
     public static void assertIs(final SQLCaseAssertContext assertContext, final OuterJoinExpression actual, final ExpectedOuterJoinExpression expected) {
         ColumnAssert.assertIs(assertContext, actual.getColumnName(), expected.getColumn());
-        assertEquals(actual.getJoinOperator(), expected.getJoinOperator());
+        assertThat(actual.getJoinOperator(), is(expected.getJoinOperator()));
     }
 }

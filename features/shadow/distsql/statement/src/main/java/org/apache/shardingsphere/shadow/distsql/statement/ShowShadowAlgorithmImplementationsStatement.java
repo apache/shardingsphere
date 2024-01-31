@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
  * Show shadow algorithm implementations statement.

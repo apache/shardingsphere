@@ -13,12 +13,12 @@ weight = 3
 {{% tab name="语法" %}}
 ```sql
 DropShardingTableRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'RULE' ifExists? shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'TABLE' 'RULE' ifExists? ruleName (',' ruleName)*  ('FROM' databaseName)?
 
 ifExists ::=
   'IF' 'EXISTS'
 
-shardingRuleName ::=
+ruleName ::=
   identifier
 
 databaseName ::=

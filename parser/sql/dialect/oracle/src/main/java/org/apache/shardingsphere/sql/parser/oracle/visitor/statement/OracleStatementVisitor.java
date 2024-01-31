@@ -171,6 +171,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlTa
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlTableOptionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.SQLStatementSegment;
 
@@ -198,6 +199,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     private final List<SQLStatementSegment> sqlStatementsInPlsql = new ArrayList<>();
     
     private final List<ProcedureCallNameSegment> procedureCallNames = new ArrayList<>();
+    
+    private final List<ProcedureBodyEndNameSegment> procedureBodyEndNameSegments = new ArrayList<>();
     
     private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
     
@@ -241,6 +244,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         if (null != ctx.intervalLiterals()) {
             return visit(ctx.intervalLiterals());
+        }
+        if (null != ctx.bindLiterals()) {
+            return visit(ctx.bindLiterals());
         }
         throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, interval, boolean or null.");
     }

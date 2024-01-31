@@ -26,7 +26,6 @@ import net.bytebuddy.pool.TypePool.Default;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfigurationLoader;
 import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptChainEngine;
 import org.apache.shardingsphere.agent.core.builder.interceptor.impl.MethodAdvisorBuilderInterceptor;
@@ -40,6 +39,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public final class AgentTransformer implements Transformer {
     
-    private static final Logger LOGGER = Logger.getLogger(AdvisorConfigurationLoader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AgentTransformer.class.getName());
     
     private static final Map<AgentPluginClassLoader, TypePool> TYPE_POOL_MAP = new ConcurrentHashMap<>();
     
@@ -79,7 +79,7 @@ public final class AgentTransformer implements Transformer {
                 result.getAdvisors().add(each);
                 continue;
             }
-            LOGGER.severe(String.format("The advice class `%s` does not exist", each.getAdviceClassName()));
+            LOGGER.log(Level.SEVERE, "The advice class `{0}` does not exist", new String[]{each.getAdviceClassName()});
         }
         return result;
     }

@@ -81,7 +81,7 @@ public final class RecordSingleTableInventoryCalculatedResult implements SingleT
                 return false;
             }
             if (!DataConsistencyCheckUtils.recordsEquals(thisRecord, thatRecord, equalsBuilder)) {
-                log.warn("Records not equals, record1={}, record2={}.", thatRecord, thatRecord);
+                log.warn("Records not equals, record1={}, record2={}.", thisRecord, thatRecord);
                 return false;
             }
         }

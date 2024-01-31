@@ -27,15 +27,16 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -60,24 +61,17 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     @RuntimeType
     @SneakyThrows
     public Object advice(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        boolean adviceEnabled = PluginContext.getInstance().isPluginEnabled();
-        if (adviceEnabled) {
-            adviceBefore(klass, method, args);
-        }
+        adviceBefore(klass, method, args);
         Object result = null;
         try {
             result = callable.call();
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            if (adviceEnabled) {
-                adviceThrow(klass, method, args, ex);
-            }
+            adviceThrow(klass, method, args, ex);
             throw ex;
         } finally {
-            if (adviceEnabled) {
-                adviceAfter(klass, method, args, result);
-            }
+            adviceAfter(klass, method, args, result);
         }
         return result;
     }
@@ -86,13 +80,15 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         try {
             for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
                 for (StaticMethodAdvice each : entry.getValue()) {
-                    each.beforeMethod(klass, method, args, entry.getKey());
+                    if (isPluginEnabled(each)) {
+                        each.beforeMethod(klass, method, args, entry.getKey());
+                    }
                 }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.severe(String.format("Failed to execute the pre-method of method `%s` in class `%s`, %s.", method.getName(), klass, ex.getMessage()));
+            LOGGER.log(Level.SEVERE, "Failed to execute the pre-method of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
         }
     }
     
@@ -100,13 +96,15 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         try {
             for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
                 for (StaticMethodAdvice each : entry.getValue()) {
-                    each.onThrowing(klass, method, args, ex, entry.getKey());
+                    if (isPluginEnabled(each)) {
+                        each.onThrowing(klass, method, args, ex, entry.getKey());
+                    }
                 }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ignored) {
             // CHECKSTYLE:ON
-            LOGGER.severe(String.format("Failed to execute the error handler of method `%s` in class `%s`, %s.", method.getName(), klass, ex.getMessage()));
+            LOGGER.log(Level.SEVERE, "Failed to execute the error handler of method `{0}` in class `{1}`, {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
         }
     }
     
@@ -114,14 +112,20 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         try {
             for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
                 for (StaticMethodAdvice each : entry.getValue()) {
-                    each.afterMethod(klass, method, args, result, entry.getKey());
+                    if (isPluginEnabled(each)) {
+                        each.afterMethod(klass, method, args, result, entry.getKey());
+                    }
                 }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.severe(String.format("Failed to execute the post-method of method `%s` in class `%s` %s.", method.getName(), klass, ex.getMessage()));
+            LOGGER.log(Level.SEVERE, "Failed to execute the post-method of method `{0}` in class `{1}` {2}.", new String[]{method.getName(), klass.getClass().getName(), ex.getMessage()});
         }
+    }
+    
+    private boolean isPluginEnabled(final StaticMethodAdvice advice) {
+        return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled();
     }
     
     @Override

@@ -120,7 +120,8 @@ unreservedWord
     | DATA_RETENTION | TEMPORAL_HISTORY_RETENTION | EDITION | MIXED_PAGE_ALLOCATION | DISABLED | ALLOWED | HADR | MULTI_USER | RESTRICTED_USER | SINGLE_USER | OFFLINE | EMERGENCY | SUSPEND | DATE_CORRELATION_OPTIMIZATION
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
-    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH
+    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | INPUT | YEAR
+    | TIMESTAMP | TRIM
     ;
 
 databaseName
@@ -152,7 +153,7 @@ sequenceName
     ;
 
 tableName
-    : (databaseName DOT_ (owner DOT_)? | (owner DOT_)?) name
+    : (databaseName DOT_)? (owner? DOT_)? name
     ;
 
 queueName
@@ -208,7 +209,7 @@ collationName
     ;
 
 alias
-    : identifier | STRING_
+    : identifier | STRING_ | NCHAR_TEXT
     ;
 
 dataTypeLength
@@ -286,7 +287,7 @@ simpleExpr
     | columnName
     | variableName
     | simpleExpr OR_ simpleExpr
-    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
+    | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY | DOLLAR_) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
@@ -295,7 +296,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | specialFunction | regularFunction 
+    : aggregationFunction | specialFunction | regularFunction
     ;
 
 aggregationFunction
@@ -311,15 +312,44 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction | convertFunction | openJsonFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction
+    ;
+
+approxFunction
+    : funcName = (APPROX_PERCENTILE_CONT | APPROX_PERCENTILE_DISC) LP_ expr RP_ WITHIN GROUP LP_ ORDER BY expr (ASC | DESC)? RP_
+    ;
+
+conversionFunction
+    : castFunction
+    | convertFunction
     ;
 
 castFunction
-    : CAST LP_ expr AS dataType RP_
+    : (CAST | TRY_CAST) LP_ expr AS dataType RP_
     ;
 
 convertFunction
-    : CONVERT LP_ dataType COMMA_ expr (COMMA_ NUMBER_)? RP_
+    : (CONVERT | TRY_CONVERT) LP_ dataType COMMA_ expr (COMMA_ NUMBER_)? RP_
+    ;
+
+jsonFunction
+    : jsonObjectFunction | jsonArrayFunction
+    ;
+
+jsonObjectFunction
+    : JSON_OBJECT LP_ (jsonKeyValue (COMMA_ jsonKeyValue)* jsonNullClause?)?  RP_
+    ;
+
+jsonArrayFunction
+    : JSON_ARRAY LP_ expr (COMMA_ expr)* jsonNullClause? RP_
+    ;
+
+jsonKeyValue
+    :  expr COLON_ expr
+    ;
+
+jsonNullClause
+    : NULL ON NULL | ABSENT ON NULL
     ;
 
 charFunction
@@ -336,6 +366,11 @@ openJsonWithclause
 
 jsonColumnDefinition
     : columnName dataType expr? (AS JSON)?
+    ;
+
+openRowSetFunction
+    : OPENROWSET LP_ expr COMMA_ ((expr SEMI_ expr SEMI_ expr) | expr) COMMA_ (tableName | expr) RP_
+    | OPENROWSET LP_ BULK expr (COMMA_ expr)* RP_
     ;
 
 regularFunction
@@ -359,7 +394,7 @@ caseElse
     ;
 
 privateExprOfDb
-    : windowedFunction | atTimeZoneExpr | castExpr | convertExpr
+    : windowFunction | atTimeZoneExpr | castExpr | convertExpr
     ;
 
 orderByClause
@@ -394,8 +429,12 @@ convertExpr
     : CONVERT (dataType (LP_ NUMBER_ RP_)? COMMA_ expr (COMMA_ NUMBER_)?)
     ;
 
-windowedFunction
-    : functionCall overClause
+windowFunction
+    : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
+    ;
+
+nullTreatment
+    : (RESPECT | IGNORE) NULLS
     ;
 
 overClause

@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -31,18 +33,26 @@ import java.util.Collections;
 /**
  * Show SQL parser rule executor.
  */
-public final class ShowSQLParserRuleExecutor implements QueryableRALExecutor<ShowSQLParserRuleStatement> {
+@Setter
+public final class ShowSQLParserRuleExecutor implements DistSQLQueryExecutor<ShowSQLParserRuleStatement>, DistSQLExecutorRuleAware<SQLParserRule> {
+    
+    private SQLParserRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLParserRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        SQLParserRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getConfiguration();
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("parse_tree_cache", "sql_statement_cache");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLParserRuleStatement sqlStatement, final ContextManager contextManager) {
+        SQLParserRuleConfiguration ruleConfig = rule.getConfiguration();
         return Collections.singleton(new LocalDataQueryResultRow(null != ruleConfig.getParseTreeCache() ? ruleConfig.getParseTreeCache().toString() : "",
                 null != ruleConfig.getSqlStatementCache() ? ruleConfig.getSqlStatementCache().toString() : ""));
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("parse_tree_cache", "sql_statement_cache");
+    public Class<SQLParserRule> getRuleClass() {
+        return SQLParserRule.class;
     }
     
     @Override

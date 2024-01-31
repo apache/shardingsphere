@@ -17,8 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement;
 
-import lombok.AccessLevel;
-import lombok.Getter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -111,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
@@ -194,12 +200,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussUpdateStatement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 /**
  * Statement visitor for openGauss.
@@ -1001,6 +1003,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         } else {
             result.setProjections(new ProjectionsSegment(-1, -1));
         }
+        if (null != ctx.intoClause()) {
+            result.setIntoSegment((TableSegment) visit(ctx.intoClause()));
+        }
         if (null != ctx.fromClause()) {
             TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
             result.setFrom(tableSegment);
@@ -1018,6 +1023,11 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
             result.setWindow((WindowSegment) visit(ctx.windowClause()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitIntoClause(final IntoClauseContext ctx) {
+        return visit(ctx.optTempTableName().qualifiedName());
     }
     
     @Override

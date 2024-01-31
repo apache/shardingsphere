@@ -28,12 +28,13 @@ import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
+import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -54,21 +55,23 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
      */
     @RuntimeType
     public void advice(@This final TargetAdviceObject target, @AllArguments final Object[] args) {
-        boolean adviceEnabled = PluginContext.getInstance().isPluginEnabled();
-        if (!adviceEnabled) {
-            return;
-        }
         try {
             for (Entry<String, Collection<ConstructorAdvice>> entry : advices.entrySet()) {
                 for (ConstructorAdvice each : entry.getValue()) {
-                    each.onConstructor(target, args, entry.getKey());
+                    if (isPluginEnabled(each)) {
+                        each.onConstructor(target, args, entry.getKey());
+                    }
                 }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.severe(String.format("Constructor advice execution error. class: %s, %s", target.getClass().getTypeName(), ex.getMessage()));
+            LOGGER.log(Level.SEVERE, "Constructor advice execution error. class: {0}, {1}", new String[]{target.getClass().getTypeName(), ex.getMessage()});
         }
+    }
+    
+    private boolean isPluginEnabled(final ConstructorAdvice advice) {
+        return !(advice instanceof AgentPluginEnable) || ((AgentPluginEnable) advice).isPluginEnabled();
     }
     
     @Override

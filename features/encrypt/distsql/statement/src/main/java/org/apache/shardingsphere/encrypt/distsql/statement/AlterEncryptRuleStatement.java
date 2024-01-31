@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.AlterRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 
 import java.util.Collection;

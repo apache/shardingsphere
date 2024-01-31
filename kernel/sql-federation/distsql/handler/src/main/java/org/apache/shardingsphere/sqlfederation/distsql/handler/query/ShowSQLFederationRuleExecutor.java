@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.queryable.ShowSQLFederationRuleStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
@@ -31,11 +33,19 @@ import java.util.Collections;
 /**
  * Show SQL federation rule executor.
  */
-public final class ShowSQLFederationRuleExecutor implements QueryableRALExecutor<ShowSQLFederationRuleStatement> {
+@Setter
+public final class ShowSQLFederationRuleExecutor implements DistSQLQueryExecutor<ShowSQLFederationRuleStatement>, DistSQLExecutorRuleAware<SQLFederationRule> {
+    
+    private SQLFederationRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLFederationRuleStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        SQLFederationRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).getConfiguration();
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSQLFederationRuleStatement sqlStatement, final ContextManager contextManager) {
+        SQLFederationRuleConfiguration ruleConfig = rule.getConfiguration();
         String sqlFederationEnabled = String.valueOf(ruleConfig.isSqlFederationEnabled());
         String allQueryUseSQLFederation = String.valueOf(ruleConfig.isAllQueryUseSQLFederation());
         String executionPlanCache = null != ruleConfig.getExecutionPlanCache() ? ruleConfig.getExecutionPlanCache().toString() : "";
@@ -44,8 +54,8 @@ public final class ShowSQLFederationRuleExecutor implements QueryableRALExecutor
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache");
+    public Class<SQLFederationRule> getRuleClass() {
+        return SQLFederationRule.class;
     }
     
     @Override

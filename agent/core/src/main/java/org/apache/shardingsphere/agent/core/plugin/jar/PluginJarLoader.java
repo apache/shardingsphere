@@ -31,6 +31,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -43,7 +44,7 @@ public final class PluginJarLoader {
     
     /**
      * Load plugin jars.
-     * 
+     *
      * @param agentRootPath agent root path
      * @return plugin jars
      * @throws IOException IO exception
@@ -53,7 +54,7 @@ public final class PluginJarLoader {
         Collection<JarFile> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new JarFile(each, true));
-            LOGGER.info(String.format("Loaded jar: %s", each.getName()));
+            LOGGER.log(Level.INFO, "Loaded jar: {0}", new String[]{each.getName()});
         }
         return result;
     }
@@ -65,8 +66,9 @@ public final class PluginJarLoader {
             
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
-                if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
-                    result.add(path.toFile());
+                File currentFile = path.toFile();
+                if (currentFile.isFile() && currentFile.getName().endsWith(".jar")) {
+                    result.add(currentFile);
                 }
                 return FileVisitResult.CONTINUE;
             }

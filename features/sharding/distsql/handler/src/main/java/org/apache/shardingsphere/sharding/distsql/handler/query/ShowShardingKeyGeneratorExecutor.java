@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -31,11 +33,10 @@ import java.util.stream.Collectors;
 /**
  * Show sharding key generator executor.
  */
-public final class ShowShardingKeyGeneratorExecutor extends RuleAwareRQLExecutor<ShowShardingKeyGeneratorsStatement, ShardingRule> {
+@Setter
+public final class ShowShardingKeyGeneratorExecutor implements DistSQLQueryExecutor<ShowShardingKeyGeneratorsStatement>, DistSQLExecutorRuleAware<ShardingRule> {
     
-    public ShowShardingKeyGeneratorExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -43,9 +44,14 @@ public final class ShowShardingKeyGeneratorExecutor extends RuleAwareRQLExecutor
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingKeyGeneratorsStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingKeyGeneratorsStatement sqlStatement, final ContextManager contextManager) {
         return rule.getConfiguration().getKeyGenerators().entrySet().stream()
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), PropertiesConverter.convert(entry.getValue().getProps()))).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

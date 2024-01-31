@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -31,11 +33,10 @@ import java.util.LinkedList;
 /**
  * Show sharding table rules used key generator executor.
  */
-public final class ShowShardingTableRulesUsedKeyGeneratorExecutor extends RuleAwareRQLExecutor<ShowShardingTableRulesUsedKeyGeneratorStatement, ShardingRule> {
+@Setter
+public final class ShowShardingTableRulesUsedKeyGeneratorExecutor implements DistSQLQueryExecutor<ShowShardingTableRulesUsedKeyGeneratorStatement>, DistSQLExecutorRuleAware<ShardingRule> {
     
-    public ShowShardingTableRulesUsedKeyGeneratorExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -43,7 +44,7 @@ public final class ShowShardingTableRulesUsedKeyGeneratorExecutor extends RuleAw
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesUsedKeyGeneratorStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableRulesUsedKeyGeneratorStatement sqlStatement, final ContextManager contextManager) {
         if (!sqlStatement.getKeyGeneratorName().isPresent()) {
             return Collections.emptyList();
         }
@@ -59,6 +60,11 @@ public final class ShowShardingTableRulesUsedKeyGeneratorExecutor extends RuleAw
             }
         });
         return result;
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

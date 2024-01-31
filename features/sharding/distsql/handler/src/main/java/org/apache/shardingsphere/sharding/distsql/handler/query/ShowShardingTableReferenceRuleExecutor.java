@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableReferenceRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -30,11 +32,10 @@ import java.util.stream.Collectors;
 /**
  * Show sharding table reference rules executor.
  */
-public final class ShowShardingTableReferenceRuleExecutor extends RuleAwareRQLExecutor<ShowShardingTableReferenceRulesStatement, ShardingRule> {
+@Setter
+public final class ShowShardingTableReferenceRuleExecutor implements DistSQLQueryExecutor<ShowShardingTableReferenceRulesStatement>, DistSQLExecutorRuleAware<ShardingRule> {
     
-    public ShowShardingTableReferenceRuleExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -42,9 +43,14 @@ public final class ShowShardingTableReferenceRuleExecutor extends RuleAwareRQLEx
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableReferenceRulesStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableReferenceRulesStatement sqlStatement, final ContextManager contextManager) {
         return rule.getConfiguration().getBindingTableGroups().stream().filter(each -> null == sqlStatement.getRuleName() || each.getName().equalsIgnoreCase(sqlStatement.getRuleName()))
                 .map(each -> new LocalDataQueryResultRow(each.getName(), each.getReference())).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

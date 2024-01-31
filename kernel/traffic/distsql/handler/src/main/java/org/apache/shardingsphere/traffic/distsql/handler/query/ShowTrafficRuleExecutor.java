@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.ral.query.QueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.distsql.statement.queryable.ShowTrafficRulesStatement;
@@ -34,17 +36,21 @@ import java.util.LinkedList;
 /**
  * Show traffic rule executor.
  */
-public final class ShowTrafficRuleExecutor implements QueryableRALExecutor<ShowTrafficRulesStatement> {
+@Setter
+public final class ShowTrafficRuleExecutor implements DistSQLQueryExecutor<ShowTrafficRulesStatement>, DistSQLExecutorRuleAware<TrafficRule> {
+    
+    private TrafficRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowTrafficRulesStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        TrafficRule rule = metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
-        return buildData(rule.getConfiguration(), sqlStatement.getRuleName());
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "labels", "algorithm_type", "algorithm_props", "load_balancer_type", "load_balancer_props");
     }
     
-    private Collection<LocalDataQueryResultRow> buildData(final TrafficRuleConfiguration ruleConfig, final String ruleName) {
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowTrafficRulesStatement sqlStatement, final ContextManager contextManager) {
+        TrafficRuleConfiguration ruleConfig = rule.getConfiguration();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        ruleConfig.getTrafficStrategies().stream().filter(each -> null == ruleName || each.getName().equals(ruleName))
+        ruleConfig.getTrafficStrategies().stream().filter(each -> null == sqlStatement.getRuleName() || each.getName().equals(sqlStatement.getRuleName()))
                 .forEach(each -> result.add(buildRow(each, ruleConfig.getTrafficAlgorithms().get(each.getAlgorithmName()), ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()))));
         return result;
     }
@@ -56,8 +62,8 @@ public final class ShowTrafficRuleExecutor implements QueryableRALExecutor<ShowT
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "labels", "algorithm_type", "algorithm_props", "load_balancer_type", "load_balancer_props");
+    public Class<TrafficRule> getRuleClass() {
+        return TrafficRule.class;
     }
     
     @Override

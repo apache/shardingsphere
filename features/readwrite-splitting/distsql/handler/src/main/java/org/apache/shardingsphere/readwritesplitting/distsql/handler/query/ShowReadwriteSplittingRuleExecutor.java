@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadwriteSplittingRulesStatement;
@@ -40,11 +42,10 @@ import java.util.Optional;
 /**
  * Show readwrite-splitting rule executor.
  */
-public final class ShowReadwriteSplittingRuleExecutor extends RuleAwareRQLExecutor<ShowReadwriteSplittingRulesStatement, ReadwriteSplittingRule> {
+@Setter
+public final class ShowReadwriteSplittingRuleExecutor implements DistSQLQueryExecutor<ShowReadwriteSplittingRulesStatement>, DistSQLExecutorRuleAware<ReadwriteSplittingRule> {
     
-    public ShowReadwriteSplittingRuleExecutor() {
-        super(ReadwriteSplittingRule.class);
-    }
+    private ReadwriteSplittingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -52,7 +53,7 @@ public final class ShowReadwriteSplittingRuleExecutor extends RuleAwareRQLExecut
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowReadwriteSplittingRulesStatement sqlStatement, final ReadwriteSplittingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowReadwriteSplittingRulesStatement sqlStatement, final ContextManager contextManager) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Map<String, Map<String, String>> exportableDataSourceMap = getExportableDataSourceMap(rule);
         ReadwriteSplittingRuleConfiguration ruleConfig = rule.getConfiguration();
@@ -94,6 +95,11 @@ public final class ShowReadwriteSplittingRuleExecutor extends RuleAwareRQLExecut
     
     private String getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
         return null == exportDataSources ? Joiner.on(",").join(dataSourceRuleConfig.getReadDataSourceNames()) : exportDataSources.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES);
+    }
+    
+    @Override
+    public Class<ReadwriteSplittingRule> getRuleClass() {
+        return ReadwriteSplittingRule.class;
     }
     
     @Override

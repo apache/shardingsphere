@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.rql.rule.RuleAwareRQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -33,11 +35,10 @@ import java.util.stream.Collectors;
 /**
  * Show sharding table nodes executor.
  */
-public final class ShowShardingTableNodesExecutor extends RuleAwareRQLExecutor<ShowShardingTableNodesStatement, ShardingRule> {
+@Setter
+public final class ShowShardingTableNodesExecutor implements DistSQLQueryExecutor<ShowShardingTableNodesStatement>, DistSQLExecutorRuleAware<ShardingRule> {
     
-    public ShowShardingTableNodesExecutor() {
-        super(ShardingRule.class);
-    }
+    private ShardingRule rule;
     
     @Override
     public Collection<String> getColumnNames() {
@@ -45,7 +46,7 @@ public final class ShowShardingTableNodesExecutor extends RuleAwareRQLExecutor<S
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableNodesStatement sqlStatement, final ShardingRule rule) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableNodesStatement sqlStatement, final ContextManager contextManager) {
         String tableName = sqlStatement.getTableName();
         return null == tableName
                 ? rule.getTableRules().entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), getTableNodes(entry.getValue()))).collect(Collectors.toList())
@@ -54,6 +55,11 @@ public final class ShowShardingTableNodesExecutor extends RuleAwareRQLExecutor<S
     
     private String getTableNodes(final TableRule tableRule) {
         return tableRule.getActualDataNodes().stream().map(DataNode::format).collect(Collectors.joining(", "));
+    }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override

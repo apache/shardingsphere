@@ -52,7 +52,7 @@
         <dependency>
             <groupId>org.graalvm.truffle</groupId>
             <artifactId>truffle-api</artifactId>
-            <version>${graalvm.version}</version>
+            <version>${graal-sdk.version}</version>
         </dependency>
     </dependencies>
     
