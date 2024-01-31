@@ -69,7 +69,7 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
         executor.setRule(rule.orElse(null));
         checkBeforeUpdate(rule.orElse(null));
         RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
-        if (getRefreshStatus(sqlStatement, currentRuleConfig, executor)) {
+        if (getRefreshStatus(sqlStatement, executor)) {
             contextManager.getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
         }
     }
@@ -88,8 +88,8 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final DatabaseRuleDefinitionExecutor<?, ?> executor) {
-        return !(executor instanceof DatabaseRuleDropExecutor) || ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+    private boolean getRefreshStatus(final SQLStatement sqlStatement, final DatabaseRuleDefinitionExecutor<?, ?> executor) {
+        return !(executor instanceof DatabaseRuleDropExecutor) || ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement);
     }
     
     @SuppressWarnings("rawtypes")
@@ -134,7 +134,7 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processDrop(final ShardingSphereDatabase database, final Collection<RuleConfiguration> configs, final RuleDefinitionStatement sqlStatement,
                              final DatabaseRuleDropExecutor executor, final RuleConfiguration currentRuleConfig) {
-        if (!executor.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
+        if (!executor.hasAnyOneToBeDropped(sqlStatement)) {
             return;
         }
         if (executor.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {

@@ -63,24 +63,24 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDr
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean hasAnyOneToBeDropped(final DropDefaultShardingStrategyStatement sqlStatement) {
         if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
-            return null != currentRuleConfig && null != currentRuleConfig.getDefaultTableShardingStrategy();
+            return null != rule && null != rule.getConfiguration().getDefaultTableShardingStrategy();
         }
-        return null != currentRuleConfig && null != currentRuleConfig.getDefaultDatabaseShardingStrategy();
+        return null != rule && null != rule.getConfiguration().getDefaultDatabaseShardingStrategy();
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropDefaultShardingStrategyStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
-            result.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
-            currentRuleConfig.setDefaultTableShardingStrategy(null);
+            result.setDefaultTableShardingStrategy(rule.getConfiguration().getDefaultTableShardingStrategy());
+            rule.getConfiguration().setDefaultTableShardingStrategy(null);
         } else {
-            result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
-            currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
+            result.setDefaultDatabaseShardingStrategy(rule.getConfiguration().getDefaultDatabaseShardingStrategy());
+            rule.getConfiguration().setDefaultDatabaseShardingStrategy(null);
         }
-        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(currentRuleConfig).forEach(each -> result.getShardingAlgorithms().put(each, currentRuleConfig.getShardingAlgorithms().get(each)));
+        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(rule.getConfiguration()).forEach(each -> result.getShardingAlgorithms().put(each, rule.getConfiguration().getShardingAlgorithms().get(each)));
         return result;
     }
     
