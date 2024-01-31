@@ -296,6 +296,12 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     }
     
     @Override
+    public void removeRuleConfiguration(final String databaseName, final String ruleName) {
+        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, ruleName);
+        clearServiceCache();
+    }
+    
+    @Override
     public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
         contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(globalRuleConfigs);
         contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().persist(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations());

@@ -133,6 +133,15 @@ public interface ModeContextManager {
     }
     
     /**
+     * Remove rule configuration.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     */
+    default void removeRuleConfiguration(final String databaseName, final String ruleName) {
+    }
+    
+    /**
      * Alter global rule configuration.
      *
      * @param globalRuleConfigs global rule configs
