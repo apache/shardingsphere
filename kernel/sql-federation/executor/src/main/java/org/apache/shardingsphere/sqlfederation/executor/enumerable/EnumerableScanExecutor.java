@@ -134,7 +134,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
         if (federationContext.isPreview()) {
-            federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
+            federationContext.getPreviewExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
         }
         try {

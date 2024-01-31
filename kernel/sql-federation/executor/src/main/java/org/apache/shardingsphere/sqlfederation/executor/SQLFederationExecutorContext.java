@@ -33,7 +33,7 @@ import java.util.LinkedList;
 @Getter
 public final class SQLFederationExecutorContext {
     
-    private final Collection<ExecutionUnit> executionUnits = new LinkedList<>();
+    private final Collection<ExecutionUnit> previewExecutionUnits = new LinkedList<>();
     
     private final boolean preview;
     
