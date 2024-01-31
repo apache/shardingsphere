@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SetDefaultSingleTableStorageUnitExecutorTest {
@@ -46,7 +48,10 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     
     @Test
     void assertBuild() {
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"), mock(SingleRuleConfiguration.class));
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration());
+        executor.setRule(rule);
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
         assertTrue(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
         assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
     }
@@ -54,7 +59,10 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     @Test
     void assertUpdate() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"), currentConfig);
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getConfiguration()).thenReturn(currentConfig);
+        executor.setRule(rule);
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertTrue(currentConfig.getDefaultDataSource().isPresent());
         assertThat(currentConfig.getDefaultDataSource().get(), is("foo_ds"));
@@ -63,7 +71,10 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
     @Test
     void assertRandom() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement(null), currentConfig);
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getConfiguration()).thenReturn(currentConfig);
+        executor.setRule(rule);
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement(null));
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertFalse(currentConfig.getDefaultDataSource().isPresent());
     }

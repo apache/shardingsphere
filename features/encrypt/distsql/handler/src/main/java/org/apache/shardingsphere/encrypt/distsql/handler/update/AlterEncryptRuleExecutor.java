@@ -100,7 +100,7 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public EncryptRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterEncryptRuleStatement sqlStatement) {
         return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

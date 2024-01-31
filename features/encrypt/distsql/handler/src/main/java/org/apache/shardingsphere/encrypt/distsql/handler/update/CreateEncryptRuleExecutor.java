@@ -142,7 +142,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateEncryptRuleStatement sqlStatement) {
         Collection<EncryptRuleSegment> segments = sqlStatement.getRules();
         if (sqlStatement.isIfNotExists()) {
             Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);

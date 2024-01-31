@@ -71,7 +71,7 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAl
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
         result.setDefaultShadowAlgorithmName(DEFAULT_ALGORITHM_NAME);

@@ -104,7 +104,7 @@ class CreateDefaultShardingStrategyExecutorTest {
         AlgorithmSegment algorithm = new AlgorithmSegment("order_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement sqlStatement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", algorithm);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         StandardShardingStrategyConfiguration defaultTableShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
         assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is("default_table_order_id_algorithm"));
@@ -120,7 +120,7 @@ class CreateDefaultShardingStrategyExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(statement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         StandardShardingStrategyConfiguration defaultDatabaseShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
         assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is("default_database_inline"));
@@ -138,12 +138,12 @@ class CreateDefaultShardingStrategyExecutorTest {
         AlgorithmSegment algorithm = new AlgorithmSegment("order_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement sqlStatement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", algorithm);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         algorithm = new AlgorithmSegment("user_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement statementWithIfNotExists = new CreateDefaultShardingStrategyStatement(true, "TABLE", "standard", "order_id", algorithm);
         executor.checkBeforeUpdate(statementWithIfNotExists);
-        toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists, currentRuleConfig);
+        toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         StandardShardingStrategyConfiguration defaultTableShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
         assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is("default_table_order_id_algorithm"));
@@ -159,12 +159,12 @@ class CreateDefaultShardingStrategyExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(statement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${order_id % 2}")));
         CreateDefaultShardingStrategyStatement statementWithIfNotExists = new CreateDefaultShardingStrategyStatement(true, "TABLE", "standard", "order_id", databaseAlgorithmSegment);
         executor.checkBeforeUpdate(statementWithIfNotExists);
-        toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists, currentRuleConfig);
+        toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         StandardShardingStrategyConfiguration defaultDatabaseShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
         assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is("default_database_inline"));
@@ -181,7 +181,7 @@ class CreateDefaultShardingStrategyExecutorTest {
         executor.setRule(rule);
         CreateDefaultShardingStrategyStatement sqlStatement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "none", null, null);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         NoneShardingStrategyConfiguration defaultTableShardingStrategy = (NoneShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
         assertThat(defaultTableShardingStrategy.getType(), is(""));
@@ -196,7 +196,7 @@ class CreateDefaultShardingStrategyExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         NoneShardingStrategyConfiguration defaultDatabaseShardingStrategy = (NoneShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
         assertThat(defaultDatabaseShardingStrategy.getType(), is(""));

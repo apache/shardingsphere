@@ -48,11 +48,10 @@ public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleC
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateReadwriteSplittingRuleStatement sqlStatement,
-                                                                                 final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateReadwriteSplittingRuleStatement sqlStatement) {
         Collection<ReadwriteSplittingRuleSegment> segments = sqlStatement.getRules();
         if (sqlStatement.isIfNotExists()) {
-            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(currentRuleConfig, sqlStatement.getRules());
+            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement.getRules());
             segments.removeIf(each -> duplicatedRuleNames.contains(each.getName()));
         }
         return ReadwriteSplittingRuleStatementConverter.convert(segments);
@@ -64,10 +63,10 @@ public final class CreateReadwriteSplittingRuleExecutor implements DatabaseRuleC
         currentRuleConfig.getLoadBalancers().putAll(toBeCreatedRuleConfig.getLoadBalancers());
     }
     
-    private Collection<String> getDuplicatedRuleNames(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final Collection<ReadwriteSplittingRuleSegment> segments) {
+    private Collection<String> getDuplicatedRuleNames(final Collection<ReadwriteSplittingRuleSegment> segments) {
         Collection<String> currentRuleNames = new LinkedList<>();
-        if (null != currentRuleConfig) {
-            currentRuleNames.addAll(currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList()));
+        if (null != rule) {
+            currentRuleNames.addAll(rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList()));
         }
         return segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
     }

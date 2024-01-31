@@ -73,7 +73,7 @@ class CreateBroadcastTableRuleExecutorTest {
         executor.setRule(rule);
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
         executor.checkBeforeUpdate(sqlStatement);
-        BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentConfig);
+        BroadcastRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getTables().size(), is(1));
         assertThat(currentConfig.getTables().iterator().next(), is("t_address"));

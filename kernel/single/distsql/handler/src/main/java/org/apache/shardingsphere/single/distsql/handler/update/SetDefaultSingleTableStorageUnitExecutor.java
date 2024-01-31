@@ -38,6 +38,8 @@ public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseR
     
     private ShardingSphereDatabase database;
     
+    private SingleRule rule;
+    
     @Override
     public void checkBeforeUpdate(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         checkStorageUnitExist(sqlStatement);
@@ -52,20 +54,16 @@ public final class SetDefaultSingleTableStorageUnitExecutor implements DatabaseR
     }
     
     @Override
-    public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         result.setDefaultDataSource(sqlStatement.getDefaultStorageUnit());
-        result.getTables().addAll(currentRuleConfig.getTables());
+        result.getTables().addAll(rule.getConfiguration().getTables());
         return result;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeCreatedRuleConfig) {
         currentRuleConfig.setDefaultDataSource(toBeCreatedRuleConfig.getDefaultDataSource().orElse(null));
-    }
-    
-    @Override
-    public void setRule(final SingleRule rule) {
     }
     
     @Override
