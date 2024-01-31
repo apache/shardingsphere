@@ -60,6 +60,9 @@ class DropMaskRuleExecutorTest {
     @Test
     void assertUpdateCurrentRuleConfiguration() {
         MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        MaskRule rule = mock(MaskRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        executor.setRule(rule);
         assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement(false, "t_mask"), ruleConfig));
         assertTrue(ruleConfig.getMaskAlgorithms().isEmpty());
         assertTrue(ruleConfig.getTables().isEmpty());
