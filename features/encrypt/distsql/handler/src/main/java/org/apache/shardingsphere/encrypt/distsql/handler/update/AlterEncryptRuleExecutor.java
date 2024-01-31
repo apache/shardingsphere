@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -112,7 +113,7 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
         Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor((EncryptRuleConfiguration) rule.getConfiguration());
         unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, ((EncryptRuleConfiguration) rule.getConfiguration()).getEncryptors().get(each)));
-        return new EncryptRuleConfiguration(null, toBeDroppedEncryptors);
+        return new EncryptRuleConfiguration(Collections.emptyList(), toBeDroppedEncryptors);
     }
     
     @Override
