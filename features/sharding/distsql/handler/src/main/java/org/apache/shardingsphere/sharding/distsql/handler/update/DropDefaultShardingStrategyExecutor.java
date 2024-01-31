@@ -80,7 +80,7 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDr
             result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
-        UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> result.getShardingAlgorithms().put(each, currentRuleConfig.getShardingAlgorithms().get(each)));
+        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(currentRuleConfig).forEach(each -> result.getShardingAlgorithms().put(each, currentRuleConfig.getShardingAlgorithms().get(each)));
         return result;
     }
     
@@ -91,7 +91,7 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDr
         } else {
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
-        UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
+        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
         return currentRuleConfig.isEmpty();
     }
     

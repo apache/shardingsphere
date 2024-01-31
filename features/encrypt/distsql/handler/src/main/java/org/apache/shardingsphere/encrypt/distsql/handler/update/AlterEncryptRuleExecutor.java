@@ -32,12 +32,16 @@ import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -102,6 +106,14 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     @Override
     public EncryptRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterEncryptRuleStatement sqlStatement) {
         return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
+    }
+    
+    @Override
+    public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration toBeAlteredRuleConfig) {
+        Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
+        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor((EncryptRuleConfiguration) rule.getConfiguration());
+        unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, ((EncryptRuleConfiguration) rule.getConfiguration()).getEncryptors().get(each)));
+        return new EncryptRuleConfiguration(Collections.emptyList(), toBeDroppedEncryptors);
     }
     
     @Override

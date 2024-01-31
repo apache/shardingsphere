@@ -84,6 +84,11 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAl
     }
     
     @Override
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration toBeAlteredRuleConfig) {
+        return null;
+    }
+    
+    @Override
     public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeAlteredRuleConfig) {
         currentRuleConfig.getShadowAlgorithms().putAll(toBeAlteredRuleConfig.getShadowAlgorithms());
         currentRuleConfig.setDefaultShadowAlgorithmName(toBeAlteredRuleConfig.getDefaultShadowAlgorithmName());

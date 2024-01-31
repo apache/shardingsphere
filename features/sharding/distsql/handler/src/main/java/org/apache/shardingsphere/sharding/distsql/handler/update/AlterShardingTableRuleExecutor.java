@@ -68,6 +68,9 @@ public final class AlterShardingTableRuleExecutor implements DatabaseRuleAlterEx
                 result.getTables().add(each);
             }
         }
+        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(rule.getConfiguration()).forEach(each -> result.getShardingAlgorithms().put(each, rule.getConfiguration().getShardingAlgorithms().get(each)));
+        UnusedAlgorithmFinder.findUnusedKeyGenerator(rule.getConfiguration()).forEach(each -> result.getKeyGenerators().put(each, rule.getConfiguration().getKeyGenerators().get(each)));
+        UnusedAlgorithmFinder.findUnusedAuditor(rule.getConfiguration()).forEach(each -> result.getAuditors().put(each, rule.getConfiguration().getAuditors().get(each)));
         return result;
     }
     
