@@ -63,33 +63,35 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig
-                && !getIdenticalData(currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables()).isEmpty();
+    public boolean hasAnyOneToBeDropped(final DropEncryptRuleStatement sqlStatement) {
+        return null != rule && !getIdenticalData(((EncryptRuleConfiguration) rule.getConfiguration())
+                .getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables()).isEmpty();
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final DropEncryptRuleStatement sqlStatement) {
         Collection<EncryptTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
         for (String each : sqlStatement.getTables()) {
             toBeDroppedTables.add(new EncryptTableRuleConfiguration(each, Collections.emptyList()));
-            dropRule(currentRuleConfig, each);
+            dropRule(each);
         }
-        UnusedAlgorithmFinder.findUnusedEncryptor(currentRuleConfig).forEach(each -> toBeDroppedEncryptors.put(each, currentRuleConfig.getEncryptors().get(each)));
+        UnusedAlgorithmFinder.findUnusedEncryptor((EncryptRuleConfiguration) rule.getConfiguration())
+                .forEach(each -> toBeDroppedEncryptors.put(each, ((EncryptRuleConfiguration) rule.getConfiguration()).getEncryptors().get(each)));
         return new EncryptRuleConfiguration(toBeDroppedTables, toBeDroppedEncryptors);
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        sqlStatement.getTables().forEach(each -> dropRule(currentRuleConfig, each));
+        sqlStatement.getTables().forEach(this::dropRule);
         dropUnusedEncryptor(currentRuleConfig);
         return currentRuleConfig.isEmpty();
     }
     
-    private void dropRule(final EncryptRuleConfiguration currentRuleConfig, final String ruleName) {
-        Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = currentRuleConfig.getTables().stream().filter(each -> each.getName().equals(ruleName)).findAny();
-        encryptTableRuleConfig.ifPresent(optional -> currentRuleConfig.getTables().remove(encryptTableRuleConfig.get()));
+    private void dropRule(final String ruleName) {
+        Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = ((EncryptRuleConfiguration) rule.getConfiguration()).getTables().stream()
+                .filter(each -> each.getName().equals(ruleName)).findAny();
+        encryptTableRuleConfig.ifPresent(optional -> ((EncryptRuleConfiguration) rule.getConfiguration()).getTables().remove(encryptTableRuleConfig.get()));
     }
     
     private void dropUnusedEncryptor(final EncryptRuleConfiguration currentRuleConfig) {

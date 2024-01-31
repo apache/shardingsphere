@@ -76,10 +76,10 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingKeyGeneratorStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
-            result.getKeyGenerators().put(each, currentRuleConfig.getKeyGenerators().get(each));
+            result.getKeyGenerators().put(each, rule.getConfiguration().getKeyGenerators().get(each));
         }
         return result;
     }
@@ -91,8 +91,8 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getKeyGenerators().keySet(), sqlStatement.getNames()).isEmpty();
+    public boolean hasAnyOneToBeDropped(final DropShardingKeyGeneratorStatement sqlStatement) {
+        return null != rule && !getIdenticalData(rule.getConfiguration().getKeyGenerators().keySet(), sqlStatement.getNames()).isEmpty();
     }
     
     @Override

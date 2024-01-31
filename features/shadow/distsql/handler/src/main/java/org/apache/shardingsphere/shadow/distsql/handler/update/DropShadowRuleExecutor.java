@@ -66,33 +66,33 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(sqlStatement.getNames(), getDataSourceNames()).isEmpty();
+    public boolean hasAnyOneToBeDropped(final DropShadowRuleStatement sqlStatement) {
+        return isExistRuleConfig(rule.getConfiguration()) && !getIdenticalData(sqlStatement.getNames(), getDataSourceNames()).isEmpty();
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShadowRuleStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getDataSources().add(new ShadowDataSourceConfiguration(each, null, null));
-            dropRule(currentRuleConfig, each);
+            dropRule(each);
         }
-        currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(sqlStatement.getNames()::contains));
-        for (Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
+        rule.getConfiguration().getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(sqlStatement.getNames()::contains));
+        for (Entry<String, ShadowTableConfiguration> each : rule.getConfiguration().getTables().entrySet()) {
             if (each.getValue().getDataSourceNames().isEmpty()) {
                 result.getTables().put(each.getKey(), each.getValue());
             }
         }
-        currentRuleConfig.getTables().entrySet().removeIf(each -> each.getValue().getDataSourceNames().isEmpty());
-        UnusedAlgorithmFinder.findUnusedShadowAlgorithm(currentRuleConfig).forEach(each -> result.getShadowAlgorithms().put(each, currentRuleConfig.getShadowAlgorithms().get(each)));
+        rule.getConfiguration().getTables().entrySet().removeIf(each -> each.getValue().getDataSourceNames().isEmpty());
+        UnusedAlgorithmFinder.findUnusedShadowAlgorithm(rule.getConfiguration()).forEach(each -> result.getShadowAlgorithms().put(each, rule.getConfiguration().getShadowAlgorithms().get(each)));
         return result;
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final DropShadowRuleStatement sqlStatement) {
         Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
         Collection<String> toBeDroppedDataSourceNames = sqlStatement.getNames();
-        for (Entry<String, ShadowTableConfiguration> each : currentRuleConfig.getTables().entrySet()) {
+        for (Entry<String, ShadowTableConfiguration> each : rule.getConfiguration().getTables().entrySet()) {
             if (!toBeDroppedDataSourceNames.containsAll(each.getValue().getDataSourceNames())) {
                 List<String> currentDataSources = new LinkedList<>(each.getValue().getDataSourceNames());
                 currentDataSources.removeAll(toBeDroppedDataSourceNames);
@@ -107,7 +107,7 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         for (String each : sqlStatement.getNames()) {
-            dropRule(currentRuleConfig, each);
+            dropRule(each);
         }
         currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(sqlStatement.getNames()::contains));
         currentRuleConfig.getTables().entrySet().removeIf(entry -> entry.getValue().getDataSourceNames().isEmpty());
@@ -115,9 +115,9 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
         return currentRuleConfig.isEmpty();
     }
     
-    private void dropRule(final ShadowRuleConfiguration currentRuleConfig, final String ruleName) {
-        Optional<ShadowDataSourceConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(each -> ruleName.equals(each.getName())).findAny();
-        dataSourceRuleConfig.ifPresent(optional -> currentRuleConfig.getDataSources().remove(optional));
+    private void dropRule(final String ruleName) {
+        Optional<ShadowDataSourceConfiguration> dataSourceRuleConfig = rule.getConfiguration().getDataSources().stream().filter(each -> ruleName.equals(each.getName())).findAny();
+        dataSourceRuleConfig.ifPresent(optional -> rule.getConfiguration().getDataSources().remove(optional));
     }
     
     private void dropUnusedAlgorithm(final ShadowRuleConfiguration currentRuleConfig) {
