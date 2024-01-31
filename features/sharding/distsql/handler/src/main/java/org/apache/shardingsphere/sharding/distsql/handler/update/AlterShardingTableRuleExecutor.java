@@ -54,16 +54,16 @@ public final class AlterShardingTableRuleExecutor implements DatabaseRuleAlterEx
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Collection<String> toBeAlteredShardingTableNames = toBeAlteredRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet());
-        for (ShardingAutoTableRuleConfiguration each : currentRuleConfig.getAutoTables()) {
+        for (ShardingAutoTableRuleConfiguration each : rule.getConfiguration().getAutoTables()) {
             if (toBeAlteredShardingTableNames.contains(each.getLogicTable())) {
                 result.getAutoTables().add(each);
             }
         }
         Collection<String> toBeAlteredAutoTableNames = toBeAlteredRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet());
-        for (ShardingTableRuleConfiguration each : currentRuleConfig.getTables()) {
+        for (ShardingTableRuleConfiguration each : rule.getConfiguration().getTables()) {
             if (toBeAlteredAutoTableNames.contains(each.getLogicTable())) {
                 result.getTables().add(each);
             }

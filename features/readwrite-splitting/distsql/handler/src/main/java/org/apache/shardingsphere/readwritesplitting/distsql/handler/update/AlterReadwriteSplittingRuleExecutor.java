@@ -60,15 +60,14 @@ public final class AlterReadwriteSplittingRuleExecutor implements DatabaseRuleAl
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig,
-                                                                                 final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
+    public ReadwriteSplittingRuleConfiguration buildToBeDroppedRuleConfiguration(final ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>();
         List<String> toBeAlteredDataSourceNames = toBeAlteredRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : rule.getConfiguration().getDataSources()) {
             if (toBeAlteredDataSourceNames.contains(each.getName())) {
                 dataSources.add(each);
-                loadBalancers.put(each.getLoadBalancerName(), currentRuleConfig.getLoadBalancers().get(each.getLoadBalancerName()));
+                loadBalancers.put(each.getLoadBalancerName(), rule.getConfiguration().getLoadBalancers().get(each.getLoadBalancerName()));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
