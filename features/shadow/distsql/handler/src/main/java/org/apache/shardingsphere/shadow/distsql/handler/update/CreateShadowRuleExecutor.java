@@ -79,11 +79,11 @@ public final class CreateShadowRuleExecutor implements DatabaseRuleCreateExecuto
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShadowRuleStatement sqlStatement) {
         Collection<ShadowRuleSegment> segments = sqlStatement.getRules();
         if (sqlStatement.isIfNotExists()) {
             Collection<String> toBeCreatedRuleNames = ShadowRuleStatementSupporter.getRuleNames(sqlStatement.getRules());
-            toBeCreatedRuleNames.retainAll(ShadowRuleStatementSupporter.getRuleNames(currentRuleConfig));
+            toBeCreatedRuleNames.retainAll(ShadowRuleStatementSupporter.getRuleNames(rule.getConfiguration()));
             segments.removeIf(each -> toBeCreatedRuleNames.contains(each.getRuleName()));
         }
         return ShadowRuleStatementConverter.convert(segments);

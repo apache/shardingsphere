@@ -73,7 +73,7 @@ public final class CreateMaskRuleExecutor implements DatabaseRuleCreateExecutor<
     }
     
     @Override
-    public MaskRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    public MaskRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
