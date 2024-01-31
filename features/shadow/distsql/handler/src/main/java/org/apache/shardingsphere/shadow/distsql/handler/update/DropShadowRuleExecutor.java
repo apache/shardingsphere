@@ -83,8 +83,8 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
                 result.getTables().put(each.getKey(), each.getValue());
             }
         }
-        currentRuleConfig.getTables().entrySet().removeIf(entry -> entry.getValue().getDataSourceNames().isEmpty());
-        findUnusedAlgorithms(currentRuleConfig).forEach(each -> result.getShadowAlgorithms().put(each, currentRuleConfig.getShadowAlgorithms().get(each)));
+        currentRuleConfig.getTables().entrySet().removeIf(each -> each.getValue().getDataSourceNames().isEmpty());
+        UnusedAlgorithmFinder.findUnusedShadowAlgorithm(currentRuleConfig).forEach(each -> result.getShadowAlgorithms().put(each, currentRuleConfig.getShadowAlgorithms().get(each)));
         return result;
     }
     
@@ -121,15 +121,7 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     }
     
     private void dropUnusedAlgorithm(final ShadowRuleConfiguration currentRuleConfig) {
-        findUnusedAlgorithms(currentRuleConfig).forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
-    }
-    
-    private Collection<String> findUnusedAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().entrySet().stream().flatMap(entry -> entry.getValue().getShadowAlgorithmNames().stream()).collect(Collectors.toSet());
-        if (null != currentRuleConfig.getDefaultShadowAlgorithmName()) {
-            inUsedAlgorithms.add(currentRuleConfig.getDefaultShadowAlgorithmName());
-        }
-        return currentRuleConfig.getShadowAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
+        UnusedAlgorithmFinder.findUnusedShadowAlgorithm(currentRuleConfig).forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
     }
     
     @Override

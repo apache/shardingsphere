@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
 import java.util.Arrays;
@@ -34,12 +37,12 @@ import java.util.stream.Collectors;
 public final class UnusedAlgorithmFinder {
     
     /**
-     * Find unused algorithms.
-     * 
+     * Find unused sharding algorithms.
+     *
      * @param ruleConfig sharding rule configuration
-     * @return found unused algorithms
+     * @return found unused sharding algorithms
      */
-    public static Collection<String> find(final ShardingRuleConfiguration ruleConfig) {
+    public static Collection<String> findUnusedShardingAlgorithm(final ShardingRuleConfiguration ruleConfig) {
         Collection<String> inUsedAlgorithms = ruleConfig.getTables().stream().map(each -> Arrays.asList(each.getTableShardingStrategy(), each.getDatabaseShardingStrategy()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).map(ShardingStrategyConfiguration::getShardingAlgorithmName).collect(Collectors.toSet());
         inUsedAlgorithms.addAll(ruleConfig.getTables().stream().filter(each -> null != each.getDatabaseShardingStrategy())
@@ -55,5 +58,39 @@ public final class UnusedAlgorithmFinder {
             inUsedAlgorithms.add(ruleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName());
         }
         return ruleConfig.getShardingAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
+    }
+    
+    /**
+     * Find unused key generators.
+     *
+     * @param ruleConfig sharding rule configuration
+     * @return found unused key generators
+     */
+    public static Collection<String> findUnusedKeyGenerator(final ShardingRuleConfiguration ruleConfig) {
+        Collection<String> inUsedKeyGenerators = ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
+                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
+        inUsedKeyGenerators.addAll(ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
+                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet()));
+        if (null != ruleConfig.getDefaultKeyGenerateStrategy()) {
+            inUsedKeyGenerators.add(ruleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        }
+        return ruleConfig.getKeyGenerators().keySet().stream().filter(each -> !inUsedKeyGenerators.contains(each)).collect(Collectors.toSet());
+    }
+    
+    /**
+     * Find unused auditors.
+     *
+     * @param ruleConfig sharding rule configuration
+     * @return found unused auditors
+     */
+    public static Collection<String> findUnusedAuditor(final ShardingRuleConfiguration ruleConfig) {
+        Collection<String> inUsedAuditors = ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getAuditStrategy).filter(Objects::nonNull)
+                .flatMap(each -> each.getAuditorNames().stream()).collect(Collectors.toSet());
+        inUsedAuditors.addAll(ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getAuditStrategy).filter(Objects::nonNull)
+                .flatMap(each -> each.getAuditorNames().stream()).collect(Collectors.toSet()));
+        if (null != ruleConfig.getDefaultAuditStrategy()) {
+            inUsedAuditors.addAll(ruleConfig.getDefaultAuditStrategy().getAuditorNames());
+        }
+        return ruleConfig.getAuditors().keySet().stream().filter(each -> !inUsedAuditors.contains(each)).collect(Collectors.toSet());
     }
 }

@@ -100,6 +100,11 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
     }
     
     @Override
+    public SingleRuleConfiguration buildToBeDroppedRuleConfiguration(final SingleRuleConfiguration toBeAlteredRuleConfig) {
+        return null;
+    }
+    
+    @Override
     public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeAlteredRuleConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
