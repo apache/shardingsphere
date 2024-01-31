@@ -77,7 +77,7 @@ public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShadowRuleStatement sqlStatement) {
         return ShadowRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
