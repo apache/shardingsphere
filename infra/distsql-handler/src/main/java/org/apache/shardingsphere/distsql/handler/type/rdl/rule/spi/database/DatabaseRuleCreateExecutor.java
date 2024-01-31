@@ -34,10 +34,9 @@ public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends Sh
      * Build to be created rule configuration.
      *
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration to be updated
      * @return to be created rule configuration
      */
-    C buildToBeCreatedRuleConfiguration(T sqlStatement, C currentRuleConfig);
+    C buildToBeCreatedRuleConfiguration(T sqlStatement);
     
     /**
      * Update current rule configuration.

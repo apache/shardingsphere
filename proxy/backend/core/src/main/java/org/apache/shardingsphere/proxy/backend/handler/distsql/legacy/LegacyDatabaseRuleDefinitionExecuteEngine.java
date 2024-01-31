@@ -116,7 +116,7 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private RuleConfiguration processCreate(final RuleDefinitionStatement sqlStatement, final DatabaseRuleCreateExecutor executor, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
+        RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         if (null == currentRuleConfig) {
             return toBeCreatedRuleConfig;
         }

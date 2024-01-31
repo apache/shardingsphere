@@ -50,10 +50,10 @@ public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreate
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingTableRuleStatement sqlStatement) {
         Collection<AbstractTableRuleSegment> segments = sqlStatement.getRules();
         if (sqlStatement.isIfNotExists()) {
-            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement);
             segments.removeIf(each -> duplicatedRuleNames.contains(each.getLogicTable()));
         }
         return ShardingTableRuleStatementConverter.convert(segments);
@@ -68,15 +68,15 @@ public final class CreateShardingTableRuleExecutor implements DatabaseRuleCreate
         currentRuleConfig.getAuditors().putAll(toBeCreatedRuleConfig.getAuditors());
     }
     
-    private Collection<String> getDuplicatedRuleNames(final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> currentShardingTables = null == currentRuleConfig ? Collections.emptyList() : getCurrentShardingTables(currentRuleConfig);
+    private Collection<String> getDuplicatedRuleNames(final CreateShardingTableRuleStatement sqlStatement) {
+        Collection<String> currentShardingTables = null == rule ? Collections.emptyList() : getCurrentShardingTables();
         return sqlStatement.getRules().stream().map(AbstractTableRuleSegment::getLogicTable).filter(currentShardingTables::contains).collect(Collectors.toSet());
     }
     
-    private Collection<String> getCurrentShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
+    private Collection<String> getCurrentShardingTables() {
         Collection<String> result = new LinkedList<>();
-        result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        result.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(rule.getConfiguration().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(rule.getConfiguration().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         return result;
     }
     

@@ -87,7 +87,7 @@ class CreateEncryptRuleExecutorTest {
         executor.setRule(rule);
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
         executor.checkBeforeUpdate(sqlStatement);
-        EncryptRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
+        EncryptRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
         assertTrue(currentRuleConfig.getEncryptors().isEmpty());

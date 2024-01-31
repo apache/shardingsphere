@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,7 +84,10 @@ class LoadSingleTableExecutorTest {
     @Test
     void assertBuild() {
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "foo")));
-        SingleRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement, mock(SingleRuleConfiguration.class));
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration());
+        executor.setRule(rule);
+        SingleRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         assertThat(actual.getTables().iterator().next(), is("ds_0.foo"));
     }
     
@@ -92,7 +96,10 @@ class LoadSingleTableExecutorTest {
         Collection<String> currentTables = new LinkedList<>(Collections.singletonList("ds_0.foo"));
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration(currentTables, null);
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singletonList(new SingleTableSegment("ds_0", null, "bar")));
-        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentConfig);
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getConfiguration()).thenReturn(currentConfig);
+        executor.setRule(rule);
+        SingleRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         Iterator<String> iterator = currentConfig.getTables().iterator();
         assertThat(iterator.next(), is("ds_0.foo"));
