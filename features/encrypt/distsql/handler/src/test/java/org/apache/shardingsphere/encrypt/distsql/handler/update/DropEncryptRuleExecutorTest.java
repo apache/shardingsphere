@@ -66,6 +66,9 @@ class DropEncryptRuleExecutorTest {
     @Test
     void assertUpdateCurrentRuleConfiguration() {
         EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        executor.setRule(rule);
         assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
         assertTrue(ruleConfig.getEncryptors().isEmpty());
     }
@@ -73,6 +76,9 @@ class DropEncryptRuleExecutorTest {
     @Test
     void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
         EncryptRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithMultipleTableRules();
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        executor.setRule(rule);
         assertFalse(executor.updateCurrentRuleConfiguration(createSQLStatement("t_encrypt"), ruleConfig));
         assertThat(ruleConfig.getEncryptors().size(), is(1));
     }
