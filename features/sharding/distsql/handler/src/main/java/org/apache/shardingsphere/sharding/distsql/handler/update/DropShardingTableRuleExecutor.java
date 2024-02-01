@@ -93,9 +93,6 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingTableRuleStatement sqlStatement) {
-        if (null == rule) {
-            return false;
-        }
         Collection<String> currentTableNames = new LinkedList<>();
         currentTableNames.addAll(rule.getConfiguration().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         currentTableNames.addAll(rule.getConfiguration().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));

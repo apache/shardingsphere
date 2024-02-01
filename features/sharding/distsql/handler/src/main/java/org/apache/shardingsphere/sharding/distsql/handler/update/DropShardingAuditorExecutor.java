@@ -91,7 +91,7 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAuditorStatement sqlStatement) {
-        return null != rule && !getIdenticalData(rule.getConfiguration().getAuditors().keySet(), sqlStatement.getNames()).isEmpty();
+        return !getIdenticalData(rule.getConfiguration().getAuditors().keySet(), sqlStatement.getNames()).isEmpty();
     }
     
     @Override

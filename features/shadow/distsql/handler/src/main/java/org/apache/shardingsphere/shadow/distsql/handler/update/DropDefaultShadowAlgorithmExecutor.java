@@ -54,7 +54,7 @@ public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDro
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropDefaultShadowAlgorithmStatement sqlStatement) {
-        return null != rule && null != rule.getConfiguration().getDefaultShadowAlgorithmName();
+        return null != rule.getConfiguration().getDefaultShadowAlgorithmName();
     }
     
     @Override

@@ -81,8 +81,7 @@ public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecut
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShadowAlgorithmStatement sqlStatement) {
-        return null != rule
-                && !getIdenticalData(ShadowRuleStatementSupporter.getAlgorithmNames(rule.getConfiguration()), sqlStatement.getNames()).isEmpty();
+        return !getIdenticalData(ShadowRuleStatementSupporter.getAlgorithmNames(rule.getConfiguration()), sqlStatement.getNames()).isEmpty();
     }
     
     @Override
