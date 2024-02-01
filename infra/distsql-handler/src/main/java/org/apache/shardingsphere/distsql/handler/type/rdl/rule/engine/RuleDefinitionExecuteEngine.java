@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.legacy.LegacyGlobalRuleDefinitionExecuteEngine;
@@ -25,10 +27,14 @@ import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.Data
 import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -61,6 +67,34 @@ public abstract class RuleDefinitionExecuteEngine {
                 new LegacyGlobalRuleDefinitionExecuteEngine(sqlStatement, contextManager).executeUpdate();
             }
         }
+    }
+    
+    /**
+     * Checks the data sources in the given ShardingSphereDatabase.
+     *
+     * @param database The ShardingSphereDatabase to check.
+     * @throws EmptyStorageUnitException If the storage units in the database are empty.
+     */
+    public static void checkDataSources(final ShardingSphereDatabase database) {
+        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
+    }
+    
+    /**
+     * Checks the existence of required data sources in the provided ShardingSphereDatabase.
+     *
+     * @param databaseName          The name of the database being checked.
+     * @param segments              Collection of ReadwriteSplittingRuleSegment instances.
+     * @param database              The ShardingSphereDatabase instance to check against.
+     * @throws MissingRequiredStorageUnitsException if any required data sources do not exist.
+     */
+    public static void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final ShardingSphereDatabase database) {
+        Collection<String> requiredDataSources = new LinkedHashSet<>();
+        segments.forEach(each -> {
+            requiredDataSources.add(each.getWriteDataSource());
+            requiredDataSources.addAll(each.getReadDataSources());
+        });
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);
