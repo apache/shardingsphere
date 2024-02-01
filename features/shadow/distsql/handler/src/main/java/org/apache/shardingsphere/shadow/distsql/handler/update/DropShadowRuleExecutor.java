@@ -67,7 +67,7 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShadowRuleStatement sqlStatement) {
-        return isExistRuleConfig(rule.getConfiguration()) && !getIdenticalData(sqlStatement.getNames(), getDataSourceNames()).isEmpty();
+        return !getIdenticalData(sqlStatement.getNames(), getDataSourceNames()).isEmpty();
     }
     
     @Override

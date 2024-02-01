@@ -61,7 +61,7 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement) {
-        return isExistRuleConfig(rule.getConfiguration()) && !getIdenticalData(rule.getConfiguration().getTables(), sqlStatement.getTables()).isEmpty();
+        return !getIdenticalData(rule.getConfiguration().getTables(), sqlStatement.getTables()).isEmpty();
     }
     
     @Override
