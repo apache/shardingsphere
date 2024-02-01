@@ -29,6 +29,7 @@ import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -172,7 +173,15 @@ public final class JDBCRepositorySQLLoader {
     
     private static JDBCRepositorySQL loadFromJar(final URL url, final String type) throws IOException {
         JDBCRepositorySQL result = null;
-        try (JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile()) {
+        URL jarUrl = url;
+        if ("zip".equals(url.getProtocol())) {
+            jarUrl = new URL(url.toExternalForm().replace("zip:/", "jar:file:/"));
+        }
+        URLConnection urlConnection = jarUrl.openConnection();
+        if (!(urlConnection instanceof JarURLConnection)) {
+            return null;
+        }
+        try (JarFile jar = ((JarURLConnection) urlConnection).getJarFile()) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
