@@ -95,6 +95,9 @@ class DropReadwriteSplittingRuleExecutorTest {
     @Test
     void assertUpdateCurrentRuleConfiguration() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        executor.setRule(rule);
         assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
         assertThat(ruleConfig.getLoadBalancers().size(), is(0));
     }
@@ -102,6 +105,9 @@ class DropReadwriteSplittingRuleExecutorTest {
     @Test
     void assertUpdateCurrentRuleConfigurationWithInUsedLoadBalancer() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createMultipleCurrentRuleConfigurations();
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        executor.setRule(rule);
         assertFalse(executor.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
         assertThat(ruleConfig.getLoadBalancers().size(), is(1));
     }
@@ -109,6 +115,9 @@ class DropReadwriteSplittingRuleExecutorTest {
     @Test
     void assertUpdateCurrentRuleConfigurationWithoutLoadBalancerName() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithoutLoadBalancerName();
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        executor.setRule(rule);
         assertTrue(executor.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
         assertThat(ruleConfig.getLoadBalancers().size(), is(0));
     }

@@ -28,14 +28,12 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -94,28 +92,29 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (null == currentRuleConfig) {
+    public boolean hasAnyOneToBeDropped(final DropShardingTableRuleStatement sqlStatement) {
+        if (null == rule) {
             return false;
         }
         Collection<String> currentTableNames = new LinkedList<>();
-        currentTableNames.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        currentTableNames.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        currentTableNames.addAll(rule.getConfiguration().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        currentTableNames.addAll(rule.getConfiguration().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         return !getIdenticalData(currentTableNames, sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet())).isEmpty();
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Collection<String> toBeDroppedShardingTableNames = getToBeDroppedShardingTableNames(sqlStatement);
         for (String each : toBeDroppedShardingTableNames) {
-            result.getTables().addAll(currentRuleConfig.getTables().stream().filter(table -> each.equalsIgnoreCase(table.getLogicTable())).collect(Collectors.toList()));
-            result.getAutoTables().addAll(currentRuleConfig.getAutoTables().stream().filter(table -> each.equalsIgnoreCase(table.getLogicTable())).collect(Collectors.toList()));
-            dropShardingTable(currentRuleConfig, each);
+            result.getTables().addAll(rule.getConfiguration().getTables().stream().filter(table -> each.equalsIgnoreCase(table.getLogicTable())).collect(Collectors.toList()));
+            result.getAutoTables().addAll(rule.getConfiguration().getAutoTables().stream().filter(table -> each.equalsIgnoreCase(table.getLogicTable())).collect(Collectors.toList()));
+            dropShardingTable(rule.getConfiguration(), each);
         }
-        UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> result.getShardingAlgorithms().put(each, currentRuleConfig.getShardingAlgorithms().get(each)));
-        findUnusedKeyGenerator(currentRuleConfig).forEach(each -> result.getKeyGenerators().put(each, currentRuleConfig.getKeyGenerators().get(each)));
-        findUnusedAuditors(currentRuleConfig).forEach(each -> result.getAuditors().put(each, currentRuleConfig.getAuditors().get(each)));
+        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(
+                rule.getConfiguration()).forEach(each -> result.getShardingAlgorithms().put(each, rule.getConfiguration().getShardingAlgorithms().get(each)));
+        UnusedAlgorithmFinder.findUnusedKeyGenerator(rule.getConfiguration()).forEach(each -> result.getKeyGenerators().put(each, rule.getConfiguration().getKeyGenerators().get(each)));
+        UnusedAlgorithmFinder.findUnusedAuditor(rule.getConfiguration()).forEach(each -> result.getAuditors().put(each, rule.getConfiguration().getAuditors().get(each)));
         return result;
     }
     
@@ -123,7 +122,7 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     public boolean updateCurrentRuleConfiguration(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> toBeDroppedShardingTableNames = getToBeDroppedShardingTableNames(sqlStatement);
         toBeDroppedShardingTableNames.forEach(each -> dropShardingTable(currentRuleConfig, each));
-        UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
+        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
         dropUnusedKeyGenerator(currentRuleConfig);
         dropUnusedAuditor(currentRuleConfig);
         return currentRuleConfig.isEmpty();
@@ -135,33 +134,11 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     }
     
     private void dropUnusedKeyGenerator(final ShardingRuleConfiguration currentRuleConfig) {
-        findUnusedKeyGenerator(currentRuleConfig).forEach(each -> currentRuleConfig.getKeyGenerators().remove(each));
-    }
-    
-    private Collection<String> findUnusedKeyGenerator(final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> inUsedKeyGenerators = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
-                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
-        inUsedKeyGenerators.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
-                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet()));
-        if (null != currentRuleConfig.getDefaultKeyGenerateStrategy()) {
-            inUsedKeyGenerators.add(currentRuleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
-        }
-        return currentRuleConfig.getKeyGenerators().keySet().stream().filter(each -> !inUsedKeyGenerators.contains(each)).collect(Collectors.toSet());
+        UnusedAlgorithmFinder.findUnusedKeyGenerator(currentRuleConfig).forEach(each -> currentRuleConfig.getKeyGenerators().remove(each));
     }
     
     private void dropUnusedAuditor(final ShardingRuleConfiguration currentRuleConfig) {
-        findUnusedAuditors(currentRuleConfig).forEach(each -> currentRuleConfig.getAuditors().remove(each));
-    }
-    
-    private Collection<String> findUnusedAuditors(final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> inUsedAuditors = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getAuditStrategy).filter(Objects::nonNull)
-                .flatMap(each -> each.getAuditorNames().stream()).collect(Collectors.toSet());
-        inUsedAuditors.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getAuditStrategy).filter(Objects::nonNull)
-                .flatMap(each -> each.getAuditorNames().stream()).collect(Collectors.toSet()));
-        if (null != currentRuleConfig.getDefaultAuditStrategy()) {
-            inUsedAuditors.addAll(currentRuleConfig.getDefaultAuditStrategy().getAuditorNames());
-        }
-        return currentRuleConfig.getAuditors().keySet().stream().filter(each -> !inUsedAuditors.contains(each)).collect(Collectors.toSet());
+        UnusedAlgorithmFinder.findUnusedAuditor(currentRuleConfig).forEach(each -> currentRuleConfig.getAuditors().remove(each));
     }
     
     @Override

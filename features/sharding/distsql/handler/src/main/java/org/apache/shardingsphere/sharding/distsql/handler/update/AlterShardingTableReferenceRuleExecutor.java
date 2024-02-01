@@ -121,6 +121,11 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
     }
     
     @Override
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        return null;
+    }
+    
+    @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         Collection<String> toBeAlteredRuleNames = getToBeAlteredRuleNames(toBeAlteredRuleConfig);
         currentRuleConfig.getBindingTableGroups().removeIf(each -> toBeAlteredRuleNames.contains(each.getName()));

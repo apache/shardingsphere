@@ -454,7 +454,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private boolean executeWithExecutionContext(final ExecutionContext executionContext) throws SQLException {
-        return isNeedImplicitCommitTransaction(connection, executionContext) ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executionContext)) : useDriverToExecute(executionContext);
+        return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executionContext))
+                : useDriverToExecute(executionContext);
     }
     
     private boolean executeWithImplicitCommitTransaction(final ImplicitTransactionCallback<Boolean> callback) throws SQLException {
@@ -475,7 +477,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private int executeUpdateWithExecutionContext(final ExecutionContext executionContext) throws SQLException {
-        return isNeedImplicitCommitTransaction(connection, executionContext) ? executeUpdateWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(executionContext))
+        return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
+                ? executeUpdateWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(executionContext))
                 : useDriverToExecuteUpdate(executionContext);
     }
     

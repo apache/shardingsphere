@@ -93,10 +93,10 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingAlgorithmStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
-            result.getShardingAlgorithms().put(each, currentRuleConfig.getShardingAlgorithms().get(each));
+            result.getShardingAlgorithms().put(each, rule.getConfiguration().getShardingAlgorithms().get(each));
         }
         return result;
     }
@@ -110,8 +110,8 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig && !getIdenticalData(getCurrentShardingAlgorithms(), sqlStatement.getNames()).isEmpty();
+    public boolean hasAnyOneToBeDropped(final DropShardingAlgorithmStatement sqlStatement) {
+        return null != rule && !getIdenticalData(getCurrentShardingAlgorithms(), sqlStatement.getNames()).isEmpty();
     }
     
     private void dropShardingAlgorithm(final String algorithmName) {

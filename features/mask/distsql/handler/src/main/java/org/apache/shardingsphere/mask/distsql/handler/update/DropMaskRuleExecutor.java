@@ -63,33 +63,33 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig
-                && !getIdenticalData(currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables()).isEmpty();
+    public boolean hasAnyOneToBeDropped(final DropMaskRuleStatement sqlStatement) {
+        return null != rule
+                && !getIdenticalData(rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables()).isEmpty();
     }
     
     @Override
-    public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    public MaskRuleConfiguration buildToBeDroppedRuleConfiguration(final DropMaskRuleStatement sqlStatement) {
         Collection<MaskTableRuleConfiguration> toBeDroppedTables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> toBeDroppedAlgorithms = new LinkedHashMap<>();
         for (String each : sqlStatement.getTables()) {
             toBeDroppedTables.add(new MaskTableRuleConfiguration(each, Collections.emptyList()));
-            dropRule(currentRuleConfig, each);
+            dropRule(each);
         }
-        findUnusedAlgorithms(currentRuleConfig).forEach(each -> toBeDroppedAlgorithms.put(each, currentRuleConfig.getMaskAlgorithms().get(each)));
+        findUnusedAlgorithms(rule.getConfiguration()).forEach(each -> toBeDroppedAlgorithms.put(each, rule.getConfiguration().getMaskAlgorithms().get(each)));
         return new MaskRuleConfiguration(toBeDroppedTables, toBeDroppedAlgorithms);
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        sqlStatement.getTables().forEach(each -> dropRule(currentRuleConfig, each));
+        sqlStatement.getTables().forEach(this::dropRule);
         dropUnusedAlgorithm(currentRuleConfig);
         return currentRuleConfig.isEmpty();
     }
     
-    private void dropRule(final MaskRuleConfiguration currentRuleConfig, final String ruleName) {
-        Optional<MaskTableRuleConfiguration> maskTableRuleConfig = currentRuleConfig.getTables().stream().filter(each -> each.getName().equals(ruleName)).findAny();
-        maskTableRuleConfig.ifPresent(optional -> currentRuleConfig.getTables().remove(maskTableRuleConfig.get()));
+    private void dropRule(final String ruleName) {
+        Optional<MaskTableRuleConfiguration> maskTableRuleConfig = rule.getConfiguration().getTables().stream().filter(each -> each.getName().equals(ruleName)).findAny();
+        maskTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(maskTableRuleConfig.get()));
     }
     
     private void dropUnusedAlgorithm(final MaskRuleConfiguration currentRuleConfig) {

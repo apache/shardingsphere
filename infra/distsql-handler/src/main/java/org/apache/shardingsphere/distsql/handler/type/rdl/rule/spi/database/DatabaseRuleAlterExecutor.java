@@ -45,9 +45,7 @@ public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends Sha
      * @param toBeAlteredRuleConfig new rule configuration to be renewed
      * @return to be dropped rule configuration
      */
-    default C buildToBeDroppedRuleConfiguration(final C toBeAlteredRuleConfig) {
-        return null;
-    }
+    C buildToBeDroppedRuleConfiguration(C toBeAlteredRuleConfig);
     
     /**
      * Update current rule configuration.

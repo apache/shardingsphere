@@ -39,10 +39,9 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
      * Build to be dropped rule configuration.
      *
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration to be updated
      * @return to be dropped rule configuration
      */
-    default C buildToBeDroppedRuleConfiguration(final T sqlStatement, final C currentRuleConfig) {
+    default C buildToBeDroppedRuleConfiguration(final T sqlStatement) {
         return null;
     }
     
@@ -50,10 +49,9 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
      * Build to be altered rule configuration.
      *
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration to be updated
      * @return to be altered rule configuration
      */
-    default C buildToBeAlteredRuleConfiguration(final T sqlStatement, final C currentRuleConfig) {
+    default C buildToBeAlteredRuleConfiguration(final T sqlStatement) {
         return null;
     }
     
@@ -81,10 +79,9 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
      * Whether there is dropped data.
      * 
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration
      * @return dropped data exists or does not exist
      */
-    default boolean hasAnyOneToBeDropped(final T sqlStatement, final C currentRuleConfig) {
+    default boolean hasAnyOneToBeDropped(final T sqlStatement) {
         return true;
     }
     

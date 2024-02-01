@@ -57,7 +57,7 @@ public final class DatabaseRuleDefinitionExecuteEngine {
         executor.setRule(rule.orElse(null));
         checkBeforeUpdate(rule.orElse(null));
         RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
-        if (getRefreshStatus(currentRuleConfig)) {
+        if (getRefreshStatus()) {
             contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
                     .switchActiveVersion(DatabaseRuleOperatorFactory.newInstance(contextManager, executor).operate(sqlStatement, database, currentRuleConfig));
         }
@@ -77,7 +77,7 @@ public final class DatabaseRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private boolean getRefreshStatus(final RuleConfiguration currentRuleConfig) {
-        return !(executor instanceof DatabaseRuleDropExecutor) || ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+    private boolean getRefreshStatus() {
+        return !(executor instanceof DatabaseRuleDropExecutor) || ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement);
     }
 }

@@ -48,18 +48,18 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<MetaDataVersion> operate(final RuleDefinitionStatement sqlStatement, final ShardingSphereDatabase database, final RuleConfiguration currentRuleConfig) {
-        if (!executor.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
+        if (!executor.hasAnyOneToBeDropped(sqlStatement)) {
             return Collections.emptyList();
         }
         ModeContextManager modeContextManager = contextManager.getInstanceContext().getModeContextManager();
-        RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement, currentRuleConfig);
+        RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
         if (sqlStatement instanceof StaticDataSourceContainedRuleAwareStatement) {
             database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)
                     .ifPresent(optional -> ((StaticDataSourceContainedRuleAwareStatement) sqlStatement).getNames().forEach(optional::cleanStorageNodeDataSource));
             // TODO refactor to new metadata refresh way
         }
         modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
-        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
+        RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         if (null != toBeAlteredRuleConfig && ((DatabaseRuleConfiguration) toBeAlteredRuleConfig).isEmpty()) {
             new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(currentRuleConfig)).values().stream().findFirst()
                     .ifPresent(optional -> modeContextManager.removeRuleConfiguration(database.getName(), optional.getRuleTagName().toLowerCase()));
