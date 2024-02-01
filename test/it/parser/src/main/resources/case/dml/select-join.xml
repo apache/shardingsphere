@@ -2318,4 +2318,313 @@
             </expression-item>
         </order-by>
     </select>
+
+    <select sql-case-id="select_left_join_sub_query_with_escape_quotes">
+        <projections start-index="7" stop-index="75">
+            <expression-projection text="'DECLARE @node NVARCHAR(512) = N''' + NodeName + '.' + Cluster + ''''" start-index="7" stop-index="75">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="75">
+                        <left>
+                            <binary-operation-expression start-index="7" stop-index="68">
+                                <left>
+                                    <binary-operation-expression start-index="7" stop-index="58">
+                                        <left>
+                                            <binary-operation-expression start-index="7" stop-index="52">
+                                                <left>
+                                                    <literal-expression value="DECLARE @node NVARCHAR(512) = N''" start-index="7" stop-index="41"/>
+                                                </left>
+                                                <operator>+</operator>
+                                                <right>
+                                                    <column name="NodeName" start-index="45" stop-index="52"/>
+                                                </right>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <operator>+</operator>
+                                        <right>
+                                            <literal-expression value="." start-index="56" stop-index="58"/>
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <column name="Cluster" start-index="62" stop-index="68"/>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="''" start-index="72" stop-index="75"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <join-table join-type="LEFT">
+                        <left>
+                            <subquery-table alias="t1">
+                                <subquery>
+                                    <select>
+                                        <projections start-index="90" stop-index="248">
+                                            <expression-projection text="SUBSTRING(replica_address, 0, CHARINDEX('\', replica_address))" alias="NodeName" start-index="90" stop-index="163">
+                                                <expr>
+                                                    <function text="SUBSTRING(replica_address, 0, CHARINDEX('\', replica_address))" function-name="SUBSTRING" start-index="90" stop-index="151">
+                                                        <parameter>
+                                                            <column name="replica_address" start-index="100" stop-index="114"/>
+                                                        </parameter>
+                                                        <parameter>
+                                                            <literal-expression value="0" start-index="117" stop-index="117"/>
+                                                        </parameter>
+                                                        <parameter>
+                                                            <function text="CHARINDEX('\', replica_address)" function-name="CHARINDEX" start-index="120" stop-index="150">
+                                                                <parameter>
+                                                                    <literal-expression value="\" start-index="130" stop-index="132"/>
+                                                                </parameter>
+                                                                <parameter>
+                                                                    <column name="replica_address" start-index="135" stop-index="149"/>
+                                                                </parameter>
+                                                            </function>
+                                                        </parameter>
+                                                    </function>
+                                                </expr>
+                                            </expression-projection>
+                                            <expression-projection text="RIGHT(service_name, CHARINDEX('/', REVERSE(service_name)) - 1)" start-index="166" stop-index="235" alias="AppName">
+                                                <expr>
+                                                    <function function-name="RIGHT" text="RIGHT(service_name, CHARINDEX('/', REVERSE(service_name)) - 1)" start-index="166" stop-index="227">
+                                                        <parameter>
+                                                            <column name="service_name" start-index="172" stop-index="183"/>
+                                                        </parameter>
+                                                        <parameter>
+                                                            <binary-operation-expression start-index="186" stop-index="226">
+                                                                <left>
+                                                                    <function text="CHARINDEX('/', REVERSE(service_name))" function-name="CHARINDEX" start-index="186" stop-index="222">
+                                                                        <parameter>
+                                                                            <literal-expression value="/" start-index="196" stop-index="198"/>
+                                                                        </parameter>
+                                                                        <parameter>
+                                                                            <function function-name="REVERSE" text="REVERSE(service_name)" start-index="201" stop-index="221">
+                                                                                <parameter>
+                                                                                    <column name="service_name" start-index="209" stop-index="220"/>
+                                                                                </parameter>
+                                                                            </function>
+                                                                        </parameter>
+                                                                    </function>
+                                                                </left>
+                                                                <operator>-</operator>
+                                                                <right>
+                                                                    <literal-expression value="1" start-index="226" stop-index="226"/>
+                                                                </right>
+                                                            </binary-operation-expression>
+                                                        </parameter>
+                                                    </function>
+                                                </expr>
+                                            </expression-projection>
+                                            <expression-projection text="1" start-index="238" stop-index="248" alias="JoinCol">
+                                                <expr>
+                                                    <literal-expression value="1" start-index="248" stop-index="248"/>
+                                                </expr>
+                                            </expression-projection>
+                                        </projections>
+                                        <from>
+                                            <join-table join-type="INNER">
+                                                <left>
+                                                    <join-table join-type="INNER">
+                                                        <left>
+                                                            <simple-table name="dm_hadr_fabric_partitions" start-index="255" stop-index="286" alias="fp">
+                                                                <owner name="sys" start-index="255" stop-index="257"/>
+                                                            </simple-table>
+                                                        </left>
+                                                        <right>
+                                                            <simple-table name="dm_hadr_fabric_replicas" start-index="299" stop-index="328" alias="fr">
+                                                                <owner name="sys" start-index="299" stop-index="301"/>
+                                                            </simple-table>
+                                                        </right>
+                                                        <on-condition>
+                                                            <binary-operation-expression start-index="333" stop-index="365">
+                                                                <left>
+                                                                    <column name="partition_id" start-index="333" stop-index="347">
+                                                                        <owner name="fp" start-index="333" stop-index="334"/>
+                                                                    </column>
+                                                                </left>
+                                                                <operator>=</operator>
+                                                                <right>
+                                                                    <column name="partition_id" start-index="351" stop-index="365">
+                                                                        <owner name="fr" start-index="351" stop-index="352"/>
+                                                                    </column>
+                                                                </right>
+                                                            </binary-operation-expression>
+                                                        </on-condition>
+                                                    </join-table>
+                                                </left>
+                                                <right>
+                                                    <simple-table name="dm_hadr_fabric_nodes" start-index="378" stop-index="404" alias="fn">
+                                                        <owner name="sys" start-index="378" stop-index="380"/>
+                                                    </simple-table>
+                                                </right>
+                                                <on-condition>
+                                                    <binary-operation-expression start-index="409" stop-index="435">
+                                                        <left>
+                                                            <column name="node_name" start-index="409" stop-index="420">
+                                                                <owner name="fr" start-index="409" stop-index="410"/>
+                                                            </column>
+                                                        </left>
+                                                        <right>
+                                                            <column name="node_name" start-index="424" stop-index="435">
+                                                                <owner name="fn" start-index="424" stop-index="425"/>
+                                                            </column>
+                                                        </right>
+                                                        <operator>=</operator>
+                                                    </binary-operation-expression>
+                                                </on-condition>
+                                            </join-table>
+                                        </from>
+                                        <where start-index="437" stop-index="498">
+                                            <expr>
+                                                <binary-operation-expression start-index="443" stop-index="498">
+                                                    <left>
+                                                        <binary-operation-expression start-index="443" stop-index="477">
+                                                            <left>
+                                                                <column name="service_name" start-index="443" stop-index="454"/>
+                                                            </left>
+                                                            <operator>LIKE</operator>
+                                                            <right>
+                                                                <list-expression start-index="461" stop-index="477">
+                                                                    <items>
+                                                                        <literal-expression value="%ManagedServer%" start-index="461" stop-index="477"/>
+                                                                    </items>
+                                                                </list-expression>
+                                                            </right>
+                                                        </binary-operation-expression>
+                                                    </left>
+                                                    <operator>AND</operator>
+                                                    <right>
+                                                        <binary-operation-expression start-index="483" stop-index="498">
+                                                            <left>
+                                                                <column name="replica_role" start-index="483" stop-index="494"/>
+                                                            </left>
+                                                            <operator>=</operator>
+                                                            <right>
+                                                                <literal-expression value="2" start-index="498" stop-index="498"/>
+                                                            </right>
+                                                        </binary-operation-expression>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </expr>
+                                        </where>
+                                    </select>
+                                </subquery>
+                            </subquery-table>
+                        </left>
+                        <right>
+                            <subquery-table alias="t2">
+                                <subquery>
+                                    <select>
+                                        <projections start-index="522" stop-index="550">
+                                            <column-projection name="value" start-index="522" stop-index="537" alias="Cluster"/>
+                                            <expression-projection text="1" alias="JoinCol" start-index="540" stop-index="550"/>
+                                        </projections>
+                                        <from>
+                                            <simple-table name="dm_hadr_fabric_config_parameters" start-index="557" stop-index="592">
+                                                <owner name="sys" start-index="557" stop-index="559"/>
+                                            </simple-table>
+                                        </from>
+                                        <where start-index="594" stop-index="629">
+                                            <expr>
+                                                <binary-operation-expression start-index="600" stop-index="629">
+                                                    <left>
+                                                        <column name="parameter_name" start-index="600" stop-index="613"/>
+                                                    </left>
+                                                    <operator>=</operator>
+                                                    <right>
+                                                        <literal-expression value="ClusterName" start-index="617" stop-index="629"/>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </expr>
+                                        </where>
+                                    </select>
+                                </subquery>
+                            </subquery-table>
+                        </right>
+                        <on-condition>
+                            <binary-operation-expression start-index="639" stop-index="661">
+                                <left>
+                                    <column name="JoinCol" start-index="639" stop-index="648">
+                                        <owner name="t1" start-index="639" stop-index="640"/>
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="JoinCol" start-index="652" stop-index="661">
+                                        <owner name="t2" start-index="652" stop-index="653"/>
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </on-condition>
+                    </join-table>
+                </left>
+                <right>
+                    <subquery-table alias="t3">
+                        <subquery>
+                            <select>
+                                <projections start-index="683" stop-index="700">
+                                    <column-projection name="value" start-index="683" stop-index="700" alias="AppName" start-delimiter="[" end-delimiter="]"/>
+                                </projections>
+                                <from>
+                                    <simple-table name="dm_hadr_fabric_config_parameters" start-index="707" stop-index="742">
+                                        <owner name="sys" start-index="707" stop-index="709"/>
+                                    </simple-table>
+                                </from>
+                                <where start-index="744" stop-index="805">
+                                    <expr>
+                                        <binary-operation-expression start-index="750" stop-index="805">
+                                            <left>
+                                                <binary-operation-expression start-index="750" stop-index="769">
+                                                    <left>
+                                                        <column name="section_name" start-index="750" stop-index="761"/>
+                                                    </left>
+                                                    <operator>=</operator>
+                                                    <right>
+                                                        <literal-expression value="SQL" start-index="765" stop-index="769"/>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </left>
+                                            <operator>AND</operator>
+                                            <right>
+                                                <binary-operation-expression start-index="775" stop-index="805">
+                                                    <left>
+                                                        <column name="parameter_name" start-index="775" stop-index="788"/>
+                                                    </left>
+                                                    <operator>=</operator>
+                                                    <right>
+                                                        <literal-expression value="InstanceName" start-index="792" stop-index="805"/>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </subquery-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="815" stop-index="837">
+                        <left>
+                            <column name="AppName" start-index="815" stop-index="824">
+                                <owner name="t1" start-index="815" stop-index="816"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="AppName" start-index="828" stop-index="837">
+                                <owner name="t3" start-index="828" stop-index="829"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
