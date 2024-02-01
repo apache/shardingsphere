@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableRul
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
@@ -96,7 +97,7 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
         Collection<String> currentTableNames = new LinkedList<>();
         currentTableNames.addAll(rule.getConfiguration().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         currentTableNames.addAll(rule.getConfiguration().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        return !getIdenticalData(currentTableNames, sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet())).isEmpty();
+        return Collections.disjoint(currentTableNames, sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet()));
     }
     
     @Override

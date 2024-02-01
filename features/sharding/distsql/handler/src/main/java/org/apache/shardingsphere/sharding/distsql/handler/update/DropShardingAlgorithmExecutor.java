@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAlgorith
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
@@ -111,7 +112,7 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAlgorithmStatement sqlStatement) {
-        return !getIdenticalData(getCurrentShardingAlgorithms(), sqlStatement.getNames()).isEmpty();
+        return Collections.disjoint(getCurrentShardingAlgorithms(), sqlStatement.getNames());
     }
     
     private void dropShardingAlgorithm(final String algorithmName) {

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGener
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
@@ -92,7 +93,7 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingKeyGeneratorStatement sqlStatement) {
-        return !getIdenticalData(rule.getConfiguration().getKeyGenerators().keySet(), sqlStatement.getNames()).isEmpty();
+        return Collections.disjoint(rule.getConfiguration().getKeyGenerators().keySet(), sqlStatement.getNames());
     }
     
     @Override

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableRef
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -85,7 +86,7 @@ public final class DropShardingTableReferenceExecutor implements DatabaseRuleDro
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingTableReferenceRuleStatement sqlStatement) {
-        return !getIdenticalData(getCurrentShardingTableReferenceRuleNames(), sqlStatement.getNames()).isEmpty();
+        return Collections.disjoint(getCurrentShardingTableReferenceRuleNames(), sqlStatement.getNames());
     }
     
     @Override
