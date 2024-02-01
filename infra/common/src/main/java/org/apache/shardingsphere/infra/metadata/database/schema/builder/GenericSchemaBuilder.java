@@ -132,7 +132,7 @@ public final class GenericSchemaBuilder {
             Collection<ShardingSphereColumn> columns = convertToColumns(each.getColumns());
             Collection<ShardingSphereIndex> indexes = convertToIndexes(each.getIndexes());
             Collection<ShardingSphereConstraint> constraints = convertToConstraints(each.getConstraints());
-            result.put(each.getName(), new ShardingSphereTable(each.getName(), columns, indexes, constraints));
+            result.put(each.getName(), new ShardingSphereTable(each.getName(), columns, indexes, constraints, each.getType()));
         }
         return result;
     }

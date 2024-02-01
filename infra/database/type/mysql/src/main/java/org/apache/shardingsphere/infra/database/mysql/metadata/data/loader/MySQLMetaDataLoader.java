@@ -62,19 +62,39 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     private static final String CONSTRAINT_META_DATA_SQL = "SELECT CONSTRAINT_NAME, TABLE_NAME, REFERENCED_TABLE_NAME FROM information_schema.KEY_COLUMN_USAGE "
             + "WHERE TABLE_NAME IN (%s) AND REFERENCED_TABLE_SCHEMA IS NOT NULL";
     
+    private static final String TABLE_TYPE_META_DATA_SQL = "SHOW FULL TABLES";
+    
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
+        Map<String, String> tableTypeMetaDataMap = loadTableTypeMetaDataMap(material.getDataSource());
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(material.getDataSource(), material.getActualTableNames());
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(material.getDataSource(), columnMetaDataMap.keySet());
         Map<String, Collection<ConstraintMetaData>> constraintMetaDataMap =
                 columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadConstraintMetaDataMap(material.getDataSource(), columnMetaDataMap.keySet());
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
+            String tableType = tableTypeMetaDataMap.getOrDefault(entry.getKey(), "BASE TABLE");
             Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
             Collection<ConstraintMetaData> constraintMetaDataList = constraintMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
-            tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, constraintMetaDataList));
+            tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, constraintMetaDataList, getTableType(tableType)));
         }
         return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaDataList));
+    }
+    
+    private Map<String, String> loadTableTypeMetaDataMap(final DataSource dataSource) throws SQLException {
+        Map<String, String> result = new LinkedHashMap<>();
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(TABLE_TYPE_META_DATA_SQL)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String tableName = resultSet.getString(1);
+                    String tableType = resultSet.getString("TABLE_TYPE");
+                    result.put(tableName, tableType);
+                }
+            }
+        }
+        return result;
     }
     
     private Map<String, Collection<ConstraintMetaData>> loadConstraintMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {

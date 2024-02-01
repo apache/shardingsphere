@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.model;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,8 +51,10 @@ public final class ShardingSphereTable {
     
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
+    private final TableType type;
+    
     public ShardingSphereTable() {
-        this("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        this("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE);
     }
     
     public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columns,
@@ -60,6 +63,16 @@ public final class ShardingSphereTable {
         this.columns = createColumns(columns);
         this.indexes = createIndexes(indexes);
         this.constraints = createConstraints(constraints);
+        this.type = TableType.TABLE;
+    }
+    
+    public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columns,
+                               final Collection<ShardingSphereIndex> indexes, final Collection<ShardingSphereConstraint> constraints, final TableType type) {
+        this.name = name;
+        this.columns = createColumns(columns);
+        this.indexes = createIndexes(indexes);
+        this.constraints = createConstraints(constraints);
+        this.type = type;
     }
     
     private Map<String, ShardingSphereColumn> createColumns(final Collection<ShardingSphereColumn> columns) {
@@ -96,7 +109,7 @@ public final class ShardingSphereTable {
     
     /**
      * Put column meta data.
-     * 
+     *
      * @param column column meta data
      */
     public void putColumn(final ShardingSphereColumn column) {
@@ -134,7 +147,7 @@ public final class ShardingSphereTable {
     
     /**
      * Put index meta data.
-     * 
+     *
      * @param index index meta data
      */
     public void putIndex(final ShardingSphereIndex index) {
@@ -143,7 +156,7 @@ public final class ShardingSphereTable {
     
     /**
      * Remove index meta data via index name.
-     * 
+     *
      * @param indexName index name
      */
     public void removeIndex(final String indexName) {

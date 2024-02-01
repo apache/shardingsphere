@@ -15,29 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.schema.pojo;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.Map;
+package org.apache.shardingsphere.infra.database.core.metadata.database.enums;
 
 /**
- * ShardingSphere table meta data for YAML.
+ * Table type.
  */
-@Getter
-@Setter
-public final class YamlShardingSphereTable implements YamlConfiguration {
-    
-    private String name;
-    
-    private Map<String, YamlShardingSphereColumn> columns;
-    
-    private Map<String, YamlShardingSphereIndex> indexes;
-    
-    private Map<String, YamlShardingSphereConstraint> constraints;
-    
-    private TableType type;
+public enum TableType {
+    TABLE, VIEW
 }

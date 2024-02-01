@@ -87,22 +87,21 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         }
         List<MemoryQueryResultDataRow> rows = getAllTableNames(databaseName).stream().map(each -> {
             List<Object> rowValues = new LinkedList<>();
-            rowValues.add(each);
+            rowValues.add(each.getName());
             if (showTablesStatement.isContainsFull()) {
-                rowValues.add(TABLE_TYPE);
+                rowValues.add(each.getType());
             }
             return new MemoryQueryResultDataRow(rowValues);
         }).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
-    private Collection<String> getAllTableNames(final String databaseName) {
-        Collection<String> result = ProxyContext.getInstance()
-                .getDatabase(databaseName).getSchema(databaseName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
+    private Collection<ShardingSphereTable> getAllTableNames(final String databaseName) {
+        Collection<ShardingSphereTable> result = ProxyContext.getInstance().getDatabase(databaseName).getSchema(databaseName).getTables().values();
         if (!showTablesStatement.getFilter().isPresent()) {
             return result;
         }
         Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(optional -> SQLUtils.convertLikePatternToRegex(optional.getPattern()));
-        return pattern.isPresent() ? result.stream().filter(each -> Pattern.compile(pattern.get(), Pattern.CASE_INSENSITIVE).matcher(each).matches()).collect(Collectors.toList()) : result;
+        return pattern.isPresent() ? result.stream().filter(each -> Pattern.compile(pattern.get(), Pattern.CASE_INSENSITIVE).matcher(each.getName()).matches()).collect(Collectors.toList()) : result;
     }
 }
