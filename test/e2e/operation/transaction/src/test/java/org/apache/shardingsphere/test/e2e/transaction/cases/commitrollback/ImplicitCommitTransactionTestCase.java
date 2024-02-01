@@ -75,7 +75,7 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
             assertTrue(connection.getAutoCommit());
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (1, 1, 1), (2, 2, 2)");
             assertTrue(connection.getAutoCommit());
-            assertThrows(SQLException.class, () -> executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (1, 1, 1), (2, 2, 2)"));
+            assertThrows(SQLException.class, () -> executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (3, 3, 3), (2, 2, 2)"));
         }
         try (Connection connection = getDataSource().getConnection()) {
             assertAccountRowCount(connection, 2);

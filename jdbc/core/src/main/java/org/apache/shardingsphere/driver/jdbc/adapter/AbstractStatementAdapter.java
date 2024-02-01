@@ -57,7 +57,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     private boolean closed;
     
     protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
-        if (connection.getAutoCommit()) {
+        if (!connection.getAutoCommit()) {
             return false;
         }
         ConnectionTransaction connectionTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction();
