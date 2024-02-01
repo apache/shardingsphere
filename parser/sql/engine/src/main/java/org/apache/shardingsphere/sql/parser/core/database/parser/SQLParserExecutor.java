@@ -67,6 +67,7 @@ public final class SQLParserExecutor {
             try {
                 return (ParseASTNode) sqlParser.parse();
             } catch (final ParseCancellationException e) {
+                e.printStackTrace();
                 throw new SQLParsingException(sql + ", " + e.getMessage());
             }
         }

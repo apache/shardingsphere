@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
 
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.OptionHintSegment;
@@ -37,6 +38,8 @@ public final class SQLServerUpdateStatement extends UpdateStatement implements S
     private WithTableHintSegment withTableHintSegment;
     
     private OptionHintSegment optionHintSegment;
+    
+    private OutputSegment outputSegment;
     
     /**
      * Get with segment.
@@ -63,5 +66,14 @@ public final class SQLServerUpdateStatement extends UpdateStatement implements S
      */
     public Optional<OptionHintSegment> getOptionHintSegment() {
         return Optional.ofNullable(optionHintSegment);
+    }
+    
+    /**
+     * Get output segment.
+     *
+     * @return output segment.
+     */
+    public Optional<OutputSegment> getOutputSegment() {
+        return Optional.ofNullable(outputSegment);
     }
 }

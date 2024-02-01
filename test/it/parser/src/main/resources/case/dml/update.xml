@@ -1713,4 +1713,187 @@
             </from>
         </set>
     </update>
+    
+    <update sql-case-id="update_with_open_query_function">
+        <table start-index="7" stop-index="106">
+            <function-table start-index="7" stop-index="106">
+                <table-function function-name="OPENQUERY" text="OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Department WHERE DepartmentID = 4')">
+                    <parameter>
+                        <column name="MyLinkedServer" start-index="18" stop-index="31" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="SELECT GroupName FROM HumanResources.Department WHERE DepartmentID = 4" start-index="34" stop-index="105" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </table>
+        <set start-index="108" stop-index="144">
+            <assignment start-index="112" stop-index="144">
+                <column name="GroupName" start-index="112" stop-index="120" />
+                <assignment-value>
+                    <literal-expression value="Sales and Marketing" start-index="124" stop-index="144" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+    
+    <update sql-case-id="update_with_open_datasource_function">
+        <table start-index="7" stop-index="130">
+            <function-table start-index="7" stop-index="130">
+                <table-function function-name="OPENDATASOURCE" text="OPENDATASOURCE('SQLNCLI', 'Data Source=&lt;server name&gt;;Integrated Security=SSPI').AdventureWorks2022.HumanResources.Department" />
+            </function-table>
+        </table>
+        <set start-index="132" stop-index="168">
+            <assignment>
+                <column name="GroupName" start-index="136" stop-index="144" />
+                <assignment-value>
+                    <literal-expression value="Sales and Marketing" start-index="148" stop-index="168" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="170" stop-index="191">
+            <expr>
+                <binary-operation-expression start-index="176" stop-index="191">
+                    <left>
+                        <column name="DepartmentID" start-index="176" stop-index="187" />
+                    </left>
+                    <right>
+                        <literal-expression value="4" start-index="191" stop-index="191" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+    
+    <update sql-case-id="update_with_write_function_and_output_clause">
+        <table start-index="7" stop-index="25">
+            <simple-table name="Document" start-index="7" stop-index="25">
+                <owner name="Production" start-index="7" stop-index="16" />
+            </simple-table>
+        </table>
+        <set start-index="27" stop-index="72">
+            <assignment start-index="31" stop-index="72">
+                <column name="DocumentSummary" start-index="31" stop-index="45" />
+                <assignment-value>
+                    <function function-name="WRITE" text="WRITE (N'features',28,10)" start-index="48" stop-index="72">
+                        <parameter>
+                            <literal-expression value="features" start-index="55" stop-index="65" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="28" start-index="67" stop-index="68" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="10" start-index="70" stop-index="71" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+        <output start-index="74" stop-index="146">
+            <output-table name="@MyTableVar" start-index="136" stop-index="146" />
+            <output-columns>
+                <column-projection name="DocumentSummary" start-index="81" stop-index="103" />
+                <column-projection name="DocumentSummary" start-index="106" stop-index="129" />
+            </output-columns>
+        </output>
+        <where start-index="148" stop-index="200">
+            <expr>
+                <binary-operation-expression start-index="154" stop-index="200">
+                    <left>
+                        <column name="Title" start-index="154" stop-index="158" />
+                    </left>
+                    <right>
+                        <literal-expression value="Front Reflector Bracket Installation" start-index="162" stop-index="200" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+    
+    <update sql-case-id="update_with_open_rowset_function_and_subquery">
+        <table start-index="7" stop-index="29">
+            <simple-table name="ProductPhoto" start-index="7" stop-index="29">
+                <owner name="Production" start-index="7" stop-index="16" />
+            </simple-table>
+        </table>
+        <set start-index="31" stop-index="118">
+            <assignment start-index="35" stop-index="118">
+                <column name="ThumbNailPhoto" start-index="35" stop-index="48" />
+                <assignment-value>
+                    <subquery start-index="52" stop-index="118">
+                        <select>
+                            <projections start-index="61" stop-index="61">
+                                <shorthand-projection start-index="61" stop-index="61" />
+                            </projections>
+                            <from start-index="69" stop-index="111">
+                                <function-table table-alias="x" start-index="69" stop-index="111">
+                                    <table-function function-name="OPENROWSET" text="OPENROWSET(BULK 'c:Tires.jpg', SINGLE_BLOB)">
+                                        <parameter>
+                                            <literal-expression value="c:Tires.jpg" start-index="85" stop-index="97" />
+                                        </parameter>
+                                        <parameter>
+                                            <column name="SINGLE_BLOB" start-index="100" stop-index="110" />
+                                        </parameter>
+                                    </table-function>
+                                </function-table>
+                            </from>
+                        </select>
+                    </subquery>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="120" stop-index="143">
+            <expr>
+                <binary-operation-expression start-index="126" stop-index="143">
+                    <left>
+                        <column name="ProductPhotoID" start-index="126" stop-index="139" />
+                    </left>
+                    <right>
+                        <literal-expression value="1" start-index="143" stop-index="143" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+    
+    <update sql-case-id="update_with_filestream">
+        <table start-index="7" stop-index="25">
+            <simple-table name="Records" start-index="7" stop-index="25">
+                <owner name="dbo" start-index="15" stop-index="17">
+                    <owner name="Archive" start-index="7" stop-index="13" />
+                </owner>
+            </simple-table>
+        </table>
+        <set start-index="27" stop-index="72">
+            <assignment start-index="31" stop-index="72">
+                <column name="Chart" start-delimiter="[" end-delimiter="]" start-index="31" stop-index="37" />
+                <assignment-value>
+                    <function function-name="CAST" text="CAST('Xray 1' as VARBINARY(max))" start-index="41" stop-index="72">
+                        <parameter>
+                            <literal-expression value="Xray 1" start-index="46" stop-index="53" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="VARBINARY" start-index="58" stop-index="71" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="74" stop-index="97">
+            <expr>
+                <binary-operation-expression start-index="80" stop-index="97">
+                    <left>
+                        <column name="SerialNumber" start-delimiter="[" end-delimiter="]" start-index="80" stop-index="93" />
+                    </left>
+                    <right>
+                        <literal-expression value="2" start-index="97" stop-index="97" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
 </sql-parser-test-cases>
