@@ -22,35 +22,15 @@
 |:---------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [![Stargazers Over Time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere) | [![Contributor over time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere) |
 
-<details>
-  <summary>Table of Contents</summary>
-
-  - [Overview](#overview-)
-  - [Documentation](#documentation-)
-  - [Contribution](#contribution-)
-  - [Team](#team-)
-  - [Community & Support](#community--support-)
-  - [Status](#status-)
-  - [How it Works](#how-it-works-)
-    - [ShardingSphere-JDBC](#shardingsphere-jdbc-)
-    - [ShardingSphere-Proxy](#shardingsphere-proxy-)
-    - [Hybrid Architecture](#hybrid-architecture-)
-  - [Solution](#solution-)
-  - [Roadmap](#roadmap-)
-  - [How to Build Apache ShardingSphere](#how-to-build-apache-shardingsphere-)
-  - [Landscapes](#landscapes-)
-
-</details>
-
 ### OVERVIEW
 
 <hr>
 
-Apache ShardingSphere is a distributed SQL transaction & query engine that allows for data sharding, scaling, encryption, and more - on any database. Our community's guiding development concept is Database Plus for creating a complete ecosystem that allows you to transform any database into a distributed database system. 
+Apache ShardingSphere is a distributed SQL transaction & query engine that allows for data sharding, scaling, encryption, and more - on any database. Our community's guiding development concept is Database Plus for creating a complete ecosystem that allows you to transform any database into a distributed database system.
 
-It focuses on repurposing existing databases, by placing a standardized upper layer above existing and fragmented databases, rather than creating a new database. 
+It focuses on repurposing existing databases, by placing a standardized upper layer above existing and fragmented databases, rather than creating a new database.
 
-The goal is to provide unified database services and minimize or eliminate the challenges caused by underlying databases' fragmentation. 
+The goal is to provide unified database services and minimize or eliminate the challenges caused by underlying databases' fragmentation.
 This results in applications only needing to communicate with a single standardized service.
 
 The concepts at the core of the project are `Connect`, `Enhance` and `Pluggable`.
@@ -120,13 +100,13 @@ Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/mi
 [comment]: <> (##)
 
 [comment]: <> (### NIGHTLY BUILDS:)
- 
+
 [comment]: <> (<hr>)
 
 [comment]: <> (A nightly build of ShardingSphere from the latest master branch is available. )
 
 [comment]: <> (The package is updated daily and is available [here]&#40;http://117.48.121.24:8080&#41;.)
- 
+
 [comment]: <> (##)
 
 [comment]: <> (**‼️ Notice:**)
@@ -138,7 +118,7 @@ Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/mi
 [comment]: <> (The branch is not always fully tested. )
 
 [comment]: <> (The nightly build may contain bugs, and there may be new features added which may cause problems with your environment. )
- 
+
 ##
 
 ### How it Works
@@ -154,7 +134,7 @@ They all provide functions of data scale-out, distributed transaction and distri
 
 [![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
-A lightweight Java framework providing extra services at the Java JDBC layer. 
+A lightweight Java framework providing extra services at the Java JDBC layer.
 With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-jdbc).
@@ -167,7 +147,7 @@ With the client end connecting directly to the database, it provides services in
 [![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.lua/shardingsphere/5.3.2/apache-shardingsphere-5.3.2-shardingsphere-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://store.docker.com/community/images/apache/shardingsphere-proxy)
 
-A transparent database proxy, providing a database server that encapsulates the database binary protocol to support heterogeneous languages. 
+A transparent database proxy, providing a database server that encapsulates the database binary protocol to support heterogeneous languages.
 Friendlier to DBAs, the MySQL and PostgreSQL version now provided can use any kind of terminal.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy).
@@ -176,7 +156,7 @@ Friendlier to DBAs, the MySQL and PostgreSQL version now provided can use any ki
 
 <hr>
 
-ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-performance light-weight OLTP applications developed with Java. 
+ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-performance light-weight OLTP applications developed with Java.
 ShardingSphere-Proxy provides static entry and all languages support, suitable for an OLAP application and sharding databases management and operation.
 
 Through the combination of ShardingSphere-JDBC & ShardingSphere-Proxy together with a unified sharding strategy by the same registry center, the ShardingSphere ecosystem can build an application system suitable to all kinds of scenarios.
