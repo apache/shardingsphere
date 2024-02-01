@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.col
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.NClob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -111,11 +114,14 @@ public final class ColumnValueReaderEngine {
             case Types.LONGVARBINARY:
                 return resultSet.getBytes(columnIndex);
             case Types.CLOB:
-                return resultSet.getClob(columnIndex);
+                Clob clob = resultSet.getClob(columnIndex);
+                return null == clob ? null : clob.getSubString(1L, (int) clob.length());
             case Types.NCLOB:
-                return resultSet.getNClob(columnIndex);
+                NClob nClob = resultSet.getNClob(columnIndex);
+                return null == nClob ? null : nClob.getSubString(1L, (int) nClob.length());
             case Types.BLOB:
-                return resultSet.getBlob(columnIndex);
+                Blob blob = resultSet.getBlob(columnIndex);
+                return null == blob ? null : blob.getBytes(1L, (int) blob.length());
             case Types.ARRAY:
                 return resultSet.getArray(columnIndex);
             default:
