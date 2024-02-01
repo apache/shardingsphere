@@ -64,7 +64,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropEncryptRuleStatement sqlStatement) {
-        return Collections.disjoint(
+        return !Collections.disjoint(
                 ((EncryptRuleConfiguration) rule.getConfiguration()).getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables());
     }
     

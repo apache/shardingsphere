@@ -68,7 +68,7 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShadowRuleStatement sqlStatement) {
-        return Collections.disjoint(sqlStatement.getNames(), getDataSourceNames());
+        return !Collections.disjoint(sqlStatement.getNames(), getDataSourceNames());
     }
     
     @Override

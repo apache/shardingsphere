@@ -86,7 +86,7 @@ public final class DropShardingTableReferenceExecutor implements DatabaseRuleDro
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingTableReferenceRuleStatement sqlStatement) {
-        return Collections.disjoint(getCurrentShardingTableReferenceRuleNames(), sqlStatement.getNames());
+        return !Collections.disjoint(getCurrentShardingTableReferenceRuleNames(), sqlStatement.getNames());
     }
     
     @Override

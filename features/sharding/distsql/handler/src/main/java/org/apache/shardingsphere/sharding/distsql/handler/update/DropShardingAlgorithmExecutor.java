@@ -112,7 +112,7 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAlgorithmStatement sqlStatement) {
-        return Collections.disjoint(getCurrentShardingAlgorithms(), sqlStatement.getNames());
+        return !Collections.disjoint(getCurrentShardingAlgorithms(), sqlStatement.getNames());
     }
     
     private void dropShardingAlgorithm(final String algorithmName) {

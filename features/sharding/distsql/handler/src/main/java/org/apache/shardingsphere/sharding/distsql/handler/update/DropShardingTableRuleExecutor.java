@@ -97,7 +97,7 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
         Collection<String> currentTableNames = new LinkedList<>();
         currentTableNames.addAll(rule.getConfiguration().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         currentTableNames.addAll(rule.getConfiguration().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        return Collections.disjoint(currentTableNames, sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet()));
+        return !Collections.disjoint(currentTableNames, sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet()));
     }
     
     @Override

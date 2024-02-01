@@ -62,7 +62,7 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement) {
-        return Collections.disjoint(rule.getConfiguration().getTables(), sqlStatement.getTables());
+        return !Collections.disjoint(rule.getConfiguration().getTables(), sqlStatement.getTables());
     }
     
     @Override

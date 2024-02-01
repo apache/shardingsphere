@@ -92,7 +92,7 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAuditorStatement sqlStatement) {
-        return Collections.disjoint(rule.getConfiguration().getAuditors().keySet(), sqlStatement.getNames());
+        return !Collections.disjoint(rule.getConfiguration().getAuditors().keySet(), sqlStatement.getNames());
     }
     
     @Override
