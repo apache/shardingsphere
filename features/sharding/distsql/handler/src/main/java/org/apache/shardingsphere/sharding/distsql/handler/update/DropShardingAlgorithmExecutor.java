@@ -111,7 +111,7 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAlgorithmStatement sqlStatement) {
-        return null != rule && !getIdenticalData(getCurrentShardingAlgorithms(), sqlStatement.getNames()).isEmpty();
+        return !getIdenticalData(getCurrentShardingAlgorithms(), sqlStatement.getNames()).isEmpty();
     }
     
     private void dropShardingAlgorithm(final String algorithmName) {

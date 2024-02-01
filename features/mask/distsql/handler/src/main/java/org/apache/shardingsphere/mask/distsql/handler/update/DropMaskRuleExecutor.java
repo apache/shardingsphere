@@ -64,8 +64,7 @@ public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<Drop
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropMaskRuleStatement sqlStatement) {
-        return null != rule
-                && !getIdenticalData(rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables()).isEmpty();
+        return !getIdenticalData(rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables()).isEmpty();
     }
     
     @Override

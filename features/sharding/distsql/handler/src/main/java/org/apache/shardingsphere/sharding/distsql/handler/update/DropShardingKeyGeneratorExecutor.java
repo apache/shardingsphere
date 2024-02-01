@@ -92,7 +92,7 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingKeyGeneratorStatement sqlStatement) {
-        return null != rule && !getIdenticalData(rule.getConfiguration().getKeyGenerators().keySet(), sqlStatement.getNames()).isEmpty();
+        return !getIdenticalData(rule.getConfiguration().getKeyGenerators().keySet(), sqlStatement.getNames()).isEmpty();
     }
     
     @Override

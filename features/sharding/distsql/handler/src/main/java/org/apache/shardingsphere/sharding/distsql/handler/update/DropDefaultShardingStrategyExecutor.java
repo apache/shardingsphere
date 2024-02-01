@@ -64,10 +64,9 @@ public final class DropDefaultShardingStrategyExecutor implements DatabaseRuleDr
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropDefaultShardingStrategyStatement sqlStatement) {
-        if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
-            return null != rule && null != rule.getConfiguration().getDefaultTableShardingStrategy();
-        }
-        return null != rule && null != rule.getConfiguration().getDefaultDatabaseShardingStrategy();
+        return sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())
+                ? null != rule.getConfiguration().getDefaultTableShardingStrategy()
+                : null != rule.getConfiguration().getDefaultDatabaseShardingStrategy();
     }
     
     @Override
