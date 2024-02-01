@@ -18,10 +18,29 @@
 package org.apache.shardingsphere.infra.database.testcontainers.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
- * Database type for Testcontainers.
- * All jdbcUrl prefixes supported by testcontainers-java should extend this class.
+ * Database type of TiDB in testcontainers-java.
  */
-public interface TestcontainersDatabaseType extends DatabaseType {
+public final class TcTiDBDatabaseType implements TestcontainersDatabaseType {
+    
+    @Override
+    public Collection<String> getJdbcUrlPrefixes() {
+        return Collections.singleton("jdbc:tc:tidb:");
+    }
+    
+    @Override
+    public Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    }
+    
+    @Override
+    public String getType() {
+        return "TC-TiDB";
+    }
 }
