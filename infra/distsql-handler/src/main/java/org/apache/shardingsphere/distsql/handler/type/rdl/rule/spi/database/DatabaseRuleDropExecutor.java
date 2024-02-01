@@ -22,9 +22,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 /**
  * Database rule drop executor.
  *
@@ -73,17 +70,6 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
      */
     default boolean hasAnyOneToBeDropped(final T sqlStatement) {
         return true;
-    }
-    
-    /**
-     * Get identical data.
-     *
-     * @param currentRules collection
-     * @param toBeDroppedRules collection
-     * @return identical data
-     */
-    default Collection<String> getIdenticalData(final Collection<String> currentRules, final Collection<String> toBeDroppedRules) {
-        return currentRules.stream().filter(each -> toBeDroppedRules.stream().anyMatch(each::equalsIgnoreCase)).collect(Collectors.toSet());
     }
     
     // TODO Remove when metadata structure adjustment completed. #25485
