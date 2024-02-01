@@ -66,16 +66,6 @@ public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends Shar
     boolean updateCurrentRuleConfiguration(T sqlStatement, C currentRuleConfig);
     
     /**
-     * Whether there is configuration.
-     *
-     * @param currentRuleConfig current rule configuration 
-     * @return configuration exists or does not exist
-     */
-    default boolean isExistRuleConfig(final C currentRuleConfig) {
-        return null != currentRuleConfig;
-    }
-    
-    /**
      * Whether there is dropped data.
      * 
      * @param sqlStatement SQL statement
