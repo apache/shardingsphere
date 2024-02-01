@@ -47,7 +47,7 @@ jobs:
         os: [ 'ubuntu-latest' ]
         java-version: [ '21.0.2' ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: ${{ matrix.java-version }}
