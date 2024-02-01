@@ -19,7 +19,6 @@ grammar SQLServerStatement;
 
 import Comments, TCLStatement, StoreProcedure, DALStatement;
 
-
 execute
     : (select
     | insert
