@@ -48,4 +48,9 @@
     <sql-case id="update_with_dot_column_name" value="UPDATE employees SET salary =.salary + 10  WHERE employee_id BETWEEN 1 and 10; " db-types="Oracle" />
     <sql-case id="update_with_set_value_clause" value="UPDATE ot1 SET VALUE(ot1.x) = t1(20) WHERE VALUE(ot1.x) = t1(10);" db-types="Oracle" />
     <sql-case id="update_with_open_row_set_function" value="UPDATE T SET XmlCol = ( SELECT * FROM OPENROWSET(BULK 'C:\SampleFolder\SampleData3.txt', SINGLE_BLOB) AS x) WHERE IntCol = 1" db-types="SQLServer"/>
+    <sql-case id="update_with_point_type" value="UPDATE dbo.Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
+    <sql-case id="update_with_table_hint" value="UPDATE Production.Product WITH (TABLOCK) SET ListPrice = ListPrice * 1.10 WHERE ProductNumber LIKE 'BK-%'" db-types="SQLServer"/>
+    <sql-case id="update_with_option_hint" value="UPDATE Production.Product SET ListPrice = ListPrice * 1.10 WHERE ProductNumber LIKE @Product OPTION (OPTIMIZE FOR (@Product = 'BK-%'))" db-types="SQLServer"/>
+    <sql-case id="update_sales_table_with_subquery" value="UPDATE YearlyTotalSales SET YearlySalesAmount=(SELECT SUM(SalesAmount) FROM FactInternetSales WHERE OrderDateKey >=20040000 AND OrderDateKey &lt; 20050000) WHERE Year=2004" db-types="SQLServer"/>
+    <sql-case id="update_with_inner_join_and_database_table_column" value="UPDATE dbo.Table2 SET dbo.Table2.ColB = dbo.Table2.ColB + dbo.Table1.ColB  FROM dbo.Table2 INNER JOIN dbo.Table1 ON (dbo.Table2.ColA = dbo.Table1.ColA)" db-types="SQLServer"/>
 </sql-cases>

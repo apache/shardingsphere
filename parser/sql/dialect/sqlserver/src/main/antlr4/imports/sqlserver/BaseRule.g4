@@ -169,7 +169,7 @@ serviceName
     ;
 
 columnName
-    : (owner DOT_)? (name | scriptVariableName)
+    : ((databaseName DOT_)? (owner DOT_))? (name | scriptVariableName)
     ;
 
 scriptVariableName

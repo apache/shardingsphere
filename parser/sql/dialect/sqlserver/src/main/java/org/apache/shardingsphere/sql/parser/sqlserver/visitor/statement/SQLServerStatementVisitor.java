@@ -82,6 +82,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Nul
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenJsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenRowSetFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OptionHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClauseContext;
@@ -205,6 +206,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherL
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.exec.ExecSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.OptionHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.TableHintLimitedSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.json.JsonNullClauseSegment;
@@ -353,7 +355,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+            OwnerSegment ownerSegment = new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier()));
+            if (null != ctx.databaseName()) {
+                ownerSegment.setOwner(new OwnerSegment(ctx.databaseName().getStart().getStartIndex(), ctx.databaseName().getStop().getStopIndex(),
+                        (IdentifierValue) visit(ctx.databaseName().identifier())));
+            }
+            result.setOwner(ownerSegment);
         }
         return result;
     }
@@ -1248,11 +1255,22 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         result.setTable((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        if (null != ctx.withTableHint()) {
+            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
+        }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
+        if (null != ctx.optionHint()) {
+            result.setOptionHintSegment((OptionHintSegment) visit(ctx.optionHint()));
+        }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitOptionHint(final OptionHintContext ctx) {
+        return new OptionHintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
     
     @Override
@@ -1261,7 +1279,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         for (AssignmentContext each : ctx.assignment()) {
             assignments.add((ColumnAssignmentSegment) visit(each));
         }
-        return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
+        SetAssignmentSegment result = new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
+        if (null != ctx.fromClause()) {
+            result.setFrom((TableSegment) visit(ctx.fromClause()));
+        }
+        return result;
     }
     
     @Override
@@ -1279,9 +1301,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(column);
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
-        ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-        result.getColumns().add(column);
-        return result;
+        return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
     
     @Override
