@@ -42,7 +42,7 @@ public interface DialectMetaDataLoader extends DatabaseTypedSPI {
     Collection<SchemaMetaData> load(MetaDataLoaderMaterial material) throws SQLException;
     
     /**
-     * get table from string value.
+     * get table type from string value.
      *
      * @param type table type string value
      * @return table type
