@@ -132,7 +132,7 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropReadwriteSplittingRuleStatement sqlStatement) {
-        return null != rule && !getIdenticalData(
+        return !getIdenticalData(
                 rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getNames()).isEmpty();
     }
     
