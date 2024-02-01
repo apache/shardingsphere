@@ -99,13 +99,19 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(database.getName()));
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName()));
-        SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(),
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionContext.getConnectionContext()));
-        Collection<ExecutionUnit> executionUnits = federationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())
-                ? getFederationExecutionUnits(queryContext, metaData, federationEngine)
-                : new KernelProcessor().generateExecutionContext(
-                        queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connectionContext.getConnectionContext()).getExecutionUnits();
+        Collection<ExecutionUnit> executionUnits = getExecutionUnits(contextManager, schemaName, metaData, queryContext);
         return executionUnits.stream().map(each -> new LocalDataQueryResultRow(each.getDataSourceName(), each.getSqlUnit().getSql())).collect(Collectors.toList());
+    }
+    
+    private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final String schemaName, final ShardingSphereMetaData metaData,
+                                                        final QueryContext queryContext) {
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionContext.getConnectionContext());
+        SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(), jdbcExecutor);
+        if (federationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
+            return getFederationExecutionUnits(queryContext, metaData, federationEngine);
+        }
+        return new KernelProcessor().generateExecutionContext(queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connectionContext.getConnectionContext())
+                .getExecutionUnits();
     }
     
     private void setUpCursorDefinition(final SQLStatementContext toBePreviewedStatementContext) {
@@ -124,11 +130,11 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaData.getProps());
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaData);
-        federationEngine.executeQuery(prepareEngine, createPreviewFederationCallback(sqlStatement), context);
-        return context.getExecutionUnits();
+        federationEngine.executeQuery(prepareEngine, createPreviewCallback(sqlStatement), context);
+        return context.getPreviewExecutionUnits();
     }
     
-    private JDBCExecutorCallback<ExecuteResult> createPreviewFederationCallback(final SQLStatement sqlStatement) {
+    private JDBCExecutorCallback<ExecuteResult> createPreviewCallback(final SQLStatement sqlStatement) {
         return new JDBCExecutorCallback<ExecuteResult>(database.getProtocolType(), database.getResourceMetaData(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()) {
             
             @Override

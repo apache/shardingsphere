@@ -15,40 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.cases.dataset.row;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint;
 
-import com.google.common.base.Splitter;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * Data set row.
+ * Option hint segment.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@RequiredArgsConstructor
 @Getter
-@Setter
-@EqualsAndHashCode
-public final class DataSetRow {
+public final class OptionHintSegment implements SQLSegment {
     
-    @XmlAttribute(name = "data-node")
-    private String dataNode;
+    private final int startIndex;
     
-    @XmlAttribute(required = true)
-    private String values;
+    private final int stopIndex;
     
-    /**
-     * Split values with vertical bar.
-     *
-     * @param delimiter delimiter of splitter
-     * @return split values
-     */
-    public List<String> splitValues(final String delimiter) {
-        return Splitter.on(delimiter).trimResults().splitToList(values);
-    }
+    private final String text;
 }

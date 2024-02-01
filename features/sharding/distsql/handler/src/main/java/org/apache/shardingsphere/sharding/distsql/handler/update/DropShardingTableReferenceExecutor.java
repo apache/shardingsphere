@@ -69,7 +69,7 @@ public final class DropShardingTableReferenceExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingTableReferenceRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
             result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration(each, ""));
@@ -84,8 +84,8 @@ public final class DropShardingTableReferenceExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(getCurrentShardingTableReferenceRuleNames(), sqlStatement.getNames()).isEmpty();
+    public boolean hasAnyOneToBeDropped(final DropShardingTableReferenceRuleStatement sqlStatement) {
+        return !getIdenticalData(getCurrentShardingTableReferenceRuleNames(), sqlStatement.getNames()).isEmpty();
     }
     
     @Override

@@ -82,7 +82,7 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleA
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShardingStrategyStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         if ("none".equalsIgnoreCase(sqlStatement.getStrategyType())) {
             setStrategyConfiguration(result, sqlStatement.getDefaultType(), new NoneShardingStrategyConfiguration());
@@ -119,6 +119,13 @@ public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleA
         } else {
             ruleConfig.setDefaultDatabaseShardingStrategy(shardingStrategyConfig);
         }
+    }
+    
+    @Override
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        UnusedAlgorithmFinder.findUnusedShardingAlgorithm(rule.getConfiguration()).forEach(each -> result.getShardingAlgorithms().put(each, rule.getConfiguration().getShardingAlgorithms().get(each)));
+        return result;
     }
     
     @Override

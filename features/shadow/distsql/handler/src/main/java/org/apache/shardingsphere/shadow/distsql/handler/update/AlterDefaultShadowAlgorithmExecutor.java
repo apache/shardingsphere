@@ -71,7 +71,7 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAl
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
         result.setDefaultShadowAlgorithmName(DEFAULT_ALGORITHM_NAME);
@@ -81,6 +81,11 @@ public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAl
     private Map<String, AlgorithmConfiguration> buildAlgorithmMap(final AlterDefaultShadowAlgorithmStatement sqlStatement) {
         return Collections.singletonMap(DEFAULT_ALGORITHM_NAME,
                 new AlgorithmConfiguration(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName(), sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getProps()));
+    }
+    
+    @Override
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration toBeAlteredRuleConfig) {
+        return null;
     }
     
     @Override

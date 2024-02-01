@@ -80,16 +80,16 @@ public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecut
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig
-                && !getIdenticalData(ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig), sqlStatement.getNames()).isEmpty();
+    public boolean hasAnyOneToBeDropped(final DropShadowAlgorithmStatement sqlStatement) {
+        return null != rule
+                && !getIdenticalData(ShadowRuleStatementSupporter.getAlgorithmNames(rule.getConfiguration()), sqlStatement.getNames()).isEmpty();
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
-            result.getShadowAlgorithms().put(each, currentRuleConfig.getShadowAlgorithms().get(each));
+            result.getShadowAlgorithms().put(each, rule.getConfiguration().getShadowAlgorithms().get(each));
         }
         return result;
     }

@@ -310,7 +310,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private int executeUpdate(final ExecuteUpdateCallback updateCallback, final SQLStatementContext sqlStatementContext, final ExecutionContext executionContext) throws SQLException {
-        return isNeedImplicitCommitTransaction(connection, executionContext)
+        return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
                 ? executeUpdateWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(updateCallback, sqlStatementContext, executionContext))
                 : useDriverToExecuteUpdate(updateCallback, sqlStatementContext, executionContext);
     }
@@ -531,7 +531,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private boolean executeWithExecutionContext(final ExecuteCallback executeCallback, final ExecutionContext executionContext) throws SQLException {
-        return isNeedImplicitCommitTransaction(connection, executionContext) ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executeCallback, executionContext))
+        return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executeCallback, executionContext))
                 : useDriverToExecute(executeCallback, executionContext);
     }
     

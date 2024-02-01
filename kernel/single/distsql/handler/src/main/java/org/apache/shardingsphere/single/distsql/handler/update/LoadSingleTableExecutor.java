@@ -55,6 +55,8 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     
     private ShardingSphereDatabase database;
     
+    private SingleRule rule;
+    
     @Override
     public void checkBeforeUpdate(final LoadSingleTableStatement sqlStatement) {
         String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
@@ -90,9 +92,9 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
         }
     }
     
-    private Collection<String> getRequiredTables(final SingleRuleConfiguration currentRuleConfig, final LoadSingleTableStatement sqlStatement) {
-        if (null != currentRuleConfig) {
-            return sqlStatement.getTables().stream().map(SingleTableSegment::toString).filter(each -> !currentRuleConfig.getTables().contains(each)).collect(Collectors.toSet());
+    private Collection<String> getRequiredTables(final LoadSingleTableStatement sqlStatement) {
+        if (null != rule) {
+            return sqlStatement.getTables().stream().map(SingleTableSegment::toString).filter(each -> !rule.getConfiguration().getTables().contains(each)).collect(Collectors.toSet());
         }
         return sqlStatement.getTables().stream().map(SingleTableSegment::toString).collect(Collectors.toSet());
     }
@@ -149,10 +151,10 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     }
     
     @Override
-    public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
+    public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final LoadSingleTableStatement sqlStatement) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
-        result.getTables().addAll(currentRuleConfig.getTables());
-        result.getTables().addAll(getRequiredTables(currentRuleConfig, sqlStatement));
+        result.getTables().addAll(rule.getConfiguration().getTables());
+        result.getTables().addAll(getRequiredTables(sqlStatement));
         return result;
     }
     
@@ -160,10 +162,6 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeCreatedRuleConfig) {
         currentRuleConfig.getTables().clear();
         currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
-    }
-    
-    @Override
-    public void setRule(final SingleRule rule) {
     }
     
     @Override

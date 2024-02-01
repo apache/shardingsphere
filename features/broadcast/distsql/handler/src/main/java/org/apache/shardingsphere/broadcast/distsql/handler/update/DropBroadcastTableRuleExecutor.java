@@ -60,13 +60,13 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
-        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getTables(), sqlStatement.getTables()).isEmpty();
+    public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement) {
+        return !getIdenticalData(rule.getConfiguration().getTables(), sqlStatement.getTables()).isEmpty();
     }
     
     @Override
-    public BroadcastRuleConfiguration buildToBeAlteredRuleConfiguration(final DropBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
-        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration(new HashSet<>(currentRuleConfig.getTables()));
+    public BroadcastRuleConfiguration buildToBeAlteredRuleConfiguration(final DropBroadcastTableRuleStatement sqlStatement) {
+        BroadcastRuleConfiguration result = new BroadcastRuleConfiguration(new HashSet<>(rule.getConfiguration().getTables()));
         result.getTables().removeIf(each -> containsIgnoreCase(sqlStatement.getTables(), each));
         return result;
     }

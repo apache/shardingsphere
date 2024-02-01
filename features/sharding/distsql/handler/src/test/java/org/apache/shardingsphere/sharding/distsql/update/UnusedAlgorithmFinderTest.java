@@ -54,7 +54,7 @@ class UnusedAlgorithmFinderTest {
         ruleConfig.getShardingAlgorithms().putAll(getAlgorithms());
         ruleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", USED_DATABASE_SHARDING_DEFAULT_ALGORITHM));
         ruleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", USED_TABLE_SHARDING_DEFAULT_ALGORITHM));
-        Collection<String> actual = UnusedAlgorithmFinder.find(ruleConfig);
+        Collection<String> actual = UnusedAlgorithmFinder.findUnusedShardingAlgorithm(ruleConfig);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
         assertTrue(actual.contains(UNUSED_ALGORITHM));

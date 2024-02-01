@@ -68,9 +68,12 @@ class DropDefaultShadowAlgorithmExecutorTest {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.setDefaultShadowAlgorithmName("default");
         ruleConfig.getShadowAlgorithms().put(ruleConfig.getDefaultShadowAlgorithmName(), mock(AlgorithmConfiguration.class));
+        ShadowRule rule = mock(ShadowRule.class);
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        executor.setRule(rule);
         executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true));
         DropDefaultShadowAlgorithmStatement sqlStatement = new DropDefaultShadowAlgorithmStatement(false);
-        assertTrue(executor.hasAnyOneToBeDropped(sqlStatement, ruleConfig));
+        assertTrue(executor.hasAnyOneToBeDropped(sqlStatement));
         executor.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
         assertNull(ruleConfig.getDefaultShadowAlgorithmName());
         assertTrue(ruleConfig.getShadowAlgorithms().isEmpty());

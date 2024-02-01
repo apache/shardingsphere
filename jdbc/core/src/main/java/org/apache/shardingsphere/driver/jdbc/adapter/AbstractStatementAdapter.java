@@ -27,7 +27,6 @@ import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOper
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -57,8 +56,8 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private boolean closed;
     
-    protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final ExecutionContext executionContext) {
-        if (connection.getAutoCommit()) {
+    protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
+        if (!connection.getAutoCommit()) {
             return false;
         }
         ConnectionTransaction connectionTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction();
@@ -66,8 +65,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         if (!TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) || isInTransaction) {
             return false;
         }
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        return isWriteDMLStatement(sqlStatement) && executionContext.getExecutionUnits().size() > 1;
+        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
     }
     
     private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {

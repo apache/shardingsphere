@@ -92,7 +92,7 @@ class CreateShardingTableRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
@@ -204,7 +204,7 @@ class CreateShardingTableRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(statementWithIfNotExists);
-        executor.updateCurrentRuleConfiguration(currentRuleConfig, executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists, currentRuleConfig));
+        executor.updateCurrentRuleConfiguration(currentRuleConfig, executor.buildToBeCreatedRuleConfiguration(statementWithIfNotExists));
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
         ShardingTableRuleConfiguration tableRule = tableRuleIterator.next();

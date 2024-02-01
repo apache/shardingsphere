@@ -77,7 +77,7 @@ class DropShardingTableReferenceExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
-        assertTrue(executor.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig));
+        assertTrue(executor.hasAnyOneToBeDropped(sqlStatement));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
@@ -95,7 +95,7 @@ class DropShardingTableReferenceExecutorTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
-        assertFalse(executor.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig));
+        assertFalse(executor.hasAnyOneToBeDropped(sqlStatement));
     }
     
     @Test

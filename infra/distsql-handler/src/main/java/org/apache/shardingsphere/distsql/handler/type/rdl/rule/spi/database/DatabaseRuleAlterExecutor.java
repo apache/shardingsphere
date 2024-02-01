@@ -34,22 +34,18 @@ public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends Sha
      * Build to be altered rule configuration.
      *
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration
      * @return to be altered rule configuration
      */
-    C buildToBeAlteredRuleConfiguration(T sqlStatement, C currentRuleConfig);
+    C buildToBeAlteredRuleConfiguration(T sqlStatement);
     
     /**
      * TODO Remove temporary default implementation
      * Build to be dropped rule configuration.
      *
-     * @param currentRuleConfig current rule configuration
      * @param toBeAlteredRuleConfig new rule configuration to be renewed
      * @return to be dropped rule configuration
      */
-    default C buildToBeDroppedRuleConfiguration(final C currentRuleConfig, final C toBeAlteredRuleConfig) {
-        return null;
-    }
+    C buildToBeDroppedRuleConfiguration(C toBeAlteredRuleConfig);
     
     /**
      * Update current rule configuration.

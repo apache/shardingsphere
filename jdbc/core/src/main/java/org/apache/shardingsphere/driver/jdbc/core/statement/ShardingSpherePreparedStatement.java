@@ -454,7 +454,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private boolean executeWithExecutionContext(final ExecutionContext executionContext) throws SQLException {
-        return isNeedImplicitCommitTransaction(connection, executionContext) ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executionContext)) : useDriverToExecute(executionContext);
+        return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
+                ? executeWithImplicitCommitTransaction(() -> useDriverToExecute(executionContext))
+                : useDriverToExecute(executionContext);
     }
     
     private boolean executeWithImplicitCommitTransaction(final ImplicitTransactionCallback<Boolean> callback) throws SQLException {
@@ -475,7 +477,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private int executeUpdateWithExecutionContext(final ExecutionContext executionContext) throws SQLException {
-        return isNeedImplicitCommitTransaction(connection, executionContext) ? executeUpdateWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(executionContext))
+        return isNeedImplicitCommitTransaction(connection, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getExecutionUnits().size() > 1)
+                ? executeUpdateWithImplicitCommitTransaction(() -> useDriverToExecuteUpdate(executionContext))
                 : useDriverToExecuteUpdate(executionContext);
     }
     
@@ -679,17 +682,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         try {
             // TODO add raw SQL executor
-            initBatchPreparedStatementExecutor();
-            int[] results = batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
-            if (statementOption.isReturnGeneratedKeys() && generatedValues.isEmpty()) {
-                List<Statement> batchPreparedStatementExecutorStatements = batchPreparedStatementExecutor.getStatements();
-                for (Statement statement : batchPreparedStatementExecutorStatements) {
-                    statements.add((PreparedStatement) statement);
-                }
-                currentBatchGeneratedKeysResultSet = getGeneratedKeys();
-                statements.clear();
-            }
-            return results;
+            return doExecuteBatch(batchPreparedStatementExecutor);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -700,23 +693,37 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
     }
     
-    private void initBatchPreparedStatementExecutor() throws SQLException {
+    private int[] doExecuteBatch(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
+        initBatchPreparedStatementExecutor(batchExecutor);
+        int[] result = batchExecutor.executeBatch(executionContext.getSqlStatementContext());
+        if (statementOption.isReturnGeneratedKeys() && generatedValues.isEmpty()) {
+            List<Statement> batchPreparedStatementExecutorStatements = batchExecutor.getStatements();
+            for (Statement statement : batchPreparedStatementExecutorStatements) {
+                statements.add((PreparedStatement) statement);
+            }
+            currentBatchGeneratedKeysResultSet = getGeneratedKeys();
+            statements.clear();
+        }
+        return result;
+    }
+    
+    private void initBatchPreparedStatementExecutor(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getMetaData().getProps()
                 .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), connection.getDatabaseConnectionManager(), statementManager, statementOption,
                 metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
                 metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits());
-        List<ExecutionUnit> executionUnits = new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits().size());
-        for (BatchExecutionUnit each : batchPreparedStatementExecutor.getBatchExecutionUnits()) {
+        List<ExecutionUnit> executionUnits = new ArrayList<>(batchExecutor.getBatchExecutionUnits().size());
+        for (BatchExecutionUnit each : batchExecutor.getBatchExecutionUnits()) {
             ExecutionUnit executionUnit = each.getExecutionUnit();
             executionUnits.add(executionUnit);
         }
-        batchPreparedStatementExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(databaseName)));
-        setBatchParametersForStatements();
+        batchExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(databaseName)));
+        setBatchParametersForStatements(batchExecutor);
     }
     
-    private void setBatchParametersForStatements() throws SQLException {
-        for (Statement each : batchPreparedStatementExecutor.getStatements()) {
-            List<List<Object>> paramSet = batchPreparedStatementExecutor.getParameterSet(each);
+    private void setBatchParametersForStatements(final BatchPreparedStatementExecutor batchExecutor) throws SQLException {
+        for (Statement each : batchExecutor.getStatements()) {
+            List<List<Object>> paramSet = batchExecutor.getParameterSet(each);
             for (List<Object> eachParams : paramSet) {
                 replaySetParameter((PreparedStatement) each, eachParams);
                 ((PreparedStatement) each).addBatch();

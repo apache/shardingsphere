@@ -48,11 +48,11 @@ exec
     ;
 
 update
-    : withClause? UPDATE top? tableReferences setAssignmentsClause whereClause? (OPTION queryHint)?
+    : withClause? UPDATE top? tableReferences withTableHint? setAssignmentsClause whereClause? optionHint?
     ;
 
 assignment
-    : columnName EQ_ assignmentValue
+    : columnName (EQ_ | DOT_) assignmentValue
     ;
 
 setAssignmentsClause
@@ -69,7 +69,11 @@ assignmentValue
     ;
 
 delete
-    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause? (OPTION queryHint)?
+    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause? optionHint?
+    ;
+
+optionHint
+    : OPTION queryHint
     ;
 
 singleTableClause
@@ -222,7 +226,7 @@ queryHint
     | MAXDOP INT_NUM_
     | MAXRECURSION INT_NUM_
     | NO_PERFORMANCE_SPOOL
-    | OPTIMIZE FOR LP_ AT_ name (UNKNOWN | EQ_ identifier)* RP_
+    | LP_ OPTIMIZE FOR LP_ variableName (UNKNOWN | EQ_ literals)* RP_ RP_
     | OPTIMIZE FOR UNKNOWN
     | PARAMETERIZATION (SIMPLE | FORCED)
     | QUERYTRACEON INT_NUM_

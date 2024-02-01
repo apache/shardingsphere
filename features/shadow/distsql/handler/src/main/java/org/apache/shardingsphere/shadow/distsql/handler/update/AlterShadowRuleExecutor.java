@@ -77,8 +77,15 @@ public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShadowRuleStatement sqlStatement) {
         return ShadowRuleStatementConverter.convert(sqlStatement.getRules());
+    }
+    
+    @Override
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final ShadowRuleConfiguration toBeAlteredRuleConfig) {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        UnusedAlgorithmFinder.findUnusedShadowAlgorithm(rule.getConfiguration()).forEach(each -> result.getShadowAlgorithms().put(each, rule.getConfiguration().getShadowAlgorithms().get(each)));
+        return result;
     }
     
     @Override

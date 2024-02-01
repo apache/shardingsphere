@@ -77,7 +77,7 @@ public final class CreateDefaultShadowAlgorithmExecutor implements DatabaseRuleC
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         if (getDuplicatedAlgorithmNames().isEmpty()) {
             result = new ShadowRuleConfiguration();

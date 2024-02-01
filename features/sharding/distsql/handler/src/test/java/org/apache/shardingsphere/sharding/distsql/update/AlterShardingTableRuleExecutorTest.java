@@ -78,7 +78,7 @@ class AlterShardingTableRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfig.getTables().iterator().next();
@@ -106,7 +106,7 @@ class AlterShardingTableRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfig.getTables().iterator().next();
@@ -134,7 +134,7 @@ class AlterShardingTableRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = currentRuleConfig.getTables().iterator().next();

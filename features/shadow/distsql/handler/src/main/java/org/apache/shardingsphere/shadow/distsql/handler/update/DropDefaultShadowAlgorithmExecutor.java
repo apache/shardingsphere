@@ -53,16 +53,16 @@ public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDro
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig && null != currentRuleConfig.getDefaultShadowAlgorithmName();
+    public boolean hasAnyOneToBeDropped(final DropDefaultShadowAlgorithmStatement sqlStatement) {
+        return null != rule && null != rule.getConfiguration().getDefaultShadowAlgorithmName();
     }
     
     @Override
-    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public ShadowRuleConfiguration buildToBeDroppedRuleConfiguration(final DropDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setShadowAlgorithms(Collections.singletonMap(currentRuleConfig.getDefaultShadowAlgorithmName(),
-                currentRuleConfig.getShadowAlgorithms().get(currentRuleConfig.getDefaultShadowAlgorithmName())));
-        result.setDefaultShadowAlgorithmName(currentRuleConfig.getDefaultShadowAlgorithmName());
+        result.setShadowAlgorithms(Collections.singletonMap(rule.getConfiguration().getDefaultShadowAlgorithmName(),
+                rule.getConfiguration().getShadowAlgorithms().get(rule.getConfiguration().getDefaultShadowAlgorithmName())));
+        result.setDefaultShadowAlgorithmName(rule.getConfiguration().getDefaultShadowAlgorithmName());
         return result;
     }
     

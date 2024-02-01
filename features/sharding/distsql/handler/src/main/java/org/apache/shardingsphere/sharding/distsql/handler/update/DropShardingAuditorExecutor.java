@@ -75,10 +75,10 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeDroppedRuleConfiguration(final DropShardingAuditorStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (String each : sqlStatement.getNames()) {
-            result.getAuditors().put(each, currentRuleConfig.getAuditors().get(each));
+            result.getAuditors().put(each, rule.getConfiguration().getAuditors().get(each));
         }
         return result;
     }
@@ -90,8 +90,8 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getAuditors().keySet(), sqlStatement.getNames()).isEmpty();
+    public boolean hasAnyOneToBeDropped(final DropShardingAuditorStatement sqlStatement) {
+        return null != rule && !getIdenticalData(rule.getConfiguration().getAuditors().keySet(), sqlStatement.getNames()).isEmpty();
     }
     
     @Override
