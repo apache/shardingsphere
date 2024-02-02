@@ -105,9 +105,9 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
                 .forEach((key, value) -> ShardingSpherePreconditions.checkState(!value.getShadowAlgorithmNames().isEmpty(), () -> new MissingRequiredShadowAlgorithmException("Shadow", databaseName)));
     }
     
-    private Map<String, ShadowDataSourceConfiguration> initShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSourceConfigurations) {
+    private Map<String, ShadowDataSourceConfiguration> initShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSourceConfigs) {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        for (ShadowDataSourceConfiguration each : dataSourceConfigurations) {
+        for (ShadowDataSourceConfiguration each : dataSourceConfigs) {
             result.put(each.getName(), each);
         }
         return result;
