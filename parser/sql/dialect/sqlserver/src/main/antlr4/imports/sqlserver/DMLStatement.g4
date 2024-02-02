@@ -52,7 +52,7 @@ update
     ;
 
 assignment
-    : columnName (EQ_ | DOT_) assignmentValue
+    : columnName ((PLUS_ | MINUS_ | ASTERISK_ | SLASH_ | MOD_)? EQ_ | DOT_) assignmentValue
     ;
 
 setAssignmentsClause
