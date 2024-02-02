@@ -62,12 +62,12 @@ class MySQLTest {
     @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException, IOException {
         try (
-                GenericContainer<?> mySQLContainer = new GenericContainer<>(DockerImageName.parse("mysql:8.2.0-oracle"))
+                GenericContainer<?> databaseContainer = new GenericContainer<>(DockerImageName.parse("mysql:8.2.0-oracle"))
                         .withEnv("MYSQL_DATABASE", DATABASE)
                         .withEnv("MYSQL_ROOT_PASSWORD", PASSWORD)
                         .withCreateContainerCmdModifier(
                                 cmd -> cmd.withHostConfig(new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(MYSQL_PORT_ON_HOST), new ExposedPort(3306)))))) {
-            mySQLContainer.start();
+            databaseContainer.start();
             beforeAll();
             DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/mysql.yaml"));
             testShardingService = new TestShardingService(dataSource);
