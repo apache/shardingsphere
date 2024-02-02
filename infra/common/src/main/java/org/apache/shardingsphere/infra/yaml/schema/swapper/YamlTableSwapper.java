@@ -45,12 +45,14 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
         result.setIndexes(swapYamlIndexes(table.getIndexValues()));
         result.setConstraints(swapYamlConstraints(table.getConstraintValues()));
         result.setName(table.getName());
+        result.setType(table.getType());
         return result;
     }
     
     @Override
     public ShardingSphereTable swapToObject(final YamlShardingSphereTable yamlConfig) {
-        return new ShardingSphereTable(yamlConfig.getName(), swapColumns(yamlConfig.getColumns()), swapIndexes(yamlConfig.getIndexes()), swapConstraints(yamlConfig.getConstraints()));
+        return new ShardingSphereTable(
+                yamlConfig.getName(), swapColumns(yamlConfig.getColumns()), swapIndexes(yamlConfig.getIndexes()), swapConstraints(yamlConfig.getConstraints()), yamlConfig.getType());
     }
     
     private Collection<ShardingSphereConstraint> swapConstraints(final Map<String, YamlShardingSphereConstraint> constraints) {
