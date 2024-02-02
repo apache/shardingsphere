@@ -799,3 +799,7 @@ APPROX_PERCENTILE_DISC
 WITHIN
     : W I T H I N
     ;
+
+OPENDATASOURCE
+    : O P E N D A T A S O U R C E
+    ;
