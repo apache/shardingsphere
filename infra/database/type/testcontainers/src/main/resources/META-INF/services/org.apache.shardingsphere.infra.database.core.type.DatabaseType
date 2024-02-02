@@ -21,3 +21,4 @@ org.apache.shardingsphere.infra.database.testcontainers.type.TcMySQLDatabaseType
 org.apache.shardingsphere.infra.database.testcontainers.type.TcOracleDatabaseType
 org.apache.shardingsphere.infra.database.testcontainers.type.TcPostgreSQLDatabaseType
 org.apache.shardingsphere.infra.database.testcontainers.type.TcSQLServerDatabaseType
+org.apache.shardingsphere.infra.database.testcontainers.type.TcTiDBDatabaseType
