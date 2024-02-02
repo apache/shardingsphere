@@ -68,7 +68,7 @@ showStreamingStatus
     ;
 
 dropStreaming
-    : DROP STREAMING jobId
+    : FORCE? DROP STREAMING jobId
     ;
 
 jobId

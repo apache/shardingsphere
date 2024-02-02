@@ -169,7 +169,7 @@ public final class CDCBackendHandler {
      * @param jobId job ID
      */
     public void dropStreaming(final String jobId) {
-        jobAPI.drop(jobId);
+        jobAPI.drop(jobId, false);
     }
     
     /**

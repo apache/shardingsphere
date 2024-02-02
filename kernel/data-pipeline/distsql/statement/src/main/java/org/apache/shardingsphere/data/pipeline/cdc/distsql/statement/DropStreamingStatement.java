@@ -29,4 +29,6 @@ import org.apache.shardingsphere.distsql.statement.ral.pipeline.cdc.UpdatableCDC
 public final class DropStreamingStatement extends UpdatableCDCRALStatement {
     
     private final String jobId;
+    
+    private final boolean force;
 }
