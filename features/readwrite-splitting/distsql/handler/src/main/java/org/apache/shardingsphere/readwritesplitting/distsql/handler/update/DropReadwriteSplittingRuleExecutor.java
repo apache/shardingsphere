@@ -36,6 +36,7 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -132,8 +133,8 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropReadwriteSplittingRuleStatement sqlStatement) {
-        return !getIdenticalData(
-                rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getNames()).isEmpty();
+        return !Collections.disjoint(
+                rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getNames());
     }
     
     @Override

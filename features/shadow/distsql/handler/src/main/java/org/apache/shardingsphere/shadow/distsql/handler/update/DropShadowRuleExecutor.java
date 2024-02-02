@@ -30,6 +30,7 @@ import org.apache.shardingsphere.shadow.distsql.statement.DropShadowRuleStatemen
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +68,7 @@ public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<Dr
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShadowRuleStatement sqlStatement) {
-        return !getIdenticalData(sqlStatement.getNames(), getDataSourceNames()).isEmpty();
+        return !Collections.disjoint(sqlStatement.getNames(), getDataSourceNames());
     }
     
     @Override
