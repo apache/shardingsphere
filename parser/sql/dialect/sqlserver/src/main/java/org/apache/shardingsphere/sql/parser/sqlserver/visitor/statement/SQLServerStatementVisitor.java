@@ -1264,6 +1264,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.optionHint()) {
             result.setOptionHintSegment((OptionHintSegment) visit(ctx.optionHint()));
         }
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+        }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }

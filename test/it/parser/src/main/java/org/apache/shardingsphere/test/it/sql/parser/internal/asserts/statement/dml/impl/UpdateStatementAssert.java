@@ -21,13 +21,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.UpdateStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.OptionHintSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.orderby.OrderByClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.output.OutputClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
@@ -61,6 +64,7 @@ public final class UpdateStatementAssert {
         assertOrderByClause(assertContext, actual, expected);
         assertLimitClause(assertContext, actual, expected);
         assertOptionHint(assertContext, actual, expected);
+        assertOutputClause(assertContext,actual,expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
@@ -113,6 +117,16 @@ public final class UpdateStatementAssert {
             assertTrue(optionHintSegment.isPresent(), assertContext.getText("Actual option hint segment should exist."));
             assertThat(assertContext.getText("Option hint text assertion error: "), optionHintSegment.get().getText(), is(expected.getOptionHint().getText()));
             SQLSegmentAssert.assertIs(assertContext, optionHintSegment.get(), expected.getOptionHint());
+        }
+    }
+    
+    private static void assertOutputClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
+        Optional<OutputSegment> outputSegment = UpdateStatementHandler.getOutputSegment(actual);
+        if (null == expected.getOutputClause()) {
+            assertFalse(outputSegment.isPresent(), assertContext.getText("Actual output segment should not exist."));
+        } else {
+            assertTrue(outputSegment.isPresent(), assertContext.getText("Actual output segment should exist."));
+            OutputClauseAssert.assertIs(assertContext, outputSegment.get(), expected.getOutputClause());
         }
     }
 }
