@@ -48,7 +48,7 @@ exec
     ;
 
 update
-    : withClause? UPDATE top? tableReferences withTableHint? setAssignmentsClause whereClause? optionHint?
+    : withClause? UPDATE top? tableReferences withTableHint? setAssignmentsClause outputClause? whereClause? optionHint?
     ;
 
 assignment
@@ -61,6 +61,7 @@ setAssignmentsClause
 
 assignmentValues
     : LP_ assignmentValue (COMMA_ assignmentValue)* RP_
+    | assignmentValue
     | LP_ RP_
     ;
 

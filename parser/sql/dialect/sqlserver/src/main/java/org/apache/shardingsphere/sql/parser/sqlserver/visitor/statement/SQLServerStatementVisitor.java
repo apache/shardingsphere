@@ -1264,6 +1264,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.optionHint()) {
             result.setOptionHintSegment((OptionHintSegment) visit(ctx.optionHint()));
         }
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+        }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -1329,6 +1332,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
         }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;

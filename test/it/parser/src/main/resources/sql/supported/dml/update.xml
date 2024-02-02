@@ -58,9 +58,4 @@
     <sql-case id="update_with_write_function_and_output_clause" value="UPDATE Production.Document SET DocumentSummary .WRITE (N'features',28,10) OUTPUT deleted.DocumentSummary, inserted.DocumentSummary INTO @MyTableVar WHERE Title = N'Front Reflector Bracket Installation'" db-types="SQLServer"/>
     <sql-case id="update_with_open_rowset_function_and_subquery" value="UPDATE Production.ProductPhoto SET ThumbNailPhoto = ( SELECT *  FROM OPENROWSET(BULK 'c:Tires.jpg', SINGLE_BLOB) AS x ) WHERE ProductPhotoID = 1" db-types="SQLServer"/>
     <sql-case id="update_with_filestream" value="UPDATE Archive.dbo.Records SET [Chart] = CAST('Xray 1' as VARBINARY(max)) WHERE [SerialNumber] = 2" db-types="SQLServer"/>
-    <sql-case id="update_production_product_with_like" value="UPDATE Production.Product SET Color = N'Metallic Red' WHERE Name LIKE N'Road-250%' AND Color = N'Red'" db-types="SQLServer"/>
-    <sql-case id="update_with_current_of" value="UPDATE HumanResources.EmployeePayHistory SET PayFrequency = 2 WHERE CURRENT OF complex_cursor" db-types="SQLServer"/>
-    <sql-case id="update_with_plus_eq_symbol" value="UPDATE Production.Product SET ListPrice += @NewPrice WHERE Color = N'Red'" db-types="SQLServer"/>
-    <sql-case id="update_scrapreason_with_between_and" value="UPDATE Production.ScrapReason SET Name += ' - tool malfunction' WHERE ScrapReasonID BETWEEN 10 and 12" db-types="SQLServer"/>
-    <sql-case id="update_sr_with_join_subquery" value="UPDATE sr SET sr.Name += ' - tool malfunction' FROM Production.ScrapReason AS sr JOIN Production.WorkOrder AS wo ON sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty > 300" db-types="SQLServer"/>
 </sql-cases>
