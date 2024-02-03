@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -305,6 +306,26 @@ class IntervalShardingAlgorithmTest {
         Collection<String> actualAsString = shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources,
                 createShardingValue("2019-10-15 10:59:08", "2020-04-08 10:59:08"));
         assertThat(actualAsString.size(), is(7));
+    }
+    
+    /**
+     * For <a href="https://github.com/apache/shardingsphere/issues/29353">apache/shardingsphere#29353</a>.
+     */
+    @Test
+    void assertRangeDoShardingByMonthsSpanYears() {
+        final IntervalShardingAlgorithm algorithm = createAlgorithm("yyyy-MM-dd HH:mm:ss", "2023-01-01 00:00:00",
+                "2024-12-31 23:59:59", "yyyyMM", 1, "Months");
+        Collection<String> availableTargetNames = new LinkedList<>();
+        for (int i = 2023; i <= 2024; i++) {
+            for (int j = 1; j <= 12; j++) {
+                availableTargetNames.add(String.format("t_order_%04d%02d", i, j));
+            }
+        }
+        final Collection<String> actual = algorithm.doSharding(availableTargetNames, createShardingValue(
+                LocalDateTime.of(2023, 12, 31, 0, 0),
+                LocalDateTime.of(2024, 1, 31, 0, 0)));
+        assertThat(actual.size(), is(2));
+        assertThat(actual, hasItems("t_order_202401", "t_order_202312"));
     }
     
     private IntervalShardingAlgorithm createAlgorithm(final String datetimePattern, final String datetimeLower,
