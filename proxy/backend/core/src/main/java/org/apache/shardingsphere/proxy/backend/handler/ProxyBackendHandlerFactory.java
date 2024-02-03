@@ -106,8 +106,8 @@ public final class ProxyBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final QueryContext queryContext, final ConnectionSession connectionSession,
-                                                  final boolean preferPreparedStatement) throws SQLException {
+    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final QueryContext queryContext,
+                                                  final ConnectionSession connectionSession, final boolean preferPreparedStatement) throws SQLException {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         allowExecutingWhenTransactionalError(databaseType, connectionSession, sqlStatement);
