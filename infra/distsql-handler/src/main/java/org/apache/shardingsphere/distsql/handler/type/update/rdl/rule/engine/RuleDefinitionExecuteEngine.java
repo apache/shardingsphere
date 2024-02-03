@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
+package org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
@@ -28,12 +28,11 @@ import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatem
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.legacy.LegacyDatabaseRuleDefinitionExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.legacy.LegacyDatabaseRuleDefinitionExecuteEngine;
 
 import java.util.Optional;
 
 /**
- *  // TODO Remove this to distsql-handler module.
  * Rule definition execute engine.
  */
 @RequiredArgsConstructor
