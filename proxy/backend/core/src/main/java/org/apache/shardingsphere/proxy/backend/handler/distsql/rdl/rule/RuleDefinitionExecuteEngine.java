@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.engine.legacy.LegacyGlobalRuleDefinitionExecuteEngine;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.legacy.LegacyGlobalRuleDefinitionExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
