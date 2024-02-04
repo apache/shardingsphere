@@ -78,12 +78,10 @@ public abstract class DistSQLUpdateExecuteEngine {
     @SuppressWarnings("rawtypes")
     private void executeDatabaseRuleDefinitionUpdate(final DatabaseRuleDefinitionExecutor databaseExecutor) {
         if (isNormalRuleUpdater()) {
-            new DatabaseRuleDefinitionExecuteEngine(
-                    (RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
+            new DatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
         } else {
             // TODO Remove when metadata structure adjustment completed. #25485
-            new LegacyDatabaseRuleDefinitionExecuteEngine(
-                    (RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
+            new LegacyDatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
         }
     }
     
