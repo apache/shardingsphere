@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Drop broadcast table rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Broadcast")
+@DistSQLExecutorCurrentRuleRequired(BroadcastRule.class)
 @Setter
 public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExecutor<DropBroadcastTableRuleStatement, BroadcastRule, BroadcastRuleConfiguration> {
     

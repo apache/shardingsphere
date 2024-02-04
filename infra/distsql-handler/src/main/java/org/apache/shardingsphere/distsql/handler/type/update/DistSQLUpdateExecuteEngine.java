@@ -78,12 +78,10 @@ public abstract class DistSQLUpdateExecuteEngine {
     @SuppressWarnings("rawtypes")
     private void executeDatabaseRuleDefinitionUpdate(final DatabaseRuleDefinitionExecutor databaseExecutor) {
         if (isNormalRuleUpdater()) {
-            new DatabaseRuleDefinitionExecuteEngine(
-                    (RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
+            new DatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
         } else {
             // TODO Remove when metadata structure adjustment completed. #25485
-            new LegacyDatabaseRuleDefinitionExecuteEngine(
-                    (RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
+            new LegacyDatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
         }
     }
     
@@ -106,8 +104,9 @@ public abstract class DistSQLUpdateExecuteEngine {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void executeNormalUpdate() throws SQLException {
         DistSQLUpdateExecutor executor = TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
-        new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : getDatabase(databaseName), null);
-        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, databaseName, null);
+        ShardingSphereDatabase database = null == databaseName ? null : getDatabase(databaseName);
+        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null);
+        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.executeUpdate(sqlStatement, contextManager);
     }
     

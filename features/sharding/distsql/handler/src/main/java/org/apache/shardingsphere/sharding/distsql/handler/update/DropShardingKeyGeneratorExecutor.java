@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding key generator executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Key generator")
+@DistSQLExecutorCurrentRuleRequired(ShardingRule.class)
 @Setter
 public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropExecutor<DropShardingKeyGeneratorStatement, ShardingRule, ShardingRuleConfiguration> {
     

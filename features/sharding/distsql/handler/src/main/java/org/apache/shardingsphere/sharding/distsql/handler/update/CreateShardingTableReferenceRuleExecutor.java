@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding table reference rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Sharding")
+@DistSQLExecutorCurrentRuleRequired(ShardingRule.class)
 @Setter
 public final class CreateShardingTableReferenceRuleExecutor implements DatabaseRuleCreateExecutor<CreateShardingTableReferenceRuleStatement, ShardingRule, ShardingRuleConfiguration> {
     

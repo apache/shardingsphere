@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Drop mask rule statement executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Mask")
+@DistSQLExecutorCurrentRuleRequired(MaskRule.class)
 @Setter
 public final class DropMaskRuleExecutor implements DatabaseRuleDropExecutor<DropMaskRuleStatement, MaskRule, MaskRuleConfiguration> {
     
