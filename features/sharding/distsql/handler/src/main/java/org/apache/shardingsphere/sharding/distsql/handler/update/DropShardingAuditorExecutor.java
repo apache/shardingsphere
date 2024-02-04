@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding auditor statement executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Sharding auditor")
+@DistSQLExecutorCurrentRuleRequired(ShardingRule.class)
 @Setter
 public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecutor<DropShardingAuditorStatement, ShardingRule, ShardingRuleConfiguration> {
     

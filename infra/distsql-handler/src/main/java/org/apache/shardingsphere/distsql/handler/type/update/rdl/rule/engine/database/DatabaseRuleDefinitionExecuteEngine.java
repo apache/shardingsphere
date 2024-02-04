@@ -52,7 +52,7 @@ public final class DatabaseRuleDefinitionExecuteEngine {
         executor.setDatabase(database);
         Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
         executor.setRule(rule.orElse(null));
-        checkBeforeUpdate(rule.orElse(null));
+        checkBeforeUpdate();
         RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
         if (getRefreshStatus()) {
             contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
@@ -61,8 +61,8 @@ public final class DatabaseRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings("unchecked")
-    private void checkBeforeUpdate(final ShardingSphereRule rule) {
-        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database.getName(), rule);
+    private void checkBeforeUpdate() {
+        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.checkBeforeUpdate(sqlStatement);
     }
     

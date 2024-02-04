@@ -40,7 +40,7 @@ import java.util.Map;
 /**
  * Alter default shadow algorithm executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Shadow")
+@DistSQLExecutorCurrentRuleRequired(ShadowRule.class)
 @Setter
 public final class AlterDefaultShadowAlgorithmExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShadowAlgorithmStatement, ShadowRule, ShadowRuleConfiguration> {
     

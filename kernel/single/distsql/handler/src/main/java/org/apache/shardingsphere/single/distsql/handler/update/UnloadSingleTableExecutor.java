@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Unload single table statement executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Single")
+@DistSQLExecutorCurrentRuleRequired(SingleRule.class)
 @Setter
 public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecutor<UnloadSingleTableStatement, SingleRule, SingleRuleConfiguration> {
     

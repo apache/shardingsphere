@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.required;
 
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,9 +32,9 @@ import java.lang.annotation.Target;
 public @interface DistSQLExecutorCurrentRuleRequired {
     
     /**
-     * Get rule type.
+     * Get rule class.
      * 
-     * @return rule type
+     * @return rule class
      */
-    String value();
+    Class<? extends ShardingSphereRule> value();
 }

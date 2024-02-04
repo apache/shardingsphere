@@ -41,7 +41,7 @@ import java.util.Optional;
 /**
  * Alter default sharding strategy executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Sharding")
+@DistSQLExecutorCurrentRuleRequired(ShardingRule.class)
 @Setter
 public final class AlterDefaultShardingStrategyExecutor implements DatabaseRuleAlterExecutor<AlterDefaultShardingStrategyStatement, ShardingRule, ShardingRuleConfiguration> {
     

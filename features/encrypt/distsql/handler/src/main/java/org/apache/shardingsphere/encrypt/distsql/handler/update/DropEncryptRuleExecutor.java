@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Drop encrypt rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Encrypt")
+@DistSQLExecutorCurrentRuleRequired(EncryptRule.class)
 @Setter
 public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<DropEncryptRuleStatement, EncryptRule, EncryptRuleConfiguration> {
     

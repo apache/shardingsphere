@@ -104,8 +104,9 @@ public abstract class DistSQLUpdateExecuteEngine {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void executeNormalUpdate() throws SQLException {
         DistSQLUpdateExecutor executor = TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
-        new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : getDatabase(databaseName), null);
-        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, databaseName, null);
+        ShardingSphereDatabase database = null == databaseName ? null : getDatabase(databaseName);
+        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null);
+        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.executeUpdate(sqlStatement, contextManager);
     }
     

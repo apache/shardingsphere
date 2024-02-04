@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Alter mask rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Mask")
+@DistSQLExecutorCurrentRuleRequired(MaskRule.class)
 @Setter
 public final class AlterMaskRuleExecutor implements DatabaseRuleAlterExecutor<AlterMaskRuleStatement, MaskRule, MaskRuleConfiguration> {
     

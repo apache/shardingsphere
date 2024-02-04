@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * Alter shadow rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Shadow")
+@DistSQLExecutorCurrentRuleRequired(ShadowRule.class)
 @Setter
 public final class AlterShadowRuleExecutor implements DatabaseRuleAlterExecutor<AlterShadowRuleStatement, ShadowRule, ShadowRuleConfiguration> {
     

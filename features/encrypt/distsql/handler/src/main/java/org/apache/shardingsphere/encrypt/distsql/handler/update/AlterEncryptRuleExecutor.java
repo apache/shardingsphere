@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Alter encrypt rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Encrypt")
+@DistSQLExecutorCurrentRuleRequired(EncryptRule.class)
 @Setter
 public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor<AlterEncryptRuleStatement, EncryptRule, EncryptRuleConfiguration> {
     

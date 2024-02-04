@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 /**
  * Drop readwrite-splitting rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Readwrite-splitting")
+@DistSQLExecutorCurrentRuleRequired(ReadwriteSplittingRule.class)
 @Setter
 public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDropExecutor<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRule, ReadwriteSplittingRuleConfiguration> {
     

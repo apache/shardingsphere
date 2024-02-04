@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding algorithm executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Sharding")
+@DistSQLExecutorCurrentRuleRequired(ShardingRule.class)
 @Setter
 public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExecutor<DropShardingAlgorithmStatement, ShardingRule, ShardingRuleConfiguration> {
     
