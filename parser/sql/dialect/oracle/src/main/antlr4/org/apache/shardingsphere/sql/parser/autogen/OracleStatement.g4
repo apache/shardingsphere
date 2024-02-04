@@ -159,5 +159,5 @@ execute
     | switch
     | createProfile
     | createTrigger
-    ) SEMI_?
+    ) SEMI_? SLASH_? EOF
     ;
