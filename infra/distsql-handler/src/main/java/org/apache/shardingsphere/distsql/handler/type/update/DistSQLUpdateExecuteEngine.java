@@ -85,7 +85,7 @@ public abstract class DistSQLUpdateExecuteEngine {
             new DatabaseRuleDefinitionExecuteEngine(
                     (RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
         } else {
-            // TODO Remove when metadata structure adjustment completed. #25485 
+            // TODO Remove when metadata structure adjustment completed. #25485
             new LegacyDatabaseRuleDefinitionExecuteEngine(
                     (RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
         }
