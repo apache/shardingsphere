@@ -153,7 +153,7 @@ sequenceName
     ;
 
 tableName
-    : (databaseName DOT_)? (owner? DOT_)? name
+    : ((databaseName DOT_)? (owner? DOT_))? name
     ;
 
 queueName

@@ -1792,7 +1792,7 @@
         </set>
         <output start-index="74" stop-index="146">
             <output-table name="@MyTableVar" start-index="136" stop-index="146" />
-            <output-columns>
+            <output-columns start-index="81" stop-index="129">
                 <column-projection name="DocumentSummary" start-index="81" stop-index="103" />
                 <column-projection name="DocumentSummary" start-index="106" stop-index="129" />
             </output-columns>

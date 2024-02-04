@@ -195,7 +195,11 @@ outputClause
     ;
 
 outputWithColumns
-    : outputWithColumn (COMMA_ outputWithColumn)*
+    : (outputWithColumn | scalarExpression) (COMMA_ (outputWithColumn | scalarExpression))*
+    ;
+
+scalarExpression
+    : expr (AS? alias)?
     ;
 
 outputWithColumn
@@ -207,7 +211,7 @@ outputWithAaterisk
     ;
 
 outputTableName
-    : (AT_ name) | tableName
+    : tableName
     ;
 
 queryHint
