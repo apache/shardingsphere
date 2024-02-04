@@ -34,29 +34,26 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class DistSQLExecutorRequiredChecker {
     
-    private final SQLStatement sqlStatement;
-    
-    private final ContextManager contextManager;
-    
-    private final String databaseName;
-    
     private final Object executor;
     
     /**
      * Check before DistSQL execute.
      * 
+     * @param sqlStatement SQL statement
+     * @param contextManager context manager
+     * @param databaseName database name
      * @param rule rule
      */
-    public void check(final ShardingSphereRule rule) {
-        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)).ifPresent(optional -> checkClusterMode());
-        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(rule, optional));
+    public void check(final SQLStatement sqlStatement, final ContextManager contextManager, final String databaseName, final ShardingSphereRule rule) {
+        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)).ifPresent(optional -> checkClusterMode(contextManager));
+        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(sqlStatement, databaseName, rule, optional));
     }
     
-    private void checkClusterMode() {
+    private void checkClusterMode(final ContextManager contextManager) {
         ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
     }
     
-    private void checkCurrentRule(final ShardingSphereRule rule, final DistSQLExecutorCurrentRuleRequired currentRuleRequired) {
+    private void checkCurrentRule(final SQLStatement sqlStatement, final String databaseName, final ShardingSphereRule rule, final DistSQLExecutorCurrentRuleRequired currentRuleRequired) {
         if (sqlStatement instanceof DropRuleStatement && ((DropRuleStatement) sqlStatement).isIfExists()) {
             return;
         }
