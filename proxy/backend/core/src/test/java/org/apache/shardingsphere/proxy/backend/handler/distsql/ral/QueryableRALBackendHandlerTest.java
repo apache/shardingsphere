@@ -63,7 +63,8 @@ class QueryableRALBackendHandlerTest {
     @Test
     void assertExecuteWithNoDatabase() {
         when(ProxyContext.getInstance().getDatabase(null)).thenThrow(NoDatabaseSelectedException.class);
-        assertThrows(NoDatabaseSelectedException.class, () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), mock(ConnectionSession.class)).execute());
+        assertThrows(NoDatabaseSelectedException.class,
+                () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }
     
     @Test
@@ -90,7 +91,7 @@ class QueryableRALBackendHandlerTest {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_db")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        assertDoesNotThrow(() -> new DistSQLQueryBackendHandler(createSqlStatement(), mock(ConnectionSession.class)).execute());
+        assertDoesNotThrow(() -> new DistSQLQueryBackendHandler(createSqlStatement(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }
     
     private Map<String, ShardingSphereTable> createTableMap() {
