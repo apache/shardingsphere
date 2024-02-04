@@ -62,7 +62,7 @@ public final class DatabaseRuleDefinitionExecuteEngine {
     
     @SuppressWarnings("unchecked")
     private void checkBeforeUpdate(final ShardingSphereRule rule) {
-        new DistSQLExecutorRequiredChecker(sqlStatement, contextManager, database.getName(), executor).check(rule);
+        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database.getName(), rule);
         executor.checkBeforeUpdate(sqlStatement);
     }
     
