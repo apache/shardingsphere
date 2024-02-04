@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -47,6 +48,7 @@ public final class DistSQLExecutorAwareSetter {
     @SuppressWarnings("rawtypes")
     public void set() {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
+            ShardingSpherePreconditions.checkNotNull(database, NoDatabaseSelectedException::new);
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(database);
         }
         if (executor instanceof DistSQLExecutorRuleAware) {

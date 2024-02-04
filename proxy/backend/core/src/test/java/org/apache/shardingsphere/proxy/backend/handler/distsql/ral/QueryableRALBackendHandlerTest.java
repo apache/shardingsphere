@@ -62,7 +62,6 @@ class QueryableRALBackendHandlerTest {
     
     @Test
     void assertExecuteWithNoDatabase() {
-        when(ProxyContext.getInstance().getDatabase(null)).thenThrow(NoDatabaseSelectedException.class);
         assertThrows(NoDatabaseSelectedException.class,
                 () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }
