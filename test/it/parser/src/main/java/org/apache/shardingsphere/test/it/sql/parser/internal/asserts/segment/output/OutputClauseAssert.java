@@ -20,15 +20,12 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ou
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.output.ExpectedOutputClause;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.column.ExpectedColumnProjection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,11 +55,6 @@ public final class OutputClauseAssert {
         if (!actual.getTableColumns().isEmpty()) {
             assertOutputTableColumnSegment(assertContext, actual, expected);
         }
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
-    }
-    
-    private static void assertOutputColumnSegment(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
-        IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Output column");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
