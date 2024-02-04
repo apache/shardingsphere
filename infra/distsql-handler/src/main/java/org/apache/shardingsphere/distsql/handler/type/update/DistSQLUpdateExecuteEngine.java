@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.type.update;
 
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorAwareSetter;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
@@ -29,10 +28,7 @@ import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.global
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -110,26 +106,9 @@ public abstract class DistSQLUpdateExecuteEngine {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void executeNormalUpdate() throws SQLException {
         DistSQLUpdateExecutor executor = TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
-        if (executor instanceof DistSQLExecutorDatabaseAware) {
-            ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(databaseName));
-        }
-        if (executor instanceof DistSQLExecutorRuleAware) {
-            setRule((DistSQLExecutorRuleAware) executor);
-        }
+        new DistSQLExecutorAwareSetter(contextManager, null == databaseName ? null : getDatabase(databaseName), null, executor).set();
         new DistSQLExecutorRequiredChecker(sqlStatement, contextManager, databaseName, executor).check(null);
         executor.executeUpdate(sqlStatement, contextManager);
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void setRule(final DistSQLExecutorRuleAware executor) throws UnsupportedSQLOperationException {
-        Optional<ShardingSphereRule> rule = findRule(executor.getRuleClass());
-        ShardingSpherePreconditions.checkState(rule.isPresent(), () -> new UnsupportedSQLOperationException(String.format("The current database has no `%s` rules", executor.getRuleClass())));
-        executor.setRule(rule.get());
-    }
-    
-    private Optional<ShardingSphereRule> findRule(final Class<ShardingSphereRule> ruleClass) {
-        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
-        return globalRule.isPresent() ? globalRule : getDatabase(databaseName).getRuleMetaData().findSingleRule(ruleClass);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);
