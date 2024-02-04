@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.type.update;
 
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.legacy.LegacyDatabaseRuleDefinitionExecuteEngine;
@@ -116,14 +116,8 @@ public abstract class DistSQLUpdateExecuteEngine {
         if (executor instanceof DistSQLExecutorRuleAware) {
             setRule((DistSQLExecutorRuleAware) executor);
         }
-        checkBeforeUpdate(executor);
+        new DistSQLExecutorRequiredChecker(sqlStatement, contextManager, databaseName, executor).check(null);
         executor.executeUpdate(sqlStatement, contextManager);
-    }
-    
-    private void checkBeforeUpdate(final DistSQLUpdateExecutor<?> executor) {
-        if (null != executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)) {
-            ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
-        }
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
