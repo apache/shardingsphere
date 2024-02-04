@@ -39,10 +39,6 @@ STATUS
     : S T A T U S
     ;
 
-FORCE
-    : F O R C E
-    ;
-
 DROP
     : D R O P
     ;

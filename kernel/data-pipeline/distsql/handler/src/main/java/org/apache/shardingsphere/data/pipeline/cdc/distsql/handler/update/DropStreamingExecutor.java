@@ -35,7 +35,7 @@ public final class DropStreamingExecutor implements DistSQLUpdateExecutor<DropSt
     
     @Override
     public void executeUpdate(final DropStreamingStatement sqlStatement, final ContextManager contextManager) throws SQLException {
-        jobAPI.drop(sqlStatement.getJobId(), sqlStatement.isForce());
+        jobAPI.drop(sqlStatement.getJobId());
     }
     
     @Override

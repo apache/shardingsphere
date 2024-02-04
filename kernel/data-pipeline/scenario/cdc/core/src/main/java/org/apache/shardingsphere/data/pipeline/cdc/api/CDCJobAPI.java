@@ -257,14 +257,9 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      * Drop CDC job.
      *
      * @param jobId job id
-     * @param force force
      */
-    public void drop(final String jobId, final boolean force) {
+    public void drop(final String jobId) {
         CDCJobConfiguration jobConfig = jobConfigManager.getJobConfiguration(jobId);
-        if (!force) {
-            ShardingSpherePreconditions.checkState(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).isDisabled(),
-                    () -> new PipelineInternalException("Can't drop streaming job which is active"));
-        }
         jobManager.drop(jobId);
         cleanup(jobConfig);
     }

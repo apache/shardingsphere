@@ -66,7 +66,7 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     
     @Override
     public ASTNode visitDropStreaming(final DropStreamingContext ctx) {
-        return new DropStreamingStatement(getIdentifierValue(ctx.jobId()), null != ctx.FORCE());
+        return new DropStreamingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     private String getIdentifierValue(final ParseTree ctx) {
