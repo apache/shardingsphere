@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.handler.type.query;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
@@ -39,20 +38,25 @@ import java.util.Optional;
 /**
  * DistSQL query execute engine.
  */
-@RequiredArgsConstructor
 public abstract class DistSQLQueryExecuteEngine {
     
     private final DistSQLStatement sqlStatement;
     
-    private final String currentDatabaseName;
-    
     private final ContextManager contextManager;
+    
+    private final String databaseName;
     
     @Getter
     private Collection<String> columnNames;
     
     @Getter
     private Collection<LocalDataQueryResultRow> rows;
+    
+    public DistSQLQueryExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName, final ContextManager contextManager) {
+        this.sqlStatement = sqlStatement;
+        this.contextManager = contextManager;
+        databaseName = DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName);
+    }
     
     /**
      * Execute query.
@@ -64,7 +68,7 @@ public abstract class DistSQLQueryExecuteEngine {
         DistSQLQueryExecutor<DistSQLStatement> executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
         columnNames = executor.getColumnNames();
         if (executor instanceof DistSQLExecutorDatabaseAware) {
-            ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
+            ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(databaseName));
         }
         if (executor instanceof DistSQLExecutorConnectionContextAware) {
             ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(getDistSQLConnectionContext());
@@ -89,7 +93,7 @@ public abstract class DistSQLQueryExecuteEngine {
     
     private Optional<ShardingSphereRule> findRule(final Class<ShardingSphereRule> ruleClass) {
         Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
-        return globalRule.isPresent() ? globalRule : getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)).getRuleMetaData().findSingleRule(ruleClass);
+        return globalRule.isPresent() ? globalRule : getDatabase(databaseName).getRuleMetaData().findSingleRule(ruleClass);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);
