@@ -255,4 +255,6 @@
     <sql-case id="select_from_table_openrowset" value="SELECT TOP 100 id=CAST(_id as VARBINARY(1000)) FROM OPENROWSET('CosmosDB', 'Your-account;Database=your-database;Key=your-key',HTAP) WITH (_id VARCHAR(1000)) as HTAP" db-types="SQLServer"/>
     <sql-case id="select_from_with_contains_function" value="SELECT candidate_name,SSN FROM candidates WHERE CONTAINS(candidate_resume, '&quot;SQL Server&quot;') AND candidate_division = 'DBA'" db-types="SQLServer"/>
     <sql-case id="select_escape_quotes_from_sys_table" value="SELECT 'DECLARE @serverName NVARCHAR(512) = N''' + value + '''' FROM sys.dm_hadr_fabric_config_parameters WHERE parameter_name = 'DnsRecordName'" db-types="SQLServer"/>
+    <sql-case id="select_from_physical_stats_function" value="SELECT page_count, compressed_page_count, forwarded_record_count, * FROM sys.dm_db_index_physical_stats(db_id(), object_id('t3'), NULL, NULL, 'SAMPLED')" db-types="SQLServer"/>
+    <sql-case id="select_from_msdb_default_schema" value="SELECT backup_size/compressed_backup_size FROM msdb..backupset" db-types="SQLServer"/>
 </sql-cases>
