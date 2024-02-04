@@ -3554,4 +3554,22 @@
             </projections>
         </select>
     </insert>
+
+    <insert sql-case-id="insert_sales_with_nchar_3">
+        <table name="sales" start-index="12" stop-index="16"/>
+        <columns start-index="17" stop-index="17"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Canada" start-index="26" stop-index="34"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Alberta" start-index="37" stop-index="46"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="100" start-index="49" stop-index="51"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
