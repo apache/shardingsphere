@@ -43,7 +43,7 @@ public final class DistSQLExecutorRequiredChecker {
     private final Object executor;
     
     /**
-     * Check before DistSQL executor execute.
+     * Check before DistSQL execute.
      * 
      * @param rule rule
      */
