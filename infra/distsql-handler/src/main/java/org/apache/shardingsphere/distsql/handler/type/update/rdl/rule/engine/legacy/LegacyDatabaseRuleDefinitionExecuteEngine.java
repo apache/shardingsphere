@@ -18,17 +18,14 @@
 package org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.engine.legacy;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.type.DropRuleStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -76,15 +73,8 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     
     @SuppressWarnings("unchecked")
     private void checkBeforeUpdate(final ShardingSphereRule rule) {
-        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(rule, optional));
+        new DistSQLExecutorRequiredChecker(sqlStatement, contextManager, database.getName(), executor).check(rule);
         executor.checkBeforeUpdate(sqlStatement);
-    }
-    
-    private void checkCurrentRule(final ShardingSphereRule rule, final DistSQLExecutorCurrentRuleRequired currentRuleRequired) {
-        if (sqlStatement instanceof DropRuleStatement && ((DropRuleStatement) sqlStatement).isIfExists()) {
-            return;
-        }
-        ShardingSpherePreconditions.checkNotNull(rule, () -> new MissingRequiredRuleException(currentRuleRequired.value(), database.getName()));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
