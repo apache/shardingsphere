@@ -320,4 +320,5 @@
     <sql-case id="unsupported_select_case_for_opengauss_579" value="select bool_or(array[1.1,2.1,3.1]::int[] =[1,2,3]);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_580" value="select bool_or(@);" db-types="openGauss" />
     <sql-case id="assertDistSQLShowRuleParseConflict" value="SHOW READWRITE_SPLITTING RULE FROM schema_name" db-types="PostgreSQL,openGauss" />
+    <sql-case id="assertDistSQLRollbackMigration" value="ROLLBACK MIGRATION 10102p0000697d5ccb2e3d960d0gif75c7c7f486fal" db-types="MySQL,PostgreSQL,openGauss,Oracle" />
 </sql-cases>
