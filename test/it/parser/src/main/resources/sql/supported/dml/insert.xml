@@ -135,4 +135,7 @@
     <sql-case id="insert_with_table_t" value="INSERT INTO #t VALUES (99)" db-types="SQLServer"/>
     <sql-case id="insert_with_table_test" value="INSERT INTO ##test VALUES (1, 1)" db-types="SQLServer"/>
     <sql-case id="insert_into_with_select_number" value="INSERT INTO #test SELECT 1" db-types="SQLServer"/>
+    <sql-case id="insert_into_player_with_compress_function" value="INSERT INTO player ( name,surname,info) VALUES (N'Ovidiu', N'Cracium',COMPRESS(N'{&quot;sport&quot;:&quot;Tennis&quot;,&quot;age&quot;: 28,&quot;rank&quot;:1,&quot;points&quot;:15258, &quot;turn&quot;:17}'))" db-types="SQLServer"/>
+    <sql-case id="insert_into_tmp_with_exec" value="INSERT INTO #temp (id, job_name, job_id, dynamic_filter_login,dynamic_filter_hostname, dynamic_snapshot_location,frequency_type, frequency_interval, frequency_subday_type,frequency_subday_interval, frequency_relative_interval, frequency_recurrence_factor, active_start_date, active_end_date, active_start_time,active_end_time) EXEC sp_helpdynamicsnapshot_job" db-types="SQLServer"/>
+    <sql-case id="insert_into_player_with_compress_function_2" value="INSERT INTO player (name,surname,info) VALUES (N'Michael',N'Raheem',COMPRESS(@info))" db-types="SQLServer"/>
 </sql-cases>

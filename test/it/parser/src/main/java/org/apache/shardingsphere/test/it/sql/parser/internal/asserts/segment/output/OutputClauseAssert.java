@@ -25,6 +25,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSeg
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.output.ExpectedOutputClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.column.ExpectedColumnProjection;
 
@@ -47,10 +49,10 @@ public final class OutputClauseAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OutputSegment actual, final ExpectedOutputClause expected) {
         assertNotNull(expected, assertContext.getText("Output clause should exist."));
-        if (!actual.getOutputColumns().isEmpty()) {
-            assertOutputColumnsSegment(assertContext, actual, expected);
+        if (null != actual.getOutputColumns()) {
+            ProjectionAssert.assertIs(assertContext, actual.getOutputColumns(), expected.getOutputColumns());
         }
-        if (null != actual.getTableName()) {
+        if (null != actual.getTable()) {
             assertOutputTableSegment(assertContext, actual, expected);
         }
         if (!actual.getTableColumns().isEmpty()) {
@@ -59,25 +61,13 @@ public final class OutputClauseAssert {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertOutputColumnsSegment(final SQLCaseAssertContext assertContext, final OutputSegment actual, final ExpectedOutputClause expected) {
-        assertThat(assertContext.getText("Output columns size assertion error: "),
-                actual.getOutputColumns().size(), is(expected.getOutputColumns().getColumnProjections().size()));
-        int count = 0;
-        for (ColumnProjectionSegment each : actual.getOutputColumns()) {
-            assertOutputColumnSegment(assertContext, each, expected.getOutputColumns().getColumnProjections().get(count));
-            count++;
-        }
-    }
-    
     private static void assertOutputColumnSegment(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Output column");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertOutputTableSegment(final SQLCaseAssertContext assertContext, final OutputSegment actual, final ExpectedOutputClause expected) {
-        assertThat(assertContext.getText("Output table name assertion error: "),
-                actual.getTableName().getIdentifier().getValue(), is(expected.getOutputTable().getName()));
-        SQLSegmentAssert.assertIs(assertContext, actual.getTableName(), expected.getOutputTable());
+        TableAssert.assertIs(assertContext, actual.getTable(), expected.getOutputTable());
     }
     
     private static void assertOutputTableColumnSegment(final SQLCaseAssertContext assertContext, final OutputSegment actual, final ExpectedOutputClause expected) {
