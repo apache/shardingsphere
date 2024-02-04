@@ -218,14 +218,13 @@ class IntervalShardingAlgorithmTest {
         assertThrows(UnsupportedTemporalTypeException.class, () -> algorithm.doSharding(availableTargetNames, shardingValueAsSqlDate),
                 "SQL Date values do not have a time component.");
         assertThat(createAlgorithm("yyyy-MM-dd", "2021-06-01",
-                "2021-07-31", "yyyyMMdd", 2, null)
+                "2021-07-31", "yyyyMMdd", stepAmount, null)
                         .doSharding(availableTargetNames, shardingValueAsSqlDate).size(),
                 is(expectSize));
         final RangeShardingValue<Comparable<?>> shardingValueAsString = createShardingValue(
                 DateTimeFormatterFactory.getStandardFormatter().format(lower),
                 DateTimeFormatterFactory.getStandardFormatter().format(upper));
-        assertThrows(StringIndexOutOfBoundsException.class, () -> algorithm.doSharding(availableTargetNames, shardingValueAsString),
-                "The current requirement for strings is to be consistent with `datetime-pattern`.");
+        assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsString).size(), is(expectSize));
         assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, shardingValueAsString).size(), is(expectSize));
     }
     
