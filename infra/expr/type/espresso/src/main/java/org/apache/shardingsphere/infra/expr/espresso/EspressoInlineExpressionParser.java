@@ -57,7 +57,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
             .build();
     
     static {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs");
+        URL resource = EspressoInlineExpressionParser.class.getClassLoader().getResource("espresso-need-libs");
         String dir = null == resource ? null : resource.getPath();
         JAVA_CLASSPATH = dir + File.separator + "groovy.jar";
     }
