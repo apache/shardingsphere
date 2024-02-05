@@ -17,7 +17,7 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru where POOL_ID=1000 limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -37,11 +37,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page where POOL_ID=1000 limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru where POOL_ID=1000 limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     

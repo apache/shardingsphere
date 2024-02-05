@@ -32,7 +32,7 @@ import java.util.Collections;
 /**
  * Drop default shadow algorithm executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Shadow")
+@DistSQLExecutorCurrentRuleRequired(ShadowRule.class)
 @Setter
 public final class DropDefaultShadowAlgorithmExecutor implements DatabaseRuleDropExecutor<DropDefaultShadowAlgorithmStatement, ShadowRule, ShadowRuleConfiguration> {
     

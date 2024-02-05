@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Drop shadow rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Shadow")
+@DistSQLExecutorCurrentRuleRequired(ShadowRule.class)
 @Setter
 public final class DropShadowRuleExecutor implements DatabaseRuleDropExecutor<DropShadowRuleStatement, ShadowRule, ShadowRuleConfiguration> {
     

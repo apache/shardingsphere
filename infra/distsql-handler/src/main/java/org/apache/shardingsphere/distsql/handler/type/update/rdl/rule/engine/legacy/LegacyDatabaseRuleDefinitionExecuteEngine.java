@@ -64,7 +64,7 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
         executor.setDatabase(database);
         Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
         executor.setRule(rule.orElse(null));
-        checkBeforeUpdate(rule.orElse(null));
+        checkBeforeUpdate();
         RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
         if (getRefreshStatus(sqlStatement, executor)) {
             contextManager.getInstanceContext().getModeContextManager().alterRuleConfiguration(database.getName(), processSQLStatement(database, sqlStatement, executor, currentRuleConfig));
@@ -72,8 +72,8 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings("unchecked")
-    private void checkBeforeUpdate(final ShardingSphereRule rule) {
-        new DistSQLExecutorRequiredChecker(sqlStatement, contextManager, database.getName(), executor).check(rule);
+    private void checkBeforeUpdate() {
+        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.checkBeforeUpdate(sqlStatement);
     }
     

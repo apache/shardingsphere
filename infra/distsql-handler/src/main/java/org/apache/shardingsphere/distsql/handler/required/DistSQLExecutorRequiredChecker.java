@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredR
 import org.apache.shardingsphere.distsql.statement.rdl.rule.type.DropRuleStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -34,32 +35,36 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class DistSQLExecutorRequiredChecker {
     
-    private final SQLStatement sqlStatement;
-    
-    private final ContextManager contextManager;
-    
-    private final String databaseName;
-    
     private final Object executor;
     
     /**
      * Check before DistSQL execute.
      * 
-     * @param rule rule
+     * @param sqlStatement SQL statement
+     * @param contextManager context manager
+     * @param database database
      */
-    public void check(final ShardingSphereRule rule) {
-        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)).ifPresent(optional -> checkClusterMode());
-        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(rule, optional));
+    public void check(final SQLStatement sqlStatement, final ContextManager contextManager, final ShardingSphereDatabase database) {
+        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorClusterModeRequired.class)).ifPresent(optional -> checkClusterMode(contextManager));
+        Optional.ofNullable(executor.getClass().getAnnotation(DistSQLExecutorCurrentRuleRequired.class)).ifPresent(optional -> checkCurrentRule(sqlStatement, contextManager, database, optional));
     }
     
-    private void checkClusterMode() {
+    private void checkClusterMode(final ContextManager contextManager) {
         ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
     }
     
-    private void checkCurrentRule(final ShardingSphereRule rule, final DistSQLExecutorCurrentRuleRequired currentRuleRequired) {
+    private void checkCurrentRule(final SQLStatement sqlStatement, final ContextManager contextManager, final ShardingSphereDatabase database,
+                                  final DistSQLExecutorCurrentRuleRequired currentRuleRequired) {
         if (sqlStatement instanceof DropRuleStatement && ((DropRuleStatement) sqlStatement).isIfExists()) {
             return;
         }
-        ShardingSpherePreconditions.checkNotNull(rule, () -> new MissingRequiredRuleException(currentRuleRequired.value(), databaseName));
+        Optional<? extends ShardingSphereRule> rule = findRule(contextManager, database, currentRuleRequired.value());
+        String ruleType = currentRuleRequired.value().getSimpleName().substring(0, currentRuleRequired.value().getSimpleName().indexOf("Rule"));
+        ShardingSpherePreconditions.checkState(rule.isPresent(), () -> null == database ? new MissingRequiredRuleException(ruleType) : new MissingRequiredRuleException(ruleType, database.getName()));
+    }
+    
+    private Optional<? extends ShardingSphereRule> findRule(final ContextManager contextManager, final ShardingSphereDatabase database, final Class<? extends ShardingSphereRule> ruleClass) {
+        Optional<? extends ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
+        return null == database || globalRule.isPresent() ? globalRule : database.getRuleMetaData().findSingleRule(ruleClass);
     }
 }

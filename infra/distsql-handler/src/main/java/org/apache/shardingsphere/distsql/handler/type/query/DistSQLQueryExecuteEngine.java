@@ -18,35 +18,30 @@
 package org.apache.shardingsphere.distsql.handler.type.query;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorAwareSetter;
 import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * DistSQL query execute engine.
  */
-@RequiredArgsConstructor
 public abstract class DistSQLQueryExecuteEngine {
     
     private final DistSQLStatement sqlStatement;
     
-    private final String currentDatabaseName;
-    
     private final ContextManager contextManager;
+    
+    private final String databaseName;
     
     @Getter
     private Collection<String> columnNames;
@@ -54,42 +49,28 @@ public abstract class DistSQLQueryExecuteEngine {
     @Getter
     private Collection<LocalDataQueryResultRow> rows;
     
+    public DistSQLQueryExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName, final ContextManager contextManager) {
+        this.sqlStatement = sqlStatement;
+        this.contextManager = contextManager;
+        databaseName = DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName);
+    }
+    
     /**
      * Execute query.
      *
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public void executeQuery() throws SQLException {
         DistSQLQueryExecutor<DistSQLStatement> executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
         columnNames = executor.getColumnNames();
-        if (executor instanceof DistSQLExecutorDatabaseAware) {
-            ((DistSQLExecutorDatabaseAware) executor).setDatabase(getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)));
-        }
-        if (executor instanceof DistSQLExecutorConnectionContextAware) {
-            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(getDistSQLConnectionContext());
-        }
-        if (executor instanceof DistSQLExecutorRuleAware) {
-            setRule((DistSQLExecutorRuleAware) executor);
-        }
-        if (null == rows) {
-            rows = executor.getRows(sqlStatement, contextManager);
-        }
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void setRule(final DistSQLExecutorRuleAware executor) {
-        Optional<ShardingSphereRule> rule = findRule(executor.getRuleClass());
-        if (rule.isPresent()) {
-            executor.setRule(rule.get());
-        } else {
+        try {
+            new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : getDatabase(databaseName), getDistSQLConnectionContext());
+        } catch (final UnsupportedSQLOperationException ignored) {
             rows = Collections.emptyList();
+            return;
         }
-    }
-    
-    private Optional<ShardingSphereRule> findRule(final Class<ShardingSphereRule> ruleClass) {
-        Optional<ShardingSphereRule> globalRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ruleClass);
-        return globalRule.isPresent() ? globalRule : getDatabase(DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName)).getRuleMetaData().findSingleRule(ruleClass);
+        rows = executor.getRows(sqlStatement, contextManager);
     }
     
     protected abstract ShardingSphereDatabase getDatabase(String databaseName);

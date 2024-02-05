@@ -825,24 +825,7 @@
         </pluginManagement>
         
         <plugins>
-            <!-- Compile plugins -->
-            <plugin>
-                <groupId>io.smallrye</groupId>
-                <artifactId>jandex-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-index</id>
-                        <goals>
-                            <goal>jandex</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
             <!-- Release plugins -->
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <executions>
