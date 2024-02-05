@@ -65,8 +65,7 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     }
     
     private void checkToBeAlteredRules(final AlterEncryptRuleStatement sqlStatement) {
-        Collection<String> currentEncryptTableNames = ((EncryptRuleConfiguration) rule.getConfiguration()).getTables()
-                .stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> currentEncryptTableNames = rule.getConfiguration().getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistEncryptTableNames = getToBeAlteredEncryptTableNames(sqlStatement).stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistEncryptTableNames.isEmpty()) {
             throw new MissingRequiredRuleException("Encrypt", database.getName(), notExistEncryptTableNames);
@@ -111,8 +110,8 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     @Override
     public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration toBeAlteredRuleConfig) {
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
-        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor((EncryptRuleConfiguration) rule.getConfiguration());
-        unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, ((EncryptRuleConfiguration) rule.getConfiguration()).getEncryptors().get(each)));
+        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor(rule.getConfiguration());
+        unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, rule.getConfiguration().getEncryptors().get(each)));
         return new EncryptRuleConfiguration(Collections.emptyList(), toBeDroppedEncryptors);
     }
     

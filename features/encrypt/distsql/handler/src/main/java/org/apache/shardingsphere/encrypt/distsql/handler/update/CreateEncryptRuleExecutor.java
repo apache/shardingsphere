@@ -71,7 +71,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement) {
         Collection<String> currentRuleNames = new LinkedHashSet<>();
         if (null != rule) {
-            currentRuleNames = ((EncryptRuleConfiguration) rule.getConfiguration()).getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
+            currentRuleNames = rule.getConfiguration().getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
         }
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toSet());
     }

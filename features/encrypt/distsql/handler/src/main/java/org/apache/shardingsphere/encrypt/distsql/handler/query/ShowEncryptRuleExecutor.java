@@ -53,8 +53,7 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptRulesStatement sqlStatement, final ContextManager contextManager) {
-        EncryptRuleConfiguration ruleConfig = (EncryptRuleConfiguration) rule.getConfiguration();
-        return buildData(ruleConfig, sqlStatement);
+        return buildData(rule.getConfiguration(), sqlStatement);
     }
     
     private Collection<LocalDataQueryResultRow> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {

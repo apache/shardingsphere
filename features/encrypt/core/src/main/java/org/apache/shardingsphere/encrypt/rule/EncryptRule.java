@@ -24,7 +24,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -43,7 +42,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     private final String databaseName;
     
     @Getter
-    private final RuleConfiguration configuration;
+    private final EncryptRuleConfiguration configuration;
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     

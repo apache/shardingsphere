@@ -47,7 +47,7 @@ public final class EncryptorChangedProcessor implements RuleItemConfigurationCha
     @Override
     public EncryptRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findSingleRule(EncryptRule.class)
-                .map(optional -> getEncryptRuleConfiguration((EncryptRuleConfiguration) optional.getConfiguration()))
+                .map(optional -> getEncryptRuleConfiguration(optional.getConfiguration()))
                 .orElseGet(() -> new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     
