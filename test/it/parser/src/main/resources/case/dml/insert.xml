@@ -3635,4 +3635,80 @@
             </value>
         </values>
     </insert>
+    
+    <insert sql-case-id="insert_with_currency_value_2">
+        <table name="Employees" start-index="12" stop-index="27" start-delimiter="[" end-delimiter="]">
+            <owner name="HR" start-index="12" stop-index="15" start-delimiter="[" end-delimiter="]" />
+        </table>
+        <columns start-index="28" stop-index="69">
+            <column name="SSN" start-index="29" stop-index="33" start-delimiter="[" end-delimiter="]" />
+            <column name="FirstName" start-index="36" stop-index="46" start-delimiter="[" end-delimiter="]" />
+            <column name="LastName" start-index="49" stop-index="58" start-delimiter="[" end-delimiter="]" />
+            <column name="Salary" start-index="61" stop-index="68" start-delimiter="[" end-delimiter="]" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="990-00-6818" start-index="79" stop-index="91" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Kim" start-index="94" stop-index="99" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Abercrombie" start-index="102" stop-index="115" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="$55415" start-index="118" stop-index="123" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_cross_database_values">
+        <table name="SourceTable" start-index="7" stop-index="42" start-delimiter="[" end-delimiter="]">
+            <owner name="dbo" start-index="24" stop-index="28" start-delimiter="[" end-delimiter="]">
+                <owner name="SourceDatabase" start-index="7" stop-index="22" start-delimiter="[" end-delimiter="]" />
+            </owner>
+        </table>
+        <columns start-index="43" stop-index="43" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="52" stop-index="52" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Bob" start-index="55" stop-index="60" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="64" stop-index="64" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Susan" start-index="67" stop-index="74" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_cross_database_select">
+        <table name="DestTable_InMem" start-index="7" stop-index="51" start-delimiter="[" end-delimiter="]">
+            <owner name="dbo" start-index="29" stop-index="33" start-delimiter="[" end-delimiter="]">
+                <owner name="DestinationDatabase" start-index="7" stop-index="27" start-delimiter="[" end-delimiter="]" />
+            </owner>
+        </table>
+        <columns start-index="52" stop-index="52" />
+        <select>
+            <projections start-index="60" stop-index="60">
+                <shorthand-projection start-index="60" stop-index="60"/>
+            </projections>
+            <from>
+                <simple-table name="SourceTable" start-index="67" stop-index="102" start-delimiter="[" end-delimiter="]">
+                    <owner name="dbo" start-index="84" stop-index="88" start-delimiter="[" end-delimiter="]">
+                        <owner name="SourceDatabase" start-index="67" stop-index="82" start-delimiter="[" end-delimiter="]" />
+                    </owner>
+                </simple-table>
+            </from>
+        </select>
+    </insert>
 </sql-parser-test-cases>
