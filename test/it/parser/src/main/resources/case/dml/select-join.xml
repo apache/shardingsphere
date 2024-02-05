@@ -2627,4 +2627,338 @@
             </join-table>
         </from>
     </select>
+    
+    <select sql-case-id="select_objects_with_inner_join">
+        <projections start-index="7" stop-index="206">
+            <expression-projection start-index="7" stop-index="43" alias="schema_name" text="SCHEMA_NAME(schema_id)">
+                <expr>
+                    <function function-name="SCHEMA_NAME" text="SCHEMA_NAME(schema_id)" start-index="7" stop-index="28">
+                        <parameter>
+                            <column name="schema_id" start-index="19" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="name" alias="object_name" start-index="45" stop-index="65">
+                <owner name="o" start-index="45" stop-index="45" />
+            </column-projection>
+            <column-projection name="type_desc" start-index="67" stop-index="77">
+                <owner name="o" start-index="67" stop-index="67" />
+            </column-projection>
+            <column-projection name="parameter_id" start-index="79" stop-index="92">
+                <owner name="p" start-index="79" stop-index="79" />
+            </column-projection>
+            <column-projection name="name" alias="parameter_name" start-index="94" stop-index="117">
+                <owner name="p" start-index="94" stop-index="94" />
+            </column-projection>
+            <expression-projection alias="parameter_type" text="TYPE_NAME(p.user_type_id)" start-index="119" stop-index="161">
+                <expr>
+                    <function function-name="TYPE_NAME" text="TYPE_NAME(p.user_type_id)" start-index="119" stop-index="143">
+                        <parameter>
+                            <column name="user_type_id" start-index="129" stop-index="142">
+                                <owner name="p" start-index="129" stop-index="129" />
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="max_length" start-index="163" stop-index="174">
+                <owner name="p" start-index="163" stop-index="163" />
+            </column-projection>
+            <column-projection name="precision" start-index="176" stop-index="186">
+                <owner name="p" start-index="176" stop-index="176" />
+            </column-projection>
+            <column-projection name="scale" start-index="188" stop-index="194">
+                <owner name="p" start-index="188" stop-index="188" />
+            </column-projection>
+            <column-projection name="is_output" start-index="196" stop-index="206">
+                <owner name="p" start-index="196" stop-index="196" />
+            </column-projection>
+        </projections>
+        <from start-index="213" stop-index="288">
+            <join-table natural="false" join-type="INNER">
+                <left>
+                    <simple-table name="objects" alias="o" start-index="213" stop-index="228">
+                        <owner name="sys" start-index="213" stop-index="215" />
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="parameters" alias="p" start-index="241" stop-index="259">
+                        <owner name="sys" start-index="241" stop-index="243" />
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="264" stop-index="288">
+                        <left>
+                            <column name="object_id" start-index="264" stop-index="274">
+                                <owner name="o" start-index="264" stop-index="264" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="object_id" start-index="278" stop-index="288">
+                                <owner name="p" start-index="278" stop-index="278" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <where start-index="290" stop-index="347">
+            <expr>
+                <binary-operation-expression start-index="296" stop-index="347">
+                    <left>
+                        <column start-index="296" stop-index="306" name="object_id">
+                            <owner name="o" start-index="296" stop-index="296" />
+                        </column>
+                    </left>
+                    <right>
+                        <function function-name="OBJECT_ID" text="OBJECT_ID('&lt;schema_name.object_name&gt;')" start-index="310" stop-index="347">
+                            <parameter>
+                                <literal-expression value="&lt;schema_name.object_name&gt;" start-index="320" stop-index="346" />
+                            </parameter>
+                        </function>
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="schema_name" start-index="358" stop-index="368" order-direction="ASC" />
+            <column-item name="object_name" start-index="371" stop-index="381" order-direction="ASC" />
+            <column-item name="parameter_id" start-index="384" stop-index="397" order-direction="ASC">
+                <owner name="p" start-index="384" stop-index="384" />
+            </column-item>
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_json_value_with_cross_apply">
+        <projections start-index="7" stop-index="97">
+            <column-projection name="name" start-index="7" stop-index="10" />
+            <column-projection name="reason" start-index="12" stop-index="17" />
+            <column-projection name="score" start-index="19" stop-index="23" />
+            <expression-projection alias="script" text="JSON_VALUE(details, '$.implementationDetails.script')" start-index="25" stop-index="87">
+                <expr>
+                    <function function-name="JSON_VALUE" text="JSON_VALUE(details, '$.implementationDetails.script')" start-index="25" stop-index="77">
+                        <parameter>
+                            <column name="details" start-index="36" stop-index="42" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.implementationDetails.script" start-index="45" stop-index="76" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <shorthand-projection start-index="89" stop-index="97">
+                <owner name="details" start-index="89" stop-index="95" />
+            </shorthand-projection>
+        </projections>
+        <from start-index="104" stop-index="318">
+            <join-table join-type="CROSS" natural="false">
+                <left>
+                    <simple-table name="dm_db_tuning_recommendations" start-index="104" stop-index="135">
+                        <owner name="sys" start-index="104" stop-index="106" />
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="details" start-index="149" stop-index="318">
+                        <table-function function-name="OPENJSON" text="OPENJSON(details, '$.planForceDetails') WITH ([query_id] INT '$.queryId',regressed_plan_id INT '$.regressedPlanId',last_good_plan_id INT '$.recommendedPlanId')">
+                            <parameter>
+                                <column name="details" start-index="158" stop-index="164" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="$.planForceDetails" start-index="167" stop-index="186" />
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="320" stop-index="371">
+            <expr>
+                <binary-operation-expression start-index="326" stop-index="371">
+                    <left>
+                       <function function-name="JSON_VALUE" text="JSON_VALUE(STATE, '$.currentValue')" start-index="326" stop-index="360">
+                           <parameter>
+                               <column name="STATE" start-index="337" stop-index="341" />
+                           </parameter>
+                           <parameter>
+                               <literal-expression value="$.currentValue" start-index="344" stop-index="359" />
+                           </parameter>
+                       </function>
+                    </left>
+                    <right>
+                        <literal-expression value="Active" start-index="364" stop-index="371" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_open_json_with_cross_apply">
+        <projections start-index="7" stop-index="337">
+            <column-projection name="reason" start-index="7" stop-index="12" />
+            <column-projection name="score" start-index="14" stop-index="18" />
+            <expression-projection text="JSON_VALUE(details, '$.implementationDetails.script')" alias="script" start-index="20" stop-index="81">
+                <expr>
+                    <function function-name="JSON_VALUE" text="JSON_VALUE(details, '$.implementationDetails.script')" start-index="29" stop-index="81">
+                        <parameter>
+                            <column name="details" start-index="40" stop-index="46" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.implementationDetails.script" start-index="49" stop-index="80" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <shorthand-projection start-index="83" stop-index="100">
+                <owner name="planForceDetails" start-index="83" stop-index="98" />
+            </shorthand-projection>
+            <expression-projection alias="estimated_gain" text="regressedPlanExecutionCount + recommendedPlanExecutionCount) * (regressedPlanCpuTimeAverage - recommendedPlanCpuTimeAverage) / 100000" start-index="102" stop-index="253">
+                <expr>
+                    <binary-operation-expression start-index="119" stop-index="253">
+                        <left>
+                            <binary-operation-expression start-index="119" stop-index="243">
+                                <left>
+                                    <binary-operation-expression start-index="120" stop-index="178">
+                                        <left>
+                                            <column name="regressedPlanExecutionCount" start-index="120" stop-index="146" />
+                                        </left>
+                                        <right>
+                                            <column name="recommendedPlanExecutionCount" start-index="150" stop-index="178" />
+                                        </right>
+                                        <operator>+</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="184" stop-index="242">
+                                        <left>
+                                            <column name="regressedPlanCpuTimeAverage" start-index="184" stop-index="210" />
+                                        </left>
+                                        <right>
+                                            <column name="recommendedPlanCpuTimeAverage" start-index="214" stop-index="242" />
+                                        </right>
+                                        <operator>-</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>*</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <literal-expression value="1000000" start-index="247" stop-index="253" />
+                        </right>
+                        <operator>/</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="255" stop-index="337" alias="error_prone" text="IIF(regressedPlanErrorCount &gt; recommendedPlanErrorCount, 'YES', 'NO')">
+                <expr>
+                    <function function-name="IIF" text="IIF(regressedPlanErrorCount &gt; recommendedPlanErrorCount, 'YES', 'NO')" start-index="269" stop-index="337">
+                        <parameter>
+                            <binary-operation-expression start-index="273" stop-index="323">
+                                <left>
+                                    <column name="regressedPlanErrorCount" start-index="273" stop-index="295" />
+                                </left>
+                                <right>
+                                    <column name="recommendedPlanErrorCount" start-index="299" stop-index="323" />
+                                </right>
+                                <operator>&gt;</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="YES" start-index="326" stop-index="330" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="NO" start-index="333" stop-index="336" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="344" stop-index="759">
+            <join-table natural="false" join-type="CROSS">
+                <left>
+                    <simple-table name="dm_db_tuning_recommendations" start-index="344" stop-index="375">
+                        <owner name="sys" start-index="344" stop-index="346" />
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="planForceDetails" start-index="389" stop-index="759">
+                        <table-function function-name="OPENJSON"  text="OPENJSON(Details, '$.planForceDetails') WITH ([query_id] INT '$.queryId',regressedPlanId INT '$.regressedPlanId',recommendedPlanId INT '$.recommendedPlanId',regressedPlanErrorCount INT,recommendedPlanErrorCount INT,regressedPlanExecutionCount INT,regressedPlanCpuTimeAverage FLOAT,recommendedPlanExecutionCount INT,recommendedPlanCpuTimeAverage FLOAT)">
+                            <parameter>
+                                <column name="Details" start-index="398" stop-index="404" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="$.planForceDetails" start-index="407" stop-index="426" />
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_sales_order_record_with_cross_apply">
+        <projections start-index="7" stop-index="64">
+            <column-projection name="Id" start-index="7" stop-index="12">
+                <owner name="Tab" start-index="7" stop-index="9" />
+            </column-projection>
+            <column-projection name="Customer" start-index="14" stop-index="40">
+                <owner name="SalesOrderJsonData" start-index="14" stop-index="31" />
+            </column-projection>
+            <column-projection name="Date" start-index="42" stop-index="64">
+                <owner name="SalesOrderJsonData" start-index="42" stop-index="59" />
+            </column-projection>
+        </projections>
+        <from start-index="71" stop-index="319">
+            <join-table join-type="CROSS" natural="false">
+                <left>
+                    <simple-table name="SalesOrderRecord" alias="Tab" start-index="71" stop-index="93" />
+                </left>
+                <right>
+                    <function-table table-alias="SalesOrderJsonData" start-index="107" stop-index="319">
+                        <table-function function-name="OPENJSON"  text="OPENJSON(Tab.json, N'$.Orders.OrdersArray') WITH (Number VARCHAR(200) N'$.Order.Number',Date DATETIME N'$.Order.Date',Customer VARCHAR(200) N'$.AccountNumber',Quantity INT N'$.Item.Quantity')">
+                            <parameter>
+                                <column name="json" start-index="116" stop-index="123">
+                                    <owner name="Tab" start-index="116" stop-index="118" />
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="$.Orders.OrdersArray" start-index="126" stop-index="148" />
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="321" stop-index="370">
+            <expr>
+                <binary-operation-expression start-index="327" stop-index="370">
+                    <left>
+                        <function function-name="JSON_VALUE" text="JSON_VALUE(Tab.json, '$.Status')" start-index="327" stop-index="358">
+                            <parameter>
+                                <column name="json" start-index="338" stop-index="345">
+                                    <owner name="Tab" start-index="338" stop-index="340" />
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="$.Status" start-index="348" stop-index="357" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <right>
+                        <literal-expression value="Closed" start-index="362" stop-index="370" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+           <expression-item expression="JSON_VALUE(Tab.json, '$.Group')" start-index="381" stop-index="411" order-direction="ASC" />
+            <column-item name="DateModified" order-direction="ASC" start-index="413" stop-index="428">
+                <owner name="Tab" start-index="413" stop-index="415" />
+            </column-item>
+        </order-by>
+    </select>
 </sql-parser-test-cases>

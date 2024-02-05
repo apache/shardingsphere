@@ -257,4 +257,5 @@
     <sql-case id="select_escape_quotes_from_sys_table" value="SELECT 'DECLARE @serverName NVARCHAR(512) = N''' + value + '''' FROM sys.dm_hadr_fabric_config_parameters WHERE parameter_name = 'DnsRecordName'" db-types="SQLServer"/>
     <sql-case id="select_from_physical_stats_function" value="SELECT page_count, compressed_page_count, forwarded_record_count, * FROM sys.dm_db_index_physical_stats(db_id(), object_id('t3'), NULL, NULL, 'SAMPLED')" db-types="SQLServer"/>
     <sql-case id="select_from_msdb_default_schema" value="SELECT backup_size/compressed_backup_size FROM msdb..backupset" db-types="SQLServer"/>
+    <sql-case id="select_from_database_files_2" value="SELECT file_id, name, type_desc, physical_name, size, max_size FROM sys.database_files" db-types="SQLServer"/>
 </sql-cases>
