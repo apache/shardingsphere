@@ -69,7 +69,7 @@ public final class JDBCRepositorySQLLoader {
      */
     @SneakyThrows({IOException.class, URISyntaxException.class})
     public static JDBCRepositorySQL load(final String type) {
-        Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(ROOT_DIRECTORY);
+        Enumeration<URL> resources = JDBCRepositorySQLLoader.class.getClassLoader().getResources(ROOT_DIRECTORY);
         if (null == resources) {
             return null;
         }
@@ -188,7 +188,7 @@ public final class JDBCRepositorySQLLoader {
                 if (!name.startsWith(ROOT_DIRECTORY) || !name.endsWith(FILE_EXTENSION)) {
                     continue;
                 }
-                final InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+                final InputStream inputStream = JDBCRepositorySQLLoader.class.getClassLoader().getResourceAsStream(name);
                 JDBCRepositorySQL provider = XML_MAPPER.readValue(inputStream, JDBCRepositorySQL.class);
                 if (provider.isDefault()) {
                     result = provider;
