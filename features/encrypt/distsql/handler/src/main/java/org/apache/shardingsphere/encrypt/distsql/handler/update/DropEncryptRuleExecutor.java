@@ -56,7 +56,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     }
     
     private void checkToBeDroppedEncryptTableNames(final DropEncryptRuleStatement sqlStatement) {
-        Collection<String> currentEncryptTableNames = ((EncryptRuleConfiguration) rule.getConfiguration()).getTables()
+        Collection<String> currentEncryptTableNames = rule.getConfiguration().getTables()
                 .stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Encrypt", database.getName(), notExistedTableNames));
@@ -64,8 +64,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropEncryptRuleStatement sqlStatement) {
-        return !Collections.disjoint(
-                ((EncryptRuleConfiguration) rule.getConfiguration()).getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables());
+        return !Collections.disjoint(rule.getConfiguration().getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables());
     }
     
     @Override
@@ -76,8 +75,7 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
             toBeDroppedTables.add(new EncryptTableRuleConfiguration(each, Collections.emptyList()));
             dropRule(each);
         }
-        UnusedAlgorithmFinder.findUnusedEncryptor((EncryptRuleConfiguration) rule.getConfiguration())
-                .forEach(each -> toBeDroppedEncryptors.put(each, ((EncryptRuleConfiguration) rule.getConfiguration()).getEncryptors().get(each)));
+        UnusedAlgorithmFinder.findUnusedEncryptor(rule.getConfiguration()).forEach(each -> toBeDroppedEncryptors.put(each, rule.getConfiguration().getEncryptors().get(each)));
         return new EncryptRuleConfiguration(toBeDroppedTables, toBeDroppedEncryptors);
     }
     
@@ -89,9 +87,9 @@ public final class DropEncryptRuleExecutor implements DatabaseRuleDropExecutor<D
     }
     
     private void dropRule(final String ruleName) {
-        Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = ((EncryptRuleConfiguration) rule.getConfiguration()).getTables().stream()
+        Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = rule.getConfiguration().getTables().stream()
                 .filter(each -> each.getName().equals(ruleName)).findAny();
-        encryptTableRuleConfig.ifPresent(optional -> ((EncryptRuleConfiguration) rule.getConfiguration()).getTables().remove(encryptTableRuleConfig.get()));
+        encryptTableRuleConfig.ifPresent(optional -> rule.getConfiguration().getTables().remove(encryptTableRuleConfig.get()));
     }
     
     private void dropUnusedEncryptor(final EncryptRuleConfiguration currentRuleConfig) {

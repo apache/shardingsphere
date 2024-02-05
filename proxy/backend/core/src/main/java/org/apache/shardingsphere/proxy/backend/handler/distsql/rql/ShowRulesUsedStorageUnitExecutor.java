@@ -21,7 +21,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -117,12 +116,8 @@ public final class ShowRulesUsedStorageUnitExecutor implements DistSQLQueryExecu
     }
     
     private Collection<LocalDataQueryResultRow> getEncryptData(final ShardingSphereDatabase database) {
-        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        if (!rule.isPresent()) {
-            return Collections.emptyList();
-        }
-        EncryptRuleConfiguration ruleConfig = (EncryptRuleConfiguration) rule.get().getConfiguration();
-        return ruleConfig.getTables().stream().map(each -> buildRow(ENCRYPT, each.getName())).collect(Collectors.toList());
+        return database.getRuleMetaData().findSingleRule(EncryptRule.class)
+                .map(optional -> optional.getConfiguration().getTables().stream().map(each -> buildRow(ENCRYPT, each.getName())).collect(Collectors.toList())).orElse(Collections.emptyList());
     }
     
     private Collection<LocalDataQueryResultRow> getShadowData(final ShardingSphereDatabase database, final String resourceName) {
