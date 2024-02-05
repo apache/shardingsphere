@@ -17,29 +17,28 @@
 
 package org.apache.shardingsphere.test.natived.jdbc.mode.cluster;
 
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.HostConfig;
-import com.github.dockerjava.api.model.PortBinding;
-import com.github.dockerjava.api.model.Ports;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
+import org.apache.curator.test.TestingServer;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledInNativeImage;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.utility.DockerImageName;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
 class ZookeeperTest {
+    
+    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.zookeeper.";
     
     private TestShardingService testShardingService;
     
@@ -50,16 +49,11 @@ class ZookeeperTest {
      *
      * @see org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository
      */
-    @SuppressWarnings("resource")
     @Test
-    @EnabledInNativeImage
-    void assertShardingInLocalTransactions() throws SQLException, IOException {
-        try (
-                GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("zookeeper:3.9.1-jre-17"))
-                        .withCreateContainerCmdModifier(cmd -> cmd.withHostConfig(new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(62372), new ExposedPort(2181)))))) {
-            container.start();
-            beforeAll();
-            DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/mode/cluster/zookeeper.yaml"));
+    void assertShardingInLocalTransactions() throws Exception {
+        try (TestingServer testingServer = new TestingServer()) {
+            String connectString = testingServer.getConnectString();
+            DataSource dataSource = createDataSource(connectString);
             testShardingService = new TestShardingService(dataSource);
             initEnvironment();
             Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
@@ -80,12 +74,22 @@ class ZookeeperTest {
         testShardingService.getAddressRepository().truncateTable();
     }
     
-    private void beforeAll() {
+    private DataSource createDataSource(final String connectString) {
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            try (CuratorFramework client = CuratorFrameworkFactory.newClient("localhost:" + 62372, new ExponentialBackoffRetry(1000, 3))) {
+            try (CuratorFramework client = CuratorFrameworkFactory.newClient(connectString, new ExponentialBackoffRetry(1000, 3))) {
                 client.start();
                 return client.blockUntilConnected(5, TimeUnit.SECONDS);
             }
         });
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath-system-props:test-native/yaml/mode/cluster/zookeeper.yaml");
+        try {
+            assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists"), is(nullValue()));
+            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", connectString);
+            return new HikariDataSource(config);
+        } finally {
+            System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
+        }
     }
 }

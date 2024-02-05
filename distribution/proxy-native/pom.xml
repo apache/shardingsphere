@@ -88,10 +88,6 @@
                                 <arg>-J-Xmx7g</arg>
                                 <arg>-H:+AddAllCharsets</arg>
                             </buildArgs>
-                            <metadataRepository>
-                                <enabled>true</enabled>
-                                <version>0.3.5</version>
-                            </metadataRepository>
                         </configuration>
                         <executions>
                             <execution>

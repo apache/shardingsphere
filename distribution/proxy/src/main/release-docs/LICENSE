@@ -265,29 +265,29 @@ The text of each license is the standard Apache 2.0 license.
     jackson-datatype-jdk8 2.16.0: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
     jackson-datatype-jsr310 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
     jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
-    jetcd-api 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
-    jetcd-common 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
-    jetcd-core 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
-    jetcd-grpc 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-api 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-common 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-core 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-grpc 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
     json-path 2.9.0: https://github.com/jayway/JsonPath, Apache 2.0
     json-smart 2.4.10: https://www.minidev.net/, Apache 2.0
     json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-buffer 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-transport 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-transport-classes-epoll 4.1.99.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.99.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.99.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-transport 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.1.106.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.106.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.106.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.106.Final: https://github.com/netty, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-linux-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-linux-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
