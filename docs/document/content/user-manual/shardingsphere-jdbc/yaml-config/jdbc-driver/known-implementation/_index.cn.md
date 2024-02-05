@@ -79,5 +79,68 @@ ds_1:
 用例：
 - `jdbc:shardingsphere:absolutepath-environment:/path/to/config.yaml`
 
+### 从类路径中加载包含系统属性的配置文件
+
+加载类路径中包含系统属性的 config.yaml 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:classpath-system-props:` 前缀识别。
+配置文件为 `xxx.yaml`，配置文件格式与`jdbc:shardingsphere:classpath-environment:`一致。
+与 `jdbc:shardingsphere:classpath-environment:` 的区别仅在于读取属性值的位置。
+
+假设存在以下一组系统属性，
+
+1. 存在系统属性`fixture.config.driver.jdbc-url`为`jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL`。
+2. 存在系统属性`fixture.config.driver.username`为`sa`。
+
+则对于以下 YAML 文件的截取片段，
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: $${fixture.config.driver.driver-class-name::org.h2.Driver}
+  jdbcUrl: $${fixture.config.driver.jdbc-url::jdbc:h2:mem:foo_ds_do_not_use}
+  username: $${fixture.config.driver.username::}
+  password: $${fixture.config.driver.password::}
+```
+
+此 YAML 截取片段将被解析为，
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: org.h2.Driver
+  jdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+  username: sa
+  password:
+```
+
+在实际情况下，系统变量通常是动态定义的。
+假设如上系统变量均未定义，存在包含如上YAML截取片段的YAML文件`config.yaml`，
+可参考如下方法创建 DataSource 实例。
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
+
+public DataSource createDataSource() {
+    HikariConfig config = new HikariConfig();
+    config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+    config.setJdbcUrl("jdbc:shardingsphere:classpath-system-props:config.yaml");
+    try {
+        assert null == System.getProperty("fixture.config.driver.jdbc-url");
+        assert null == System.getProperty("fixture.config.driver.username");
+        System.setProperty("fixture.config.driver.jdbc-url", "jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        System.setProperty("fixture.config.driver.username", "sa");
+        return new HikariDataSource(config);
+    } finally {
+        System.clearProperty("fixture.config.driver.jdbc-url");
+        System.clearProperty("fixture.config.driver.username");
+    }
+}
+```
+
+用例：
+- `jdbc:shardingsphere:classpath-system-props:config.yaml`
+
 ### 其他实现
 具体可参考 https://github.com/apache/shardingsphere-plugin 。

@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.test.natived.jdbc.databases;
 
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.HostConfig;
-import com.github.dockerjava.api.model.PortBinding;
-import com.github.dockerjava.api.model.Ports;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -31,14 +27,19 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
 class OpenGaussTest {
+    
+    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.database.opengauss.";
     
     private static final String USERNAME = "gaussdb";
     
@@ -46,21 +47,21 @@ class OpenGaussTest {
     
     private static final String DATABASE = "postgres";
     
-    private static final String JDBC_URL = "jdbc:opengauss://localhost:62390/" + DATABASE;
+    private String jdbcUrlPrefix;
     
     private TestShardingService testShardingService;
     
     @SuppressWarnings("resource")
     @Test
     @EnabledInNativeImage
-    void assertShardingInLocalTransactions() throws SQLException, IOException {
+    void assertShardingInLocalTransactions() throws SQLException {
         try (
                 GenericContainer<?> openGaussContainer = new GenericContainer<>(DockerImageName.parse("opengauss/opengauss:5.0.0"))
                         .withEnv("GS_PASSWORD", PASSWORD)
-                        .withCreateContainerCmdModifier(cmd -> cmd.withHostConfig(new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(62390), new ExposedPort(5432)))))) {
+                        .withExposedPorts(5432)) {
             openGaussContainer.start();
-            beforeAll();
-            DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/opengauss.yaml"));
+            jdbcUrlPrefix = "jdbc:opengauss://localhost:" + openGaussContainer.getMappedPort(5432) + "/";
+            DataSource dataSource = createDataSource();
             testShardingService = new TestShardingService(dataSource);
             this.initEnvironment();
             testShardingService.processSuccess();
@@ -77,15 +78,15 @@ class OpenGaussTest {
         testShardingService.getAddressRepository().truncateTable();
     }
     
-    private static Connection openConnection() throws SQLException {
+    private Connection openConnection() throws SQLException {
         Properties props = new Properties();
         props.setProperty("user", USERNAME);
         props.setProperty("password", PASSWORD);
-        return DriverManager.getConnection(JDBC_URL, props);
+        return DriverManager.getConnection(jdbcUrlPrefix + DATABASE, props);
     }
     
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
-    private void beforeAll() {
+    private DataSource createDataSource() {
         Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().until(() -> {
             openConnection().close();
             return true;
@@ -96,6 +97,22 @@ class OpenGaussTest {
             connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_2;");
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath-system-props:test-native/yaml/databases/opengauss.yaml");
+        try {
+            assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url"), is(nullValue()));
+            assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url"), is(nullValue()));
+            assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url"), is(nullValue()));
+            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
+            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
+            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
+            return new HikariDataSource(config);
+        } finally {
+            System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url");
+            System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url");
+            System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "ds2.jdbc-url");
         }
     }
 }
