@@ -58,7 +58,7 @@ public class AbsolutePathWithEnvironmentURLProvider extends AbstractAbsolutePath
             while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#")) {
                     line = replaceEnvironmentVariables(line);
-                    builder.append(line).append('\n');
+                    builder.append(line).append(System.lineSeparator());
                 }
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);

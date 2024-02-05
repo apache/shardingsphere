@@ -56,7 +56,7 @@ public final class ClasspathWithSystemPropsURLProvider extends AbstractClasspath
             while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#")) {
                     line = replaceSystemProperties(line);
-                    builder.append(line).append('\n');
+                    builder.append(line).append(System.lineSeparator());
                 }
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);
