@@ -76,22 +76,22 @@ public abstract class DistSQLUpdateExecuteEngine {
     }
     
     @SuppressWarnings("rawtypes")
-    private void executeDatabaseRuleDefinitionUpdate(final DatabaseRuleDefinitionExecutor databaseExecutor) {
+    private void executeDatabaseRuleDefinitionUpdate(final DatabaseRuleDefinitionExecutor executor) {
         if (isNormalRuleUpdater()) {
-            new DatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
+            new DatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), executor).executeUpdate();
         } else {
             // TODO Remove when metadata structure adjustment completed. #25485
-            new LegacyDatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), databaseExecutor).executeUpdate();
+            new LegacyDatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), executor).executeUpdate();
         }
     }
     
     @SuppressWarnings("rawtypes")
-    private void executeGlobalRuleDefinitionUpdate(final GlobalRuleDefinitionExecutor globalExecutor) {
+    private void executeGlobalRuleDefinitionUpdate(final GlobalRuleDefinitionExecutor executor) {
         if (isNormalRuleUpdater()) {
-            new GlobalRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, globalExecutor).executeUpdate();
+            new GlobalRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, executor).executeUpdate();
         } else {
             // TODO Remove when metadata structure adjustment completed. #25485
-            new LegacyGlobalRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, globalExecutor).executeUpdate();
+            new LegacyGlobalRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, executor).executeUpdate();
         }
     }
     

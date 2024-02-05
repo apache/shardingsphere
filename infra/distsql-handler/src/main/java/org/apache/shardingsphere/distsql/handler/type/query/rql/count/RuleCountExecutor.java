@@ -33,10 +33,10 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Count RQL executor.
+ * Rule count executor.
  */
 @Setter
-public final class CountRQLExecutor implements DistSQLQueryExecutor<CountRuleStatement>, DistSQLExecutorDatabaseAware {
+public final class RuleCountExecutor implements DistSQLQueryExecutor<CountRuleStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;
     
