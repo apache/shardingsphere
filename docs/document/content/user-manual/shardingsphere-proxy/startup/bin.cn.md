@@ -40,7 +40,7 @@ ShardingSphere-Proxy 支持配置多个逻辑数据源，每个以 `config-` 前
 
 ShardingSphere-Proxy 默认集成 ZooKeeper Curator 客户端，集群模式使用 ZooKeeper 无须引入其他依赖。
 
-如果集群模式使用 Etcd，需要将 Etcd 依赖的 [vertx-grpc 4.4.4](https://repo1.maven.org/maven2/io/vertx/vertx-grpc/4.4.4/vertx-grpc-4.4.4.jar) 和 [vertx-core 4.4.4](https://repo1.maven.org/maven2/io/vertx/vertx-core/4.4.4/vertx-core-4.4.4.jar) 复制至目录 `ext-lib`。
+如果集群模式使用 Etcd，需要将 Etcd 依赖的 [vertx-grpc 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-grpc/4.5.1/vertx-grpc-4.5.1.jar) 和 [vertx-core 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-core/4.5.1/vertx-core-4.5.1.jar) 复制至目录 `ext-lib`。
 
 6. （可选）引入分布式事务所需依赖
 

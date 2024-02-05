@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.natived.jdbc.features;
 
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Address;
 import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Order;
 import org.apache.shardingsphere.test.natived.jdbc.commons.entity.OrderItem;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderRepos
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,8 +48,11 @@ class ShadowTest {
     private AddressRepository addressRepository;
     
     @Test
-    void assertShadowInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/features/shadow.yaml"));
+    void assertShadowInLocalTransactions() throws SQLException {
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/features/shadow.yaml");
+        DataSource dataSource = new HikariDataSource(config);
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);

@@ -41,7 +41,7 @@ If the backend is connected to a MySQL database, please download [mysql-connecto
 
 ShardingSphere-Proxy integrates the ZooKeeper Curator client by default. ZooKeeper is used in cluster mode without introducing other dependencies.
 
-If the cluster mode uses Etcd, please copy [vertx-grpc 4.4.4](https://repo1.maven.org/maven2/io/vertx/vertx-grpc/4.4.4/vertx-grpc-4.4.4.jar) and [vertx-core 4.4.4](https://repo1.maven.org/maven2/io/vertx/vertx-core/4.4.4/vertx-core-4.4.4.jar) that Etcd depends on into the `ext-lib` directory.
+If the cluster mode uses Etcd, please copy [vertx-grpc 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-grpc/4.5.1/vertx-grpc-4.5.1.jar) and [vertx-core 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-core/4.5.1/vertx-core-4.5.1.jar) that Etcd depends on into the `ext-lib` directory.
 
 6. Introduce dependencies required by distributed transactions (Optional)
 

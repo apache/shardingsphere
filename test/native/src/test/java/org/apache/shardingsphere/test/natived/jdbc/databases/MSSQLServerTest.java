@@ -17,24 +17,26 @@
 
 package org.apache.shardingsphere.test.natived.jdbc.databases;
 
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 
+@EnabledInNativeImage
 class MSSQLServerTest {
     
     private TestShardingService testShardingService;
     
     @Test
-    @EnabledInNativeImage
-    void assertShardingInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/mssqlserver.yaml"));
+    void assertShardingInLocalTransactions() throws SQLException {
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/mssqlserver.yaml");
+        DataSource dataSource = new HikariDataSource(config);
         testShardingService = new TestShardingService(dataSource);
         this.initEnvironment();
         testShardingService.processSuccess();

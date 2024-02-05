@@ -37,15 +37,12 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.9.28</version>
+                <version>0.10.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
                         <buildArg>-H:+AddAllCharsets</buildArg>
                     </buildArgs>
-                    <metadataRepository>
-                        <enabled>true</enabled>
-                    </metadataRepository>
                 </configuration>
                 <executions>
                     <execution>
@@ -76,7 +73,7 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.9.28'
+   id 'org.graalvm.buildtools.native' version '0.10.0'
 }
 
 dependencies {
@@ -91,9 +88,6 @@ graalvmNative {
       test {
          buildArgs.add('-H:+AddAllCharsets')
       }
-   }
-   metadataRepository {
-      enabled = true
    }
 }
 ```
@@ -240,8 +234,8 @@ ShardingSphere 定义了 `nativeTestInShardingSphere` 的 Maven Profile 用于�
 sudo apt install unzip zip curl sed -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 21.0.1-graalce
-sdk use java 21.0.1-graalce
+sdk install java 21.0.2-graalce
+sdk use java 21.0.2-graalce
 sudo apt-get install build-essential libz-dev zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git

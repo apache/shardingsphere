@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.natived.jdbc.features;
 
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Address;
 import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Order;
 import org.apache.shardingsphere.test.natived.jdbc.commons.entity.OrderItem;
@@ -29,7 +29,6 @@ import org.h2.jdbc.JdbcSQLSyntaxErrorException;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,8 +44,11 @@ class ReadWriteSplittingTest {
     private AddressRepository addressRepository;
     
     @Test
-    void assertReadWriteSplittingInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/features/readwrite-splitting.yaml"));
+    void assertReadWriteSplittingInLocalTransactions() throws SQLException {
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/features/readwrite-splitting.yaml");
+        DataSource dataSource = new HikariDataSource(config);
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
@@ -66,11 +68,11 @@ class ReadWriteSplittingTest {
     
     private void processSuccess() throws SQLException {
         Collection<Long> orderIds = insertData();
-        // This is intentional because the read operation is in the slave database and the corresponding table does not exist.
-        assertThrows(JdbcSQLSyntaxErrorException.class, this::printData);
+        assertThrows(JdbcSQLSyntaxErrorException.class, this::printData,
+                "This is intentional because the read operation is in the slave database and the corresponding table does not exist.");
         deleteData(orderIds);
-        // This is intentional because the read operation is in the slave database and the corresponding table does not exist.
-        assertThrows(JdbcSQLSyntaxErrorException.class, this::printData);
+        assertThrows(JdbcSQLSyntaxErrorException.class, this::printData,
+                "This is intentional because the read operation is in the slave database and the corresponding table does not exist.");
     }
     
     private Collection<Long> insertData() throws SQLException {
