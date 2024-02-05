@@ -19,21 +19,28 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
-/**
- * Window segment.
- */
 @RequiredArgsConstructor
 @Getter
-public final class WindowSegment implements SQLSegment {
+@Setter
+public class WindowItemSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<WindowItemSegment> itemSegments = new LinkedList<>();
+    private IdentifierValue windowName;
+    
+    private Collection<ExpressionSegment> partitionListSegments;
+    
+    private OrderBySegment orderBySegment;
+    
+    private ExpressionSegment frameClause;
 }
