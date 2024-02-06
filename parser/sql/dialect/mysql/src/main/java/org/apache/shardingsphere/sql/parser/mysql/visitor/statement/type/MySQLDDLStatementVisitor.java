@@ -590,6 +590,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             result.setConstraintName((ConstraintSegment) visit(ctx.constraintClause().constraintName()));
         }
         if (null != ctx.KEY() && null != ctx.PRIMARY()) {
+            result.setPrimaryKey(true);
             result.getPrimaryKeyColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
             return result;
         }
@@ -598,6 +599,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             return result;
         }
         if (null != ctx.UNIQUE()) {
+            result.setUniqueKey(true);
             result.getIndexColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
             if (null != ctx.indexName()) {
                 result.setIndexName((IndexSegment) visit(ctx.indexName()));
