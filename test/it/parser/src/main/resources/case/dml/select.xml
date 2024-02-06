@@ -8426,4 +8426,31 @@
             </simple-table>
         </from>
     </select>
+    
+    <select sql-case-id="select_mdx">
+        <projections start-index="7" stop-index="153">
+            <expression-projection start-index="7" stop-index="94" text="{[Measures].[Internet Sales Count], [Measures].[Internet Sales-Sales Amount]} ON COLUMNS">
+                <expr>
+                    <common-expression text="{[Measures].[Internet Sales Count], [Measures].[Internet Sales-Sales Amount]} ON COLUMNS" start-index="7" stop-index="94" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="{[Product].[Product Line].[Product Line].MEMBERS} ON ROWS" start-index="97" stop-index="153">
+                <expr>
+                    <common-expression text="{[Product].[Product Line].[Product Line].MEMBERS} ON ROWS" start-index="97" stop-index="153" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="160" stop-index="187">
+            <simple-table name="Analysis Services Tutorial" start-index="160" stop-index="187" start-delimiter="[" end-delimiter="]" />
+        </from>
+        <where start-index="189" stop-index="249">
+            <expr>
+                <column name="Australia" start-index="195" stop-index="249" start-delimiter="[" end-delimiter="]">
+                    <owner name="Sales Territory Country" start-index="213" stop-index="237" start-delimiter="[" end-delimiter="]">
+                        <owner name="Sales Territory" start-index="195" stop-index="211" start-delimiter="[" end-delimiter="]" />
+                    </owner>
+                </column>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

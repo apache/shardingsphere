@@ -258,4 +258,5 @@
     <sql-case id="select_from_physical_stats_function" value="SELECT page_count, compressed_page_count, forwarded_record_count, * FROM sys.dm_db_index_physical_stats(db_id(), object_id('t3'), NULL, NULL, 'SAMPLED')" db-types="SQLServer"/>
     <sql-case id="select_from_msdb_default_schema" value="SELECT backup_size/compressed_backup_size FROM msdb..backupset" db-types="SQLServer"/>
     <sql-case id="select_from_database_files_2" value="SELECT file_id, name, type_desc, physical_name, size, max_size FROM sys.database_files" db-types="SQLServer"/>
+    <sql-case id="select_mdx" value="SELECT {[Measures].[Internet Sales Count], [Measures].[Internet Sales-Sales Amount]} ON COLUMNS, {[Product].[Product Line].[Product Line].MEMBERS} ON ROWS FROM [Analysis Services Tutorial] WHERE [Sales Territory].[Sales Territory Country].[Australia]" db-types="SQLServer"/>
 </sql-cases>
