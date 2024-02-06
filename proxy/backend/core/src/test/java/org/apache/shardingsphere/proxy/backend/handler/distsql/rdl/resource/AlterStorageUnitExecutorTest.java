@@ -69,8 +69,8 @@ class AlterStorageUnitExecutorTest {
     void assertExecuteUpdate() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        ConnectionProperties connectionProperties = mockConnectionProperties("ds_0");
-        when(storageUnit.getConnectionProperties()).thenReturn(connectionProperties);
+        ConnectionProperties connectionProps = mockConnectionProperties("ds_0");
+        when(storageUnit.getConnectionProperties()).thenReturn(connectionProps);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         executor.setDatabase(database);
@@ -98,8 +98,8 @@ class AlterStorageUnitExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        ConnectionProperties connectionProperties = mockConnectionProperties("ds_1");
-        when(storageUnit.getConnectionProperties()).thenReturn(connectionProperties);
+        ConnectionProperties connectionProps = mockConnectionProperties("ds_1");
+        when(storageUnit.getConnectionProperties()).thenReturn(connectionProps);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         executor.setDatabase(database);

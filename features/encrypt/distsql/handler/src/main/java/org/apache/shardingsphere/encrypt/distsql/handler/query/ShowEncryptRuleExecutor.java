@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -53,8 +53,7 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptRulesStatement sqlStatement, final ContextManager contextManager) {
-        EncryptRuleConfiguration ruleConfig = (EncryptRuleConfiguration) rule.getConfiguration();
-        return buildData(ruleConfig, sqlStatement);
+        return buildData(rule.getConfiguration(), sqlStatement);
     }
     
     private Collection<LocalDataQueryResultRow> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {

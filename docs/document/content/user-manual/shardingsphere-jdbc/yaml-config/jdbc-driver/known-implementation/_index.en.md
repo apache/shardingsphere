@@ -82,5 +82,71 @@ The difference from `jdbc:shardingsphere:classpath-environment:` is only where t
 Example:
 - `jdbc:shardingsphere:absolutepath-environment:/path/to/config.yaml`
 
+### Load configuration file containing system properties from classpath
+
+JDBC URL to load the config.yaml configuration file containing system properties in the classpath, 
+identified by the `jdbc:shardingsphere:classpath-system-props:` prefix.
+The configuration file is `xxx.yaml`, 
+and the configuration file format is consistent with `jdbc:shardingsphere:classpath-environment:`.
+The difference from `jdbc:shardingsphere:classpath-environment:` is only where the property value is read.
+
+Assume the following set of system properties exists,
+
+1. The system property `fixture.config.driver.jdbc-url` exists as `jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL`.
+2. The system property `fixture.config.driver.username` exists as `sa`.
+
+Then for the intercepted fragment of the following YAML file,
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: $${fixture.config.driver.driver-class-name::org.h2.Driver}
+  jdbcUrl: $${fixture.config.driver.jdbc-url::jdbc:h2:mem:foo_ds_do_not_use}
+  username: $${fixture.config.driver.username::}
+  password: $${fixture.config.driver.password::}
+```
+
+This YAML snippet will be parsed as,
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: org.h2.Driver
+  jdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+  username: sa
+  password:
+```
+
+In real situations, system variables are usually defined dynamically.
+Assume that none of the above system variables are defined, 
+and there is a YAML file `config.yaml` containing the above YAML interception fragment,
+Users can refer to the following methods to create a DataSource instance.
+
+```java
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
+
+public DataSource createDataSource() {
+    HikariConfig config = new HikariConfig();
+    config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
+    config.setJdbcUrl("jdbc:shardingsphere:classpath-system-props:config.yaml");
+    try {
+        assert null == System.getProperty("fixture.config.driver.jdbc-url");
+        assert null == System.getProperty("fixture.config.driver.username");
+        System.setProperty("fixture.config.driver.jdbc-url", "jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        System.setProperty("fixture.config.driver.username", "sa");
+        return new HikariDataSource(config);
+    } finally {
+        System.clearProperty("fixture.config.driver.jdbc-url");
+        System.clearProperty("fixture.config.driver.username");
+    }
+}
+```
+
+Example:
+- `jdbc:shardingsphere:classpath-system-props:config.yaml`
+
 ### Other implementations
 For details, please refer to https://github.com/apache/shardingsphere-plugin .

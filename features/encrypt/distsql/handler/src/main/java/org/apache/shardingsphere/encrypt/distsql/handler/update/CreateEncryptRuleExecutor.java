@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgo
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -71,7 +71,7 @@ public final class CreateEncryptRuleExecutor implements DatabaseRuleCreateExecut
     private Collection<String> getDuplicatedRuleNames(final CreateEncryptRuleStatement sqlStatement) {
         Collection<String> currentRuleNames = new LinkedHashSet<>();
         if (null != rule) {
-            currentRuleNames = ((EncryptRuleConfiguration) rule.getConfiguration()).getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
+            currentRuleNames = rule.getConfiguration().getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
         }
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toSet());
     }

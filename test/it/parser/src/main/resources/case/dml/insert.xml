@@ -1989,12 +1989,8 @@
         </columns>
         <output start-index="40" stop-index="128">
             <output-columns start-index="47" stop-index="81">
-                <column-projection name="order_id" start-index="47" stop-index="63">
-                    <owner name="INSERTED" start-index="47" stop-index="54" />
-                </column-projection>
-                <column-projection name="user_id" start-index="66" stop-index="81">
-                    <owner name="INSERTED" start-index="66" stop-index="73" />
-                </column-projection>
+                <column-projection name="order_id" start-index="47" stop-index="63" />
+                <column-projection name="user_id" start-index="66" stop-index="81" />
             </output-columns>
             <output-table name="@MyTableVar" start-index="88" stop-index="98" />
             <output-table-columns start-index="100" stop-index="128">
@@ -2024,12 +2020,8 @@
         </columns>
         <output start-index="40" stop-index="98">
             <output-columns start-index="47" stop-index="81">
-                <column-projection name="order_id" start-index="47" stop-index="63">
-                    <owner name="INSERTED" start-index="47" stop-index="54" />
-                </column-projection>
-                <column-projection name="user_id" start-index="66" stop-index="81">
-                    <owner name="INSERTED" start-index="66" stop-index="73" />
-                </column-projection>
+                <column-projection name="order_id" start-index="47" stop-index="63" />
+                <column-projection name="user_id" start-index="66" stop-index="81" />
             </output-columns>
             <output-table name="@MyTableVar" start-index="88" stop-index="98" />
         </output>
@@ -2055,12 +2047,8 @@
         </columns>
         <output start-index="40" stop-index="81">
             <output-columns start-index="47" stop-index="81">
-                <column-projection name="order_id" start-index="47" stop-index="63">
-                    <owner name="INSERTED" start-index="47" stop-index="54" />
-                </column-projection>
-                <column-projection name="user_id" start-index="66" stop-index="81">
-                    <owner name="INSERTED" start-index="66" stop-index="73" />
-                </column-projection>
+                <column-projection name="order_id" start-index="47" stop-index="63" />
+                <column-projection name="user_id" start-index="66" stop-index="81" />
             </output-columns>
         </output>
         <values>
@@ -3553,5 +3541,98 @@
                 <expression-projection start-index="25" stop-index="25" text="1"/>
             </projections>
         </select>
+    </insert>
+
+    <insert sql-case-id="insert_sales_with_nchar_3">
+        <table name="sales" start-index="12" stop-index="16"/>
+        <columns start-index="17" stop-index="17"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Canada" start-index="26" stop-index="34"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Alberta" start-index="37" stop-index="46"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="100" start-index="49" stop-index="51"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_tmp_with_exec">
+        <table name="#temp" start-index="12" stop-index="16" />
+        <columns start-index="18" stop-index="325">
+            <column name="id" start-index="19" stop-index="20" />
+            <column name="job_name" start-index="23" stop-index="30" />
+            <column name="job_id" start-index="33" stop-index="38" />
+            <column name="dynamic_filter_login" start-index="41" stop-index="60" />
+            <column name="dynamic_filter_hostname" start-index="62" stop-index="84" />
+            <column name="dynamic_snapshot_location" start-index="87" stop-index="111" />
+            <column name="frequency_type" start-index="113" stop-index="126" />
+            <column name="frequency_interval" start-index="129" stop-index="146" />
+            <column name="frequency_subday_type" start-index="149" stop-index="169" />
+            <column name="frequency_subday_interval" start-index="171" stop-index="195" />
+            <column name="frequency_relative_interval" start-index="198" stop-index="224" />
+            <column name="frequency_recurrence_factor" start-index="227" stop-index="253" />
+            <column name="active_start_date" start-index="256" stop-index="272" />
+            <column name="active_end_date" start-index="275" stop-index="289" />
+            <column name="active_start_time" start-index="292" stop-index="308" />
+            <column name="active_end_time" start-index="310" stop-index="324" />
+        </columns>
+        <exec name="sp_helpdynamicsnapshot_job" start-index="327" stop-index="357" />
+    </insert>
+    
+    <insert sql-case-id="insert_into_player_with_compress_function">
+        <table name="player" start-index="12" stop-index="17" />
+        <columns start-index="19" stop-index="38">
+            <column name="name" start-index="21" stop-index="24" />
+            <column name="surname" start-index="26" stop-index="32" />
+            <column name="info" start-index="34" stop-index="37" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Ovidiu" start-index="48" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Cracium" start-index="59" stop-index="68" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="COMPRESS" text="COMPRESS(N'{&quot;sport&quot;:&quot;Tennis&quot;,&quot;age&quot;: 28,&quot;rank&quot;:1,&quot;points&quot;:15258, &quot;turn&quot;:17}')" start-index="70" stop-index="145">
+                        <parameter>
+                            <literal-expression value="{&quot;sport&quot;:&quot;Tennis&quot;,&quot;age&quot;: 28,&quot;rank&quot;:1,&quot;points&quot;:15258, &quot;turn&quot;:17}" start-index="79" stop-index="144" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_player_with_compress_function_2">
+        <table name="player" start-index="12" stop-index="17" />
+        <columns start-index="19" stop-index="37">
+            <column name="name" start-index="20" stop-index="23" />
+            <column name="surname" start-index="25" stop-index="31" />
+            <column name="info" start-index="33" stop-index="36" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Michael" start-index="47" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Raheem" start-index="58" stop-index="66" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="COMPRESS" text="COMPRESS(@info)" start-index="68" stop-index="82">
+                        <parameter>
+                            <column name="@info" start-index="77" stop-index="81" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </value>
+        </values>
     </insert>
 </sql-parser-test-cases>

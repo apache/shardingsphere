@@ -93,6 +93,17 @@
             <artifactId>mssqlserver</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.etcd</groupId>
+            <artifactId>jetcd-test</artifactId>
+            <version>${jetcd.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
     <build>

@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Alter encrypt rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Encrypt")
+@DistSQLExecutorCurrentRuleRequired(EncryptRule.class)
 @Setter
 public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor<AlterEncryptRuleStatement, EncryptRule, EncryptRuleConfiguration> {
     
@@ -65,8 +65,7 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     }
     
     private void checkToBeAlteredRules(final AlterEncryptRuleStatement sqlStatement) {
-        Collection<String> currentEncryptTableNames = ((EncryptRuleConfiguration) rule.getConfiguration()).getTables()
-                .stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> currentEncryptTableNames = rule.getConfiguration().getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistEncryptTableNames = getToBeAlteredEncryptTableNames(sqlStatement).stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistEncryptTableNames.isEmpty()) {
             throw new MissingRequiredRuleException("Encrypt", database.getName(), notExistEncryptTableNames);
@@ -111,8 +110,8 @@ public final class AlterEncryptRuleExecutor implements DatabaseRuleAlterExecutor
     @Override
     public EncryptRuleConfiguration buildToBeDroppedRuleConfiguration(final EncryptRuleConfiguration toBeAlteredRuleConfig) {
         Map<String, AlgorithmConfiguration> toBeDroppedEncryptors = new HashMap<>();
-        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor((EncryptRuleConfiguration) rule.getConfiguration());
-        unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, ((EncryptRuleConfiguration) rule.getConfiguration()).getEncryptors().get(each)));
+        Collection<String> unusedEncryptor = UnusedAlgorithmFinder.findUnusedEncryptor(rule.getConfiguration());
+        unusedEncryptor.forEach(each -> toBeDroppedEncryptors.put(each, rule.getConfiguration().getEncryptors().get(each)));
         return new EncryptRuleConfiguration(Collections.emptyList(), toBeDroppedEncryptors);
     }
     

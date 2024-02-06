@@ -69,7 +69,7 @@ public final class ShardingSphereSchema {
     
     /**
      * Get table meta data via table name.
-     * 
+     *
      * @param tableName tableName table name
      * @return table meta data
      */
@@ -89,7 +89,7 @@ public final class ShardingSphereSchema {
     
     /**
      * Add table.
-     * 
+     *
      * @param tableName table name
      * @param table table
      */

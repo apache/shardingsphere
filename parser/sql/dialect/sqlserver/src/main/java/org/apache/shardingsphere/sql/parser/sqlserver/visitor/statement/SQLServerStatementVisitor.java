@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesWithSortContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConstraintNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConversionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConvertFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableAsSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseContext;
@@ -68,6 +69,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Ins
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertExecClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.InsertValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonArrayFunctionContext;
@@ -86,7 +88,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Opt
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputTableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OwnerContext;
@@ -99,6 +100,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Qua
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SampleOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ScalarExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ScriptVariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectClauseContext;
@@ -127,8 +129,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConversionFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -1170,28 +1170,50 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         OutputSegment result = new OutputSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.outputWithColumns()) {
             OutputWithColumnsContext outputWithColumnsContext = ctx.outputWithColumns();
-            List<OutputWithColumnContext> outputWithColumnContexts = outputWithColumnsContext.outputWithColumn();
-            Collection<ColumnProjectionSegment> outputColumns = new LinkedList<>();
-            for (OutputWithColumnContext each : outputWithColumnContexts) {
-                ColumnSegment column = new ColumnSegment(each.start.getStartIndex(), each.stop.getStopIndex(), new IdentifierValue(each.name().getText()));
-                ColumnProjectionSegment outputColumn = new ColumnProjectionSegment(column);
-                if (null != each.alias()) {
-                    outputColumn.setAlias(new AliasSegment(each.alias().start.getStartIndex(), each.alias().stop.getStopIndex(), new IdentifierValue(each.name().getText())));
-                }
-                outputColumns.add(outputColumn);
+            ProjectionsSegment outputColumns = new ProjectionsSegment(outputWithColumnsContext.start.getStartIndex(), outputWithColumnsContext.stop.getStopIndex());
+            if (null != outputWithColumnsContext.outputWithColumn()) {
+                outputColumns.getProjections().addAll(visitOutputWithColumn(outputWithColumnsContext.outputWithColumn()));
             }
-            result.getOutputColumns().addAll(outputColumns);
+            if (null != outputWithColumnsContext.scalarExpression()) {
+                outputColumns.getProjections().addAll(visitScalarExpression(outputWithColumnsContext.scalarExpression()));
+            }
+            result.setOutputColumns(outputColumns);
         }
         if (null != ctx.outputTableName()) {
-            OutputTableNameContext outputTableNameContext = ctx.outputTableName();
-            TableNameSegment tableName = new TableNameSegment(outputTableNameContext.start.getStartIndex(),
-                    outputTableNameContext.stop.getStopIndex(), new IdentifierValue(outputTableNameContext.getText()));
-            result.setTableName(tableName);
+            if (null != ctx.outputTableName().tableName()) {
+                result.setTable((SimpleTableSegment) visit(ctx.outputTableName().tableName()));
+            }
             if (null != ctx.columnNames()) {
                 ColumnNamesContext columnNames = ctx.columnNames();
                 CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnNames);
                 result.getTableColumns().addAll(columns.getValue());
             }
+        }
+        return result;
+    }
+    
+    private Collection<ProjectionSegment> visitOutputWithColumn(final List<OutputWithColumnContext> outputWithColumnContexts) {
+        Collection<ProjectionSegment> result = new LinkedList<>();
+        for (OutputWithColumnContext each : outputWithColumnContexts) {
+            ColumnSegment column = new ColumnSegment(each.start.getStartIndex(), each.stop.getStopIndex(), new IdentifierValue(each.name().getText()));
+            ColumnProjectionSegment outputColumn = new ColumnProjectionSegment(column);
+            if (null != each.alias()) {
+                outputColumn.setAlias(new AliasSegment(each.alias().start.getStartIndex(), each.alias().stop.getStopIndex(), new IdentifierValue(each.alias().getText())));
+            }
+            result.add(outputColumn);
+        }
+        return result;
+    }
+    
+    private Collection<ProjectionSegment> visitScalarExpression(final List<ScalarExpressionContext> scalarExpressionContexts) {
+        Collection<ProjectionSegment> result = new LinkedList<>();
+        for (ScalarExpressionContext each : scalarExpressionContexts) {
+            ExpressionProjectionSegment outputColumn = new ExpressionProjectionSegment(each.start.getStartIndex(), each.stop.getStopIndex(),
+                    getOriginalText(each), (ExpressionSegment) visit(each.expr()));
+            if (null != each.alias()) {
+                outputColumn.setAlias(new AliasSegment(each.alias().start.getStartIndex(), each.alias().stop.getStopIndex(), new IdentifierValue(each.alias().getText())));
+            }
+            result.add(outputColumn);
         }
         return result;
     }
@@ -1264,6 +1286,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.optionHint()) {
             result.setOptionHintSegment((OptionHintSegment) visit(ctx.optionHint()));
         }
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+        }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -1329,6 +1354,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
         }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;

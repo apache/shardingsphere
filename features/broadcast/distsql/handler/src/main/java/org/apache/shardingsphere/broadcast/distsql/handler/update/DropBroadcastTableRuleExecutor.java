@@ -23,18 +23,19 @@ import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableR
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
  * Drop broadcast table rule executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Broadcast")
+@DistSQLExecutorCurrentRuleRequired(BroadcastRule.class)
 @Setter
 public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExecutor<DropBroadcastTableRuleStatement, BroadcastRule, BroadcastRuleConfiguration> {
     
@@ -61,7 +62,7 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement) {
-        return !getIdenticalData(rule.getConfiguration().getTables(), sqlStatement.getTables()).isEmpty();
+        return !Collections.disjoint(rule.getConfiguration().getTables(), sqlStatement.getTables());
     }
     
     @Override

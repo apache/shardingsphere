@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -30,13 +30,14 @@ import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAuditorS
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 /**
  * Drop sharding auditor statement executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Sharding auditor")
+@DistSQLExecutorCurrentRuleRequired(ShardingRule.class)
 @Setter
 public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecutor<DropShardingAuditorStatement, ShardingRule, ShardingRuleConfiguration> {
     
@@ -91,7 +92,7 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAuditorStatement sqlStatement) {
-        return !getIdenticalData(rule.getConfiguration().getAuditors().keySet(), sqlStatement.getNames()).isEmpty();
+        return !Collections.disjoint(rule.getConfiguration().getAuditors().keySet(), sqlStatement.getNames());
     }
     
     @Override

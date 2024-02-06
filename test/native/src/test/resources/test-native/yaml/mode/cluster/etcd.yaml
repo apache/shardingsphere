@@ -21,7 +21,7 @@ mode:
     type: etcd
     props:
       namespace: governance-etcd-data-source
-      server-lists: http://localhost:62290
+      server-lists: $${fixture.test-native.yaml.mode.cluster.etcd.server-lists::}
 
 dataSources:
   ds_0:

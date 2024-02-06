@@ -8309,4 +8309,121 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_escape_quotes_from_sys_table">
+        <projections start-index="7" stop-index="62">
+            <expression-projection start-index="7" stop-index="62" text="'DECLARE @serverName NVARCHAR(512) = N''' + value + ''''">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="62">
+                        <left>
+                            <binary-operation-expression start-index="7" stop-index="55">
+                                <left>
+                                    <literal-expression value="DECLARE @serverName NVARCHAR(512) = N''" start-index="7" stop-index="47"/>
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <column name="value" start-index="51" stop-index="55"/>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="''" start-index="59" stop-index="62"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="dm_hadr_fabric_config_parameters" start-index="69" stop-index="104">
+                <owner name="sys" start-index="69" stop-index="71"/>
+            </simple-table>
+        </from>
+        <where start-index="106" stop-index="143">
+            <expr>
+                <binary-operation-expression start-index="112" stop-index="143">
+                    <left>
+                        <column name="parameter_name" start-index="112" stop-index="125"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="DnsRecordName" start-index="129" stop-index="143"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_from_physical_stats_function">
+        <projections start-index="7" stop-index="66">
+            <column-projection name="page_count" start-index="7" stop-index="16"/>
+            <column-projection name="compressed_page_count" start-index="19" stop-index="39"/>
+            <column-projection name="forwarded_record_count" start-index="42" stop-index="63"/>
+            <shorthand-projection start-index="66" stop-index="66"/>
+        </projections>
+        <from>
+            <function-table start-index="73" stop-index="151">
+                <table-function text="sys.dm_db_index_physical_stats(db_id(), object_id('t3'), NULL, NULL, 'SAMPLED')" function-name="sys.dm_db_index_physical_stats">
+                    <parameter>
+                        <function function-name="db_id" text="db_id()" start-index="104" stop-index="110"/>
+                    </parameter>
+                    <parameter>
+                        <function function-name="object_id" text="object_id('t3')" start-index="113" stop-index="127">
+                            <parameter>
+                                <literal-expression value="t3" start-index="123" stop-index="126"/>
+                            </parameter>
+                        </function>
+                    </parameter>
+                    <parameter>
+                        <literal-expression start-index="130" stop-index="133"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression start-index="136" stop-index="139"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression start-index="142" stop-index="150"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_msdb_default_schema">
+        <projections start-index="7" stop-index="40">
+            <expression-projection text="backup_size/compressed_backup_size" start-index="7" stop-index="40">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="40">
+                        <left>
+                            <column name="backup_size" start-index="7" stop-index="17"/>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <column name="compressed_backup_size" start-index="19" stop-index="40"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="backupset" start-index="47" stop-index="61">
+                <owner name="msdb" start-index="47" stop-index="50"/>
+            </simple-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_from_database_files_2">
+        <projections start-index="7" stop-index="61">
+            <column-projection name="file_id" start-index="7" stop-index="13" />
+            <column-projection name="name" start-index="16" stop-index="19" />
+            <column-projection name="type_desc" start-index="22" stop-index="30" />
+            <column-projection name="physical_name" start-index="33" stop-index="45" />
+            <column-projection name="size" start-index="48" stop-index="51" />
+            <column-projection name="max_size" start-index="54" stop-index="61" />
+        </projections>
+        <from start-index="68" stop-index="85">
+            <simple-table name="database_files" start-index="68" stop-index="85">
+                <owner name="sys" start-index="68" stop-index="70" />
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

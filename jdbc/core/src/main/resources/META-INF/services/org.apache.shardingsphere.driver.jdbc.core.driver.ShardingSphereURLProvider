@@ -16,6 +16,7 @@
 #
 
 org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath.AbsolutePathURLProvider
+org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath.AbsolutePathWithEnvironmentURLProvider
 org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath.ClasspathURLProvider
 org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath.ClasspathWithEnvironmentURLProvider
-org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath.AbsolutePathWithEnvironmentURLProvider
+org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath.ClasspathWithSystemPropsURLProvider

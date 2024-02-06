@@ -44,7 +44,6 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -67,6 +66,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     private static final String INTERVAL_UNIT_KEY = "datetime-interval-unit";
     
+    private String dateTimePatternString;
+    
     private DateTimeFormatter dateTimeFormatter;
     
     private int dateTimePatternLength;
@@ -83,11 +84,11 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     @Override
     public void init(final Properties props) {
-        String dateTimePattern = getDateTimePattern(props);
-        dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
-        dateTimePatternLength = dateTimePattern.length();
-        dateTimeLower = getDateTimeLower(props, dateTimePattern);
-        dateTimeUpper = getDateTimeUpper(props, dateTimePattern);
+        dateTimePatternString = getDateTimePattern(props);
+        dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePatternString);
+        dateTimePatternLength = dateTimePatternString.length();
+        dateTimeLower = getDateTimeLower(props, dateTimePatternString);
+        dateTimeUpper = getDateTimeUpper(props, dateTimePatternString);
         tableSuffixPattern = getTableSuffixPattern(props);
         stepAmount = Integer.parseInt(props.getOrDefault(INTERVAL_AMOUNT_KEY, 1).toString());
         stepUnit = props.containsKey(INTERVAL_UNIT_KEY) ? getStepUnit(props.getProperty(INTERVAL_UNIT_KEY)) : ChronoUnit.DAYS;
@@ -305,41 +306,80 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private LocalDateTime parseLocalDateTime(final Comparable<?> endpoint) {
-        return LocalDateTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+        String dateTimeText = getDateTimeText(endpoint);
+        if (dateTimeText.length() >= dateTimePatternLength) {
+            return LocalDateTime.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
+        }
+        return LocalDateTime.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
     private LocalDate parseLocalDate(final Comparable<?> endpoint) {
-        return LocalDate.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+        String dateTimeText = getDateTimeText(endpoint);
+        if (dateTimeText.length() >= dateTimePatternLength) {
+            return LocalDate.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
+        }
+        return LocalDate.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
     private LocalTime parseLocalTime(final Comparable<?> endpoint) {
-        return LocalTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+        String dateTimeText = getDateTimeText(endpoint);
+        if (dateTimeText.length() >= dateTimePatternLength) {
+            return LocalTime.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
+        }
+        return LocalTime.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
     private Year parseYear(final Comparable<?> endpoint) {
-        return Year.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+        String dateTimeText = getDateTimeText(endpoint);
+        if (dateTimeText.length() >= dateTimePatternLength) {
+            return Year.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
+        }
+        return Year.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
     }
     
+    private YearMonth parseYearMonth(final Comparable<?> endpoint) {
+        String dateTimeText = getDateTimeText(endpoint);
+        if (dateTimeText.length() >= dateTimePatternLength) {
+            return YearMonth.parse(dateTimeText.substring(0, dateTimePatternLength), dateTimeFormatter);
+        }
+        return YearMonth.parse(dateTimeText, createRelaxedDateTimeFormatter(dateTimeText));
+    }
+    
+    /**
+     * After the sharding key is formatted as a {@link String},
+     * if the length of the {@link String} is less than `datetime-pattern`,
+     * it usually means there is a problem with the sharding key.
+     * @param endpoint A class carrying time information with an unknown class name.
+     * @return {@link java.time.Month}
+     */
     private Month parseMonth(final Comparable<?> endpoint) {
         return Month.of(Integer.parseInt(getDateTimeText(endpoint).substring(0, dateTimePatternLength)));
     }
     
-    private YearMonth parseYearMonth(final Comparable<?> endpoint) {
-        return YearMonth.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+    /**
+     * When the sharding key is a {@link String} and the length of this {@link String} is less than the `datetime-pattern` set by the algorithm,
+     * ShardingSphere will try to use a substring of `datetime-pattern` to parse the sharding key.
+     * This is to be compatible with the behavior of ORM libraries such as <a href="https://github.com/go-gorm/gorm">go-gorm/gorm</a>.
+     * @param dateTimeText Sharding key with class name {@link String}
+     * @return Child `datetime-pattern`, the pattern length is consistent with the shard key.
+     */
+    private DateTimeFormatter createRelaxedDateTimeFormatter(final String dateTimeText) {
+        String dateTimeFormatterString = dateTimePatternString.substring(0, dateTimeText.length());
+        return DateTimeFormatter.ofPattern(dateTimeFormatterString);
     }
     
     private String getDateTimeText(final Comparable<?> endpoint) {
         if (endpoint instanceof Instant) {
-            return dateTimeFormatter.withZone(ZoneId.systemDefault()).format((Instant) endpoint);
+            return dateTimeFormatter.format(((Instant) endpoint).atZone(ZoneId.systemDefault()));
         }
         if (endpoint instanceof TemporalAccessor) {
             return dateTimeFormatter.format((TemporalAccessor) endpoint);
         }
         if (endpoint instanceof java.sql.Date) {
-            return ((java.sql.Date) endpoint).toLocalDate().format(dateTimeFormatter);
+            return dateTimeFormatter.format(((java.sql.Date) endpoint).toLocalDate());
         }
-        if (endpoint instanceof Date) {
-            return dateTimeFormatter.format(((Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        if (endpoint instanceof java.util.Date) {
+            return dateTimeFormatter.format(((java.util.Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         }
         return endpoint.toString();
     }

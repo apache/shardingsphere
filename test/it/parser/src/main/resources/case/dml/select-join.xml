@@ -1889,4 +1889,1076 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_inner_join_from_user_table">
+        <projections start-index="16" stop-index="44" distinct-row="true">
+            <column-projection name="FirstName" start-index="16" stop-index="29">
+                <owner name="user" start-index="16" stop-index="19"/>
+            </column-projection>
+            <column-projection name="LastName" start-index="32" stop-index="44">
+                <owner name="user" start-index="32" stop-index="35"/>
+            </column-projection>
+        </projections>
+        <into>
+            <simple-table name="ms_user" start-index="51" stop-index="57"/>
+        </into>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="user" start-index="64" stop-index="67"/>
+                </left>
+                <right>
+                    <subquery-table alias="ms">
+                        <subquery>
+                            <select>
+                                <projections start-index="88" stop-index="88">
+                                    <shorthand-projection start-index="88" stop-index="88"/>
+                                </projections>
+                                <from>
+                                    <simple-table name="ClickStream" start-index="95" stop-index="105"/>
+                                </from>
+                                <where start-index="107" stop-index="140">
+                                    <expr>
+                                        <binary-operation-expression start-index="113" stop-index="140">
+                                            <left>
+                                                <column name="url" start-index="113" stop-index="118">
+                                                    <owner name="cs" start-index="113" stop-index="114"/>
+                                                </column>
+                                            </left>
+                                            <right>
+                                                <literal-expression value="www.microsoft.com" start-index="122" stop-index="140"/>
+                                            </right>
+                                            <operator>=</operator>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </subquery-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="152" stop-index="176">
+                        <left>
+                            <column name="user_ip" start-index="152" stop-index="163">
+                                <owner name="user" start-index="152" stop-index="155"/>
+                            </column>
+                        </left>
+                        <right>
+                            <column name="user_ip" start-index="167" stop-index="176">
+                                <owner name="ms" start-index="167" stop-index="168"/>
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_cross_apply_with_substring_nest_case_when">
+        <projections start-index="7" stop-index="440">
+            <column-projection name="session_id" start-index="7" stop-index="20">
+                <owner name="req" start-index="7" stop-index="9"/>
+            </column-projection>
+            <column-projection name="total_elapsed_time" start-index="23" stop-index="59" alias="duration_ms">
+                <owner name="req" start-index="23" stop-index="25"/>
+            </column-projection>
+            <column-projection name="cpu_time" start-index="62" stop-index="88" alias="cpu_time_ms">
+                <owner name="req" start-index="62" stop-index="64"/>
+            </column-projection>
+            <expression-projection text="req.total_elapsed_time - req.cpu_time" alias="wait_time" start-index="91" stop-index="140">
+                <expr>
+                    <binary-operation-expression start-index="91" stop-index="127">
+                        <left>
+                            <column name="total_elapsed_time" start-index="91" stop-index="112">
+                                <owner name="req" start-index="91" stop-index="93"/>
+                            </column>
+                        </left>
+                        <right>
+                            <column name="cpu_time" start-index="116" stop-index="127">
+                                <owner name="req" start-index="116" stop-index="118"/>
+                            </column>
+                        </right>
+                        <operator>-</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <column-projection name="logical_reads" start-index="143" stop-index="159">
+                <owner name="req" start-index="143" stop-index="145"/>
+            </column-projection>
+            <expression-projection text="SUBSTRING (REPLACE (REPLACE (SUBSTRING (ST.text, (req.statement_start_offset/2) + 1, ((CASE statement_end_offset WHEN -1 THEN DATALENGTH(ST.text)  ELSE req.statement_end_offset END - req.statement_start_offset)/2) + 1) , CHAR(10), ' '), CHAR(13), ' '), 1, 512)" alias="statement_text" start-index="162" stop-index="440">
+                <expr>
+                    <function function-name="SUBSTRING" text="SUBSTRING (REPLACE (REPLACE (SUBSTRING (ST.text, (req.statement_start_offset/2) + 1, ((CASE statement_end_offset WHEN -1 THEN DATALENGTH(ST.text)  ELSE req.statement_end_offset END - req.statement_start_offset)/2) + 1) , CHAR(10), ' '), CHAR(13), ' '), 1, 512)" start-index="162" stop-index="421">
+                        <parameter>
+                            <function function-name="REPLACE" text="REPLACE (REPLACE (SUBSTRING (ST.text, (req.statement_start_offset/2) + 1, ((CASE statement_end_offset WHEN -1 THEN DATALENGTH(ST.text)  ELSE req.statement_end_offset END - req.statement_start_offset)/2) + 1) , CHAR(10), ' '), CHAR(13), ' ')" start-index="173" stop-index="412">
+                                <parameter>
+                                    <function function-name="REPLACE" text="REPLACE (SUBSTRING (ST.text, (req.statement_start_offset/2) + 1, ((CASE statement_end_offset WHEN -1 THEN DATALENGTH(ST.text)  ELSE req.statement_end_offset END - req.statement_start_offset)/2) + 1) , CHAR(10), ' ')" start-index="182" stop-index="396">
+                                        <parameter>
+                                            <function function-name="SUBSTRING" text="SUBSTRING (ST.text, (req.statement_start_offset/2) + 1, ((CASE statement_end_offset WHEN -1 THEN DATALENGTH(ST.text)  ELSE req.statement_end_offset END - req.statement_start_offset)/2) + 1)" start-index="191" stop-index="379">
+                                                <parameter>
+                                                    <column name="text" start-index="202" stop-index="208">
+                                                        <owner name="ST" start-index="202" stop-index="203"/>
+                                                    </column>
+                                                </parameter>
+                                                <parameter>
+                                                    <binary-operation-expression start-index="211" stop-index="244">
+                                                        <left>
+                                                            <binary-operation-expression start-index="212" stop-index="239">
+                                                                <left>
+                                                                    <column name="statement_start_offset" start-index="212" stop-index="237">
+                                                                        <owner name="req" start-index="212" stop-index="214"/>
+                                                                    </column>
+                                                                </left>
+                                                                <right>
+                                                                    <literal-expression value="2" start-index="239" stop-index="239"/>
+                                                                </right>
+                                                                <operator>/</operator>
+                                                            </binary-operation-expression>
+                                                        </left>
+                                                        <right>
+                                                            <literal-expression value="1" start-index="244" stop-index="244"/>
+                                                        </right>
+                                                        <operator>+</operator>
+                                                    </binary-operation-expression>
+                                                </parameter>
+                                                <parameter>
+                                                    <binary-operation-expression start-index="247" stop-index="378">
+                                                        <operator>+</operator>
+                                                        <left>
+                                                            <binary-operation-expression start-index="248" stop-index="373">
+                                                                <operator>/</operator>
+                                                                <left>
+                                                                    <binary-operation-expression start-index="249" stop-index="370">
+                                                                        <operator>-</operator>
+                                                                        <left>
+                                                                            <common-expression literal-text="CASEstatement_end_offsetWHEN-1THENDATALENGTH(ST.text)ELSEreq.statement_end_offsetEND" start-index="249" stop-index="341"/>
+                                                                        </left>
+                                                                        <right>
+                                                                            <column name="statement_start_offset" start-index="345" stop-index="370">
+                                                                                <owner name="req" start-index="345" stop-index="347"/>
+                                                                            </column>
+                                                                        </right>
+                                                                    </binary-operation-expression>
+                                                                </left>
+                                                                <right>
+                                                                    <literal-expression value="2" start-index="373" stop-index="373"/>
+                                                                </right>
+                                                            </binary-operation-expression>
+                                                        </left>
+                                                        <right>
+                                                            <literal-expression value="1" start-index="378" stop-index="378"/>
+                                                        </right>
+                                                    </binary-operation-expression>
+                                                </parameter>
+                                            </function>
+                                        </parameter>
+                                        <parameter>
+                                            <function function-name="CHAR" text="CHAR(10)" start-index="383" stop-index="390"/>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value=" " start-index="393" stop-index="395"/>
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                                <parameter>
+                                    <function function-name="CHAR" text="CHAR(13)" start-index="399" stop-index="406"/>
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value=" " start-index="409" stop-index="411"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="415" stop-index="415"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="512" start-index="418" stop-index="420"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="dm_exec_requests" start-index="447" stop-index="473" alias="req">
+                        <owner name="sys" start-index="447" stop-index="449"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="ST" start-index="487" stop-index="522">
+                        <table-function text="sys.dm_exec_sql_text(req.sql_handle)" function-name="sys.dm_exec_sql_text">
+                            <parameter>
+                                <column name="sql_handle" start-index="508" stop-index="521">
+                                    <owner name="req" start-index="508" stop-index="510"/>
+                                </column>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <order-by>
+            <column-item name="total_elapsed_time" start-index="539" stop-index="556" order-direction="DESC"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_cross_apply_sys_table_query_status">
+        <projections start-index="7" stop-index="471">
+            <column-projection name="text" start-index="7" stop-index="12">
+                <owner name="t" start-index="7" stop-index="7"/>
+            </column-projection>
+            <expression-projection start-index="15" stop-index="83" text="qs.total_elapsed_time/1000) / qs.execution_coun" alias="avg_elapsed_time">
+                <expr>
+                    <binary-operation-expression start-index="15" stop-index="63">
+                        <left>
+                            <binary-operation-expression start-index="16" stop-index="41">
+                                <left>
+                                    <column name="total_elapsed_time" start-index="16" stop-index="36">
+                                        <owner name="qs" start-index="16" stop-index="17"/>
+                                    </column>
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <literal-expression value="1000" start-index="38" stop-index="41"/>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <column name="execution_count" start-index="46" stop-index="63">
+                                <owner name="qs" start-index="46" stop-index="47"/>
+                            </column>
+                        </right>
+                        <operator>/</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="qs.total_worker_time/1000) / qs.execution_coun" start-index="86" stop-index="149" alias="avg_cpu_time">
+                <expr>
+                    <binary-operation-expression start-index="86" stop-index="133">
+                        <left>
+                            <binary-operation-expression start-index="87" stop-index="111">
+                                <left>
+                                    <column name="total_worker_time" start-index="87" stop-index="106">
+                                        <owner name="qs" start-index="87" stop-index="88"/>
+                                    </column>
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <literal-expression value="1000" start-index="108" stop-index="111"/>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <column name="execution_count" start-index="116" stop-index="133">
+                                <owner name="qs" start-index="116" stop-index="117"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="qs.total_elapsed_time/1000) / qs.execution_count ) - ((qs.total_worker_time/1000) / qs.execution_coun" start-index="152" stop-index="273" alias="avg_wait_time">
+                <expr>
+                    <binary-operation-expression start-index="152" stop-index="256">
+                        <left>
+                            <binary-operation-expression start-index="153" stop-index="201">
+                                <left>
+                                    <binary-operation-expression start-index="154" stop-index="179">
+                                        <left>
+                                            <column name="total_elapsed_time" start-index="154" stop-index="174">
+                                                <owner name="qs" start-index="154" stop-index="155"/>
+                                            </column>
+                                        </left>
+                                        <operator>/</operator>
+                                        <right>
+                                            <literal-expression value="1000" start-index="176" stop-index="179"/>
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <column name="execution_count" start-index="184" stop-index="201">
+                                        <owner name="qs" start-index="184" stop-index="185"/>
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>-</operator>
+                        <right>
+                            <binary-operation-expression start-index="208" stop-index="255">
+                                <left>
+                                    <binary-operation-expression start-index="209" stop-index="233">
+                                        <left>
+                                            <column name="total_worker_time" start-index="209" stop-index="228">
+                                                <owner name="qs" start-index="209" stop-index="210"/>
+                                            </column>
+                                        </left>
+                                        <operator>/</operator>
+                                        <right>
+                                            <literal-expression value="1000" start-index="230" stop-index="233"/>
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <column name="execution_count" start-index="238" stop-index="255">
+                                        <owner name="qs" start-index="238" stop-index="239"/>
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="qs.total_logical_reads / qs.execution_count" start-index="276" stop-index="339" alias="avg_logical_reads">
+                <expr>
+                    <binary-operation-expression start-index="276" stop-index="318">
+                        <left>
+                            <column name="total_logical_reads" start-index="276" stop-index="297">
+                                <owner name="qs" start-index="276" stop-index="277"/>
+                            </column>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <column name="execution_count" start-index="301" stop-index="318">
+                                <owner name="qs" start-index="301" stop-index="302"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="qs.total_logical_writes / qs.execution_count" start-index="342" stop-index="399" alias="avg_writes">
+                <expr>
+                    <binary-operation-expression start-index="342" stop-index="385">
+                        <left>
+                            <column name="total_logical_writes" start-index="342" stop-index="364">
+                                <owner name="qs" start-index="342" stop-index="343"/>
+                            </column>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <column name="execution_count" start-index="368" stop-index="385">
+                                <owner name="qs" start-index="368" stop-index="369"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="qs.total_elapsed_time/1000" start-index="403" stop-index="471" alias="cumulative_elapsed_time_all_executions">
+                <expr>
+                    <binary-operation-expression start-index="403" stop-index="428">
+                        <left>
+                            <column name="total_elapsed_time" start-index="403" stop-index="423">
+                                <owner name="qs" start-index="403" stop-index="404"/>
+                            </column>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <literal-expression value="1000" start-index="425" stop-index="428"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="dm_exec_query_stats" start-index="478" stop-index="503" alias="qs">
+                        <owner name="sys" start-index="478" stop-index="480"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table start-index="517" stop-index="549" table-alias="t">
+                        <table-function function-name="sys.Dm_exec_sql_text" text="sys.Dm_exec_sql_text (sql_handle)">
+                            <parameter>
+                                <column name="sql_handle" start-index="539" stop-index="548"/>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="553" stop-index="585">
+            <expr>
+                <binary-operation-expression start-index="559" stop-index="585">
+                    <left>
+                        <column name="text" start-index="559" stop-index="564">
+                            <owner name="t" start-index="559" stop-index="559"/>
+                        </column>
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="571" stop-index="585">
+                            <items>
+                                <literal-expression value="&lt;Your Query&gt;%" start-index="571" stop-index="585"/>
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <expression-item expression="(qs.total_elapsed_time / qs.execution_count)" order-direction="DESC" start-index="596" stop-index="639">
+                <expr>
+                    <binary-operation-expression start-index="597" stop-index="638">
+                        <left>
+                            <column name="total_elapsed_time" start-index="597" stop-index="617">
+                                <owner name="qs" start-index="597" stop-index="598"/>
+                            </column>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <column name="execution_count" start-index="621" stop-index="638">
+                                <owner name="qs" start-index="621" stop-index="622"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_left_join_sub_query_with_escape_quotes">
+        <projections start-index="7" stop-index="75">
+            <expression-projection text="'DECLARE @node NVARCHAR(512) = N''' + NodeName + '.' + Cluster + ''''" start-index="7" stop-index="75">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="75">
+                        <left>
+                            <binary-operation-expression start-index="7" stop-index="68">
+                                <left>
+                                    <binary-operation-expression start-index="7" stop-index="58">
+                                        <left>
+                                            <binary-operation-expression start-index="7" stop-index="52">
+                                                <left>
+                                                    <literal-expression value="DECLARE @node NVARCHAR(512) = N''" start-index="7" stop-index="41"/>
+                                                </left>
+                                                <operator>+</operator>
+                                                <right>
+                                                    <column name="NodeName" start-index="45" stop-index="52"/>
+                                                </right>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <operator>+</operator>
+                                        <right>
+                                            <literal-expression value="." start-index="56" stop-index="58"/>
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <column name="Cluster" start-index="62" stop-index="68"/>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="''" start-index="72" stop-index="75"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <join-table join-type="LEFT">
+                        <left>
+                            <subquery-table alias="t1">
+                                <subquery>
+                                    <select>
+                                        <projections start-index="90" stop-index="248">
+                                            <expression-projection text="SUBSTRING(replica_address, 0, CHARINDEX('\', replica_address))" alias="NodeName" start-index="90" stop-index="163">
+                                                <expr>
+                                                    <function text="SUBSTRING(replica_address, 0, CHARINDEX('\', replica_address))" function-name="SUBSTRING" start-index="90" stop-index="151">
+                                                        <parameter>
+                                                            <column name="replica_address" start-index="100" stop-index="114"/>
+                                                        </parameter>
+                                                        <parameter>
+                                                            <literal-expression value="0" start-index="117" stop-index="117"/>
+                                                        </parameter>
+                                                        <parameter>
+                                                            <function text="CHARINDEX('\', replica_address)" function-name="CHARINDEX" start-index="120" stop-index="150">
+                                                                <parameter>
+                                                                    <literal-expression value="\" start-index="130" stop-index="132"/>
+                                                                </parameter>
+                                                                <parameter>
+                                                                    <column name="replica_address" start-index="135" stop-index="149"/>
+                                                                </parameter>
+                                                            </function>
+                                                        </parameter>
+                                                    </function>
+                                                </expr>
+                                            </expression-projection>
+                                            <expression-projection text="RIGHT(service_name, CHARINDEX('/', REVERSE(service_name)) - 1)" start-index="166" stop-index="235" alias="AppName">
+                                                <expr>
+                                                    <function function-name="RIGHT" text="RIGHT(service_name, CHARINDEX('/', REVERSE(service_name)) - 1)" start-index="166" stop-index="227">
+                                                        <parameter>
+                                                            <column name="service_name" start-index="172" stop-index="183"/>
+                                                        </parameter>
+                                                        <parameter>
+                                                            <binary-operation-expression start-index="186" stop-index="226">
+                                                                <left>
+                                                                    <function text="CHARINDEX('/', REVERSE(service_name))" function-name="CHARINDEX" start-index="186" stop-index="222">
+                                                                        <parameter>
+                                                                            <literal-expression value="/" start-index="196" stop-index="198"/>
+                                                                        </parameter>
+                                                                        <parameter>
+                                                                            <function function-name="REVERSE" text="REVERSE(service_name)" start-index="201" stop-index="221">
+                                                                                <parameter>
+                                                                                    <column name="service_name" start-index="209" stop-index="220"/>
+                                                                                </parameter>
+                                                                            </function>
+                                                                        </parameter>
+                                                                    </function>
+                                                                </left>
+                                                                <operator>-</operator>
+                                                                <right>
+                                                                    <literal-expression value="1" start-index="226" stop-index="226"/>
+                                                                </right>
+                                                            </binary-operation-expression>
+                                                        </parameter>
+                                                    </function>
+                                                </expr>
+                                            </expression-projection>
+                                            <expression-projection text="1" start-index="238" stop-index="248" alias="JoinCol">
+                                                <expr>
+                                                    <literal-expression value="1" start-index="248" stop-index="248"/>
+                                                </expr>
+                                            </expression-projection>
+                                        </projections>
+                                        <from>
+                                            <join-table join-type="INNER">
+                                                <left>
+                                                    <join-table join-type="INNER">
+                                                        <left>
+                                                            <simple-table name="dm_hadr_fabric_partitions" start-index="255" stop-index="286" alias="fp">
+                                                                <owner name="sys" start-index="255" stop-index="257"/>
+                                                            </simple-table>
+                                                        </left>
+                                                        <right>
+                                                            <simple-table name="dm_hadr_fabric_replicas" start-index="299" stop-index="328" alias="fr">
+                                                                <owner name="sys" start-index="299" stop-index="301"/>
+                                                            </simple-table>
+                                                        </right>
+                                                        <on-condition>
+                                                            <binary-operation-expression start-index="333" stop-index="365">
+                                                                <left>
+                                                                    <column name="partition_id" start-index="333" stop-index="347">
+                                                                        <owner name="fp" start-index="333" stop-index="334"/>
+                                                                    </column>
+                                                                </left>
+                                                                <operator>=</operator>
+                                                                <right>
+                                                                    <column name="partition_id" start-index="351" stop-index="365">
+                                                                        <owner name="fr" start-index="351" stop-index="352"/>
+                                                                    </column>
+                                                                </right>
+                                                            </binary-operation-expression>
+                                                        </on-condition>
+                                                    </join-table>
+                                                </left>
+                                                <right>
+                                                    <simple-table name="dm_hadr_fabric_nodes" start-index="378" stop-index="404" alias="fn">
+                                                        <owner name="sys" start-index="378" stop-index="380"/>
+                                                    </simple-table>
+                                                </right>
+                                                <on-condition>
+                                                    <binary-operation-expression start-index="409" stop-index="435">
+                                                        <left>
+                                                            <column name="node_name" start-index="409" stop-index="420">
+                                                                <owner name="fr" start-index="409" stop-index="410"/>
+                                                            </column>
+                                                        </left>
+                                                        <right>
+                                                            <column name="node_name" start-index="424" stop-index="435">
+                                                                <owner name="fn" start-index="424" stop-index="425"/>
+                                                            </column>
+                                                        </right>
+                                                        <operator>=</operator>
+                                                    </binary-operation-expression>
+                                                </on-condition>
+                                            </join-table>
+                                        </from>
+                                        <where start-index="437" stop-index="498">
+                                            <expr>
+                                                <binary-operation-expression start-index="443" stop-index="498">
+                                                    <left>
+                                                        <binary-operation-expression start-index="443" stop-index="477">
+                                                            <left>
+                                                                <column name="service_name" start-index="443" stop-index="454"/>
+                                                            </left>
+                                                            <operator>LIKE</operator>
+                                                            <right>
+                                                                <list-expression start-index="461" stop-index="477">
+                                                                    <items>
+                                                                        <literal-expression value="%ManagedServer%" start-index="461" stop-index="477"/>
+                                                                    </items>
+                                                                </list-expression>
+                                                            </right>
+                                                        </binary-operation-expression>
+                                                    </left>
+                                                    <operator>AND</operator>
+                                                    <right>
+                                                        <binary-operation-expression start-index="483" stop-index="498">
+                                                            <left>
+                                                                <column name="replica_role" start-index="483" stop-index="494"/>
+                                                            </left>
+                                                            <operator>=</operator>
+                                                            <right>
+                                                                <literal-expression value="2" start-index="498" stop-index="498"/>
+                                                            </right>
+                                                        </binary-operation-expression>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </expr>
+                                        </where>
+                                    </select>
+                                </subquery>
+                            </subquery-table>
+                        </left>
+                        <right>
+                            <subquery-table alias="t2">
+                                <subquery>
+                                    <select>
+                                        <projections start-index="522" stop-index="550">
+                                            <column-projection name="value" start-index="522" stop-index="537" alias="Cluster"/>
+                                            <expression-projection text="1" alias="JoinCol" start-index="540" stop-index="550"/>
+                                        </projections>
+                                        <from>
+                                            <simple-table name="dm_hadr_fabric_config_parameters" start-index="557" stop-index="592">
+                                                <owner name="sys" start-index="557" stop-index="559"/>
+                                            </simple-table>
+                                        </from>
+                                        <where start-index="594" stop-index="629">
+                                            <expr>
+                                                <binary-operation-expression start-index="600" stop-index="629">
+                                                    <left>
+                                                        <column name="parameter_name" start-index="600" stop-index="613"/>
+                                                    </left>
+                                                    <operator>=</operator>
+                                                    <right>
+                                                        <literal-expression value="ClusterName" start-index="617" stop-index="629"/>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </expr>
+                                        </where>
+                                    </select>
+                                </subquery>
+                            </subquery-table>
+                        </right>
+                        <on-condition>
+                            <binary-operation-expression start-index="639" stop-index="661">
+                                <left>
+                                    <column name="JoinCol" start-index="639" stop-index="648">
+                                        <owner name="t1" start-index="639" stop-index="640"/>
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="JoinCol" start-index="652" stop-index="661">
+                                        <owner name="t2" start-index="652" stop-index="653"/>
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </on-condition>
+                    </join-table>
+                </left>
+                <right>
+                    <subquery-table alias="t3">
+                        <subquery>
+                            <select>
+                                <projections start-index="683" stop-index="700">
+                                    <column-projection name="value" start-index="683" stop-index="700" alias="AppName" start-delimiter="[" end-delimiter="]"/>
+                                </projections>
+                                <from>
+                                    <simple-table name="dm_hadr_fabric_config_parameters" start-index="707" stop-index="742">
+                                        <owner name="sys" start-index="707" stop-index="709"/>
+                                    </simple-table>
+                                </from>
+                                <where start-index="744" stop-index="805">
+                                    <expr>
+                                        <binary-operation-expression start-index="750" stop-index="805">
+                                            <left>
+                                                <binary-operation-expression start-index="750" stop-index="769">
+                                                    <left>
+                                                        <column name="section_name" start-index="750" stop-index="761"/>
+                                                    </left>
+                                                    <operator>=</operator>
+                                                    <right>
+                                                        <literal-expression value="SQL" start-index="765" stop-index="769"/>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </left>
+                                            <operator>AND</operator>
+                                            <right>
+                                                <binary-operation-expression start-index="775" stop-index="805">
+                                                    <left>
+                                                        <column name="parameter_name" start-index="775" stop-index="788"/>
+                                                    </left>
+                                                    <operator>=</operator>
+                                                    <right>
+                                                        <literal-expression value="InstanceName" start-index="792" stop-index="805"/>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </subquery-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="815" stop-index="837">
+                        <left>
+                            <column name="AppName" start-index="815" stop-index="824">
+                                <owner name="t1" start-index="815" stop-index="816"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="AppName" start-index="828" stop-index="837">
+                                <owner name="t3" start-index="828" stop-index="829"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_objects_with_inner_join">
+        <projections start-index="7" stop-index="206">
+            <expression-projection start-index="7" stop-index="43" alias="schema_name" text="SCHEMA_NAME(schema_id)">
+                <expr>
+                    <function function-name="SCHEMA_NAME" text="SCHEMA_NAME(schema_id)" start-index="7" stop-index="28">
+                        <parameter>
+                            <column name="schema_id" start-index="19" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="name" alias="object_name" start-index="45" stop-index="65">
+                <owner name="o" start-index="45" stop-index="45" />
+            </column-projection>
+            <column-projection name="type_desc" start-index="67" stop-index="77">
+                <owner name="o" start-index="67" stop-index="67" />
+            </column-projection>
+            <column-projection name="parameter_id" start-index="79" stop-index="92">
+                <owner name="p" start-index="79" stop-index="79" />
+            </column-projection>
+            <column-projection name="name" alias="parameter_name" start-index="94" stop-index="117">
+                <owner name="p" start-index="94" stop-index="94" />
+            </column-projection>
+            <expression-projection alias="parameter_type" text="TYPE_NAME(p.user_type_id)" start-index="119" stop-index="161">
+                <expr>
+                    <function function-name="TYPE_NAME" text="TYPE_NAME(p.user_type_id)" start-index="119" stop-index="143">
+                        <parameter>
+                            <column name="user_type_id" start-index="129" stop-index="142">
+                                <owner name="p" start-index="129" stop-index="129" />
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="max_length" start-index="163" stop-index="174">
+                <owner name="p" start-index="163" stop-index="163" />
+            </column-projection>
+            <column-projection name="precision" start-index="176" stop-index="186">
+                <owner name="p" start-index="176" stop-index="176" />
+            </column-projection>
+            <column-projection name="scale" start-index="188" stop-index="194">
+                <owner name="p" start-index="188" stop-index="188" />
+            </column-projection>
+            <column-projection name="is_output" start-index="196" stop-index="206">
+                <owner name="p" start-index="196" stop-index="196" />
+            </column-projection>
+        </projections>
+        <from start-index="213" stop-index="288">
+            <join-table natural="false" join-type="INNER">
+                <left>
+                    <simple-table name="objects" alias="o" start-index="213" stop-index="228">
+                        <owner name="sys" start-index="213" stop-index="215" />
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="parameters" alias="p" start-index="241" stop-index="259">
+                        <owner name="sys" start-index="241" stop-index="243" />
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="264" stop-index="288">
+                        <left>
+                            <column name="object_id" start-index="264" stop-index="274">
+                                <owner name="o" start-index="264" stop-index="264" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="object_id" start-index="278" stop-index="288">
+                                <owner name="p" start-index="278" stop-index="278" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <where start-index="290" stop-index="347">
+            <expr>
+                <binary-operation-expression start-index="296" stop-index="347">
+                    <left>
+                        <column start-index="296" stop-index="306" name="object_id">
+                            <owner name="o" start-index="296" stop-index="296" />
+                        </column>
+                    </left>
+                    <right>
+                        <function function-name="OBJECT_ID" text="OBJECT_ID('&lt;schema_name.object_name&gt;')" start-index="310" stop-index="347">
+                            <parameter>
+                                <literal-expression value="&lt;schema_name.object_name&gt;" start-index="320" stop-index="346" />
+                            </parameter>
+                        </function>
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="schema_name" start-index="358" stop-index="368" order-direction="ASC" />
+            <column-item name="object_name" start-index="371" stop-index="381" order-direction="ASC" />
+            <column-item name="parameter_id" start-index="384" stop-index="397" order-direction="ASC">
+                <owner name="p" start-index="384" stop-index="384" />
+            </column-item>
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_json_value_with_cross_apply">
+        <projections start-index="7" stop-index="97">
+            <column-projection name="name" start-index="7" stop-index="10" />
+            <column-projection name="reason" start-index="12" stop-index="17" />
+            <column-projection name="score" start-index="19" stop-index="23" />
+            <expression-projection alias="script" text="JSON_VALUE(details, '$.implementationDetails.script')" start-index="25" stop-index="87">
+                <expr>
+                    <function function-name="JSON_VALUE" text="JSON_VALUE(details, '$.implementationDetails.script')" start-index="25" stop-index="77">
+                        <parameter>
+                            <column name="details" start-index="36" stop-index="42" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.implementationDetails.script" start-index="45" stop-index="76" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <shorthand-projection start-index="89" stop-index="97">
+                <owner name="details" start-index="89" stop-index="95" />
+            </shorthand-projection>
+        </projections>
+        <from start-index="104" stop-index="318">
+            <join-table join-type="CROSS" natural="false">
+                <left>
+                    <simple-table name="dm_db_tuning_recommendations" start-index="104" stop-index="135">
+                        <owner name="sys" start-index="104" stop-index="106" />
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="details" start-index="149" stop-index="318">
+                        <table-function function-name="OPENJSON" text="OPENJSON(details, '$.planForceDetails') WITH ([query_id] INT '$.queryId',regressed_plan_id INT '$.regressedPlanId',last_good_plan_id INT '$.recommendedPlanId')">
+                            <parameter>
+                                <column name="details" start-index="158" stop-index="164" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="$.planForceDetails" start-index="167" stop-index="186" />
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="320" stop-index="371">
+            <expr>
+                <binary-operation-expression start-index="326" stop-index="371">
+                    <left>
+                       <function function-name="JSON_VALUE" text="JSON_VALUE(STATE, '$.currentValue')" start-index="326" stop-index="360">
+                           <parameter>
+                               <column name="STATE" start-index="337" stop-index="341" />
+                           </parameter>
+                           <parameter>
+                               <literal-expression value="$.currentValue" start-index="344" stop-index="359" />
+                           </parameter>
+                       </function>
+                    </left>
+                    <right>
+                        <literal-expression value="Active" start-index="364" stop-index="371" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_open_json_with_cross_apply">
+        <projections start-index="7" stop-index="337">
+            <column-projection name="reason" start-index="7" stop-index="12" />
+            <column-projection name="score" start-index="14" stop-index="18" />
+            <expression-projection text="JSON_VALUE(details, '$.implementationDetails.script')" alias="script" start-index="20" stop-index="81">
+                <expr>
+                    <function function-name="JSON_VALUE" text="JSON_VALUE(details, '$.implementationDetails.script')" start-index="29" stop-index="81">
+                        <parameter>
+                            <column name="details" start-index="40" stop-index="46" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.implementationDetails.script" start-index="49" stop-index="80" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <shorthand-projection start-index="83" stop-index="100">
+                <owner name="planForceDetails" start-index="83" stop-index="98" />
+            </shorthand-projection>
+            <expression-projection alias="estimated_gain" text="regressedPlanExecutionCount + recommendedPlanExecutionCount) * (regressedPlanCpuTimeAverage - recommendedPlanCpuTimeAverage) / 100000" start-index="102" stop-index="253">
+                <expr>
+                    <binary-operation-expression start-index="119" stop-index="253">
+                        <left>
+                            <binary-operation-expression start-index="119" stop-index="243">
+                                <left>
+                                    <binary-operation-expression start-index="120" stop-index="178">
+                                        <left>
+                                            <column name="regressedPlanExecutionCount" start-index="120" stop-index="146" />
+                                        </left>
+                                        <right>
+                                            <column name="recommendedPlanExecutionCount" start-index="150" stop-index="178" />
+                                        </right>
+                                        <operator>+</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="184" stop-index="242">
+                                        <left>
+                                            <column name="regressedPlanCpuTimeAverage" start-index="184" stop-index="210" />
+                                        </left>
+                                        <right>
+                                            <column name="recommendedPlanCpuTimeAverage" start-index="214" stop-index="242" />
+                                        </right>
+                                        <operator>-</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>*</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <literal-expression value="1000000" start-index="247" stop-index="253" />
+                        </right>
+                        <operator>/</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="255" stop-index="337" alias="error_prone" text="IIF(regressedPlanErrorCount &gt; recommendedPlanErrorCount, 'YES', 'NO')">
+                <expr>
+                    <function function-name="IIF" text="IIF(regressedPlanErrorCount &gt; recommendedPlanErrorCount, 'YES', 'NO')" start-index="269" stop-index="337">
+                        <parameter>
+                            <binary-operation-expression start-index="273" stop-index="323">
+                                <left>
+                                    <column name="regressedPlanErrorCount" start-index="273" stop-index="295" />
+                                </left>
+                                <right>
+                                    <column name="recommendedPlanErrorCount" start-index="299" stop-index="323" />
+                                </right>
+                                <operator>&gt;</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="YES" start-index="326" stop-index="330" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="NO" start-index="333" stop-index="336" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="344" stop-index="759">
+            <join-table natural="false" join-type="CROSS">
+                <left>
+                    <simple-table name="dm_db_tuning_recommendations" start-index="344" stop-index="375">
+                        <owner name="sys" start-index="344" stop-index="346" />
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="planForceDetails" start-index="389" stop-index="759">
+                        <table-function function-name="OPENJSON"  text="OPENJSON(Details, '$.planForceDetails') WITH ([query_id] INT '$.queryId',regressedPlanId INT '$.regressedPlanId',recommendedPlanId INT '$.recommendedPlanId',regressedPlanErrorCount INT,recommendedPlanErrorCount INT,regressedPlanExecutionCount INT,regressedPlanCpuTimeAverage FLOAT,recommendedPlanExecutionCount INT,recommendedPlanCpuTimeAverage FLOAT)">
+                            <parameter>
+                                <column name="Details" start-index="398" stop-index="404" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="$.planForceDetails" start-index="407" stop-index="426" />
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_sales_order_record_with_cross_apply">
+        <projections start-index="7" stop-index="64">
+            <column-projection name="Id" start-index="7" stop-index="12">
+                <owner name="Tab" start-index="7" stop-index="9" />
+            </column-projection>
+            <column-projection name="Customer" start-index="14" stop-index="40">
+                <owner name="SalesOrderJsonData" start-index="14" stop-index="31" />
+            </column-projection>
+            <column-projection name="Date" start-index="42" stop-index="64">
+                <owner name="SalesOrderJsonData" start-index="42" stop-index="59" />
+            </column-projection>
+        </projections>
+        <from start-index="71" stop-index="319">
+            <join-table join-type="CROSS" natural="false">
+                <left>
+                    <simple-table name="SalesOrderRecord" alias="Tab" start-index="71" stop-index="93" />
+                </left>
+                <right>
+                    <function-table table-alias="SalesOrderJsonData" start-index="107" stop-index="319">
+                        <table-function function-name="OPENJSON"  text="OPENJSON(Tab.json, N'$.Orders.OrdersArray') WITH (Number VARCHAR(200) N'$.Order.Number',Date DATETIME N'$.Order.Date',Customer VARCHAR(200) N'$.AccountNumber',Quantity INT N'$.Item.Quantity')">
+                            <parameter>
+                                <column name="json" start-index="116" stop-index="123">
+                                    <owner name="Tab" start-index="116" stop-index="118" />
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="$.Orders.OrdersArray" start-index="126" stop-index="148" />
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="321" stop-index="370">
+            <expr>
+                <binary-operation-expression start-index="327" stop-index="370">
+                    <left>
+                        <function function-name="JSON_VALUE" text="JSON_VALUE(Tab.json, '$.Status')" start-index="327" stop-index="358">
+                            <parameter>
+                                <column name="json" start-index="338" stop-index="345">
+                                    <owner name="Tab" start-index="338" stop-index="340" />
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="$.Status" start-index="348" stop-index="357" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <right>
+                        <literal-expression value="Closed" start-index="362" stop-index="370" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+           <expression-item expression="JSON_VALUE(Tab.json, '$.Group')" start-index="381" stop-index="411" order-direction="ASC" />
+            <column-item name="DateModified" order-direction="ASC" start-index="413" stop-index="428">
+                <owner name="Tab" start-index="413" stop-index="415" />
+            </column-item>
+        </order-by>
+    </select>
 </sql-parser-test-cases>

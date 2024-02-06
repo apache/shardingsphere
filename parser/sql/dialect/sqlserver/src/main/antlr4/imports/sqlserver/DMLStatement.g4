@@ -48,11 +48,11 @@ exec
     ;
 
 update
-    : withClause? UPDATE top? tableReferences withTableHint? setAssignmentsClause whereClause? optionHint?
+    : withClause? UPDATE top? tableReferences withTableHint? setAssignmentsClause outputClause? whereClause? optionHint?
     ;
 
 assignment
-    : columnName (EQ_ | DOT_) assignmentValue
+    : columnName ((PLUS_ | MINUS_ | ASTERISK_ | SLASH_ | MOD_)? EQ_ | DOT_) assignmentValue
     ;
 
 setAssignmentsClause
@@ -61,6 +61,7 @@ setAssignmentsClause
 
 assignmentValues
     : LP_ assignmentValue (COMMA_ assignmentValue)* RP_
+    | assignmentValue
     | LP_ RP_
     ;
 
@@ -194,7 +195,11 @@ outputClause
     ;
 
 outputWithColumns
-    : outputWithColumn (COMMA_ outputWithColumn)*
+    : (outputWithColumn | scalarExpression) (COMMA_ (outputWithColumn | scalarExpression))*
+    ;
+
+scalarExpression
+    : expr (AS? alias)?
     ;
 
 outputWithColumn
@@ -206,7 +211,7 @@ outputWithAaterisk
     ;
 
 outputTableName
-    : (AT_ name) | tableName
+    : tableName
     ;
 
 queryHint

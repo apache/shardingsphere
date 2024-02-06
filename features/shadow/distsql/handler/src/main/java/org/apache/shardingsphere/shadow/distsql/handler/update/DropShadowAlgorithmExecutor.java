@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.distsql.handler.type.rdl.rule.spi.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Drop shadow algorithm executor.
  */
-@DistSQLExecutorCurrentRuleRequired("Shadow")
+@DistSQLExecutorCurrentRuleRequired(ShadowRule.class)
 @Setter
 public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecutor<DropShadowAlgorithmStatement, ShadowRule, ShadowRuleConfiguration> {
     
@@ -81,7 +81,7 @@ public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecut
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShadowAlgorithmStatement sqlStatement) {
-        return !getIdenticalData(ShadowRuleStatementSupporter.getAlgorithmNames(rule.getConfiguration()), sqlStatement.getNames()).isEmpty();
+        return !Collections.disjoint(ShadowRuleStatementSupporter.getAlgorithmNames(rule.getConfiguration()), sqlStatement.getNames());
     }
     
     @Override

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler;
 
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
@@ -40,7 +39,6 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory;
@@ -61,7 +59,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
@@ -74,26 +71,6 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyBackendHandlerFactory {
-    
-    /**
-     * Create new instance of backend handler.
-     *
-     * @param databaseType database type
-     * @param sql SQL to be executed
-     * @param connectionSession connection session
-     * @param hintValueContext hint value context
-     * @return created instance
-     * @throws SQLException SQL exception
-     */
-    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql,
-                                                  final ConnectionSession connectionSession, final HintValueContext hintValueContext) throws SQLException {
-        if (Strings.isNullOrEmpty(SQLUtils.trimComment(sql))) {
-            return new SkipBackendHandler(new EmptyStatement());
-        }
-        SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession)).parse(sql, false);
-        return newInstance(databaseType, sql, sqlStatement, connectionSession, hintValueContext);
-    }
     
     /**
      * Create new instance of backend handler.
@@ -129,8 +106,8 @@ public final class ProxyBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final QueryContext queryContext, final ConnectionSession connectionSession,
-                                                  final boolean preferPreparedStatement) throws SQLException {
+    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final QueryContext queryContext,
+                                                  final ConnectionSession connectionSession, final boolean preferPreparedStatement) throws SQLException {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         allowExecutingWhenTransactionalError(databaseType, connectionSession, sqlStatement);
@@ -193,13 +170,6 @@ public final class ProxyBackendHandlerFactory {
     
     private static boolean isSupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement) {
         return sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof RULStatement;
-    }
-    
-    private static DatabaseType getProtocolType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
-        String databaseName = connectionSession.getDatabaseName();
-        return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
-                ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getProtocolType();
     }
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {

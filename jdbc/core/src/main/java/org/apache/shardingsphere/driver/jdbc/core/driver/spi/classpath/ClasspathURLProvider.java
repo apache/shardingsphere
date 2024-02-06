@@ -49,7 +49,7 @@ public final class ClasspathURLProvider extends AbstractClasspathURLProvider {
             String line;
             while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#")) {
-                    builder.append(line).append('\n');
+                    builder.append(line).append(System.lineSeparator());
                 }
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);

@@ -73,9 +73,9 @@ public final class YamlProxyConfigurationSwapper {
         return DataSourcePoolCreator.create(propsMap, true);
     }
     
-    private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations) {
-        Map<String, DatabaseConfiguration> result = new LinkedHashMap<>(databaseConfigurations.size(), 1F);
-        for (Entry<String, YamlProxyDatabaseConfiguration> entry : databaseConfigurations.entrySet()) {
+    private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final Map<String, YamlProxyDatabaseConfiguration> databaseConfigs) {
+        Map<String, DatabaseConfiguration> result = new LinkedHashMap<>(databaseConfigs.size(), 1F);
+        for (Entry<String, YamlProxyDatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             Map<String, DataSourceConfiguration> databaseDataSourceConfigs = swapDataSourceConfigurations(entry.getValue().getDataSources());
             Collection<RuleConfiguration> databaseRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
             result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs));

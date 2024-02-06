@@ -21,7 +21,7 @@ mode:
     type: ZooKeeper
     props:
       namespace: governance-zookeeper-data-source
-      server-lists: localhost:62372
+      server-lists: $${fixture.test-native.yaml.mode.cluster.zookeeper.server-lists::}
 
 dataSources:
   ds_0:

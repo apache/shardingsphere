@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
-import org.apache.shardingsphere.distsql.handler.type.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.type.ral.query.algorithm.AlgorithmMetaDataQueryResultRows;
+import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.type.query.ral.algorithm.AlgorithmMetaDataQueryResultRows;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
