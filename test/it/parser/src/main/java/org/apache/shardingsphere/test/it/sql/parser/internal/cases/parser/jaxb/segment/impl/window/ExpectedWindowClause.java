@@ -32,7 +32,7 @@ import java.util.LinkedList;
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedWindowClause extends AbstractExpectedSQLSegment {
-
+    
     @XmlElement(name = "window-item")
     private final Collection<ExpectedWindowItem> windowItems = new LinkedList<>();
 }
