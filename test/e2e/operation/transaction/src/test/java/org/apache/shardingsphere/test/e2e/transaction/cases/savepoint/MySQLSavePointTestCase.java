@@ -40,8 +40,7 @@ public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollbackToSavepoint();
-        // TODO FIXME
-        // assertReleaseSavepoint();
+        assertReleaseSavepoint();
         assertReleaseSavepointFailure();
     }
     
