@@ -250,7 +250,7 @@ public final class ConsistencyCheckJobAPI {
             long durationMillis = (null != stopTime ? Timestamp.valueOf(stopTime).getTime() : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
             result.setDurationSeconds(TimeUnit.MILLISECONDS.toSeconds(durationMillis));
             if (null != stopTime) {
-                result.setCheckEndTime(DateTimeFormatterFactory.getLongMillsFormatter().format(stopTime));
+                result.setCheckEndTime(jobConfigPOJO.getProps().getProperty("stop_time"));
             }
             long remainingMills = Math.max(0, (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis));
             result.setInventoryRemainingSeconds(remainingMills / 1000);
