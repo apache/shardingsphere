@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * Unregister storage unit rule usage checker.
+ * Storage unit definition processor.
  */
 @SingletonSPI
-public interface UnregisterStorageUnitRuleUsageChecker {
+public interface StorageUnitDefinitionProcessor {
     
     /**
      * Whether to ignore rule usage checking when unregister storage unit.
@@ -33,7 +33,7 @@ public interface UnregisterStorageUnitRuleUsageChecker {
      * @param sqlStatement unregister storage unit statement
      * @return ignored or not
      */
-    boolean isIgnored(UnregisterStorageUnitStatement sqlStatement);
+    boolean ignoreUsageCheckOnUnregister(UnregisterStorageUnitStatement sqlStatement);
     
     /**
      * Get rule.
