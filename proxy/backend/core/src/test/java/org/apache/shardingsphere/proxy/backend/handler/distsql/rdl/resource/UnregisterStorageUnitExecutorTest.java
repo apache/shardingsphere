@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -32,16 +31,14 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.fixture.FixtureUnregisterStorageUnitRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -55,37 +52,34 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class UnregisterStorageUnitExecutorTest {
     
+    private final UnregisterStorageUnitExecutor executor = new UnregisterStorageUnitExecutor();
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
-    
-    @Mock
-    private ResourceMetaData resourceMetaData;
     
     private ContextManager contextManager;
     
     @Mock
     private ModeContextManager modeContextManager;
     
-    private UnregisterStorageUnitExecutor executor;
-    
     @BeforeEach
     void setUp() {
-        resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("foo_db");
+        StorageUnit storageUnit = createStorageUnit();
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        contextManager = mockContextManager();
+        executor.setDatabase(database);
+    }
+    
+    private static StorageUnit createStorageUnit() {
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_db"));
-        StorageUnit storageUnit = new StorageUnit(mock(StorageNode.class), dataSourcePoolProps, new MockedDataSource());
-        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
-        when(database.getName()).thenReturn("foo_db");
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor = new UnregisterStorageUnitExecutor();
+        return new StorageUnit(mock(StorageNode.class), dataSourcePoolProps, new MockedDataSource());
     }
     
     private ContextManager mockContextManager() {
@@ -98,79 +92,54 @@ class UnregisterStorageUnitExecutorTest {
     }
     
     @Test
-    void assertExecute() throws SQLException {
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
-        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+    void assertExecuteUpdateSuccess() throws SQLException {
         when(database.getRuleMetaData().getInUsedStorageUnitNameAndRulesMap()).thenReturn(Collections.emptyMap());
-        UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false);
-        executor.setDatabase(database);
-        executor.executeUpdate(unregisterStorageUnitStatement, contextManager);
-        verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
+        UnregisterStorageUnitStatement sqlStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false);
+        executor.executeUpdate(sqlStatement, contextManager);
+        verify(modeContextManager).unregisterStorageUnits("foo_db", sqlStatement.getStorageUnitNames());
     }
     
     @Test
-    void assertExecuteUpdateWithStorageUnitNameNotExisted() {
-        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        executor.setDatabase(database);
+    void assertExecuteUpdateWithStorageUnitNotExisted() {
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         assertThrows(MissingRequiredStorageUnitsException.class,
                 () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
-    void assertExecuteUpdateWithStorageUnitNameInUse() {
+    void assertExecuteUpdateWithStorageUnitInUsed() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(DataSourceContainedRule.class));
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         when(((DataSourceContainedRule) rule).getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
-        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        executor.setDatabase(database);
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
-    void assertExecuteUpdateWithStorageUnitNameInUseWithoutIgnoreSingleTables() {
+    void assertExecuteUpdateWithStorageUnitInUsedWithoutIgnoredTables() {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new FixtureUnregisterStorageUnitRule())));
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
-        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        executor.setDatabase(database);
         assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
-    void assertStorageUnitNameInUseIgnoreSingleTables() throws SQLException {
+    void assertExecuteUpdateWithStorageUnitInUsedWithIgnoredTables() throws SQLException {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new FixtureUnregisterStorageUnitRule())));
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
-        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
-        UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true, false);
-        executor.setDatabase(database);
-        executor.executeUpdate(unregisterStorageUnitStatement, contextManager);
-        verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
+        UnregisterStorageUnitStatement sqlStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true, false);
+        executor.executeUpdate(sqlStatement, contextManager);
+        verify(modeContextManager).unregisterStorageUnits("foo_db", sqlStatement.getStorageUnitNames());
     }
     
     @Test
-    void assertExecuteWithIfExists() throws SQLException {
-        UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
-        executor.setDatabase(database);
-        executor.executeUpdate(unregisterStorageUnitStatement, contextManager);
-        verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
+    void assertExecuteUpdateWithIfExists() throws SQLException {
+        UnregisterStorageUnitStatement sqlStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
+        executor.executeUpdate(sqlStatement, contextManager);
+        verify(modeContextManager).unregisterStorageUnits("foo_db", sqlStatement.getStorageUnitNames());
     }
     
     @Test
-    void assertExecuteUpdateWithStorageUnitNameInUseWithIfExists() {
+    void assertExecuteUpdateWithStorageUnitInUsedWithIfExists() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(DataSourceContainedRule.class));
         when(((DataSourceContainedRule) rule).getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
-        executor.setDatabase(database);
-        assertThrows(DistSQLException.class, () -> executor.executeUpdate(unregisterStorageUnitStatement, contextManager));
+        assertThrows(DistSQLException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false), contextManager));
     }
 }

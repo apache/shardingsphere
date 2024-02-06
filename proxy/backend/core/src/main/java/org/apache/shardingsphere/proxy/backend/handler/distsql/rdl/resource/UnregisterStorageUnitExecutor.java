@@ -78,12 +78,9 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
             return;
         }
         Collection<Class<? extends ShardingSphereRule>> ignoreShardingSphereRules = getIgnoreShardingSphereRules(sqlStatement);
-        if (!ignoreShardingSphereRules.isEmpty()) {
-            checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreShardingSphereRules);
-        } else {
-            String firstResource = inUsedStorageUnitNames.iterator().next();
-            throw new StorageUnitInUsedException(firstResource, inUsedStorageUnits.get(firstResource));
-        }
+        String firstResource = inUsedStorageUnitNames.iterator().next();
+        ShardingSpherePreconditions.checkState(!ignoreShardingSphereRules.isEmpty(), () -> new StorageUnitInUsedException(firstResource, inUsedStorageUnits.get(firstResource)));
+        checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreShardingSphereRules);
     }
     
     private Collection<Class<? extends ShardingSphereRule>> getIgnoreShardingSphereRules(final UnregisterStorageUnitStatement sqlStatement) {
