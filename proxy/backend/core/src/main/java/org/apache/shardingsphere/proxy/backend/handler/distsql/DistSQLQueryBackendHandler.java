@@ -40,24 +40,26 @@ import java.util.stream.Collectors;
 /**
  * DistSQL query backend handler.
  */
-public final class DistSQLQueryBackendHandler extends DistSQLQueryExecuteEngine implements DistSQLBackendHandler {
+public final class DistSQLQueryBackendHandler implements DistSQLBackendHandler {
     
-    private final ConnectionSession connectionSession;
+    private final DistSQLQueryExecuteEngine engine;
     
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
     
     public DistSQLQueryBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
-        this.connectionSession = connectionSession;
+        DistSQLConnectionContext distsqlConnectionContext = new DistSQLConnectionContext(connectionSession.getConnectionContext(),
+                connectionSession.getDatabaseConnectionManager().getConnectionSize(), connectionSession.getProtocolType(),
+                connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
+        engine = new DistSQLQueryExecuteEngine(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager(), distsqlConnectionContext);
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        executeQuery();
-        queryHeaders = createQueryHeader(getColumnNames());
-        mergedResult = new LocalDataMergedResult(getRows());
+        engine.executeQuery();
+        queryHeaders = createQueryHeader(engine.getColumnNames());
+        mergedResult = new LocalDataMergedResult(engine.getRows());
         return new QueryResponseHeader(queryHeaders);
     }
     
@@ -77,11 +79,5 @@ public final class DistSQLQueryBackendHandler extends DistSQLQueryExecuteEngine 
             cells.add(new QueryResponseCell(queryHeaders.get(i).getColumnType(), mergedResult.getValue(i + 1, Object.class)));
         }
         return new QueryResponseRow(cells);
-    }
-    
-    @Override
-    protected DistSQLConnectionContext getDistSQLConnectionContext() {
-        return new DistSQLConnectionContext(connectionSession.getConnectionContext(), connectionSession.getDatabaseConnectionManager().getConnectionSize(),
-                connectionSession.getProtocolType(), connectionSession.getDatabaseConnectionManager(), connectionSession.getStatementManager());
     }
 }
