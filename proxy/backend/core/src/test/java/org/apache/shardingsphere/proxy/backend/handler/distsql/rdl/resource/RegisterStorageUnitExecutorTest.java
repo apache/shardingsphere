@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
@@ -38,9 +37,8 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -53,30 +51,26 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class RegisterStorageUnitExecutorTest {
     
+    private final RegisterStorageUnitExecutor executor = new RegisterStorageUnitExecutor();
+    
     @Mock
     private ShardingSphereDatabase database;
-    
-    private RegisterStorageUnitExecutor executor;
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         when(database.getName()).thenReturn("foo_db");
         when(database.getRuleMetaData()).thenReturn(mock(RuleMetaData.class));
-        executor = new RegisterStorageUnitExecutor();
+        executor.setDatabase(database);
         Plugins.getMemberAccessor().set(executor.getClass().getDeclaredField("validateHandler"), executor, mock(DataSourcePoolPropertiesValidator.class));
     }
     
     @Test
-    void assertExecute() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
-        executor.setDatabase(database);
-        assertDoesNotThrow(() -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
+    void assertExecuteUpdateSuccess() {
+        assertDoesNotThrow(() -> executor.executeUpdate(createRegisterStorageUnitStatement(), mock(ContextManager.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
     void assertExecuteUpdateWithDuplicateStorageUnitNamesInStatement() {
-        executor.setDatabase(database);
         assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
@@ -84,7 +78,6 @@ class RegisterStorageUnitExecutorTest {
     void assertExecuteUpdateWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStorageUnits("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
-        executor.setDatabase(database);
         assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
@@ -95,7 +88,6 @@ class RegisterStorageUnitExecutorTest {
         DataSourceContainedRule rule = mock(DataSourceContainedRule.class);
         when(rule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(rule));
-        executor.setDatabase(database);
         assertThrows(InvalidStorageUnitsException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     
@@ -104,9 +96,8 @@ class RegisterStorageUnitExecutorTest {
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatementWithDuplicateStorageUnitNames() {
-        Collection<DataSourceSegment> result = new LinkedList<>();
-        result.add(new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()));
-        result.add(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties()));
-        return new RegisterStorageUnitStatement(false, result);
+        return new RegisterStorageUnitStatement(false, Arrays.asList(
+                new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()),
+                new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties())));
     }
 }

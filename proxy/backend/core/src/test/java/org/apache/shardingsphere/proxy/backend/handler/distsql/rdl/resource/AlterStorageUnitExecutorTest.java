@@ -30,15 +30,13 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,60 +48,51 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@ExtendWith(MockitoExtension.class)
 class AlterStorageUnitExecutorTest {
+    
+    private final AlterStorageUnitExecutor executor = new AlterStorageUnitExecutor();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    private AlterStorageUnitExecutor executor;
-    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        executor = new AlterStorageUnitExecutor();
+        executor.setDatabase(database);
         Plugins.getMemberAccessor().set(executor.getClass().getDeclaredField("validateHandler"), executor, mock(DataSourcePoolPropertiesValidator.class));
     }
     
     @Test
-    void assertExecuteUpdate() {
+    void assertExecuteUpdateSuccess() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         ConnectionProperties connectionProps = mockConnectionProperties("ds_0");
         when(storageUnit.getConnectionProperties()).thenReturn(connectionProps);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        executor.setDatabase(database);
         assertDoesNotThrow(() -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
     }
     
     @Test
     void assertExecuteUpdateWithDuplicateStorageUnitNames() {
-        executor.setDatabase(database);
         assertThrows(DuplicateStorageUnitException.class, () -> executor.executeUpdate(createAlterStorageUnitStatementWithDuplicateStorageUnitNames(), mock(ContextManager.class)));
     }
     
     @Test
     void assertExecuteUpdateWithNotExistedStorageUnitNames() {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        ContextManager contextManager = mockContextManager(metaDataContexts);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        executor.setDatabase(database);
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.executeUpdate(createAlterStorageUnitStatement("not_existed"), mock(ContextManager.class)));
+        assertThrows(MissingRequiredStorageUnitsException.class,
+                () -> executor.executeUpdate(createAlterStorageUnitStatement("not_existed"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
     }
     
     @Test
     void assertExecuteUpdateWithAlterDatabase() {
-        ContextManager contextManager = mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         ConnectionProperties connectionProps = mockConnectionProperties("ds_1");
         when(storageUnit.getConnectionProperties()).thenReturn(connectionProps);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        executor.setDatabase(database);
-        assertThrows(InvalidStorageUnitsException.class, () -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mock(ContextManager.class)));
+        assertThrows(InvalidStorageUnitsException.class, () -> executor.executeUpdate(createAlterStorageUnitStatement("ds_0"), mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS))));
     }
     
     private ContextManager mockContextManager(final MetaDataContexts metaDataContexts) {
