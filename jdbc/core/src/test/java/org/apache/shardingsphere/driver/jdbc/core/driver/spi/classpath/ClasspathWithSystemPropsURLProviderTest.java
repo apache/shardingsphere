@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 
-public class ClasspathWithSystemPropsURLProviderTest {
+class ClasspathWithSystemPropsURLProviderTest {
     
     private static final String FIXTURE_JDBC_URL_KEY = "fixture.config.driver.jdbc-url";
     
