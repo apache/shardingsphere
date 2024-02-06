@@ -147,8 +147,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
-        when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
                 parameterIndexes));
@@ -179,8 +177,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
-        when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
                 parameterIndexes));
@@ -211,8 +207,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
-        when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
                 parameterIndexes));
@@ -243,8 +237,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
-        when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
                 new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
@@ -267,8 +259,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
-        when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes,
                 parameterIndexes));
@@ -349,8 +339,6 @@ class PostgreSQLComDescribeExecutorTest {
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.UNSPECIFIED));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
-        when(ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
                 new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
@@ -407,6 +395,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).containsSchema("public")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").containsTable(TABLE_NAME)).thenReturn(true);
+        ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+        when(result.getDatabase(DATABASE_NAME)).thenReturn(database);
         return result;
     }
     

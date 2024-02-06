@@ -269,7 +269,7 @@ class MySQLAdminExecutorCreatorTest {
         Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
         initProxyContext(result);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
-        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager().getDatabase("db_0")).thenReturn(database);
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(null);
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -287,7 +287,7 @@ class MySQLAdminExecutorCreatorTest {
         Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
         initProxyContext(result);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
-        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager().getDatabase("db_0")).thenReturn(database);
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(null);
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -323,7 +323,7 @@ class MySQLAdminExecutorCreatorTest {
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select SCHEMA_NAME from SCHEMATA", "information_schema", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(SelectInformationSchemataExecutor.class));
-        when(ProxyContext.getInstance().getDatabase("information_schema").isComplete()).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getDatabase("information_schema").isComplete()).thenReturn(true);
         actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select SCHEMA_NAME from SCHEMATA", "information_schema", Collections.emptyList());
         assertFalse(actual.isPresent());
     }

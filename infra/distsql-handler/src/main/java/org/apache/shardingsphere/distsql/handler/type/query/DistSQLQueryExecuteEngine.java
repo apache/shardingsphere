@@ -24,7 +24,6 @@ import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -65,15 +64,13 @@ public abstract class DistSQLQueryExecuteEngine {
         DistSQLQueryExecutor<DistSQLStatement> executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
         columnNames = executor.getColumnNames();
         try {
-            new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : getDatabase(databaseName), getDistSQLConnectionContext());
+            new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : contextManager.getDatabase(databaseName), getDistSQLConnectionContext());
         } catch (final UnsupportedSQLOperationException ignored) {
             rows = Collections.emptyList();
             return;
         }
         rows = executor.getRows(sqlStatement, contextManager);
     }
-    
-    protected abstract ShardingSphereDatabase getDatabase(String databaseName);
     
     protected abstract DistSQLConnectionContext getDistSQLConnectionContext();
 }

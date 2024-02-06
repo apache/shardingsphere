@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.mode.manager;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -97,6 +101,19 @@ public final class ContextManager implements AutoCloseable {
      */
     public synchronized void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
         this.metaDataContexts.set(metaDataContexts);
+    }
+    
+    /**
+     * Get database.
+     *
+     * @param name database name
+     * @return got database
+     */
+    public ShardingSphereDatabase getDatabase(final String name) {
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(name), NoDatabaseSelectedException::new);
+        ShardingSphereMetaData metaData = getMetaDataContexts().getMetaData();
+        ShardingSpherePreconditions.checkState(metaData.containsDatabase(name), () -> new UnknownDatabaseException(name));
+        return metaData.getDatabase(name);
     }
     
     /**

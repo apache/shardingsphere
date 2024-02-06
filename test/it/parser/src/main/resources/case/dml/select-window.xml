@@ -22,32 +22,17 @@
             <column-projection name="user_id" start-index="7" stop-index="13" />
             <expression-projection text="ROW_NUMBER() OVER w" start-index="16" stop-index="50" alias="row_number">
                 <expr>
-                    <!-- FIXME correct function-name parse -->
-                    <function start-index="16" stop-index="34" text="ROW_NUMBER() OVER w" function-name="OVER">
-                        <parameter>
-                            <function start-index="16" stop-index="25" text="ROW_NUMBER()" function-name="ROW_NUMBER" />
-                        </parameter>
-                    </function>
+                    <function start-index="16" stop-index="34" text="ROW_NUMBER() OVER w" function-name="ROW_NUMBER" />
                 </expr>
             </expression-projection>
             <expression-projection text="RANK() OVER w" start-index="53" stop-index="75" alias="rank">
                 <expr>
-                    <!-- FIXME correct function-name parse -->
-                    <function start-index="53" stop-index="65" text="RANK() OVER w" function-name="OVER">
-                        <parameter>
-                            <function start-index="53" stop-index="56" text="RANK()" function-name="RANK" />
-                        </parameter>
-                    </function>
+                    <function start-index="53" stop-index="65" text="RANK() OVER w" function-name="RANK" />
                 </expr>
             </expression-projection>
             <expression-projection text="DENSE_RANK() OVER w" start-index="78" stop-index="112" alias="dense_rank">
                 <expr>
-                    <!-- FIXME correct function-name parse -->
-                    <function start-index="78" stop-index="96" text="DENSE_RANK() OVER w" function-name="OVER">
-                        <parameter>
-                            <function start-index="78" stop-index="87" text="DENSE_RANK()" function-name="DENSE_RANK" />
-                        </parameter>
-                    </function>
+                    <function start-index="78" stop-index="96" text="DENSE_RANK() OVER w" function-name="DENSE_RANK" />
                 </expr>
             </expression-projection>
         </projections>
@@ -68,6 +53,12 @@
                 </binary-operation-expression>
             </expr>
         </where>
-        <window start-index="146" stop-index="175" />
+        <window start-index="146" stop-index="175">
+            <window-item start-index="153" stop-index="175">
+                <order-by>
+                    <column-item name="user_id" order-direction="ASC" start-index="168" stop-index="174"/>
+                </order-by>
+            </window-item>
+        </window>
     </select>
 </sql-parser-test-cases>

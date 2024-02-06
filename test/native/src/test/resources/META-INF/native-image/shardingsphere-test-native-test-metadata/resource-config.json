@@ -7,8 +7,8 @@
     "condition":{"typeReachable":"ch.qos.logback.core.util.Loader"},
     "pattern":"\\Qlogback-test.xml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MSSQLServerTest"},
-    "pattern":"\\Qtest-native/yaml/databases/mssqlserver.yaml\\E"
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.SQLServerTest"},
+    "pattern":"\\Qtest-native/yaml/databases/sqlserver.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MySQLTest"},
     "pattern":"\\Qtest-native/yaml/databases/mysql.yaml\\E"

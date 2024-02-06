@@ -51,8 +51,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
-    private static final String TABLE_TYPE = "BASE TABLE";
-    
     private final MySQLShowTablesStatement showTablesStatement;
     
     private final DatabaseType databaseType;
@@ -82,7 +80,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private QueryResult getQueryResult(final String databaseName) {
         SystemDatabase systemDatabase = new SystemDatabase(databaseType);
-        if (!systemDatabase.getSystemSchemas().contains(databaseName) && !ProxyContext.getInstance().getDatabase(databaseName).isComplete()) {
+        if (!systemDatabase.getSystemSchemas().contains(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
         List<MemoryQueryResultDataRow> rows = getAllTableNames(databaseName).stream().map(each -> {
@@ -97,7 +95,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<ShardingSphereTable> getAllTableNames(final String databaseName) {
-        Collection<ShardingSphereTable> result = ProxyContext.getInstance().getDatabase(databaseName).getSchema(databaseName).getTables().values();
+        Collection<ShardingSphereTable> result = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getSchema(databaseName).getTables().values();
         if (!showTablesStatement.getFilter().isPresent()) {
             return result;
         }

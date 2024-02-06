@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
 import org.apache.shardingsphere.distsql.handler.type.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -30,23 +29,20 @@ import java.sql.SQLException;
 /**
  * DistSQL update backend handler.
  */
-public final class DistSQLUpdateBackendHandler extends DistSQLUpdateExecuteEngine implements DistSQLBackendHandler {
+public final class DistSQLUpdateBackendHandler implements DistSQLBackendHandler {
     
     private final DistSQLStatement sqlStatement;
     
+    private final DistSQLUpdateExecuteEngine engine;
+    
     public DistSQLUpdateBackendHandler(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
         this.sqlStatement = sqlStatement;
+        engine = new DistSQLUpdateExecuteEngine(sqlStatement, connectionSession.getDatabaseName(), ProxyContext.getInstance().getContextManager());
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        executeUpdate();
+        engine.executeUpdate();
         return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    @Override
-    protected ShardingSphereDatabase getDatabase(final String databaseName) {
-        return ProxyContext.getInstance().getDatabase(databaseName);
     }
 }

@@ -92,8 +92,8 @@ class PostgreSQLComBindExecutorTest {
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        when(contextManager.getDatabase(databaseName)).thenReturn(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase(databaseName)).thenReturn(database);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
@@ -122,8 +122,8 @@ class PostgreSQLComBindExecutorTest {
         when(bindPacket.readParameters(anyList())).thenReturn(parameters);
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        when(contextManager.getDatabase(databaseName)).thenReturn(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase(databaseName)).thenReturn(database);
         executor.execute();
         assertThat(connectionSession.getQueryContext().getParameters(), is(Arrays.asList(parameters.get(1), parameters.get(0))));
     }

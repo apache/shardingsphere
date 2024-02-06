@@ -58,7 +58,7 @@ class RefreshTableMetaDataUpdaterTest {
         when(contextManager.getStorageUnits("foo_db")).thenReturn(Collections.emptyMap());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         DistSQLUpdateBackendHandler backendHandler = new DistSQLUpdateBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
         assertThrows(EmptyStorageUnitException.class, backendHandler::execute);
     }
@@ -79,7 +79,7 @@ class RefreshTableMetaDataUpdaterTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         DistSQLUpdateBackendHandler backendHandler = new DistSQLUpdateBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
