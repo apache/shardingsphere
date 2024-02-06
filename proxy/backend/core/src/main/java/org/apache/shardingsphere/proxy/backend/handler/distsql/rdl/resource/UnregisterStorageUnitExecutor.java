@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidSt
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.handler.type.update.DistSQLUpdateExecutor;
-import org.apache.shardingsphere.distsql.handler.type.update.rdl.resource.UnregisterStorageUnitRuleUsageChecker;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.resource.StorageUnitDefinitionProcessor;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
@@ -84,8 +84,8 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
     }
     
     private Collection<Class<? extends ShardingSphereRule>> getIgnoreShardingSphereRules(final UnregisterStorageUnitStatement sqlStatement) {
-        return ShardingSphereServiceLoader.getServiceInstances(UnregisterStorageUnitRuleUsageChecker.class).stream()
-                .filter(each -> each.isIgnored(sqlStatement)).map(UnregisterStorageUnitRuleUsageChecker::getRule).collect(Collectors.toList());
+        return ShardingSphereServiceLoader.getServiceInstances(StorageUnitDefinitionProcessor.class).stream()
+                .filter(each -> each.ignoreUsageCheckOnUnregister(sqlStatement)).map(StorageUnitDefinitionProcessor::getRule).collect(Collectors.toList());
     }
     
     private void checkInUsedIgnoreTables(final Collection<String> inUsedResourceNames, final Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits,

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.broadcast.distsql.handler.update.UnregisterStorageUnitBroadcastRuleUsageChecker
+org.apache.shardingsphere.single.distsql.handler.update.StorageUnitSingleDefinitionProcessor

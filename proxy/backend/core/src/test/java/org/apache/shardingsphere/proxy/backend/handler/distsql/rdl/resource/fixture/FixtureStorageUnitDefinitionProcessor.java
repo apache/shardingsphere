@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.fixture;
 
-import org.apache.shardingsphere.distsql.handler.type.update.rdl.resource.UnregisterStorageUnitRuleUsageChecker;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.resource.StorageUnitDefinitionProcessor;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-public final class FixtureUnregisterStorageUnitRuleUsageChecker implements UnregisterStorageUnitRuleUsageChecker {
+public final class FixtureStorageUnitDefinitionProcessor implements StorageUnitDefinitionProcessor {
     
     @Override
-    public boolean isIgnored(final UnregisterStorageUnitStatement sqlStatement) {
+    public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
         return sqlStatement.isIgnoreSingleTables();
     }
     
