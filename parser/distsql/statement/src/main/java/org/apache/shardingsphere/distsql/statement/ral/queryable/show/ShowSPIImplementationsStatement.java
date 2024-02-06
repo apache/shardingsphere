@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.statement;
+package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
 
+import lombok.Getter;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
- * Show sharding algorithm implementations statement.
+ * Show SPI implementations statement.
  */
-public final class ShowShardingAlgorithmImplementationsStatement extends QueryableRALStatement {
+@Getter
+public final class ShowSPIImplementationsStatement extends QueryableRALStatement {
+    
+    private final String type;
+    
+    public ShowSPIImplementationsStatement(final String type) {
+        this.type = type;
+    }
 }
