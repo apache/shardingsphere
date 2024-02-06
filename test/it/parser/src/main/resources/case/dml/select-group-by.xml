@@ -507,7 +507,9 @@
                 </binary-operation-expression>
             </expr>
         </having>
-        <window start-index="102" stop-index="135" />
+        <window start-index="102" stop-index="135">
+            <window-item start-index="109" stop-index="135"/>
+        </window>
     </select>
 
     <select sql-case-id="select_group_by_cube">
