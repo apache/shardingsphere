@@ -70,7 +70,7 @@ class QueryableRALBackendHandlerTest {
     void assertExecuteWithUnknownDatabase() {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData();
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), metaData);
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("unknown");
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -79,7 +79,7 @@ class QueryableRALBackendHandlerTest {
     
     @Test
     void assertExecuteWithAbstractStatement() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> new DistSQLQueryBackendHandler(mock(QueryableRALStatement.class), mock(ConnectionSession.class)).execute());
+        assertThrows(ServiceProviderNotFoundException.class, () -> new DistSQLQueryBackendHandler(mock(QueryableRALStatement.class), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }
     
     @Test
