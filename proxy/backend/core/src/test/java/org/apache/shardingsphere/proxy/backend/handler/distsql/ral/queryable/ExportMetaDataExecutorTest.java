@@ -144,7 +144,6 @@ class ExportMetaDataExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("normal_db"));
-        when(ProxyContext.getInstance().getDatabase("normal_db")).thenReturn(database);
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(new ExportMetaDataStatement(null), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
@@ -175,6 +174,7 @@ class ExportMetaDataExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getInstanceContext()).thenReturn(instanceContext);
+        when(result.getDatabase("normal_db")).thenReturn(database);
         return result;
     }
     

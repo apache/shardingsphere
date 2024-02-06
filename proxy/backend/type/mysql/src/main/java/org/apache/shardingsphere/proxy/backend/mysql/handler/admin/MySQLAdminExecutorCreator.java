@@ -161,7 +161,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     
     private boolean isQueryInformationSchema(final String databaseName) {
         // TODO remove DefaultDatabaseMetaDataExecutor when sql federation can support all system table query
-        return INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getDatabase(databaseName).isComplete();
+        return INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete();
     }
     
     private boolean isQueryPerformanceSchema(final String databaseName) {
@@ -190,7 +190,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return true;
         }
         for (String each : databaseNames) {
-            if (ProxyContext.getInstance().getDatabase(each).containsDataSource()) {
+            if (ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource()) {
                 return false;
             }
         }

@@ -90,7 +90,6 @@ class UnregisterStorageUnitExecutorTest {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         executor = new UnregisterStorageUnitExecutor();
     }
     
@@ -99,6 +98,7 @@ class UnregisterStorageUnitExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getInstanceContext().getModeContextManager()).thenReturn(modeContextManager);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }
     
@@ -116,8 +116,8 @@ class UnregisterStorageUnitExecutorTest {
     }
     
     @Test
-    void assertExecuteUpdateWithhStorageUnitNameNotExisted() {
-        when(ProxyContext.getInstance().getDatabase("foo_db").getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
+    void assertExecuteUpdateWithStorageUnitNameNotExisted() {
+        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         executor.setDatabase(database);
         assertThrows(MissingRequiredStorageUnitsException.class,
                 () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));

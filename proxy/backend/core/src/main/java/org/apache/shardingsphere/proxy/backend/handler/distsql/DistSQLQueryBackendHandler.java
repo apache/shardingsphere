@@ -82,7 +82,7 @@ public final class DistSQLQueryBackendHandler extends DistSQLQueryExecuteEngine 
     
     @Override
     protected ShardingSphereDatabase getDatabase(final String databaseName) {
-        return ProxyContext.getInstance().getDatabase(databaseName);
+        return ProxyContext.getInstance().getContextManager().getDatabase(databaseName);
     }
     
     @Override

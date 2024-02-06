@@ -75,7 +75,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         String originDatabase = connectionSession.getDatabaseName();
         String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).containsDataSource(), () -> new StorageUnitNotExistedException(databaseName));
+        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getContextManager().getDatabase(databaseName).containsDataSource(), () -> new StorageUnitNotExistedException(databaseName));
         try {
             connectionSession.setCurrentDatabase(databaseName);
             SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
@@ -95,7 +95,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         if (databaseNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst();
+        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource()).findFirst();
         ShardingSpherePreconditions.checkState(result.isPresent(), StorageUnitNotExistedException::new);
         return result.get();
     }

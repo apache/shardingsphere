@@ -86,7 +86,6 @@ class DistSQLBackendHandlerFactoryTest {
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
     }
     
@@ -100,6 +99,7 @@ class DistSQLBackendHandlerFactoryTest {
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = mockMetaDataContexts(database);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getInstanceContext().getModeContextManager()).thenReturn(mock(ModeContextManager.class));
         when(result.getInstanceContext().getModeConfiguration().getType()).thenReturn("Cluster");
@@ -119,7 +119,7 @@ class DistSQLBackendHandlerFactoryTest {
     
     @Test
     void assertExecuteShardingTableRuleContext() throws SQLException {
-        when(ProxyContext.getInstance().getDatabase("foo_db").getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         assertThat(new DistSQLUpdateBackendHandler(mock(CreateShardingTableRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -214,7 +214,7 @@ class DistSQLBackendHandlerFactoryTest {
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         when(ruleMetaData.findSingleRule(ShadowRule.class)).thenReturn(Optional.of(rule));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database);
     }
     
     private ShadowRuleConfiguration mockShadowRuleConfiguration() {

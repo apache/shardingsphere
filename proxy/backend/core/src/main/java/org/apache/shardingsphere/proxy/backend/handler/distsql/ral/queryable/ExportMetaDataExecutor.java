@@ -85,7 +85,7 @@ public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<Export
     private Map<String, String> getDatabases(final ProxyContext proxyContext) {
         Map<String, String> result = new LinkedHashMap<>();
         proxyContext.getAllDatabaseNames().forEach(each -> {
-            ShardingSphereDatabase database = proxyContext.getDatabase(each);
+            ShardingSphereDatabase database = proxyContext.getContextManager().getDatabase(each);
             if (database.getResourceMetaData().getAllInstanceDataSourceNames().isEmpty()) {
                 return;
             }
