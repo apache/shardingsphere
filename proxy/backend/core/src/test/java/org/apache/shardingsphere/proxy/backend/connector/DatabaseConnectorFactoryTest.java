@@ -61,7 +61,6 @@ class DatabaseConnectorFactoryTest {
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
         assertThat(engine, instanceOf(DatabaseConnector.class));
     }
@@ -76,7 +75,6 @@ class DatabaseConnectorFactoryTest {
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         assertThat(DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), databaseConnectionManager, false),
                 instanceOf(DatabaseConnector.class));
     }
@@ -87,6 +85,7 @@ class DatabaseConnectorFactoryTest {
                         mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }
     

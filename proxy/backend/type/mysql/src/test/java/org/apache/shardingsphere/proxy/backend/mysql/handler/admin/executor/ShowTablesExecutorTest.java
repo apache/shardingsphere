@@ -75,7 +75,6 @@ class ShowTablesExecutorTest {
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
@@ -97,7 +96,6 @@ class ShowTablesExecutorTest {
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
     }
@@ -112,7 +110,6 @@ class ShowTablesExecutorTest {
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
@@ -134,7 +131,6 @@ class ShowTablesExecutorTest {
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
@@ -152,7 +148,6 @@ class ShowTablesExecutorTest {
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
@@ -170,7 +165,6 @@ class ShowTablesExecutorTest {
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
@@ -202,6 +196,7 @@ class ShowTablesExecutorTest {
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getDatabase("db_0")).thenReturn(databases.get("db_0"));
         return result;
     }
     

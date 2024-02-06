@@ -128,7 +128,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private void failedIfBackendNotReady(final ConnectionSession connectionSession, final SQLStatementContext sqlStatementContext) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getDatabaseName());
         boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
         ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new StorageUnitNotExistedException(connectionSession.getDatabaseName()));
         if (!isSystemSchema && !database.isComplete()) {

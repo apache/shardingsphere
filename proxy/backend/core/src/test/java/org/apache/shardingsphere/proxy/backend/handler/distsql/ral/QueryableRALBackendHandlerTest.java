@@ -72,7 +72,6 @@ class QueryableRALBackendHandlerTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), metaData);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("unknown");
-        when(ProxyContext.getInstance().getDatabase("unknown")).thenThrow(UnknownDatabaseException.class);
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(UnknownDatabaseException.class, () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute());
@@ -89,7 +88,7 @@ class QueryableRALBackendHandlerTest {
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_db")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database);
         assertDoesNotThrow(() -> new DistSQLQueryBackendHandler(createSqlStatement(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }
     

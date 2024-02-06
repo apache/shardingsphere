@@ -54,6 +54,6 @@ public final class ProxySQLComQueryParser {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getDatabase(databaseName).getProtocolType();
+                : ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getProtocolType();
     }
 }

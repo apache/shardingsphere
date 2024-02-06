@@ -204,7 +204,7 @@ public final class ProxySQLExecutor {
         JDBCBackendStatement statementManager = (JDBCBackendStatement) databaseConnectionManager.getConnectionSession().getStatementManager();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 type, maxConnectionsSizePerQuery, databaseConnectionManager, statementManager, new StatementOption(isReturnGeneratedKeys), rules,
-                ProxyContext.getInstance().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName()).getResourceMetaData().getStorageUnits());
+                ProxyContext.getInstance().getContextManager().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName()).getResourceMetaData().getStorageUnits());
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
         try {
             executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(),
@@ -231,7 +231,7 @@ public final class ProxySQLExecutor {
     }
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName()).getProtocolType();
+        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName()).getProtocolType();
         Optional<ExecuteResult> executeResult = new SaneQueryResultEngine(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement(), originalException);
         return executeResult.map(Collections::singletonList).orElseThrow(() -> originalException);
     }

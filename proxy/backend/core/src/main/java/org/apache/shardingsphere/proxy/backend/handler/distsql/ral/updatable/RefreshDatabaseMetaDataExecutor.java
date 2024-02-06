@@ -37,7 +37,8 @@ public final class RefreshDatabaseMetaDataExecutor implements DistSQLUpdateExecu
     @Override
     public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         Optional<String> toBeRefreshedDatabaseName = sqlStatement.getDatabaseName();
-        Map<String, ShardingSphereDatabase> databases = toBeRefreshedDatabaseName.map(optional -> Collections.singletonMap(optional, ProxyContext.getInstance().getDatabase(optional)))
+        Map<String, ShardingSphereDatabase> databases = toBeRefreshedDatabaseName
+                .map(optional -> Collections.singletonMap(optional, ProxyContext.getInstance().getContextManager().getDatabase(optional)))
                 .orElseGet(() -> contextManager.getMetaDataContexts().getMetaData().getDatabases());
         for (ShardingSphereDatabase each : databases.values()) {
             if (!SystemSchemaUtils.isSystemSchema(each)) {
