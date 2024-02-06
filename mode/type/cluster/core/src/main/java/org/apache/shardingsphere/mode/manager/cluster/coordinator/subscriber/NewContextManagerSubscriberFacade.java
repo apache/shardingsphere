@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.NewRegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.NewProcessListChangedSubscriber;
-import org.apache.shardingsphere.mode.subsciber.NewConfigurationChangedSubscriber;
 
 /**
  * TODO replace the old implementation after meta data refactor completed
