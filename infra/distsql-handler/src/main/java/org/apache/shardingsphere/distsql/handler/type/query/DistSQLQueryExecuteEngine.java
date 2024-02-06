@@ -34,11 +34,13 @@ import java.util.Collections;
 /**
  * DistSQL query execute engine.
  */
-public abstract class DistSQLQueryExecuteEngine {
+public final class DistSQLQueryExecuteEngine {
     
     private final DistSQLStatement sqlStatement;
     
     private final ContextManager contextManager;
+    
+    private final DistSQLConnectionContext distsqlConnectionContext;
     
     private final String databaseName;
     
@@ -48,9 +50,11 @@ public abstract class DistSQLQueryExecuteEngine {
     @Getter
     private Collection<LocalDataQueryResultRow> rows;
     
-    public DistSQLQueryExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName, final ContextManager contextManager) {
+    public DistSQLQueryExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName,
+                                     final ContextManager contextManager, final DistSQLConnectionContext distsqlConnectionContext) {
         this.sqlStatement = sqlStatement;
         this.contextManager = contextManager;
+        this.distsqlConnectionContext = distsqlConnectionContext;
         databaseName = DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName);
     }
     
@@ -64,13 +68,11 @@ public abstract class DistSQLQueryExecuteEngine {
         DistSQLQueryExecutor<DistSQLStatement> executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
         columnNames = executor.getColumnNames();
         try {
-            new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : contextManager.getDatabase(databaseName), getDistSQLConnectionContext());
+            new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : contextManager.getDatabase(databaseName), distsqlConnectionContext);
         } catch (final UnsupportedSQLOperationException ignored) {
             rows = Collections.emptyList();
             return;
         }
         rows = executor.getRows(sqlStatement, contextManager);
     }
-    
-    protected abstract DistSQLConnectionContext getDistSQLConnectionContext();
 }
