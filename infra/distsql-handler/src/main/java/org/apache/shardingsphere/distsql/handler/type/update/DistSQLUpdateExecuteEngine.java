@@ -38,7 +38,7 @@ import java.util.Optional;
 /**
  * DistSQL update execute engine.
  */
-public abstract class DistSQLUpdateExecuteEngine {
+public final class DistSQLUpdateExecuteEngine {
     
     private final DistSQLStatement sqlStatement;
     
@@ -78,10 +78,10 @@ public abstract class DistSQLUpdateExecuteEngine {
     @SuppressWarnings("rawtypes")
     private void executeDatabaseRuleDefinitionUpdate(final DatabaseRuleDefinitionExecutor executor) {
         if (isNormalRuleUpdater()) {
-            new DatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), executor).executeUpdate();
+            new DatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, contextManager.getDatabase(databaseName), executor).executeUpdate();
         } else {
             // TODO Remove when metadata structure adjustment completed. #25485
-            new LegacyDatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, getDatabase(databaseName), executor).executeUpdate();
+            new LegacyDatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, contextManager.getDatabase(databaseName), executor).executeUpdate();
         }
     }
     
@@ -104,11 +104,9 @@ public abstract class DistSQLUpdateExecuteEngine {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void executeNormalUpdate() throws SQLException {
         DistSQLUpdateExecutor executor = TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
-        ShardingSphereDatabase database = null == databaseName ? null : getDatabase(databaseName);
+        ShardingSphereDatabase database = null == databaseName ? null : contextManager.getDatabase(databaseName);
         new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null);
         new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.executeUpdate(sqlStatement, contextManager);
     }
-    
-    protected abstract ShardingSphereDatabase getDatabase(String databaseName);
 }
