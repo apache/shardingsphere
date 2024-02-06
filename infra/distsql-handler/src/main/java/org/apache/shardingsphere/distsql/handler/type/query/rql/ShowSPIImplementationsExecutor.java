@@ -35,21 +35,17 @@ import java.util.Optional;
 @Setter
 public final class ShowSPIImplementationsExecutor implements DistSQLQueryExecutor<ShowSPIImplementationsStatement> {
     
-    private Collection<String> columnNames;
-    
     @Override
     public Collection<String> getColumnNames() {
-        return null != columnNames ? columnNames : Arrays.asList("type", "type_aliases", "description");
+        return Arrays.asList("type", "type_aliases", "description");
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSPIImplementationsStatement sqlStatement, final ContextManager contextManager) {
         Optional<ShowSPIImplementationsBuilder> rowBuilder = TypedSPILoader.findService(ShowSPIImplementationsBuilder.class, sqlStatement.getType());
         if (!rowBuilder.isPresent()) {
             return Collections.emptyList();
         }
-        columnNames = rowBuilder.get().getColumnNames();
         return rowBuilder.get().generateRows();
     }
     
