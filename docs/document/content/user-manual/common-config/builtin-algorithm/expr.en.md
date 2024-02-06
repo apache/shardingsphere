@@ -82,8 +82,8 @@ Example:
 
 ## Row Value Expressions that uses the Groovy syntax based on GraalVM Truffle's Espresso implementation
 
-This is an optional implementation, and you need to actively declare the following dependencies in the `pom.xml` of your own project.
-And make sure your own project is compiled with GraalVM CE 23.0.1 For JDK 17.0.9.
+This is an optional implementation. You need to actively declare the following dependencies in the `pom.xml` of your own project. 
+And please make sure your own projects are compiled with OpenJDK 21+ or its downstream distribution.
 
 ```xml
 <dependencies>
@@ -92,13 +92,18 @@ And make sure your own project is compiled with GraalVM CE 23.0.1 For JDK 17.0.9
         <artifactId>shardingsphere-infra-expr-espresso</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.graalvm.polyglot</groupId>
+        <artifactId>polyglot</artifactId>
+        <version>23.1.2</version>
+    </dependency>
+    <dependency>
+        <groupId>org.graalvm.polyglot</groupId>
+        <artifactId>java-community</artifactId>
+        <version>23.1.2</version>
+        <type>pom</type>
+    </dependency>
 </dependencies>
-```
-
-The user must install the Espresso component via GraalVM Updater, i.e. execute the following command in bash
-
-```bash
-gu install espresso
 ```
 
 `ESPRESSO` is still an experimental module that allows the use of Row Value Expressions with Groovy syntax under GraalVM

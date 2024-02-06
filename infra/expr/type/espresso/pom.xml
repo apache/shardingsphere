@@ -50,9 +50,17 @@
         </dependency>
         
         <dependency>
-            <groupId>org.graalvm.truffle</groupId>
-            <artifactId>truffle-api</artifactId>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>polyglot</artifactId>
             <version>${graal-sdk.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>java-community</artifactId>
+            <version>${graal-sdk.version}</version>
+            <type>pom</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     
@@ -69,7 +77,7 @@
                         </goals>
                         <phase>process-resources</phase>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/classes/espresso-need-libs</outputDirectory>
+                            <outputDirectory>${project.build.directory}/classes/build/libs/</outputDirectory>
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.apache.groovy</groupId>

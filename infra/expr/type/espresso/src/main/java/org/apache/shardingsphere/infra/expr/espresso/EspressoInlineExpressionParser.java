@@ -22,8 +22,6 @@ import com.google.common.collect.Sets;
 import groovy.lang.GroovyShell;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.groovy.GroovyUtils;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
 
 import java.io.File;
 import java.net.URL;
@@ -45,19 +43,10 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     private String inlineExpression;
     
-    /**
-     * TODO <a href="https://github.com/oracle/graal/issues/4555">espressoHome not defined</a> not yet closed.
-     * Maybe sometimes we need `.option("java.Properties.org.graalvm.home", System.getenv("JAVA_HOME"))`
-     *
-     * @see org.graalvm.polyglot.Context
-     */
-    private final Context context = Context.newBuilder()
-            .allowAllAccess(true)
-            .option("java.Classpath", JAVA_CLASSPATH)
-            .build();
+    private final ReflectContext context = new ReflectContext(JAVA_CLASSPATH);
     
     static {
-        URL resource = EspressoInlineExpressionParser.class.getClassLoader().getResource("espresso-need-libs");
+        URL resource = ClassLoader.getSystemResource("build" + File.separator + "libs");
         String dir = null == resource ? null : resource.getPath();
         JAVA_CLASSPATH = dir + File.separator + "groovy.jar";
     }
@@ -84,11 +73,11 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     @Override
     public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(GroovyUtils.split(handlePlaceHolder(inlineExpression)), context));
+        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(GroovyUtils.split(handlePlaceHolder(inlineExpression))));
     }
     
-    private List<Value> evaluate(final List<String> inlineExpressions, final Context context) {
-        List<Value> result = new ArrayList<>(inlineExpressions.size());
+    private List<ReflectValue> evaluate(final List<String> inlineExpressions) {
+        List<ReflectValue> result = new ArrayList<>(inlineExpressions.size());
         for (String each : inlineExpressions) {
             StringBuilder expression = new StringBuilder(handlePlaceHolder(each));
             if (!each.startsWith("\"")) {
@@ -97,12 +86,12 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
             if (!each.endsWith("\"")) {
                 expression.append('"');
             }
-            result.add(evaluate(expression.toString(), context));
+            result.add(evaluate(expression.toString()));
         }
         return result;
     }
     
-    private Value evaluate(final String expression, final Context context) {
+    private ReflectValue evaluate(final String expression) {
         return context.getBindings("java")
                 .getMember(GroovyShell.class.getName())
                 .newInstance()
@@ -110,19 +99,32 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
                 .invokeMember("run");
     }
     
-    private List<String> flatten(final List<Value> segments) {
+    /**
+     * Flatten.
+     *
+     * @param segments Actually corresponds to some class instance of {@link java.lang.Object}.
+     *                 This Object may or may not correspond to a class instance of {@link groovy.lang.GString}.
+     * @return List of String
+     */
+    private List<String> flatten(final List<ReflectValue> segments) {
         List<String> result = new ArrayList<>();
-        for (Value each : segments) {
+        for (ReflectValue each : segments) {
             if (!each.isString()) {
                 result.addAll(assemblyCartesianSegments(each));
             } else {
-                result.add(each.toString());
+                result.add(each.toStringForValue());
             }
         }
         return result;
     }
     
-    private List<String> assemblyCartesianSegments(final Value segment) {
+    /**
+     * Assembly cartesian segments.
+     *
+     * @param segment Actually corresponds to a class instance of {@link groovy.lang.GString}.
+     * @return List of String
+     */
+    private List<String> assemblyCartesianSegments(final ReflectValue segment) {
         Set<List<String>> cartesianValues = getCartesianValues(segment);
         List<String> result = new ArrayList<>(cartesianValues.size());
         for (List<String> each : cartesianValues) {
@@ -131,8 +133,14 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
         return result;
     }
     
+    /**
+     * Get cartesian values.
+     *
+     * @param segment Actually corresponds to a class instance of {@link groovy.lang.GString}.
+     * @return A Set consisting of a List of Strings
+     */
     @SuppressWarnings("unchecked")
-    private Set<List<String>> getCartesianValues(final Value segment) {
+    private Set<List<String>> getCartesianValues(final ReflectValue segment) {
         Object[] temp = segment.invokeMember("getValues").as(Object[].class);
         List<Set<String>> result = new ArrayList<>(temp.length);
         for (Object each : temp) {
@@ -148,7 +156,14 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
         return Sets.cartesianProduct(result);
     }
     
-    private String assemblySegment(final List<String> cartesianValue, final Value segment) {
+    /**
+     * Assembly segment.
+     *
+     * @param cartesianValue List of String
+     * @param segment        Actually corresponds to a class instance of {@link groovy.lang.GString}.
+     * @return {@link java.lang.String}
+     */
+    private String assemblySegment(final List<String> cartesianValue, final ReflectValue segment) {
         String[] temp = segment.invokeMember("getStrings").as(String[].class);
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < temp.length; i++) {
