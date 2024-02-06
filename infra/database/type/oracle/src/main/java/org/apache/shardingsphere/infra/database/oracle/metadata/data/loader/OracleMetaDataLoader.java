@@ -106,8 +106,7 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    String viewName = resultSet.getString(1);
-                    result.add(viewName);
+                    result.add(resultSet.getString(1));
                 }
             }
         }

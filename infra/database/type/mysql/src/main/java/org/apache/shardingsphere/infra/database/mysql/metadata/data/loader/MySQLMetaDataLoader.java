@@ -91,8 +91,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
             preparedStatement.setString(1, databaseName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    String viewName = resultSet.getString(1);
-                    result.add(viewName);
+                    result.add(resultSet.getString(1));
                 }
             }
         }
