@@ -145,7 +145,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNam
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
@@ -949,7 +948,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         return result;
     }
     
-    private Collection<ExpressionSegment> getExpressions(final List<ExprContext> exprList) {
+    protected Collection<ExpressionSegment> getExpressions(final List<ExprContext> exprList) {
         if (null == exprList) {
             return Collections.emptyList();
         }
@@ -1018,17 +1017,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GROUP_CONCAT().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             result.getParameters().add((ExpressionSegment) visit(each));
-        }
-        return result;
-    }
-    
-    @Override
-    public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
-        super.visitWindowFunction(ctx);
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.windowingClause().OVER().getText(), getOriginalText(ctx));
-        result.getParameters().add(new FunctionSegment(ctx.funcName.getStartIndex(), ctx.funcName.getStopIndex(), ctx.funcName.getText(), ctx.funcName.getText() + "()"));
-        if (null != ctx.windowingClause().windowSpecification()) {
-            result.getParameters().addAll(getExpressions(ctx.windowingClause().windowSpecification().expr()));
         }
         return result;
     }

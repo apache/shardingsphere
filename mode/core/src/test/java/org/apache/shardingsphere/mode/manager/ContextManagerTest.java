@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -64,6 +66,8 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -219,6 +223,26 @@ class ContextManagerTest {
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getPassword(), is("test"));
         assertThat(actual.getUsername(), is("test"));
+    }
+    
+    @Test
+    void assertGetDatabaseWithNull() {
+        assertThrows(NoDatabaseSelectedException.class, () -> contextManager.getDatabase(null));
+    }
+    
+    @Test
+    void assertGetDatabaseWithEmptyString() {
+        assertThrows(NoDatabaseSelectedException.class, () -> contextManager.getDatabase(""));
+    }
+    
+    @Test
+    void assertGetDatabaseWhenNotExisted() {
+        assertThrows(UnknownDatabaseException.class, () -> contextManager.getDatabase("bar_db"));
+    }
+    
+    @Test
+    void assertGetDatabase() {
+        assertNotNull(contextManager.getDatabase("foo_db"));
     }
     
     @Test

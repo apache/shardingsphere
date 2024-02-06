@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.window;
+package org.apache.shardingsphere.distsql.handler.type.update.rdl.resource;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * Expected window clause.
+ * Unregister storage unit rule usage checker.
  */
-@Getter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedWindowClause extends AbstractExpectedSQLSegment {
+@SingletonSPI
+public interface UnregisterStorageUnitRuleUsageChecker {
     
-    @XmlElement(name = "window-item")
-    private final Collection<ExpectedWindowItem> windowItems = new LinkedList<>();
+    /**
+     * Whether to ignore rule usage checking when unregister storage unit.
+     * 
+     * @param sqlStatement unregister storage unit statement
+     * @return ignored or not
+     */
+    boolean isIgnored(UnregisterStorageUnitStatement sqlStatement);
+    
+    /**
+     * Get rule.
+     * 
+     * @return rule
+     */
+    Class<? extends ShardingSphereRule> getRule();
 }

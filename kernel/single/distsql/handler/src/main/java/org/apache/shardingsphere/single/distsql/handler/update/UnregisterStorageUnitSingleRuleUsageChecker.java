@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.window;
+package org.apache.shardingsphere.single.distsql.handler.update;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.resource.UnregisterStorageUnitRuleUsageChecker;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 /**
- * Expected window clause.
+ * Unregister storage unit single rule usage checker.
  */
-@Getter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedWindowClause extends AbstractExpectedSQLSegment {
+public final class UnregisterStorageUnitSingleRuleUsageChecker implements UnregisterStorageUnitRuleUsageChecker {
     
-    @XmlElement(name = "window-item")
-    private final Collection<ExpectedWindowItem> windowItems = new LinkedList<>();
+    @Override
+    public boolean isIgnored(final UnregisterStorageUnitStatement sqlStatement) {
+        return sqlStatement.isIgnoreSingleTables();
+    }
+    
+    @Override
+    public Class<SingleRule> getRule() {
+        return SingleRule.class;
+    }
 }

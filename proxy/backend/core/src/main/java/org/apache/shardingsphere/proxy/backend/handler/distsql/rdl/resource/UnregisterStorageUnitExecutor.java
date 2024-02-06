@@ -19,26 +19,25 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.handler.type.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.type.update.rdl.resource.UnregisterStorageUnitRuleUsageChecker;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -75,26 +74,21 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits = database.getRuleMetaData().getInUsedStorageUnitNameAndRulesMap();
         Collection<String> inUsedStorageUnitNames = inUsedStorageUnits.keySet();
         inUsedStorageUnitNames.retainAll(sqlStatement.getStorageUnitNames());
-        if (!inUsedStorageUnitNames.isEmpty()) {
-            Collection<Class<? extends ShardingSphereRule>> ignoreShardingSphereRules = getIgnoreShardingSphereRules(sqlStatement);
-            if (!ignoreShardingSphereRules.isEmpty()) {
-                checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreShardingSphereRules);
-            } else {
-                String firstResource = inUsedStorageUnitNames.iterator().next();
-                throw new StorageUnitInUsedException(firstResource, inUsedStorageUnits.get(firstResource));
-            }
+        if (inUsedStorageUnitNames.isEmpty()) {
+            return;
+        }
+        Collection<Class<? extends ShardingSphereRule>> ignoreShardingSphereRules = getIgnoreShardingSphereRules(sqlStatement);
+        if (!ignoreShardingSphereRules.isEmpty()) {
+            checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreShardingSphereRules);
+        } else {
+            String firstResource = inUsedStorageUnitNames.iterator().next();
+            throw new StorageUnitInUsedException(firstResource, inUsedStorageUnits.get(firstResource));
         }
     }
     
     private Collection<Class<? extends ShardingSphereRule>> getIgnoreShardingSphereRules(final UnregisterStorageUnitStatement sqlStatement) {
-        Collection<Class<? extends ShardingSphereRule>> result = new LinkedList<>();
-        if (sqlStatement.isIgnoreSingleTables()) {
-            result.add(SingleRule.class);
-        }
-        if (sqlStatement.isIgnoreBroadcastTables()) {
-            result.add(BroadcastRule.class);
-        }
-        return result;
+        return ShardingSphereServiceLoader.getServiceInstances(UnregisterStorageUnitRuleUsageChecker.class).stream()
+                .filter(each -> each.isIgnored(sqlStatement)).map(UnregisterStorageUnitRuleUsageChecker::getRule).collect(Collectors.toList());
     }
     
     private void checkInUsedIgnoreTables(final Collection<String> inUsedResourceNames, final Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits,

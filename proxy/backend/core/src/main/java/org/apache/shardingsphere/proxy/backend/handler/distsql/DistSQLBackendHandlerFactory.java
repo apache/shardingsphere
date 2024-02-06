@@ -21,12 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -51,7 +51,7 @@ public final class DistSQLBackendHandlerFactory {
             return new DistSQLUpdateBackendHandler(sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
-            return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement, connectionSession);
+            return sqlStatement instanceof QueryableRALStatement ? new DistSQLQueryBackendHandler(sqlStatement, connectionSession) : new DistSQLUpdateBackendHandler(sqlStatement, connectionSession);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }

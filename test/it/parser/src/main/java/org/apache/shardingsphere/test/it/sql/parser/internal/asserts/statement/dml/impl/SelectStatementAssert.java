@@ -41,6 +41,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ord
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.window.WindowClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.SelectStatementTestCase;
 
@@ -87,7 +88,7 @@ public final class SelectStatementAssert {
             assertFalse(windowSegment.isPresent(), assertContext.getText("Actual window segment should not exist."));
         } else {
             assertTrue(windowSegment.isPresent(), assertContext.getText("Actual window segment should exist."));
-            SQLSegmentAssert.assertIs(assertContext, windowSegment.get(), expected.getWindowClause());
+            WindowClauseAssert.assertIs(assertContext, windowSegment.get(), expected.getWindowClause());
         }
     }
     

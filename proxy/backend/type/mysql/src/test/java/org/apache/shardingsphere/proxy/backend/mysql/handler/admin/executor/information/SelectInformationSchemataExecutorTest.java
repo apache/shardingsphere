@@ -118,7 +118,6 @@ class SelectInformationSchemataExecutorTest {
             ContextManager contextManager = mockContextManager(database);
             when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
-            when(ProxyContext.getInstance().getDatabase("auth_db")).thenReturn(database);
             SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
             executor.execute(connectionSession);
             assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
@@ -166,6 +165,9 @@ class SelectInformationSchemataExecutorTest {
                 Arrays.stream(databases).collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each)),
                 mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        for (ShardingSphereDatabase each : databases) {
+            when(result.getDatabase(each.getName())).thenReturn(each);
+        }
         return result;
     }
     
