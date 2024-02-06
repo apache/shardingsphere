@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
@@ -29,11 +28,12 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.fixture.FixtureUnregisterStorageUnitRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -53,6 +53,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
@@ -64,12 +65,6 @@ class UnregisterStorageUnitExecutorTest {
     
     @Mock
     private ResourceMetaData resourceMetaData;
-    
-    @Mock
-    private ShadowRule shadowRule;
-    
-    @Mock
-    private SingleRule singleRule;
     
     private ContextManager contextManager;
     
@@ -125,8 +120,9 @@ class UnregisterStorageUnitExecutorTest {
     
     @Test
     void assertExecuteUpdateWithStorageUnitNameInUse() {
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(shadowRule)));
-        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(DataSourceContainedRule.class));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(((DataSourceContainedRule) rule).getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
@@ -137,10 +133,7 @@ class UnregisterStorageUnitExecutorTest {
     
     @Test
     void assertExecuteUpdateWithStorageUnitNameInUseWithoutIgnoreSingleTables() {
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(singleRule)));
-        DataNode dataNode = mock(DataNode.class);
-        when(dataNode.getDataSourceName()).thenReturn("foo_ds");
-        when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new FixtureUnregisterStorageUnitRule())));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
@@ -151,10 +144,7 @@ class UnregisterStorageUnitExecutorTest {
     
     @Test
     void assertStorageUnitNameInUseIgnoreSingleTables() throws SQLException {
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(singleRule)));
-        DataNode dataNode = mock(DataNode.class);
-        when(dataNode.getDataSourceName()).thenReturn("foo_ds");
-        when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new FixtureUnregisterStorageUnitRule())));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getDataSource()).thenReturn(new MockedDataSource());
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
@@ -176,8 +166,9 @@ class UnregisterStorageUnitExecutorTest {
     
     @Test
     void assertExecuteUpdateWithStorageUnitNameInUseWithIfExists() {
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(shadowRule)));
-        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(DataSourceContainedRule.class));
+        when(((DataSourceContainedRule) rule).getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true, false);
         executor.setDatabase(database);
         assertThrows(DistSQLException.class, () -> executor.executeUpdate(unregisterStorageUnitStatement, contextManager));
