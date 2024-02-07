@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Refresh database meta data executor.
@@ -35,9 +34,7 @@ public final class RefreshDatabaseMetaDataExecutor implements DistSQLUpdateExecu
     
     @Override
     public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
-        Optional<String> toBeRefreshedDatabaseName = sqlStatement.getDatabaseName();
-        Map<String, ShardingSphereDatabase> databases = toBeRefreshedDatabaseName
-                .map(optional -> Collections.singletonMap(optional, contextManager.getDatabase(optional)))
+        Map<String, ShardingSphereDatabase> databases = sqlStatement.getDatabaseName().map(optional -> Collections.singletonMap(optional, contextManager.getDatabase(optional)))
                 .orElseGet(() -> contextManager.getMetaDataContexts().getMetaData().getDatabases());
         for (ShardingSphereDatabase each : databases.values()) {
             if (!SystemSchemaUtils.isSystemSchema(each)) {
