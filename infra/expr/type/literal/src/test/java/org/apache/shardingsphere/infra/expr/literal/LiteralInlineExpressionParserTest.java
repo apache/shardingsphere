@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -75,8 +76,8 @@ class LiteralInlineExpressionParserTest {
     }
     
     @Test
-    void assertEvaluateClosure() {
+    void assertEvaluateWithArgs() {
         assertThrows(UnsupportedOperationException.class, () -> TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateClosure().call().toString());
+                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateWithArgs(new LinkedHashMap<>()));
     }
 }
