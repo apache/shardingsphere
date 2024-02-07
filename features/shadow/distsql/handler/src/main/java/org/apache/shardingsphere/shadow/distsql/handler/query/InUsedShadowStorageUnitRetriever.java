@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -27,9 +27,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
- * Show shadow rules used storage unit row builder.
+ * In used shadow storage unit retriever.
  */
-public final class ShowShadowRulesUsedStorageUnitRowBuilder implements ShowRulesUsedStorageUnitRowBuilder<ShadowRule> {
+public final class InUsedShadowStorageUnitRetriever implements InUsedStorageUnitRetriever<ShadowRule> {
     
     @Override
     public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ShadowRule rule) {

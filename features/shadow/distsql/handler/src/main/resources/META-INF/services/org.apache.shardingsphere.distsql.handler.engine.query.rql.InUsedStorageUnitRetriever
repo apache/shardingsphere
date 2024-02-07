@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.distsql.handler.query.ShowShadowRulesUsedStorageUnitRowBuilder
+org.apache.shardingsphere.shadow.distsql.handler.query.InUsedShadowStorageUnitRetriever

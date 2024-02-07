@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -28,9 +28,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Show readwrite-splitting rules used storage unit row builder.
+ * In used readwrite-splitting storage unit retriever.
  */
-public final class ShowReadwriteSplittingRulesUsedStorageUnitRowBuilder implements ShowRulesUsedStorageUnitRowBuilder<ReadwriteSplittingRule> {
+public final class InUsedReadwriteSplittingStorageUnitRetriever implements InUsedStorageUnitRetriever<ReadwriteSplittingRule> {
     
     @Override
     public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ReadwriteSplittingRule rule) {

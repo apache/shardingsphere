@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.distsql.handler.query;
+package org.apache.shardingsphere.distsql.handler.engine.query.rql;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.rule.MaskRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
- * Show mask rules used storage unit row builder.
+ * In used storage unit retriever.
+ * 
+ * @param <T> type of rule
  */
-public final class ShowMaskRulesUsedStorageUnitRowBuilder implements ShowRulesUsedStorageUnitRowBuilder<MaskRule> {
+@SingletonSPI
+public interface InUsedStorageUnitRetriever<T extends ShardingSphereRule> extends TypedSPI {
+    
+    /**
+     * Get in used resources.
+     * 
+     * @param sqlStatement show rules used storage unit statement
+     * @param rule rule
+     * @return in used resources
+     */
+    Collection<String> getInUsedResources(ShowRulesUsedStorageUnitStatement sqlStatement, T rule);
     
     @Override
-    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final MaskRule rule) {
-        return rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
-    }
-    
-    @Override
-    public Class<MaskRule> getType() {
-        return MaskRule.class;
-    }
+    Class<T> getType();
 }

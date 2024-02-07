@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.rql;
+package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * Show rules used storage unit executor.
- * 
- * @param <T> type of rule
+ * In used encrypt storage unit retriever.
  */
-@SingletonSPI
-public interface ShowRulesUsedStorageUnitRowBuilder<T extends ShardingSphereRule> extends TypedSPI {
-    
-    /**
-     * Get in used resources.
-     * 
-     * @param sqlStatement show rules used storage unit statement
-     * @param rule rule
-     * @return in used resources
-     */
-    Collection<String> getInUsedResources(ShowRulesUsedStorageUnitStatement sqlStatement, T rule);
+public final class InUsedEncryptStorageUnitRetriever implements InUsedStorageUnitRetriever<EncryptRule> {
     
     @Override
-    Class<T> getType();
+    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final EncryptRule rule) {
+        return rule.getConfiguration().getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Class<EncryptRule> getType() {
+        return EncryptRule.class;
+    }
 }
