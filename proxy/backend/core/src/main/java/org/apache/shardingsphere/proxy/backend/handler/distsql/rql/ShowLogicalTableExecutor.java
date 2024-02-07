@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +55,7 @@ public final class ShowLogicalTableExecutor implements DistSQLQueryExecutor<Show
         }
         Collection<String> tables = database.getSchema(schemaName).getAllTableNames();
         if (sqlStatement.getLikePattern().isPresent()) {
-            String pattern = SQLUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
+            String pattern = RegexUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
             tables = tables.stream().filter(each -> Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(each).matches()).collect(Collectors.toList());
         }
         return tables.stream().map(LocalDataQueryResultRow::new).collect(Collectors.toList());

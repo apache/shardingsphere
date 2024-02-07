@@ -39,7 +39,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * SQL utility class.
@@ -56,14 +55,6 @@ public final class SQLUtils {
     private static final String COMMENT_SUFFIX = "*/";
     
     private static final String EXCLUDED_CHARACTERS = "[]'\"";
-    
-    private static final Pattern SINGLE_CHARACTER_PATTERN = Pattern.compile("([^\\\\])_|^_");
-    
-    private static final Pattern SINGLE_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\_");
-    
-    private static final Pattern ANY_CHARACTER_PATTERN = Pattern.compile("([^\\\\])%|^%");
-    
-    private static final Pattern ANY_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\%");
     
     /**
      * Get exactly number value and type.
@@ -108,7 +99,7 @@ public final class SQLUtils {
      *
      * <p>remove special char for SQL expression</p>
      *
-     * @param value              SQL expression
+     * @param value SQL expression
      * @param reservedCharacters characters to be reserved
      * @return exactly SQL expression
      */
@@ -269,24 +260,5 @@ public final class SQLUtils {
             result = result.substring(0, result.length() - 1);
         }
         return result.trim();
-    }
-    
-    /**
-     * Convert like pattern to regex.
-     *
-     * @param pattern like pattern
-     * @return regex
-     */
-    public static String convertLikePatternToRegex(final String pattern) {
-        String result = pattern;
-        if (pattern.contains("_")) {
-            result = SINGLE_CHARACTER_PATTERN.matcher(result).replaceAll("$1.");
-            result = SINGLE_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("_");
-        }
-        if (pattern.contains("%")) {
-            result = ANY_CHARACTER_PATTERN.matcher(result).replaceAll("$1.*");
-            result = ANY_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("%");
-        }
-        return result;
     }
 }
