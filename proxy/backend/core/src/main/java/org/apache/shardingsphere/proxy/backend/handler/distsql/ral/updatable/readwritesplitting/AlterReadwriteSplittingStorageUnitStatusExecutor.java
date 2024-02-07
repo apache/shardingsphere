@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
-import org.apache.shardingsphere.mode.event.storage.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -175,8 +174,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
     private void updateStatus(final ContextManager contextManager, final String databaseName, final Collection<String> groupNames, final String toBeDisableStorageUnit, final boolean isDisable) {
         groupNames.forEach(each -> {
             StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? DataSourceState.DISABLED : DataSourceState.ENABLED);
-            contextManager.getInstanceContext().getEventBusContext()
-                    .post(new DataSourceDisabledEvent(databaseName, each, toBeDisableStorageUnit, storageNodeDataSource));
+            new StorageNodeStatusService(contextManager.getMetaDataContexts().getPersistService().getRepository()).changeStorageNodeStatus(databaseName, each, toBeDisableStorageUnit, storageNodeDataSource);
         });
     }
     

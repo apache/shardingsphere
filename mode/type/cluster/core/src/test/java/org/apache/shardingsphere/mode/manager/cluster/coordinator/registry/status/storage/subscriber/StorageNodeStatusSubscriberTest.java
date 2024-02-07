@@ -17,17 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber;
 
-import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.storage.node.StorageNode;
-import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSourceSwapper;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.event.storage.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.storage.node.StorageNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -42,30 +36,6 @@ class StorageNodeStatusSubscriberTest {
     private ClusterPersistRepository repository;
     
     private final EventBusContext eventBusContext = new EventBusContext();
-    
-    @Test
-    void assertUpdateDataSourceDisabledState() {
-        String databaseName = "replica_query_db";
-        String groupName = "readwrite_ds";
-        String dataSourceName = "replica_ds_0";
-        StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED);
-        DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(databaseName, groupName, dataSourceName, storageNodeDataSource);
-        new StorageNodeStatusSubscriber(repository, eventBusContext).update(dataSourceDisabledEvent);
-        verify(repository).persist(StorageNode.getStorageNodeDataSourcePath(new QualifiedDatabase(databaseName, groupName, dataSourceName)),
-                YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED))));
-    }
-    
-    @Test
-    void assertUpdateDataSourceEnabledState() {
-        String databaseName = "replica_query_db";
-        String groupName = "readwrite_ds";
-        String dataSourceName = "replica_ds_0";
-        StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.ENABLED);
-        DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(databaseName, groupName, dataSourceName, storageNodeDataSource);
-        new StorageNodeStatusSubscriber(repository, eventBusContext).update(dataSourceDisabledEvent);
-        verify(repository).persist(StorageNode.getStorageNodeDataSourcePath(new QualifiedDatabase(databaseName, groupName, dataSourceName)),
-                YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(storageNodeDataSource)));
-    }
     
     @Test
     void assertDeleteStorageNodeDataSourceDataSourceState() {
