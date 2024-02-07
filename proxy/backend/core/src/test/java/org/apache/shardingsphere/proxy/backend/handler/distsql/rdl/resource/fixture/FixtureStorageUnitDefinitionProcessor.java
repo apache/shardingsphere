@@ -28,7 +28,7 @@ public final class FixtureStorageUnitDefinitionProcessor implements StorageUnitD
     }
     
     @Override
-    public Class<FixtureUnregisterStorageUnitRule> getRule() {
+    public Class<FixtureUnregisterStorageUnitRule> getRuleClass() {
         return FixtureUnregisterStorageUnitRule.class;
     }
 }

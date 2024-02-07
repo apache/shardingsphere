@@ -89,7 +89,7 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
         Collection<Class<ShardingSphereRule>> result = new LinkedList<>();
         for (StorageUnitDefinitionProcessor each : ShardingSphereServiceLoader.getServiceInstances(StorageUnitDefinitionProcessor.class)) {
             if (each.ignoreUsageCheckOnUnregister(sqlStatement)) {
-                result.add(each.getRule());
+                result.add(each.getRuleClass());
             }
         }
         return result;
