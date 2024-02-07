@@ -85,6 +85,9 @@ Example:
 This is an optional implementation. You need to actively declare the following dependencies in the `pom.xml` of your own project. 
 And please make sure your own projects are compiled with OpenJDK 21+ or its downstream distribution.
 
+Due to the limitations of https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too , 
+this module is only ready on Linux when used in environments other than GraalVM Native Image.
+
 ```xml
 <dependencies>
     <dependency>

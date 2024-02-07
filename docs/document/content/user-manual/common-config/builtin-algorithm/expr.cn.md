@@ -75,6 +75,9 @@ weight = 10
 
 此为可选实现，你需要在自有项目的 `pom.xml` 主动声明如下依赖。并且请确保自有项目通过 OpenJDK 21+ 或其下游发行版编译。
 
+由于 https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too 的限制，
+当此模块在非 GraalVM Native Image 的环境中被使用时，仅在 Linux 上就绪。
+
 ```xml
 <dependencies>
     <dependency>
