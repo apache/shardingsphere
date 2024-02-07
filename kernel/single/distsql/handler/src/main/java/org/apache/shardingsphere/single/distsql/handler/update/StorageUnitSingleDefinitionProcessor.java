@@ -24,7 +24,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 /**
  * Storage unit definition processor for single rule.
  */
-public final class StorageUnitSingleDefinitionProcessor implements StorageUnitDefinitionProcessor {
+public final class StorageUnitSingleDefinitionProcessor implements StorageUnitDefinitionProcessor<SingleRule> {
     
     @Override
     public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
