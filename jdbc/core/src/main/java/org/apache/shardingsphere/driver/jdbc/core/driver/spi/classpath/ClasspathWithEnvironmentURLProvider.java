@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,18 +27,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Classpath with environment variables URL provider.
  */
-public final class ClasspathWithEnvironmentURLProvider extends AbstractClasspathURLProvider {
+public final class ClasspathWithEnvironmentURLProvider implements AbstractClasspathURLProvider {
     
     private static final String PATH_TYPE = "classpath-environment:";
-    
-    private static final String KEY_VALUE_SEPARATOR = "::";
-    
-    private static final Pattern PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
     @Override
     public boolean accept(final String url) {
@@ -47,9 +43,9 @@ public final class ClasspathWithEnvironmentURLProvider extends AbstractClasspath
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = getConfigurationFile(url, urlPrefix, PATH_TYPE);
+        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, PATH_TYPE);
         try (
-                InputStream stream = getResourceAsStream(file);
+                InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(file);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;
@@ -64,21 +60,13 @@ public final class ClasspathWithEnvironmentURLProvider extends AbstractClasspath
     }
     
     private String replaceEnvironmentVariables(final String line) {
-        Matcher matcher = PATTERN.matcher(line);
+        Matcher matcher = ArgsUtils.getPattern().matcher(line);
         if (!matcher.find()) {
             return line;
         }
-        String[] envNameAndDefaultValue = matcher.group(1).split(KEY_VALUE_SEPARATOR, 2);
-        String envName = envNameAndDefaultValue[0];
-        String envValue = getEnvironmentVariables(envName);
-        if (Strings.isNullOrEmpty(envValue) && envNameAndDefaultValue[1].isEmpty()) {
-            String modifiedLineWithSpace = matcher.replaceAll("");
-            return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
-        }
-        if (Strings.isNullOrEmpty(envValue)) {
-            envValue = envNameAndDefaultValue[1];
-        }
-        return matcher.replaceAll(envValue);
+        String[] envNameAndDefaultValue = ArgsUtils.getArgNameAndDefaultValue(matcher);
+        String envValue = getEnvironmentVariables(envNameAndDefaultValue[0]);
+        return ArgsUtils.replaceArg(envValue, envNameAndDefaultValue[1], matcher);
     }
     
     /**

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath;
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,18 +29,13 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Absolute path with environment variables URL provider.
  */
-public class AbsolutePathWithEnvironmentURLProvider extends AbstractAbsolutePathURLProvider {
+public class AbsolutePathWithEnvironmentURLProvider implements AbstractAbsolutePathURLProvider {
     
     private static final String PATH_TYPE = "absolutepath-environment:";
-    
-    private static final String KEY_VALUE_SEPARATOR = "::";
-    
-    private static final Pattern PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
     @Override
     public boolean accept(final String url) {
@@ -49,7 +45,7 @@ public class AbsolutePathWithEnvironmentURLProvider extends AbstractAbsolutePath
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = getConfigurationFile(url, urlPrefix, PATH_TYPE);
+        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, PATH_TYPE);
         try (
                 InputStream stream = Files.newInputStream(new File(file).toPath());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
@@ -66,21 +62,13 @@ public class AbsolutePathWithEnvironmentURLProvider extends AbstractAbsolutePath
     }
     
     private String replaceEnvironmentVariables(final String line) {
-        Matcher matcher = PATTERN.matcher(line);
+        Matcher matcher = ArgsUtils.getPattern().matcher(line);
         if (!matcher.find()) {
             return line;
         }
-        String[] envNameAndDefaultValue = matcher.group(1).split(KEY_VALUE_SEPARATOR, 2);
-        String envName = envNameAndDefaultValue[0];
-        String envValue = getEnvironmentVariables(envName);
-        if (Strings.isNullOrEmpty(envValue) && envNameAndDefaultValue[1].isEmpty()) {
-            String modifiedLineWithSpace = matcher.replaceAll("");
-            return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
-        }
-        if (Strings.isNullOrEmpty(envValue)) {
-            envValue = envNameAndDefaultValue[1];
-        }
-        return matcher.replaceAll(envValue);
+        String[] envNameAndDefaultValue = ArgsUtils.getArgNameAndDefaultValue(matcher);
+        String envValue = getEnvironmentVariables(envNameAndDefaultValue[0]);
+        return ArgsUtils.replaceArg(envValue, envNameAndDefaultValue[1], matcher);
     }
     
     /**

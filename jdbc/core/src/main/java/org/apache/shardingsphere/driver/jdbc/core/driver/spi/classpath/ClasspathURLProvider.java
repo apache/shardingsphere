@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Classpath URL provider.
  */
-public final class ClasspathURLProvider extends AbstractClasspathURLProvider {
+public final class ClasspathURLProvider implements AbstractClasspathURLProvider {
     
     private static final String PATH_TYPE = "classpath:";
     
@@ -41,9 +42,9 @@ public final class ClasspathURLProvider extends AbstractClasspathURLProvider {
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = getConfigurationFile(url, urlPrefix, PATH_TYPE);
+        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, PATH_TYPE);
         try (
-                InputStream stream = getResourceAsStream(file);
+                InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(file);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;

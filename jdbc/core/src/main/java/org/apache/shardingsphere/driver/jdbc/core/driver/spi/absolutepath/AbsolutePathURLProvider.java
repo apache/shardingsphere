@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath;
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,7 +32,7 @@ import java.nio.file.Files;
 /**
  * Absolute path URL provider.
  */
-public final class AbsolutePathURLProvider extends AbstractAbsolutePathURLProvider {
+public final class AbsolutePathURLProvider implements AbstractAbsolutePathURLProvider {
     
     private static final String PATH_TYPE = "absolutepath:";
     
@@ -43,7 +44,7 @@ public final class AbsolutePathURLProvider extends AbstractAbsolutePathURLProvid
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = getConfigurationFile(url, urlPrefix, PATH_TYPE);
+        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, PATH_TYPE);
         try (
                 InputStream stream = Files.newInputStream(new File(file).toPath());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {

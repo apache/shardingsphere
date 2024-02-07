@@ -17,29 +17,10 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
-
-import java.io.InputStream;
 
 /**
  * Abstract classpath URL provider.
  */
-public abstract class AbstractClasspathURLProvider implements ShardingSphereURLProvider {
-    
-    String getConfigurationFile(final String url, final String urlPrefix, final String pathType) {
-        String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
-        String file = configuredFile.substring(pathType.length());
-        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere URL.");
-        return file;
-    }
-    
-    InputStream getResourceAsStream(final String resource) {
-        InputStream result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
-        result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
-        if (null != result) {
-            return result;
-        }
-        throw new IllegalArgumentException(String.format("Can not find configuration file `%s`.", resource));
-    }
+public interface AbstractClasspathURLProvider extends ShardingSphereURLProvider {
 }
