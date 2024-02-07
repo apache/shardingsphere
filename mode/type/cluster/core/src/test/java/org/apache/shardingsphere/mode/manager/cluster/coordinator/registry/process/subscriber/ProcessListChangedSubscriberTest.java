@@ -108,12 +108,12 @@ class ProcessListChangedSubscriberTest {
     
     @Test
     void assertReportLocalProcesses() {
-        String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         Process process = mock(Process.class);
         String processId = "foo_id";
         when(process.getId()).thenReturn(processId);
         when(process.getInterrupted()).thenReturn(new AtomicBoolean());
         ProcessRegistry.getInstance().add(process);
+        String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         subscriber.reportLocalProcesses(new ReportLocalProcessesEvent(instanceId, processId));
         ClusterPersistRepository repository = registryCenter.getRepository();
         verify(repository).persist("/execution_nodes/foo_id/" + instanceId,
