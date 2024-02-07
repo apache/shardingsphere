@@ -23,11 +23,11 @@ showReadQueryLoadBalanceAlgorithmImplementations ::=
 
 ### 返回值说明
 
-| 列    | 说明      |
-|------|---------|
-| name | 实现类名称   |
-| type | 类型      |
-| class_path | 实现类完整路径 |
+| 列            | 说明     |
+|--------------|--------|
+| type         | 类型     |
+| type_aliases | 类型别名   |
+| description  | 描述     |
 
 ### 示例
 
@@ -39,13 +39,13 @@ SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
 
 ```sql
 SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS;
-+-----------------------------------------+-------------+------------------------------------------------------------------------------------------------------------+
-| name                                    | type        | class_path                                                                                                 |
-+-----------------------------------------+-------------+------------------------------------------------------------------------------------------------------------+
-| RoundRobinReadQueryLoadBalanceAlgorithm | ROUND_ROBIN | org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReadQueryLoadBalanceAlgorithm |
-| RandomReadQueryLoadBalanceAlgorithm     | RANDOM      | org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm     |
-| WeightReadQueryLoadBalanceAlgorithm     | WEIGHT      | org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReadQueryLoadBalanceAlgorithm     |
-+-----------------------------------------+-------------+------------------------------------------------------------------------------------------------------------+
++-------------+--------------+-------------+
+| type        | type_aliases | description |
++-------------+--------------+-------------+
+| ROUND_ROBIN |              |             |
+| RANDOM      |              |             |
+| WEIGHT      |              |             |
++-------------+--------------+-------------+
 3 rows in set (0.03 sec)
 ```
 

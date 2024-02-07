@@ -23,11 +23,11 @@ showReadQueryLoadBalanceAlgorithmImplementations ::=
 
 ### Return Value Description
 
-| Columns     | Description                           |
-|-------------|---------------------------------------|
-| name        | class name of the implementation      |
-| type        | type of the implementation            |
-| class_path  | full class name of the implementation |
+| Columns      | Description  |
+|--------------|--------------|
+| type         | type         |
+| type_aliases | type aliases |
+| description  | description  |
 
 ### Example
 
@@ -39,13 +39,13 @@ SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
 
 ```sql
 SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS;
-+-----------------------------------------+-------------+------------------------------------------------------------------------------------------------------------+
-| name                                    | type        | class_path                                                                                                 |
-+-----------------------------------------+-------------+------------------------------------------------------------------------------------------------------------+
-| RoundRobinReadQueryLoadBalanceAlgorithm | ROUND_ROBIN | org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReadQueryLoadBalanceAlgorithm |
-| RandomReadQueryLoadBalanceAlgorithm     | RANDOM      | org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm     |
-| WeightReadQueryLoadBalanceAlgorithm     | WEIGHT      | org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReadQueryLoadBalanceAlgorithm     |
-+-----------------------------------------+-------------+------------------------------------------------------------------------------------------------------------+
++-------------+--------------+-------------+
+| type        | type_aliases | description |
++-------------+--------------+-------------+
+| ROUND_ROBIN |              |             |
+| RANDOM      |              |             |
+| WEIGHT      |              |             |
++-------------+--------------+-------------+
 3 rows in set (0.03 sec)
 ```
 
