@@ -54,8 +54,7 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
     }
     
     private void checkState(final ContextManager contextManager) {
-        ClusterState currentState = contextManager.getClusterStateContext().getCurrentState();
-        ShardingSpherePreconditions.checkState(ClusterState.OK == currentState, () -> new IllegalStateException("Cluster is already locked"));
+        ShardingSpherePreconditions.checkState(ClusterState.OK == contextManager.getClusterStateContext().getCurrentState(), () -> new IllegalStateException("Cluster is already locked"));
     }
     
     private void checkAlgorithm(final LockClusterStatement sqlStatement) {
