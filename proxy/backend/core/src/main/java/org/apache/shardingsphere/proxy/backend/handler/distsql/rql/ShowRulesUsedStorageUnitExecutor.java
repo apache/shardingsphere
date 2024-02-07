@@ -61,7 +61,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements DistSQLQueryExecu
         for (ShowRulesUsedStorageUnitRowBuilder each : ShardingSphereServiceLoader.getServiceInstances(ShowRulesUsedStorageUnitRowBuilder.class)) {
             Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(each.getType());
             if (rule.isPresent()) {
-                String type = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, each.getType().getName().substring(0, each.getType().getName().indexOf("Rule")));
+                String type = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, each.getType().getSimpleName().substring(0, each.getType().getSimpleName().indexOf("Rule")));
                 Collection<String> inUsedResources = each.getInUsedResources(sqlStatement, rule.get());
                 result.addAll(inUsedResources.stream().map(resource -> new LocalDataQueryResultRow(type, resource)).collect(Collectors.toList()));
             }
