@@ -49,6 +49,7 @@ public final class YamlProcessSwapper implements YamlConfigurationSwapper<YamlPr
     @Override
     public Process swapToObject(final YamlProcess yamlConfig) {
         return new Process(yamlConfig.getId(), yamlConfig.getStartMillis(), yamlConfig.getSql(), yamlConfig.getDatabaseName(), yamlConfig.getUsername(), yamlConfig.getHostname(),
-                yamlConfig.getTotalUnitCount(), new AtomicInteger(yamlConfig.getCompletedUnitCount()), yamlConfig.isIdle(), yamlConfig.isHeldByConnection(), new AtomicBoolean(yamlConfig.isInterrupted()));
+                yamlConfig.getTotalUnitCount(), new AtomicInteger(yamlConfig.getCompletedUnitCount()), yamlConfig.isIdle(), yamlConfig.isHeldByConnection(),
+                new AtomicBoolean(yamlConfig.isInterrupted()));
     }
 }
