@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 /**
  * Storage node status subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class StorageNodeStatusSubscriber {
     
     private final ClusterPersistRepository repository;
