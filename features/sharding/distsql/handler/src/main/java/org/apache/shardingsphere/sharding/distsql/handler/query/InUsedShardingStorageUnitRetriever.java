@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Show sharding rules used storage unit row builder.
+ * In used sharding storage unit retriever.
  */
-public final class ShowShardingRulesUsedStorageUnitRowBuilder implements ShowRulesUsedStorageUnitRowBuilder<ShardingRule> {
+public final class InUsedShardingStorageUnitRetriever implements InUsedStorageUnitRetriever<ShardingRule> {
     
     @Override
     public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ShardingRule rule) {

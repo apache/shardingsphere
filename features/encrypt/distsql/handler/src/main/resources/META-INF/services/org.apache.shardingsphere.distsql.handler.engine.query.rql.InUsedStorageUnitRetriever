@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ShowReadwriteSplittingRulesUsedStorageUnitRowBuilder
+org.apache.shardingsphere.encrypt.distsql.handler.query.InUsedEncryptStorageUnitRetriever

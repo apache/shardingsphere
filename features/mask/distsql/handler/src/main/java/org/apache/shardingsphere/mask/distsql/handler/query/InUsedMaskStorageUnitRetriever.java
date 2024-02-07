@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.handler.query;
+package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Show encrypt rules used storage unit row builder.
+ * In used mask storage unit retriever.
  */
-public final class ShowEncryptRulesUsedStorageUnitRowBuilder implements ShowRulesUsedStorageUnitRowBuilder<EncryptRule> {
+public final class InUsedMaskStorageUnitRetriever implements InUsedStorageUnitRetriever<MaskRule> {
     
     @Override
-    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final EncryptRule rule) {
-        return rule.getConfiguration().getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final MaskRule rule) {
+        return rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
     }
     
     @Override
-    public Class<EncryptRule> getType() {
-        return EncryptRule.class;
+    public Class<MaskRule> getType() {
+        return MaskRule.class;
     }
 }

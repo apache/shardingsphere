@@ -21,7 +21,7 @@ import com.google.common.base.CaseFormat;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -55,18 +54,19 @@ public final class ShowRulesUsedStorageUnitExecutor implements DistSQLQueryExecu
         return database.getResourceMetaData().getStorageUnits().containsKey(resourceName) ? getRows(sqlStatement) : Collections.emptyList();
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     private Collection<LocalDataQueryResultRow> getRows(final ShowRulesUsedStorageUnitStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (ShowRulesUsedStorageUnitRowBuilder each : ShardingSphereServiceLoader.getServiceInstances(ShowRulesUsedStorageUnitRowBuilder.class)) {
-            Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(each.getType());
-            if (rule.isPresent()) {
-                String type = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, each.getType().getSimpleName().substring(0, each.getType().getSimpleName().indexOf("Rule")));
-                Collection<String> inUsedResources = each.getInUsedResources(sqlStatement, rule.get());
-                result.addAll(inUsedResources.stream().map(resource -> new LocalDataQueryResultRow(type, resource)).collect(Collectors.toList()));
-            }
+        for (InUsedStorageUnitRetriever<ShardingSphereRule> each : ShardingSphereServiceLoader.getServiceInstances(InUsedStorageUnitRetriever.class)) {
+            database.getRuleMetaData().findSingleRule(each.getType()).ifPresent(optional -> result.addAll(getRows(sqlStatement, optional, each)));
         }
         return result;
+    }
+    
+    private Collection<LocalDataQueryResultRow> getRows(final ShowRulesUsedStorageUnitStatement sqlStatement,
+                                                        final ShardingSphereRule rule, final InUsedStorageUnitRetriever<ShardingSphereRule> retriever) {
+        String type = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, retriever.getType().getSimpleName().substring(0, retriever.getType().getSimpleName().indexOf("Rule")));
+        return retriever.getInUsedResources(sqlStatement, rule).stream().map(each -> new LocalDataQueryResultRow(type, each)).collect(Collectors.toList());
     }
     
     @Override

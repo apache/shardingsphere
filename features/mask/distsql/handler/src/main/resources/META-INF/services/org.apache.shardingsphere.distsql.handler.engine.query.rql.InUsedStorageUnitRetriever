@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mask.distsql.handler.query.ShowMaskRulesUsedStorageUnitRowBuilder
+org.apache.shardingsphere.mask.distsql.handler.query.InUsedMaskStorageUnitRetriever
