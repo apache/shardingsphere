@@ -23,9 +23,11 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
  * Storage unit definition processor.
+ * 
+ * @param <T> type of rule
  */
 @SingletonSPI
-public interface StorageUnitDefinitionProcessor {
+public interface StorageUnitDefinitionProcessor<T extends ShardingSphereRule> {
     
     /**
      * Whether to ignore rule usage checking when unregister storage unit.
@@ -40,5 +42,5 @@ public interface StorageUnitDefinitionProcessor {
      * 
      * @return rule
      */
-    Class<? extends ShardingSphereRule> getRule();
+    Class<T> getRule();
 }

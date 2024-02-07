@@ -19,9 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.fix
 
 import org.apache.shardingsphere.distsql.handler.type.update.rdl.resource.StorageUnitDefinitionProcessor;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-public final class FixtureStorageUnitDefinitionProcessor implements StorageUnitDefinitionProcessor {
+public final class FixtureStorageUnitDefinitionProcessor implements StorageUnitDefinitionProcessor<FixtureUnregisterStorageUnitRule> {
     
     @Override
     public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
@@ -29,7 +28,7 @@ public final class FixtureStorageUnitDefinitionProcessor implements StorageUnitD
     }
     
     @Override
-    public Class<? extends ShardingSphereRule> getRule() {
+    public Class<FixtureUnregisterStorageUnitRule> getRule() {
         return FixtureUnregisterStorageUnitRule.class;
     }
 }

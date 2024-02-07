@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Unregi
 /**
  * Storage unit definition processor for broadcast rule.
  */
-public final class StorageUnitBroadcastDefinitionProcessor implements StorageUnitDefinitionProcessor {
+public final class StorageUnitBroadcastDefinitionProcessor implements StorageUnitDefinitionProcessor<BroadcastRule> {
     
     @Override
     public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
