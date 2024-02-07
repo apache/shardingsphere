@@ -41,7 +41,7 @@ public final class ShowStorageUnitsStatement extends ResourceQueryStatement impl
     }
     
     /**
-     * get usage count.
+     * Get usage count.
      * 
      * @return usage count
      */
