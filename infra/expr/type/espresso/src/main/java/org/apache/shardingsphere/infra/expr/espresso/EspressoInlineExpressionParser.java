@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.expr.espresso;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import groovy.lang.GroovyShell;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.groovy.GroovyUtils;
 
@@ -93,7 +92,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     private ReflectValue evaluate(final String expression) {
         return context.getBindings("java")
-                .getMember(GroovyShell.class.getName())
+                .getMember("groovy.lang.GroovyShell")
                 .newInstance()
                 .invokeMember("parse", expression)
                 .invokeMember("run");
@@ -103,7 +102,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
      * Flatten.
      *
      * @param segments Actually corresponds to some class instance of {@link java.lang.Object}.
-     *                 This Object may or may not correspond to a class instance of {@link groovy.lang.GString}.
+     *                 This Object may or may not correspond to a class instance of `groovy.lang.GString`.
      * @return List of String
      */
     private List<String> flatten(final List<ReflectValue> segments) {
@@ -112,7 +111,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
             if (!each.isString()) {
                 result.addAll(assemblyCartesianSegments(each));
             } else {
-                result.add(each.toStringForValue());
+                result.add(each.as(String.class));
             }
         }
         return result;
@@ -121,7 +120,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     /**
      * Assembly cartesian segments.
      *
-     * @param segment Actually corresponds to a class instance of {@link groovy.lang.GString}.
+     * @param segment Actually corresponds to a class instance of `groovy.lang.GString`.
      * @return List of String
      */
     private List<String> assemblyCartesianSegments(final ReflectValue segment) {
@@ -136,7 +135,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     /**
      * Get cartesian values.
      *
-     * @param segment Actually corresponds to a class instance of {@link groovy.lang.GString}.
+     * @param segment Actually corresponds to a class instance of `groovy.lang.GString`.
      * @return A Set consisting of a List of Strings
      */
     @SuppressWarnings("unchecked")
@@ -160,7 +159,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
      * Assembly segment.
      *
      * @param cartesianValue List of String
-     * @param segment        Actually corresponds to a class instance of {@link groovy.lang.GString}.
+     * @param segment        Actually corresponds to a class instance of `groovy.lang.GString`.
      * @return {@link java.lang.String}
      */
     private String assemblySegment(final List<String> cartesianValue, final ReflectValue segment) {

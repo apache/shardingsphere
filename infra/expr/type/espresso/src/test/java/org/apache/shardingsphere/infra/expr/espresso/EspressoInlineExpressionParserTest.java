@@ -25,6 +25,7 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -133,17 +134,10 @@ class EspressoInlineExpressionParserTest {
                 new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_${[\"new${1+2}\"]}"));
     }
     
-    /**
-     * This method needs to avoid returning a `Closure` class instance, and instead return the result of `Closure#call`.
-     * Because `Value#as` does not allow this type to be returned from the guest JVM.
-     *
-     * @see groovy.lang.Closure
-     * @see org.graalvm.polyglot.Value
-     */
     @Test
-    void assertEvaluateClosure() {
+    void assertEvaluateWithArgs() {
         assertThrows(UnsupportedOperationException.class, () -> TypedSPILoader.getService(
                 InlineExpressionParser.class, "ESPRESSO",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateClosure().call().toString());
+                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateWithArgs(new LinkedHashMap<>()));
     }
 }

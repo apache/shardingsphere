@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledInNativeImage;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -31,7 +31,6 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@DisabledInNativeImage
 class GroovyInlineExpressionParserTest {
     
     @Test
@@ -132,8 +131,8 @@ class GroovyInlineExpressionParserTest {
     }
     
     @Test
-    void assertEvaluateClosure() {
+    void assertEvaluateWithArgs() {
         assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateClosure().call().toString(), is("3"));
+                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateWithArgs(new LinkedHashMap<>()), is("3"));
     }
 }
