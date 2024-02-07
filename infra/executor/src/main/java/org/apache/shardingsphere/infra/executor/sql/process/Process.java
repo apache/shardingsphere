@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -64,8 +63,7 @@ public final class Process {
     
     private final boolean heldByConnection;
     
-    @Setter
-    private AtomicBoolean interrupted = new AtomicBoolean(false);
+    private final AtomicBoolean interrupted;
     
     public Process(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean heldByConnection) {
         this("", executionGroupContext, true, heldByConnection);
@@ -88,6 +86,7 @@ public final class Process {
         completedUnitCount = new AtomicInteger(0);
         this.idle = idle;
         this.heldByConnection = heldByConnection;
+        interrupted = new AtomicBoolean(false);
     }
     
     private int getTotalUnitCount(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
