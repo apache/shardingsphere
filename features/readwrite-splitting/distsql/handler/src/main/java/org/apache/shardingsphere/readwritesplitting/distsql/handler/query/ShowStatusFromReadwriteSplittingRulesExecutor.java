@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.readwritesplitting;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import com.google.common.base.Strings;
 import lombok.Setter;
@@ -29,12 +29,10 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExpor
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 
 import java.util.Arrays;
@@ -52,7 +50,6 @@ import java.util.stream.Collectors;
 /**
  * Show status from readwrite-splitting rules executor.
  */
-// TODO move to readwritesplitting module
 @Setter
 public final class ShowStatusFromReadwriteSplittingRulesExecutor implements DistSQLQueryExecutor<ShowStatusFromReadwriteSplittingRulesStatement>, DistSQLExecutorDatabaseAware {
     
@@ -66,10 +63,11 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Dist
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement, final ContextManager contextManager) {
         Collection<String> allReadResources = getAllReadResources(sqlStatement.getGroupName());
-        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(database.getName(), contextManager.getMetaDataContexts().getPersistService());
+        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(database.getName(), contextManager);
         return buildRows(allReadResources, persistentReadResources);
     }
     
+    @SuppressWarnings("unchecked")
     private Collection<String> getAllReadResources(final String groupName) {
         Collection<String> exportKeys = Arrays.asList(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE);
         Map<String, Object> exportMap = database.getRuleMetaData().findRules(ExportableRule.class).stream()
@@ -84,11 +82,11 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Dist
                 .map(this::deconstructString).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
-    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String databaseName, final MetaDataBasedPersistService persistService) {
-        if (null == persistService || null == persistService.getRepository() || !(persistService.getRepository() instanceof ClusterPersistRepository)) {
+    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String databaseName, final ContextManager contextManager) {
+        if (!contextManager.getInstanceContext().isCluster()) {
             return Collections.emptyMap();
         }
-        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService(persistService.getRepository()).loadStorageNodes();
+        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService(contextManager.getMetaDataContexts().getPersistService().getRepository()).loadStorageNodes();
         Map<String, StorageNodeDataSource> result = new HashMap<>();
         storageNodes.entrySet().stream().filter(entry -> StorageNodeRole.MEMBER == entry.getValue().getRole()).forEach(entry -> {
             QualifiedDatabase qualifiedDatabase = new QualifiedDatabase(entry.getKey());

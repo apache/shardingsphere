@@ -50,7 +50,7 @@ public final class DistSQLExecutorRequiredChecker {
     }
     
     private void checkClusterMode(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`."));
+        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`"));
     }
     
     private void checkCurrentRule(final SQLStatement sqlStatement, final ContextManager contextManager, final ShardingSphereDatabase database,

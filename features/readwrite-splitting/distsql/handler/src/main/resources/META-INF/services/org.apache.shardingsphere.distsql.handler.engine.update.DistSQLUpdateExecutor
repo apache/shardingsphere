@@ -15,6 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ShowReadwriteSplittingRuleExecutor
-org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ShowStatusFromReadwriteSplittingRulesExecutor
-org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor
+org.apache.shardingsphere.readwritesplitting.distsql.handler.update.AlterReadwriteSplittingStorageUnitStatusExecutor
