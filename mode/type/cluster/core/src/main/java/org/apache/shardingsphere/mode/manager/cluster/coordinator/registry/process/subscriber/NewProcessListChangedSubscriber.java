@@ -96,6 +96,7 @@ public final class NewProcessListChangedSubscriber {
         }
         Process process = ProcessRegistry.getInstance().get(event.getProcessId());
         if (null != process) {
+            process.getInterrupted().set(true);
             for (Statement each : process.getProcessStatements()) {
                 each.cancel();
             }

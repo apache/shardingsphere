@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -48,6 +47,6 @@ public final class YamlProcessSwapper implements YamlConfigurationSwapper<YamlPr
     @Override
     public Process swapToObject(final YamlProcess yamlConfig) {
         return new Process(yamlConfig.getId(), yamlConfig.getStartMillis(), yamlConfig.getSql(), yamlConfig.getDatabaseName(), yamlConfig.getUsername(), yamlConfig.getHostname(),
-                yamlConfig.getTotalUnitCount(), Collections.emptyList(), new AtomicInteger(yamlConfig.getCompletedUnitCount()), yamlConfig.isIdle(), yamlConfig.isHeldByConnection());
+                yamlConfig.getTotalUnitCount(), new AtomicInteger(yamlConfig.getCompletedUnitCount()), yamlConfig.isIdle(), yamlConfig.isHeldByConnection());
     }
 }

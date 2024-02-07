@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -27,7 +29,10 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -36,6 +41,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 @Getter
 public final class Process {
+    
+    private final Map<String, Statement> processStatements = new ConcurrentHashMap<>();
     
     private final String id;
     
@@ -51,13 +58,14 @@ public final class Process {
     
     private final int totalUnitCount;
     
-    private final Collection<Statement> processStatements;
-    
     private final AtomicInteger completedUnitCount;
     
     private final boolean idle;
     
     private final boolean heldByConnection;
+    
+    @Setter
+    private AtomicBoolean interrupted = new AtomicBoolean(false);
     
     public Process(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean heldByConnection) {
         this("", executionGroupContext, true, heldByConnection);
@@ -76,7 +84,7 @@ public final class Process {
         username = null == grantee ? null : grantee.getUsername();
         hostname = null == grantee ? null : grantee.getHostname();
         totalUnitCount = getTotalUnitCount(executionGroupContext);
-        processStatements = getProcessStatements(executionGroupContext);
+        processStatements.putAll(createProcessStatements(executionGroupContext));
         completedUnitCount = new AtomicInteger(0);
         this.idle = idle;
         this.heldByConnection = heldByConnection;
@@ -90,12 +98,13 @@ public final class Process {
         return result;
     }
     
-    private Collection<Statement> getProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        Collection<Statement> result = new LinkedList<>();
+    private Map<String, Statement> createProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        Map<String, Statement> result = new LinkedHashMap<>();
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 if (executionUnit instanceof JDBCExecutionUnit) {
-                    result.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
+                    JDBCExecutionUnit jdbcExecutionUnit = (JDBCExecutionUnit) executionUnit;
+                    result.put(jdbcExecutionUnit.getExecutionUnit().getSqlUnit().getSql(), jdbcExecutionUnit.getStorageResource());
                 }
             }
         }
@@ -116,5 +125,36 @@ public final class Process {
      */
     public int getCompletedUnitCount() {
         return completedUnitCount.get();
+    }
+    
+    /**
+     * Put process statement.
+     *
+     * @param sql sql
+     * @param statement statement
+     */
+    public void putProcessStatement(final String sql, final Statement statement) {
+        processStatements.put(sql, statement);
+    }
+    
+    /**
+     * Remove process statement.
+     *
+     * @param sql sql
+     */
+    public void removeProcessStatement(final String sql) {
+        if (Strings.isNullOrEmpty(sql)) {
+            return;
+        }
+        processStatements.remove(sql);
+    }
+    
+    /**
+     * Get process statements.
+     * 
+     * @return process statements
+     */
+    public Collection<Statement> getProcessStatements() {
+        return processStatements.values();
     }
 }
