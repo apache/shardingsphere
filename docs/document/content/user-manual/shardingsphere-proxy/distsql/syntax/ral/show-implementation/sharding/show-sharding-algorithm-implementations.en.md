@@ -23,11 +23,11 @@ showShardingAlgorithmImplementations ::=
 
 ### Return Value Description
 
-| Columns     | Description                           |
-|-------------|---------------------------------------|
-| name        | class name of the implementation      |
-| type        | type of the implementation            |
-| class_path  | full class name of the implementation |
+| Columns      | Description  |
+|--------------|--------------|
+| type         | type         |
+| type_aliases | type aliases |
+| description  | description  |
 
 ### Example
 
@@ -39,20 +39,20 @@ SHOW SHARDING ALGORITHM IMPLEMENTATIONS
 
 ```sql
 SHOW SHARDING ALGORITHM IMPLEMENTATIONS;
-+-------------------------------------+----------------+-------------------------------------------------------------------------------------------------+
-| name                                | type           | class_path                                                                                      |
-+-------------------------------------+----------------+-------------------------------------------------------------------------------------------------+
-| ModShardingAlgorithm                | MOD            | org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm                  |
-| HashModShardingAlgorithm            | HASH_MOD       | org.apache.shardingsphere.sharding.algorithm.sharding.mod.HashModShardingAlgorithm              |
-| VolumeBasedRangeShardingAlgorithm   | VOLUME_RANGE   | org.apache.shardingsphere.sharding.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm   |
-| BoundaryBasedRangeShardingAlgorithm | BOUNDARY_RANGE | org.apache.shardingsphere.sharding.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm |
-| AutoIntervalShardingAlgorithm       | AUTO_INTERVAL  | org.apache.shardingsphere.sharding.algorithm.sharding.datetime.AutoIntervalShardingAlgorithm    |
-| IntervalShardingAlgorithm           | INTERVAL       | org.apache.shardingsphere.sharding.algorithm.sharding.datetime.IntervalShardingAlgorithm        |
-| ClassBasedShardingAlgorithm         | CLASS_BASED    | org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithm    |
-| InlineShardingAlgorithm             | INLINE         | org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm            |
-| ComplexInlineShardingAlgorithm      | COMPLEX_INLINE | org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm     |
-| HintInlineShardingAlgorithm         | HINT_INLINE    | org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm          |
-+-------------------------------------+----------------+-------------------------------------------------------------------------------------------------+
++----------------+--------------+-------------+
+| type           | type_aliases | description |
++----------------+--------------+-------------+
+| MOD            |              |             |
+| HASH_MOD       |              |             |
+| VOLUME_RANGE   |              |             |
+| BOUNDARY_RANGE |              |             |
+| AUTO_INTERVAL  |              |             |
+| INTERVAL       |              |             |
+| CLASS_BASED    |              |             |
+| INLINE         |              |             |
+| COMPLEX_INLINE |              |             |
+| HINT_INLINE    |              |             |
++----------------+--------------+-------------+
 10 rows in set (0.27 sec)
 ```
 

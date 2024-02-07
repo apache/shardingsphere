@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.rql;
+package org.apache.shardingsphere.distsql.handler.engine.query.rql.spi;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import java.util.Collection;
 
 /**
- * Show SPI implementations builder.
+ * Show SPI implementations result row builder.
  */
 @SingletonSPI
-public interface ShowSPIImplementationsBuilder extends TypedSPI {
+public interface ShowSPIImplementationsResultRowBuilder extends TypedSPI {
     
     /**
      * Generate rows.
