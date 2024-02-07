@@ -15,38 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
+package org.apache.shardingsphere.distsql.handler.engine.query.rql;
 
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -54,46 +47,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ShowStorageUnitExecutorTest {
     
-    @Mock
+    private final ShowStorageUnitExecutor executor = new ShowStorageUnitExecutor();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @BeforeEach
     void setUp() {
-        ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSources());
-        RuleMetaData metaData = new RuleMetaData(Collections.singleton(createShardingRule()));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getRuleMetaData()).thenReturn(metaData);
-    }
-    
-    private ShardingRule createShardingRule() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("order", "ds_${0..1}.order_${0..1}");
-        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "increment"));
-        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        shardingRuleConfig.getKeyGenerators().put("increment", mock(AlgorithmConfiguration.class));
-        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(InstanceContext.class));
-    }
-    
-    private ShardingTableRuleConfiguration createTableRuleConfiguration(final String logicTableName, final String actualDataNodes) {
-        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(logicTableName, actualDataNodes);
-        result.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "database_inline"));
-        result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "table_inline"));
-        return result;
-    }
-    
-    private Collection<String> createDataSourceNames() {
-        return Arrays.asList("ds_0", "ds_1", "ds_2");
-    }
-    
-    private Map<String, DataSource> createDataSources() {
-        Map<String, DataSource> result = new HashMap<>();
-        for (String each : createDataSourceNames()) {
-            result.put(each, createDataSource(each));
-        }
-        return result;
+        when(database.getResourceMetaData()).thenReturn(new ResourceMetaData(Stream.of("ds_0", "ds_1", "ds_2").collect(Collectors.toMap(each -> each, this::createDataSource))));
+        executor.setDatabase(database);
     }
     
     private MockedDataSource createDataSource(final String dataSourceName) {
@@ -107,17 +71,14 @@ class ShowStorageUnitExecutorTest {
     }
     
     @Test
-    void assertAllStorageUnit() {
-        ShowStorageUnitExecutor executor = new ShowStorageUnitExecutor();
-        executor.setDatabase(database);
-        ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null);
+    void assertGetRowsWithAllStorageUnits() {
         Map<Integer, String> nameMap = new HashMap<>(3, 1F);
         nameMap.put(0, "ds_2");
         nameMap.put(1, "ds_1");
         nameMap.put(2, "ds_0");
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(showStorageUnitsStatement, mock(ContextManager.class));
-        Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null), mock(ContextManager.class));
         assertThat(actual.size(), is(3));
+        Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         int index = 0;
         while (rowData.hasNext()) {
             LocalDataQueryResultRow data = rowData.next();
@@ -138,11 +99,10 @@ class ShowStorageUnitExecutorTest {
     }
     
     @Test
-    void assertUnusedStorageUnit() {
-        ShowStorageUnitExecutor executor = new ShowStorageUnitExecutor();
-        executor.setDatabase(database);
-        ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), 0);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(showStorageUnitsStatement, mock(ContextManager.class));
+    void assertGetRowsWithUnusedStorageUnits() {
+        RuleMetaData metaData = mockUnusedStorageUnitsRuleMetaData();
+        when(database.getRuleMetaData()).thenReturn(metaData);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(DatabaseSegment.class), 0), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         LocalDataQueryResultRow data = rowData.next();
@@ -158,5 +118,14 @@ class ShowStorageUnitExecutorTest {
         assertThat(data.getCell(10), is("10"));
         assertThat(data.getCell(11), is(""));
         assertThat(data.getCell(12), is("{\"openedConnections\":[],\"closed\":false}"));
+    }
+    
+    private RuleMetaData mockUnusedStorageUnitsRuleMetaData() {
+        RuleMetaData result = mock(RuleMetaData.class);
+        Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnitNameAndRulesMap = new HashMap<>(2, 1F);
+        inUsedStorageUnitNameAndRulesMap.put("ds_0", Collections.singleton(ShardingSphereRule.class));
+        inUsedStorageUnitNameAndRulesMap.put("ds_1", Collections.singleton(ShardingSphereRule.class));
+        when(result.getInUsedStorageUnitNameAndRulesMap()).thenReturn(inUsedStorageUnitNameAndRulesMap);
+        return result;
     }
 }
