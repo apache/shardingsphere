@@ -33,7 +33,7 @@ import java.util.regex.Matcher;
 /**
  * Absolute path with environment variables URL provider.
  */
-public class AbsolutePathWithEnvironmentURLProvider implements AbstractAbsolutePathURLProvider {
+public final class AbsolutePathWithEnvironmentURLProvider implements AbstractAbsolutePathURLProvider {
     
     private static final String PATH_TYPE = "absolutepath-environment:";
     
