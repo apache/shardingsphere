@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 public final class ShowEncryptRulesUsedStorageUnitRowBuilder implements ShowRulesUsedStorageUnitRowBuilder<EncryptRule> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getInUsedData(final ShowRulesUsedStorageUnitStatement sqlStatement, final EncryptRule rule) {
-        return rule.getConfiguration().getTables().stream().map(each -> new LocalDataQueryResultRow("encrypt", each.getName())).collect(Collectors.toList());
+    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final EncryptRule rule) {
+        return rule.getConfiguration().getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
     }
     
     @Override
