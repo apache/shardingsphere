@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service;
+package org.apache.shardingsphere.mode.storage.service;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml.YamlStorageNodeDataSource;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml.YamlStorageNodeDataSourceSwapper;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.storage.node.StorageNode;
+import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSource;
+import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSourceSwapper;
 
 import java.util.Collection;
 import java.util.HashMap;

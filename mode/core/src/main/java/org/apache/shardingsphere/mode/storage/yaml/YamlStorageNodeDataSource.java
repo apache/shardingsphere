@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml;
+package org.apache.shardingsphere.mode.storage.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
