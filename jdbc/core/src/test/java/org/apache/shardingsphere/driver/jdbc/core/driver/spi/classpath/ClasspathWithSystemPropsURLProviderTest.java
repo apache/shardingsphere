@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
 
 import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLManager;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.nullValue;
 
 class ClasspathWithSystemPropsURLProviderTest {
     
@@ -35,8 +34,8 @@ class ClasspathWithSystemPropsURLProviderTest {
     
     @BeforeAll
     static void beforeAll() {
-        assertThat(System.getProperty(FIXTURE_JDBC_URL_KEY), Matchers.is(nullValue()));
-        assertThat(System.getProperty(FIXTURE_USERNAME_KEY), Matchers.is(nullValue()));
+        assertThat(System.getProperty(FIXTURE_JDBC_URL_KEY), is(nullValue()));
+        assertThat(System.getProperty(FIXTURE_USERNAME_KEY), is(nullValue()));
         System.setProperty(FIXTURE_JDBC_URL_KEY, "jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         System.setProperty(FIXTURE_USERNAME_KEY, "sa");
     }

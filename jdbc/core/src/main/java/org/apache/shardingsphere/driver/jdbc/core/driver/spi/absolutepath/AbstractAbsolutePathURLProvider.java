@@ -17,18 +17,10 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
 
 /**
  * Abstract absolute path URL provider.
  */
-public abstract class AbstractAbsolutePathURLProvider implements ShardingSphereURLProvider {
-    
-    String getConfigurationFile(final String url, final String urlPrefix, final String pathType) {
-        String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
-        String file = configuredFile.substring(pathType.length());
-        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere URL.");
-        return file;
-    }
+public interface AbstractAbsolutePathURLProvider extends ShardingSphereURLProvider {
 }
