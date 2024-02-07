@@ -35,7 +35,7 @@ public final class ShowReadwriteSplittingRulesUsedStorageUnitRowBuilder implemen
     
     @Override
     public Collection<LocalDataQueryResultRow> getInUsedData(final ShowRulesUsedStorageUnitStatement sqlStatement, final ReadwriteSplittingRule rule) {
-        if (sqlStatement.getStorageUnitName().isPresent()) {
+        if (!sqlStatement.getStorageUnitName().isPresent()) {
             return Collections.emptyList();
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();

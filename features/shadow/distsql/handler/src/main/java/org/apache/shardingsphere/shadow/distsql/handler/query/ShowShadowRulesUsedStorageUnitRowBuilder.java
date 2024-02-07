@@ -33,7 +33,7 @@ public final class ShowShadowRulesUsedStorageUnitRowBuilder implements ShowRules
     
     @Override
     public Collection<LocalDataQueryResultRow> getInUsedData(final ShowRulesUsedStorageUnitStatement sqlStatement, final ShadowRule rule) {
-        if (sqlStatement.getStorageUnitName().isPresent()) {
+        if (!sqlStatement.getStorageUnitName().isPresent()) {
             return Collections.emptyList();
         }
         return rule.getConfiguration().getDataSources().stream()
