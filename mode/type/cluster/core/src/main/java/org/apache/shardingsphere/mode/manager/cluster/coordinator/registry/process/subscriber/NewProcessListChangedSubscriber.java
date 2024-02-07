@@ -40,7 +40,6 @@ import java.util.Collection;
  * TODO replace the old ProcessListChangedSubscriber after meta data refactor completed
  * New process list changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class NewProcessListChangedSubscriber {
     
     private final NewRegistryCenter registryCenter;

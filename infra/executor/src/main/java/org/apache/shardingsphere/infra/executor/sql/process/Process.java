@@ -86,7 +86,7 @@ public final class Process {
         completedUnitCount = new AtomicInteger(0);
         this.idle = idle;
         this.heldByConnection = heldByConnection;
-        interrupted = new AtomicBoolean(false);
+        interrupted = new AtomicBoolean();
     }
     
     private int getTotalUnitCount(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
