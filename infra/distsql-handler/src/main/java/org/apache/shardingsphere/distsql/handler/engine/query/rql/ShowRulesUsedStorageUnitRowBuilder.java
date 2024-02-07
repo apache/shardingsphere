@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.handler.engine.query.rql;
 
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
@@ -34,13 +33,13 @@ import java.util.Collection;
 public interface ShowRulesUsedStorageUnitRowBuilder<T extends ShardingSphereRule> extends TypedSPI {
     
     /**
-     * Get in used data.
+     * Get in used resources.
      * 
      * @param sqlStatement show rules used storage unit statement
      * @param rule rule
-     * @return in used data
+     * @return in used resources
      */
-    Collection<LocalDataQueryResultRow> getInUsedData(ShowRulesUsedStorageUnitStatement sqlStatement, T rule);
+    Collection<String> getInUsedResources(ShowRulesUsedStorageUnitStatement sqlStatement, T rule);
     
     @Override
     Class<T> getType();

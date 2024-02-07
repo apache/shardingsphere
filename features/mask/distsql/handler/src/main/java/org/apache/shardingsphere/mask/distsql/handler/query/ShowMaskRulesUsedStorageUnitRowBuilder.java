@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Collection;
@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 public final class ShowMaskRulesUsedStorageUnitRowBuilder implements ShowRulesUsedStorageUnitRowBuilder<MaskRule> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getInUsedData(final ShowRulesUsedStorageUnitStatement sqlStatement, final MaskRule rule) {
-        return rule.getConfiguration().getTables().stream().map(each -> new LocalDataQueryResultRow("mask", each.getName())).collect(Collectors.toList());
+    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final MaskRule rule) {
+        return rule.getConfiguration().getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
     }
     
     @Override

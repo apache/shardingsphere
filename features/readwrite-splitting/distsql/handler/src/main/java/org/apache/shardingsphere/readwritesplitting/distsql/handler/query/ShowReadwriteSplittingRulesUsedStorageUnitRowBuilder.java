@@ -20,7 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
@@ -34,17 +33,17 @@ import java.util.LinkedList;
 public final class ShowReadwriteSplittingRulesUsedStorageUnitRowBuilder implements ShowRulesUsedStorageUnitRowBuilder<ReadwriteSplittingRule> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getInUsedData(final ShowRulesUsedStorageUnitStatement sqlStatement, final ReadwriteSplittingRule rule) {
+    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ReadwriteSplittingRule rule) {
         if (!sqlStatement.getStorageUnitName().isPresent()) {
             return Collections.emptyList();
         }
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        Collection<String> result = new LinkedList<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : rule.getConfiguration().getDataSources()) {
             if (each.getWriteDataSourceName().equalsIgnoreCase(sqlStatement.getStorageUnitName().get())) {
-                result.add(new LocalDataQueryResultRow("readwrite_splitting", each.getName()));
+                result.add(each.getName());
             }
             if (new CaseInsensitiveSet<>(each.getReadDataSourceNames()).contains(sqlStatement.getStorageUnitName().get())) {
-                result.add(new LocalDataQueryResultRow("readwrite_splitting", each.getName()));
+                result.add(each.getName());
             }
         }
         return result;

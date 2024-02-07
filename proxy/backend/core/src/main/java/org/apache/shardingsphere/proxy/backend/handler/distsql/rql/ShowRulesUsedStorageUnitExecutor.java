@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
+import com.google.common.base.CaseFormat;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Show rules used storage unit executor.
@@ -58,7 +60,11 @@ public final class ShowRulesUsedStorageUnitExecutor implements DistSQLQueryExecu
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (ShowRulesUsedStorageUnitRowBuilder each : ShardingSphereServiceLoader.getServiceInstances(ShowRulesUsedStorageUnitRowBuilder.class)) {
             Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(each.getType());
-            rule.ifPresent(optional -> result.addAll(each.getInUsedData(sqlStatement, optional)));
+            if (rule.isPresent()) {
+                String type = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, each.getType().getSimpleName().substring(0, each.getType().getSimpleName().indexOf("Rule")));
+                Collection<String> inUsedResources = each.getInUsedResources(sqlStatement, rule.get());
+                result.addAll(inUsedResources.stream().map(resource -> new LocalDataQueryResultRow(type, resource)).collect(Collectors.toList()));
+            }
         }
         return result;
     }

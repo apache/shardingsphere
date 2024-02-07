@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowRulesUsedStorageUnitRowBuilder;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -33,13 +32,13 @@ import java.util.LinkedList;
 public final class ShowShardingRulesUsedStorageUnitRowBuilder implements ShowRulesUsedStorageUnitRowBuilder<ShardingRule> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getInUsedData(final ShowRulesUsedStorageUnitStatement sqlStatement, final ShardingRule rule) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ShardingRule rule) {
+        Collection<String> result = new LinkedList<>();
         for (ShardingAutoTableRuleConfiguration each : rule.getConfiguration().getAutoTables()) {
-            result.add(new LocalDataQueryResultRow("sharding", each.getLogicTable()));
+            result.add(each.getLogicTable());
         }
         for (ShardingTableRuleConfiguration each : rule.getConfiguration().getTables()) {
-            result.add(new LocalDataQueryResultRow("sharding", each.getLogicTable()));
+            result.add(each.getLogicTable());
         }
         return result;
     }
