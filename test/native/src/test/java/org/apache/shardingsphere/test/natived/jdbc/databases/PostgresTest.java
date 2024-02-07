@@ -26,11 +26,11 @@ import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-@EnabledInNativeImage
 class PostgresTest {
     
     private TestShardingService testShardingService;
     
+    @EnabledInNativeImage
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
