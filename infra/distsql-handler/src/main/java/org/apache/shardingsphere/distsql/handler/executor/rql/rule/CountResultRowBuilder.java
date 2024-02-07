@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.rql.count;
+package org.apache.shardingsphere.distsql.handler.executor.rql.rule;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.distsql.handler.engine.query.rql.count.RuleCountExecutor
+org.apache.shardingsphere.distsql.handler.executor.rql.rule.RuleCountExecutor
 org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowSPIImplementationsExecutor
