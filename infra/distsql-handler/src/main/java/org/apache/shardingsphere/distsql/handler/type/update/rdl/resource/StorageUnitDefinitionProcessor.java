@@ -38,9 +38,9 @@ public interface StorageUnitDefinitionProcessor<T extends ShardingSphereRule> {
     boolean ignoreUsageCheckOnUnregister(UnregisterStorageUnitStatement sqlStatement);
     
     /**
-     * Get rule.
+     * Get rule class.
      * 
-     * @return rule
+     * @return rule class
      */
-    Class<T> getRule();
+    Class<T> getRuleClass();
 }

@@ -32,7 +32,7 @@ public final class StorageUnitBroadcastDefinitionProcessor implements StorageUni
     }
     
     @Override
-    public Class<BroadcastRule> getRule() {
+    public Class<BroadcastRule> getRuleClass() {
         return BroadcastRule.class;
     }
 }

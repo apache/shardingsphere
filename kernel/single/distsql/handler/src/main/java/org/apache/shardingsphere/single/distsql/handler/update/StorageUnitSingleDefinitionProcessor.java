@@ -32,7 +32,7 @@ public final class StorageUnitSingleDefinitionProcessor implements StorageUnitDe
     }
     
     @Override
-    public Class<SingleRule> getRule() {
+    public Class<SingleRule> getRuleClass() {
         return SingleRule.class;
     }
 }
