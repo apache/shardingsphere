@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
+package org.apache.shardingsphere.distsql.handler.engine.query.rql;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
@@ -60,7 +60,7 @@ public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowS
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStorageUnitsStatement sqlStatement, final ContextManager contextManager) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (Entry<String, StorageUnit> entry : getToBeShownStorageUnits(database, sqlStatement).entrySet()) {
+        for (Entry<String, StorageUnit> entry : getToBeShownStorageUnits(sqlStatement).entrySet()) {
             ConnectionProperties connectionProps = entry.getValue().getConnectionProperties();
             DataSourcePoolProperties dataSourcePoolProps = getDataSourcePoolProperties(entry.getValue());
             Map<String, Object> poolProps = dataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties();
@@ -81,9 +81,8 @@ public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowS
         return result;
     }
     
-    private Map<String, StorageUnit> getToBeShownStorageUnits(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
+    private Map<String, StorageUnit> getToBeShownStorageUnits(final ShowStorageUnitsStatement sqlStatement) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
-        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         Optional<Integer> usageCount = sqlStatement.getUsageCount();
         if (usageCount.isPresent()) {
             Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits = database.getRuleMetaData().getInUsedStorageUnitNameAndRulesMap();
@@ -94,7 +93,7 @@ public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowS
                 }
             }
         } else {
-            result.putAll(storageUnits);
+            result.putAll(database.getResourceMetaData().getStorageUnits());
         }
         return result;
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.rdl.resource.fixture;
+package org.apache.shardingsphere.distsql.handler.fixture;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -30,11 +30,11 @@ import java.util.Optional;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class FixtureUnregisterStorageUnitRule implements ShardingSphereRule, DataNodeContainedRule {
+public final class DistSQLHandlerFixtureRule implements ShardingSphereRule, DataNodeContainedRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
-        return null;
+        return mock(RuleConfiguration.class);
     }
     
     @Override

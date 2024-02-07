@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
+import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.distsql.handler.executor.rdl.resource.fixture.FixtureUnregisterStorageUnitRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,13 +116,13 @@ class UnregisterStorageUnitExecutorTest {
     
     @Test
     void assertExecuteUpdateWithStorageUnitInUsedWithoutIgnoredTables() {
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new FixtureUnregisterStorageUnitRule())));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new DistSQLHandlerFixtureRule())));
         assertThrows(StorageUnitInUsedException.class, () -> executor.executeUpdate(new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false, false), mock(ContextManager.class)));
     }
     
     @Test
     void assertExecuteUpdateWithStorageUnitInUsedWithIgnoredTables() throws SQLException {
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new FixtureUnregisterStorageUnitRule())));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new DistSQLHandlerFixtureRule())));
         UnregisterStorageUnitStatement sqlStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true, false);
         executor.executeUpdate(sqlStatement, contextManager);
         verify(modeContextManager).unregisterStorageUnits("foo_db", sqlStatement.getStorageUnitNames());

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
+package org.apache.shardingsphere.distsql.handler.engine.query.rql;
 
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;

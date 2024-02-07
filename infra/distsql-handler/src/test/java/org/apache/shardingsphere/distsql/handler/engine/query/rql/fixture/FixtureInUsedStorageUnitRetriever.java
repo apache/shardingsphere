@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.rdl.resource.fixture;
+package org.apache.shardingsphere.distsql.handler.engine.query.rql.fixture;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.InUsedStorageUnitRetriever;
 import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
-import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 
-public final class FixtureStorageUnitDefinitionProcessor implements StorageUnitDefinitionProcessor<DistSQLHandlerFixtureRule> {
+import java.util.Collection;
+import java.util.Collections;
+
+public final class FixtureInUsedStorageUnitRetriever implements InUsedStorageUnitRetriever<DistSQLHandlerFixtureRule> {
     
     @Override
-    public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
-        return sqlStatement.isIgnoreSingleTables();
+    public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final DistSQLHandlerFixtureRule rule) {
+        return Collections.singleton("foo_tbl");
     }
     
     @Override
-    public Class<DistSQLHandlerFixtureRule> getRuleClass() {
+    public Class<DistSQLHandlerFixtureRule> getType() {
         return DistSQLHandlerFixtureRule.class;
     }
 }
