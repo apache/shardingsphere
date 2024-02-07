@@ -15,12 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.statement;
+package org.apache.shardingsphere.distsql.handler.type.query.rql.spi;
 
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+
+import java.util.Collection;
 
 /**
- * Show read query load balance algorithm implementations statement.
+ * Show SPI implementations builder.
  */
-public final class ShowReadQueryLoadBalanceAlgorithmImplementationsStatement extends QueryableRALStatement {
+@SingletonSPI
+public interface ShowSPIImplementationsBuilder extends TypedSPI {
+    
+    /**
+     * Generate rows.
+     *
+     * @return generated rows
+     */
+    Collection<LocalDataQueryResultRow> generateRows();
+    
+    /**
+     * Get column names.
+     *
+     * @return column names
+     */
+    Collection<String> getColumnNames();
+    
+    @Override
+    String getType();
 }

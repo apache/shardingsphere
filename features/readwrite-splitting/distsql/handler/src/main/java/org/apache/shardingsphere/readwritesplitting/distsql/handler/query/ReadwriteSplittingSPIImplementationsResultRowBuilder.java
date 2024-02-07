@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.query;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.type.query.ral.algorithm.AlgorithmMetaDataQueryResultRows;
 import org.apache.shardingsphere.distsql.handler.type.query.rql.spi.ShowSPIImplementationsBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Sharding SPI implementations result row builder.
+ * Readwrite-splitting SPI implementations result row builder.
  */
-public final class ShardingSPIImplementationsResultRowBuilder implements ShowSPIImplementationsBuilder {
+public final class ReadwriteSplittingSPIImplementationsResultRowBuilder implements ShowSPIImplementationsBuilder {
     
-    private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(ShardingAlgorithm.class);
+    private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(ReadQueryLoadBalanceAlgorithm.class);
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows() {
@@ -43,6 +43,6 @@ public final class ShardingSPIImplementationsResultRowBuilder implements ShowSPI
     
     @Override
     public String getType() {
-        return "SHARDING";
+        return "READWRITE_SPLITTING";
     }
 }
