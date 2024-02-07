@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.aware;
 
-import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 
 /**
  * DistSQL executor connection context aware.

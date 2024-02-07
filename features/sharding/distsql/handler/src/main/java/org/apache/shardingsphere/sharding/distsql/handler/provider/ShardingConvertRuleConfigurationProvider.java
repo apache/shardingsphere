@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.provider;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.handler.type.query.ral.convert.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;

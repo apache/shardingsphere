@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.query.ral.algorithm.AlgorithmMetaDataQueryResultRows;
-import org.apache.shardingsphere.distsql.handler.type.query.rql.ShowSPIImplementationsBuilder;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.algorithm.AlgorithmMetaDataQueryResultRows;
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowSPIImplementationsBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 

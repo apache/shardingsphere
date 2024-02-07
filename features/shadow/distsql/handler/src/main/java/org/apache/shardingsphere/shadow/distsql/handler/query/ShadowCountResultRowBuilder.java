@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.type.query.rql.count.CountResultRowBuilder;
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.count.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
