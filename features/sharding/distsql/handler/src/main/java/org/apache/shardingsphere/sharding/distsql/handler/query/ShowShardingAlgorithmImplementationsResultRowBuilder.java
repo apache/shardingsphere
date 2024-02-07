@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.algorithm.AlgorithmMetaDataQueryResultRows;
-import org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowSPIImplementationsBuilder;
+import org.apache.shardingsphere.distsql.handler.engine.query.rql.spi.ShowSPIImplementationsResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Sharding SPI implementations result row builder.
+ * Show sharding algorithm implementations result row builder.
  */
-public final class ShardingSPIImplementationsResultRowBuilder implements ShowSPIImplementationsBuilder {
+public final class ShowShardingAlgorithmImplementationsResultRowBuilder implements ShowSPIImplementationsResultRowBuilder {
     
     private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(ShardingAlgorithm.class);
     
@@ -43,6 +43,6 @@ public final class ShardingSPIImplementationsResultRowBuilder implements ShowSPI
     
     @Override
     public String getType() {
-        return "SHARDING";
+        return "SHARDING_ALGORITHM";
     }
 }

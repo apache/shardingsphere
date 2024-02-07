@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.rql;
+package org.apache.shardingsphere.distsql.handler.engine.query.rql.spi;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
@@ -42,7 +42,7 @@ public final class ShowSPIImplementationsExecutor implements DistSQLQueryExecuto
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSPIImplementationsStatement sqlStatement, final ContextManager contextManager) {
-        Optional<ShowSPIImplementationsBuilder> rowBuilder = TypedSPILoader.findService(ShowSPIImplementationsBuilder.class, sqlStatement.getType());
+        Optional<ShowSPIImplementationsResultRowBuilder> rowBuilder = TypedSPILoader.findService(ShowSPIImplementationsResultRowBuilder.class, sqlStatement.getType());
         if (!rowBuilder.isPresent()) {
             return Collections.emptyList();
         }

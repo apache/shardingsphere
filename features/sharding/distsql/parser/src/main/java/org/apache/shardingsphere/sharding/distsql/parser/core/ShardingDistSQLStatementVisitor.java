@@ -405,6 +405,6 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShowShardingAlgorithmImplementations(final ShowShardingAlgorithmImplementationsContext ctx) {
-        return new ShowSPIImplementationsStatement("SHARDING");
+        return new ShowSPIImplementationsStatement("SHARDING_ALGORITHM");
     }
 }
