@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public final class Process {
     
-    private final Map<String, Statement> processStatements = new ConcurrentHashMap<>();
+    private final Map<ExecutionUnit, Statement> processStatements = new ConcurrentHashMap<>();
     
     private final String id;
     
@@ -98,13 +98,13 @@ public final class Process {
         return result;
     }
     
-    private Map<String, Statement> createProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        Map<String, Statement> result = new LinkedHashMap<>();
+    private Map<ExecutionUnit, Statement> createProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        Map<ExecutionUnit, Statement> result = new LinkedHashMap<>();
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     JDBCExecutionUnit jdbcExecutionUnit = (JDBCExecutionUnit) executionUnit;
-                    result.put(jdbcExecutionUnit.getExecutionUnit().getSqlUnit().getSql(), jdbcExecutionUnit.getStorageResource());
+                    result.put(jdbcExecutionUnit.getExecutionUnit(), jdbcExecutionUnit.getStorageResource());
                 }
             }
         }
@@ -125,28 +125,6 @@ public final class Process {
      */
     public int getCompletedUnitCount() {
         return completedUnitCount.get();
-    }
-    
-    /**
-     * Put process statement.
-     *
-     * @param sql sql
-     * @param statement statement
-     */
-    public void putProcessStatement(final String sql, final Statement statement) {
-        processStatements.put(sql, statement);
-    }
-    
-    /**
-     * Remove process statement.
-     *
-     * @param sql sql
-     */
-    public void removeProcessStatement(final String sql) {
-        if (Strings.isNullOrEmpty(sql)) {
-            return;
-        }
-        processStatements.remove(sql);
     }
     
     /**
