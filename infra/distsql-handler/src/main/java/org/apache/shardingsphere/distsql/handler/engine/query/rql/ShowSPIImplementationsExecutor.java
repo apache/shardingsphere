@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.rql.spi;
+package org.apache.shardingsphere.distsql.handler.engine.query.rql;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;

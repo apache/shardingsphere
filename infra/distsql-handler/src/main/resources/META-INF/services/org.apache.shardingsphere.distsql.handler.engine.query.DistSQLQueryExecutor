@@ -16,4 +16,4 @@
 #
 
 org.apache.shardingsphere.distsql.handler.executor.rql.rule.RuleCountExecutor
-org.apache.shardingsphere.distsql.handler.engine.query.rql.spi.ShowSPIImplementationsExecutor
+org.apache.shardingsphere.distsql.handler.engine.query.rql.ShowSPIImplementationsExecutor
