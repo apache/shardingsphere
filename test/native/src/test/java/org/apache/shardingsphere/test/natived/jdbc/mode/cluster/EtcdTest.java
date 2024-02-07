@@ -19,7 +19,8 @@ package org.apache.shardingsphere.test.natived.jdbc.mode.cluster;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.etcd.jetcd.test.EtcdClusterExtension;
+import io.etcd.jetcd.launcher.Etcd;
+import io.etcd.jetcd.launcher.EtcdCluster;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -30,26 +31,19 @@ import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-@EnabledInNativeImage
 class EtcdTest {
-    
-    @RegisterExtension
-    public static final EtcdClusterExtension CLUSTER = EtcdClusterExtension.builder()
-            .withNodes(1)
-            .withMountDirectory(false)
-            .build();
     
     private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.etcd.";
     
@@ -63,16 +57,24 @@ class EtcdTest {
      * @see org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository
      */
     @Test
+    @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException {
-        DataSource dataSource = createDataSource();
-        testShardingService = new TestShardingService(dataSource);
-        initEnvironment();
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
-            dataSource.getConnection().close();
-            return true;
-        });
-        testShardingService.processSuccess();
-        testShardingService.cleanEnvironment();
+        try (
+                EtcdCluster etcd = Etcd.builder()
+                        .withNodes(1)
+                        .withMountedDataDirectory(false)
+                        .build()) {
+            etcd.start();
+            DataSource dataSource = createDataSource(etcd.clientEndpoints());
+            testShardingService = new TestShardingService(dataSource);
+            initEnvironment();
+            Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
+                dataSource.getConnection().close();
+                return true;
+            });
+            testShardingService.processSuccess();
+            testShardingService.cleanEnvironment();
+        }
     }
     
     private void initEnvironment() throws SQLException {
@@ -84,8 +86,8 @@ class EtcdTest {
         testShardingService.getAddressRepository().truncateTable();
     }
     
-    private DataSource createDataSource() {
-        URI clientEndpoint = CLUSTER.clientEndpoints().get(0);
+    private DataSource createDataSource(final List<URI> clientEndpoints) {
+        URI clientEndpoint = clientEndpoints.get(0);
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> verifyEtcdClusterRunning(clientEndpoint));
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
