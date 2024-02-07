@@ -127,6 +127,24 @@ public final class Process {
     }
     
     /**
+     * Get interrupted.
+     *
+     * @return interrupted
+     */
+    public boolean getInterrupted() {
+        return interrupted.get();
+    }
+    
+    /**
+     * Set interrupted.
+     * 
+     * @param interrupted interrupted
+     */
+    public void setInterrupted(final boolean interrupted) {
+        this.interrupted.set(interrupted);
+    }
+    
+    /**
      * Get process statements.
      * 
      * @return process statements

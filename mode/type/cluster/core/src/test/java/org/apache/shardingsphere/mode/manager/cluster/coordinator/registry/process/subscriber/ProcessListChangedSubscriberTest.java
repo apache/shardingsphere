@@ -111,7 +111,7 @@ class ProcessListChangedSubscriberTest {
         Process process = mock(Process.class);
         String processId = "foo_id";
         when(process.getId()).thenReturn(processId);
-        when(process.getInterrupted()).thenReturn(new AtomicBoolean());
+        when(process.getInterrupted()).thenReturn(false);
         ProcessRegistry.getInstance().add(process);
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         subscriber.reportLocalProcesses(new ReportLocalProcessesEvent(instanceId, processId));
