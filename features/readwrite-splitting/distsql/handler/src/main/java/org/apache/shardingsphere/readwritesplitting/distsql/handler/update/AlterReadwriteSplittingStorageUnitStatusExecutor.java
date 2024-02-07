@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.readwritesplitting;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 /**
  * Alter readwrite-splitting storage unit status executor.
  */
-// TODO move to readwritesplitting module
 @DistSQLExecutorClusterModeRequired
 @Setter
 public final class AlterReadwriteSplittingStorageUnitStatusExecutor

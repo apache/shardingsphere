@@ -18,7 +18,6 @@
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.ShowStorageUnitExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.ShowRulesUsedStorageUnitExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.ShowLogicalTableExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.rql.readwritesplitting.ShowStatusFromReadwriteSplittingRulesExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodesExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodeInfoExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodeModeExecutor
