@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.rql;
+package org.apache.shardingsphere.distsql.handler.executor.rql.resource;
 
 import com.google.common.base.CaseFormat;
 import lombok.Setter;

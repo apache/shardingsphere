@@ -15,32 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.rql;
+package org.apache.shardingsphere.distsql.handler.executor.rql.plugin;
 
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 
 /**
- * In used storage unit retriever.
- * 
- * @param <T> type of rule
+ * Show SPI implementations result row builder.
  */
 @SingletonSPI
-public interface InUsedStorageUnitRetriever<T extends ShardingSphereRule> extends TypedSPI {
+public interface ShowSPIImplementationsResultRowBuilder extends TypedSPI {
     
     /**
-     * Get in used resources.
-     * 
-     * @param sqlStatement show rules used storage unit statement
-     * @param rule rule
-     * @return in used resources
+     * Generate rows.
+     *
+     * @return generated rows
      */
-    Collection<String> getInUsedResources(ShowRulesUsedStorageUnitStatement sqlStatement, T rule);
+    Collection<LocalDataQueryResultRow> generateRows();
+    
+    /**
+     * Get column names.
+     *
+     * @return column names
+     */
+    Collection<String> getColumnNames();
     
     @Override
-    Class<T> getType();
+    String getType();
 }
