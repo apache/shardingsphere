@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.storage.service;
 
 import com.google.common.base.Strings;
-import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;

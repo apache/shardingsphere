@@ -174,7 +174,8 @@ public final class AlterReadwriteSplittingStorageUnitStatusExecutor
     private void updateStatus(final ContextManager contextManager, final String databaseName, final Collection<String> groupNames, final String toBeDisableStorageUnit, final boolean isDisable) {
         groupNames.forEach(each -> {
             StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? DataSourceState.DISABLED : DataSourceState.ENABLED);
-            new StorageNodeStatusService(contextManager.getMetaDataContexts().getPersistService().getRepository()).changeStorageNodeStatus(databaseName, each, toBeDisableStorageUnit, storageNodeDataSource);
+            new StorageNodeStatusService(contextManager.getMetaDataContexts().getPersistService().getRepository())
+                    .changeStorageNodeStatus(databaseName, each, toBeDisableStorageUnit, storageNodeDataSource);
         });
     }
     
