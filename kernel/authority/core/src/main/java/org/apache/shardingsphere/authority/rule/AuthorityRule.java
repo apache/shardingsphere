@@ -54,7 +54,7 @@ public final class AuthorityRule implements GlobalRule {
     public String getAuthenticatorType(final ShardingSphereUser user) {
         return configuration.getAuthenticators().containsKey(user.getAuthenticationMethodName())
                 ? configuration.getAuthenticators().get(user.getAuthenticationMethodName()).getType()
-                : Optional.ofNullable(configuration.getDefaultAuthenticator()).orElse("");
+                : Optional.ofNullable(configuration.getAuthenticators().get(configuration.getDefaultAuthenticator()).getType()).orElse("");
     }
     
     /**
