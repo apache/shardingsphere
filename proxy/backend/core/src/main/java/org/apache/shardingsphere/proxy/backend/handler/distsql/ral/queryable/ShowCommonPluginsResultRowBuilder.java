@@ -35,17 +35,16 @@ public final class ShowCommonPluginsResultRowBuilder implements ShowPluginsResul
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final ShowPluginsStatement sqlStatement) {
-        PluginMetaDataQueryResultRows pluginMetaDataQueryResultRows = new PluginMetaDataQueryResultRows(getPluginClass(sqlStatement));
-        return pluginMetaDataQueryResultRows.getRows();
+        return new PluginMetaDataQueryResultRows(getPluginClass(sqlStatement)).getRows();
     }
     
     @SuppressWarnings("unchecked")
     private static Class<? extends TypedSPI> getPluginClass(final ShowPluginsStatement sqlStatement) {
         try {
             Class<?> result = Class.forName(sqlStatement.getPluginClass());
-            ShardingSpherePreconditions.checkState(TypedSPI.class.isAssignableFrom(result), () -> new UnsupportedOperationException("The plugin class to be queried must extend TypedSPI"));
+            ShardingSpherePreconditions.checkState(TypedSPI.class.isAssignableFrom(result), () -> new UnsupportedOperationException("The plugin class to be queried must extend TypedSPI."));
             return (Class<? extends TypedSPI>) result;
-        } catch (final ClassNotFoundException ex) {
+        } catch (final ClassNotFoundException ignore) {
             throw new PluginNotFoundException(sqlStatement.getPluginClass());
         }
     }
