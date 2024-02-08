@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,9 +42,10 @@ class YamlProcessListSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext("foo_db", new Grantee("root", "localhost"));
+        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+        ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext(processId, "foo_db", new Grantee("root", "localhost"));
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
-        Process process = new Process("SELECT 1", executionGroupContext, false);
+        Process process = new Process("SELECT 1", executionGroupContext);
         YamlProcessList actual = new YamlProcessListSwapper().swapToYamlConfiguration(Collections.singleton(process));
         assertThat(actual.getProcesses().size(), is(1));
         assertYamlProcessContext(actual.getProcesses().iterator().next());
@@ -57,7 +60,6 @@ class YamlProcessListSwapperTest {
         assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getCompletedUnitCount(), is(0));
         assertThat(actual.getTotalUnitCount(), is(0));
-        assertThat(actual.isHeldByConnection(), is(false));
         assertFalse(actual.isIdle());
     }
     
@@ -81,7 +83,6 @@ class YamlProcessListSwapperTest {
         result.setTotalUnitCount(10);
         result.setCompletedUnitCount(5);
         result.setIdle(true);
-        result.setHeldByConnection(true);
         return result;
     }
     
@@ -94,7 +95,6 @@ class YamlProcessListSwapperTest {
         assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getTotalUnitCount(), is(10));
         assertThat(actual.getCompletedUnitCount(), is(5));
-        assertThat(actual.isHeldByConnection(), is(true));
         assertTrue(actual.isIdle());
     }
 }

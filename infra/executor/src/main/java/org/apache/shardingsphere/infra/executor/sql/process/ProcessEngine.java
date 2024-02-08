@@ -28,6 +28,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Collections;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Process engine.
@@ -42,8 +44,11 @@ public final class ProcessEngine {
      * @return process ID
      */
     public String connect(final Grantee grantee, final String databaseName) {
-        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
-        Process process = new Process(executionGroupContext, true);
+        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+        ProcessIdContext.set(processId);
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
+                new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(processId, databaseName, grantee));
+        Process process = new Process(executionGroupContext);
         ProcessRegistry.getInstance().add(process);
         return executionGroupContext.getReportContext().getProcessId();
     }
@@ -55,7 +60,7 @@ public final class ProcessEngine {
      */
     public void disconnect(final String processId) {
         ProcessRegistry.getInstance().remove(processId);
-        
+        ProcessIdContext.remove();
     }
     
     /**
@@ -66,11 +71,7 @@ public final class ProcessEngine {
      */
     public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            String processId = executionGroupContext.getReportContext().getProcessId();
-            // TODO remove heldByConnection when jdbc connection support generate processId and call connect and disconnect
-            boolean heldByConnection = null != ProcessRegistry.getInstance().get(processId) && ProcessRegistry.getInstance().get(processId).isHeldByConnection();
-            ProcessIdContext.set(processId);
-            ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext, heldByConnection));
+            ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext));
         }
     }
     
@@ -97,12 +98,7 @@ public final class ProcessEngine {
         }
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
                 Collections.emptyList(), new ExecutionGroupReportContext(ProcessIdContext.get(), process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
-        if (process.isHeldByConnection()) {
-            ProcessRegistry.getInstance().add(new Process(executionGroupContext, true));
-        } else {
-            ProcessRegistry.getInstance().remove(ProcessIdContext.get());
-        }
-        ProcessIdContext.remove();
+        ProcessRegistry.getInstance().add(new Process(executionGroupContext));
     }
     
     private boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {

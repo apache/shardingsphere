@@ -61,19 +61,17 @@ public final class Process {
     
     private final boolean idle;
     
-    private final boolean heldByConnection;
-    
     private final AtomicBoolean interrupted;
     
-    public Process(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean heldByConnection) {
-        this("", executionGroupContext, true, heldByConnection);
+    public Process(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        this("", executionGroupContext, true);
     }
     
-    public Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean heldByConnection) {
-        this(sql, executionGroupContext, false, heldByConnection);
+    public Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        this(sql, executionGroupContext, false);
     }
     
-    private Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean idle, final boolean heldByConnection) {
+    private Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean idle) {
         id = executionGroupContext.getReportContext().getProcessId();
         startMillis = System.currentTimeMillis();
         this.sql = sql;
@@ -85,7 +83,6 @@ public final class Process {
         processStatements.putAll(createProcessStatements(executionGroupContext));
         completedUnitCount = new AtomicInteger(0);
         this.idle = idle;
-        this.heldByConnection = heldByConnection;
         interrupted = new AtomicBoolean();
     }
     
