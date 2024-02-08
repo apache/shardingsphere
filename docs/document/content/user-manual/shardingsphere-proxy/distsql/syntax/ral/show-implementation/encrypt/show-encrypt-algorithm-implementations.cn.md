@@ -23,11 +23,11 @@ showEncryptAlgorithmImplementations ::=
 
 ### 返回值说明
 
-| 列    | 说明      |
-|------|---------|
-| name | 实现类名称   |
-| type | 类型      |
-| class_path | 实现类完整路径 |
+| 列            | 说明     |
+|--------------|--------|
+| type         | 类型     |
+| type_aliases | 类型别名   |
+| description  | 描述     |
 
 ### 示例
 
@@ -39,12 +39,12 @@ SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS
 
 ```sql
 SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS;
-+-----------------------------+------+----------------------------------------------------------------------------------+
-| name                        | type | class_path                                                                       |
-+-----------------------------+------+----------------------------------------------------------------------------------+
-| AESEncryptAlgorithm         | AES  | org.apache.shardingsphere.encrypt.algorithm.standard.AESEncryptAlgorithm         |
-| MD5AssistedEncryptAlgorithm | MD5  | org.apache.shardingsphere.encrypt.algorithm.assisted.MD5AssistedEncryptAlgorithm |
-+-----------------------------+------+----------------------------------------------------------------------------------+
++------+--------------+-------------+
+| type | type_aliases | description |
++------+--------------+-------------+
+| AES  |              |             |
+| MD5  |              |             |
++------+--------------+-------------+
 2 rows in set (0.06 sec)
 ```
 
