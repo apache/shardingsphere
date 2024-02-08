@@ -85,7 +85,6 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComput
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodesStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowKeyGenerateAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
@@ -413,6 +412,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowKeyGenerateAlgorithmImplementations(final ShowKeyGenerateAlgorithmImplementationsContext ctx) {
-        return new ShowKeyGenerateAlgorithmImplementationsStatement();
+        return new ShowPluginsStatement("KEY_GENERATE_ALGORITHM");
     }
 }
