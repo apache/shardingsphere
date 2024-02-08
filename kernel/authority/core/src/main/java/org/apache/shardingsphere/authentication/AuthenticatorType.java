@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.authentication;
-
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+package org.apache.shardingsphere.authentication;
 
 /**
- * Authenticator.
+ * Authenticator type.
  */
-public interface Authenticator {
+public interface AuthenticatorType {
     
     /**
-     * Authenticate.
-     *
-     * @param user ShardingSphere user
-     * @param authInfo authentication information
-     * @return authentication success or not
+     * Get authenticator class.
+     * 
+     * @return authenticator class
      */
-    boolean authenticate(ShardingSphereUser user, Object[] authInfo);
+    Class<? extends Authenticator> getAuthenticatorClass();
     
     /**
-     * Get authentication method name.
-     *
-     * @return authentication method name
+     * Is default authenticator.
+     * 
+     * @return is default authenticator
      */
-    String getAuthenticationMethodName();
+    boolean isDefault();
 }
