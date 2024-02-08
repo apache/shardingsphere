@@ -63,4 +63,5 @@
     <sql-case id="update_with_plus_eq_symbol" value="UPDATE Production.Product SET ListPrice += @NewPrice WHERE Color = N'Red'" db-types="SQLServer"/>
     <sql-case id="update_scrapreason_with_between_and" value="UPDATE Production.ScrapReason SET Name += ' - tool malfunction' WHERE ScrapReasonID BETWEEN 10 and 12" db-types="SQLServer"/>
     <sql-case id="update_sr_with_join_subquery" value="UPDATE sr SET sr.Name += ' - tool malfunction' FROM Production.ScrapReason AS sr JOIN Production.WorkOrder AS wo ON sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" db-types="SQLServer"/>
+    <sql-case id="update_with_print" value="UPDATE HumanResources.Employee SET JobTitle = N'Executive' WHERE NationalIDNumber = 123456789  IF @@ROWCOUNT = 0  PRINT 'Warning: No rows were updated'" db-types="SQLServer" />
 </sql-cases>

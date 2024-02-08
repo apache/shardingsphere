@@ -2090,4 +2090,33 @@
             </from>
         </set>
     </update>
+    
+    <update sql-case-id="update_with_print">
+        <table start-index="7" stop-index="29">
+            <simple-table name="Employee" start-index="7" stop-index="29">
+                <owner name="HumanResources" start-index="7" stop-index="20" />
+            </simple-table>
+        </table>
+        <set start-index="31" stop-index="57">
+            <assignment start-index="35" stop-index="57">
+                <column name="JobTitle" start-index="35" stop-index="42" />
+                <assignment-value>
+                    <literal-expression value="Executive" start-index="46" stop-index="57" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="59" stop-index="92">
+            <expr>
+                <binary-operation-expression start-index="65" stop-index="92">
+                    <left>
+                        <column name="NationalIDNumber" start-index="65" stop-index="80" />
+                    </left>
+                    <right>
+                        <literal-expression value="123456789" start-index="84" stop-index="92" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
 </sql-parser-test-cases>
