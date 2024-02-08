@@ -114,7 +114,7 @@ public final class SingleXAResource implements XAResource {
         }
     }
     
-    private XAException mapXAException(final XAException exception) throws XAException {
+    private XAException mapXAException(final XAException exception) {
         return exception;
     }
 }

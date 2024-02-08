@@ -153,7 +153,7 @@ public final class ConfigurationContextManager {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             // TODO consider rename this method to alterDatabaseRuleConfiguration
-            staleResourceHeldRules.stream().filter(each -> each instanceof DatabaseRule).forEach(ResourceHeldRule::closeStaleResource);
+            staleResourceHeldRules.stream().filter(DatabaseRule.class::isInstance).forEach(ResourceHeldRule::closeStaleResource);
             MetaDataContexts reloadMetaDataContexts = createMetaDataContextsWhenRuleChanged(databaseName, false, null, ruleConfigs);
             alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
             metaDataContexts.set(reloadMetaDataContexts);
