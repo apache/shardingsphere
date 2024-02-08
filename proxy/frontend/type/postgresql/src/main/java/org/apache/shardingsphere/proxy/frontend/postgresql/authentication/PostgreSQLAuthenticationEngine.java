@@ -144,7 +144,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username, final AuthorityRule rule) {
         Optional<Authenticator> authenticator = rule.findUser(new Grantee(username, "")).map(optional -> new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(optional));
-        if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD == authenticator.get().getAuthenticationMethod()) {
+        if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {
             return new PostgreSQLPasswordAuthenticationPacket();
         }
         md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);

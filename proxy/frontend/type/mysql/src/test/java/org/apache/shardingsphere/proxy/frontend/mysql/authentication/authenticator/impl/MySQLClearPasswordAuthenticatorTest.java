@@ -29,7 +29,7 @@ class MySQLClearPasswordAuthenticatorTest {
     
     @Test
     void assertAuthenticationMethodName() {
-        assertThat(new MySQLClearPasswordAuthenticator().getAuthenticationMethod().getMethodName(), is("mysql_clear_password"));
+        assertThat(new MySQLClearPasswordAuthenticator().getAuthenticationMethodName(), is("mysql_clear_password"));
     }
     
     @Test

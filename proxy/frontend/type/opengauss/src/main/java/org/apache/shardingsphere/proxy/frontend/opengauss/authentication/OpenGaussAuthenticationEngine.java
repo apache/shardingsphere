@@ -143,7 +143,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     }
     
     private boolean login(final Authenticator authenticator, final ShardingSphereUser user, final String digest) {
-        if (PostgreSQLAuthenticationMethod.MD5 == authenticator.getAuthenticationMethod()) {
+        if (PostgreSQLAuthenticationMethod.MD5.getMethodName().equals(authenticator.getAuthenticationMethodName())) {
             return authenticator.authenticate(user, new Object[]{digest, md5Salt});
         }
         return authenticator.authenticate(user, new Object[]{digest, authHexData.getSalt(), authHexData.getNonce(), serverIteration});
@@ -163,7 +163,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username, final AuthorityRule rule, final int version) {
         Optional<Authenticator> authenticator = rule.findUser(new Grantee(username, "")).map(optional -> new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(optional));
-        if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.MD5 == authenticator.get().getAuthenticationMethod()) {
+        if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.MD5.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {
             md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
             return new PostgreSQLMD5PasswordAuthenticationPacket(md5Salt);
         }

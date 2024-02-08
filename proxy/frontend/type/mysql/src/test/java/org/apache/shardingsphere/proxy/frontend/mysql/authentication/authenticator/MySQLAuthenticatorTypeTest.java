@@ -44,7 +44,7 @@ class MySQLAuthenticatorTypeTest {
     void assertAuthenticator(final String name, final String authenticatorType, final String expectedAuthenticatorMethodName) {
         when(rule.getAuthenticatorType(any())).thenReturn(authenticatorType);
         Authenticator actual = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
-        assertThat(actual.getAuthenticationMethod().getMethodName(), is(expectedAuthenticatorMethodName));
+        assertThat(actual.getAuthenticationMethodName(), is(expectedAuthenticatorMethodName));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
