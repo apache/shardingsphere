@@ -15,20 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
+package org.apache.shardingsphere.distsql.handler.executor.rql.plugin;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+
+import java.util.Collection;
 
 /**
- * Show SPI implementations statement.
+ * Show plugin result row builder.
  */
-@Getter
-public final class ShowSPIImplementationsStatement extends QueryableRALStatement {
+@SingletonSPI
+public interface ShowPluginResultRowBuilder extends TypedSPI {
     
-    private final String type;
+    /**
+     * Generate rows.
+     *
+     * @return generated rows
+     */
+    Collection<LocalDataQueryResultRow> generateRows();
     
-    public ShowSPIImplementationsStatement(final String type) {
-        this.type = type;
-    }
+    /**
+     * Get column names.
+     *
+     * @return column names
+     */
+    Collection<String> getColumnNames();
+    
+    @Override
+    String getType();
 }

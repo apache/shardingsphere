@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmImplementationsResultRowBuilder;
+import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmPluginResultRowBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -27,11 +27,11 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShowShardingAlgorithmImplementationsResultRowBuilderTest {
+class ShowShardingAlgorithmPluginResultRowBuilderTest {
     
     @Test
     void assertGetRowData() {
-        ShowShardingAlgorithmImplementationsResultRowBuilder rowBuilder = new ShowShardingAlgorithmImplementationsResultRowBuilder();
+        ShowShardingAlgorithmPluginResultRowBuilder rowBuilder = new ShowShardingAlgorithmPluginResultRowBuilder();
         Collection<LocalDataQueryResultRow> actual = rowBuilder.generateRows();
         assertThat(actual.size(), is(15));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();

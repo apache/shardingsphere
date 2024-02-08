@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmImplementationsResultRowBuilder
+org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmPluginResultRowBuilder

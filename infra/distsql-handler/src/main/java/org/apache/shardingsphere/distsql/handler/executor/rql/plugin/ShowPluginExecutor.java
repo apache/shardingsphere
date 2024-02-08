@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.executor.rql.plugin;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowSPIImplementationsStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -30,10 +30,10 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Show SPI implementations executor.
+ * Show plugin executor.
  */
 @Setter
-public final class ShowSPIImplementationsExecutor implements DistSQLQueryExecutor<ShowSPIImplementationsStatement> {
+public final class ShowPluginExecutor implements DistSQLQueryExecutor<ShowPluginStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -41,8 +41,8 @@ public final class ShowSPIImplementationsExecutor implements DistSQLQueryExecuto
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowSPIImplementationsStatement sqlStatement, final ContextManager contextManager) {
-        Optional<ShowSPIImplementationsResultRowBuilder> rowBuilder = TypedSPILoader.findService(ShowSPIImplementationsResultRowBuilder.class, sqlStatement.getType());
+    public Collection<LocalDataQueryResultRow> getRows(final ShowPluginStatement sqlStatement, final ContextManager contextManager) {
+        Optional<ShowPluginResultRowBuilder> rowBuilder = TypedSPILoader.findService(ShowPluginResultRowBuilder.class, sqlStatement.getType());
         if (!rowBuilder.isPresent()) {
             return Collections.emptyList();
         }
@@ -50,7 +50,7 @@ public final class ShowSPIImplementationsExecutor implements DistSQLQueryExecuto
     }
     
     @Override
-    public Class<ShowSPIImplementationsStatement> getType() {
-        return ShowSPIImplementationsStatement.class;
+    public Class<ShowPluginStatement> getType() {
+        return ShowPluginStatement.class;
     }
 }

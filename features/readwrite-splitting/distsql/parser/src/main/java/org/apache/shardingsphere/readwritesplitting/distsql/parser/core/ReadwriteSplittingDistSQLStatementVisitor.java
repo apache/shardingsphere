@@ -33,7 +33,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQ
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowStatusFromReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowSPIImplementationsStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginStatement;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingRuleStatement;
@@ -133,6 +133,6 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitShowReadQueryLoadBalanceAlgorithmImplementations(final ShowReadQueryLoadBalanceAlgorithmImplementationsContext ctx) {
-        return new ShowSPIImplementationsStatement("READ_QUERY_LOAD_BALANCE_ALGORITHM");
+        return new ShowPluginStatement("READ_QUERY_LOAD_BALANCE_ALGORITHM");
     }
 }

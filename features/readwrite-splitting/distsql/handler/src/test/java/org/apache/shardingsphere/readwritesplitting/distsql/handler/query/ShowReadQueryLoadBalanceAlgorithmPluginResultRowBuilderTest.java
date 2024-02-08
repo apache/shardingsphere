@@ -26,11 +26,11 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShowReadQueryLoadBalanceAlgorithmImplementationsResultRowBuilderTest {
+class ShowReadQueryLoadBalanceAlgorithmPluginResultRowBuilderTest {
     
     @Test
     void assertGetRowData() {
-        ShowReadQueryLoadBalanceAlgorithmImplementationsResultRowBuilder rowBuilder = new ShowReadQueryLoadBalanceAlgorithmImplementationsResultRowBuilder();
+        ShowReadQueryLoadBalanceAlgorithmPluginResultRowBuilder rowBuilder = new ShowReadQueryLoadBalanceAlgorithmPluginResultRowBuilder();
         Collection<LocalDataQueryResultRow> actual = rowBuilder.generateRows();
         assertThat(actual.size(), is(4));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
