@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.authority.distsql.handler.executor.query.ShowAuthorityRuleExecutor
+org.apache.shardingsphere.authority.distsql.handler.query.ShowAuthorityRuleExecutor

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.distsql.handler.executor.query;
+package org.apache.shardingsphere.authority.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
