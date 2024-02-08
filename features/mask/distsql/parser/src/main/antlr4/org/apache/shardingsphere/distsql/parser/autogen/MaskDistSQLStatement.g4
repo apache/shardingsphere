@@ -25,6 +25,6 @@ execute
     | dropMaskRule
     | showMaskRules
     | countMaskRule
-    | showMaskAlgorithmImplementations
+    | showMaskAlgorithmPlugins
     ) SEMI_? EOF
     ;

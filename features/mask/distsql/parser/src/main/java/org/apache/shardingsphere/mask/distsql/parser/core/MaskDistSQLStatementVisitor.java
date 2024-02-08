@@ -29,7 +29,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementPars
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.MaskRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.PropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ShowMaskAlgorithmImplementationsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ShowMaskAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ShowMaskRulesContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
@@ -115,7 +115,7 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
     }
     
     @Override
-    public ASTNode visitShowMaskAlgorithmImplementations(final ShowMaskAlgorithmImplementationsContext ctx) {
+    public ASTNode visitShowMaskAlgorithmPlugins(final ShowMaskAlgorithmPluginsContext ctx) {
         return new ShowPluginsStatement("MASK_ALGORITHM");
     }
 }

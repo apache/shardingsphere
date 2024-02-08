@@ -25,6 +25,6 @@ execute
     | dropEncryptRule
     | showEncryptRules
     | countEncryptRule
-    | showEncryptAlgorithmImplementations
+    | showEncryptAlgorithmPlugins
     ) SEMI_? EOF
     ;

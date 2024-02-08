@@ -46,7 +46,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowDefaultShardingStrategyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAlgorithmImplementationsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAuditorsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingKeyGeneratorsContext;
@@ -404,7 +404,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     @Override
-    public ASTNode visitShowShardingAlgorithmImplementations(final ShowShardingAlgorithmImplementationsContext ctx) {
+    public ASTNode visitShowShardingAlgorithmPlugins(final ShowShardingAlgorithmPluginsContext ctx) {
         return new ShowPluginsStatement("SHARDING_ALGORITHM");
     }
 }

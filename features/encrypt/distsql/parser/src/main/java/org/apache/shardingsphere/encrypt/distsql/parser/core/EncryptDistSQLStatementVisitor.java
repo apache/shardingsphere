@@ -29,7 +29,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementP
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.EncryptRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.PropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.ShowEncryptAlgorithmImplementationsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.ShowEncryptAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.ShowEncryptRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
@@ -141,7 +141,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     }
     
     @Override
-    public ASTNode visitShowEncryptAlgorithmImplementations(final ShowEncryptAlgorithmImplementationsContext ctx) {
+    public ASTNode visitShowEncryptAlgorithmPlugins(final ShowEncryptAlgorithmPluginsContext ctx) {
         return new ShowPluginsStatement("ENCRYPT_ALGORITHM");
     }
 }

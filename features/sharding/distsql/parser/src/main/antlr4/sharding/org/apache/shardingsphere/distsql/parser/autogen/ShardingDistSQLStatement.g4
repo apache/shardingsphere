@@ -46,6 +46,6 @@ execute
     | showUnusedShardingKeyGenerators
     | showUnusedShardingAuditors
     | countShardingRule
-    | showShardingAlgorithmImplementations
+    | showShardingAlgorithmPlugins
     ) SEMI_? EOF
     ;
