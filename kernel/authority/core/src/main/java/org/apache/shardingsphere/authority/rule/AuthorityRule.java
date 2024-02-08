@@ -41,8 +41,7 @@ public final class AuthorityRule implements GlobalRule {
     
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        PrivilegeProvider provider = TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps());
-        privileges = provider.build(ruleConfig);
+        privileges = TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps()).build(ruleConfig);
     }
     
     /**

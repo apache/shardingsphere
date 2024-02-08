@@ -45,16 +45,12 @@ public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
     @SneakyThrows(ReflectiveOperationException.class)
     public Authenticator newInstance(final ShardingSphereUser user) {
         E authenticatorType = getAuthenticatorType(rule.getAuthenticatorType(user));
-        try {
-            return authenticatorType.getAuthenticatorClass().getConstructor().newInstance();
-        } catch (final NoSuchMethodException ignored) {
-            return authenticatorType.getAuthenticatorClass().getConstructor(AuthorityRule.class).newInstance(rule);
-        }
+        return authenticatorType.getAuthenticatorClass().getConstructor().newInstance();
     }
     
-    private E getAuthenticatorType(final String authenticationMethod) {
+    private E getAuthenticatorType(final String authenticationMethodName) {
         try {
-            return E.valueOf(authenticatorTypeClass, authenticationMethod.toUpperCase());
+            return E.valueOf(authenticatorTypeClass, authenticationMethodName.toUpperCase());
         } catch (final IllegalArgumentException ignored) {
             return Arrays.stream(authenticatorTypeClass.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new);
         }
