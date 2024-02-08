@@ -29,7 +29,7 @@ class PostgreSQLPasswordAuthenticatorTest {
     
     @Test
     void assertAuthenticationMethodName() {
-        assertThat(new PostgreSQLPasswordAuthenticator().getAuthenticationMethod().getMethodName(), is("password"));
+        assertThat(new PostgreSQLPasswordAuthenticator().getAuthenticationMethodName(), is("password"));
     }
     
     @Test
