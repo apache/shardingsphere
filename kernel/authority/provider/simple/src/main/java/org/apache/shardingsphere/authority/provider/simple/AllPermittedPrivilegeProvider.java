@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.authority.provider.simple;
 
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -33,8 +34,8 @@ import java.util.stream.Collectors;
 public final class AllPermittedPrivilegeProvider implements PrivilegeProvider {
     
     @Override
-    public Map<Grantee, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users) {
-        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new AllPermittedPrivileges()));
+    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig) {
+        return ruleConfig.getUsers().stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new AllPermittedPrivileges()));
     }
     
     @Override

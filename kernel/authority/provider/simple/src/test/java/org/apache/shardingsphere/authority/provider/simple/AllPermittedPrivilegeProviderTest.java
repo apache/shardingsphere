@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.authority.provider.simple;
 
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -30,12 +32,15 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class AllPermittedPrivilegeProviderTest {
     
     @Test
     void assertBuild() {
-        Map<Grantee, ShardingSpherePrivileges> actual = TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PERMITTED").build(Collections.singleton(new ShardingSphereUser("root@%")));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
+                Collections.singleton(new ShardingSphereUser("root@%")), mock(AlgorithmConfiguration.class), Collections.emptyMap(), null);
+        Map<Grantee, ShardingSpherePrivileges> actual = TypedSPILoader.getService(PrivilegeProvider.class, "ALL_PERMITTED").build(ruleConfig);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(new Grantee("root", "%")), instanceOf(AllPermittedPrivileges.class));
     }
