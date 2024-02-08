@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mask.distsql.handler.query.ShowMaskRuleExecutor
+org.apache.shardingsphere.shadow.distsql.handler.query.ShowShadowAlgorithmPluginsResultRowBuilder
