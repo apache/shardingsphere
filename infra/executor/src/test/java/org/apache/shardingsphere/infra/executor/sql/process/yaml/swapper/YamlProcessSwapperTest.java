@@ -53,7 +53,6 @@ class YamlProcessSwapperTest {
         assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getCompletedUnitCount(), is(0));
         assertThat(actual.getTotalUnitCount(), is(0));
-        assertThat(actual.isHeldByConnection(), is(true));
         assertFalse(actual.isIdle());
     }
     
@@ -82,7 +81,6 @@ class YamlProcessSwapperTest {
         result.setTotalUnitCount(10);
         result.setCompletedUnitCount(5);
         result.setIdle(true);
-        result.setHeldByConnection(false);
         return result;
     }
 }

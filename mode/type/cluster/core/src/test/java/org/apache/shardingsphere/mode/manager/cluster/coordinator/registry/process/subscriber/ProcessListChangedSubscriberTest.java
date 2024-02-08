@@ -118,7 +118,6 @@ class ProcessListChangedSubscriberTest {
         ClusterPersistRepository repository = registryCenter.getRepository();
         verify(repository).persist("/execution_nodes/foo_id/" + instanceId,
                 "processes:" + System.lineSeparator() + "- completedUnitCount: 0" + System.lineSeparator()
-                        + "  heldByConnection: false" + System.lineSeparator()
                         + "  id: foo_id" + System.lineSeparator()
                         + "  idle: false" + System.lineSeparator()
                         + "  interrupted: false" + System.lineSeparator()
