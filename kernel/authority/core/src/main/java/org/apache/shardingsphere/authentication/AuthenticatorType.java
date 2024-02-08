@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
+package org.apache.shardingsphere.authentication;
 
-import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
-
-public final class OutputJobRateLimitAlgorithmFixture implements JobRateLimitAlgorithm {
+/**
+ * Authenticator type.
+ */
+public interface AuthenticatorType {
     
-    @Override
-    public void intercept(final PipelineSQLOperationType type, final Number data) {
-    }
+    /**
+     * Get authenticator class.
+     * 
+     * @return authenticator class
+     */
+    Class<? extends Authenticator> getAuthenticatorClass();
     
-    @Override
-    public String getType() {
-        return "FIXTURE_OUTPUT";
-    }
+    /**
+     * Is default authenticator.
+     * 
+     * @return is default authenticator
+     */
+    boolean isDefault();
 }
