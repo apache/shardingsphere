@@ -41,7 +41,7 @@ public final class YamlProcessSwapper implements YamlConfigurationSwapper<YamlPr
         result.setTotalUnitCount(data.getTotalUnitCount());
         result.setCompletedUnitCount(data.getCompletedUnitCount());
         result.setIdle(data.isIdle());
-        result.setInterrupted(data.getInterrupted());
+        result.setInterrupted(data.isInterrupted());
         return result;
     }
     

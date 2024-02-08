@@ -44,6 +44,7 @@ public final class ProcessEngine {
      * @return process ID
      */
     public String connect(final Grantee grantee, final String databaseName) {
+        // TODO remove processId return value, and use ProcessIdContext.get() instead
         String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
         ProcessIdContext.set(processId);
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
@@ -59,6 +60,7 @@ public final class ProcessEngine {
      * @param processId process ID
      */
     public void disconnect(final String processId) {
+        // TODO remove processId parameter, and use ProcessIdContext.get() instead
         ProcessRegistry.getInstance().remove(processId);
         ProcessIdContext.remove();
     }
@@ -77,12 +79,19 @@ public final class ProcessEngine {
     
     /**
      * Complete SQL unit execution.
+     * 
+     * @param executionUnit execution unit
      */
-    public void completeSQLUnitExecution() {
+    public void completeSQLUnitExecution(final SQLExecutionUnit executionUnit) {
         if (ProcessIdContext.isEmpty()) {
             return;
         }
-        ProcessRegistry.getInstance().get(ProcessIdContext.get()).completeExecutionUnit();
+        Process process = ProcessRegistry.getInstance().get(ProcessIdContext.get());
+        if (null == process) {
+            return;
+        }
+        process.completeExecutionUnit();
+        process.removeProcessStatement(executionUnit.getExecutionUnit());
     }
     
     /**

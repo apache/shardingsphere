@@ -55,7 +55,7 @@ public final class StandaloneProcessSubscriber implements ProcessSubscriber {
         if (null == process) {
             return;
         }
-        for (Statement each : process.getProcessStatements()) {
+        for (Statement each : process.getProcessStatements().values()) {
             each.cancel();
         }
     }

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -77,8 +76,8 @@ public final class Process {
         this.sql = sql;
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
-        username = null == grantee ? null : grantee.getUsername();
-        hostname = null == grantee ? null : grantee.getHostname();
+        username = null == grantee ? "" : grantee.getUsername();
+        hostname = null == grantee ? "" : grantee.getHostname();
         totalUnitCount = getTotalUnitCount(executionGroupContext);
         processStatements.putAll(createProcessStatements(executionGroupContext));
         completedUnitCount = new AtomicInteger(0);
@@ -116,7 +115,7 @@ public final class Process {
     
     /**
      * Get completed unit count.
-     * 
+     *
      * @return completed unit count
      */
     public int getCompletedUnitCount() {
@@ -124,17 +123,17 @@ public final class Process {
     }
     
     /**
-     * Get interrupted.
+     * Is interrupted.
      *
      * @return interrupted
      */
-    public boolean getInterrupted() {
+    public boolean isInterrupted() {
         return interrupted.get();
     }
     
     /**
      * Set interrupted.
-     * 
+     *
      * @param interrupted interrupted
      */
     public void setInterrupted(final boolean interrupted) {
@@ -142,11 +141,21 @@ public final class Process {
     }
     
     /**
-     * Get process statements.
-     * 
-     * @return process statements
+     * Put process statement.
+     *
+     * @param executionUnit execution unit
+     * @param statement statement
      */
-    public Collection<Statement> getProcessStatements() {
-        return processStatements.values();
+    public void putProcessStatement(final ExecutionUnit executionUnit, final Statement statement) {
+        processStatements.put(executionUnit, statement);
+    }
+    
+    /**
+     * Remove process statement.
+     *
+     * @param executionUnit execution unit
+     */
+    public void removeProcessStatement(final ExecutionUnit executionUnit) {
+        processStatements.remove(executionUnit);
     }
 }

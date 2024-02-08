@@ -62,6 +62,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 08000     | 13020       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
 | 08000     | 13030       | Connection has been closed.                                                                                                                                                                                                 |
 | 08000     | 13031       | Result set has been closed.                                                                                                                                                                                                 |
+| 08000     | 13032       | SQL execution has been interrupted.                                                                                                                                                                                         |
 | HY000     | 13090       | Load datetime from database failed, reason: %s                                                                                                                                                                              |
 
 ### Transaction
