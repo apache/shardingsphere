@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.distsql.handler;
+package org.apache.shardingsphere.authority.distsql.handler.executor.query;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
