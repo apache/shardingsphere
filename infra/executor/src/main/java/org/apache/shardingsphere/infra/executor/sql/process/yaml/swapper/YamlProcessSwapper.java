@@ -41,7 +41,6 @@ public final class YamlProcessSwapper implements YamlConfigurationSwapper<YamlPr
         result.setTotalUnitCount(data.getTotalUnitCount());
         result.setCompletedUnitCount(data.getCompletedUnitCount());
         result.setIdle(data.isIdle());
-        result.setHeldByConnection(data.isHeldByConnection());
         result.setInterrupted(data.getInterrupted());
         return result;
     }
@@ -49,7 +48,6 @@ public final class YamlProcessSwapper implements YamlConfigurationSwapper<YamlPr
     @Override
     public Process swapToObject(final YamlProcess yamlConfig) {
         return new Process(yamlConfig.getId(), yamlConfig.getStartMillis(), yamlConfig.getSql(), yamlConfig.getDatabaseName(), yamlConfig.getUsername(), yamlConfig.getHostname(),
-                yamlConfig.getTotalUnitCount(), new AtomicInteger(yamlConfig.getCompletedUnitCount()), yamlConfig.isIdle(), yamlConfig.isHeldByConnection(),
-                new AtomicBoolean(yamlConfig.isInterrupted()));
+                yamlConfig.getTotalUnitCount(), new AtomicInteger(yamlConfig.getCompletedUnitCount()), yamlConfig.isIdle(), new AtomicBoolean(yamlConfig.isInterrupted()));
     }
 }

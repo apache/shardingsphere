@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,9 +40,10 @@ class YamlProcessSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext("foo_db", new Grantee("root", "localhost"));
+        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+        ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext(processId, "foo_db", new Grantee("root", "localhost"));
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
-        Process process = new Process("SELECT 1", executionGroupContext, true);
+        Process process = new Process("SELECT 1", executionGroupContext);
         YamlProcess actual = new YamlProcessSwapper().swapToYamlConfiguration(process);
         assertNotNull(actual.getId());
         assertThat(actual.getStartMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
@@ -65,7 +68,6 @@ class YamlProcessSwapperTest {
         assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getTotalUnitCount(), is(10));
         assertThat(actual.getCompletedUnitCount(), is(5));
-        assertThat(actual.isHeldByConnection(), is(false));
         assertTrue(actual.isIdle());
     }
     
