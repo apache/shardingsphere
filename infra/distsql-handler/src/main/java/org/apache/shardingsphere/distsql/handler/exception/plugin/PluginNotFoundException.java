@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
+package org.apache.shardingsphere.distsql.handler.exception.plugin;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 
 /**
- * Show plugins statement.
+ * Plugin not found exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowPluginsStatement extends QueryableRALStatement {
+public final class PluginNotFoundException extends DistSQLException {
     
-    private final String type;
+    private static final long serialVersionUID = -2938352776606947755L;
     
-    private final String pluginClass;
-    
-    public ShowPluginsStatement(final String type) {
-        this(type, null);
+    public PluginNotFoundException(final String pluginClass) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 155, String.format("Plugin class `%s` not found.", pluginClass));
     }
 }

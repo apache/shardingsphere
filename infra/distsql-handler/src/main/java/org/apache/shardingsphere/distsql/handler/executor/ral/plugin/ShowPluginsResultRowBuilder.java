@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
@@ -32,9 +33,10 @@ public interface ShowPluginsResultRowBuilder extends TypedSPI {
     /**
      * Generate rows.
      *
+     * @param sqlStatement SQL statement
      * @return generated rows
      */
-    Collection<LocalDataQueryResultRow> generateRows();
+    Collection<LocalDataQueryResultRow> generateRows(ShowPluginsStatement sqlStatement);
     
     /**
      * Get column names.

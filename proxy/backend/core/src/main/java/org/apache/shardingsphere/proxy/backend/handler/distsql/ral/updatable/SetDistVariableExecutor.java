@@ -33,7 +33,7 @@ import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidVariableValueException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +83,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
             }
             return TypedSPI.class.isAssignableFrom(propertyKey.getType()) ? ((TypedSPI) propertyValue).getType().toString() : propertyValue;
         } catch (final TypedPropertyValueException ignored) {
-            throw new InvalidValueException(value);
+            throw new InvalidVariableValueException(value);
         }
     }
     

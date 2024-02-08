@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.algorithm.AlgorithmMetaDataQueryResultRows;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 
@@ -29,16 +30,16 @@ import java.util.Collection;
  */
 public final class ShowEncryptAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
     
-    private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(EncryptAlgorithm.class);
+    private final PluginMetaDataQueryResultRows pluginMetaDataQueryResultRows = new PluginMetaDataQueryResultRows(EncryptAlgorithm.class);
     
     @Override
-    public Collection<LocalDataQueryResultRow> generateRows() {
-        return algorithmMetaDataQueryResultRows.getRows();
+    public Collection<LocalDataQueryResultRow> generateRows(final ShowPluginsStatement sqlStatement) {
+        return pluginMetaDataQueryResultRows.getRows();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return algorithmMetaDataQueryResultRows.getColumnNames();
+        return pluginMetaDataQueryResultRows.getColumnNames();
     }
     
     @Override

@@ -15,35 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.query;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
+import org.apache.shardingsphere.distsql.handler.exception.plugin.PluginNotFoundException;
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Show sharding algorithm plugins result row builder.
+ * Show common plugins result row builder.
  */
-public final class ShowShardingAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
-    
-    private final PluginMetaDataQueryResultRows pluginMetaDataQueryResultRows = new PluginMetaDataQueryResultRows(ShardingAlgorithm.class);
+public final class ShowCommonPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final ShowPluginsStatement sqlStatement) {
-        return pluginMetaDataQueryResultRows.getRows();
+        return new PluginMetaDataQueryResultRows(getPluginClass(sqlStatement)).getRows();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static Class<? extends TypedSPI> getPluginClass(final ShowPluginsStatement sqlStatement) {
+        try {
+            Class<?> result = Class.forName(sqlStatement.getPluginClass());
+            ShardingSpherePreconditions.checkState(TypedSPI.class.isAssignableFrom(result), () -> new UnsupportedOperationException("The plugin class to be queried must extend TypedSPI."));
+            return (Class<? extends TypedSPI>) result;
+        } catch (final ClassNotFoundException ignore) {
+            throw new PluginNotFoundException(sqlStatement.getPluginClass());
+        }
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return pluginMetaDataQueryResultRows.getColumnNames();
+        // TODO change to pluginMetaDataQueryResultRows.getColumnNames after adding SQL statement as param for this method
+        return Arrays.asList("type", "type_aliases", "description");
     }
     
     @Override
     public String getType() {
-        return "SHARDING_ALGORITHM";
+        return "COMMON";
     }
 }

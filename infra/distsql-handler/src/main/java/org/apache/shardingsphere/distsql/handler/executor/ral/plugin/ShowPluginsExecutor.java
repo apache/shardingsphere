@@ -46,7 +46,7 @@ public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPlugi
         if (!rowBuilder.isPresent()) {
             return Collections.emptyList();
         }
-        return rowBuilder.get().generateRows();
+        return rowBuilder.get().generateRows(sqlStatement);
     }
     
     @Override
