@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.authentication;
+package org.apache.shardingsphere.authentication.result;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
