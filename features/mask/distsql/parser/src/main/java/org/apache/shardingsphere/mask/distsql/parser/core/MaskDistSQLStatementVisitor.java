@@ -32,13 +32,13 @@ import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementPars
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ShowMaskAlgorithmImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ShowMaskRulesContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.statement.CreateMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
-import org.apache.shardingsphere.mask.distsql.statement.ShowMaskAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -116,6 +116,6 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
     
     @Override
     public ASTNode visitShowMaskAlgorithmImplementations(final ShowMaskAlgorithmImplementationsContext ctx) {
-        return new ShowMaskAlgorithmImplementationsStatement();
+        return new ShowPluginsStatement("MASK_ALGORITHM");
     }
 }
