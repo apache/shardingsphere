@@ -172,7 +172,6 @@ public final class JDBCRepositorySQLLoader {
     }
     
     private static JDBCRepositorySQL loadFromJar(final URL url, final String type) throws IOException {
-        JDBCRepositorySQL result = null;
         URL jarUrl = url;
         if ("zip".equals(url.getProtocol())) {
             jarUrl = new URL(url.toExternalForm().replace("zip:/", "jar:file:/"));
@@ -181,6 +180,7 @@ public final class JDBCRepositorySQLLoader {
         if (!(urlConnection instanceof JarURLConnection)) {
             return null;
         }
+        JDBCRepositorySQL result = null;
         try (JarFile jar = ((JarURLConnection) urlConnection).getJarFile()) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
