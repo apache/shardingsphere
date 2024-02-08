@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.rql.plugin;
+package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -30,10 +30,10 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Show plugin executor.
+ * Show plugins executor.
  */
 @Setter
-public final class ShowPluginExecutor implements DistSQLQueryExecutor<ShowPluginStatement> {
+public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPluginsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -41,8 +41,8 @@ public final class ShowPluginExecutor implements DistSQLQueryExecutor<ShowPlugin
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowPluginStatement sqlStatement, final ContextManager contextManager) {
-        Optional<ShowPluginResultRowBuilder> rowBuilder = TypedSPILoader.findService(ShowPluginResultRowBuilder.class, sqlStatement.getType());
+    public Collection<LocalDataQueryResultRow> getRows(final ShowPluginsStatement sqlStatement, final ContextManager contextManager) {
+        Optional<ShowPluginsResultRowBuilder> rowBuilder = TypedSPILoader.findService(ShowPluginsResultRowBuilder.class, sqlStatement.getType());
         if (!rowBuilder.isPresent()) {
             return Collections.emptyList();
         }
@@ -50,7 +50,7 @@ public final class ShowPluginExecutor implements DistSQLQueryExecutor<ShowPlugin
     }
     
     @Override
-    public Class<ShowPluginStatement> getType() {
-        return ShowPluginStatement.class;
+    public Class<ShowPluginsStatement> getType() {
+        return ShowPluginsStatement.class;
     }
 }

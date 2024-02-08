@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.rql.plugin;
+package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import java.util.Collection;
 
 /**
- * Show plugin result row builder.
+ * Show plugins result row builder.
  */
 @SingletonSPI
-public interface ShowPluginResultRowBuilder extends TypedSPI {
+public interface ShowPluginsResultRowBuilder extends TypedSPI {
     
     /**
      * Generate rows.
