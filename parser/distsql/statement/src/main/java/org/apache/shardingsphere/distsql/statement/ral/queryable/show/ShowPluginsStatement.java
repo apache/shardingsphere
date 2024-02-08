@@ -21,14 +21,14 @@ import lombok.Getter;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
- * Show plugin statement.
+ * Show plugins statement.
  */
 @Getter
-public final class ShowPluginStatement extends QueryableRALStatement {
+public final class ShowPluginsStatement extends QueryableRALStatement {
     
     private final String type;
     
-    public ShowPluginStatement(final String type) {
+    public ShowPluginsStatement(final String type) {
         this.type = type;
     }
 }

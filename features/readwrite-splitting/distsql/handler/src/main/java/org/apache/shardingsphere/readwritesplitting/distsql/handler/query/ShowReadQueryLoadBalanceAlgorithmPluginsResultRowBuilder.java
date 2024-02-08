@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.algorithm.AlgorithmMetaDataQueryResultRows;
-import org.apache.shardingsphere.distsql.handler.executor.rql.plugin.ShowPluginResultRowBuilder;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Show read query load balance algorithm plugin result row builder.
+ * Show read query load balance algorithm plugins result row builder.
  */
-public final class ShowReadQueryLoadBalanceAlgorithmPluginResultRowBuilder implements ShowPluginResultRowBuilder {
+public final class ShowReadQueryLoadBalanceAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
     
     private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(ReadQueryLoadBalanceAlgorithm.class);
     
