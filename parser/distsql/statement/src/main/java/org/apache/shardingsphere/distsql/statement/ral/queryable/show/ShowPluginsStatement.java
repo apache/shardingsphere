@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
 /**
- * Show plugins statement.a
+ * Show plugins statement.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ShowPluginsStatement extends QueryableRALStatement {
     
@@ -32,10 +34,5 @@ public final class ShowPluginsStatement extends QueryableRALStatement {
     
     public ShowPluginsStatement(final String type) {
         this(type, null);
-    }
-    
-    public ShowPluginsStatement(final String type, final String pluginClass) {
-        this.type = type;
-        this.pluginClass = pluginClass;
     }
 }
