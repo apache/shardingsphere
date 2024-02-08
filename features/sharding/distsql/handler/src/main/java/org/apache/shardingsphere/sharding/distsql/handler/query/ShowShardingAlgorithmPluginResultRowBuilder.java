@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
+package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.algorithm.AlgorithmMetaDataQueryResultRows;
-import org.apache.shardingsphere.distsql.handler.engine.query.rql.spi.ShowSPIImplementationsResultRowBuilder;
+import org.apache.shardingsphere.distsql.handler.executor.rql.plugin.ShowPluginResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
 
 /**
- * Show read query load balance algorithm implementations result row builder.
+ * Show sharding algorithm plugin result row builder.
  */
-public final class ShowReadQueryLoadBalanceAlgorithmImplementationsResultRowBuilder implements ShowSPIImplementationsResultRowBuilder {
+public final class ShowShardingAlgorithmPluginResultRowBuilder implements ShowPluginResultRowBuilder {
     
-    private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(ReadQueryLoadBalanceAlgorithm.class);
+    private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(ShardingAlgorithm.class);
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows() {
@@ -43,6 +43,6 @@ public final class ShowReadQueryLoadBalanceAlgorithmImplementationsResultRowBuil
     
     @Override
     public String getType() {
-        return "READ_QUERY_LOAD_BALANCE_ALGORITHM";
+        return "SHARDING_ALGORITHM";
     }
 }
