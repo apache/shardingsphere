@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.algorithm.AlgorithmMetaDataQueryResultRows;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -31,16 +31,16 @@ import java.util.Collection;
  */
 public final class ShowMigrationCheckAlgorithmsExecutor implements DistSQLQueryExecutor<ShowMigrationCheckAlgorithmsStatement> {
     
-    private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(TableDataConsistencyChecker.class);
+    private final PluginMetaDataQueryResultRows pluginMetaDataQueryResultRows = new PluginMetaDataQueryResultRows(TableDataConsistencyChecker.class);
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
-        return algorithmMetaDataQueryResultRows.getRows();
+        return pluginMetaDataQueryResultRows.getRows();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return algorithmMetaDataQueryResultRows.getColumnNames();
+        return pluginMetaDataQueryResultRows.getColumnNames();
     }
     
     @Override

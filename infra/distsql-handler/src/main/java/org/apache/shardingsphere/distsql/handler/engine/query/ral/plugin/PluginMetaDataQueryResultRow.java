@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.ral.algorithm;
+package org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Algorithm meta data query result row.
+ * Plugin meta data query result row.
  */
-public final class AlgorithmMetaDataQueryResultRow {
+public final class PluginMetaDataQueryResultRow {
     
     private final boolean containsDatabaseTypes;
     
@@ -42,14 +42,14 @@ public final class AlgorithmMetaDataQueryResultRow {
     
     private final String description;
     
-    public AlgorithmMetaDataQueryResultRow(final ShardingSphereAlgorithm algorithm) {
-        containsDatabaseTypes = algorithm instanceof DatabaseSupportedTypedSPI;
-        type = String.valueOf(algorithm.getType());
-        typeAliases = algorithm.getTypeAliases().stream().map(Object::toString).collect(Collectors.joining(","));
+    public PluginMetaDataQueryResultRow(final TypedSPI plugin) {
+        containsDatabaseTypes = plugin instanceof DatabaseSupportedTypedSPI;
+        type = String.valueOf(plugin.getType());
+        typeAliases = plugin.getTypeAliases().stream().map(Object::toString).collect(Collectors.joining(","));
         supportedDatabaseTypes = containsDatabaseTypes
-                ? getSupportedDatabaseTypes(((DatabaseSupportedTypedSPI) algorithm).getSupportedDatabaseTypes()).stream().map(DatabaseType::getType).collect(Collectors.joining(","))
+                ? getSupportedDatabaseTypes(((DatabaseSupportedTypedSPI) plugin).getSupportedDatabaseTypes()).stream().map(DatabaseType::getType).collect(Collectors.joining(","))
                 : "";
-        SPIDescription description = algorithm.getClass().getAnnotation(SPIDescription.class);
+        SPIDescription description = plugin.getClass().getAnnotation(SPIDescription.class);
         this.description = null == description ? "" : description.value();
     }
     

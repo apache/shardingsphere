@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.ral.algorithm;
+package org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Algorithm meta data query result rows.
+ * Plugin meta data query result rows.
  */
-public final class AlgorithmMetaDataQueryResultRows {
+public final class PluginMetaDataQueryResultRows {
     
     private final boolean containsDatabaseTypes;
     
-    private final Collection<AlgorithmMetaDataQueryResultRow> rows;
+    private final Collection<PluginMetaDataQueryResultRow> rows;
     
-    public AlgorithmMetaDataQueryResultRows(final Class<? extends ShardingSphereAlgorithm> algorithmClass) {
-        containsDatabaseTypes = DatabaseSupportedTypedSPI.class.isAssignableFrom(algorithmClass);
-        rows = ShardingSphereServiceLoader.getServiceInstances(algorithmClass).stream().map(AlgorithmMetaDataQueryResultRow::new).collect(Collectors.toList());
+    public PluginMetaDataQueryResultRows(final Class<? extends TypedSPI> pluginClass) {
+        containsDatabaseTypes = DatabaseSupportedTypedSPI.class.isAssignableFrom(pluginClass);
+        rows = ShardingSphereServiceLoader.getServiceInstances(pluginClass).stream().map(PluginMetaDataQueryResultRow::new).collect(Collectors.toList());
     }
     
     /**
@@ -46,7 +46,7 @@ public final class AlgorithmMetaDataQueryResultRows {
      * @return rows
      */
     public Collection<LocalDataQueryResultRow> getRows() {
-        return rows.stream().map(AlgorithmMetaDataQueryResultRow::toLocalDataQueryResultRow).collect(Collectors.toList());
+        return rows.stream().map(PluginMetaDataQueryResultRow::toLocalDataQueryResultRow).collect(Collectors.toList());
     }
     
     /**

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.junit.jupiter.api.Test;
 
@@ -25,13 +26,14 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class ShowEncryptAlgorithmPluginsResultRowBuilderTest {
     
     @Test
     void assertGetRowData() {
         ShowEncryptAlgorithmPluginsResultRowBuilder rowBuilder = new ShowEncryptAlgorithmPluginsResultRowBuilder();
-        Collection<LocalDataQueryResultRow> actual = rowBuilder.generateRows();
+        Collection<LocalDataQueryResultRow> actual = rowBuilder.generateRows(mock(ShowPluginsStatement.class));
         assertThat(actual.size(), is(3));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
