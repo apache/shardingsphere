@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.authority.distsql.handler.query;
 
 import lombok.Setter;
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -46,9 +46,10 @@ public final class ShowAuthorityRuleExecutor implements DistSQLQueryExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowAuthorityRuleStatement sqlStatement, final ContextManager contextManager) {
-        AuthorityRuleConfiguration ruleConfig = rule.getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
-                ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps().isEmpty() ? "" : ruleConfig.getPrivilegeProvider().getProps()));
+        String users = rule.getConfiguration().getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; "));
+        String provider = rule.getConfiguration().getPrivilegeProvider().getType();
+        Properties props = rule.getConfiguration().getPrivilegeProvider().getProps().isEmpty() ? new Properties() : rule.getConfiguration().getPrivilegeProvider().getProps();
+        return Collections.singleton(new LocalDataQueryResultRow(users, provider, props));
     }
     
     @Override
