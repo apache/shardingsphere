@@ -52,9 +52,9 @@ class ShowAuthorityRuleExecutorTest {
     }
     
     private ContextManager mockContextManager() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)).thenReturn(Optional.of(new AuthorityRule(createRuleConfiguration())));
-        return contextManager;
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)).thenReturn(Optional.of(new AuthorityRule(createRuleConfiguration())));
+        return result;
     }
     
     private AuthorityRuleConfiguration createRuleConfiguration() {
