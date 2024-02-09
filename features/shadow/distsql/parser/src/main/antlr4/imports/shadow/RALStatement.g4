@@ -19,6 +19,6 @@ grammar RALStatement;
 
 import BaseRule;
 
-showShadowAlgorithmImplementations
-    : SHOW SHADOW ALGORITHM IMPLEMENTATIONS
+showShadowAlgorithmPlugins
+    : SHOW SHADOW ALGORITHM PLUGINS
     ;

@@ -55,11 +55,11 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariablesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowKeyGenerateAlgorithmImplementationsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowKeyGenerateAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowLogicalTablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowPluginImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedStorageUnitContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowServiceProviderImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowStorageUnitsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StorageUnitDefinitionContext;
@@ -406,12 +406,12 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitShowServiceProviderImplementations(final ShowServiceProviderImplementationsContext ctx) {
-        return new ShowPluginsStatement("COMMON", getIdentifierValue(ctx.serviceProviderInterface()));
+    public ASTNode visitShowPluginImplementations(final ShowPluginImplementationsContext ctx) {
+        return new ShowPluginsStatement("COMMON", getIdentifierValue(ctx.pluginClass()));
     }
     
     @Override
-    public ASTNode visitShowKeyGenerateAlgorithmImplementations(final ShowKeyGenerateAlgorithmImplementationsContext ctx) {
+    public ASTNode visitShowKeyGenerateAlgorithmPlugins(final ShowKeyGenerateAlgorithmPluginsContext ctx) {
         return new ShowPluginsStatement("KEY_GENERATE_ALGORITHM");
     }
 }

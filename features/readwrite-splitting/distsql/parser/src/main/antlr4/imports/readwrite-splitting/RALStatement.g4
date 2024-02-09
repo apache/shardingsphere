@@ -27,6 +27,6 @@ showStatusFromReadwriteSplittingRules
     : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
     ;
 
-showReadQueryLoadBalanceAlgorithmImplementations
-    : SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
+showReadQueryLoadBalanceAlgorithmPlugins
+    : SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS
     ;

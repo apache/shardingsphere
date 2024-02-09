@@ -115,12 +115,12 @@ unlockCluster
     : UNLOCK CLUSTER
     ;
 
-showServiceProviderImplementations
-    : SHOW IMPLEMENTATIONS OF serviceProviderInterface
+showPluginImplementations
+    : SHOW PLUGINS OF pluginClass
     ;
 
-showKeyGenerateAlgorithmImplementations
-    : SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS
+showKeyGenerateAlgorithmPlugins
+    : SHOW KEY GENERATE ALGORITHM PLUGINS
     ;
 
 transmissionRule
@@ -211,6 +211,6 @@ likePattern
     : STRING_
     ;
 
-serviceProviderInterface
-    : IDENTIFIER_ | STRING_
+pluginClass
+    : STRING_
     ;

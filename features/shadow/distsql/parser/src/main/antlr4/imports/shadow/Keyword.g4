@@ -151,6 +151,6 @@ NOT
     : N O T
     ;
 
-IMPLEMENTATIONS
-    : I M P L E M E N T A T I O N S
+PLUGINS
+    : P L U G I N S
     ;

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQ
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadQueryLoadBalanceAlgorithmImplementationsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadQueryLoadBalanceAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowStatusFromReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
@@ -132,7 +132,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     }
     
     @Override
-    public ASTNode visitShowReadQueryLoadBalanceAlgorithmImplementations(final ShowReadQueryLoadBalanceAlgorithmImplementationsContext ctx) {
+    public ASTNode visitShowReadQueryLoadBalanceAlgorithmPlugins(final ShowReadQueryLoadBalanceAlgorithmPluginsContext ctx) {
         return new ShowPluginsStatement("READ_QUERY_LOAD_BALANCE_ALGORITHM");
     }
 }

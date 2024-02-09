@@ -19,6 +19,6 @@ grammar RALStatement;
 
 import BaseRule;
 
-showShardingAlgorithmImplementations
-    : SHOW SHARDING ALGORITHM IMPLEMENTATIONS
+showShardingAlgorithmPlugins
+    : SHOW SHARDING ALGORITHM PLUGINS
     ;
