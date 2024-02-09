@@ -59,11 +59,11 @@ class ShowAuthorityRuleExecutorTest {
     private DistSQLQueryExecuteEngine getDistSQLQueryExecuteEngine() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class))
-                .thenReturn(Optional.of(new AuthorityRule(createAuthorityRuleConfiguration())));
+                .thenReturn(Optional.of(new AuthorityRule(createRuleConfiguration())));
         return new DistSQLQueryExecuteEngine(new ShowAuthorityRuleStatement(), null, contextManager, mock(DistSQLConnectionContext.class));
     }
     
-    private AuthorityRuleConfiguration createAuthorityRuleConfiguration() {
+    private AuthorityRuleConfiguration createRuleConfiguration() {
         ShardingSphereUser user = new ShardingSphereUser("root", "", "localhost");
         AlgorithmConfiguration privilegeProvider = new AlgorithmConfiguration("ALL_PERMITTED", new Properties());
         return new AuthorityRuleConfiguration(Collections.singleton(user), privilegeProvider, Collections.emptyMap(), null);
