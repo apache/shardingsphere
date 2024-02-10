@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.distsql.handler.engine.update;
 
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorAwareSetter;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.legacy.LegacyDatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.legacy.LegacyGlobalRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
