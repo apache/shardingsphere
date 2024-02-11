@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.migration.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
 
 /**
- * Show migration check algorithms statement.
+ * Show migration check algorithm plugins result row builder.
  */
-public final class ShowMigrationCheckAlgorithmsStatement extends QueryableMigrationRALStatement {
+public final class ShowMigrationCheckAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+    
+    @Override
+    public Class<TableDataConsistencyChecker> getPluginClass() {
+        return TableDataConsistencyChecker.class;
+    }
+    
+    @Override
+    public String getType() {
+        return "MIGRATION_CHECK";
+    }
 }
