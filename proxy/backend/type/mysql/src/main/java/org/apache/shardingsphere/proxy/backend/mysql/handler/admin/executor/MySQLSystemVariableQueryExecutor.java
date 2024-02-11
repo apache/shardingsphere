@@ -72,7 +72,7 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
             metaData.add(new RawQueryResultColumnMetaData("", name, name, Types.VARCHAR, "VARCHAR", 1024, 0));
         }
         queryResultMetaData = new RawQueryResultMetaData(metaData);
-        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(columnsOfRow)));
+        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(columnsOfRow.toArray())));
     }
     
     /**
