@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Show migration source storage units executor.
@@ -51,7 +50,7 @@ public final class ShowMigrationSourceStorageUnitsExecutor implements DistSQLQue
         Iterator<Collection<Object>> data = jobAPI.listMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY)).iterator();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
-            result.add(new LocalDataQueryResultRow((List<Object>) data.next()));
+            result.add(new LocalDataQueryResultRow(data.next().toArray()));
         }
         return result;
     }

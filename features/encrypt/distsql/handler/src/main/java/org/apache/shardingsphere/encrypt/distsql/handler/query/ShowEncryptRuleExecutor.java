@@ -68,7 +68,7 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
             AlgorithmConfiguration encryptorAlgorithmConfig = encryptors.get(each.getCipher().getEncryptorName());
             AlgorithmConfiguration assistedQueryEncryptorAlgorithmConfig = each.getAssistedQuery().isPresent() ? encryptors.get(each.getAssistedQuery().get().getEncryptorName()) : null;
             AlgorithmConfiguration likeQueryEncryptorAlgorithmConfig = each.getLikeQuery().isPresent() ? encryptors.get(each.getLikeQuery().get().getEncryptorName()) : null;
-            result.add(new LocalDataQueryResultRow(Arrays.asList(
+            result.add(new LocalDataQueryResultRow(
                     tableRuleConfig.getName(),
                     each.getName(),
                     each.getCipher().getName(),
@@ -79,7 +79,7 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
                     null == assistedQueryEncryptorAlgorithmConfig ? "" : assistedQueryEncryptorAlgorithmConfig.getType(),
                     null == assistedQueryEncryptorAlgorithmConfig ? "" : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
                     null == likeQueryEncryptorAlgorithmConfig ? "" : likeQueryEncryptorAlgorithmConfig.getType(),
-                    null == likeQueryEncryptorAlgorithmConfig ? "" : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()))));
+                    null == likeQueryEncryptorAlgorithmConfig ? "" : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps())));
         }
         return result;
     }

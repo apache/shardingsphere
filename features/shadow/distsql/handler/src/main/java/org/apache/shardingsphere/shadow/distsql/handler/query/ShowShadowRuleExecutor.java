@@ -77,8 +77,8 @@ public final class ShowShadowRuleExecutor implements DistSQLQueryExecutor<ShowSh
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         dataSourceTable.forEach((key, value) -> value.getShadowAlgorithmNames().forEach(each -> {
             AlgorithmConfiguration algorithmConfig = algorithmConfigs.get(each);
-            result.add(new LocalDataQueryResultRow(Arrays.asList(key, dataSourceConfig.getName(), dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(),
-                    algorithmConfig.getType(), PropertiesConverter.convert(algorithmConfig.getProps()))));
+            result.add(new LocalDataQueryResultRow(key, dataSourceConfig.getName(), dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(),
+                    algorithmConfig.getType(), PropertiesConverter.convert(algorithmConfig.getProps())));
         }));
         return result;
     }

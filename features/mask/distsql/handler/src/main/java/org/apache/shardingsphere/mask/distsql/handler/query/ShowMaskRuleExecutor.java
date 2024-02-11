@@ -57,8 +57,7 @@ public final class ShowMaskRuleExecutor implements DistSQLQueryExecutor<ShowMask
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         tableRuleConfig.getColumns().forEach(each -> {
             AlgorithmConfiguration maskAlgorithmConfig = algorithmMap.get(each.getMaskAlgorithm());
-            result.add(new LocalDataQueryResultRow(
-                    Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(), maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps()))));
+            result.add(new LocalDataQueryResultRow(tableRuleConfig.getName(), each.getLogicColumn(), maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps())));
         });
         return result;
     }

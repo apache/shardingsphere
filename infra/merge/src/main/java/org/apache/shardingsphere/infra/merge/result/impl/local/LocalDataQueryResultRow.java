@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.merge.result.impl.local;
 
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +25,6 @@ import java.util.List;
 /**
  * Local data query result row.
  */
-@RequiredArgsConstructor
 public final class LocalDataQueryResultRow {
     
     private final List<Object> data;

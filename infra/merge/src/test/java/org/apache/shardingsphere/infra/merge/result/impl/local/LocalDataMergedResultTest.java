@@ -23,7 +23,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -59,22 +58,19 @@ class LocalDataMergedResultTest {
     
     @Test
     void assertGetInputStream() {
-        List<Object> row = Collections.singletonList("value");
-        LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(row)));
+        LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow("value")));
         assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getInputStream(1, "Ascii"));
     }
     
     @Test
     void assertGetCharacterStream() {
-        List<Object> row = Collections.singletonList("value");
-        LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(row)));
+        LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow("value")));
         assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getCharacterStream(1));
     }
     
     @Test
     void assertWasNull() {
-        List<Object> row = Collections.singletonList("value");
-        LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(row)));
+        LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow("value")));
         assertTrue(actual.next());
         assertFalse(actual.wasNull());
     }
