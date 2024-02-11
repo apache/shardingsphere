@@ -33,7 +33,7 @@ public final class ShowMigrationRuleExecutor implements DistSQLQueryExecutor<Sho
     private final ShowTransmissionRuleQueryResult queryResult = new ShowTransmissionRuleQueryResult("MIGRATION");
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowMigrationRuleStatement sqlStatement) {
         return queryResult.getColumnNames();
     }
     

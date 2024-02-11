@@ -48,7 +48,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements DistSQLQueryExe
     private ReadwriteSplittingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowReadwriteSplittingRulesStatement sqlStatement) {
         return Arrays.asList("name", "write_storage_unit_name", "read_storage_unit_names", "transactional_read_query_strategy", "load_balancer_type", "load_balancer_props");
     }
     

@@ -39,7 +39,7 @@ public final class ShowSQLFederationRuleExecutor implements DistSQLQueryExecutor
     private SQLFederationRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowSQLFederationRuleStatement sqlStatement) {
         return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache");
     }
     

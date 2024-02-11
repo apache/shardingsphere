@@ -44,7 +44,7 @@ public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowS
     private SingleRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowSingleTableStatement sqlStatement) {
         return Arrays.asList("table_name", "storage_unit_name");
     }
     

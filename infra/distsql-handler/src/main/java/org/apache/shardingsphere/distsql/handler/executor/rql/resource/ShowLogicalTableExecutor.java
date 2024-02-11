@@ -42,7 +42,7 @@ public final class ShowLogicalTableExecutor implements DistSQLQueryExecutor<Show
     private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowLogicalTablesStatement sqlStatement) {
         return Collections.singleton("table_name");
     }
     

@@ -42,7 +42,7 @@ public final class ShowTrafficRuleExecutor implements DistSQLQueryExecutor<ShowT
     private TrafficRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowTrafficRulesStatement sqlStatement) {
         return Arrays.asList("name", "labels", "algorithm_type", "algorithm_props", "load_balancer_type", "load_balancer_props");
     }
     

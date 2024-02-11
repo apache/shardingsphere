@@ -43,7 +43,7 @@ public final class ShowDefaultShardingStrategyExecutor implements DistSQLQueryEx
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowDefaultShardingStrategyStatement sqlStatement) {
         return Arrays.asList("name", "type", "sharding_column", "sharding_algorithm_name", "sharding_algorithm_type", "sharding_algorithm_props");
     }
     

@@ -46,7 +46,7 @@ public final class ShowShadowRuleExecutor implements DistSQLQueryExecutor<ShowSh
     private ShadowRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShadowRulesStatement sqlStatement) {
         return Arrays.asList("shadow_table", "rule_name", "source_name", "shadow_name", "algorithm_type", "algorithm_props");
     }
     

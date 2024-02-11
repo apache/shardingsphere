@@ -39,7 +39,7 @@ public final class ShowStreamingListExecutor implements DistSQLQueryExecutor<Sho
     private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new CDCJobType());
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowStreamingListStatement sqlStatement) {
         return Arrays.asList("id", "database", "tables", "job_item_count", "active", "create_time", "stop_time");
     }
     

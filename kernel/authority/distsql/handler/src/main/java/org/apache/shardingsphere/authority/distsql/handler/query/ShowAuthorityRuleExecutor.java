@@ -40,7 +40,7 @@ public final class ShowAuthorityRuleExecutor implements DistSQLQueryExecutor<Sho
     private AuthorityRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowAuthorityRuleStatement sqlStatement) {
         return Arrays.asList("users", "provider", "props");
     }
     

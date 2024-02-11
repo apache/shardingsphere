@@ -39,7 +39,7 @@ public final class ShowShardingTableRulesUsedKeyGeneratorExecutor implements Dis
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingTableRulesUsedKeyGeneratorStatement sqlStatement) {
         return Arrays.asList("type", "name");
     }
     

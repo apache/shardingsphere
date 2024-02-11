@@ -45,7 +45,7 @@ public final class ShowTableMetaDataExecutor implements DistSQLQueryExecutor<Sho
     private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowTableMetaDataStatement sqlStatement) {
         return Arrays.asList("database_name", "table_name", "type", "name", "value");
     }
     

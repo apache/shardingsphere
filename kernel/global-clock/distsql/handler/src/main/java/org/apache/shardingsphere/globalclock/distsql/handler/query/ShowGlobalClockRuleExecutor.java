@@ -40,7 +40,7 @@ public final class ShowGlobalClockRuleExecutor implements DistSQLQueryExecutor<S
     private GlobalClockRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowGlobalClockRuleStatement sqlStatement) {
         return Arrays.asList("type", "provider", "enable", "props");
     }
     

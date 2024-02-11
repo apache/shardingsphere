@@ -43,7 +43,7 @@ public final class ShowMaskRuleExecutor implements DistSQLQueryExecutor<ShowMask
     private MaskRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowMaskRulesStatement sqlStatement) {
         return Arrays.asList("table", "column", "algorithm_type", "algorithm_props");
     }
     

@@ -42,7 +42,7 @@ public final class ParseDistSQLExecutor implements DistSQLQueryExecutor<ParseSta
     private DistSQLConnectionContext connectionContext;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ParseStatement sqlStatement) {
         return Arrays.asList("parsed_statement", "parsed_statement_detail");
     }
     

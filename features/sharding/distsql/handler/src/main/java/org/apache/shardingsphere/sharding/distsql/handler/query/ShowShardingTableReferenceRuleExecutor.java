@@ -38,7 +38,7 @@ public final class ShowShardingTableReferenceRuleExecutor implements DistSQLQuer
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingTableReferenceRulesStatement sqlStatement) {
         return Arrays.asList("name", "sharding_table_reference");
     }
     

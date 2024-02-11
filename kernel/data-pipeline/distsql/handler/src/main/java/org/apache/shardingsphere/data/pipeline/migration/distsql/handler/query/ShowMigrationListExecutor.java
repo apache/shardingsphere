@@ -38,7 +38,7 @@ public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<Sho
     private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowMigrationListStatement sqlStatement) {
         return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
     }
     

@@ -41,7 +41,7 @@ public final class FormatSQLExecutor implements DistSQLQueryExecutor<FormatState
     private DistSQLConnectionContext connectionContext;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final FormatStatement sqlStatement) {
         return Collections.singleton("formatted_result");
     }
     

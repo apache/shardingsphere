@@ -34,7 +34,7 @@ import java.util.Collections;
 public final class ShowComputeNodeModeExecutor implements DistSQLQueryExecutor<ShowComputeNodeModeStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowComputeNodeModeStatement sqlStatement) {
         return Arrays.asList("type", "repository", "props");
     }
     

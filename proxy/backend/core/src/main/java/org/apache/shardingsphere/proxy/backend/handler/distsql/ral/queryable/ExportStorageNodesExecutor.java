@@ -46,7 +46,7 @@ import java.util.Map.Entry;
 public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<ExportStorageNodesStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ExportStorageNodesStatement sqlStatement) {
         return Arrays.asList("id", "create_time", "storage_nodes");
     }
     

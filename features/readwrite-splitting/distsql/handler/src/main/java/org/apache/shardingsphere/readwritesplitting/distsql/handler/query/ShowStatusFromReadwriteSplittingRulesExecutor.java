@@ -56,7 +56,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Dist
     private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
         return Arrays.asList("storage_unit", "status");
     }
     

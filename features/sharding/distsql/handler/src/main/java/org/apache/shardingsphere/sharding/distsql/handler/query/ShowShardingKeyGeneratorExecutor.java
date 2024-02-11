@@ -39,7 +39,7 @@ public final class ShowShardingKeyGeneratorExecutor implements DistSQLQueryExecu
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingKeyGeneratorsStatement sqlStatement) {
         return Arrays.asList("name", "type", "props");
     }
     

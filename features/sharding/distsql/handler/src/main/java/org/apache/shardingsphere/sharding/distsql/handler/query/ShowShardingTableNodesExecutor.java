@@ -41,7 +41,7 @@ public final class ShowShardingTableNodesExecutor implements DistSQLQueryExecuto
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingTableNodesStatement sqlStatement) {
         return Arrays.asList("name", "nodes");
     }
     

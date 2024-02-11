@@ -37,9 +37,10 @@ public interface DistSQLQueryExecutor<T extends DistSQLStatement> extends TypedS
     /**
      * Get column names.
      *
+     * @param sqlStatement DistSQL statement
      * @return column names
      */
-    Collection<String> getColumnNames();
+    Collection<String> getColumnNames(T sqlStatement);
     
     /**
      * Get query result rows.
