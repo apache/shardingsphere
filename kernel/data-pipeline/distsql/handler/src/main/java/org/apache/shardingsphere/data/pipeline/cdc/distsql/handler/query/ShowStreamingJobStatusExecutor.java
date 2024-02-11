@@ -41,6 +41,12 @@ public final class ShowStreamingJobStatusExecutor implements DistSQLQueryExecuto
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
     @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("item", "data_source", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "confirmed_position",
+                "current_position", "error_message");
+    }
+    
+    @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingStatusStatement sqlStatement, final ContextManager contextManager) {
         Collection<CDCJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
@@ -61,12 +67,6 @@ public final class ShowStreamingJobStatusExecutor implements DistSQLQueryExecuto
         return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
                 jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), transmissionJobItemInfo.getInventoryFinishedPercentage(),
                 incrementalIdleSeconds, cdcJobItemInfo.getConfirmedPosition(), cdcJobItemInfo.getCurrentPosition(), transmissionJobItemInfo.getErrorMessage());
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "confirmed_position",
-                "current_position", "error_message");
     }
     
     @Override

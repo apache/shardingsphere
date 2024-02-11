@@ -38,16 +38,16 @@ public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<Sho
     private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
+    }
+    
+    @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement, final ContextManager contextManager) {
         return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
                 each.getTableName(), each.getJobMetaData().getJobItemCount(),
                 each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
                 each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
     }
     
     @Override

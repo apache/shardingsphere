@@ -31,16 +31,14 @@ import java.util.Collection;
  */
 public final class ShowMigrationCheckAlgorithmsExecutor implements DistSQLQueryExecutor<ShowMigrationCheckAlgorithmsStatement> {
     
-    private final PluginMetaDataQueryResultRows pluginMetaDataQueryResultRows = new PluginMetaDataQueryResultRows(TableDataConsistencyChecker.class);
-    
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
-        return pluginMetaDataQueryResultRows.getRows();
+    public Collection<String> getColumnNames() {
+        return new PluginMetaDataQueryResultRows(TableDataConsistencyChecker.class).getColumnNames();
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return pluginMetaDataQueryResultRows.getColumnNames();
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
+        return new PluginMetaDataQueryResultRows(TableDataConsistencyChecker.class).getRows();
     }
     
     @Override
