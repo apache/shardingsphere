@@ -39,7 +39,7 @@ public final class ShowShardingTableRulesUsedAuditorExecutor implements DistSQLQ
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingTableRulesUsedAuditorStatement sqlStatement) {
         return Arrays.asList("type", "name");
     }
     

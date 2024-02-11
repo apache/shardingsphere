@@ -50,7 +50,7 @@ public final class ShowUnloadedSingleTableExecutor implements DistSQLQueryExecut
     private SingleRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowUnloadedSingleTableStatement sqlStatement) {
         return Arrays.asList("table_name", "storage_unit_name");
     }
     

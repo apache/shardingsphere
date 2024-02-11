@@ -33,7 +33,7 @@ import java.util.Collections;
 public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPluginsStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowPluginsStatement sqlStatement) {
         return Arrays.asList("type", "type_aliases", "description");
     }
     

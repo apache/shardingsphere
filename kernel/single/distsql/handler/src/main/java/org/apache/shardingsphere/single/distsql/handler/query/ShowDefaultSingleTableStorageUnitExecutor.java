@@ -37,7 +37,7 @@ public final class ShowDefaultSingleTableStorageUnitExecutor implements DistSQLQ
     private SingleRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowDefaultSingleTableStorageUnitStatement sqlStatement) {
         return Collections.singleton("storage_unit_name");
     }
     

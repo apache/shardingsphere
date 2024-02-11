@@ -39,7 +39,7 @@ public final class ShowSQLParserRuleExecutor implements DistSQLQueryExecutor<Sho
     private SQLParserRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowSQLParserRuleStatement sqlStatement) {
         return Arrays.asList("parse_tree_cache", "sql_statement_cache");
     }
     

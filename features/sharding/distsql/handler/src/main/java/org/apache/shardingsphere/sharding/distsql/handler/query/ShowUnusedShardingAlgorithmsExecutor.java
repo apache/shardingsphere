@@ -46,7 +46,7 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements DistSQLQueryE
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowUnusedShardingAlgorithmsStatement sqlStatement) {
         return Arrays.asList("name", "type", "props");
     }
     

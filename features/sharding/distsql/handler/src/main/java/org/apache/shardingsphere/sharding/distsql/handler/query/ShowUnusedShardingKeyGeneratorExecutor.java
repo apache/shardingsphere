@@ -44,7 +44,7 @@ public final class ShowUnusedShardingKeyGeneratorExecutor implements DistSQLQuer
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowUnusedShardingKeyGeneratorsStatement sqlStatement) {
         return Arrays.asList("name", "type", "props");
     }
     

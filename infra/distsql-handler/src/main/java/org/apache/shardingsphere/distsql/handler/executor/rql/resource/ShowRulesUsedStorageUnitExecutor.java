@@ -43,7 +43,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements DistSQLQueryExecu
     private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowRulesUsedStorageUnitStatement sqlStatement) {
         return Arrays.asList("type", "name");
     }
     

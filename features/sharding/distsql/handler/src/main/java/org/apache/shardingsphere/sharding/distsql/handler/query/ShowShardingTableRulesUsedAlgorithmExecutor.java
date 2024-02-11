@@ -41,7 +41,7 @@ public final class ShowShardingTableRulesUsedAlgorithmExecutor implements DistSQ
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingTableRulesUsedAlgorithmStatement sqlStatement) {
         return Arrays.asList("type", "name");
     }
     

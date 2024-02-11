@@ -81,7 +81,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     private DistSQLConnectionContext connectionContext;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final PreviewStatement sqlStatement) {
         return Arrays.asList("data_source_name", "actual_sql");
     }
     

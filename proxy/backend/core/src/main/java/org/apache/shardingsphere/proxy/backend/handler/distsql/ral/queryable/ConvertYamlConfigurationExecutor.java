@@ -59,7 +59,7 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ConvertYamlConfigurationStatement statement) {
         return Collections.singleton("dist_sql");
     }
     

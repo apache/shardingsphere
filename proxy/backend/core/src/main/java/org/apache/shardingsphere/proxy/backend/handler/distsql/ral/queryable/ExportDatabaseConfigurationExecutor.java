@@ -38,7 +38,7 @@ public final class ExportDatabaseConfigurationExecutor implements DistSQLQueryEx
     private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ExportDatabaseConfigurationStatement sqlStatement) {
         return Collections.singleton("result");
     }
     

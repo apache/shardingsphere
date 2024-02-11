@@ -51,7 +51,7 @@ public final class ShowDistVariablesExecutor implements DistSQLQueryExecutor<Sho
     private DistSQLConnectionContext connectionContext;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowDistVariablesStatement sqlStatement) {
         return Arrays.asList("variable_name", "variable_value");
     }
     

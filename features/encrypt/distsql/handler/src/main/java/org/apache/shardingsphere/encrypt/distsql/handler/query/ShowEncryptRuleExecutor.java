@@ -46,7 +46,7 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
     private EncryptRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowEncryptRulesStatement sqlStatement) {
         return Arrays.asList("table", "logic_column", "cipher_column",
                 "assisted_query_column", "like_query_column", "encryptor_type", "encryptor_props", "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props");
     }
@@ -76,16 +76,12 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
                     each.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getName).orElse(""),
                     encryptorAlgorithmConfig.getType(),
                     PropertiesConverter.convert(encryptorAlgorithmConfig.getProps()),
-                    null == assistedQueryEncryptorAlgorithmConfig ? nullToEmptyString(null) : assistedQueryEncryptorAlgorithmConfig.getType(),
-                    null == assistedQueryEncryptorAlgorithmConfig ? nullToEmptyString(null) : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
-                    null == likeQueryEncryptorAlgorithmConfig ? nullToEmptyString(null) : likeQueryEncryptorAlgorithmConfig.getType(),
-                    null == likeQueryEncryptorAlgorithmConfig ? nullToEmptyString(null) : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()))));
+                    null == assistedQueryEncryptorAlgorithmConfig ? "" : assistedQueryEncryptorAlgorithmConfig.getType(),
+                    null == assistedQueryEncryptorAlgorithmConfig ? "" : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
+                    null == likeQueryEncryptorAlgorithmConfig ? "" : likeQueryEncryptorAlgorithmConfig.getType(),
+                    null == likeQueryEncryptorAlgorithmConfig ? "" : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()))));
         }
         return result;
-    }
-    
-    private Object nullToEmptyString(final Object obj) {
-        return null == obj ? "" : obj;
     }
     
     @Override

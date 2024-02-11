@@ -41,7 +41,7 @@ public final class ShowStreamingJobStatusExecutor implements DistSQLQueryExecuto
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowStreamingStatusStatement sqlStatement) {
         return Arrays.asList("item", "data_source", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "confirmed_position",
                 "current_position", "error_message");
     }

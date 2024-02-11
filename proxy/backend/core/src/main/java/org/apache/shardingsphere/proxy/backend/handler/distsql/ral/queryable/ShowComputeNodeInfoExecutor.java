@@ -35,7 +35,7 @@ import java.util.Collections;
 public final class ShowComputeNodeInfoExecutor implements DistSQLQueryExecutor<ShowComputeNodeInfoStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowComputeNodeInfoStatement sqlStatement) {
         return Arrays.asList("instance_id", "host", "port", "status", "mode_type", "worker_id", "labels", "version");
     }
     

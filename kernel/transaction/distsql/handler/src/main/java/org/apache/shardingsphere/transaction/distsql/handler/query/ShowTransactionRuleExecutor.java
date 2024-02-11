@@ -39,7 +39,7 @@ public final class ShowTransactionRuleExecutor implements DistSQLQueryExecutor<S
     private TransactionRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowTransactionRuleStatement sqlStatement) {
         return Arrays.asList("default_type", "provider_type", "props");
     }
     

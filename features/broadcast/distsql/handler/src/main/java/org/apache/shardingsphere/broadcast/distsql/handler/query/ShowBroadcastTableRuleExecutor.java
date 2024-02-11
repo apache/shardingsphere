@@ -38,7 +38,7 @@ public final class ShowBroadcastTableRuleExecutor implements DistSQLQueryExecuto
     private BroadcastRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowBroadcastTableRulesStatement sqlStatement) {
         return Collections.singleton("broadcast_table");
     }
     

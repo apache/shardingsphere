@@ -41,7 +41,7 @@ public final class RuleCountExecutor implements DistSQLQueryExecutor<CountRuleSt
     private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final CountRuleStatement sqlStatement) {
         return Arrays.asList("rule_name", "database", "count");
     }
     

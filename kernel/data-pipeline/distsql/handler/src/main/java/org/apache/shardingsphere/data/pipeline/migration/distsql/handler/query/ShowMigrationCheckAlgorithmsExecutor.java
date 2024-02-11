@@ -32,7 +32,7 @@ import java.util.Collection;
 public final class ShowMigrationCheckAlgorithmsExecutor implements DistSQLQueryExecutor<ShowMigrationCheckAlgorithmsStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowMigrationCheckAlgorithmsStatement sqlStatement) {
         return new PluginMetaDataQueryResultRows(TableDataConsistencyChecker.class).getColumnNames();
     }
     

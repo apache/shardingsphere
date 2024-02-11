@@ -33,7 +33,7 @@ public final class ShowStreamingRuleExecutor implements DistSQLQueryExecutor<Sho
     private final ShowTransmissionRuleQueryResult queryResult = new ShowTransmissionRuleQueryResult("STREAMING");
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowStreamingRuleStatement sqlStatement) {
         return queryResult.getColumnNames();
     }
     

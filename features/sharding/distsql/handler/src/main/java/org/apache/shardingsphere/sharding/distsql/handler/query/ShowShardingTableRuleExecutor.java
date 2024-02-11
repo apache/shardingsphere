@@ -51,7 +51,7 @@ public final class ShowShardingTableRuleExecutor implements DistSQLQueryExecutor
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingTableRulesStatement sqlStatement) {
         return Arrays.asList("table", "actual_data_nodes", "actual_data_sources", "database_strategy_type", "database_sharding_column", "database_sharding_algorithm_type",
                 "database_sharding_algorithm_props", "table_strategy_type", "table_sharding_column", "table_sharding_algorithm_type", "table_sharding_algorithm_props",
                 "key_generate_column", "key_generator_type", "key_generator_props", "auditor_types", "allow_hint_disable");

@@ -40,7 +40,7 @@ public final class ShowSQLTranslatorRuleExecutor implements DistSQLQueryExecutor
     private SQLTranslatorRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowSQLTranslatorRuleStatement sqlStatement) {
         return Arrays.asList("type", "props", "use_original_sql_when_translating_failed");
     }
     

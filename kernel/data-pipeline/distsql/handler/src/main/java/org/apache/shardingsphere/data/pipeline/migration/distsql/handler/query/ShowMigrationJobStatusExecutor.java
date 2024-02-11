@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public final class ShowMigrationJobStatusExecutor implements DistSQLQueryExecutor<ShowMigrationStatusStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowMigrationStatusStatement sqlStatement) {
         return Arrays.asList("item", "data_source", "tables", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "error_message");
     }
     

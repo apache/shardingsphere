@@ -52,7 +52,7 @@ public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowS
     private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowStorageUnitsStatement sqlStatement) {
         return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds",
                 "max_lifetime_milliseconds", "max_pool_size", "min_pool_size", "read_only", "other_attributes");
     }

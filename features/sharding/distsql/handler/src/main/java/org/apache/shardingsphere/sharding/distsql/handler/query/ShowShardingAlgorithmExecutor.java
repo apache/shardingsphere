@@ -40,7 +40,7 @@ public final class ShowShardingAlgorithmExecutor implements DistSQLQueryExecutor
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingAlgorithmsStatement sqlStatement) {
         return Arrays.asList("name", "type", "props");
     }
     

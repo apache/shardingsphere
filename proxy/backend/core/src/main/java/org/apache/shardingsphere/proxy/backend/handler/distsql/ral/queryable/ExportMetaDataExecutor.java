@@ -53,7 +53,7 @@ import java.util.Properties;
 public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<ExportMetaDataStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ExportMetaDataStatement sqlStatement) {
         return Arrays.asList("id", "create_time", "cluster_info");
     }
     

@@ -66,14 +66,13 @@ public final class DistSQLQueryExecuteEngine {
     @SuppressWarnings("unchecked")
     public void executeQuery() throws SQLException {
         DistSQLQueryExecutor<DistSQLStatement> executor = TypedSPILoader.getService(DistSQLQueryExecutor.class, sqlStatement.getClass());
+        columnNames = executor.getColumnNames(sqlStatement);
         try {
             new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : contextManager.getDatabase(databaseName), distsqlConnectionContext);
         } catch (final UnsupportedSQLOperationException ignored) {
             rows = Collections.emptyList();
-            columnNames = executor.getColumnNames();
             return;
         }
         rows = executor.getRows(sqlStatement, contextManager);
-        columnNames = executor.getColumnNames();
     }
 }
