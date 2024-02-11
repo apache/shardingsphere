@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
+package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
