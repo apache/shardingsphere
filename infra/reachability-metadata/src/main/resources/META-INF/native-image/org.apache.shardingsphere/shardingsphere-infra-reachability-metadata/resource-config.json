@@ -15,6 +15,9 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":"\\Qsql\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "pattern":"\\Qtransactions.properties\\E"
   }]},
   "bundles":[]
 }

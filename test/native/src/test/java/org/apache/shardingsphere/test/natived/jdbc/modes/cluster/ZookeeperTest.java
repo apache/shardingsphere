@@ -15,57 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.jdbc.mode.cluster;
+package org.apache.shardingsphere.test.natived.jdbc.modes.cluster;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.etcd.jetcd.launcher.Etcd;
-import io.etcd.jetcd.launcher.EtcdCluster;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.test.TestingServer;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.net.URI;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-class EtcdTest {
+class ZookeeperTest {
     
-    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.etcd.";
+    private static final String SYSTEM_PROP_KEY_PREFIX = "fixture.test-native.yaml.mode.cluster.zookeeper.";
     
     private TestShardingService testShardingService;
     
     /**
      * TODO On low-performance devices in Github Actions, `INSERT` related SQLs may throw a table not found error under nativeTest.
      *  So that we need to wait for a period of time after executing `CREATE TABLE` related SQLs before executing `INSERT` related SQLs.
-     *  This may mean that the implementation of {@link org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository} needs optimization.
+     *  This may mean that the implementation of {@link org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository} needs optimization.
      *
-     * @see org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository
+     * @see org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository
      */
     @Test
-    @EnabledInNativeImage
-    void assertShardingInLocalTransactions() throws SQLException {
-        try (
-                EtcdCluster etcd = Etcd.builder()
-                        .withNodes(1)
-                        .withMountedDataDirectory(false)
-                        .build()) {
-            etcd.start();
-            DataSource dataSource = createDataSource(etcd.clientEndpoints());
+    void assertShardingInLocalTransactions() throws Exception {
+        try (TestingServer testingServer = new TestingServer()) {
+            String connectString = testingServer.getConnectString();
+            DataSource dataSource = createDataSource(connectString);
             testShardingService = new TestShardingService(dataSource);
             initEnvironment();
             Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
@@ -86,32 +74,22 @@ class EtcdTest {
         testShardingService.getAddressRepository().truncateTable();
     }
     
-    private DataSource createDataSource(final List<URI> clientEndpoints) {
-        URI clientEndpoint = clientEndpoints.get(0);
-        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> verifyEtcdClusterRunning(clientEndpoint));
+    private DataSource createDataSource(final String connectString) {
+        Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
+            try (CuratorFramework client = CuratorFrameworkFactory.newClient(connectString, new ExponentialBackoffRetry(1000, 3))) {
+                client.start();
+                return client.blockUntilConnected(5, TimeUnit.SECONDS);
+            }
+        });
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath-system-props:test-native/yaml/mode/cluster/etcd.yaml");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath-system-props:test-native/yaml/modes/cluster/zookeeper.yaml");
         try {
             assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists"), is(nullValue()));
-            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", clientEndpoint.toString());
+            System.setProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists", connectString);
             return new HikariDataSource(config);
         } finally {
             System.clearProperty(SYSTEM_PROP_KEY_PREFIX + "server-lists");
         }
-    }
-    
-    private Boolean verifyEtcdClusterRunning(final URI clientEndpoint) throws IOException {
-        boolean flag = false;
-        HttpGet httpGet = new HttpGet(clientEndpoint.toString() + "/health");
-        try (
-                CloseableHttpClient httpclient = HttpClients.createDefault();
-                CloseableHttpResponse response = httpclient.execute(httpGet)) {
-            if (HttpStatus.SC_OK == response.getCode()) {
-                flag = true;
-            }
-            EntityUtils.consume(response.getEntity());
-        }
-        return flag;
     }
 }

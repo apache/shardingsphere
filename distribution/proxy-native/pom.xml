@@ -85,8 +85,7 @@
                         <configuration>
                             <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
                             <buildArgs>
-                                <arg>-J-Xmx7g</arg>
-                                <arg>-H:+AddAllCharsets</arg>
+                                <buildArg>-H:+AddAllCharsets</buildArg>
                             </buildArgs>
                         </configuration>
                         <executions>
