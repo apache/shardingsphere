@@ -18,16 +18,19 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.exception.plugin.PluginNotFoundException;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * Show plugins executor.
@@ -36,10 +39,26 @@ public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPlugi
     
     @Override
     public Collection<String> getColumnNames(final ShowPluginsStatement sqlStatement) {
-        Optional<ShowPluginsResultRowBuilder> rowBuilder = TypedSPILoader.findService(ShowPluginsResultRowBuilder.class, sqlStatement.getType());
-        return rowBuilder.isPresent() && DatabaseSupportedTypedSPI.class.isAssignableFrom(rowBuilder.get().getPluginClass())
+        return getColumnNames(sqlStatement.getPluginClass().isPresent()
+                ? getPluginClass(sqlStatement.getPluginClass().get())
+                : TypedSPILoader.getService(ShowPluginsResultRowBuilder.class, sqlStatement.getType()).getPluginClass());
+    }
+    
+    private List<String> getColumnNames(final Class<? extends TypedSPI> pluginClass) {
+        return DatabaseSupportedTypedSPI.class.isAssignableFrom(pluginClass)
                 ? Arrays.asList("type", "type_aliases", "supported_database_types", "description")
                 : Arrays.asList("type", "type_aliases", "description");
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Class<? extends TypedSPI> getPluginClass(final String pluginClass) {
+        try {
+            Class<?> result = Class.forName(pluginClass);
+            ShardingSpherePreconditions.checkState(TypedSPI.class.isAssignableFrom(result), () -> new UnsupportedOperationException("The plugin class to be queried must extend TypedSPI."));
+            return (Class<? extends TypedSPI>) result;
+        } catch (final ClassNotFoundException ignored) {
+            throw new PluginNotFoundException(pluginClass);
+        }
     }
     
     @Override

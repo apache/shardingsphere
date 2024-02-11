@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
+package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
 import org.apache.shardingsphere.distsql.handler.exception.plugin.PluginNotFoundException;
@@ -38,13 +38,13 @@ public final class ShowCommonPluginsResultRowBuilder implements ShowPluginsResul
     }
     
     @SuppressWarnings("unchecked")
-    private static Class<? extends TypedSPI> getPluginClass(final ShowPluginsStatement sqlStatement) {
+    private Class<? extends TypedSPI> getPluginClass(final ShowPluginsStatement sqlStatement) {
         try {
-            Class<?> result = Class.forName(sqlStatement.getPluginClass());
+            Class<?> result = Class.forName(sqlStatement.getPluginClass().orElse(""));
             ShardingSpherePreconditions.checkState(TypedSPI.class.isAssignableFrom(result), () -> new UnsupportedOperationException("The plugin class to be queried must extend TypedSPI."));
             return (Class<? extends TypedSPI>) result;
-        } catch (final ClassNotFoundException ignore) {
-            throw new PluginNotFoundException(sqlStatement.getPluginClass());
+        } catch (final ClassNotFoundException ignored) {
+            throw new PluginNotFoundException(sqlStatement.getPluginClass().orElse(""));
         }
     }
     

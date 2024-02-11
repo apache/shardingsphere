@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 
+import java.util.Optional;
+
 /**
  * Show plugins statement.
  */
@@ -34,5 +36,14 @@ public final class ShowPluginsStatement extends QueryableRALStatement {
     
     public ShowPluginsStatement(final String type) {
         this(type, null);
+    }
+    
+    /**
+     * Get plugin class.
+     * 
+     * @return plugin class
+     */
+    public Optional<String> getPluginClass() {
+        return Optional.ofNullable(pluginClass);
     }
 }
