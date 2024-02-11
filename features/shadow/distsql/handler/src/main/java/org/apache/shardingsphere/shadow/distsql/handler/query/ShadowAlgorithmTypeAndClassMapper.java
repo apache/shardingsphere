@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeA
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 /**
- * Show shadow algorithm type and class mapper.
+ * Shadow algorithm type and class mapper.
  */
 public final class ShadowAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     

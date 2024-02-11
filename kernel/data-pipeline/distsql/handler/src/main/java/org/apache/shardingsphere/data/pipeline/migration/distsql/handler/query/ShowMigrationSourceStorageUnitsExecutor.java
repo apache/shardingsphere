@@ -29,15 +29,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Show migration source storage units executor.
  */
 public final class ShowMigrationSourceStorageUnitsExecutor implements DistSQLQueryExecutor<ShowMigrationSourceStorageUnitsStatement> {
-    
-    private final MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
     
     @Override
     public Collection<String> getColumnNames(final ShowMigrationSourceStorageUnitsStatement sqlStatement) {
@@ -47,12 +44,8 @@ public final class ShowMigrationSourceStorageUnitsExecutor implements DistSQLQue
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationSourceStorageUnitsStatement sqlStatement, final ContextManager contextManager) {
-        Iterator<Collection<Object>> data = jobAPI.listMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY)).iterator();
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (data.hasNext()) {
-            result.add(new LocalDataQueryResultRow(data.next().toArray()));
-        }
-        return result;
+        MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
+        return jobAPI.listMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.toArray())).collect(Collectors.toList());
     }
     
     @Override

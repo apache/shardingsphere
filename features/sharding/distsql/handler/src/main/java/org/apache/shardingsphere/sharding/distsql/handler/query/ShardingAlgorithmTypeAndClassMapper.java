@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeA
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 /**
- * Show sharding algorithm type and class mapper.
+ * Sharding algorithm type and class mapper.
  */
 public final class ShardingAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
