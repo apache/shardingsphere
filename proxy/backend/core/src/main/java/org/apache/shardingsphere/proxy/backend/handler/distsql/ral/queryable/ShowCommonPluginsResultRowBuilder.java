@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -50,9 +49,8 @@ public final class ShowCommonPluginsResultRowBuilder implements ShowPluginsResul
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        // TODO change to pluginMetaDataQueryResultRows.getColumnNames after adding SQL statement as param for this method
-        return Arrays.asList("type", "type_aliases", "description");
+    public Class<TypedSPI> getPluginClass() {
+        return TypedSPI.class;
     }
     
     @Override

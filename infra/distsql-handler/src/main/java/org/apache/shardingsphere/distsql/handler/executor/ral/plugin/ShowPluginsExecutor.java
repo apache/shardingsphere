@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Show plugins executor.
@@ -34,7 +36,10 @@ public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPlugi
     
     @Override
     public Collection<String> getColumnNames(final ShowPluginsStatement sqlStatement) {
-        return Arrays.asList("type", "type_aliases", "description");
+        Optional<ShowPluginsResultRowBuilder> rowBuilder = TypedSPILoader.findService(ShowPluginsResultRowBuilder.class, sqlStatement.getType());
+        return rowBuilder.isPresent() && DatabaseSupportedTypedSPI.class.isAssignableFrom(rowBuilder.get().getPluginClass())
+                ? Arrays.asList("type", "type_aliases", "supported_database_types", "description")
+                : Arrays.asList("type", "type_aliases", "description");
     }
     
     @Override

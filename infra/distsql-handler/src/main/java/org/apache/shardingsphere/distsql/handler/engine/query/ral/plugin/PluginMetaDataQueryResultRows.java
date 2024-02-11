@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -31,22 +29,10 @@ import java.util.stream.Collectors;
  */
 public final class PluginMetaDataQueryResultRows {
     
-    private final boolean containsDatabaseTypes;
-    
     private final Collection<PluginMetaDataQueryResultRow> rows;
     
     public PluginMetaDataQueryResultRows(final Class<? extends TypedSPI> pluginClass) {
-        containsDatabaseTypes = DatabaseSupportedTypedSPI.class.isAssignableFrom(pluginClass);
         rows = ShardingSphereServiceLoader.getServiceInstances(pluginClass).stream().map(PluginMetaDataQueryResultRow::new).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get column names.
-     *
-     * @return column names
-     */
-    public Collection<String> getColumnNames() {
-        return containsDatabaseTypes ? Arrays.asList("type", "type_aliases", "supported_database_types", "description") : Arrays.asList("type", "type_aliases", "description");
     }
     
     /**

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginM
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -33,7 +34,7 @@ public final class ShowMigrationCheckAlgorithmsExecutor implements DistSQLQueryE
     
     @Override
     public Collection<String> getColumnNames(final ShowMigrationCheckAlgorithmsStatement sqlStatement) {
-        return new PluginMetaDataQueryResultRows(TableDataConsistencyChecker.class).getColumnNames();
+        return Arrays.asList("type", "type_aliases", "supported_database_types", "description");
     }
     
     @Override

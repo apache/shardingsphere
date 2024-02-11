@@ -38,8 +38,8 @@ public final class ShowKeyGenerateAlgorithmPluginsResultRowBuilder implements Sh
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return pluginMetaDataQueryResultRows.getColumnNames();
+    public Class<KeyGenerateAlgorithm> getPluginClass() {
+        return KeyGenerateAlgorithm.class;
     }
     
     @Override

@@ -37,9 +37,10 @@ public final class ShowMaskAlgorithmPluginsResultRowBuilder implements ShowPlugi
         return pluginMetaDataQueryResultRows.getRows();
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
-    public Collection<String> getColumnNames() {
-        return pluginMetaDataQueryResultRows.getColumnNames();
+    public Class<MaskAlgorithm> getPluginClass() {
+        return MaskAlgorithm.class;
     }
     
     @Override
