@@ -24,7 +24,6 @@ import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfigura
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
@@ -47,8 +46,7 @@ public final class ShowGlobalClockRuleExecutor implements DistSQLQueryExecutor<S
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement, final ContextManager contextManager) {
         GlobalClockRuleConfiguration ruleConfig = rule.getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(),
-                String.valueOf(ruleConfig.isEnabled()), PropertiesConverter.convert(ruleConfig.getProps())));
+        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(), ruleConfig.isEnabled(), ruleConfig.getProps()));
     }
     
     @Override

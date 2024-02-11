@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
@@ -76,7 +75,7 @@ public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowS
                     getStandardProperty(poolProps, "maxPoolSize"),
                     getStandardProperty(poolProps, "minPoolSize"),
                     getStandardProperty(poolProps, "readOnly"),
-                    customProps.isEmpty() ? "" : JsonUtils.toJsonString(customProps)));
+                    customProps));
         }
         return result;
     }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -80,8 +79,8 @@ public final class ShowReadwriteSplittingRuleExecutor implements DistSQLQueryExe
                 getWriteDataSourceName(dataSourceRuleConfig, exportDataSources),
                 getReadDataSourceNames(dataSourceRuleConfig, exportDataSources),
                 dataSourceRuleConfig.getTransactionalReadQueryStrategy().name(),
-                loadBalancer.map(AlgorithmConfiguration::getType).orElse(""),
-                loadBalancer.map(each -> PropertiesConverter.convert(each.getProps())).orElse(""));
+                loadBalancer.map(AlgorithmConfiguration::getType).orElse(null),
+                loadBalancer.map(AlgorithmConfiguration::getProps).orElse(null));
     }
     
     private Map<String, AlgorithmConfiguration> getLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {

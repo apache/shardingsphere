@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -57,8 +56,7 @@ public final class ShowTrafficRuleExecutor implements DistSQLQueryExecutor<ShowT
     
     private LocalDataQueryResultRow buildRow(final TrafficStrategyConfiguration strategy, final AlgorithmConfiguration trafficAlgorithm, final AlgorithmConfiguration loadBalancer) {
         return new LocalDataQueryResultRow(strategy.getName(), String.join(",", strategy.getLabels()), null != trafficAlgorithm ? trafficAlgorithm.getType() : "",
-                null != trafficAlgorithm ? PropertiesConverter.convert(trafficAlgorithm.getProps()) : "", null != loadBalancer ? loadBalancer.getType() : "",
-                null != loadBalancer ? PropertiesConverter.convert(loadBalancer.getProps()) : "");
+                null == trafficAlgorithm ? null : trafficAlgorithm.getProps(), null == loadBalancer ? "" : loadBalancer.getType(), null == loadBalancer ? "" : loadBalancer.getProps());
     }
     
     @Override

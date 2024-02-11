@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +50,7 @@ public final class ShowUnusedShardingKeyGeneratorExecutor implements DistSQLQuer
     public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingKeyGeneratorsStatement sqlStatement, final ContextManager contextManager) {
         Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(rule.getConfiguration());
         return rule.getConfiguration().getKeyGenerators().entrySet().stream().filter(entry -> !inUsedKeyGenerators.contains(entry.getKey()))
-                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), buildProps(entry.getValue().getProps()))).collect(Collectors.toList());
+                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps())).collect(Collectors.toList());
     }
     
     private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration ruleConfig) {
@@ -64,10 +62,6 @@ public final class ShowUnusedShardingKeyGeneratorExecutor implements DistSQLQuer
             result.add(keyGenerateStrategy.getKeyGeneratorName());
         }
         return result;
-    }
-    
-    private String buildProps(final Properties props) {
-        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override

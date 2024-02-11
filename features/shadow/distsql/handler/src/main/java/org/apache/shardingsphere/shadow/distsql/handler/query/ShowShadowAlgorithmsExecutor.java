@@ -21,14 +21,12 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -48,13 +46,8 @@ public final class ShowShadowAlgorithmsExecutor implements DistSQLQueryExecutor<
     public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
         String defaultAlgorithm = rule.getConfiguration().getDefaultShadowAlgorithmName();
         return rule.getConfiguration().getShadowAlgorithms().entrySet().stream()
-                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(),
-                        convertToString(entry.getValue().getProps()), Boolean.toString(entry.getKey().equals(defaultAlgorithm))))
+                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps(), Boolean.toString(entry.getKey().equals(defaultAlgorithm))))
                 .collect(Collectors.toList());
-    }
-    
-    private String convertToString(final Properties props) {
-        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override

@@ -21,14 +21,12 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAlgorithmsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -47,11 +45,7 @@ public final class ShowShardingAlgorithmExecutor implements DistSQLQueryExecutor
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowShardingAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
         return rule.getConfiguration().getShardingAlgorithms().entrySet().stream()
-                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), buildProps(entry.getValue().getProps()))).collect(Collectors.toList());
-    }
-    
-    private String buildProps(final Properties props) {
-        return null == props ? "" : PropertiesConverter.convert(props);
+                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps())).collect(Collectors.toList());
     }
     
     @Override
