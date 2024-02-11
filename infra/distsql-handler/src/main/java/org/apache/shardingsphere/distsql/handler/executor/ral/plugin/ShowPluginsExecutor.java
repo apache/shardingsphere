@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
-import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -27,12 +26,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Show plugins executor.
  */
-@Setter
 public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPluginsStatement> {
     
     @Override
@@ -42,11 +39,7 @@ public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPlugi
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowPluginsStatement sqlStatement, final ContextManager contextManager) {
-        Optional<ShowPluginsResultRowBuilder> rowBuilder = TypedSPILoader.findService(ShowPluginsResultRowBuilder.class, sqlStatement.getType());
-        if (!rowBuilder.isPresent()) {
-            return Collections.emptyList();
-        }
-        return rowBuilder.get().generateRows(sqlStatement);
+        return TypedSPILoader.findService(ShowPluginsResultRowBuilder.class, sqlStatement.getType()).map(optional -> optional.generateRows(sqlStatement)).orElse(Collections.emptyList());
     }
     
     @Override

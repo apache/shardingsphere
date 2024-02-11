@@ -72,6 +72,6 @@ class ShowAuthorityRuleExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("root@localhost"));
         assertThat(row.getCell(2), is("ALL_PERMITTED"));
-        assertThat(row.getCell(3), is(new Properties()));
+        assertThat(row.getCell(3), is(""));
     }
 }
