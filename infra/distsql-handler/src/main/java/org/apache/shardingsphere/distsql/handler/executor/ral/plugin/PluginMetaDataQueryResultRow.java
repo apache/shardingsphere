@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin;
+package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;

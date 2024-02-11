@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRow;
 import org.apache.shardingsphere.distsql.handler.exception.plugin.PluginNotFoundException;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
