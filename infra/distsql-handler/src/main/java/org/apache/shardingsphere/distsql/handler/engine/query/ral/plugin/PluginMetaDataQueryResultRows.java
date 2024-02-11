@@ -41,20 +41,20 @@ public final class PluginMetaDataQueryResultRows {
     }
     
     /**
+     * Get column names.
+     *
+     * @return column names
+     */
+    public Collection<String> getColumnNames() {
+        return containsDatabaseTypes ? Arrays.asList("type", "type_aliases", "supported_database_types", "description") : Arrays.asList("type", "type_aliases", "description");
+    }
+    
+    /**
      * Get rows.
      * 
      * @return rows
      */
     public Collection<LocalDataQueryResultRow> getRows() {
         return rows.stream().map(PluginMetaDataQueryResultRow::toLocalDataQueryResultRow).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get column names.
-     * 
-     * @return column names
-     */
-    public Collection<String> getColumnNames() {
-        return containsDatabaseTypes ? Arrays.asList("type", "type_aliases", "supported_database_types", "description") : Arrays.asList("type", "type_aliases", "description");
     }
 }
