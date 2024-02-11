@@ -70,9 +70,11 @@ public final class DistSQLQueryExecuteEngine {
         try {
             new DistSQLExecutorAwareSetter(executor).set(contextManager, null == databaseName ? null : contextManager.getDatabase(databaseName), distsqlConnectionContext);
         } catch (final UnsupportedSQLOperationException ignored) {
+            columnNames = executor.getColumnNames(sqlStatement);
             rows = Collections.emptyList();
             return;
         }
+        columnNames = executor.getColumnNames(sqlStatement);
         rows = executor.getRows(sqlStatement, contextManager);
     }
 }
