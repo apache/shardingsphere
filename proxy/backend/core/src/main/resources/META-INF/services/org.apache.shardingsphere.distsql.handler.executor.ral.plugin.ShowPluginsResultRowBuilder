@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowCommonPluginsResultRowBuilder
+org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type.ShowCommonPluginsResultRowBuilder

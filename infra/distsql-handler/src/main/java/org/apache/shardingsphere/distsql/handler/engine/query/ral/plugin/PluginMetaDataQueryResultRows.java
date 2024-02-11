@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
@@ -27,13 +28,10 @@ import java.util.stream.Collectors;
 /**
  * Plugin meta data query result rows.
  */
+@RequiredArgsConstructor
 public final class PluginMetaDataQueryResultRows {
     
-    private final Collection<PluginMetaDataQueryResultRow> rows;
-    
-    public PluginMetaDataQueryResultRows(final Class<? extends TypedSPI> pluginClass) {
-        rows = ShardingSphereServiceLoader.getServiceInstances(pluginClass).stream().map(PluginMetaDataQueryResultRow::new).collect(Collectors.toList());
-    }
+    private final Class<? extends TypedSPI> pluginClass;
     
     /**
      * Get rows.
@@ -41,6 +39,6 @@ public final class PluginMetaDataQueryResultRows {
      * @return rows
      */
     public Collection<LocalDataQueryResultRow> getRows() {
-        return rows.stream().map(PluginMetaDataQueryResultRow::toLocalDataQueryResultRow).collect(Collectors.toList());
+        return ShardingSphereServiceLoader.getServiceInstances(pluginClass).stream().map(each -> new PluginMetaDataQueryResultRow(each).toLocalDataQueryResultRow()).collect(Collectors.toList());
     }
 }

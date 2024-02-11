@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
+package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Show read query load balance algorithm plugins result row builder.
+ * Show common plugins result row builder.
  */
-public final class ShowReadQueryLoadBalanceAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+public final class ShowCommonPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
     
     @Override
-    public Class<ReadQueryLoadBalanceAlgorithm> getPluginClass() {
-        return ReadQueryLoadBalanceAlgorithm.class;
+    public Class<TypedSPI> getPluginClass() {
+        return TypedSPI.class;
     }
     
     @Override
     public String getType() {
-        return "READ_QUERY_LOAD_BALANCE_ALGORITHM";
+        return "COMMON";
     }
 }
