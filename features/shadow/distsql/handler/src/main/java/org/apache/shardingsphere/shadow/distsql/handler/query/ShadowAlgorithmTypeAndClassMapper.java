@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
-import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 /**
- * Show key generate algorithm plugins result row builder.
+ * Show shadow algorithm type and class mapper.
  */
-public final class ShowKeyGenerateAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+public final class ShadowAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
     @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
+    public Class<ShadowAlgorithm> getPluginClass() {
+        return ShadowAlgorithm.class;
     }
     
     @Override
     public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+        return "SHADOW_ALGORITHM";
     }
 }

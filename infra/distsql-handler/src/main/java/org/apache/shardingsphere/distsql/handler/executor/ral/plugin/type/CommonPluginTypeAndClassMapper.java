@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Show common plugins result row builder.
+ * Common plugin type and class mapper.
  */
-public final class ShowCommonPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+public final class CommonPluginTypeAndClassMapper implements PluginTypeAndClassMapper {
     
     @Override
     public Class<TypedSPI> getPluginClass() {

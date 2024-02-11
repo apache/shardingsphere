@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.distsql.handler.query.ShowShadowAlgorithmPluginsResultRowBuilder
+org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmTypeAndClassMapper
