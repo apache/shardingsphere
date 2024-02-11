@@ -39,11 +39,11 @@ public interface ShowPluginsResultRowBuilder extends TypedSPI {
     Collection<LocalDataQueryResultRow> generateRows(ShowPluginsStatement sqlStatement);
     
     /**
-     * Get column names.
-     *
-     * @return column names
+     * Get plugin class.
+     * 
+     * @return plugin class
      */
-    Collection<String> getColumnNames();
+    Class<? extends TypedSPI> getPluginClass();
     
     @Override
     String getType();

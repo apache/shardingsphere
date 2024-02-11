@@ -38,8 +38,8 @@ public final class ShowEncryptAlgorithmPluginsResultRowBuilder implements ShowPl
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return pluginMetaDataQueryResultRows.getColumnNames();
+    public Class<EncryptAlgorithm> getPluginClass() {
+        return EncryptAlgorithm.class;
     }
     
     @Override

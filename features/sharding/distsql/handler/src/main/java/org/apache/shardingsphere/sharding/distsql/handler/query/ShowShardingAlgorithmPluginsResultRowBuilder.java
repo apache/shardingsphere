@@ -38,8 +38,8 @@ public final class ShowShardingAlgorithmPluginsResultRowBuilder implements ShowP
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return pluginMetaDataQueryResultRows.getColumnNames();
+    public Class<ShardingAlgorithm> getPluginClass() {
+        return ShardingAlgorithm.class;
     }
     
     @Override

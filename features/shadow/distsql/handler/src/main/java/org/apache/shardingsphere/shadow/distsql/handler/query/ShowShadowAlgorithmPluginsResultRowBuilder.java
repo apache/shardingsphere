@@ -38,8 +38,8 @@ public final class ShowShadowAlgorithmPluginsResultRowBuilder implements ShowPlu
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return pluginMetaDataQueryResultRows.getColumnNames();
+    public Class<ShadowAlgorithm> getPluginClass() {
+        return ShadowAlgorithm.class;
     }
     
     @Override

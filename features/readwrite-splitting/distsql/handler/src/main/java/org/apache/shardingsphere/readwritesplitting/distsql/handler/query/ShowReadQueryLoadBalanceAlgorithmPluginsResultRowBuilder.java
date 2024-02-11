@@ -38,8 +38,8 @@ public final class ShowReadQueryLoadBalanceAlgorithmPluginsResultRowBuilder impl
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return pluginMetaDataQueryResultRows.getColumnNames();
+    public Class<ReadQueryLoadBalanceAlgorithm> getPluginClass() {
+        return ReadQueryLoadBalanceAlgorithm.class;
     }
     
     @Override
