@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRow;
 import org.apache.shardingsphere.distsql.handler.exception.plugin.PluginNotFoundException;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Show plugins executor.
@@ -67,7 +69,8 @@ public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPlugi
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowPluginsStatement sqlStatement, final ContextManager contextManager) {
-        return new PluginMetaDataQueryResultRows(getPluginClass(sqlStatement)).getRows();
+        return ShardingSphereServiceLoader.getServiceInstances(getPluginClass(sqlStatement)).stream()
+                .map(each -> new PluginMetaDataQueryResultRow(each).toLocalDataQueryResultRow()).collect(Collectors.toList());
     }
     
     @Override
