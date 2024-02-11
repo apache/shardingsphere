@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type.ShowKeyGenerateAlgorithmPluginsResultRowBuilder
+org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type.KeyGenerateAlgorithmTypeAndClassMapper

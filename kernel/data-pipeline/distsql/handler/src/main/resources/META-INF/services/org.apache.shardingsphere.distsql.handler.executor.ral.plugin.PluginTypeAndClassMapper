@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmPluginsResultRowBuilder
+org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query.MigrationCheckAlgorithmTypeAndClassMapper

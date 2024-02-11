@@ -52,7 +52,7 @@ public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPlugi
     private Class<? extends TypedSPI> getPluginClass(final ShowPluginsStatement sqlStatement) {
         return sqlStatement.getPluginClass().isPresent()
                 ? getPluginClass(sqlStatement.getPluginClass().get())
-                : TypedSPILoader.getService(ShowPluginsResultRowBuilder.class, sqlStatement.getType()).getPluginClass();
+                : TypedSPILoader.getService(PluginTypeAndClassMapper.class, sqlStatement.getType()).getPluginClass();
     }
     
     @SuppressWarnings("unchecked")

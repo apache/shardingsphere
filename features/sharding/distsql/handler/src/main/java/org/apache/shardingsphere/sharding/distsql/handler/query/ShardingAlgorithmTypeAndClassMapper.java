@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 /**
- * Show sharding algorithm plugins result row builder.
+ * Show sharding algorithm type and class mapper.
  */
-public final class ShowShardingAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+public final class ShardingAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
     @Override
     public Class<ShardingAlgorithm> getPluginClass() {

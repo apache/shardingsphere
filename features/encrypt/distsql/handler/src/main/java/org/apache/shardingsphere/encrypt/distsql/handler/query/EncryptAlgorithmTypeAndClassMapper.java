@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
+package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 /**
- * Show migration check algorithm plugins result row builder.
+ * Encrypt algorithm type and class mapper.
  */
-public final class ShowMigrationCheckAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+public final class EncryptAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
     @Override
-    public Class<TableDataConsistencyChecker> getPluginClass() {
-        return TableDataConsistencyChecker.class;
+    public Class<EncryptAlgorithm> getPluginClass() {
+        return EncryptAlgorithm.class;
     }
     
     @Override
     public String getType() {
-        return "MIGRATION_CHECK";
+        return "ENCRYPT_ALGORITHM";
     }
 }

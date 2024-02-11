@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.handler.query;
+package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Show encrypt algorithm plugins result row builder.
+ * Plugin type and class mapper.
  */
-public final class ShowEncryptAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+@SingletonSPI
+public interface PluginTypeAndClassMapper extends TypedSPI {
+    
+    /**
+     * Get plugin class.
+     * 
+     * @return plugin class
+     */
+    Class<? extends TypedSPI> getPluginClass();
     
     @Override
-    public Class<EncryptAlgorithm> getPluginClass() {
-        return EncryptAlgorithm.class;
-    }
-    
-    @Override
-    public String getType() {
-        return "ENCRYPT_ALGORITHM";
-    }
+    String getType();
 }

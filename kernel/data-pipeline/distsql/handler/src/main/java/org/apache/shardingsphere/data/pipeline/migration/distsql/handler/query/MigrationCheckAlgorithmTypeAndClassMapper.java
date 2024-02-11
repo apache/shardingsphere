@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
 
 /**
- * Show read query load balance algorithm plugins result row builder.
+ * Migration check algorithm type and class mapper.
  */
-public final class ShowReadQueryLoadBalanceAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+public final class MigrationCheckAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
     @Override
-    public Class<ReadQueryLoadBalanceAlgorithm> getPluginClass() {
-        return ReadQueryLoadBalanceAlgorithm.class;
+    public Class<TableDataConsistencyChecker> getPluginClass() {
+        return TableDataConsistencyChecker.class;
     }
     
     @Override
     public String getType() {
-        return "READ_QUERY_LOAD_BALANCE_ALGORITHM";
+        return "MIGRATION_CHECK";
     }
 }

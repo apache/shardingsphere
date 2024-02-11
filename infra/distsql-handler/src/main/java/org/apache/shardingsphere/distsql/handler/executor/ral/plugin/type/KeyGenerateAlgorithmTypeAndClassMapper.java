@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.distsql.handler.query;
+package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
-import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 
 /**
- * Show mask algorithm plugins result row builder.
+ * Key generate algorithm type and class mapper.
  */
-public final class ShowMaskAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
-    @SuppressWarnings("rawtypes")
     @Override
-    public Class<MaskAlgorithm> getPluginClass() {
-        return MaskAlgorithm.class;
+    public Class<KeyGenerateAlgorithm> getPluginClass() {
+        return KeyGenerateAlgorithm.class;
     }
     
     @Override
     public String getType() {
-        return "MASK_ALGORITHM";
+        return "KEY_GENERATE_ALGORITHM";
     }
 }

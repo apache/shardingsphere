@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.handler.query;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 /**
- * Show shadow algorithm plugins result row builder.
+ * Read query load balance algorithm type and class mapper.
  */
-public final class ShowShadowAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
+public final class ReadQueryLoadBalanceAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
     @Override
-    public Class<ShadowAlgorithm> getPluginClass() {
-        return ShadowAlgorithm.class;
+    public Class<ReadQueryLoadBalanceAlgorithm> getPluginClass() {
+        return ReadQueryLoadBalanceAlgorithm.class;
     }
     
     @Override
     public String getType() {
-        return "SHADOW_ALGORITHM";
+        return "READ_QUERY_LOAD_BALANCE_ALGORITHM";
     }
 }

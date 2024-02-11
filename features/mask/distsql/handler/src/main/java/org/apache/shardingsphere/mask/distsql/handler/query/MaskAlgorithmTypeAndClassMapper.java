@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
+package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 /**
- * Show plugins result row builder.
+ * Mask algorithm type and class mapper.
  */
-@SingletonSPI
-public interface ShowPluginsResultRowBuilder extends TypedSPI {
+public final class MaskAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
-    /**
-     * Get plugin class.
-     * 
-     * @return plugin class
-     */
-    Class<? extends TypedSPI> getPluginClass();
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Class<MaskAlgorithm> getPluginClass() {
+        return MaskAlgorithm.class;
+    }
     
     @Override
-    String getType();
+    public String getType() {
+        return "MASK_ALGORITHM";
+    }
 }
