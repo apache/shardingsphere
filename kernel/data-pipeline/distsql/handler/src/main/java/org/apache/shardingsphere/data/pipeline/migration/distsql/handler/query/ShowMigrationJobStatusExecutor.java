@@ -37,6 +37,11 @@ import java.util.stream.Collectors;
 public final class ShowMigrationJobStatusExecutor implements DistSQLQueryExecutor<ShowMigrationStatusStatement> {
     
     @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("item", "data_source", "tables", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "error_message");
+    }
+    
+    @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationStatusStatement sqlStatement, final ContextManager contextManager) {
         Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(new MigrationJobType()).getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
@@ -56,11 +61,6 @@ public final class ShowMigrationJobStatusExecutor implements DistSQLQueryExecuto
         return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemInfo.getTableNames(), jobItemProgress.getStatus(),
                 jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(),
                 incrementalIdleSeconds, jobItemInfo.getErrorMessage());
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "tables", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "error_message");
     }
     
     @Override

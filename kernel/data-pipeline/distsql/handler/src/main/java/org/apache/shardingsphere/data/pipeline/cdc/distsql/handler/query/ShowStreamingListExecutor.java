@@ -39,16 +39,16 @@ public final class ShowStreamingListExecutor implements DistSQLQueryExecutor<Sho
     private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new CDCJobType());
     
     @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("id", "database", "tables", "job_item_count", "active", "create_time", "stop_time");
+    }
+    
+    @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement, final ContextManager contextManager) {
         return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
                 each.getDatabaseName(), each.getTableName(),
                 each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
                 each.getJobMetaData().getCreateTime(), Optional.ofNullable(each.getJobMetaData().getStopTime()).orElse(""))).collect(Collectors.toList());
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("id", "database", "tables", "job_item_count", "active", "create_time", "stop_time");
     }
     
     @Override

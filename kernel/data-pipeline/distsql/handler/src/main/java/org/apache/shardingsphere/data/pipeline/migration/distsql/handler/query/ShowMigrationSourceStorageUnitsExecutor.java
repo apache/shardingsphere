@@ -41,6 +41,12 @@ public final class ShowMigrationSourceStorageUnitsExecutor implements DistSQLQue
     private final MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
     
     @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds",
+                "max_lifetime_milliseconds", "max_pool_size", "min_pool_size", "read_only", "other_attributes");
+    }
+    
+    @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationSourceStorageUnitsStatement sqlStatement, final ContextManager contextManager) {
         Iterator<Collection<Object>> data = jobAPI.listMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY)).iterator();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
@@ -48,12 +54,6 @@ public final class ShowMigrationSourceStorageUnitsExecutor implements DistSQLQue
             result.add(new LocalDataQueryResultRow((List<Object>) data.next()));
         }
         return result;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds",
-                "max_lifetime_milliseconds", "max_pool_size", "min_pool_size", "read_only", "other_attributes");
     }
     
     @Override

@@ -39,6 +39,12 @@ public final class ShowMigrationCheckStatusExecutor implements DistSQLQueryExecu
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobType());
     
     @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("tables", "result", "check_failed_tables", "active", "inventory_finished_percentage", "inventory_remaining_seconds", "incremental_idle_seconds",
+                "check_begin_time", "check_end_time", "duration_seconds", "algorithm_type", "algorithm_props", "error_message");
+    }
+    
+    @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckStatusStatement sqlStatement, final ContextManager contextManager) {
         List<ConsistencyCheckJobItemInfo> infos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
@@ -55,12 +61,6 @@ public final class ShowMigrationCheckStatusExecutor implements DistSQLQueryExecu
                 String.valueOf(info.getInventoryFinishedPercentage()), info.getInventoryRemainingSeconds(), info.getIncrementalIdleSeconds(),
                 Optional.ofNullable(info.getCheckBeginTime()).orElse(""), Optional.ofNullable(info.getCheckEndTime()).orElse(""), info.getDurationSeconds(),
                 info.getAlgorithmType(), Optional.ofNullable(info.getAlgorithmProps()).orElse(""), Optional.ofNullable(info.getErrorMessage()).orElse(""));
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("tables", "result", "check_failed_tables", "active", "inventory_finished_percentage", "inventory_remaining_seconds", "incremental_idle_seconds",
-                "check_begin_time", "check_end_time", "duration_seconds", "algorithm_type", "algorithm_props", "error_message");
     }
     
     @Override
