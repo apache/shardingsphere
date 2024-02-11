@@ -17,36 +17,13 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
-import org.apache.shardingsphere.distsql.handler.exception.plugin.PluginNotFoundException;
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-
-import java.util.Collection;
 
 /**
  * Show common plugins result row builder.
  */
 public final class ShowCommonPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
-    
-    @Override
-    public Collection<LocalDataQueryResultRow> generateRows(final ShowPluginsStatement sqlStatement) {
-        return new PluginMetaDataQueryResultRows(getPluginClass(sqlStatement)).getRows();
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Class<? extends TypedSPI> getPluginClass(final ShowPluginsStatement sqlStatement) {
-        try {
-            Class<?> result = Class.forName(sqlStatement.getPluginClass().orElse(""));
-            ShardingSpherePreconditions.checkState(TypedSPI.class.isAssignableFrom(result), () -> new UnsupportedOperationException("The plugin class to be queried must extend TypedSPI."));
-            return (Class<? extends TypedSPI>) result;
-        } catch (final ClassNotFoundException ignored) {
-            throw new PluginNotFoundException(sqlStatement.getPluginClass().orElse(""));
-        }
-    }
     
     @Override
     public Class<TypedSPI> getPluginClass() {

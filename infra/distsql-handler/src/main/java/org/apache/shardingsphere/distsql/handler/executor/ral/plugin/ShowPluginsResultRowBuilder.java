@@ -17,26 +17,14 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-
-import java.util.Collection;
 
 /**
  * Show plugins result row builder.
  */
 @SingletonSPI
 public interface ShowPluginsResultRowBuilder extends TypedSPI {
-    
-    /**
-     * Generate rows.
-     *
-     * @param sqlStatement SQL statement
-     * @return generated rows
-     */
-    Collection<LocalDataQueryResultRow> generateRows(ShowPluginsStatement sqlStatement);
     
     /**
      * Get plugin class.

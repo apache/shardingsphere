@@ -17,25 +17,13 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
-
-import java.util.Collection;
 
 /**
  * Show key generate algorithm plugins result row builder.
  */
 public final class ShowKeyGenerateAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
-    
-    private final PluginMetaDataQueryResultRows pluginMetaDataQueryResultRows = new PluginMetaDataQueryResultRows(KeyGenerateAlgorithm.class);
-    
-    @Override
-    public Collection<LocalDataQueryResultRow> generateRows(final ShowPluginsStatement sqlStatement) {
-        return pluginMetaDataQueryResultRows.getRows();
-    }
     
     @Override
     public Class<KeyGenerateAlgorithm> getPluginClass() {

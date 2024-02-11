@@ -17,25 +17,13 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsResultRowBuilder;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-
-import java.util.Collection;
 
 /**
  * Show sharding algorithm plugins result row builder.
  */
 public final class ShowShardingAlgorithmPluginsResultRowBuilder implements ShowPluginsResultRowBuilder {
-    
-    private final PluginMetaDataQueryResultRows pluginMetaDataQueryResultRows = new PluginMetaDataQueryResultRows(ShardingAlgorithm.class);
-    
-    @Override
-    public Collection<LocalDataQueryResultRow> generateRows(final ShowPluginsStatement sqlStatement) {
-        return pluginMetaDataQueryResultRows.getRows();
-    }
     
     @Override
     public Class<ShardingAlgorithm> getPluginClass() {

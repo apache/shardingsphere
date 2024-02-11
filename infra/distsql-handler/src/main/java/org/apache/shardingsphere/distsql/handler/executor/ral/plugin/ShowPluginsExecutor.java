@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.plugin.PluginMetaDataQueryResultRows;
 import org.apache.shardingsphere.distsql.handler.exception.plugin.PluginNotFoundException;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,15 +39,19 @@ public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPlugi
     
     @Override
     public Collection<String> getColumnNames(final ShowPluginsStatement sqlStatement) {
-        return getColumnNames(sqlStatement.getPluginClass().isPresent()
-                ? getPluginClass(sqlStatement.getPluginClass().get())
-                : TypedSPILoader.getService(ShowPluginsResultRowBuilder.class, sqlStatement.getType()).getPluginClass());
+        return getColumnNames(getPluginClass(sqlStatement));
     }
     
     private List<String> getColumnNames(final Class<? extends TypedSPI> pluginClass) {
         return DatabaseSupportedTypedSPI.class.isAssignableFrom(pluginClass)
                 ? Arrays.asList("type", "type_aliases", "supported_database_types", "description")
                 : Arrays.asList("type", "type_aliases", "description");
+    }
+    
+    private Class<? extends TypedSPI> getPluginClass(final ShowPluginsStatement sqlStatement) {
+        return sqlStatement.getPluginClass().isPresent()
+                ? getPluginClass(sqlStatement.getPluginClass().get())
+                : TypedSPILoader.getService(ShowPluginsResultRowBuilder.class, sqlStatement.getType()).getPluginClass();
     }
     
     @SuppressWarnings("unchecked")
@@ -63,7 +67,7 @@ public final class ShowPluginsExecutor implements DistSQLQueryExecutor<ShowPlugi
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowPluginsStatement sqlStatement, final ContextManager contextManager) {
-        return TypedSPILoader.findService(ShowPluginsResultRowBuilder.class, sqlStatement.getType()).map(optional -> optional.generateRows(sqlStatement)).orElse(Collections.emptyList());
+        return new PluginMetaDataQueryResultRows(getPluginClass(sqlStatement)).getRows();
     }
     
     @Override
