@@ -45,6 +45,18 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.NarayanaTest"},
     "pattern":"\\Qtest-native/yaml/transactions/xa/narayana.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"},
+    "pattern":"\\Qtest-native/yaml/transactions/base/seata.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"},
+    "pattern":"\\Qfile.conf\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"},
+    "pattern":"\\Qregistry.conf\\E"
+  },{
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"},
+    "pattern":"\\Qseata.conf\\E"
   }]},
   "bundles":[]
 }

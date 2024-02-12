@@ -89,7 +89,7 @@ ALTER TABLE `undo_log` ADD INDEX `ix_log_created` (`log_created`);
 
 ```conf
 sharding.transaction.seata.at.enable = true
-sharding.transaction.seata.tx.timeout = 30
+sharding.transaction.seata.tx.timeout = 60
 
 client {
     application.id = example
@@ -117,9 +117,11 @@ ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的
 
 3. 在函数上使用 Jakarta EE 9/10 的 `jakarta.transaction.Transactional` 注解，这是被允许的。
 
-4. 在函数上使用 `io.seata.spring.annotation.GlobalTransactional` 注解，这是不被允许的。
+4. 在函数上使用 Spring Framework 的 `org.springframework.transaction.annotation.Transactional` 注解，这是被允许的。
 
-5. 手动从 `io.seata.tm.api.GlobalTransactionContext ` 创建 `io.seata.tm.api.GlobalTransaction` 实例，
+5. 在函数上使用 `io.seata.spring.annotation.GlobalTransactional` 注解，这是不被允许的。
+
+6. 手动从 `io.seata.tm.api.GlobalTransactionContext ` 创建 `io.seata.tm.api.GlobalTransaction` 实例，
 调用 `io.seata.tm.api.GlobalTransaction` 实例的 `begin()`, `commit()` 和 `rollback()` 方法，这是不被允许的。
 
 长话短说，在使用 ShardingSphere 的 Seata 集成时，你不应该使用 Seata Java API。

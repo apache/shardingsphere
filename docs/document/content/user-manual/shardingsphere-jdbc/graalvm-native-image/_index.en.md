@@ -76,11 +76,12 @@ and the documentation of GraalVM Native Build Tools shall prevail.
 
 ```groovy
 plugins {
-     id 'org.graalvm.buildtools.native' version '0.10.0'
+   id 'org.graalvm.buildtools.native' version '0.10.0'
 }
 
 dependencies {
-     implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
+   implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.0', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
@@ -91,6 +92,9 @@ graalvmNative {
       test {
          buildArgs.add('-H:+AddAllCharsets')
       }
+   }
+   metadataRepository {
+      enabled.set(false)
    }
 }
 ```
@@ -186,9 +190,8 @@ normally under GraalVM Native Image.
 ```
 
 2. For the `ReadWrite Splitting` feature, you need to use other implementations of `Row Value Expressions` SPI to configure 
-`logic database name`, `writeDataSourceName` and `readDataSourceNames` when bypassing calls to GroovyShell. One possible 
-configuration is to use the `Row Value Expressions` SPI implementation of `LITERAL`. The same applies to `actualDataNodes` 
-for the `Sharding` feature.
+`logic database name`, `writeDataSourceName` and `readDataSourceNames` when bypassing calls to GroovyShell. 
+One possible configuration is to use the `Row Value Expressions` SPI implementation of `LITERAL`.
 
 ```yaml
 rules:
@@ -201,6 +204,18 @@ rules:
          - <LITERAL>ds_2
 ```
 
+The same applies to `actualDataNodes` for the `Sharding` feature.
+
+```yaml
+- !SHARDING
+   tables:
+      t_order:
+         actualDataNodes: <LITERAL>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
+         keyGenerateStrategy:
+            column: order_id
+            keyGeneratorName: snowflake
+```
+
 3. Users still need to configure GraalVM Reachability Metadata for independent files in the `src/main/resources/META-INF/native-image` 
 folder or `src/test/resources/META-INF/native-image` folder. Users can quickly collect GraalVM Reachability Metadata through 
 the GraalVM Tracing Agent of GraalVM Native Build Tools. 
@@ -210,16 +225,44 @@ will dynamically load different character sets based on the encoding used in the
 When encountering the following Error, users need to add the `buildArg` of `-H:+AddAllCharsets` to the configuration of GraalVM Native Build Tools.
 
 ```shell
-Caused by: java.io.UnsupportedEncodingException: SQL Server collation SQL_Latin1_General_CP1_CI_AS is not supported by this driver.
- com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:506)
- com.microsoft.sqlserver.jdbc.SQLCollation.<init>(SQLCollation.java:63)
- com.microsoft.sqlserver.jdbc.SQLServerConnection.processEnvChange(SQLServerConnection.java:3174)
- [...]
 Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supported by the Java environment.
  com.microsoft.sqlserver.jdbc.Encoding.checkSupported(SQLCollation.java:572)
  com.microsoft.sqlserver.jdbc.SQLCollation$SortOrder.getEncoding(SQLCollation.java:473)
  com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:501)
  [...]
+```
+
+5. When using Seata's BASE integration, 
+users need to use a specific `io.seata:seata-all:1.8.0` version to avoid using the ByteBuddy Java API,
+and exclude the outdated Maven dependency of `org.antlr:antlr4-runtime:4.8` in `io.seata:seata-all:1.8.0`.
+Possible configuration examples are as follows,
+
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>io.seata</groupId>
+         <artifactId>seata-all</artifactId>
+         <version>1.8.0</version>
+         <exclusions>
+            <exclusion>
+               <groupId>org.antlr</groupId>
+               <artifactId>antlr4-runtime</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+    </dependencies>
+</project>
 ```
 
 ## Contribute GraalVM Reachability Metadata

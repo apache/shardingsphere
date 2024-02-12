@@ -1168,6 +1168,16 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine"},
+  "name":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook"},
+  "name":"org.apache.shardingsphere.transaction.base.seata.at.SeataTransactionalSQLExecutionHook",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine"},
   "name":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },

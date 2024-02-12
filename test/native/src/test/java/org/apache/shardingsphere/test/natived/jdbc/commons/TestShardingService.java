@@ -81,6 +81,7 @@ public final class TestShardingService {
         assertThat(orderRepository.selectAll(), equalTo(new ArrayList<>()));
         assertThat(orderItemRepository.selectAll(), equalTo(new ArrayList<>()));
         assertThat(addressRepository.selectAll(), equalTo(new ArrayList<>()));
+        addressRepository.assertRollbackWithTransactions();
     }
     
     /**
