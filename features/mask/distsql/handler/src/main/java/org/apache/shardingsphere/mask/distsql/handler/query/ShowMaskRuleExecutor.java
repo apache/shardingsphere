@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -57,7 +56,7 @@ public final class ShowMaskRuleExecutor implements DistSQLQueryExecutor<ShowMask
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         tableRuleConfig.getColumns().forEach(each -> {
             AlgorithmConfiguration maskAlgorithmConfig = algorithmMap.get(each.getMaskAlgorithm());
-            result.add(new LocalDataQueryResultRow(tableRuleConfig.getName(), each.getLogicColumn(), maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps())));
+            result.add(new LocalDataQueryResultRow(tableRuleConfig.getName(), each.getLogicColumn(), maskAlgorithmConfig.getType(), maskAlgorithmConfig.getProps()));
         });
         return result;
     }

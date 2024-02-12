@@ -21,7 +21,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -51,7 +50,7 @@ public final class ShowUnusedShardingAuditorsExecutor implements DistSQLQueryExe
         ShardingRuleConfiguration shardingRuleConfig = rule.getConfiguration();
         Collection<String> inUsedAuditors = getUsedAuditors(shardingRuleConfig);
         return shardingRuleConfig.getAuditors().entrySet().stream().filter(entry -> !inUsedAuditors.contains(entry.getKey()))
-                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), PropertiesConverter.convert(entry.getValue().getProps()))).collect(Collectors.toList());
+                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps())).collect(Collectors.toList());
     }
     
     private Collection<String> getUsedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {

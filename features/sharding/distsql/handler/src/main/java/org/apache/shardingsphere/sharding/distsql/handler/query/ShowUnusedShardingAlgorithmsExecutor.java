@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -35,7 +34,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Show unused sharding algorithms executor.
@@ -57,7 +55,7 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements DistSQLQueryE
         Collection<String> inUsedAlgorithms = getUsedShardingAlgorithms(shardingRuleConfig);
         for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getShardingAlgorithms().entrySet()) {
             if (!inUsedAlgorithms.contains(entry.getKey())) {
-                result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), buildProps(entry.getValue().getProps())));
+                result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps()));
             }
         }
         return result;
@@ -83,10 +81,6 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements DistSQLQueryE
             result.add(databaseShardingStrategy.getShardingAlgorithmName());
         }
         return result;
-    }
-    
-    private String buildProps(final Properties props) {
-        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override

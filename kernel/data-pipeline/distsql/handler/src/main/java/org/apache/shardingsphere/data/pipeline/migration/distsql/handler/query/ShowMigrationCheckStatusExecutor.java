@@ -27,9 +27,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Show migration check status executor.
@@ -46,21 +44,14 @@ public final class ShowMigrationCheckStatusExecutor implements DistSQLQueryExecu
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckStatusStatement sqlStatement, final ContextManager contextManager) {
-        List<ConsistencyCheckJobItemInfo> infos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (ConsistencyCheckJobItemInfo each : infos) {
-            result.add(convert(each));
-        }
-        return result;
+        return jobAPI.getJobItemInfos(sqlStatement.getJobId()).stream().map(this::convert).collect(Collectors.toList());
     }
     
     private LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
         String checkResult = null == info.getCheckSuccess() ? "" : info.getCheckSuccess().toString();
-        return new LocalDataQueryResultRow(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult, Optional.ofNullable(info.getCheckFailedTableNames()).orElse(""),
-                info.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
-                String.valueOf(info.getInventoryFinishedPercentage()), info.getInventoryRemainingSeconds(), info.getIncrementalIdleSeconds(),
-                Optional.ofNullable(info.getCheckBeginTime()).orElse(""), Optional.ofNullable(info.getCheckEndTime()).orElse(""), info.getDurationSeconds(),
-                info.getAlgorithmType(), Optional.ofNullable(info.getAlgorithmProps()).orElse(""), Optional.ofNullable(info.getErrorMessage()).orElse(""));
+        return new LocalDataQueryResultRow(info.getTableNames(), checkResult, info.getCheckFailedTableNames(), info.isActive(),
+                info.getInventoryFinishedPercentage(), info.getInventoryRemainingSeconds(), info.getIncrementalIdleSeconds(),
+                info.getCheckBeginTime(), info.getCheckEndTime(), info.getDurationSeconds(), info.getAlgorithmType(), info.getAlgorithmProps(), info.getErrorMessage());
     }
     
     @Override

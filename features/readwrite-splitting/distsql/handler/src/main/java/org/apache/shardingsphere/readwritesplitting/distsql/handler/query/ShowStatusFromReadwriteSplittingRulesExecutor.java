@@ -113,7 +113,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Dist
     }
     
     private LocalDataQueryResultRow buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
-        return null == storageNodeDataSource ? new LocalDataQueryResultRow(resource, DataSourceState.ENABLED.name()) : new LocalDataQueryResultRow(resource, storageNodeDataSource.getStatus().name());
+        return null == storageNodeDataSource ? new LocalDataQueryResultRow(resource, DataSourceState.ENABLED) : new LocalDataQueryResultRow(resource, storageNodeDataSource.getStatus());
     }
     
     @Override

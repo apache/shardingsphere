@@ -59,8 +59,7 @@ public final class ShowMigrationJobStatusExecutor implements DistSQLQueryExecuto
             incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
         }
         return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemInfo.getTableNames(), jobItemProgress.getStatus(),
-                jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(),
-                incrementalIdleSeconds, jobItemInfo.getErrorMessage());
+                jobItemProgress.isActive(), jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(), incrementalIdleSeconds, jobItemInfo.getErrorMessage());
     }
     
     @Override

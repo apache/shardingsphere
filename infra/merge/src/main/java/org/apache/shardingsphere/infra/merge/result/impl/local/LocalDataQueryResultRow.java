@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.infra.merge.result.impl.local;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Local data query result row.
@@ -30,7 +33,23 @@ public final class LocalDataQueryResultRow {
     private final List<Object> data;
     
     public LocalDataQueryResultRow(final Object... data) {
-        this.data = Arrays.asList(data);
+        this.data = Stream.of(data).map(this::convert).collect(Collectors.toList());
+    }
+    
+    private Object convert(final Object data) {
+        if (null == data) {
+            return "";
+        }
+        if (data instanceof Boolean) {
+            return Boolean.toString((Boolean) data);
+        }
+        if (data instanceof Enum) {
+            return ((Enum<?>) data).name();
+        }
+        if (data instanceof Properties) {
+            return PropertiesConverter.convert((Properties) data);
+        }
+        return data;
     }
     
     /**
