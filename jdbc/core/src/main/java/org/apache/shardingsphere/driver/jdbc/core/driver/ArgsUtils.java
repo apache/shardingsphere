@@ -41,7 +41,7 @@ public final class ArgsUtils {
     }
     
     /**
-     * Get Pattern.
+     * Get pattern.
      *
      * @return got pattern
      */
@@ -89,9 +89,9 @@ public final class ArgsUtils {
      */
     public static String getConfigurationFile(final String url, final String urlPrefix, final String pathType) {
         String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
-        String file = configuredFile.substring(pathType.length());
-        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere URL.");
-        return file;
+        String result = configuredFile.substring(pathType.length());
+        Preconditions.checkArgument(!result.isEmpty(), "Configuration file is required in ShardingSphere URL.");
+        return result;
     }
     
     /**
@@ -99,7 +99,7 @@ public final class ArgsUtils {
      *
      * @param resource resource
      * @return input stream
-     * @throws IllegalArgumentException can not find configuration file
+     * @throws IllegalArgumentException throw when configuration file not found
      */
     public static InputStream getResourceAsStreamFromClasspath(final String resource) {
         InputStream result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
