@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,10 +39,9 @@ public final class AbsolutePathURLProvider implements AbstractAbsolutePathURLPro
     
     @Override
     @SneakyThrows(IOException.class)
-    public byte[] getContent(final String url, final String urlPrefix) {
-        String file = ArgsUtils.getConfigurationSubject(url, urlPrefix, getConfigurationType());
+    public byte[] getContent(final String url, final String configurationSubject) {
         try (
-                InputStream stream = Files.newInputStream(new File(file).toPath());
+                InputStream stream = Files.newInputStream(new File(configurationSubject).toPath());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;
