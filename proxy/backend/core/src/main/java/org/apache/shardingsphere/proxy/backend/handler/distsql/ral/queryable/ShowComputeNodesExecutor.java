@@ -53,9 +53,9 @@ public final class ShowComputeNodesExecutor implements DistSQLQueryExecutor<Show
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {
         String labels = String.join(",", instance.getLabels());
         InstanceMetaData instanceMetaData = instance.getMetaData();
-        return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getType().name(), instanceMetaData.getIp(),
+        return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getType(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
-                instance.getState().getCurrentState().name(), modeType, instance.getWorkerId(), labels, instanceMetaData.getVersion());
+                instance.getState().getCurrentState(), modeType, instance.getWorkerId(), labels, instanceMetaData.getVersion());
     }
     
     @Override

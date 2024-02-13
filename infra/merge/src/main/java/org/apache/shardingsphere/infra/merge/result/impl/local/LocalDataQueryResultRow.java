@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.merge.result.impl.local;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,10 @@ public final class LocalDataQueryResultRow {
         if (data instanceof Optional) {
             return ((Optional<?>) data).isPresent() ? convert(((Optional<?>) data).get()) : "";
         }
-        if (data instanceof Boolean || data instanceof Integer || data instanceof Long) {
+        if (data instanceof String) {
+            return data;
+        }
+        if (data instanceof Boolean || data instanceof Integer || data instanceof Long || data instanceof LocalDateTime) {
             return data.toString();
         }
         if (data instanceof Enum) {
@@ -55,7 +59,10 @@ public final class LocalDataQueryResultRow {
         if (data instanceof Properties) {
             return ((Properties) data).isEmpty() ? "" : JsonUtils.toJsonString(convert((Properties) data));
         }
-        return data;
+        if (data instanceof Map) {
+            return ((Map<?, ?>) data).isEmpty() ? "" : JsonUtils.toJsonString(data);
+        }
+        return JsonUtils.toJsonString(data);
     }
     
     private Map<Object, Object> convert(final Properties props) {
