@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sqltranslator.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -30,7 +29,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,9 +44,8 @@ class AlterSQLTranslatorRuleExecutorTest {
         SQLTranslatorRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(
                 new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("JOOQ", PropertiesBuilder.build(new Property("foo", "bar"))), null));
         assertThat(actual.getType(), is("JOOQ"));
-        assertFalse(actual.getProps().isEmpty());
-        String props = PropertiesConverter.convert(actual.getProps());
-        assertThat(props, is("{\"foo\":\"bar\"}"));
+        assertThat(actual.getProps().size(), is(1));
+        assertThat(actual.getProps().getProperty("foo"), is("bar"));
         assertTrue(actual.isUseOriginalSQLWhenTranslatingFailed());
     }
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -37,8 +36,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,10 +54,9 @@ class AlterTransactionRuleExecutorTest {
         TransactionRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getDefaultType(), is("XA"));
         assertThat(actual.getProviderType(), is("Atomikos"));
-        assertFalse(actual.getProps().isEmpty());
-        String props = PropertiesConverter.convert(actual.getProps());
-        assertTrue(props.contains("\"host\":\"127.0.0.1\""));
-        assertTrue(props.contains("\"databaseName\":\"jbossts\""));
+        assertThat(actual.getProps().size(), is(2));
+        assertThat(actual.getProps().getProperty("host"), is("127.0.0.1"));
+        assertThat(actual.getProps().getProperty("databaseName"), is("jbossts"));
     }
     
     @Test
