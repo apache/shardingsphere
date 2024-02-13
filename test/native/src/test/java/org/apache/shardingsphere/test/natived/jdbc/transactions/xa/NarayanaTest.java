@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.natived.jdbc.transactions.xa;
 
+import com.arjuna.ats.arjuna.common.CoreEnvironmentBeanException;
+import com.arjuna.ats.arjuna.common.arjPropertyManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
@@ -30,7 +32,8 @@ class NarayanaTest {
     private TestShardingService testShardingService;
     
     @Test
-    void assertShardingInNarayanaTransactions() throws SQLException {
+    void assertShardingInNarayanaTransactions() throws SQLException, CoreEnvironmentBeanException {
+        arjPropertyManager.getCoreEnvironmentBean().setNodeIdentifier("1");
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/transactions/xa/narayana.yaml");

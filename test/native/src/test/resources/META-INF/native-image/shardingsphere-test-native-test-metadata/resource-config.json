@@ -45,9 +45,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.NarayanaTest"},
     "pattern":"\\Qtest-native/yaml/transactions/xa/narayana.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"com.arjuna.common.util.propertyservice.FileLocator"},
-    "pattern":"\\Qjbossts-properties.xml\\E"
   }]},
   "bundles":[]
 }
