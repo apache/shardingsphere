@@ -49,10 +49,10 @@ class ShowComputeNodeInfoExecutorTest {
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));
         assertThat(row.getCell(2), is("127.0.0.1"));
-        assertThat(row.getCell(3), is(3309));
+        assertThat(row.getCell(3), is("3309"));
         assertThat(row.getCell(4), is("OK"));
         assertThat(row.getCell(5), is("Standalone"));
-        assertThat(row.getCell(6), is(0));
+        assertThat(row.getCell(6), is("0"));
         assertThat(row.getCell(7), is(""));
         assertThat(row.getCell(8), is("foo_version"));
     }

@@ -47,7 +47,7 @@ class ShowConnectionIdExecutorTest {
         assertThat(metaData.getColumnName(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));
         assertThat(metaData.getColumnLabel(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));
         while (executor.getMergedResult().next()) {
-            assertThat(executor.getMergedResult().getValue(1, Object.class), is(109));
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("109"));
         }
     }
     
@@ -60,7 +60,7 @@ class ShowConnectionIdExecutorTest {
         assertThat(metaData.getColumnName(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));
         assertThat(metaData.getColumnLabel(1), is("test_alias"));
         while (executor.getMergedResult().next()) {
-            assertThat(executor.getMergedResult().getValue(1, Object.class), is(109));
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("109"));
         }
     }
     
