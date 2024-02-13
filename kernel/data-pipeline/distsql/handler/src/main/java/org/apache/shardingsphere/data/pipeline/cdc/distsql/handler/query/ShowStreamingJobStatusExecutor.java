@@ -65,7 +65,7 @@ public final class ShowStreamingJobStatusExecutor implements DistSQLQueryExecuto
             incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
         }
         return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
-                jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), transmissionJobItemInfo.getInventoryFinishedPercentage(),
+                jobItemProgress.isActive(), jobItemProgress.getProcessedRecordsCount(), transmissionJobItemInfo.getInventoryFinishedPercentage(),
                 incrementalIdleSeconds, cdcJobItemInfo.getConfirmedPosition(), cdcJobItemInfo.getCurrentPosition(), transmissionJobItemInfo.getErrorMessage());
     }
     

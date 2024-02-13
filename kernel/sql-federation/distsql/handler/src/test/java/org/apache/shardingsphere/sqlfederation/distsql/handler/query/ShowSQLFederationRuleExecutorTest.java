@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 class ShowSQLFederationRuleExecutorTest {
     
     @Test
-    void assertSQLFederationRule() {
+    void assertGetRows() {
         ShowSQLFederationRuleExecutor executor = new ShowSQLFederationRuleExecutor();
         SQLFederationRule rule = mock(SQLFederationRule.class);
         when(rule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, true, new CacheOption(2000, 65535L)));
