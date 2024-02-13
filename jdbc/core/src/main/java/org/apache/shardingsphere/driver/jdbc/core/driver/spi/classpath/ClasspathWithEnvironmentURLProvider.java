@@ -39,10 +39,9 @@ public final class ClasspathWithEnvironmentURLProvider implements AbstractClassp
     
     @Override
     @SneakyThrows(IOException.class)
-    public byte[] getContent(final String url, final String urlPrefix) {
-        String file = ArgsUtils.getConfigurationSubject(url, urlPrefix, getConfigurationType());
+    public byte[] getContent(final String url, final String configurationSubject) {
         try (
-                InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(file);
+                InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(configurationSubject);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;
