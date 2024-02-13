@@ -36,7 +36,7 @@ public final class DriverDataSourceCache {
      * Get data source.
      *
      * @param url URL
-     * @param urlPrefix url prefix
+     * @param urlPrefix URL prefix
      * @return got data source
      */
     public DataSource get(final String url, final String urlPrefix) {
