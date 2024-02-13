@@ -67,7 +67,7 @@ public final class ShowDefaultShardingStrategyExecutor implements DistSQLQueryEx
         Iterator<String> iterator = strategyType.getConfigurationContents(strategyConfig).iterator();
         String shardingColumn = iterator.next();
         String algorithmName = iterator.next();
-        return new LocalDataQueryResultRow(defaultType, strategyType.toString(), shardingColumn, algorithmName, algorithmConfig.getType(), algorithmConfig.getProps().toString());
+        return new LocalDataQueryResultRow(defaultType, strategyType.toString(), shardingColumn, algorithmName, algorithmConfig.getType(), algorithmConfig.getProps());
     }
     
     @Override

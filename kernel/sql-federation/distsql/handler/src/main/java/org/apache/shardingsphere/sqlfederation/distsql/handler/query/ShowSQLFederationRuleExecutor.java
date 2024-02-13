@@ -46,9 +46,9 @@ public final class ShowSQLFederationRuleExecutor implements DistSQLQueryExecutor
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSQLFederationRuleStatement sqlStatement, final ContextManager contextManager) {
         SQLFederationRuleConfiguration ruleConfig = rule.getConfiguration();
-        String sqlFederationEnabled = String.valueOf(ruleConfig.isSqlFederationEnabled());
-        String allQueryUseSQLFederation = String.valueOf(ruleConfig.isAllQueryUseSQLFederation());
-        String executionPlanCache = null != ruleConfig.getExecutionPlanCache() ? ruleConfig.getExecutionPlanCache().toString() : "";
+        boolean sqlFederationEnabled = ruleConfig.isSqlFederationEnabled();
+        boolean allQueryUseSQLFederation = ruleConfig.isAllQueryUseSQLFederation();
+        String executionPlanCache = null == ruleConfig.getExecutionPlanCache() ? "" : ruleConfig.getExecutionPlanCache().toString();
         return Collections.singleton(new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache));
     }
     

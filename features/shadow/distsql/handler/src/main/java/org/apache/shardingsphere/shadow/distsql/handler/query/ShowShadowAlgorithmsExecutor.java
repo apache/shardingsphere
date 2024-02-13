@@ -46,7 +46,7 @@ public final class ShowShadowAlgorithmsExecutor implements DistSQLQueryExecutor<
     public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
         String defaultAlgorithm = rule.getConfiguration().getDefaultShadowAlgorithmName();
         return rule.getConfiguration().getShadowAlgorithms().entrySet().stream()
-                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps(), Boolean.toString(entry.getKey().equals(defaultAlgorithm))))
+                .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps(), entry.getKey().equals(defaultAlgorithm)))
                 .collect(Collectors.toList());
     }
     

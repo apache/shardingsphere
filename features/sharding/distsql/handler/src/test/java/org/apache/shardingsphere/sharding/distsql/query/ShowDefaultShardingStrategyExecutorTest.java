@@ -64,7 +64,7 @@ class ShowDefaultShardingStrategyExecutorTest {
         assertThat(row.getCell(3), is("use_id, order_id"));
         assertThat(row.getCell(4), is("database_inline"));
         assertThat(row.getCell(5), is("INLINE"));
-        assertThat(row.getCell(6), is("{algorithm-expression=ds_${user_id % 2}}"));
+        assertThat(row.getCell(6), is("{\"algorithm-expression\":\"ds_${user_id % 2}\"}"));
         ShardingRule rule2 = mock(ShardingRule.class);
         when(rule2.getConfiguration()).thenReturn(createRuleConfiguration2());
         executor = new ShowDefaultShardingStrategyExecutor();
@@ -78,14 +78,14 @@ class ShowDefaultShardingStrategyExecutorTest {
         assertThat(row.getCell(3), is("use_id"));
         assertThat(row.getCell(4), is("database_inline"));
         assertThat(row.getCell(5), is("INLINE"));
-        assertThat(row.getCell(6), is("{algorithm-expression=ds_${user_id % 2}}"));
+        assertThat(row.getCell(6), is("{\"algorithm-expression\":\"ds_${user_id % 2}\"}"));
         row = iterator.next();
         assertThat(row.getCell(1), is("DATABASE"));
         assertThat(row.getCell(2), is("HINT"));
         assertThat(row.getCell(3), is(""));
         assertThat(row.getCell(4), is("database_inline"));
         assertThat(row.getCell(5), is("INLINE"));
-        assertThat(row.getCell(6), is("{algorithm-expression=ds_${user_id % 2}}"));
+        assertThat(row.getCell(6), is("{\"algorithm-expression\":\"ds_${user_id % 2}\"}"));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration1() {

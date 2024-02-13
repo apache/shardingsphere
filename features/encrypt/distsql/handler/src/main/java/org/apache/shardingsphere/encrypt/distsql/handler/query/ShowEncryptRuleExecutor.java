@@ -20,7 +20,6 @@ package org.apache.shardingsphere.encrypt.distsql.handler.query;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -52,13 +51,8 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptRulesStatement sqlStatement, final ContextManager contextManager) {
-        return buildData(rule.getConfiguration(), sqlStatement);
-    }
-    
-    private Collection<LocalDataQueryResultRow> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {
-        return ruleConfig.getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
-                .map(each -> buildColumnData(each, ruleConfig.getEncryptors()))
-                .flatMap(Collection::stream).collect(Collectors.toList());
+        return rule.getConfiguration().getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
+                .map(each -> buildColumnData(each, rule.getConfiguration().getEncryptors())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Collection<LocalDataQueryResultRow> buildColumnData(final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {

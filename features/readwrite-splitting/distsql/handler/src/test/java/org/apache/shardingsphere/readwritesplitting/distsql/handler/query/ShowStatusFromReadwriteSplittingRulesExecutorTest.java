@@ -59,13 +59,9 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ReadwriteSplittingRule readwriteSplittingRule = mock(ReadwriteSplittingRule.class);
-        when(readwriteSplittingRule.getExportData()).thenReturn(mockExportData());
-        when(result.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singletonList(readwriteSplittingRule));
+        when(readwriteSplittingRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportDataSources()));
+        when(result.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(readwriteSplittingRule));
         return result;
-    }
-    
-    private Map<String, Object> mockExportData() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportDataSources());
     }
     
     private Map<String, Map<String, String>> exportDataSources() {
