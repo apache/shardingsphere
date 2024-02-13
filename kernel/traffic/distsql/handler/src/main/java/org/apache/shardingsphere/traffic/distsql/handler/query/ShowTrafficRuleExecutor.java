@@ -55,8 +55,8 @@ public final class ShowTrafficRuleExecutor implements DistSQLQueryExecutor<ShowT
     }
     
     private LocalDataQueryResultRow buildRow(final TrafficStrategyConfiguration strategy, final AlgorithmConfiguration trafficAlgorithm, final AlgorithmConfiguration loadBalancer) {
-        return new LocalDataQueryResultRow(strategy.getName(), String.join(",", strategy.getLabels()), null != trafficAlgorithm ? trafficAlgorithm.getType() : "",
-                null == trafficAlgorithm ? null : trafficAlgorithm.getProps(), null == loadBalancer ? "" : loadBalancer.getType(), null == loadBalancer ? "" : loadBalancer.getProps());
+        return new LocalDataQueryResultRow(strategy.getName(), String.join(",", strategy.getLabels()), null == trafficAlgorithm ? null : trafficAlgorithm.getType(),
+                null == trafficAlgorithm ? null : trafficAlgorithm.getProps(), null == loadBalancer ? null : loadBalancer.getType(), null == loadBalancer ? null : loadBalancer.getProps());
     }
     
     @Override

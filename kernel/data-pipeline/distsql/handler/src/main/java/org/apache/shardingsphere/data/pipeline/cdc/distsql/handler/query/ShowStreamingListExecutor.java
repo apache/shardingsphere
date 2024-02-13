@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +46,7 @@ public final class ShowStreamingListExecutor implements DistSQLQueryExecutor<Sho
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement, final ContextManager contextManager) {
         return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
                 each.getDatabaseName(), each.getTableName(), each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive(),
-                each.getJobMetaData().getCreateTime(), Optional.ofNullable(each.getJobMetaData().getStopTime()).orElse(""))).collect(Collectors.toList());
+                each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());
     }
     
     @Override

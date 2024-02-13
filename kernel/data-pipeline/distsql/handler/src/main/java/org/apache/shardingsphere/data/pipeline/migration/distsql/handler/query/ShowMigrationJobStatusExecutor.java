@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -53,13 +54,17 @@ public final class ShowMigrationJobStatusExecutor implements DistSQLQueryExecuto
         if (null == jobItemProgress) {
             return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", "", jobItemInfo.getErrorMessage());
         }
-        String incrementalIdleSeconds = "";
+        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemInfo.getTableNames(), jobItemProgress.getStatus(), jobItemProgress.isActive(),
+                jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(), getIncrementalIdleSeconds(jobItemProgress, jobItemInfo, currentTimeMillis),
+                jobItemInfo.getErrorMessage());
+    }
+    
+    private Optional<Long> getIncrementalIdleSeconds(final TransmissionJobItemProgress jobItemProgress, final TransmissionJobItemInfo jobItemInfo, final long currentTimeMillis) {
         if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
             long latestActiveTimeMillis = Math.max(jobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
-            incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
+            return Optional.of(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
         }
-        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemInfo.getTableNames(), jobItemProgress.getStatus(),
-                jobItemProgress.isActive(), jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(), incrementalIdleSeconds, jobItemInfo.getErrorMessage());
+        return Optional.empty();
     }
     
     @Override

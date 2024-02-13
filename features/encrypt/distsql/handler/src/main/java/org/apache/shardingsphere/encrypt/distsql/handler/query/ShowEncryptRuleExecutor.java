@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -59,8 +61,8 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (EncryptColumnRuleConfiguration each : tableRuleConfig.getColumns()) {
             AlgorithmConfiguration encryptorAlgorithmConfig = encryptors.get(each.getCipher().getEncryptorName());
-            AlgorithmConfiguration assistedQueryEncryptorAlgorithmConfig = each.getAssistedQuery().isPresent() ? encryptors.get(each.getAssistedQuery().get().getEncryptorName()) : null;
-            AlgorithmConfiguration likeQueryEncryptorAlgorithmConfig = each.getLikeQuery().isPresent() ? encryptors.get(each.getLikeQuery().get().getEncryptorName()) : null;
+            Optional<AlgorithmConfiguration> assistedQueryEncryptorAlgorithmConfig = each.getAssistedQuery().map(optional -> encryptors.get(optional.getEncryptorName()));
+            Optional<AlgorithmConfiguration> likeQueryEncryptorAlgorithmConfig = each.getLikeQuery().map(optional -> encryptors.get(optional.getEncryptorName()));
             result.add(new LocalDataQueryResultRow(
                     tableRuleConfig.getName(),
                     each.getName(),
@@ -69,10 +71,10 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
                     each.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getName).orElse(""),
                     encryptorAlgorithmConfig.getType(),
                     encryptorAlgorithmConfig.getProps(),
-                    null == assistedQueryEncryptorAlgorithmConfig ? "" : assistedQueryEncryptorAlgorithmConfig.getType(),
-                    null == assistedQueryEncryptorAlgorithmConfig ? "" : assistedQueryEncryptorAlgorithmConfig.getProps(),
-                    null == likeQueryEncryptorAlgorithmConfig ? "" : likeQueryEncryptorAlgorithmConfig.getType(),
-                    null == likeQueryEncryptorAlgorithmConfig ? "" : likeQueryEncryptorAlgorithmConfig.getProps()));
+                    assistedQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getType).orElse(""),
+                    assistedQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getProps).orElse(new Properties()),
+                    likeQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getType).orElse(""),
+                    likeQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getProps).orElse(new Properties())));
         }
         return result;
     }

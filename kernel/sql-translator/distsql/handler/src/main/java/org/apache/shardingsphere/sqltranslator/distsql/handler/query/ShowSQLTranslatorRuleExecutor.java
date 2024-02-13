@@ -46,7 +46,7 @@ public final class ShowSQLTranslatorRuleExecutor implements DistSQLQueryExecutor
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSQLTranslatorRuleStatement sqlStatement, final ContextManager contextManager) {
         SQLTranslatorRuleConfiguration ruleConfig = rule.getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProps(), String.valueOf(ruleConfig.isUseOriginalSQLWhenTranslatingFailed())));
+        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProps(), ruleConfig.isUseOriginalSQLWhenTranslatingFailed()));
     }
     
     @Override
