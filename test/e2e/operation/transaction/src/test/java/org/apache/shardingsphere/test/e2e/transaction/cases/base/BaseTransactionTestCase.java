@@ -46,7 +46,7 @@ public abstract class BaseTransactionTestCase {
     private final TransactionTestCaseParameter testCaseParam;
     
     /**
-     * Execute test cases test.
+     * Execute test cases test2222.
      *
      * @param containerComposer container composer
      * @throws SQLException SQL exception
