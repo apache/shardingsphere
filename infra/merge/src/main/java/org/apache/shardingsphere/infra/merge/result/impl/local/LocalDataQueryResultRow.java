@@ -40,8 +40,8 @@ public final class LocalDataQueryResultRow {
         if (null == data) {
             return "";
         }
-        if (data instanceof Boolean) {
-            return Boolean.toString((Boolean) data);
+        if (data instanceof Boolean || data instanceof Integer || data instanceof Long || data instanceof Float || data instanceof Double) {
+            return data.toString();
         }
         if (data instanceof Enum) {
             return ((Enum<?>) data).name();
