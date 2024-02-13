@@ -23,11 +23,11 @@ package org.apache.shardingsphere.driver.jdbc.core.driver;
 public interface ShardingSphereURLProvider {
     
     /**
-     * Get URL prefix.
+     * Get path type.
      * 
-     * @return URL prefix
+     * @return path type
      */
-    String getPrefix();
+    String getPathType();
     
     /**
      * Get configuration content from URL.

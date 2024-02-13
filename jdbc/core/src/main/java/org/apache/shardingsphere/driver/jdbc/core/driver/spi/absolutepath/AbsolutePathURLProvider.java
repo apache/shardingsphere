@@ -34,14 +34,14 @@ import java.nio.file.Files;
 public final class AbsolutePathURLProvider implements AbstractAbsolutePathURLProvider {
     
     @Override
-    public String getPrefix() {
+    public String getPathType() {
         return "absolutepath:";
     }
     
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, getPrefix());
+        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, getPathType());
         try (
                 InputStream stream = Files.newInputStream(new File(file).toPath());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
