@@ -32,14 +32,14 @@ import java.nio.charset.StandardCharsets;
 public final class ClasspathURLProvider implements AbstractClasspathURLProvider {
     
     @Override
-    public String getPathType() {
+    public String getConfigurationType() {
         return "classpath:";
     }
     
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = ArgsUtils.getConfigurationSubject(url, urlPrefix, getPathType());
+        String file = ArgsUtils.getConfigurationSubject(url, urlPrefix, getConfigurationType());
         try (
                 InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(file);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
