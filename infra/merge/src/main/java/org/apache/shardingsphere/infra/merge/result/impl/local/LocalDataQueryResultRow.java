@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.infra.merge.result.impl.local;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,9 +49,13 @@ public final class LocalDataQueryResultRow {
             return ((Enum<?>) data).name();
         }
         if (data instanceof Properties) {
-            return PropertiesConverter.convert((Properties) data);
+            return ((Properties) data).isEmpty() ? "" : JsonUtils.toJsonString(convert((Properties) data));
         }
         return data;
+    }
+    
+    private Map<Object, Object> convert(final Properties props) {
+        return props.keySet().stream().map(Object::toString).sorted().collect(Collectors.toMap(each -> each, props::get, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
