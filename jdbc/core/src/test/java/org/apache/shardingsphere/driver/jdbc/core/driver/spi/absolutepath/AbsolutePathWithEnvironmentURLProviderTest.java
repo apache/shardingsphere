@@ -38,7 +38,7 @@ class AbsolutePathWithEnvironmentURLProviderTest {
         String absoluteOriginPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
         byte[] actualOrigin = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absoluteOriginPath, urlPrefix);
         String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-environment-variables-fixture.yaml")).getPath();
-        byte[] actual = spy.getContent("jdbc:shardingsphere:absolutepath-environment:" + absolutePath, urlPrefix);
+        byte[] actual = spy.getContent("jdbc:shardingsphere:absolutepath-environment:" + absolutePath, absolutePath);
         assertThat(actual, is(actualOrigin));
     }
 }
