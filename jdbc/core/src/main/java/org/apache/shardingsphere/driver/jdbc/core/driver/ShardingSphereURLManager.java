@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.URLProviderNotFoundException;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 /**
@@ -29,16 +30,17 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 public final class ShardingSphereURLManager {
     
     /**
-     * Get config content from URL.
+     * Get configuration content from URL.
      *
      * @param url driver URL
-     * @param urlPrefix url prefix
+     * @param urlPrefix URL prefix
      * @return configuration content
      * @throws URLProviderNotFoundException driver URL provider not found exception
      */
     public static byte[] getContent(final String url, final String urlPrefix) {
+        ShardingSpherePreconditions.checkNotNull(url, () -> new URLProviderNotFoundException(url));
         for (ShardingSphereURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereURLProvider.class)) {
-            if (each.accept(url)) {
+            if (url.contains(each.getPrefix())) {
                 return each.getContent(url, urlPrefix);
             }
         }

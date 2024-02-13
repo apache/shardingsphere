@@ -23,19 +23,18 @@ package org.apache.shardingsphere.driver.jdbc.core.driver;
 public interface ShardingSphereURLProvider {
     
     /**
-     * Check if the url is suitable for this provider.
+     * Get URL prefix.
      * 
-     * @param url the driver url
-     * @return true if the url is suitable for this provider or false
+     * @return URL prefix
      */
-    boolean accept(String url);
+    String getPrefix();
     
     /**
-     * Get config content from url.
+     * Get configuration content from URL.
      *
-     * @param url the driver url
-     * @param urlPrefix url prefix
-     * @return the config content
+     * @param url driver URL
+     * @param urlPrefix URL prefix
+     * @return configuration content
      */
     byte[] getContent(String url, String urlPrefix);
 }
