@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -59,14 +60,18 @@ public final class ShowStreamingJobStatusExecutor implements DistSQLQueryExecuto
         if (null == jobItemProgress) {
             return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), "", "", "", "", "", "", "", "", transmissionJobItemInfo.getErrorMessage());
         }
-        String incrementalIdleSeconds = "";
+        return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(), jobItemProgress.isActive(),
+                jobItemProgress.getProcessedRecordsCount(), transmissionJobItemInfo.getInventoryFinishedPercentage(),
+                getIncrementalIdleSeconds(jobItemProgress, transmissionJobItemInfo, currentTimeMillis), cdcJobItemInfo.getConfirmedPosition(), cdcJobItemInfo.getCurrentPosition(),
+                transmissionJobItemInfo.getErrorMessage());
+    }
+    
+    private static Optional<Long> getIncrementalIdleSeconds(final TransmissionJobItemProgress jobItemProgress, final TransmissionJobItemInfo transmissionJobItemInfo, final long currentTimeMillis) {
         if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
             long latestActiveTimeMillis = Math.max(transmissionJobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
-            incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
+            return Optional.of(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
         }
-        return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
-                jobItemProgress.isActive(), jobItemProgress.getProcessedRecordsCount(), transmissionJobItemInfo.getInventoryFinishedPercentage(),
-                incrementalIdleSeconds, cdcJobItemInfo.getConfirmedPosition(), cdcJobItemInfo.getCurrentPosition(), transmissionJobItemInfo.getErrorMessage());
+        return Optional.empty();
     }
     
     @Override

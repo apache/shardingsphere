@@ -21,6 +21,7 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -81,6 +82,15 @@ class LocalDataQueryResultRowTest {
         LocalDataQueryResultRow actual = new LocalDataQueryResultRow(new Properties(), PropertiesBuilder.build(new Property("foo", "bar")));
         assertThat(actual.getCell(1), is(""));
         assertThat(actual.getCell(2), is("{\"foo\":\"bar\"}"));
+    }
+    
+    @Test
+    void assertGetCellWithOptional() {
+        LocalDataQueryResultRow actual = new LocalDataQueryResultRow(Optional.empty(), Optional.of("foo"), Optional.of(1), Optional.of(PropertiesBuilder.build(new Property("foo", "bar"))));
+        assertThat(actual.getCell(1), is(""));
+        assertThat(actual.getCell(2), is("foo"));
+        assertThat(actual.getCell(3), is("1"));
+        assertThat(actual.getCell(4), is("{\"foo\":\"bar\"}"));
     }
     
     private enum FixtureEnum {

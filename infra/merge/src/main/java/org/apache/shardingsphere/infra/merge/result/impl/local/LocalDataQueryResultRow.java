@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,6 +42,9 @@ public final class LocalDataQueryResultRow {
     private Object convert(final Object data) {
         if (null == data) {
             return "";
+        }
+        if (data instanceof Optional) {
+            return ((Optional<?>) data).isPresent() ? convert(((Optional<?>) data).get()) : "";
         }
         if (data instanceof Boolean || data instanceof Integer || data instanceof Long) {
             return data.toString();
