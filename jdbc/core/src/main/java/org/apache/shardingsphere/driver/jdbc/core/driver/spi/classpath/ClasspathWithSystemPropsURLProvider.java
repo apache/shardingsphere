@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
 
-import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
 
@@ -33,17 +32,15 @@ import java.util.regex.Matcher;
  */
 public final class ClasspathWithSystemPropsURLProvider implements AbstractClasspathURLProvider {
     
-    private static final String PATH_TYPE = "classpath-system-props:";
-    
     @Override
-    public boolean accept(final String url) {
-        return !Strings.isNullOrEmpty(url) && url.contains(PATH_TYPE);
+    public String getPrefix() {
+        return "classpath-system-props:";
     }
     
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, PATH_TYPE);
+        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, getPrefix());
         try (
                 InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(file);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
