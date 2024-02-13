@@ -33,7 +33,8 @@ class ClasspathWithEnvironmentURLProviderTest {
         ClasspathWithEnvironmentURLProvider spy = spy(new ClasspathWithEnvironmentURLProvider());
         when(spy.getEnvironmentVariables("FIXTURE_JDBC_URL")).thenReturn("jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         when(spy.getEnvironmentVariables("FIXTURE_USERNAME")).thenReturn("sa");
-        byte[] actual = spy.getContent("jdbc:shardingsphere:classpath-environment:config/driver/foo-driver-environment-variables-fixture.yaml", urlPrefix);
+        byte[] actual = spy.getContent("jdbc:shardingsphere:classpath-environment:config/driver/foo-driver-environment-variables-fixture.yaml",
+                "config/driver/foo-driver-environment-variables-fixture.yaml");
         byte[] actualOrigin = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
         assertThat(actual, is(actualOrigin));
     }

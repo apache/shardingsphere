@@ -50,7 +50,8 @@ class ClasspathWithSystemPropsURLProviderTest {
     void assertReplaceEnvironmentVariables() {
         final String urlPrefix = "jdbc:shardingsphere:";
         ClasspathWithSystemPropsURLProvider urlProvider = new ClasspathWithSystemPropsURLProvider();
-        byte[] actual = urlProvider.getContent("jdbc:shardingsphere:classpath-system-props:config/driver/foo-driver-system-properties-fixture.yaml", urlPrefix);
+        byte[] actual = urlProvider.getContent("jdbc:shardingsphere:classpath-system-props:config/driver/foo-driver-system-properties-fixture.yaml",
+                "config/driver/foo-driver-system-properties-fixture.yaml");
         byte[] actualOrigin = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
         assertThat(actual, is(actualOrigin));
     }
