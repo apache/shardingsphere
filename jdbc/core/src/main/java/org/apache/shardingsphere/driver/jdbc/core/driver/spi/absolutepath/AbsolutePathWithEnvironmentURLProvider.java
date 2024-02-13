@@ -35,14 +35,14 @@ import java.util.regex.Matcher;
 public final class AbsolutePathWithEnvironmentURLProvider implements AbstractAbsolutePathURLProvider {
     
     @Override
-    public String getPrefix() {
+    public String getPathType() {
         return "absolutepath-environment:";
     }
     
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, getPrefix());
+        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, getPathType());
         try (
                 InputStream stream = Files.newInputStream(new File(file).toPath());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {

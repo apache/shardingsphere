@@ -33,14 +33,14 @@ import java.util.regex.Matcher;
 public final class ClasspathWithSystemPropsURLProvider implements AbstractClasspathURLProvider {
     
     @Override
-    public String getPrefix() {
+    public String getPathType() {
         return "classpath-system-props:";
     }
     
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, getPrefix());
+        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, getPathType());
         try (
                 InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(file);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
