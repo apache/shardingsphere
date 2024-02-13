@@ -80,17 +80,17 @@ public final class ArgsUtils {
     }
     
     /**
-     * Get configuration file.
+     * Get configuration subject.
      *
      * @param url URL
      * @param urlPrefix URL prefix
-     * @param pathType path type
-     * @return configuration file
+     * @param configurationType configuration type
+     * @return configuration subject
      */
-    public static String getConfigurationFile(final String url, final String urlPrefix, final String pathType) {
+    public static String getConfigurationSubject(final String url, final String urlPrefix, final String configurationType) {
         String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
-        String result = configuredFile.substring(pathType.length());
-        Preconditions.checkArgument(!result.isEmpty(), "Configuration file is required in ShardingSphere URL.");
+        String result = configuredFile.substring(configurationType.length());
+        Preconditions.checkArgument(!result.isEmpty(), "Configuration subject is required in driver URL.");
         return result;
     }
     

@@ -42,7 +42,7 @@ public final class AbsolutePathWithEnvironmentURLProvider implements AbstractAbs
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String urlPrefix) {
-        String file = ArgsUtils.getConfigurationFile(url, urlPrefix, getPathType());
+        String file = ArgsUtils.getConfigurationSubject(url, urlPrefix, getPathType());
         try (
                 InputStream stream = Files.newInputStream(new File(file).toPath());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {

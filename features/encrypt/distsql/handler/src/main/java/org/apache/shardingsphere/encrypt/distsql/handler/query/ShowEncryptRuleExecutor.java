@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -67,14 +66,14 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
                     tableRuleConfig.getName(),
                     each.getName(),
                     each.getCipher().getName(),
-                    each.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getName).orElse(""),
-                    each.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getName).orElse(""),
+                    each.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getName),
+                    each.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getName),
                     encryptorAlgorithmConfig.getType(),
                     encryptorAlgorithmConfig.getProps(),
-                    assistedQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getType).orElse(""),
-                    assistedQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getProps).orElse(new Properties()),
-                    likeQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getType).orElse(""),
-                    likeQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getProps).orElse(new Properties())));
+                    assistedQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getType),
+                    assistedQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getProps),
+                    likeQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getType),
+                    likeQueryEncryptorAlgorithmConfig.map(AlgorithmConfiguration::getProps)));
         }
         return result;
     }
