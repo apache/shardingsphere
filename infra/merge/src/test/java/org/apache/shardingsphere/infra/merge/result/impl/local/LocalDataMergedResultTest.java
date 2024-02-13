@@ -53,7 +53,7 @@ class LocalDataMergedResultTest {
         LocalDataQueryResultRow row = new LocalDataQueryResultRow(new Date(0L));
         LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(row));
         assertTrue(actual.next());
-        assertThat(actual.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
+        assertThat(actual.getCalendarValue(1, Object.class, Calendar.getInstance()), is("0"));
     }
     
     @Test
