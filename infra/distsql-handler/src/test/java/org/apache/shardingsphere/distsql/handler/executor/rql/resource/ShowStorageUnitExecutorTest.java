@@ -85,7 +85,7 @@ class ShowStorageUnitExecutorTest {
             assertThat(data.getCell(1), is(nameMap.get(index)));
             assertThat(data.getCell(2), is("MySQL"));
             assertThat(data.getCell(3), is("localhost"));
-            assertThat(data.getCell(4), is(3307));
+            assertThat(data.getCell(4), is("3307"));
             assertThat(data.getCell(5), is(nameMap.get(index)));
             assertThat(data.getCell(6), is(""));
             assertThat(data.getCell(7), is(""));
@@ -109,7 +109,7 @@ class ShowStorageUnitExecutorTest {
         assertThat(data.getCell(1), is("ds_2"));
         assertThat(data.getCell(2), is("MySQL"));
         assertThat(data.getCell(3), is("localhost"));
-        assertThat(data.getCell(4), is(3307));
+        assertThat(data.getCell(4), is("3307"));
         assertThat(data.getCell(5), is("ds_2"));
         assertThat(data.getCell(6), is(""));
         assertThat(data.getCell(7), is(""));
