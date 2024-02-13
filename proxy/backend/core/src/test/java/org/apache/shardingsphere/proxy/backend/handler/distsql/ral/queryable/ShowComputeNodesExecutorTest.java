@@ -53,10 +53,10 @@ class ShowComputeNodesExecutorTest {
         assertThat(row.getCell(1), is("foo"));
         assertThat(row.getCell(2), is("PROXY"));
         assertThat(row.getCell(3), is("127.0.0.1"));
-        assertThat(row.getCell(4), is(3308));
+        assertThat(row.getCell(4), is("3308"));
         assertThat(row.getCell(5), is("OK"));
         assertThat(row.getCell(6), is("Standalone"));
-        assertThat(row.getCell(7), is(0));
+        assertThat(row.getCell(7), is("0"));
         assertThat(row.getCell(8), is(""));
         assertThat(row.getCell(9), is("foo_version"));
     }
@@ -73,10 +73,10 @@ class ShowComputeNodesExecutorTest {
         assertThat(row.getCell(1), is("foo"));
         assertThat(row.getCell(2), is("PROXY"));
         assertThat(row.getCell(3), is("127.0.0.1"));
-        assertThat(row.getCell(4), is(3309));
+        assertThat(row.getCell(4), is("3309"));
         assertThat(row.getCell(5), is("OK"));
         assertThat(row.getCell(6), is("Cluster"));
-        assertThat(row.getCell(7), is(1));
+        assertThat(row.getCell(7), is("1"));
         assertThat(row.getCell(8), is(""));
         assertThat(row.getCell(9), is("foo_version"));
     }
