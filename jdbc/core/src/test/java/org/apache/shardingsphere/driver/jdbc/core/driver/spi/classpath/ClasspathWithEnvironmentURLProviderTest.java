@@ -28,14 +28,23 @@ import static org.mockito.Mockito.when;
 class ClasspathWithEnvironmentURLProviderTest {
     
     @Test
-    void assertReplaceEnvironmentVariables() {
-        final String urlPrefix = "jdbc:shardingsphere:";
-        ClasspathWithEnvironmentURLProvider spy = spy(new ClasspathWithEnvironmentURLProvider());
-        when(spy.getEnvironmentVariables("FIXTURE_JDBC_URL")).thenReturn("jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        when(spy.getEnvironmentVariables("FIXTURE_USERNAME")).thenReturn("sa");
-        byte[] actual = spy.getContent("jdbc:shardingsphere:classpath-environment:config/driver/foo-driver-environment-variables-fixture.yaml",
-                "config/driver/foo-driver-environment-variables-fixture.yaml");
-        byte[] actualOrigin = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
-        assertThat(actual, is(actualOrigin));
+    void assertGetContent() {
+        assertThat(getActual(createURLProvider()), is(getExpected()));
+    }
+    
+    private ClasspathWithEnvironmentURLProvider createURLProvider() {
+        ClasspathWithEnvironmentURLProvider result = spy(new ClasspathWithEnvironmentURLProvider());
+        when(result.getEnvironmentVariables("FIXTURE_JDBC_URL")).thenReturn("jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        when(result.getEnvironmentVariables("FIXTURE_USERNAME")).thenReturn("sa");
+        return result;
+    }
+    
+    private byte[] getActual(final ClasspathWithEnvironmentURLProvider urlProvider) {
+        return urlProvider.getContent(
+                "jdbc:shardingsphere:classpath-environment:config/driver/foo-driver-environment-variables-fixture.yaml", "config/driver/foo-driver-environment-variables-fixture.yaml");
+    }
+    
+    private byte[] getExpected() {
+        return ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", "jdbc:shardingsphere:");
     }
 }
