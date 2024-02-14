@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.arg;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentPlaceholderType;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -36,17 +35,17 @@ public final class URLArgumentLine {
     
     private static final String KV_SEPARATOR = "::";
     
-    private final String name;
+    private final String argName;
     
-    private final String defaultValue;
+    private final String argDefaultValue;
     
-    private final Matcher matcher;
+    private final Matcher placehodlerMatcher;
     
     /**
-     * Parse ShardingSphere URL argument.
+     * Parse URL argument line.
      *
      * @param line line
-     * @return parsed argument
+     * @return parsed URL argument line
      */
     public static Optional<URLArgumentLine> parse(final String line) {
         Matcher matcher = URLArgumentLine.PLACEHOLDER_PATTERN.matcher(line);
@@ -63,24 +62,24 @@ public final class URLArgumentLine {
      * @param type placeholder type
      * @return replaced argument
      */
-    public String replaceArgument(final ConfigurationContentPlaceholderType type) {
+    public String replaceArgument(final URLArgumentPlaceholderType type) {
         String argumentValue = getArgumentValue(type);
-        if (Strings.isNullOrEmpty(argumentValue) && defaultValue.isEmpty()) {
-            String modifiedLineWithSpace = matcher.replaceAll("");
+        if (Strings.isNullOrEmpty(argumentValue) && argDefaultValue.isEmpty()) {
+            String modifiedLineWithSpace = placehodlerMatcher.replaceAll("");
             return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
         }
         if (Strings.isNullOrEmpty(argumentValue)) {
-            return matcher.replaceAll(defaultValue);
+            return placehodlerMatcher.replaceAll(argDefaultValue);
         }
-        return matcher.replaceAll(argumentValue);
+        return placehodlerMatcher.replaceAll(argumentValue);
     }
     
-    private String getArgumentValue(final ConfigurationContentPlaceholderType type) {
-        if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
-            return System.getenv(name);
+    private String getArgumentValue(final URLArgumentPlaceholderType type) {
+        if (URLArgumentPlaceholderType.ENVIRONMENT == type) {
+            return System.getenv(argName);
         }
-        if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
-            return System.getProperty(name);
+        if (URLArgumentPlaceholderType.SYSTEM_PROPS == type) {
+            return System.getProperty(argName);
         }
         return null;
     }

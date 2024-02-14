@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentPlaceholderType;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -94,14 +93,14 @@ public final class ArgsUtils {
      * @param params parameters
      * @return placeholder type
      */
-    public static ConfigurationContentPlaceholderType getPlaceholderType(final Map<String, String> params) {
+    public static URLArgumentPlaceholderType getPlaceholderType(final Map<String, String> params) {
         if (!params.containsKey("placeholder-type")) {
-            return ConfigurationContentPlaceholderType.NONE;
+            return URLArgumentPlaceholderType.NONE;
         }
         try {
-            return ConfigurationContentPlaceholderType.valueOf(params.get("placeholder-type").toUpperCase());
+            return URLArgumentPlaceholderType.valueOf(params.get("placeholder-type").toUpperCase());
         } catch (final IllegalArgumentException ex) {
-            return ConfigurationContentPlaceholderType.NONE;
+            return URLArgumentPlaceholderType.NONE;
         }
     }
 }
