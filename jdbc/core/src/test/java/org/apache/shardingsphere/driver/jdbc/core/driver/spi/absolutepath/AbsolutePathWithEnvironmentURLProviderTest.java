@@ -24,30 +24,14 @@ import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 class AbsolutePathWithEnvironmentURLProviderTest {
     
     @Test
     void assertGetContent() {
-        assertThat(getActual(createURLProvider()), is(getExpected()));
-    }
-    
-    private AbsolutePathWithEnvironmentURLProvider createURLProvider() {
-        AbsolutePathWithEnvironmentURLProvider result = spy(new AbsolutePathWithEnvironmentURLProvider());
-        when(result.getEnvironmentVariables("FIXTURE_JDBC_URL")).thenReturn("jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        when(result.getEnvironmentVariables("FIXTURE_USERNAME")).thenReturn("sa");
-        return result;
-    }
-    
-    private byte[] getActual(final AbsolutePathWithEnvironmentURLProvider urlProvider) {
-        String absoluteActualPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-environment-variables-fixture.yaml")).getPath();
-        return urlProvider.getContent("jdbc:shardingsphere:absolutepath-environment:" + absoluteActualPath, absoluteActualPath);
-    }
-    
-    private byte[] getExpected() {
-        String absoluteExpectedPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        return ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absoluteExpectedPath, "jdbc:shardingsphere:");
+        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
+        byte[] actual = new AbsolutePathWithEnvironmentURLProvider().getContent("jdbc:shardingsphere:absolutepath-environment:" + path, path);
+        byte[] expected = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + path, "jdbc:shardingsphere:");
+        assertThat(actual, is(expected));
     }
 }

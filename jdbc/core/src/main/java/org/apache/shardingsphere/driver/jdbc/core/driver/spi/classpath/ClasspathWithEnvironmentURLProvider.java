@@ -19,13 +19,14 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReader;
+import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReaderType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
 
 /**
  * Classpath with environment variables URL provider.
@@ -43,32 +44,7 @@ public final class ClasspathWithEnvironmentURLProvider implements AbstractClassp
         try (
                 InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(configurationSubject);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#")) {
-                    line = replaceEnvironmentVariables(line);
-                    builder.append(line).append(System.lineSeparator());
-                }
-            }
-            return builder.toString().getBytes(StandardCharsets.UTF_8);
+            return ConfigurationContentReader.readContent(reader, ConfigurationContentReaderType.ENVIRONMENT);
         }
-    }
-    
-    private String replaceEnvironmentVariables(final String line) {
-        Matcher matcher = ArgsUtils.getPattern().matcher(line);
-        if (!matcher.find()) {
-            return line;
-        }
-        String[] envNameAndDefaultValue = ArgsUtils.getArgNameAndDefaultValue(matcher);
-        String envValue = getEnvironmentVariables(envNameAndDefaultValue[0]);
-        return ArgsUtils.replaceArg(envValue, envNameAndDefaultValue[1], matcher);
-    }
-    
-    /*
-     * This method is only used for mocking environment variables in unit tests and should not be used under any circumstances.
-     */
-    String getEnvironmentVariables(final String name) {
-        return System.getenv(name);
     }
 }
