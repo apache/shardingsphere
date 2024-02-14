@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
+import java.util.Optional;
 
 /**
  * Configuration content reader.
@@ -49,35 +49,36 @@ public final class ConfigurationContentReader {
             String line;
             while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#")) {
-                    if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
-                        line = replaceEnvironmentVariables(line);
-                    } else if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
-                        line = replaceSystemProperties(line);
-                    }
-                    builder.append(line).append(System.lineSeparator());
+                    continue;
                 }
+                Optional<ShardingSphereURLArgument> arg = ShardingSphereURLArgument.parse(line);
+                if (arg.isPresent()) {
+                    Optional<String> argValue = getArgumentValue(type, arg.get());
+                    if (argValue.isPresent()) {
+                        line = ArgsUtils.replaceArg(argValue.get(), arg.get().getDefaultValue(), ArgsUtils.PLACEHOLDER_PATTERN.matcher(line));
+                    }
+                }
+                builder.append(line).append(System.lineSeparator());
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);
         }
     }
     
-    private static String replaceSystemProperties(final String line) {
-        Matcher matcher = ArgsUtils.PLACEHOLDER_PATTERN.matcher(line);
-        if (!matcher.find()) {
-            return line;
+    private static Optional<String> getArgumentValue(final ConfigurationContentPlaceholderType type, final ShardingSphereURLArgument arg) {
+        if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
+            return Optional.of(getEnvironmentVariable(arg.getName()));
         }
-        ShardingSphereURLArgument arg = ShardingSphereURLArgument.parse(matcher.group(1));
-        String systemPropValue = System.getProperty(arg.getName());
-        return ArgsUtils.replaceArg(systemPropValue, arg.getDefaultValue(), matcher);
+        if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
+            return Optional.of(getSystemProperty(arg.getName()));
+        }
+        return Optional.empty();
     }
     
-    private static String replaceEnvironmentVariables(final String line) {
-        Matcher matcher = ArgsUtils.PLACEHOLDER_PATTERN.matcher(line);
-        if (!matcher.find()) {
-            return line;
-        }
-        ShardingSphereURLArgument arg = ShardingSphereURLArgument.parse(matcher.group(1));
-        String envValue = System.getenv(arg.getName());
-        return ArgsUtils.replaceArg(envValue, arg.getDefaultValue(), matcher);
+    private static String getEnvironmentVariable(final String argName) {
+        return System.getenv(argName);
+    }
+    
+    private static String getSystemProperty(final String argName) {
+        return System.getProperty(argName);
     }
 }

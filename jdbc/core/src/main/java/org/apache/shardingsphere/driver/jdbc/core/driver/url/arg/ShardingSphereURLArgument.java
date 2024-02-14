@@ -21,12 +21,18 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * ShardingSphere URL argument.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class ShardingSphereURLArgument {
+    
+    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
     private static final String KV_SEPARATOR = "::";
     
@@ -37,11 +43,16 @@ public final class ShardingSphereURLArgument {
     /**
      * Parse ShardingSphere URL argument.
      *
-     * @param argString argument string
+     * @param line line
      * @return parsed argument
      */
-    public static ShardingSphereURLArgument parse(final String argString) {
-        String[] parsedArg = argString.split(KV_SEPARATOR, 2);
-        return new ShardingSphereURLArgument(parsedArg[0], parsedArg[1]);
+    public static Optional<ShardingSphereURLArgument> parse(final String line) {
+        Matcher matcher = ArgsUtils.PLACEHOLDER_PATTERN.matcher(line);
+        if (!matcher.find()) {
+            return Optional.empty();
+        }
+        String[] parsedArg = matcher.group(1).split(KV_SEPARATOR, 2);
+        return Optional.of(new ShardingSphereURLArgument(parsedArg[0], parsedArg[1]));
     }
+    
 }
