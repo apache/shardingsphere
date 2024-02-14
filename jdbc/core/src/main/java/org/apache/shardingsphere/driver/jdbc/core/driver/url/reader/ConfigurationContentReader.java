@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ArgsUtils;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ShardingSphereURLArgument;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderType;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentLine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,39 +43,17 @@ public final class ConfigurationContentReader {
      * @return content
      * @throws IOException IO exception
      */
-    public static byte[] read(final InputStream inputStream, final ConfigurationContentPlaceholderType type) throws IOException {
+    public static byte[] read(final InputStream inputStream, final URLArgumentPlaceholderType type) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;
             while (null != (line = reader.readLine())) {
-                if (line.startsWith("#")) {
-                    continue;
+                if (!line.startsWith("#")) {
+                    Optional<URLArgumentLine> argLine = URLArgumentPlaceholderType.NONE == type ? Optional.empty() : URLArgumentLine.parse(line);
+                    builder.append(argLine.map(optional -> optional.replaceArgument(type)).orElse(line)).append(System.lineSeparator());
                 }
-                Optional<ShardingSphereURLArgument> arg = ConfigurationContentPlaceholderType.NONE == type ? Optional.empty() : ShardingSphereURLArgument.parse(line);
-                if (arg.isPresent()) {
-                    line = ArgsUtils.replaceArg(getArgumentValue(type, arg.get()), arg.get().getDefaultValue(), ArgsUtils.PLACEHOLDER_PATTERN.matcher(line));
-                }
-                builder.append(line).append(System.lineSeparator());
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);
         }
-    }
-    
-    private static String getArgumentValue(final ConfigurationContentPlaceholderType type, final ShardingSphereURLArgument arg) {
-        if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
-            return getEnvironmentVariable(arg.getName());
-        }
-        if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
-            return getSystemProperty(arg.getName());
-        }
-        return null;
-    }
-    
-    private static String getEnvironmentVariable(final String argName) {
-        return System.getenv(argName);
-    }
-    
-    private static String getSystemProperty(final String argName) {
-        return System.getProperty(argName);
     }
 }

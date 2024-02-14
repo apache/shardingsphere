@@ -21,44 +21,17 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentPlaceholderType;
 
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Arguments utils.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArgsUtils {
-    
-    /**
-     * Placeholder pattern.
-     */
-    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
-    
-    /**
-     * Replace argument.
-     *
-     * @param targetValue value of argument
-     * @param defaultValue default value of argument
-     * @param matcher matcher
-     * @return replaced argument
-     */
-    public static String replaceArg(final String targetValue, final String defaultValue, final Matcher matcher) {
-        if (Strings.isNullOrEmpty(targetValue) && defaultValue.isEmpty()) {
-            String modifiedLineWithSpace = matcher.replaceAll("");
-            return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
-        }
-        if (Strings.isNullOrEmpty(targetValue)) {
-            return matcher.replaceAll(defaultValue);
-        }
-        return matcher.replaceAll(targetValue);
-    }
     
     /**
      * Get configuration subject.
@@ -120,14 +93,14 @@ public final class ArgsUtils {
      * @param params parameters
      * @return placeholder type
      */
-    public static ConfigurationContentPlaceholderType getPlaceholderType(final Map<String, String> params) {
+    public static URLArgumentPlaceholderType getPlaceholderType(final Map<String, String> params) {
         if (!params.containsKey("placeholder-type")) {
-            return ConfigurationContentPlaceholderType.NONE;
+            return URLArgumentPlaceholderType.NONE;
         }
         try {
-            return ConfigurationContentPlaceholderType.valueOf(params.get("placeholder-type").toUpperCase());
+            return URLArgumentPlaceholderType.valueOf(params.get("placeholder-type").toUpperCase());
         } catch (final IllegalArgumentException ex) {
-            return ConfigurationContentPlaceholderType.NONE;
+            return URLArgumentPlaceholderType.NONE;
         }
     }
 }

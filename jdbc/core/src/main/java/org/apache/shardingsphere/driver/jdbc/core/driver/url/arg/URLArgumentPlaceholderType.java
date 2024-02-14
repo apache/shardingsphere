@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.arg;
 
 /**
- * Configuration content placeholder type.
+ * URL argument placeholder type.
  */
-public enum ConfigurationContentPlaceholderType {
+public enum URLArgumentPlaceholderType {
     
     NONE, ENVIRONMENT, SYSTEM_PROPS
 }

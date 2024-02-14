@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -48,19 +49,19 @@ class ConfigurationContentReaderTest {
     
     @Test
     void assertReadWithNonePlaceholder() throws IOException {
-        byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", ConfigurationContentPlaceholderType.NONE);
-        byte[] expected = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", ConfigurationContentPlaceholderType.NONE);
+        byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", URLArgumentPlaceholderType.NONE);
+        byte[] expected = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", URLArgumentPlaceholderType.NONE);
         assertThat(new String(actual), is(new String(expected)));
     }
     
     @Test
     void assertReadWithSystemPropertiesPlaceholder() throws IOException {
-        byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", ConfigurationContentPlaceholderType.SYSTEM_PROPS);
-        byte[] expected = readContent("config/driver/foo-driver-fixture.yaml", ConfigurationContentPlaceholderType.SYSTEM_PROPS);
+        byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", URLArgumentPlaceholderType.SYSTEM_PROPS);
+        byte[] expected = readContent("config/driver/foo-driver-fixture.yaml", URLArgumentPlaceholderType.SYSTEM_PROPS);
         assertThat(new String(actual), is(new String(expected)));
     }
     
-    private byte[] readContent(final String name, final ConfigurationContentPlaceholderType placeholderType) throws IOException {
+    private byte[] readContent(final String name, final URLArgumentPlaceholderType placeholderType) throws IOException {
         String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).getPath();
         try (FileInputStream inputStream = new FileInputStream(path)) {
             return ConfigurationContentReader.read(inputStream, placeholderType);
