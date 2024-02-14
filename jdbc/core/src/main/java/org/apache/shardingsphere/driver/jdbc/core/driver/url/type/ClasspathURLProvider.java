@@ -33,7 +33,7 @@ import java.io.InputStream;
 public final class ClasspathURLProvider implements ShardingSphereURLProvider {
     
     @Override
-    public String getConfigurationType() {
+    public String getSourceType() {
         return "classpath:";
     }
     

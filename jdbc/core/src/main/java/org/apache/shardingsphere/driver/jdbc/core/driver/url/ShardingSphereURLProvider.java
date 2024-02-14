@@ -23,11 +23,11 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 public interface ShardingSphereURLProvider {
     
     /**
-     * Get configuration type.
+     * Get source type.
      * 
-     * @return configuration type
+     * @return source type
      */
-    String getConfigurationType();
+    String getSourceType();
     
     /**
      * Get configuration content from URL.

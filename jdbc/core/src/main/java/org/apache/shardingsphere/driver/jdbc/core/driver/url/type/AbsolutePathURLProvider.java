@@ -34,7 +34,7 @@ import java.nio.file.Files;
 public final class AbsolutePathURLProvider implements ShardingSphereURLProvider {
     
     @Override
-    public String getConfigurationType() {
+    public String getSourceType() {
         return "absolutepath:";
     }
     

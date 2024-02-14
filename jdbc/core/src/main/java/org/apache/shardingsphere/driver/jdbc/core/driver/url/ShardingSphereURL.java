@@ -43,11 +43,11 @@ public final class ShardingSphereURL {
      * 
      * @param url ShardingSphere URL
      * @param urlPrefix URL prefix
-     * @param configurationType configuration type
+     * @param sourceType source type
      * @return ShardingSphere URL
      */
-    public static ShardingSphereURL parse(final String url, final String urlPrefix, final String configurationType) {
-        return new ShardingSphereURL(parseConfigurationSubject(url, urlPrefix, configurationType), parseParameters(url));
+    public static ShardingSphereURL parse(final String url, final String urlPrefix, final String sourceType) {
+        return new ShardingSphereURL(parseConfigurationSubject(url, urlPrefix, sourceType), parseParameters(url));
     }
     
     private static String parseConfigurationSubject(final String url, final String urlPrefix, final String configurationType) {
