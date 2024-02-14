@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.url;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.arg;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -36,38 +36,10 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArgsUtils {
     
-    private static final String KEY_VALUE_SEPARATOR = "::";
-    
-    private static final Pattern PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
-    
     /**
-     * Get key value separator.
-     * 
-     * @return key value separator
+     * Placeholder pattern.
      */
-    public static String getKeyValueSeparator() {
-        return KEY_VALUE_SEPARATOR;
-    }
-    
-    /**
-     * Get pattern.
-     *
-     * @return got pattern
-     */
-    public static Pattern getPattern() {
-        return PATTERN;
-    }
-    
-    /**
-     * Get arg name and default value.
-     *
-     * @param matcher matcher
-     * @return argument name and default value
-     */
-    public static String[] getArgNameAndDefaultValue(final Matcher matcher) {
-        String groupString = matcher.group(1);
-        return groupString.split(ArgsUtils.getKeyValueSeparator(), 2);
-    }
+    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
     /**
      * Replace argument.

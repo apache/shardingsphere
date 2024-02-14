@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ArgsUtils;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.URLProviderNotFoundException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
