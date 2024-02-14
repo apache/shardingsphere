@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderTypeFactory;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
@@ -26,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Map;
 
 /**
  * Absolute path URL provider.
@@ -34,15 +34,15 @@ import java.util.Map;
 public final class AbsolutePathURLProvider implements ShardingSphereURLProvider {
     
     @Override
-    public String getConfigurationType() {
+    public String getSourceType() {
         return "absolutepath:";
     }
     
     @Override
     @SneakyThrows(IOException.class)
-    public byte[] getContent(final String configSubject, final Map<String, String> configParams) {
-        try (InputStream inputStream = Files.newInputStream(new File(configSubject).toPath())) {
-            return ConfigurationContentReader.read(inputStream, URLArgumentPlaceholderTypeFactory.valueOf(configParams));
+    public byte[] getContent(final ShardingSphereURL url) {
+        try (InputStream inputStream = Files.newInputStream(new File(url.getConfigurationSubject()).toPath())) {
+            return ConfigurationContentReader.read(inputStream, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
         }
     }
 }
