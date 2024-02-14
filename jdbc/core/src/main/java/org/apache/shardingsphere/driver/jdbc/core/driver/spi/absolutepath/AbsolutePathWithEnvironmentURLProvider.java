@@ -45,7 +45,7 @@ public final class AbsolutePathWithEnvironmentURLProvider implements AbstractAbs
         try (
                 InputStream stream = Files.newInputStream(new File(configurationSubject).toPath());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            return ConfigurationContentReader.readContent(reader, ConfigurationContentReaderType.ENVIRONMENT);
+            return ConfigurationContentReader.read(reader, ConfigurationContentReaderType.ENVIRONMENT);
         }
     }
 }

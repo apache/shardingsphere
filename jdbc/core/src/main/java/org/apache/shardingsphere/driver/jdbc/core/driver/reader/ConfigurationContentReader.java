@@ -40,7 +40,7 @@ public final class ConfigurationContentReader {
      * @return content
      * @throws IOException IO exception
      */
-    public static byte[] readContent(final BufferedReader reader, final ConfigurationContentReaderType type) throws IOException {
+    public static byte[] read(final BufferedReader reader, final ConfigurationContentReaderType type) throws IOException {
         StringBuilder builder = new StringBuilder();
         String line;
         while (null != (line = reader.readLine())) {

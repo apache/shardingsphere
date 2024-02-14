@@ -57,7 +57,7 @@ class ConfigurationContentReaderTest {
     private byte[] readContent(final String name) throws IOException {
         String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).getPath();
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
-            return ConfigurationContentReader.readContent(reader, ConfigurationContentReaderType.SYSTEM_PROPS);
+            return ConfigurationContentReader.read(reader, ConfigurationContentReaderType.SYSTEM_PROPS);
         }
     }
 }

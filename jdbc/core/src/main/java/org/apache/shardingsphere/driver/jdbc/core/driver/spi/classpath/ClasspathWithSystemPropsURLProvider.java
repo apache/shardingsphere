@@ -44,7 +44,7 @@ public final class ClasspathWithSystemPropsURLProvider implements AbstractClassp
         try (
                 InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(configurationSubject);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            return ConfigurationContentReader.readContent(reader, ConfigurationContentReaderType.SYSTEM_PROPS);
+            return ConfigurationContentReader.read(reader, ConfigurationContentReaderType.SYSTEM_PROPS);
         }
     }
 }
