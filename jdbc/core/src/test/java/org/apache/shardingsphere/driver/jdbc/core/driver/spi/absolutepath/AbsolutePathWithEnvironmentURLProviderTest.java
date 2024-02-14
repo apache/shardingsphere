@@ -30,15 +30,24 @@ import static org.mockito.Mockito.when;
 class AbsolutePathWithEnvironmentURLProviderTest {
     
     @Test
-    void assertReplaceEnvironmentVariables() {
-        final String urlPrefix = "jdbc:shardingsphere:";
-        AbsolutePathWithEnvironmentURLProvider spy = spy(new AbsolutePathWithEnvironmentURLProvider());
-        when(spy.getEnvironmentVariables("FIXTURE_JDBC_URL")).thenReturn("jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        when(spy.getEnvironmentVariables("FIXTURE_USERNAME")).thenReturn("sa");
-        String absoluteOriginPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        byte[] actualOrigin = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absoluteOriginPath, urlPrefix);
-        String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-environment-variables-fixture.yaml")).getPath();
-        byte[] actual = spy.getContent("jdbc:shardingsphere:absolutepath-environment:" + absolutePath, absolutePath);
-        assertThat(actual, is(actualOrigin));
+    void assertGetContent() {
+        assertThat(getActual(createAbsolutePathWithEnvironmentURLProvider()), is(getExpected()));
+    }
+    
+    private AbsolutePathWithEnvironmentURLProvider createAbsolutePathWithEnvironmentURLProvider() {
+        AbsolutePathWithEnvironmentURLProvider result = spy(new AbsolutePathWithEnvironmentURLProvider());
+        when(result.getEnvironmentVariables("FIXTURE_JDBC_URL")).thenReturn("jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        when(result.getEnvironmentVariables("FIXTURE_USERNAME")).thenReturn("sa");
+        return result;
+    }
+    
+    private byte[] getActual(final AbsolutePathWithEnvironmentURLProvider spy) {
+        String absoluteActualPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-environment-variables-fixture.yaml")).getPath();
+        return spy.getContent("jdbc:shardingsphere:absolutepath-environment:" + absoluteActualPath, absoluteActualPath);
+    }
+    
+    private byte[] getExpected() {
+        String absoluteExpectedPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
+        return ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absoluteExpectedPath, "jdbc:shardingsphere:");
     }
 }
