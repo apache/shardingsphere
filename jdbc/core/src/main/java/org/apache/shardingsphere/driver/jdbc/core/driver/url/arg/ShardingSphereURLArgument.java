@@ -32,6 +32,9 @@ import java.util.regex.Pattern;
 @Getter
 public final class ShardingSphereURLArgument {
     
+    /**
+     * Placeholder pattern.
+     */
     public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
     private static final String KV_SEPARATOR = "::";
@@ -47,7 +50,7 @@ public final class ShardingSphereURLArgument {
      * @return parsed argument
      */
     public static Optional<ShardingSphereURLArgument> parse(final String line) {
-        Matcher matcher = ArgsUtils.PLACEHOLDER_PATTERN.matcher(line);
+        Matcher matcher = ShardingSphereURLArgument.PLACEHOLDER_PATTERN.matcher(line);
         if (!matcher.find()) {
             return Optional.empty();
         }

@@ -28,18 +28,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Arguments utils.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArgsUtils {
-    
-    /**
-     * Placeholder pattern.
-     */
-    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
     /**
      * Replace argument.

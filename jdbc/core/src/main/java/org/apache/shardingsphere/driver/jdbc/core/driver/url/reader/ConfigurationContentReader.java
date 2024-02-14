@@ -53,7 +53,7 @@ public final class ConfigurationContentReader {
                 }
                 Optional<ShardingSphereURLArgument> arg = ConfigurationContentPlaceholderType.NONE == type ? Optional.empty() : ShardingSphereURLArgument.parse(line);
                 if (arg.isPresent()) {
-                    line = ArgsUtils.replaceArg(getArgumentValue(type, arg.get()), arg.get().getDefaultValue(), ArgsUtils.PLACEHOLDER_PATTERN.matcher(line));
+                    line = ArgsUtils.replaceArg(getArgumentValue(type, arg.get()), arg.get().getDefaultValue(), ShardingSphereURLArgument.PLACEHOLDER_PATTERN.matcher(line));
                 }
                 builder.append(line).append(System.lineSeparator());
             }
