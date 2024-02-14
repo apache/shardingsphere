@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ArgsUtils;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
 

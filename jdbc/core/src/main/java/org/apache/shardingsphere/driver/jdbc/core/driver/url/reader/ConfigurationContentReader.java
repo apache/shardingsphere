@@ -19,7 +19,8 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ShardingSphereURLArgument;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -65,9 +66,9 @@ public final class ConfigurationContentReader {
         if (!matcher.find()) {
             return line;
         }
-        String[] systemPropNameAndDefaultValue = ArgsUtils.getArgNameAndDefaultValue(matcher);
-        String systemPropValue = System.getProperty(systemPropNameAndDefaultValue[0]);
-        return ArgsUtils.replaceArg(systemPropValue, systemPropNameAndDefaultValue[1], matcher);
+        ShardingSphereURLArgument arg = ShardingSphereURLArgument.parse(matcher.group(1));
+        String systemPropValue = System.getProperty(arg.getName());
+        return ArgsUtils.replaceArg(systemPropValue, arg.getDefaultValue(), matcher);
     }
     
     private static String replaceEnvironmentVariables(final String line) {
@@ -75,8 +76,8 @@ public final class ConfigurationContentReader {
         if (!matcher.find()) {
             return line;
         }
-        String[] envNameAndDefaultValue = ArgsUtils.getArgNameAndDefaultValue(matcher);
-        String envValue = System.getenv(envNameAndDefaultValue[0]);
-        return ArgsUtils.replaceArg(envValue, envNameAndDefaultValue[1], matcher);
+        ShardingSphereURLArgument arg = ShardingSphereURLArgument.parse(matcher.group(1));
+        String envValue = System.getenv(arg.getName());
+        return ArgsUtils.replaceArg(envValue, arg.getDefaultValue(), matcher);
     }
 }

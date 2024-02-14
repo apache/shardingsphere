@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.url;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.arg;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -40,19 +40,6 @@ public final class ArgsUtils {
      * Placeholder pattern.
      */
     public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
-    
-    private static final String KV_SEPARATOR = "::";
-    
-    /**
-     * Get arg name and default value.
-     *
-     * @param matcher matcher
-     * @return argument name and default value
-     */
-    public static String[] getArgNameAndDefaultValue(final Matcher matcher) {
-        String groupString = matcher.group(1);
-        return groupString.split(KV_SEPARATOR, 2);
-    }
     
     /**
      * Replace argument.
