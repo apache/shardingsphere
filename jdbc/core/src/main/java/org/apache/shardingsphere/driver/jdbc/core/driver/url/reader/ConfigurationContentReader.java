@@ -52,29 +52,11 @@ public final class ConfigurationContentReader {
                 }
                 Optional<ShardingSphereURLArgument> arg = ConfigurationContentPlaceholderType.NONE == type ? Optional.empty() : ShardingSphereURLArgument.parse(line);
                 if (arg.isPresent()) {
-                    line = arg.get().replaceArgument(getArgumentValue(arg.get().getName(), type));
+                    line = arg.get().replaceArgument(type);
                 }
                 builder.append(line).append(System.lineSeparator());
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);
         }
-    }
-    
-    private static String getArgumentValue(final String argName, final ConfigurationContentPlaceholderType type) {
-        if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
-            return getEnvironmentVariable(argName);
-        }
-        if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
-            return getSystemProperty(argName);
-        }
-        return null;
-    }
-    
-    private static String getEnvironmentVariable(final String argName) {
-        return System.getenv(argName);
-    }
-    
-    private static String getSystemProperty(final String argName) {
-        return System.getProperty(argName);
     }
 }

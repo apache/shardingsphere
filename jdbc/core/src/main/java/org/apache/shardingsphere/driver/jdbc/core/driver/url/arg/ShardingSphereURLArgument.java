@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.arg;
 
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentPlaceholderType;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -36,7 +36,6 @@ public final class ShardingSphereURLArgument {
     
     private static final String KV_SEPARATOR = "::";
     
-    @Getter
     private final String name;
     
     private final String defaultValue;
@@ -61,17 +60,28 @@ public final class ShardingSphereURLArgument {
     /**
      * Replace argument.
      *
-     * @param targetValue value of argument
+     * @param type placeholder type
      * @return replaced argument
      */
-    public String replaceArgument(final String targetValue) {
-        if (Strings.isNullOrEmpty(targetValue) && defaultValue.isEmpty()) {
+    public String replaceArgument(final ConfigurationContentPlaceholderType type) {
+        String argumentValue = getArgumentValue(type);
+        if (Strings.isNullOrEmpty(argumentValue) && defaultValue.isEmpty()) {
             String modifiedLineWithSpace = matcher.replaceAll("");
             return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
         }
-        if (Strings.isNullOrEmpty(targetValue)) {
+        if (Strings.isNullOrEmpty(argumentValue)) {
             return matcher.replaceAll(defaultValue);
         }
-        return matcher.replaceAll(targetValue);
+        return matcher.replaceAll(argumentValue);
+    }
+    
+    private String getArgumentValue(final ConfigurationContentPlaceholderType type) {
+        if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
+            return System.getenv(name);
+        }
+        if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
+            return System.getProperty(name);
+        }
+        return null;
     }
 }
