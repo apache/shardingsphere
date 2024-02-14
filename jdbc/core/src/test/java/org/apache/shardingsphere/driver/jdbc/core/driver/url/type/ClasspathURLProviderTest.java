@@ -32,7 +32,7 @@ class ClasspathURLProviderTest {
     @Test
     void assertGetContent() {
         byte[] actual = new ClasspathURLProvider().getContent(mockURL());
-        byte[] expected = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", "jdbc:shardingsphere:");
+        byte[] expected = ShardingSphereURLManager.getContent("classpath:config/driver/foo-driver-fixture.yaml");
         assertThat(actual, is(expected));
     }
     

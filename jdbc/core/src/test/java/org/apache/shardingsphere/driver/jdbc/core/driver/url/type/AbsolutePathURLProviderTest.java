@@ -35,7 +35,7 @@ class AbsolutePathURLProviderTest {
     void assertGetContent() {
         String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
         byte[] actual = new AbsolutePathURLProvider().getContent(mockURL(path));
-        byte[] expected = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + path, "jdbc:shardingsphere:");
+        byte[] expected = ShardingSphereURLManager.getContent("absolutepath:" + path);
         assertThat(actual, is(expected));
     }
     

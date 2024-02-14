@@ -45,7 +45,7 @@ public final class ClasspathURLProvider implements ShardingSphereURLProvider {
         }
     }
     
-    private static InputStream getResourceAsStreamFromClasspath(final String resource) {
+    private InputStream getResourceAsStreamFromClasspath(final String resource) {
         InputStream result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
         result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
         Preconditions.checkNotNull(result, "Can not find configuration file `%s`.", resource);

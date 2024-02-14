@@ -42,16 +42,15 @@ public final class ShardingSphereURL {
      * Parse ShardingSphere URL.
      * 
      * @param url ShardingSphere URL
-     * @param urlPrefix URL prefix
      * @param sourceType source type
      * @return ShardingSphere URL
      */
-    public static ShardingSphereURL parse(final String url, final String urlPrefix, final String sourceType) {
-        return new ShardingSphereURL(parseConfigurationSubject(url, urlPrefix, sourceType), parseParameters(url));
+    public static ShardingSphereURL parse(final String url, final String sourceType) {
+        return new ShardingSphereURL(parseConfigurationSubject(url, sourceType), parseParameters(url));
     }
     
-    private static String parseConfigurationSubject(final String url, final String urlPrefix, final String configurationType) {
-        String configuredSubject = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
+    private static String parseConfigurationSubject(final String url, final String configurationType) {
+        String configuredSubject = url.substring(0, url.contains("?") ? url.indexOf('?') : url.length());
         String result = configuredSubject.substring(configurationType.length());
         Preconditions.checkArgument(!result.isEmpty(), "Configuration subject is required in driver URL.");
         return result;
