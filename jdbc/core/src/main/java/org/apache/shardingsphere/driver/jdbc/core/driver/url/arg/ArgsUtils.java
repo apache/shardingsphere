@@ -86,21 +86,4 @@ public final class ArgsUtils {
         }
         return result;
     }
-    
-    /**
-     * Get placeholder type.
-     * 
-     * @param params parameters
-     * @return placeholder type
-     */
-    public static URLArgumentPlaceholderType getPlaceholderType(final Map<String, String> params) {
-        if (!params.containsKey("placeholder-type")) {
-            return URLArgumentPlaceholderType.NONE;
-        }
-        try {
-            return URLArgumentPlaceholderType.valueOf(params.get("placeholder-type").toUpperCase());
-        } catch (final IllegalArgumentException ex) {
-            return URLArgumentPlaceholderType.NONE;
-        }
-    }
 }

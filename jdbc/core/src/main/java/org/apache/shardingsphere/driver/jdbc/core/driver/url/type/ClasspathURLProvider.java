@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ArgsUtils;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderTypeFactory;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public final class ClasspathURLProvider implements ShardingSphereURLProvider {
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String configSubject, final Map<String, String> configParams) {
         try (InputStream inputStream = ArgsUtils.getResourceAsStreamFromClasspath(configSubject)) {
-            return ConfigurationContentReader.read(inputStream, ArgsUtils.getPlaceholderType(configParams));
+            return ConfigurationContentReader.read(inputStream, URLArgumentPlaceholderTypeFactory.valueOf(configParams));
         }
     }
 }
