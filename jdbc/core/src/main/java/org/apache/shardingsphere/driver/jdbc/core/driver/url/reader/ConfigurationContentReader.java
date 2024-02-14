@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ArgsUtils;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ShardingSphereURLArgument;
 
 import java.io.BufferedReader;
@@ -53,7 +52,7 @@ public final class ConfigurationContentReader {
                 }
                 Optional<ShardingSphereURLArgument> arg = ConfigurationContentPlaceholderType.NONE == type ? Optional.empty() : ShardingSphereURLArgument.parse(line);
                 if (arg.isPresent()) {
-                    line = ArgsUtils.replaceArg(getArgumentValue(type, arg.get()), arg.get().getDefaultValue(), ShardingSphereURLArgument.PLACEHOLDER_PATTERN.matcher(line));
+                    line = arg.get().replaceArgument(getArgumentValue(arg.get().getName(), type));
                 }
                 builder.append(line).append(System.lineSeparator());
             }
@@ -61,12 +60,12 @@ public final class ConfigurationContentReader {
         }
     }
     
-    private static String getArgumentValue(final ConfigurationContentPlaceholderType type, final ShardingSphereURLArgument arg) {
+    private static String getArgumentValue(final String argName, final ConfigurationContentPlaceholderType type) {
         if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
-            return getEnvironmentVariable(arg.getName());
+            return getEnvironmentVariable(argName);
         }
         if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
-            return getSystemProperty(arg.getName());
+            return getSystemProperty(argName);
         }
         return null;
     }

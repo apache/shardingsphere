@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.arg;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,19 +30,18 @@ import java.util.regex.Pattern;
  * ShardingSphere URL argument.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
 public final class ShardingSphereURLArgument {
     
-    /**
-     * Placeholder pattern.
-     */
-    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
     private static final String KV_SEPARATOR = "::";
     
+    @Getter
     private final String name;
     
     private final String defaultValue;
+    
+    private final Matcher matcher;
     
     /**
      * Parse ShardingSphere URL argument.
@@ -55,7 +55,23 @@ public final class ShardingSphereURLArgument {
             return Optional.empty();
         }
         String[] parsedArg = matcher.group(1).split(KV_SEPARATOR, 2);
-        return Optional.of(new ShardingSphereURLArgument(parsedArg[0], parsedArg[1]));
+        return Optional.of(new ShardingSphereURLArgument(parsedArg[0], parsedArg[1], matcher));
     }
     
+    /**
+     * Replace argument.
+     *
+     * @param targetValue value of argument
+     * @return replaced argument
+     */
+    public String replaceArgument(final String targetValue) {
+        if (Strings.isNullOrEmpty(targetValue) && defaultValue.isEmpty()) {
+            String modifiedLineWithSpace = matcher.replaceAll("");
+            return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
+        }
+        if (Strings.isNullOrEmpty(targetValue)) {
+            return matcher.replaceAll(defaultValue);
+        }
+        return matcher.replaceAll(targetValue);
+    }
 }

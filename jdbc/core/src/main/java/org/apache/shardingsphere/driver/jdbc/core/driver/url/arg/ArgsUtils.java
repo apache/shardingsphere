@@ -27,32 +27,12 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 /**
  * Arguments utils.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArgsUtils {
-    
-    /**
-     * Replace argument.
-     *
-     * @param targetValue value of argument
-     * @param defaultValue default value of argument
-     * @param matcher matcher
-     * @return replaced argument
-     */
-    public static String replaceArg(final String targetValue, final String defaultValue, final Matcher matcher) {
-        if (Strings.isNullOrEmpty(targetValue) && defaultValue.isEmpty()) {
-            String modifiedLineWithSpace = matcher.replaceAll("");
-            return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
-        }
-        if (Strings.isNullOrEmpty(targetValue)) {
-            return matcher.replaceAll(defaultValue);
-        }
-        return matcher.replaceAll(targetValue);
-    }
     
     /**
      * Get configuration subject.
