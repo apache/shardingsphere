@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.url.arg;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Arguments utils.
+ * ShardingSphere URL parser.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ArgsUtils {
+public final class ShardingSphereURLParser {
     
     /**
      * Get configuration subject.
@@ -40,7 +40,7 @@ public final class ArgsUtils {
      * @param configurationType configuration type
      * @return configuration subject
      */
-    public static String getConfigurationSubject(final String url, final String urlPrefix, final String configurationType) {
+    public static String parseConfigurationSubject(final String url, final String urlPrefix, final String configurationType) {
         String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
         String result = configuredFile.substring(configurationType.length());
         Preconditions.checkArgument(!result.isEmpty(), "Configuration subject is required in driver URL.");
