@@ -48,7 +48,7 @@ class ConfigurationContentReaderTest {
     }
     
     @Test
-    void assertReadContentWithSystemProperties() throws IOException {
+    void assertReadWithSystemProperties() throws IOException {
         byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml");
         byte[] expected = readContent("config/driver/foo-driver-fixture.yaml");
         assertThat(actual, is(expected));
