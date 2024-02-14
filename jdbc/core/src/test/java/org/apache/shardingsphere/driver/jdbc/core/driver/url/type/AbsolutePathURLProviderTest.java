@@ -17,22 +17,31 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AbsolutePathURLProviderTest {
     
     @Test
     void assertGetContent() {
         String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        byte[] actual = new AbsolutePathURLProvider().getContent(path, Collections.emptyMap());
+        byte[] actual = new AbsolutePathURLProvider().getContent(mockURL(path));
         byte[] expected = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + path, "jdbc:shardingsphere:");
         assertThat(actual, is(expected));
+    }
+    
+    private ShardingSphereURL mockURL(final String path) {
+        ShardingSphereURL result = mock(ShardingSphereURL.class, RETURNS_DEEP_STUBS);
+        when(result.getConfigurationSubject()).thenReturn(path);
+        return result;
     }
 }

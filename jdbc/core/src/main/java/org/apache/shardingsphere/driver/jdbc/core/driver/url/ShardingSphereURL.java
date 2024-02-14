@@ -20,40 +20,44 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ShardingSphere URL parser.
+ * ShardingSphere URL.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereURLParser {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public final class ShardingSphereURL {
+    
+    private final String configurationSubject;
+    
+    private final Map<String, String> parameters;
     
     /**
-     * Get configuration subject.
-     *
-     * @param url URL
+     * Parse ShardingSphere URL.
+     * 
+     * @param url ShardingSphere URL
      * @param urlPrefix URL prefix
      * @param configurationType configuration type
-     * @return configuration subject
+     * @return ShardingSphere URL
      */
-    public static String parseConfigurationSubject(final String url, final String urlPrefix, final String configurationType) {
+    public static ShardingSphereURL parse(final String url, final String urlPrefix, final String configurationType) {
+        return new ShardingSphereURL(parseConfigurationSubject(url, urlPrefix, configurationType), parseParameters(url));
+    }
+    
+    private static String parseConfigurationSubject(final String url, final String urlPrefix, final String configurationType) {
         String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
         String result = configuredFile.substring(configurationType.length());
         Preconditions.checkArgument(!result.isEmpty(), "Configuration subject is required in driver URL.");
         return result;
     }
     
-    /**
-     * Parse parameters.
-     *
-     * @param url URL
-     * @return parameter map
-     */
-    public static Map<String, String> parseParameters(final String url) {
+    private static Map<String, String> parseParameters(final String url) {
         if (!url.contains("?")) {
             return Collections.emptyMap();
         }

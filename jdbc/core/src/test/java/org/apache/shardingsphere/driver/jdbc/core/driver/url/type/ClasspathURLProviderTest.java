@@ -17,20 +17,28 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ClasspathURLProviderTest {
     
     @Test
     void assertGetContent() {
-        byte[] actual = new ClasspathURLProvider().getContent("config/driver/foo-driver-fixture.yaml", Collections.emptyMap());
+        byte[] actual = new ClasspathURLProvider().getContent(mockURL());
         byte[] expected = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", "jdbc:shardingsphere:");
         assertThat(actual, is(expected));
+    }
+    
+    private ShardingSphereURL mockURL() {
+        ShardingSphereURL result = mock(ShardingSphereURL.class, RETURNS_DEEP_STUBS);
+        when(result.getConfigurationSubject()).thenReturn("config/driver/foo-driver-fixture.yaml");
+        return result;
     }
 }
