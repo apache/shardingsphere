@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.reader;
 
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Objects;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ClasspathWithSystemPropsURLProviderTest {
+class ConfigurationContentReaderTest {
     
     private static final String FIXTURE_JDBC_URL_KEY = "fixture.config.driver.jdbc-url";
     
@@ -34,8 +36,6 @@ class ClasspathWithSystemPropsURLProviderTest {
     
     @BeforeAll
     static void beforeAll() {
-        assertThat(System.getProperty(FIXTURE_JDBC_URL_KEY), is(nullValue()));
-        assertThat(System.getProperty(FIXTURE_USERNAME_KEY), is(nullValue()));
         System.setProperty(FIXTURE_JDBC_URL_KEY, "jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         System.setProperty(FIXTURE_USERNAME_KEY, "sa");
     }
@@ -47,12 +47,16 @@ class ClasspathWithSystemPropsURLProviderTest {
     }
     
     @Test
-    void assertReplaceEnvironmentVariables() {
-        final String urlPrefix = "jdbc:shardingsphere:";
-        ClasspathWithSystemPropsURLProvider urlProvider = new ClasspathWithSystemPropsURLProvider();
-        byte[] actual = urlProvider.getContent("jdbc:shardingsphere:classpath-system-props:config/driver/foo-driver-to-be-replaced-fixture.yaml",
-                "config/driver/foo-driver-to-be-replaced-fixture.yaml");
-        byte[] actualOrigin = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
-        assertThat(actual, is(actualOrigin));
+    void assertReadWithSystemProperties() throws IOException {
+        byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml");
+        byte[] expected = readContent("config/driver/foo-driver-fixture.yaml");
+        assertThat(actual, is(expected));
+    }
+    
+    private byte[] readContent(final String name) throws IOException {
+        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).getPath();
+        try (FileInputStream inputStream = new FileInputStream(path)) {
+            return ConfigurationContentReader.read(inputStream, ConfigurationContentReaderType.SYSTEM_PROPS);
+        }
     }
 }

@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReader;
+import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReaderType;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.regex.Matcher;
 
 /**
  * Absolute path with environment variables URL provider.
@@ -42,35 +39,8 @@ public final class AbsolutePathWithEnvironmentURLProvider implements AbstractAbs
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String configurationSubject) {
-        try (
-                InputStream stream = Files.newInputStream(new File(configurationSubject).toPath());
-                BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#")) {
-                    line = replaceEnvironmentVariables(line);
-                    builder.append(line).append(System.lineSeparator());
-                }
-            }
-            return builder.toString().getBytes(StandardCharsets.UTF_8);
+        try (InputStream inputStream = Files.newInputStream(new File(configurationSubject).toPath())) {
+            return ConfigurationContentReader.read(inputStream, ConfigurationContentReaderType.ENVIRONMENT);
         }
-    }
-    
-    private String replaceEnvironmentVariables(final String line) {
-        Matcher matcher = ArgsUtils.getPattern().matcher(line);
-        if (!matcher.find()) {
-            return line;
-        }
-        String[] envNameAndDefaultValue = ArgsUtils.getArgNameAndDefaultValue(matcher);
-        String envValue = getEnvironmentVariables(envNameAndDefaultValue[0]);
-        return ArgsUtils.replaceArg(envValue, envNameAndDefaultValue[1], matcher);
-    }
-    
-    /*
-     * This method is only used for mocking environment variables in unit tests and should not be used under any circumstances.
-     */
-    String getEnvironmentVariables(final String name) {
-        return System.getenv(name);
     }
 }
