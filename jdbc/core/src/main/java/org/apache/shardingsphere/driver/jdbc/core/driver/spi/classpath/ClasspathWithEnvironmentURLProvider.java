@@ -65,11 +65,8 @@ public final class ClasspathWithEnvironmentURLProvider implements AbstractClassp
         return ArgsUtils.replaceArg(envValue, envNameAndDefaultValue[1], matcher);
     }
     
-    /**
+    /*
      * This method is only used for mocking environment variables in unit tests and should not be used under any circumstances.
-     *
-     * @param name the name of the environment variable
-     * @return the string value of the variable, or null if the variable is not defined in the system environment
      */
     String getEnvironmentVariables(final String name) {
         return System.getenv(name);

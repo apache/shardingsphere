@@ -31,19 +31,19 @@ class AbsolutePathWithEnvironmentURLProviderTest {
     
     @Test
     void assertGetContent() {
-        assertThat(getActual(createAbsolutePathWithEnvironmentURLProvider()), is(getExpected()));
+        assertThat(getActual(createURLProvider()), is(getExpected()));
     }
     
-    private AbsolutePathWithEnvironmentURLProvider createAbsolutePathWithEnvironmentURLProvider() {
+    private AbsolutePathWithEnvironmentURLProvider createURLProvider() {
         AbsolutePathWithEnvironmentURLProvider result = spy(new AbsolutePathWithEnvironmentURLProvider());
         when(result.getEnvironmentVariables("FIXTURE_JDBC_URL")).thenReturn("jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         when(result.getEnvironmentVariables("FIXTURE_USERNAME")).thenReturn("sa");
         return result;
     }
     
-    private byte[] getActual(final AbsolutePathWithEnvironmentURLProvider spy) {
+    private byte[] getActual(final AbsolutePathWithEnvironmentURLProvider urlProvider) {
         String absoluteActualPath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-environment-variables-fixture.yaml")).getPath();
-        return spy.getContent("jdbc:shardingsphere:absolutepath-environment:" + absoluteActualPath, absoluteActualPath);
+        return urlProvider.getContent("jdbc:shardingsphere:absolutepath-environment:" + absoluteActualPath, absoluteActualPath);
     }
     
     private byte[] getExpected() {
