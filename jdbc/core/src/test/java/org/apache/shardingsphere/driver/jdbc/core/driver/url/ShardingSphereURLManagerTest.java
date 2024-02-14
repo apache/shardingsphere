@@ -37,24 +37,22 @@ class ShardingSphereURLManagerTest {
     
     private final int fooDriverConfigLengthOnWindows = 1040;
     
-    private final String urlPrefix = "jdbc:shardingsphere:";
-    
     @Test
     void assertNewConstructorWithEmptyURL() {
-        assertThrows(URLProviderNotFoundException.class, () -> ShardingSphereURLManager.getContent("jdbc:shardingsphere:", urlPrefix));
+        assertThrows(URLProviderNotFoundException.class, () -> ShardingSphereURLManager.getContent("invalid:xxx"));
     }
     
     @Test
     @EnabledOnOs({OS.LINUX, OS.MAC})
     void assertToClasspathConfigurationFile() {
-        byte[] actual = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
+        byte[] actual = ShardingSphereURLManager.getContent("classpath:config/driver/foo-driver-fixture.yaml");
         assertThat(actual.length, is(fooDriverConfigLengthOnUnix));
     }
     
     @Test
     @EnabledOnOs(OS.WINDOWS)
     void assertToClasspathConfigurationFileOnWindows() {
-        byte[] actual = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
+        byte[] actual = ShardingSphereURLManager.getContent("classpath:config/driver/foo-driver-fixture.yaml");
         assertThat(actual.length, is(fooDriverConfigLengthOnWindows));
     }
     
@@ -62,7 +60,7 @@ class ShardingSphereURLManagerTest {
     @EnabledOnOs({OS.LINUX, OS.MAC})
     void assertToAbsolutePathConfigurationFile() {
         String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        byte[] actual = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath, urlPrefix);
+        byte[] actual = ShardingSphereURLManager.getContent("absolutepath:" + absolutePath);
         assertThat(actual.length, is(fooDriverConfigLengthOnUnix));
     }
     
@@ -70,7 +68,7 @@ class ShardingSphereURLManagerTest {
     @EnabledOnOs(OS.WINDOWS)
     void assertToAbsolutePathConfigurationFileOnWindows() {
         String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        byte[] actual = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath, urlPrefix);
+        byte[] actual = ShardingSphereURLManager.getContent("absolutepath:" + absolutePath);
         assertThat(actual.length, is(fooDriverConfigLengthOnWindows));
     }
 }

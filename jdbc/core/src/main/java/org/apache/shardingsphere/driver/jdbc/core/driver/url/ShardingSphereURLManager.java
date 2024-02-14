@@ -33,15 +33,14 @@ public final class ShardingSphereURLManager {
      * Get configuration content from URL.
      *
      * @param url driver URL
-     * @param urlPrefix URL prefix
      * @return configuration content
      * @throws URLProviderNotFoundException driver URL provider not found exception
      */
-    public static byte[] getContent(final String url, final String urlPrefix) {
+    public static byte[] getContent(final String url) {
         ShardingSpherePreconditions.checkNotNull(url, () -> new URLProviderNotFoundException(url));
         for (ShardingSphereURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereURLProvider.class)) {
             if (url.contains(each.getSourceType())) {
-                return each.getContent(ShardingSphereURL.parse(url, urlPrefix, each.getSourceType()));
+                return each.getContent(ShardingSphereURL.parse(url, each.getSourceType()));
             }
         }
         throw new URLProviderNotFoundException(url);
