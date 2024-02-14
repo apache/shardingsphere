@@ -27,10 +27,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * ShardingSphere URL argument.
+ * URL argument line.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereURLArgument {
+public final class URLArgumentLine {
     
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
@@ -48,13 +48,13 @@ public final class ShardingSphereURLArgument {
      * @param line line
      * @return parsed argument
      */
-    public static Optional<ShardingSphereURLArgument> parse(final String line) {
-        Matcher matcher = ShardingSphereURLArgument.PLACEHOLDER_PATTERN.matcher(line);
+    public static Optional<URLArgumentLine> parse(final String line) {
+        Matcher matcher = URLArgumentLine.PLACEHOLDER_PATTERN.matcher(line);
         if (!matcher.find()) {
             return Optional.empty();
         }
         String[] parsedArg = matcher.group(1).split(KV_SEPARATOR, 2);
-        return Optional.of(new ShardingSphereURLArgument(parsedArg[0], parsedArg[1], matcher));
+        return Optional.of(new URLArgumentLine(parsedArg[0], parsedArg[1], matcher));
     }
     
     /**

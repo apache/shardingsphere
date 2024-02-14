@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ShardingSphereURLArgument;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentLine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,14 +47,10 @@ public final class ConfigurationContentReader {
             StringBuilder builder = new StringBuilder();
             String line;
             while (null != (line = reader.readLine())) {
-                if (line.startsWith("#")) {
-                    continue;
+                if (!line.startsWith("#")) {
+                    Optional<URLArgumentLine> argLine = ConfigurationContentPlaceholderType.NONE == type ? Optional.empty() : URLArgumentLine.parse(line);
+                    builder.append(argLine.map(optional -> optional.replaceArgument(type)).orElse(line)).append(System.lineSeparator());
                 }
-                Optional<ShardingSphereURLArgument> arg = ConfigurationContentPlaceholderType.NONE == type ? Optional.empty() : ShardingSphereURLArgument.parse(line);
-                if (arg.isPresent()) {
-                    line = arg.get().replaceArgument(type);
-                }
-                builder.append(line).append(System.lineSeparator());
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);
         }
