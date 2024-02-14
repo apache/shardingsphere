@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
-import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReader;
-import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReaderType;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Map;
 
 /**
- * Classpath with environment variables URL provider.
+ * Absolute path URL provider.
  */
-public final class ClasspathWithEnvironmentURLProvider implements AbstractClasspathURLProvider {
+public final class AbsolutePathURLProvider implements ShardingSphereURLProvider {
     
     @Override
     public String getConfigurationType() {
-        return "classpath-environment:";
+        return "absolutepath:";
     }
     
     @Override
     @SneakyThrows(IOException.class)
-    public byte[] getContent(final String url, final String configurationSubject) {
-        try (InputStream inputStream = ArgsUtils.getResourceAsStreamFromClasspath(configurationSubject)) {
-            return ConfigurationContentReader.read(inputStream, ConfigurationContentReaderType.ENVIRONMENT);
+    public byte[] getContent(final String configSubject, final Map<String, String> configParams) {
+        try (InputStream inputStream = Files.newInputStream(new File(configSubject).toPath())) {
+            return ConfigurationContentReader.read(inputStream, ArgsUtils.getPlaceholderType(configParams));
         }
     }
 }

@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
+import org.junit.jupiter.api.Test;
 
-/**
- * Abstract classpath URL provider.
- */
-public interface AbstractClasspathURLProvider extends ShardingSphereURLProvider {
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class ClasspathURLProviderTest {
+    
+    @Test
+    void assertGetContent() {
+        byte[] actual = new ClasspathURLProvider().getContent("config/driver/foo-driver-fixture.yaml", Collections.emptyMap());
+        byte[] expected = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", "jdbc:shardingsphere:");
+        assertThat(actual, is(expected));
+    }
 }

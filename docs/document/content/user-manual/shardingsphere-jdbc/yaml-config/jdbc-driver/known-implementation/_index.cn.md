@@ -20,24 +20,27 @@ chapter = true
 ## URL 配置
 
 ### 从类路径中加载配置文件
-加载 classpath 中 config.yaml 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:classpath:` 前缀识别。
+
+加载类路径中 `config.yaml` 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:classpath:` 前缀识别。
 配置文件为 `xxx.yaml`，配置文件格式与 [YAML 配置](../../../yaml-config)一致。
 
 用例：
 - `jdbc:shardingsphere:classpath:config.yaml`
 
 ### 从绝对路径中加载配置文件
-加载绝对路径中 config.yaml 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:absolutepath:` 前缀识别。
+
+加载绝对路径中 `config.yaml` 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:absolutepath:` 前缀识别。
 配置文件为 `xxx.yaml`，配置文件格式与 [YAML 配置](../../../yaml-config)一致。
 
 用例：
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml`
 
-### 从类路径中加载包含环境变量的配置文件
+### 加载包含环境变量的配置文件
 
-加载 classpath 中包含环境变量的 config.yaml 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:classpath-environment:` 前缀识别。
+加载路径中包含环境变量的 `config.yaml` 配置文件的 JDBC URL，通过追加 `placeholder-type=xxx` 参数识别。
+`placeholder-type` 的取值范围包括 `none`（默认值）， `environment` 和 `system_props`。
 配置文件为 `xxx.yaml`，配置文件格式与 [YAML 配置](../../../yaml-config)基本一致。
-在涉及的 YAML 文件中，允许通过环境变量设置特定YAML属性的值，并配置可选的默认值。这常用于 Docker Image 的部署场景。
+在涉及的 YAML 文件中，允许通过环境变量设置特定 YAML 属性的值，并配置可选的默认值，这常用于 Docker 镜像的部署场景。
 环境变量的名称和其可选的默认值通过`::`分割，在最外层通过`$${`和`}`包裹。
 
 讨论两种情况。
@@ -48,7 +51,8 @@ chapter = true
 1. 存在环境变量`FIXTURE_JDBC_URL`为`jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL`。
 2. 存在环境变量`FIXTURE_USERNAME`为`sa`。
 
-则对于以下 YAML 文件的截取片段，
+则对于以下 YAML 文件的截取片段：
+
 ```yaml
 ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -57,7 +61,8 @@ ds_1:
     username: $${FIXTURE_USERNAME::}
     password: $${FIXTURE_PASSWORD::}
 ```
-此 YAML 截取片段将被解析为，
+此 YAML 截取片段将被解析为：
+
 ```yaml
 ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -68,52 +73,10 @@ ds_1:
 ```
 
 用例：
-- `jdbc:shardingsphere:classpath-environment:config.yaml`
-
-### 从绝对路径中加载包含环境变量的配置文件
-
-加载绝对路径中包含环境变量的 config.yaml 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:absolutepath-environment:` 前缀识别。
-配置文件为 `xxx.yaml`，配置文件格式与`jdbc:shardingsphere:classpath-environment:`一致。
-与 `jdbc:shardingsphere:classpath-environment:` 的区别仅在于 YAML 文件的加载位置。
-
-用例：
-- `jdbc:shardingsphere:absolutepath-environment:/path/to/config.yaml`
-
-### 从类路径中加载包含系统属性的配置文件
-
-加载类路径中包含系统属性的 config.yaml 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:classpath-system-props:` 前缀识别。
-配置文件为 `xxx.yaml`，配置文件格式与`jdbc:shardingsphere:classpath-environment:`一致。
-与 `jdbc:shardingsphere:classpath-environment:` 的区别仅在于读取属性值的位置。
-
-假设存在以下一组系统属性，
-
-1. 存在系统属性`fixture.config.driver.jdbc-url`为`jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL`。
-2. 存在系统属性`fixture.config.driver.username`为`sa`。
-
-则对于以下 YAML 文件的截取片段，
-
-```yaml
-ds_1:
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  driverClassName: $${fixture.config.driver.driver-class-name::org.h2.Driver}
-  jdbcUrl: $${fixture.config.driver.jdbc-url::jdbc:h2:mem:foo_ds_do_not_use}
-  username: $${fixture.config.driver.username::}
-  password: $${fixture.config.driver.password::}
-```
-
-此 YAML 截取片段将被解析为，
-
-```yaml
-ds_1:
-  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  driverClassName: org.h2.Driver
-  jdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
-  username: sa
-  password:
-```
+- `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=environment`
 
 在实际情况下，系统变量通常是动态定义的。
-假设如上系统变量均未定义，存在包含如上YAML截取片段的YAML文件`config.yaml`，
+假设如上系统变量均未定义，存在包含如上 YAML 截取片段的 YAML 文件 `config.yaml`，
 可参考如下方法创建 DataSource 实例。
 
 ```java
@@ -125,7 +88,7 @@ import javax.sql.DataSource;
 public DataSource createDataSource() {
     HikariConfig config = new HikariConfig();
     config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-    config.setJdbcUrl("jdbc:shardingsphere:classpath-system-props:config.yaml");
+    config.setJdbcUrl("jdbc:shardingsphere:classpath:config.yaml?placeholder-type=system_props");
     try {
         assert null == System.getProperty("fixture.config.driver.jdbc-url");
         assert null == System.getProperty("fixture.config.driver.username");
@@ -140,7 +103,8 @@ public DataSource createDataSource() {
 ```
 
 用例：
-- `jdbc:shardingsphere:classpath-system-props:config.yaml`
+- `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=system_props`
 
 ### 其他实现
+
 具体可参考 https://github.com/apache/shardingsphere-plugin 。

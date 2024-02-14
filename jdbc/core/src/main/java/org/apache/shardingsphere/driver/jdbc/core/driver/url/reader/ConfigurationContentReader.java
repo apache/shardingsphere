@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.reader;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ArgsUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,20 +38,20 @@ public final class ConfigurationContentReader {
      * Read content.
      * 
      * @param inputStream input stream
-     * @param type type
+     * @param type configuration content placeholder type
      * @return content
      * @throws IOException IO exception
      */
-    public static byte[] read(final InputStream inputStream, final ConfigurationContentReaderType type) throws IOException {
+    public static byte[] read(final InputStream inputStream, final ConfigurationContentPlaceholderType type) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;
             while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#")) {
-                    if (ConfigurationContentReaderType.SYSTEM_PROPS == type) {
-                        line = replaceSystemProperties(line);
-                    } else if (ConfigurationContentReaderType.ENVIRONMENT == type) {
+                    if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
                         line = replaceEnvironmentVariables(line);
+                    } else if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
+                        line = replaceSystemProperties(line);
                     }
                     builder.append(line).append(System.lineSeparator());
                 }

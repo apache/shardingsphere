@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 /**
- * ShardingSphere URL provider.
+ * Configuration content placeholder type.
  */
-public interface ShardingSphereURLProvider {
+public enum ConfigurationContentPlaceholderType {
     
-    /**
-     * Get configuration type.
-     * 
-     * @return configuration type
-     */
-    String getConfigurationType();
-    
-    /**
-     * Get configuration content from URL.
-     *
-     * @param url driver URL
-     * @param configurationSubject configuration subject
-     * @return configuration content
-     */
-    byte[] getContent(String url, String configurationSubject);
+    NONE, ENVIRONMENT, SYSTEM_PROPS
 }

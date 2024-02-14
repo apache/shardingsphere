@@ -15,12 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
+import java.util.Map;
 
 /**
- * Abstract absolute path URL provider.
+ * ShardingSphere URL provider.
  */
-public interface AbstractAbsolutePathURLProvider extends ShardingSphereURLProvider {
+public interface ShardingSphereURLProvider {
+    
+    /**
+     * Get configuration type.
+     * 
+     * @return configuration type
+     */
+    String getConfigurationType();
+    
+    /**
+     * Get configuration content from URL.
+     *
+     * @param configSubject configuration subject
+     * @param configParams configuration parameters
+     * @return configuration content
+     */
+    byte[] getContent(String configSubject, Map<String, String> configParams);
 }

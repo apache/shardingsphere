@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
-import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReader;
-import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReaderType;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
- * Classpath with system properties URL provider.
+ * Classpath URL provider.
  */
-public final class ClasspathWithSystemPropsURLProvider implements AbstractClasspathURLProvider {
+public final class ClasspathURLProvider implements ShardingSphereURLProvider {
     
     @Override
     public String getConfigurationType() {
-        return "classpath-system-props:";
+        return "classpath:";
     }
     
     @Override
     @SneakyThrows(IOException.class)
-    public byte[] getContent(final String url, final String configurationSubject) {
-        try (InputStream inputStream = ArgsUtils.getResourceAsStreamFromClasspath(configurationSubject)) {
-            return ConfigurationContentReader.read(inputStream, ConfigurationContentReaderType.SYSTEM_PROPS);
+    public byte[] getContent(final String configSubject, final Map<String, String> configParams) {
+        try (InputStream inputStream = ArgsUtils.getResourceAsStreamFromClasspath(configSubject)) {
+            return ConfigurationContentReader.read(inputStream, ArgsUtils.getPlaceholderType(configParams));
         }
     }
 }
