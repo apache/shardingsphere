@@ -21,8 +21,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -56,8 +55,8 @@ class ConfigurationContentReaderTest {
     
     private byte[] readContent(final String name) throws IOException {
         String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).getPath();
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
-            return ConfigurationContentReader.read(reader, ConfigurationContentReaderType.SYSTEM_PROPS);
+        try (FileInputStream inputStream = new FileInputStream(path)) {
+            return ConfigurationContentReader.read(inputStream, ConfigurationContentReaderType.SYSTEM_PROPS);
         }
     }
 }

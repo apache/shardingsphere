@@ -23,6 +23,8 @@ import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 
@@ -35,25 +37,27 @@ public final class ConfigurationContentReader {
     /**
      * Read content.
      * 
-     * @param reader reader
+     * @param inputStream input stream
      * @param type type
      * @return content
      * @throws IOException IO exception
      */
-    public static byte[] read(final BufferedReader reader, final ConfigurationContentReaderType type) throws IOException {
-        StringBuilder builder = new StringBuilder();
-        String line;
-        while (null != (line = reader.readLine())) {
-            if (!line.startsWith("#")) {
-                if (ConfigurationContentReaderType.SYSTEM_PROPS == type) {
-                    line = replaceSystemProperties(line);
-                } else if (ConfigurationContentReaderType.ENVIRONMENT == type) {
-                    line = replaceEnvironmentVariables(line);
+    public static byte[] read(final InputStream inputStream, final ConfigurationContentReaderType type) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while (null != (line = reader.readLine())) {
+                if (!line.startsWith("#")) {
+                    if (ConfigurationContentReaderType.SYSTEM_PROPS == type) {
+                        line = replaceSystemProperties(line);
+                    } else if (ConfigurationContentReaderType.ENVIRONMENT == type) {
+                        line = replaceEnvironmentVariables(line);
+                    }
+                    builder.append(line).append(System.lineSeparator());
                 }
-                builder.append(line).append(System.lineSeparator());
             }
+            return builder.toString().getBytes(StandardCharsets.UTF_8);
         }
-        return builder.toString().getBytes(StandardCharsets.UTF_8);
     }
     
     private static String replaceSystemProperties(final String line) {

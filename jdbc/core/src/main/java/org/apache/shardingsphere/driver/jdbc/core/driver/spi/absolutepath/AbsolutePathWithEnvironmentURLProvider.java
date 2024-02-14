@@ -21,12 +21,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReader;
 import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReaderType;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 /**
@@ -42,10 +39,8 @@ public final class AbsolutePathWithEnvironmentURLProvider implements AbstractAbs
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String configurationSubject) {
-        try (
-                InputStream stream = Files.newInputStream(new File(configurationSubject).toPath());
-                BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            return ConfigurationContentReader.read(reader, ConfigurationContentReaderType.ENVIRONMENT);
+        try (InputStream inputStream = Files.newInputStream(new File(configurationSubject).toPath())) {
+            return ConfigurationContentReader.read(inputStream, ConfigurationContentReaderType.ENVIRONMENT);
         }
     }
 }

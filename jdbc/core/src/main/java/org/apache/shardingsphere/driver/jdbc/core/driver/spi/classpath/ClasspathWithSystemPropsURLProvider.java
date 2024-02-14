@@ -22,11 +22,8 @@ import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
 import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReader;
 import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReaderType;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Classpath with system properties URL provider.
@@ -41,10 +38,8 @@ public final class ClasspathWithSystemPropsURLProvider implements AbstractClassp
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String url, final String configurationSubject) {
-        try (
-                InputStream stream = ArgsUtils.getResourceAsStreamFromClasspath(configurationSubject);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            return ConfigurationContentReader.read(reader, ConfigurationContentReaderType.SYSTEM_PROPS);
+        try (InputStream inputStream = ArgsUtils.getResourceAsStreamFromClasspath(configurationSubject)) {
+            return ConfigurationContentReader.read(inputStream, ConfigurationContentReaderType.SYSTEM_PROPS);
         }
     }
 }
