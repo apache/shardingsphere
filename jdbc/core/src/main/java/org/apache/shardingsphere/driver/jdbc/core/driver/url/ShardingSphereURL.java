@@ -61,12 +61,12 @@ public final class ShardingSphereURL {
         if (!url.contains("?")) {
             return Collections.emptyMap();
         }
-        String query = url.substring(url.indexOf('?') + 1);
-        if (Strings.isNullOrEmpty(query)) {
+        String queryProps = url.substring(url.indexOf('?') + 1);
+        if (Strings.isNullOrEmpty(queryProps)) {
             return Collections.emptyMap();
         }
-        String[] pairs = query.split("&");
-        Map<String, String> result = new HashMap<>(pairs.length, 1L);
+        String[] pairs = queryProps.split("&");
+        Map<String, String> result = new HashMap<>(pairs.length, 1F);
         for (String each : pairs) {
             int index = each.indexOf("=");
             if (index > 0) {
