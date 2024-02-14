@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.url.spi.absolutepath;
-
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 /**
- * Abstract absolute path URL provider.
+ * Configuration content placeholder type.
  */
-public interface AbstractAbsolutePathURLProvider extends ShardingSphereURLProvider {
+public enum ConfigurationContentPlaceholderType {
+    
+    NONE, ENVIRONMENT, SYSTEM_PROPS
 }

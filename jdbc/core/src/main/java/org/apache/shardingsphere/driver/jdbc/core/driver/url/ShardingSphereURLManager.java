@@ -41,7 +41,7 @@ public final class ShardingSphereURLManager {
         ShardingSpherePreconditions.checkNotNull(url, () -> new URLProviderNotFoundException(url));
         for (ShardingSphereURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereURLProvider.class)) {
             if (url.contains(each.getConfigurationType())) {
-                return each.getContent(url, ArgsUtils.getConfigurationSubject(url, urlPrefix, each.getConfigurationType()));
+                return each.getContent(ArgsUtils.getConfigurationSubject(url, urlPrefix, each.getConfigurationType()), ArgsUtils.parseParameters(url));
             }
         }
         throw new URLProviderNotFoundException(url);

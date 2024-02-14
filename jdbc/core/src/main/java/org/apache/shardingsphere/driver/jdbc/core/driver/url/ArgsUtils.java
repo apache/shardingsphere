@@ -21,8 +21,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentPlaceholderType;
 
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,5 +115,47 @@ public final class ArgsUtils {
         result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
         Preconditions.checkNotNull(result, "Can not find configuration file `%s`.", resource);
         return result;
+    }
+    
+    /**
+     * Parse parameters.
+     *
+     * @param url URL
+     * @return parameter map
+     */
+    public static Map<String, String> parseParameters(final String url) {
+        if (!url.contains("?")) {
+            return Collections.emptyMap();
+        }
+        String query = url.substring(url.indexOf('?') + 1);
+        if (Strings.isNullOrEmpty(query)) {
+            return Collections.emptyMap();
+        }
+        String[] pairs = query.split("&");
+        Map<String, String> result = new HashMap<>(pairs.length, 1L);
+        for (String each : pairs) {
+            int index = each.indexOf("=");
+            if (index > 0) {
+                result.put(each.substring(0, index), each.substring(index + 1));
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get placeholder type.
+     * 
+     * @param params parameters
+     * @return placeholder type
+     */
+    public static ConfigurationContentPlaceholderType getPlaceholderType(final Map<String, String> params) {
+        if (!params.containsKey("placeholder-type")) {
+            return ConfigurationContentPlaceholderType.NONE;
+        }
+        try {
+            return ConfigurationContentPlaceholderType.valueOf(params.get("placeholder-type").toUpperCase());
+        } catch (final IllegalArgumentException ex) {
+            return ConfigurationContentPlaceholderType.NONE;
+        }
     }
 }

@@ -38,20 +38,20 @@ public final class ConfigurationContentReader {
      * Read content.
      * 
      * @param inputStream input stream
-     * @param type type
+     * @param type configuration content placeholder type
      * @return content
      * @throws IOException IO exception
      */
-    public static byte[] read(final InputStream inputStream, final ConfigurationContentReaderType type) throws IOException {
+    public static byte[] read(final InputStream inputStream, final ConfigurationContentPlaceholderType type) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;
             while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#")) {
-                    if (ConfigurationContentReaderType.SYSTEM_PROPS == type) {
-                        line = replaceSystemProperties(line);
-                    } else if (ConfigurationContentReaderType.ENVIRONMENT == type) {
+                    if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
                         line = replaceEnvironmentVariables(line);
+                    } else if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
+                        line = replaceSystemProperties(line);
                     }
                     builder.append(line).append(System.lineSeparator());
                 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
+import java.util.Map;
+
 /**
  * ShardingSphere URL provider.
  */
@@ -32,9 +34,9 @@ public interface ShardingSphereURLProvider {
     /**
      * Get configuration content from URL.
      *
-     * @param url driver URL
-     * @param configurationSubject configuration subject
+     * @param configSubject configuration subject
+     * @param configParams configuration parameters
      * @return configuration content
      */
-    byte[] getContent(String url, String configurationSubject);
+    byte[] getContent(String configSubject, Map<String, String> configParams);
 }

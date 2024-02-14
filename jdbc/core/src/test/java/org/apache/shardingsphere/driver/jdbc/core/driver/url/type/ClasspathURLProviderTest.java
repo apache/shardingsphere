@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
-/**
- * Configuration content reader type.
- */
-public enum ConfigurationContentReaderType {
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
+import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class ClasspathURLProviderTest {
     
-    SYSTEM_PROPS, ENVIRONMENT
+    @Test
+    void assertGetContent() {
+        byte[] actual = new ClasspathURLProvider().getContent("config/driver/foo-driver-fixture.yaml", Collections.emptyMap());
+        byte[] expected = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", "jdbc:shardingsphere:");
+        assertThat(actual, is(expected));
+    }
 }
