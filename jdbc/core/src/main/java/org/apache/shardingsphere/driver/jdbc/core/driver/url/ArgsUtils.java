@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -36,6 +36,11 @@ public final class ArgsUtils {
     
     private static final Pattern PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
+    /**
+     * Get key value separator.
+     * 
+     * @return key value separator
+     */
     public static String getKeyValueSeparator() {
         return KEY_VALUE_SEPARATOR;
     }

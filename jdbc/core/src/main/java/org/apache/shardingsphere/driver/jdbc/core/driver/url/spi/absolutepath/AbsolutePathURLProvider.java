@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.spi.absolutepath;
 
 import lombok.SneakyThrows;
 

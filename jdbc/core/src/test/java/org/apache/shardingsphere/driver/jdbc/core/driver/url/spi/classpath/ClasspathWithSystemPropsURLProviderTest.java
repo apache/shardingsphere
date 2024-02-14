@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.spi.classpath;
 
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLManager;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

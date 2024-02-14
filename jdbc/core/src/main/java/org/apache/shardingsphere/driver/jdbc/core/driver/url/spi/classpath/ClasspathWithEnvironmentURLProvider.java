@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.spi.classpath;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
-import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReader;
-import org.apache.shardingsphere.driver.jdbc.core.driver.reader.ConfigurationContentReaderType;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReaderType;
 
 import java.io.IOException;
 import java.io.InputStream;

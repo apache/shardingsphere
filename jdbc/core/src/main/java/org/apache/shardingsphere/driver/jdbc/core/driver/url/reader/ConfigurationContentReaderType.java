@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
-
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 /**
- * Abstract classpath URL provider.
+ * Configuration content reader type.
  */
-public interface AbstractClasspathURLProvider extends ShardingSphereURLProvider {
+public enum ConfigurationContentReaderType {
+    
+    SYSTEM_PROPS, ENVIRONMENT
 }

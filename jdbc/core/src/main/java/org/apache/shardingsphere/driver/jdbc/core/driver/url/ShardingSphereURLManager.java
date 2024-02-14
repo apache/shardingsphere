@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

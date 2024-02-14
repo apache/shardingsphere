@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.spi.absolutepath;
 
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
 
 /**
  * Abstract absolute path URL provider.

@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.spi.absolutepath;
 
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLManager;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
 import org.junit.jupiter.api.Test;
+
+import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ClasspathWithEnvironmentURLProviderTest {
+class AbsolutePathWithEnvironmentURLProviderTest {
     
     @Test
     void assertGetContent() {
-        byte[] actual = new ClasspathWithEnvironmentURLProvider().getContent(
-                "jdbc:shardingsphere:classpath-environment:config/driver/foo-driver-fixture.yaml", "config/driver/foo-driver-fixture.yaml");
-        byte[] expected = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath-environment:config/driver/foo-driver-fixture.yaml", "jdbc:shardingsphere:");
+        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
+        byte[] actual = new AbsolutePathWithEnvironmentURLProvider().getContent("jdbc:shardingsphere:absolutepath-environment:" + path, path);
+        byte[] expected = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + path, "jdbc:shardingsphere:");
         assertThat(actual, is(expected));
     }
 }

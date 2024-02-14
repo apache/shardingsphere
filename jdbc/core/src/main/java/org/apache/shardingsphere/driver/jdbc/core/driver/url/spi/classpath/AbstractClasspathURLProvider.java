@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.spi.classpath;
+
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
 
 /**
- * ShardingSphere URL provider.
+ * Abstract classpath URL provider.
  */
-public interface ShardingSphereURLProvider {
-    
-    /**
-     * Get configuration type.
-     * 
-     * @return configuration type
-     */
-    String getConfigurationType();
-    
-    /**
-     * Get configuration content from URL.
-     *
-     * @param url driver URL
-     * @param configurationSubject configuration subject
-     * @return configuration content
-     */
-    byte[] getContent(String url, String configurationSubject);
+public interface AbstractClasspathURLProvider extends ShardingSphereURLProvider {
 }

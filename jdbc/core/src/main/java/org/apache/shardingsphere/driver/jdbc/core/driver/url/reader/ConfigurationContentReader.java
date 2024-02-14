@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.reader;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ArgsUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ArgsUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
