@@ -22,7 +22,7 @@ For the configuration of the metadata repository, please refer to [Metadata Repo
 
 ### Load configuration files from classpath
 
-Load the JDBC URL of the config.yaml configuration file in classpath, identified by the `jdbc:shardingsphere:classpath:` prefix.
+Load the JDBC URL of the `config.yaml` configuration file in classpath, identified by the `jdbc:shardingsphere:classpath:` prefix.
 The configuration file is `xxx.yaml`, and the configuration file format is consistent with [YAML configuration](../../../yaml-config).
 
 Example:
@@ -30,7 +30,7 @@ Example:
 
 ### Load configuration file from absolute path
 
-JDBC URL to load the config.yaml configuration file in an absolute path, identified by the `jdbc:shardingsphere:absolutepath:` prefix.
+JDBC URL to load the `config.yaml` configuration file in an absolute path, identified by the `jdbc:shardingsphere:absolutepath:` prefix.
 The configuration file is `xxx.yaml`, and the configuration file format is consistent with [YAML configuration](../../../yaml-config).
 
 Example:

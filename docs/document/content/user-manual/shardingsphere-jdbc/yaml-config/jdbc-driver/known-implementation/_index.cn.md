@@ -21,7 +21,7 @@ chapter = true
 
 ### 从类路径中加载配置文件
 
-加载类路径中 config.yaml 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:classpath:` 前缀识别。
+加载类路径中 `config.yaml` 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:classpath:` 前缀识别。
 配置文件为 `xxx.yaml`，配置文件格式与 [YAML 配置](../../../yaml-config)一致。
 
 用例：
@@ -29,7 +29,7 @@ chapter = true
 
 ### 从绝对路径中加载配置文件
 
-加载绝对路径中 config.yaml 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:absolutepath:` 前缀识别。
+加载绝对路径中 `config.yaml` 配置文件的 JDBC URL，通过 `jdbc:shardingsphere:absolutepath:` 前缀识别。
 配置文件为 `xxx.yaml`，配置文件格式与 [YAML 配置](../../../yaml-config)一致。
 
 用例：
