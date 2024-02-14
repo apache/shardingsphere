@@ -36,27 +36,12 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArgsUtils {
     
-    private static final String KEY_VALUE_SEPARATOR = "::";
-    
-    private static final Pattern PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
-    
     /**
-     * Get key value separator.
-     * 
-     * @return key value separator
+     * Placeholder pattern.
      */
-    public static String getKeyValueSeparator() {
-        return KEY_VALUE_SEPARATOR;
-    }
+    public static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
     
-    /**
-     * Get pattern.
-     *
-     * @return got pattern
-     */
-    public static Pattern getPattern() {
-        return PATTERN;
-    }
+    private static final String KV_SEPARATOR = "::";
     
     /**
      * Get arg name and default value.
@@ -66,7 +51,7 @@ public final class ArgsUtils {
      */
     public static String[] getArgNameAndDefaultValue(final Matcher matcher) {
         String groupString = matcher.group(1);
-        return groupString.split(ArgsUtils.getKeyValueSeparator(), 2);
+        return groupString.split(KV_SEPARATOR, 2);
     }
     
     /**

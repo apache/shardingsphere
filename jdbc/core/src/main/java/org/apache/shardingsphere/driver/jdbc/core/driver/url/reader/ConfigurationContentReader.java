@@ -61,7 +61,7 @@ public final class ConfigurationContentReader {
     }
     
     private static String replaceSystemProperties(final String line) {
-        Matcher matcher = ArgsUtils.getPattern().matcher(line);
+        Matcher matcher = ArgsUtils.PLACEHOLDER_PATTERN.matcher(line);
         if (!matcher.find()) {
             return line;
         }
@@ -71,7 +71,7 @@ public final class ConfigurationContentReader {
     }
     
     private static String replaceEnvironmentVariables(final String line) {
-        Matcher matcher = ArgsUtils.getPattern().matcher(line);
+        Matcher matcher = ArgsUtils.PLACEHOLDER_PATTERN.matcher(line);
         if (!matcher.find()) {
             return line;
         }
