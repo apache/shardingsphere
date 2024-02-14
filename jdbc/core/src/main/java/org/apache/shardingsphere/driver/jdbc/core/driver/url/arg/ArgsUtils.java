@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,20 +44,6 @@ public final class ArgsUtils {
         String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
         String result = configuredFile.substring(configurationType.length());
         Preconditions.checkArgument(!result.isEmpty(), "Configuration subject is required in driver URL.");
-        return result;
-    }
-    
-    /**
-     * Get resource as stream from classpath.
-     *
-     * @param resource resource
-     * @return input stream
-     * @throws IllegalArgumentException throw when configuration file not found
-     */
-    public static InputStream getResourceAsStreamFromClasspath(final String resource) {
-        InputStream result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
-        result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
-        Preconditions.checkNotNull(result, "Can not find configuration file `%s`.", resource);
         return result;
     }
     

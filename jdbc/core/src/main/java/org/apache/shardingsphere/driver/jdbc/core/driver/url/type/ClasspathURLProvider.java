@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
+import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.ArgsUtils;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderTypeFactory;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
@@ -40,8 +40,15 @@ public final class ClasspathURLProvider implements ShardingSphereURLProvider {
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final String configSubject, final Map<String, String> configParams) {
-        try (InputStream inputStream = ArgsUtils.getResourceAsStreamFromClasspath(configSubject)) {
+        try (InputStream inputStream = getResourceAsStreamFromClasspath(configSubject)) {
             return ConfigurationContentReader.read(inputStream, URLArgumentPlaceholderTypeFactory.valueOf(configParams));
         }
+    }
+    
+    private static InputStream getResourceAsStreamFromClasspath(final String resource) {
+        InputStream result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+        result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
+        Preconditions.checkNotNull(result, "Can not find configuration file `%s`.", resource);
+        return result;
     }
 }
