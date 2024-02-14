@@ -91,7 +91,7 @@ import javax.sql.DataSource;
 public DataSource createDataSource() {
     HikariConfig config = new HikariConfig();
     config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-    config.setJdbcUrl("jdbc:shardingsphere:classpath:config.yaml??placeholder-type=system_props");
+    config.setJdbcUrl("jdbc:shardingsphere:classpath:config.yaml?placeholder-type=system_props");
     try {
         assert null == System.getProperty("fixture.config.driver.jdbc-url");
         assert null == System.getProperty("fixture.config.driver.username");
