@@ -32,7 +32,7 @@ public final class ShardingSphereURLManager {
     /**
      * Get configuration content from URL.
      *
-     * @param url driver URL
+     * @param url URL
      * @return configuration content
      * @throws URLProviderNotFoundException driver URL provider not found exception
      */
