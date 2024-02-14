@@ -50,14 +50,14 @@ class ConfigurationContentReaderTest {
     void assertReadWithNonePlaceholder() throws IOException {
         byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", ConfigurationContentPlaceholderType.NONE);
         byte[] expected = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", ConfigurationContentPlaceholderType.NONE);
-        assertThat(actual, is(expected));
+        assertThat(new String(actual), is(new String(expected)));
     }
     
     @Test
     void assertReadWithSystemPropertiesPlaceholder() throws IOException {
         byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", ConfigurationContentPlaceholderType.SYSTEM_PROPS);
         byte[] expected = readContent("config/driver/foo-driver-fixture.yaml", ConfigurationContentPlaceholderType.SYSTEM_PROPS);
-        assertThat(actual, is(expected));
+        assertThat(new String(actual), is(new String(expected)));
     }
     
     private byte[] readContent(final String name, final ConfigurationContentPlaceholderType placeholderType) throws IOException {

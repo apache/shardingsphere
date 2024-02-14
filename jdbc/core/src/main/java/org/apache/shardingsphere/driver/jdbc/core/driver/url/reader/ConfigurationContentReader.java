@@ -48,15 +48,12 @@ public final class ConfigurationContentReader {
             StringBuilder builder = new StringBuilder();
             String line;
             while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#")) {
+                if (line.startsWith("#")) {
                     continue;
                 }
-                Optional<ShardingSphereURLArgument> arg = ShardingSphereURLArgument.parse(line);
+                Optional<ShardingSphereURLArgument> arg = ConfigurationContentPlaceholderType.NONE == type ? Optional.empty() : ShardingSphereURLArgument.parse(line);
                 if (arg.isPresent()) {
-                    Optional<String> argValue = getArgumentValue(type, arg.get());
-                    if (argValue.isPresent()) {
-                        line = ArgsUtils.replaceArg(argValue.get(), arg.get().getDefaultValue(), ArgsUtils.PLACEHOLDER_PATTERN.matcher(line));
-                    }
+                    line = ArgsUtils.replaceArg(getArgumentValue(type, arg.get()), arg.get().getDefaultValue(), ArgsUtils.PLACEHOLDER_PATTERN.matcher(line));
                 }
                 builder.append(line).append(System.lineSeparator());
             }
@@ -64,14 +61,14 @@ public final class ConfigurationContentReader {
         }
     }
     
-    private static Optional<String> getArgumentValue(final ConfigurationContentPlaceholderType type, final ShardingSphereURLArgument arg) {
+    private static String getArgumentValue(final ConfigurationContentPlaceholderType type, final ShardingSphereURLArgument arg) {
         if (ConfigurationContentPlaceholderType.ENVIRONMENT == type) {
-            return Optional.of(getEnvironmentVariable(arg.getName()));
+            return getEnvironmentVariable(arg.getName());
         }
         if (ConfigurationContentPlaceholderType.SYSTEM_PROPS == type) {
-            return Optional.of(getSystemProperty(arg.getName()));
+            return getSystemProperty(arg.getName());
         }
-        return Optional.empty();
+        return null;
     }
     
     private static String getEnvironmentVariable(final String argName) {
