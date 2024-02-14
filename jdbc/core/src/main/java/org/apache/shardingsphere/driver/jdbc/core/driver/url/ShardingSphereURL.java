@@ -51,8 +51,8 @@ public final class ShardingSphereURL {
     }
     
     private static String parseConfigurationSubject(final String url, final String urlPrefix, final String configurationType) {
-        String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
-        String result = configuredFile.substring(configurationType.length());
+        String configuredSubject = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
+        String result = configuredSubject.substring(configurationType.length());
         Preconditions.checkArgument(!result.isEmpty(), "Configuration subject is required in driver URL.");
         return result;
     }
