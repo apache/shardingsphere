@@ -64,14 +64,14 @@ public final class URLArgumentLine {
      */
     public String replaceArgument(final URLArgumentPlaceholderType type) {
         String argumentValue = getArgumentValue(type);
-        if (Strings.isNullOrEmpty(argumentValue) && argDefaultValue.isEmpty()) {
-            String modifiedLineWithSpace = placehodlerMatcher.replaceAll("");
-            return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
+        if (!Strings.isNullOrEmpty(argumentValue)) {
+            return placehodlerMatcher.replaceAll(argumentValue);
         }
-        if (Strings.isNullOrEmpty(argumentValue)) {
+        if (!argDefaultValue.isEmpty()) {
             return placehodlerMatcher.replaceAll(argDefaultValue);
         }
-        return placehodlerMatcher.replaceAll(argumentValue);
+        String modifiedLineWithSpace = placehodlerMatcher.replaceAll("");
+        return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
     }
     
     private String getArgumentValue(final URLArgumentPlaceholderType type) {
