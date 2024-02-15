@@ -53,8 +53,8 @@ public final class DriverDataSourceCache {
     private <T extends Throwable> DataSource createDataSource(final String url) throws T {
         try {
             ShardingSphereURL shardingSphereURL = ShardingSphereURL.parse(url);
-            ShardingSphereURLLoader urlProvider = TypedSPILoader.getService(ShardingSphereURLLoader.class, shardingSphereURL.getSourceType());
-            return YamlShardingSphereDataSourceFactory.createDataSource(urlProvider.getContent(shardingSphereURL));
+            ShardingSphereURLLoader urlLoader = TypedSPILoader.getService(ShardingSphereURLLoader.class, shardingSphereURL.getSourceType());
+            return YamlShardingSphereDataSourceFactory.createDataSource(urlLoader.getContent(shardingSphereURL));
         } catch (final IOException ex) {
             throw (T) new SQLException(ex);
         } catch (final SQLException ex) {
