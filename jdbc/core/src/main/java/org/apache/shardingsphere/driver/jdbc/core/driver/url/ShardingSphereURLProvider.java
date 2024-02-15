@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+
 /**
  * ShardingSphere URL provider.
  */
+@SingletonSPI
 public interface ShardingSphereURLProvider {
     
     /**
