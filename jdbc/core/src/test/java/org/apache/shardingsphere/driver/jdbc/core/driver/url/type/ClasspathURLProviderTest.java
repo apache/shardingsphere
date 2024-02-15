@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,7 +33,8 @@ class ClasspathURLProviderTest {
     @Test
     void assertGetContent() {
         byte[] actual = new ClasspathURLProvider().getContent(mockURL());
-        byte[] expected = ShardingSphereURLManager.getContent("classpath:config/driver/foo-driver-fixture.yaml");
+        ShardingSphereURLProvider urlProvider = ShardingSphereURLManager.getURLProvider("classpath:config/driver/foo-driver-fixture.yaml");
+        byte[] expected = urlProvider.getContent(ShardingSphereURL.parse("classpath:config/driver/foo-driver-fixture.yaml", urlProvider.getSourceType()));
         assertThat(actual, is(expected));
     }
     

@@ -30,17 +30,17 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 public final class ShardingSphereURLManager {
     
     /**
-     * Get configuration content from URL.
+     * Get ShardingSphere URL provider.
      *
      * @param url URL
-     * @return configuration content
-     * @throws URLProviderNotFoundException driver URL provider not found exception
+     * @return URL provider
+     * @throws URLProviderNotFoundException thrown if URL provider not found
      */
-    public static byte[] getContent(final String url) {
+    public static ShardingSphereURLProvider getURLProvider(final String url) {
         ShardingSpherePreconditions.checkNotNull(url, () -> new URLProviderNotFoundException(url));
         for (ShardingSphereURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereURLProvider.class)) {
             if (url.contains(each.getSourceType())) {
-                return each.getContent(ShardingSphereURL.parse(url, each.getSourceType()));
+                return each;
             }
         }
         throw new URLProviderNotFoundException(url);
