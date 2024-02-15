@@ -28,9 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Classpath URL provider.
+ * Class path URL provider.
  */
-public final class ClasspathURLProvider implements ShardingSphereURLProvider {
+public final class ClassPathURLProvider implements ShardingSphereURLProvider {
     
     @Override
     @SneakyThrows(IOException.class)
