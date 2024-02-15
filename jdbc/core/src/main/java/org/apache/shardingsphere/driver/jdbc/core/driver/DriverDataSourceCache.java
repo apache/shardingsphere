@@ -44,13 +44,13 @@ public final class DriverDataSourceCache {
         if (dataSourceMap.containsKey(url)) {
             return dataSourceMap.get(url);
         }
-        return dataSourceMap.computeIfAbsent(url, driverUrl -> createDataSource(driverUrl, urlPrefix));
+        return dataSourceMap.computeIfAbsent(url, driverUrl -> createDataSource(driverUrl.substring(urlPrefix.length())));
     }
     
     @SuppressWarnings("unchecked")
-    private <T extends Throwable> DataSource createDataSource(final String url, final String urlPrefix) throws T {
+    private <T extends Throwable> DataSource createDataSource(final String url) throws T {
         try {
-            return YamlShardingSphereDataSourceFactory.createDataSource(ShardingSphereURLManager.getContent(url.substring(urlPrefix.length())));
+            return YamlShardingSphereDataSourceFactory.createDataSource(ShardingSphereURLManager.getContent(url));
         } catch (final IOException ex) {
             throw (T) new SQLException(ex);
         } catch (final SQLException ex) {
