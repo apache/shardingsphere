@@ -18,19 +18,13 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * ShardingSphere URL provider.
  */
 @SingletonSPI
-public interface ShardingSphereURLProvider {
-    
-    /**
-     * Get source type.
-     * 
-     * @return source type
-     */
-    String getSourceType();
+public interface ShardingSphereURLProvider extends TypedSPI {
     
     /**
      * Get configuration content from URL.

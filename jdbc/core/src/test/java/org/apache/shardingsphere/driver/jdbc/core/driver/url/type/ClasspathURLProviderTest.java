@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,11 +31,19 @@ import static org.mockito.Mockito.when;
 class ClasspathURLProviderTest {
     
     @Test
-    void assertGetContent() {
-        byte[] actual = new ClasspathURLProvider().getContent(mockURL());
-        ShardingSphereURLProvider urlProvider = ShardingSphereURLManager.getURLProvider("classpath:config/driver/foo-driver-fixture.yaml");
-        byte[] expected = urlProvider.getContent(ShardingSphereURL.parse("classpath:config/driver/foo-driver-fixture.yaml", urlProvider.getSourceType()));
-        assertThat(actual, is(expected));
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void assertGetContentOnLinux() {
+        assertGetContent(999);
+    }
+    
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void assertGetContentOnWindows() {
+        assertGetContent(1040);
+    }
+    
+    private void assertGetContent(final int expectedLength) {
+        assertThat(new ClasspathURLProvider().getContent(mockURL()).length, is(expectedLength));
     }
     
     private ShardingSphereURL mockURL() {
