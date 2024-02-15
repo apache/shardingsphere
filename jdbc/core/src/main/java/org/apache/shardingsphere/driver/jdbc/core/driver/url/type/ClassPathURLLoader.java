@@ -17,32 +17,38 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
+import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoader;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderTypeFactory;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 /**
- * Absolute path URL provider.
+ * Class path URL loader.
  */
-public final class AbsolutePathURLProvider implements ShardingSphereURLProvider {
+public final class ClassPathURLLoader implements ShardingSphereURLLoader {
     
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final ShardingSphereURL url) {
-        try (InputStream inputStream = Files.newInputStream(new File(url.getConfigurationSubject()).toPath())) {
+        try (InputStream inputStream = getResourceAsStreamFromClasspath(url.getConfigurationSubject())) {
             return ConfigurationContentReader.read(inputStream, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
         }
     }
     
+    private InputStream getResourceAsStreamFromClasspath(final String resource) {
+        InputStream result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+        result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
+        Preconditions.checkNotNull(result, "Can not find configuration file `%s`.", resource);
+        return result;
+    }
+    
     @Override
     public String getType() {
-        return "absolutepath:";
+        return "classpath:";
     }
 }
