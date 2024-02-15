@@ -47,7 +47,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlShardingSphereDataSourceFactory {
     
-    private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
+    private static final YamlRuleConfigurationSwapperEngine RULE_CONFIG_SWAPPER = new YamlRuleConfigurationSwapperEngine();
     
     private static final YamlDataSourceConfigurationSwapper DATA_SOURCE_SWAPPER = new YamlDataSourceConfigurationSwapper();
     
@@ -72,7 +72,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig) throws SQLException {
         ModeConfiguration modeConfig = null == rootConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
-        Collection<RuleConfiguration> ruleConfigs = SWAPPER_ENGINE.swapToRuleConfigurations(rootConfig.getRules());
+        Collection<RuleConfiguration> ruleConfigs = RULE_CONFIG_SWAPPER.swapToRuleConfigurations(rootConfig.getRules());
         return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, rootConfig.getProps());
     }
     
@@ -163,7 +163,7 @@ public final class YamlShardingSphereDataSourceFactory {
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlJDBCConfiguration jdbcConfig) throws SQLException {
         rebuildGlobalRuleConfiguration(jdbcConfig);
         ModeConfiguration modeConfig = null == jdbcConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(jdbcConfig.getMode());
-        Collection<RuleConfiguration> ruleConfigs = SWAPPER_ENGINE.swapToRuleConfigurations(jdbcConfig.getRules());
+        Collection<RuleConfiguration> ruleConfigs = RULE_CONFIG_SWAPPER.swapToRuleConfigurations(jdbcConfig.getRules());
         return ShardingSphereDataSourceFactory.createDataSource(jdbcConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, jdbcConfig.getProps());
     }
     
