@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
 import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
@@ -35,7 +36,8 @@ class AbsolutePathURLProviderTest {
     void assertGetContent() {
         String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
         byte[] actual = new AbsolutePathURLProvider().getContent(mockURL(path));
-        byte[] expected = ShardingSphereURLManager.getContent("absolutepath:" + path);
+        ShardingSphereURLProvider urlProvider = ShardingSphereURLManager.getURLProvider("absolutepath:" + path);
+        byte[] expected = urlProvider.getContent(ShardingSphereURL.parse("absolutepath:" + path, urlProvider.getSourceType()));
         assertThat(actual, is(expected));
     }
     
