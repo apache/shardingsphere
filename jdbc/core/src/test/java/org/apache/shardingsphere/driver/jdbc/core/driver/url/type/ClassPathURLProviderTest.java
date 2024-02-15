@@ -28,7 +28,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ClasspathURLProviderTest {
+class ClassPathURLProviderTest {
     
     @Test
     @EnabledOnOs({OS.LINUX, OS.MAC})
@@ -43,7 +43,7 @@ class ClasspathURLProviderTest {
     }
     
     private void assertGetContent(final int expectedLength) {
-        assertThat(new ClasspathURLProvider().getContent(mockURL()).length, is(expectedLength));
+        assertThat(new ClassPathURLProvider().getContent(mockURL()).length, is(expectedLength));
     }
     
     private ShardingSphereURL mockURL() {

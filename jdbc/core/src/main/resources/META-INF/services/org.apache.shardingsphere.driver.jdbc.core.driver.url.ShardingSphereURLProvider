@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.jdbc.core.driver.url.type.ClasspathURLProvider
+org.apache.shardingsphere.driver.jdbc.core.driver.url.type.ClassPathURLProvider
 org.apache.shardingsphere.driver.jdbc.core.driver.url.type.AbsolutePathURLProvider
