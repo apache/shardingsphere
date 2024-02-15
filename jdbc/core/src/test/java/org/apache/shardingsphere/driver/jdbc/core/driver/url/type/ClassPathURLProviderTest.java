@@ -43,7 +43,7 @@ class ClassPathURLProviderTest {
     }
     
     private void assertGetContent(final int expectedLength) {
-        assertThat(new ClassPathURLProvider().getContent(mockURL()).length, is(expectedLength));
+        assertThat(new ClassPathURLLoader().getContent(mockURL()).length, is(expectedLength));
     }
     
     private ShardingSphereURL mockURL() {

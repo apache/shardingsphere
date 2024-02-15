@@ -45,7 +45,7 @@ class AbsolutePathURLProviderTest {
     }
     
     private void assertGetContent(final int expectedLength) {
-        byte[] actual = new AbsolutePathURLProvider().getContent(
+        byte[] actual = new AbsolutePathURLLoader().getContent(
                 mockURL(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath()));
         assertThat(actual.length, is(expectedLength));
     }

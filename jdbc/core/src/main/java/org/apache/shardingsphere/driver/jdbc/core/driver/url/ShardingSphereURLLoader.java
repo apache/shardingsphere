@@ -21,10 +21,10 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * ShardingSphere URL provider.
+ * ShardingSphere URL loader.
  */
 @SingletonSPI
-public interface ShardingSphereURLProvider extends TypedSPI {
+public interface ShardingSphereURLLoader extends TypedSPI {
     
     /**
      * Get configuration content from URL.
