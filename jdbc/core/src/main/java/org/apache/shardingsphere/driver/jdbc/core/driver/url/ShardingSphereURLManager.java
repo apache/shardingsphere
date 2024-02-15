@@ -45,4 +45,21 @@ public final class ShardingSphereURLManager {
         }
         throw new URLProviderNotFoundException(url);
     }
+    
+    /**
+     * Get ShardingSphere URL provider.
+     *
+     * @param url URL
+     * @return URL provider
+     * @throws URLProviderNotFoundException thrown if URL provider not found
+     */
+    public static ShardingSphereURLProvider getURLProvider(final String url) {
+        ShardingSpherePreconditions.checkNotNull(url, () -> new URLProviderNotFoundException(url));
+        for (ShardingSphereURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereURLProvider.class)) {
+            if (url.contains(each.getSourceType())) {
+                return each;
+            }
+        }
+        throw new URLProviderNotFoundException(url);
+    }
 }
