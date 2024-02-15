@@ -175,6 +175,6 @@ public class ExampleUtils {
 - `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=system_props`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=system_props`
 
-### 其他实现
+## 其他实现
 
 具体可参考 https://github.com/apache/shardingsphere-plugin 。
