@@ -33,11 +33,6 @@ import java.io.InputStream;
 public final class ClasspathURLProvider implements ShardingSphereURLProvider {
     
     @Override
-    public String getSourceType() {
-        return "classpath:";
-    }
-    
-    @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final ShardingSphereURL url) {
         try (InputStream inputStream = getResourceAsStreamFromClasspath(url.getConfigurationSubject())) {
@@ -50,5 +45,10 @@ public final class ClasspathURLProvider implements ShardingSphereURLProvider {
         result = null == result ? Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + resource) : result;
         Preconditions.checkNotNull(result, "Can not find configuration file `%s`.", resource);
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return "classpath:";
     }
 }

@@ -22,6 +22,8 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.driver.jdbc.exception.syntax.URLProviderNotFoundException;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +36,8 @@ import java.util.Map;
 @Getter
 public final class ShardingSphereURL {
     
+    private final String sourceType;
+    
     private final String configurationSubject;
     
     private final Map<String, String> parameters;
@@ -41,17 +45,21 @@ public final class ShardingSphereURL {
     /**
      * Parse ShardingSphere URL.
      * 
-     * @param url ShardingSphere URL
-     * @param sourceType source type
+     * @param url URL
      * @return ShardingSphere URL
      */
-    public static ShardingSphereURL parse(final String url, final String sourceType) {
-        return new ShardingSphereURL(parseConfigurationSubject(url, sourceType), parseParameters(url));
+    public static ShardingSphereURL parse(final String url) {
+        ShardingSpherePreconditions.checkNotNull(url, () -> new URLProviderNotFoundException(url));
+        String sourceType = parseSourceType(url);
+        return new ShardingSphereURL(sourceType, parseConfigurationSubject(url.substring(sourceType.length())), parseParameters(url));
     }
     
-    private static String parseConfigurationSubject(final String url, final String configurationType) {
-        String configuredSubject = url.substring(0, url.contains("?") ? url.indexOf('?') : url.length());
-        String result = configuredSubject.substring(configurationType.length());
+    private static String parseSourceType(final String url) {
+        return url.substring(0, url.indexOf(':') + 1);
+    }
+    
+    private static String parseConfigurationSubject(final String url) {
+        String result = url.substring(0, url.contains("?") ? url.indexOf('?') : url.length());
         Preconditions.checkArgument(!result.isEmpty(), "Configuration subject is required in driver URL.");
         return result;
     }

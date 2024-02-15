@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLManager;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLProvider;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import java.util.Objects;
 
@@ -33,12 +33,21 @@ import static org.mockito.Mockito.when;
 class AbsolutePathURLProviderTest {
     
     @Test
-    void assertGetContent() {
-        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        byte[] actual = new AbsolutePathURLProvider().getContent(mockURL(path));
-        ShardingSphereURLProvider urlProvider = ShardingSphereURLManager.getURLProvider("absolutepath:" + path);
-        byte[] expected = urlProvider.getContent(ShardingSphereURL.parse("absolutepath:" + path, urlProvider.getSourceType()));
-        assertThat(actual, is(expected));
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void assertGetContentOnLinux() {
+        assertGetContent(999);
+    }
+    
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void assertGetContentOnWindows() {
+        assertGetContent(1040);
+    }
+    
+    private void assertGetContent(final int expectedLength) {
+        byte[] actual = new AbsolutePathURLProvider().getContent(
+                mockURL(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath()));
+        assertThat(actual.length, is(expectedLength));
     }
     
     private ShardingSphereURL mockURL(final String path) {

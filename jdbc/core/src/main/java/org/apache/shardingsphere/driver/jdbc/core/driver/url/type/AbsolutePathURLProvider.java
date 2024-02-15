@@ -34,15 +34,15 @@ import java.nio.file.Files;
 public final class AbsolutePathURLProvider implements ShardingSphereURLProvider {
     
     @Override
-    public String getSourceType() {
-        return "absolutepath:";
-    }
-    
-    @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final ShardingSphereURL url) {
         try (InputStream inputStream = Files.newInputStream(new File(url.getConfigurationSubject()).toPath())) {
             return ConfigurationContentReader.read(inputStream, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "absolutepath:";
     }
 }
