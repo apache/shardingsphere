@@ -17,58 +17,34 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.type.AbsolutePathURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.type.ClasspathURLProvider;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.URLProviderNotFoundException;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.Objects;
-
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(AutoMockExtension.class)
 class ShardingSphereURLManagerTest {
     
-    private final int fooDriverConfigLengthOnUnix = 999;
-    
-    private final int fooDriverConfigLengthOnWindows = 1040;
-    
     @Test
-    void assertNewConstructorWithEmptyURL() {
-        assertThrows(URLProviderNotFoundException.class, () -> ShardingSphereURLManager.getContent("invalid:xxx"));
+    void assertGetInvalidURLProvider() {
+        assertThrows(URLProviderNotFoundException.class, () -> ShardingSphereURLManager.getURLProvider("invalid:xxx"));
     }
     
     @Test
-    @EnabledOnOs({OS.LINUX, OS.MAC})
-    void assertToClasspathConfigurationFile() {
-        byte[] actual = ShardingSphereURLManager.getContent("classpath:config/driver/foo-driver-fixture.yaml");
-        assertThat(actual.length, is(fooDriverConfigLengthOnUnix));
+    void assertGetClasspathURLProvider() {
+        ShardingSphereURLProvider actual = ShardingSphereURLManager.getURLProvider("classpath:xxx");
+        assertThat(actual, instanceOf(ClasspathURLProvider.class));
     }
     
     @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void assertToClasspathConfigurationFileOnWindows() {
-        byte[] actual = ShardingSphereURLManager.getContent("classpath:config/driver/foo-driver-fixture.yaml");
-        assertThat(actual.length, is(fooDriverConfigLengthOnWindows));
-    }
-    
-    @Test
-    @EnabledOnOs({OS.LINUX, OS.MAC})
-    void assertToAbsolutePathConfigurationFile() {
-        String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        byte[] actual = ShardingSphereURLManager.getContent("absolutepath:" + absolutePath);
-        assertThat(actual.length, is(fooDriverConfigLengthOnUnix));
-    }
-    
-    @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void assertToAbsolutePathConfigurationFileOnWindows() {
-        String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        byte[] actual = ShardingSphereURLManager.getContent("absolutepath:" + absolutePath);
-        assertThat(actual.length, is(fooDriverConfigLengthOnWindows));
+    void assertGetAbsolutePathURLProvider() {
+        ShardingSphereURLProvider actual = ShardingSphereURLManager.getURLProvider("absolutepath:xxx");
+        assertThat(actual, instanceOf(AbsolutePathURLProvider.class));
     }
 }
