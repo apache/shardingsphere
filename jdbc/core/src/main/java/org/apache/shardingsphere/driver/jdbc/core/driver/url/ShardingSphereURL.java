@@ -60,7 +60,7 @@ public final class ShardingSphereURL {
     
     private static String parseConfigurationSubject(final String url) {
         String result = url.substring(0, url.contains("?") ? url.indexOf('?') : url.length());
-        Preconditions.checkArgument(!result.isEmpty(), "Configuration subject is required in driver URL.");
+        Preconditions.checkArgument(!result.isEmpty(), "Configuration subject is required in URL.");
         return result;
     }
     
