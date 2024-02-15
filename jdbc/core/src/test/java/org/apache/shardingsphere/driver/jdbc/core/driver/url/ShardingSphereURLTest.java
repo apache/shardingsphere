@@ -53,8 +53,7 @@ class ShardingSphereURLTest {
                     Arguments.of("absolutepath:C:\\Users\\shardingsphere\\config.yaml", "absolutepath:", "C:\\Users\\shardingsphere\\config.yaml", Collections.emptyMap()),
                     Arguments.of("absolutepath:/Users/configDirName?databaseName=sharding_db", "absolutepath:", "/Users/configDirName", Collections.singletonMap("databaseName", "sharding_db")),
                     Arguments.of("absolutepath:/Users/configDirName/?databaseName=sharding_db", "absolutepath:", "/Users/configDirName/", Collections.singletonMap("databaseName", "sharding_db")),
-                    Arguments.of("classpath:config/shardingsphere/config.yml?databaseName=sharding_db&placeholder-type=none", "classpath:", "config/shardingsphere/config.yml", multiParams)
-            );
+                    Arguments.of("classpath:config/shardingsphere/config.yml?databaseName=sharding_db&placeholder-type=none", "classpath:", "config/shardingsphere/config.yml", multiParams));
         }
     }
 }
