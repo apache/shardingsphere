@@ -25,8 +25,6 @@ import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.Configuratio
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 
 /**
  * Absolute path URL loader.
@@ -36,9 +34,11 @@ public final class AbsolutePathURLLoader implements ShardingSphereURLLoader {
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final ShardingSphereURL url) {
-        try (InputStream inputStream = Files.newInputStream(new File(url.getConfigurationSubject()).toPath())) {
-            return ConfigurationContentReader.read(inputStream, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
-        }
+        return ConfigurationContentReader.read(getAbsoluteFile(url.getConfigurationSubject()), URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
+    }
+    
+    private File getAbsoluteFile(final String configurationSubject) {
+        return new File(configurationSubject);
     }
     
     @Override

@@ -19,14 +19,15 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderType;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentLine;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderType;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Optional;
 
 /**
@@ -37,20 +38,22 @@ public final class ConfigurationContentReader {
     
     /**
      * Read content.
-     * 
-     * @param inputStream input stream
-     * @param type configuration content placeholder type
+     *
+     * @param file file to be read
+     * @param placeholderType configuration content placeholder type
      * @return content
      * @throws IOException IO exception
      */
-    public static byte[] read(final InputStream inputStream, final URLArgumentPlaceholderType type) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+    public static byte[] read(final File file, final URLArgumentPlaceholderType placeholderType) throws IOException {
+        try (
+                InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             StringBuilder builder = new StringBuilder();
             String line;
-            while (null != (line = reader.readLine())) {
+            while (null != (line = bufferedReader.readLine())) {
                 if (!line.startsWith("#")) {
-                    Optional<URLArgumentLine> argLine = URLArgumentPlaceholderType.NONE == type ? Optional.empty() : URLArgumentLine.parse(line);
-                    builder.append(argLine.map(optional -> optional.replaceArgument(type)).orElse(line)).append(System.lineSeparator());
+                    Optional<URLArgumentLine> argLine = URLArgumentPlaceholderType.NONE == placeholderType ? Optional.empty() : URLArgumentLine.parse(line);
+                    builder.append(argLine.map(optional -> optional.replaceArgument(placeholderType)).orElse(line)).append(System.lineSeparator());
                 }
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);
