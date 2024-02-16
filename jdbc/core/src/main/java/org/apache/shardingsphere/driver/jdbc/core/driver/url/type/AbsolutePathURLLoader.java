@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -38,13 +39,16 @@ public final class AbsolutePathURLLoader implements ShardingSphereURLLoader {
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final ShardingSphereURL url) {
-        Collection<String> lines = Files.readAllLines(
-                getAbsoluteFile(url.getConfigurationSubject()).toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
-        return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
+        Path path = getAbsoluteFile(url.getConfigurationSubject()).toPath();
+        return URLArgumentLineRender.render(readLines(path), URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
     }
     
     private File getAbsoluteFile(final String configurationSubject) {
         return new File(configurationSubject);
+    }
+    
+    private Collection<String> readLines(final Path path) throws IOException {
+        return Files.readAllLines(path, StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
     }
     
     @Override
