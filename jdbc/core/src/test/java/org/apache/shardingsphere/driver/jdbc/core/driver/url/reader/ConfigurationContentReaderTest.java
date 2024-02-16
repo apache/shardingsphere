@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -64,6 +65,7 @@ class ConfigurationContentReaderTest {
     
     private byte[] readContent(final String name, final URLArgumentPlaceholderType placeholderType) throws IOException, URISyntaxException {
         File file = new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).toURI().getPath());
-        return ConfigurationContentReader.read(file, placeholderType);
+        Collection<String> lines = ConfigurationContentReader.read(file);
+        return ConfigurationContentReader.read(lines, placeholderType);
     }
 }

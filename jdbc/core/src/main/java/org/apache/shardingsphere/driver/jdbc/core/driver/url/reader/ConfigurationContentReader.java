@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Configuration content reader.
@@ -40,23 +42,31 @@ public final class ConfigurationContentReader {
      * Read content.
      *
      * @param file file to be read
+     * @return content lines
+     * @throws IOException IO exception
+     */
+    public static Collection<String> read(final File file) throws IOException {
+        try (
+                InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            return bufferedReader.lines().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
+        }
+    }
+    
+    /**
+     * Read content.
+     *
+     * @param lines content lines
      * @param placeholderType configuration content placeholder type
      * @return content
      * @throws IOException IO exception
      */
-    public static byte[] read(final File file, final URLArgumentPlaceholderType placeholderType) throws IOException {
-        try (
-                InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while (null != (line = bufferedReader.readLine())) {
-                if (!line.startsWith("#")) {
-                    Optional<URLArgumentLine> argLine = URLArgumentPlaceholderType.NONE == placeholderType ? Optional.empty() : URLArgumentLine.parse(line);
-                    builder.append(argLine.map(optional -> optional.replaceArgument(placeholderType)).orElse(line)).append(System.lineSeparator());
-                }
-            }
-            return builder.toString().getBytes(StandardCharsets.UTF_8);
+    public static byte[] read(final Collection<String> lines, final URLArgumentPlaceholderType placeholderType) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        for (String each : lines) {
+            Optional<URLArgumentLine> argLine = URLArgumentPlaceholderType.NONE == placeholderType ? Optional.empty() : URLArgumentLine.parse(each);
+            builder.append(argLine.map(optional -> optional.replaceArgument(placeholderType)).orElse(each)).append(System.lineSeparator());
         }
+        return builder.toString().getBytes(StandardCharsets.UTF_8);
     }
 }
