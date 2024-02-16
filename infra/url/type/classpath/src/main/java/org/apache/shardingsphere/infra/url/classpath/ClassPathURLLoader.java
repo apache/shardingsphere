@@ -20,10 +20,11 @@ package org.apache.shardingsphere.infra.url.classpath;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -36,12 +37,12 @@ public final class ClassPathURLLoader implements ShardingSphereURLLoader {
     @Override
     @SneakyThrows(IOException.class)
     public String load(final String configurationSubject, final Properties queryProps) {
-        return Files.readAllLines(getResourceFile(configurationSubject).toPath()).stream().collect(Collectors.joining(System.lineSeparator()));
-    }
-    
-    @SneakyThrows(URISyntaxException.class)
-    private File getResourceFile(final String configurationSubject) {
-        return new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(configurationSubject)).toURI().getPath());
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(configurationSubject)) {
+            Objects.requireNonNull(inputStream);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+            }
+        }
     }
     
     @Override

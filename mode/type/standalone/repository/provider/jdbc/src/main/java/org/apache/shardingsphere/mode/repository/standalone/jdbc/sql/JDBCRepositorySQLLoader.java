@@ -85,15 +85,10 @@ public final class JDBCRepositorySQLLoader {
     }
     
     /**
-     * Under the GraalVM Native Image, although there is
-     * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystemProvider`, the corresponding
-     * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystem` does not autoload. This is mainly to align the
-     * behavior of `ZipFileSystemProvider`, so ShardingSphere need to manually open and close the FileSystem
-     * corresponding to the `resource:/` scheme. For more background reference <a href="https://github.com/oracle/graal/issues/7682">oracle/graal#7682</a>.
-     * <p/>
-     * ShardingSphere use the System Property of `org.graalvm.nativeimage.imagecode` to identify whether this class is in the
-     * GraalVM Native Image environment. The background of this property comes from
-     * <a href="https://junit.org/junit5/docs/5.10.0/api/org.junit.jupiter.api/org/junit/jupiter/api/condition/DisabledInNativeImage.html">Annotation Interface DisabledInNativeImage</a>.
+     * Under the GraalVM Native Image, `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystem` does not autoload.
+     * This is mainly to align the behavior of `jdk.nio.zipfs.ZipFileSystem`,
+     * so ShardingSphere need to manually open and close the FileSystem corresponding to the `resource:/` scheme.
+     * For more background reference <a href="https://github.com/oracle/graal/issues/7682">oracle/graal#7682</a>.
      *
      * @param url  url
      * @param type type of JDBC repository SQL
@@ -104,13 +99,12 @@ public final class JDBCRepositorySQLLoader {
      * @see sun.nio.fs.UnixFileSystemProvider
      */
     private static JDBCRepositorySQL loadFromDirectory(final URL url, final String type) throws URISyntaxException, IOException {
-        if (null == System.getProperty("org.graalvm.nativeimage.imagecode") || !"runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"))) {
-            return loadFromDirectoryLegacy(url, type);
-        } else {
+        if ("resource".equals(url.getProtocol())) {
             try (FileSystem ignored = FileSystems.newFileSystem(URI.create("resource:/"), Collections.emptyMap())) {
                 return loadFromDirectoryInNativeImage(url, type);
             }
         }
+        return loadFromDirectoryLegacy(url, type);
     }
     
     /**

@@ -66,31 +66,6 @@
   "name":"org.apache.shardingsphere.driver.api.yaml.YamlJDBCConfigurationCustomizer"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLManager"},
-  "name":"org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath.AbsolutePathURLProvider",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLManager"},
-  "name":"org.apache.shardingsphere.driver.jdbc.core.driver.spi.absolutepath.AbsolutePathWithEnvironmentURLProvider",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLManager"},
-  "name":"org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath.ClasspathURLProvider",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLManager"},
-  "name":"org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath.ClasspathWithEnvironmentURLProvider",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLManager"},
-  "name":"org.apache.shardingsphere.driver.jdbc.core.driver.spi.classpath.ClasspathWithSystemPropsURLProvider",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.rule.EncryptRule"},
   "name":"org.apache.shardingsphere.encrypt.algorithm.assisted.MD5AssistedEncryptAlgorithm",
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -175,6 +150,45 @@
   "name":"org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.swapper.NewYamlEncryptRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
+  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }, {"name":"setType","parameterTypes":["java.lang.String"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.swapper.NewYamlMaskRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.NewYamlShadowRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.NewYamlShardingRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
+  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
+  "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationCustomizer"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService"},
   "name":"org.apache.shardingsphere.infra.instance.ComputeNodeData",
   "allDeclaredFields":true,
@@ -188,6 +202,16 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService"},
   "name":"org.apache.shardingsphere.infra.instance.ComputeNodeDataCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.ShardingRule"},
+  "name":"org.apache.shardingsphere.infra.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.ShardingRule"},
+  "name":"org.apache.shardingsphere.infra.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder"},
@@ -207,45 +231,6 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.schema.ShardingSphereTableRowDataPersistService"},
   "name":"org.apache.shardingsphere.infra.util.yaml.YamlConfiguration",
   "queryAllPublicMethods":true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.swapper.NewYamlEncryptRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }, {"name":"setType","parameterTypes":["java.lang.String"] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.swapper.NewYamlMaskRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.NewYamlShadowRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.NewYamlShardingRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfigurationBeanInfo"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
@@ -364,16 +349,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.schema.NewTableMetaDataPersistService"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTableCustomizer"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.ShardingRule"},
-  "name":"org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.ShardingRule"},
-  "name":"org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
@@ -979,7 +954,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -1004,7 +979,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
   "name":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDMLStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -1034,7 +1009,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -1124,7 +1099,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
   "name":"org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDMLStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
