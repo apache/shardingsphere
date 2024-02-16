@@ -42,11 +42,11 @@ public final class ConfigurationContentReader {
      * @throws IOException IO exception
      */
     public static byte[] read(final Collection<String> lines, final URLArgumentPlaceholderType placeholderType) throws IOException {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         for (String each : lines) {
             Optional<URLArgumentLine> argLine = URLArgumentPlaceholderType.NONE == placeholderType ? Optional.empty() : URLArgumentLine.parse(each);
-            builder.append(argLine.map(optional -> optional.replaceArgument(placeholderType)).orElse(each)).append(System.lineSeparator());
+            result.append(argLine.map(optional -> optional.replaceArgument(placeholderType)).orElse(each)).append(System.lineSeparator());
         }
-        return builder.toString().getBytes(StandardCharsets.UTF_8);
+        return result.toString().getBytes(StandardCharsets.UTF_8);
     }
 }
