@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoader;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderTypeFactory;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentLineRender;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,7 @@ public final class ClassPathURLLoader implements ShardingSphereURLLoader {
     public byte[] getContent(final ShardingSphereURL url) {
         Collection<String> lines = Files.readAllLines(
                 getResourceFile(url.getConfigurationSubject()).toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
-        return ConfigurationContentReader.read(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
+        return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
     }
     
     @SneakyThrows(URISyntaxException.class)

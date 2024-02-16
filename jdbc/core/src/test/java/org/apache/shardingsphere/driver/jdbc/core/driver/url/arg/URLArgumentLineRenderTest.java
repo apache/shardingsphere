@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.arg;
 
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ConfigurationContentReaderTest {
+class URLArgumentLineRenderTest {
     
     private static final String FIXTURE_JDBC_URL_KEY = "fixture.config.driver.jdbc-url";
     
@@ -67,6 +66,6 @@ class ConfigurationContentReaderTest {
     
     private byte[] readContent(final String name, final URLArgumentPlaceholderType placeholderType) throws IOException, URISyntaxException {
         File file = new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).toURI().getPath());
-        return ConfigurationContentReader.read(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList()), placeholderType);
+        return URLArgumentLineRender.render(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList()), placeholderType);
     }
 }

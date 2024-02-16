@@ -15,33 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver.url.reader;
+package org.apache.shardingsphere.driver.jdbc.core.driver.url.arg;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentLine;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderType;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Configuration content reader.
+ * URL argument line render.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfigurationContentReader {
+public final class URLArgumentLineRender {
     
     /**
-     * Read content.
+     * Render argument.
      *
-     * @param lines content lines
+     * @param lines lines to be rendered
      * @param placeholderType configuration content placeholder type
-     * @return content
-     * @throws IOException IO exception
+     * @return rendered content
      */
-    public static byte[] read(final Collection<String> lines, final URLArgumentPlaceholderType placeholderType) throws IOException {
+    public static byte[] render(final Collection<String> lines, final URLArgumentPlaceholderType placeholderType) {
         StringBuilder result = new StringBuilder();
         for (String each : lines) {
             Optional<URLArgumentLine> argLine = URLArgumentPlaceholderType.NONE == placeholderType ? Optional.empty() : URLArgumentLine.parse(each);
