@@ -7,10 +7,10 @@ chapter = true
 ## Background Information
 
 For the driver class of `org.apache.shardingsphere.driver.ShardingSphereDriver`,
-by implementing the SPI of `org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoader`,
+by implementing the SPI of `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader`,
 allows YAML configuration files to be fetched from multiple sources and File Systems and parsed into ShardingSphere.
 If there is no specific statement, the following implementations all use YAML 1.1 as the YAML writing specification.
-This does not prevent custom implementations of `org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoader` from being manually converted to YAML from files such as XML or JSON.
+This does not prevent custom implementations of `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader` from being manually converted to YAML from files such as XML or JSON.
 
 After parsing and loading the YAML file into ShardingSphere's metadata, 
 the next behavior will be determined again through the relevant configuration of [Mode Configuration](../../../java-api/mode). 
@@ -56,9 +56,9 @@ Example:
 
 ## JDBC URL parameters
 
-For implementations of `org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoader`, 
+For implementations of `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader`, 
 not all JDBC URL parameters must be parsed,
-this involves how to implement `org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoader.getContent()`.
+this involves how to implement `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader.load()`.
 
 ### placeholder-type
 
