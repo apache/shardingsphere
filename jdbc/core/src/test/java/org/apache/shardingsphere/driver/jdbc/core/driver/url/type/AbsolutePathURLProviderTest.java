@@ -17,42 +17,33 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
+import java.util.Collections;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class AbsolutePathURLProviderTest {
     
     @Test
     @EnabledOnOs({OS.LINUX, OS.MAC})
     void assertGetContentOnLinux() {
-        assertGetContent(999);
+        assertGetContent(998);
     }
     
     @Test
     @EnabledOnOs(OS.WINDOWS)
     void assertGetContentOnWindows() {
-        assertGetContent(1040);
+        assertGetContent(1039);
     }
     
     private void assertGetContent(final int expectedLength) {
-        byte[] actual = new AbsolutePathURLLoader().getContent(
-                mockURL(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath()));
-        assertThat(actual.length, is(expectedLength));
-    }
-    
-    private ShardingSphereURL mockURL(final String path) {
-        ShardingSphereURL result = mock(ShardingSphereURL.class, RETURNS_DEEP_STUBS);
-        when(result.getConfigurationSubject()).thenReturn(path);
-        return result;
+        String actual = new AbsolutePathURLLoader().load(
+                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath(), Collections.emptyMap());
+        assertThat(actual.length(), is(expectedLength));
     }
 }

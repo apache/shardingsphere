@@ -17,38 +17,30 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ClassPathURLProviderTest {
     
     @Test
     @EnabledOnOs({OS.LINUX, OS.MAC})
     void assertGetContentOnLinux() {
-        assertGetContent(999);
+        assertGetContent(998);
     }
     
     @Test
     @EnabledOnOs(OS.WINDOWS)
     void assertGetContentOnWindows() {
-        assertGetContent(1040);
+        assertGetContent(1039);
     }
     
     private void assertGetContent(final int expectedLength) {
-        assertThat(new ClassPathURLLoader().getContent(mockURL()).length, is(expectedLength));
-    }
-    
-    private ShardingSphereURL mockURL() {
-        ShardingSphereURL result = mock(ShardingSphereURL.class, RETURNS_DEEP_STUBS);
-        when(result.getConfigurationSubject()).thenReturn("config/driver/foo-driver-fixture.yaml");
-        return result;
+        assertThat(new ClassPathURLLoader().load("config/driver/foo-driver-fixture.yaml", Collections.emptyMap()).length(), is(expectedLength));
     }
 }

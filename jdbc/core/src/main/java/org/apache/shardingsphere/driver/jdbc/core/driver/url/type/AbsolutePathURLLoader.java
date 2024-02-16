@@ -18,10 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.url.type;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoader;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderTypeFactory;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentLineRender;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -38,9 +36,8 @@ public final class AbsolutePathURLLoader implements ShardingSphereURLLoader {
     
     @Override
     @SneakyThrows(IOException.class)
-    public byte[] getContent(final ShardingSphereURL url) {
-        Path path = getAbsoluteFile(url.getConfigurationSubject()).toPath();
-        return URLArgumentLineRender.render(readLines(path), URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
+    public String load(final String configurationSubject, final Map<String, String> parameters) {
+        return readLines(getAbsoluteFile(configurationSubject).toPath()).stream().collect(Collectors.joining(System.lineSeparator()));
     }
     
     private File getAbsoluteFile(final String configurationSubject) {
