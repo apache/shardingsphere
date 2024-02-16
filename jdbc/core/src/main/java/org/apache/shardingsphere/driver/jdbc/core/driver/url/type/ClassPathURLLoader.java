@@ -26,8 +26,11 @@ import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.Configuratio
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Class path URL loader.
@@ -37,7 +40,8 @@ public final class ClassPathURLLoader implements ShardingSphereURLLoader {
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final ShardingSphereURL url) {
-        Collection<String> lines = ConfigurationContentReader.read(getResourceFile(url.getConfigurationSubject()));
+        Collection<String> lines = Files.readAllLines(
+                getResourceFile(url.getConfigurationSubject()).toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
         return ConfigurationContentReader.read(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
     }
     

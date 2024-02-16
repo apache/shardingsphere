@@ -22,36 +22,16 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentLine;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderType;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Configuration content reader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfigurationContentReader {
-    
-    /**
-     * Read content.
-     *
-     * @param file file to be read
-     * @return content lines
-     * @throws IOException IO exception
-     */
-    public static Collection<String> read(final File file) throws IOException {
-        try (
-                InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
-            return bufferedReader.lines().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
-        }
-    }
     
     /**
      * Read content.

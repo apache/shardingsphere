@@ -25,7 +25,10 @@ import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.Configuratio
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Absolute path URL loader.
@@ -35,7 +38,8 @@ public final class AbsolutePathURLLoader implements ShardingSphereURLLoader {
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final ShardingSphereURL url) {
-        Collection<String> lines = ConfigurationContentReader.read(getAbsoluteFile(url.getConfigurationSubject()));
+        Collection<String> lines = Files.readAllLines(
+                getAbsoluteFile(url.getConfigurationSubject()).toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
         return ConfigurationContentReader.read(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
     }
     
