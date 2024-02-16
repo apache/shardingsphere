@@ -21,10 +21,14 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoader;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderTypeFactory;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.reader.ConfigurationContentReader;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentLineRender;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Absolute path URL loader.
@@ -34,7 +38,9 @@ public final class AbsolutePathURLLoader implements ShardingSphereURLLoader {
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final ShardingSphereURL url) {
-        return ConfigurationContentReader.read(getAbsoluteFile(url.getConfigurationSubject()), URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
+        Collection<String> lines = Files.readAllLines(
+                getAbsoluteFile(url.getConfigurationSubject()).toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
+        return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
     }
     
     private File getAbsoluteFile(final String configurationSubject) {
