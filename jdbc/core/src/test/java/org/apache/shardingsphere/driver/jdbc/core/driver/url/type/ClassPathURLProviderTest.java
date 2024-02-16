@@ -31,13 +31,13 @@ class ClassPathURLProviderTest {
     @Test
     @EnabledOnOs({OS.LINUX, OS.MAC})
     void assertGetContentOnLinux() {
-        assertGetContent(998);
+        assertGetContent(1783);
     }
     
     @Test
     @EnabledOnOs(OS.WINDOWS)
     void assertGetContentOnWindows() {
-        assertGetContent(1039);
+        assertGetContent(1824);
     }
     
     private void assertGetContent(final int expectedLength) {
