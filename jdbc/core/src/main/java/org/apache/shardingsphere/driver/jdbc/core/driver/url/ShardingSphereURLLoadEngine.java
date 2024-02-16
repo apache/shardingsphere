@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentLineRender;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.arg.URLArgumentPlaceholderTypeFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -29,17 +27,23 @@ import java.util.Collection;
 /**
  * ShardingSphere URL load engine.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereURLLoadEngine {
+    
+    private final ShardingSphereURL url;
+    
+    private final ShardingSphereURLLoader urlLoader;
+    
+    public ShardingSphereURLLoadEngine(final ShardingSphereURL url) {
+        this.url = url;
+        urlLoader = TypedSPILoader.getService(ShardingSphereURLLoader.class, url.getSourceType());
+    }
     
     /**
      * Load configuration content.
      * 
-     * @param url ShardingSphere URL
      * @return loaded content
      */
-    public static byte[] loadContent(final ShardingSphereURL url) {
-        ShardingSphereURLLoader urlLoader = TypedSPILoader.getService(ShardingSphereURLLoader.class, url.getSourceType());
+    public byte[] loadContent() {
         Collection<String> lines = Arrays.asList(urlLoader.load(url.getConfigurationSubject(), url.getParameters()).split(System.lineSeparator()));
         return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
     }
