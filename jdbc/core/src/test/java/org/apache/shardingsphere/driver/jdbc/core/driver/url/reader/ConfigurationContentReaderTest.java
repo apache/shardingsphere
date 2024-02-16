@@ -22,8 +22,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,23 +49,21 @@ class ConfigurationContentReaderTest {
     }
     
     @Test
-    void assertReadWithNonePlaceholder() throws IOException {
+    void assertReadWithNonePlaceholder() throws IOException, URISyntaxException {
         byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", URLArgumentPlaceholderType.NONE);
         byte[] expected = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", URLArgumentPlaceholderType.NONE);
         assertThat(new String(actual), is(new String(expected)));
     }
     
     @Test
-    void assertReadWithSystemPropertiesPlaceholder() throws IOException {
+    void assertReadWithSystemPropertiesPlaceholder() throws IOException, URISyntaxException {
         byte[] actual = readContent("config/driver/foo-driver-to-be-replaced-fixture.yaml", URLArgumentPlaceholderType.SYSTEM_PROPS);
         byte[] expected = readContent("config/driver/foo-driver-fixture.yaml", URLArgumentPlaceholderType.SYSTEM_PROPS);
         assertThat(new String(actual), is(new String(expected)));
     }
     
-    private byte[] readContent(final String name, final URLArgumentPlaceholderType placeholderType) throws IOException {
-        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).getPath();
-        try (FileInputStream inputStream = new FileInputStream(path)) {
-            return ConfigurationContentReader.read(inputStream, placeholderType);
-        }
+    private byte[] readContent(final String name, final URLArgumentPlaceholderType placeholderType) throws IOException, URISyntaxException {
+        File file = new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(name)).toURI().getPath());
+        return ConfigurationContentReader.read(file, placeholderType);
     }
 }
