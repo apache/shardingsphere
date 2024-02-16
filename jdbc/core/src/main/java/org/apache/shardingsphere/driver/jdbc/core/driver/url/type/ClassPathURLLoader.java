@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,14 +41,17 @@ public final class ClassPathURLLoader implements ShardingSphereURLLoader {
     @Override
     @SneakyThrows(IOException.class)
     public byte[] getContent(final ShardingSphereURL url) {
-        Collection<String> lines = Files.readAllLines(
-                getResourceFile(url.getConfigurationSubject()).toPath(), StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
-        return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
+        Path path = getResourceFile(url.getConfigurationSubject()).toPath();
+        return URLArgumentLineRender.render(readLines(path), URLArgumentPlaceholderTypeFactory.valueOf(url.getParameters()));
     }
     
     @SneakyThrows(URISyntaxException.class)
     private File getResourceFile(final String configurationSubject) {
         return new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(configurationSubject)).toURI().getPath());
+    }
+    
+    private Collection<String> readLines(final Path path) throws IOException {
+        return Files.readAllLines(path, StandardCharsets.UTF_8).stream().filter(each -> !each.startsWith("#")).collect(Collectors.toList());
     }
     
     @Override
