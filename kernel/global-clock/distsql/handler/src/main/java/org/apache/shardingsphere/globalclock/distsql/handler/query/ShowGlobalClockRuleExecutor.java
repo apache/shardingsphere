@@ -19,12 +19,11 @@ package org.apache.shardingsphere.globalclock.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
@@ -40,15 +39,14 @@ public final class ShowGlobalClockRuleExecutor implements DistSQLQueryExecutor<S
     private GlobalClockRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowGlobalClockRuleStatement sqlStatement) {
         return Arrays.asList("type", "provider", "enable", "props");
     }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowGlobalClockRuleStatement sqlStatement, final ContextManager contextManager) {
         GlobalClockRuleConfiguration ruleConfig = rule.getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(),
-                String.valueOf(ruleConfig.isEnabled()), PropertiesConverter.convert(ruleConfig.getProps())));
+        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(), ruleConfig.isEnabled(), ruleConfig.getProps()));
     }
     
     @Override

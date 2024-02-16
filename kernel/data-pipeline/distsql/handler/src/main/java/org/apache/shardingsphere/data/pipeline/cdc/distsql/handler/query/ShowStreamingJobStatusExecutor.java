@@ -23,13 +23,14 @@ import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreami
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,12 @@ import java.util.stream.Collectors;
 public final class ShowStreamingJobStatusExecutor implements DistSQLQueryExecutor<ShowStreamingStatusStatement> {
     
     private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
+    
+    @Override
+    public Collection<String> getColumnNames(final ShowStreamingStatusStatement sqlStatement) {
+        return Arrays.asList("item", "data_source", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "confirmed_position",
+                "current_position", "error_message");
+    }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingStatusStatement sqlStatement, final ContextManager contextManager) {
@@ -53,20 +60,18 @@ public final class ShowStreamingJobStatusExecutor implements DistSQLQueryExecuto
         if (null == jobItemProgress) {
             return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), "", "", "", "", "", "", "", "", transmissionJobItemInfo.getErrorMessage());
         }
-        String incrementalIdleSeconds = "";
-        if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
-            long latestActiveTimeMillis = Math.max(transmissionJobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
-            incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
-        }
-        return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
-                jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), transmissionJobItemInfo.getInventoryFinishedPercentage(),
-                incrementalIdleSeconds, cdcJobItemInfo.getConfirmedPosition(), cdcJobItemInfo.getCurrentPosition(), transmissionJobItemInfo.getErrorMessage());
+        return new LocalDataQueryResultRow(transmissionJobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(), jobItemProgress.isActive(),
+                jobItemProgress.getProcessedRecordsCount(), transmissionJobItemInfo.getInventoryFinishedPercentage(),
+                getIncrementalIdleSeconds(jobItemProgress, transmissionJobItemInfo, currentTimeMillis), cdcJobItemInfo.getConfirmedPosition(), cdcJobItemInfo.getCurrentPosition(),
+                transmissionJobItemInfo.getErrorMessage());
     }
     
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "confirmed_position",
-                "current_position", "error_message");
+    private static Optional<Long> getIncrementalIdleSeconds(final TransmissionJobItemProgress jobItemProgress, final TransmissionJobItemInfo transmissionJobItemInfo, final long currentTimeMillis) {
+        if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
+            long latestActiveTimeMillis = Math.max(transmissionJobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
+            return Optional.of(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
+        }
+        return Optional.empty();
     }
     
     @Override

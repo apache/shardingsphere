@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
-import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -42,7 +42,7 @@ public final class ParseDistSQLExecutor implements DistSQLQueryExecutor<ParseSta
     private DistSQLConnectionContext connectionContext;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ParseStatement sqlStatement) {
         return Arrays.asList("parsed_statement", "parsed_statement_detail");
     }
     

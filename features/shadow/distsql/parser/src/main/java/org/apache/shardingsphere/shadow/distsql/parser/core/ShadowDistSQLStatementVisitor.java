@@ -33,11 +33,12 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShadowRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowDefaultShadowAlgorithmContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowAlgorithmImplementationsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowTableRulesContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowRuleSegment;
@@ -49,7 +50,6 @@ import org.apache.shardingsphere.shadow.distsql.statement.DropDefaultShadowAlgor
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowDefaultShadowAlgorithmStatement;
-import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesStatement;
@@ -205,7 +205,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitShowShadowAlgorithmImplementations(final ShowShadowAlgorithmImplementationsContext ctx) {
-        return new ShowShadowAlgorithmImplementationsStatement();
+    public ASTNode visitShowShadowAlgorithmPlugins(final ShowShadowAlgorithmPluginsContext ctx) {
+        return new ShowPluginsStatement("SHADOW_ALGORITHM");
     }
 }

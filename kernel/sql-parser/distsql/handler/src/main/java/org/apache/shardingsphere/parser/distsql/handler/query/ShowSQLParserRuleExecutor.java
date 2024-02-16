@@ -19,7 +19,7 @@ package org.apache.shardingsphere.parser.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -39,7 +39,7 @@ public final class ShowSQLParserRuleExecutor implements DistSQLQueryExecutor<Sho
     private SQLParserRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowSQLParserRuleStatement sqlStatement) {
         return Arrays.asList("parse_tree_cache", "sql_statement_cache");
     }
     

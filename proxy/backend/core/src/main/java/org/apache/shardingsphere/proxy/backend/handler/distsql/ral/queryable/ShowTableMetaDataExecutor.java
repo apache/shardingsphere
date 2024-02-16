@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
@@ -45,7 +44,7 @@ public final class ShowTableMetaDataExecutor implements DistSQLQueryExecutor<Sho
     private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowTableMetaDataStatement sqlStatement) {
         return Arrays.asList("database_name", "table_name", "type", "name", "value");
     }
     
@@ -66,11 +65,11 @@ public final class ShowTableMetaDataExecutor implements DistSQLQueryExecutor<Sho
     }
     
     private LocalDataQueryResultRow buildColumnRow(final String databaseName, final String tableName, final ShardingSphereColumn column) {
-        return new LocalDataQueryResultRow(databaseName, tableName, "COLUMN", column.getName(), JsonUtils.toJsonString(column));
+        return new LocalDataQueryResultRow(databaseName, tableName, "COLUMN", column.getName(), column);
     }
     
     private LocalDataQueryResultRow buildIndexRow(final String databaseName, final String tableName, final ShardingSphereIndex index) {
-        return new LocalDataQueryResultRow(databaseName, tableName, "INDEX", index.getName(), JsonUtils.toJsonString(index));
+        return new LocalDataQueryResultRow(databaseName, tableName, "INDEX", index.getName(), index);
     }
     
     @Override

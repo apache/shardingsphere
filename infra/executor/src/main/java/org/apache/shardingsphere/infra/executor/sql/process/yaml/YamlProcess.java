@@ -46,5 +46,5 @@ public final class YamlProcess implements YamlConfiguration {
     
     private boolean idle;
     
-    private boolean heldByConnection;
+    private boolean interrupted;
 }

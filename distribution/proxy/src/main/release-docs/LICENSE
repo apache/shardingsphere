@@ -257,13 +257,13 @@ The text of each license is the standard Apache 2.0 license.
     httpcore5-h2 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     httpcore5 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     j2objc-annotations 1.3 https://github.com/google/j2objc/, Apache 2.0
-    jackson-annotations 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-core 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-databind 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-dataformat-xml 2.16.0: https://github.com/FasterXML/jackson-dataformat-xml, Apache 2.0
-    jackson-dataformat-yaml 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-datatype-jdk8 2.16.0: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
-    jackson-datatype-jsr310 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-annotations 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-core 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-databind 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-dataformat-xml 2.16.1: https://github.com/FasterXML/jackson-dataformat-xml, Apache 2.0
+    jackson-dataformat-yaml 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-datatype-jdk8 2.16.1: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
+    jackson-datatype-jsr310 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
     jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
     jetcd-api 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-common 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
@@ -345,7 +345,6 @@ EPL licenses
 The following components are provided under the EPL License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    jakarta.annotation-api 1.3.5: https://github.com/jakartaee/common-annotations-api, EPL 2.0
     jakarta.transaction-api 1.3.3: https://github.com/jakartaee/transactions, EPL 2.0
     logback-classic 1.2.12: https://github.com/qos-ch/logback, EPL 1.0
     logback-core 1.2.12: https://github.com/qos-ch/logback, EPL 1.0

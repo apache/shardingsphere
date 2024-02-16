@@ -102,48 +102,6 @@ class SQLUtilsTest {
     }
     
     @Test
-    void assertConvertLikePatternToRegexWhenEndWithPattern() {
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding_"), is("sharding."));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding%"), is("sharding.*"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding%_"), is("sharding.*."));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding\\_"), is("sharding_"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding\\%"), is("sharding%"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding\\%\\_"), is("sharding%_"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding_\\_"), is("sharding._"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding%\\%"), is("sharding.*%"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding_\\%"), is("sharding.%"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding\\_%"), is("sharding_.*"));
-    }
-    
-    @Test
-    void assertConvertLikePatternToRegexWhenStartWithPattern() {
-        assertThat(SQLUtils.convertLikePatternToRegex("_sharding"), is(".sharding"));
-        assertThat(SQLUtils.convertLikePatternToRegex("%sharding"), is(".*sharding"));
-        assertThat(SQLUtils.convertLikePatternToRegex("%_sharding"), is(".*.sharding"));
-        assertThat(SQLUtils.convertLikePatternToRegex("\\_sharding"), is("_sharding"));
-        assertThat(SQLUtils.convertLikePatternToRegex("\\%sharding"), is("%sharding"));
-        assertThat(SQLUtils.convertLikePatternToRegex("\\%\\_sharding"), is("%_sharding"));
-        assertThat(SQLUtils.convertLikePatternToRegex("_\\_sharding"), is("._sharding"));
-        assertThat(SQLUtils.convertLikePatternToRegex("%\\%sharding"), is(".*%sharding"));
-        assertThat(SQLUtils.convertLikePatternToRegex("_\\%sharding"), is(".%sharding"));
-        assertThat(SQLUtils.convertLikePatternToRegex("\\_%sharding"), is("_.*sharding"));
-    }
-    
-    @Test
-    void assertConvertLikePatternToRegexWhenContainsPattern() {
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding_db"), is("sharding.db"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding%db"), is("sharding.*db"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding%_db"), is("sharding.*.db"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding\\_db"), is("sharding_db"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding\\%db"), is("sharding%db"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding\\%\\_db"), is("sharding%_db"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding_\\_db"), is("sharding._db"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding%\\%db"), is("sharding.*%db"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding_\\%db"), is("sharding.%db"));
-        assertThat(SQLUtils.convertLikePatternToRegex("sharding\\_%db"), is("sharding_.*db"));
-    }
-    
-    @Test
     void assertTrimSemiColon() {
         assertThat(SQLUtils.trimSemicolon("SHOW DATABASES;"), is("SHOW DATABASES"));
         assertThat(SQLUtils.trimSemicolon("SHOW DATABASES"), is("SHOW DATABASES"));

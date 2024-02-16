@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoadEngine;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -36,20 +38,21 @@ public final class DriverDataSourceCache {
      * Get data source.
      *
      * @param url URL
-     * @param urlPrefix url prefix
+     * @param urlPrefix URL prefix
      * @return got data source
      */
     public DataSource get(final String url, final String urlPrefix) {
         if (dataSourceMap.containsKey(url)) {
             return dataSourceMap.get(url);
         }
-        return dataSourceMap.computeIfAbsent(url, driverUrl -> createDataSource(driverUrl, urlPrefix));
+        return dataSourceMap.computeIfAbsent(url, driverUrl -> createDataSource(ShardingSphereURL.parse(driverUrl.substring(urlPrefix.length()))));
     }
     
     @SuppressWarnings("unchecked")
-    private <T extends Throwable> DataSource createDataSource(final String url, final String urlPrefix) throws T {
+    private <T extends Throwable> DataSource createDataSource(final ShardingSphereURL url) throws T {
         try {
-            return YamlShardingSphereDataSourceFactory.createDataSource(ShardingSphereURLManager.getContent(url, urlPrefix));
+            ShardingSphereURLLoadEngine urlLoadEngine = new ShardingSphereURLLoadEngine(url);
+            return YamlShardingSphereDataSourceFactory.createDataSource(urlLoadEngine.loadContent());
         } catch (final IOException ex) {
             throw (T) new SQLException(ex);
         } catch (final SQLException ex) {

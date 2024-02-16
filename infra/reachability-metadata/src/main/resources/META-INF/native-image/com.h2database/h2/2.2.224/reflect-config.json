@@ -1,0 +1,23 @@
+[
+{
+  "condition":{"typeReachable":"org.h2.jdbcx.JdbcDataSource"},
+  "name":"org.h2.jdbcx.JdbcDataSource",
+  "allDeclaredClasses": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allPublicClasses": true,
+  "allPublicMethods": true,
+  "allPublicFields": true,
+  "allPublicConstructors": true,
+  "allRecordComponents": true,
+  "allNestMembers": true,
+  "allSigners": true,
+  "allPermittedSubclasses": true,
+  "queryAllDeclaredMethods": true,
+  "queryAllDeclaredConstructors": true,
+  "queryAllPublicMethods": true,
+  "queryAllPublicConstructors": true,
+  "unsafeAllocated": true
+}
+]

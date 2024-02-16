@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreamingRuleStatement;
 import org.apache.shardingsphere.data.pipeline.distsql.ShowTransmissionRuleQueryResult;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -33,7 +33,7 @@ public final class ShowStreamingRuleExecutor implements DistSQLQueryExecutor<Sho
     private final ShowTransmissionRuleQueryResult queryResult = new ShowTransmissionRuleQueryResult("STREAMING");
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowStreamingRuleStatement sqlStatement) {
         return queryResult.getColumnNames();
     }
     

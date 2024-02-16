@@ -19,9 +19,8 @@ package org.apache.shardingsphere.sqltranslator.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
@@ -40,15 +39,14 @@ public final class ShowSQLTranslatorRuleExecutor implements DistSQLQueryExecutor
     private SQLTranslatorRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowSQLTranslatorRuleStatement sqlStatement) {
         return Arrays.asList("type", "props", "use_original_sql_when_translating_failed");
     }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSQLTranslatorRuleStatement sqlStatement, final ContextManager contextManager) {
         SQLTranslatorRuleConfiguration ruleConfig = rule.getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(null == ruleConfig.getType() ? "" : ruleConfig.getType(),
-                PropertiesConverter.convert(ruleConfig.getProps()), String.valueOf(ruleConfig.isUseOriginalSQLWhenTranslatingFailed())));
+        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProps(), ruleConfig.isUseOriginalSQLWhenTranslatingFailed()));
     }
     
     @Override

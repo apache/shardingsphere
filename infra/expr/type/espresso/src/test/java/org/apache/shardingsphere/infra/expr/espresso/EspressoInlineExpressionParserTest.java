@@ -20,10 +20,14 @@ package org.apache.shardingsphere.infra.expr.espresso;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.condition.OS;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -32,7 +36,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Disabled("Unit tests for this class only run on GraalVM CE 23.0.1 For JDK17. Wait for https://github.com/oracle/graal/issues/7500 .")
+@EnabledForJreRange(min = JRE.JAVA_21)
+@EnabledOnOs(value = OS.LINUX, disabledReason = "Refer to https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too .")
 class EspressoInlineExpressionParserTest {
     
     @Test
@@ -132,17 +137,10 @@ class EspressoInlineExpressionParserTest {
                 new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_${[\"new${1+2}\"]}"));
     }
     
-    /**
-     * This method needs to avoid returning a `Closure` class instance, and instead return the result of `Closure#call`.
-     * Because `Value#as` does not allow this type to be returned from the guest JVM.
-     *
-     * @see groovy.lang.Closure
-     * @see org.graalvm.polyglot.Value
-     */
     @Test
-    void assertEvaluateClosure() {
+    void assertEvaluateWithArgs() {
         assertThrows(UnsupportedOperationException.class, () -> TypedSPILoader.getService(
                 InlineExpressionParser.class, "ESPRESSO",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateClosure().call().toString());
+                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateWithArgs(new LinkedHashMap<>()));
     }
 }

@@ -36,7 +36,7 @@ class PostgreSQLMD5PasswordAuthenticatorTest {
     
     @Test
     void assertAuthenticationMethodName() {
-        assertThat(new PostgreSQLMD5PasswordAuthenticator().getAuthenticationMethod().getMethodName(), is("md5"));
+        assertThat(new PostgreSQLMD5PasswordAuthenticator().getAuthenticationMethodName(), is("md5"));
     }
     
     @Test

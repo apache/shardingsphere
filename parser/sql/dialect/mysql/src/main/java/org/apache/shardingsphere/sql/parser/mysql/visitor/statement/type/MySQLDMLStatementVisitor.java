@@ -21,7 +21,6 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HandlerStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ImportStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexHintContext;
@@ -52,7 +51,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -195,17 +193,6 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
             result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
             result.setOrderBySegment(windowItemSegment.getOrderBySegment());
             result.setFrameClause(windowItemSegment.getFrameClause());
-        }
-        return result;
-    }
-    
-    private Collection<ExpressionSegment> getExpressions(final List<ExprContext> exprList) {
-        if (null == exprList) {
-            return Collections.emptyList();
-        }
-        Collection<ExpressionSegment> result = new ArrayList<>(exprList.size());
-        for (ExprContext each : exprList) {
-            result.add((ExpressionSegment) visit(each));
         }
         return result;
     }

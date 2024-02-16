@@ -33,19 +33,19 @@ class PostgreSQLUUIDBinaryProtocolValueTest {
     
     @Test
     void assertGetColumnLength() {
-        assertThat(new PostgreSQLUUIDBinaryProtocolValue().getColumnLength(UUID.randomUUID()), is(16));
+        assertThat(new PostgreSQLUUIDBinaryProtocolValue().getColumnLength(UUID.fromString("00000000-000-0000-0000-000000000001")), is(16));
     }
     
     @Test
     void assertRead() {
-        UUID randomUUID = UUID.randomUUID();
+        UUID uuid = UUID.fromString("00000000-000-0000-0000-000000000001");
         byte[] expected = new byte[16];
         ByteBuffer buffer = ByteBuffer.wrap(expected);
-        buffer.putLong(randomUUID.getMostSignificantBits());
-        buffer.putLong(randomUUID.getLeastSignificantBits());
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
         ByteBuf byteBuf = Unpooled.wrappedBuffer(expected);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        assertThat(new PostgreSQLUUIDBinaryProtocolValue().read(payload, 16), is(randomUUID));
+        assertThat(new PostgreSQLUUIDBinaryProtocolValue().read(payload, 16), is(uuid));
     }
     
     @Test

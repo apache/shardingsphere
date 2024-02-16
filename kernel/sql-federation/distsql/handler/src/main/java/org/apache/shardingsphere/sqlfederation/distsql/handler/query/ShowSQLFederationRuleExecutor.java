@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
@@ -39,18 +39,17 @@ public final class ShowSQLFederationRuleExecutor implements DistSQLQueryExecutor
     private SQLFederationRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowSQLFederationRuleStatement sqlStatement) {
         return Arrays.asList("sql_federation_enabled", "all_query_use_sql_federation", "execution_plan_cache");
     }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSQLFederationRuleStatement sqlStatement, final ContextManager contextManager) {
         SQLFederationRuleConfiguration ruleConfig = rule.getConfiguration();
-        String sqlFederationEnabled = String.valueOf(ruleConfig.isSqlFederationEnabled());
-        String allQueryUseSQLFederation = String.valueOf(ruleConfig.isAllQueryUseSQLFederation());
-        String executionPlanCache = null != ruleConfig.getExecutionPlanCache() ? ruleConfig.getExecutionPlanCache().toString() : "";
-        LocalDataQueryResultRow row = new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache);
-        return Collections.singleton(row);
+        boolean sqlFederationEnabled = ruleConfig.isSqlFederationEnabled();
+        boolean allQueryUseSQLFederation = ruleConfig.isAllQueryUseSQLFederation();
+        String executionPlanCache = null == ruleConfig.getExecutionPlanCache() ? "" : ruleConfig.getExecutionPlanCache().toString();
+        return Collections.singleton(new LocalDataQueryResultRow(sqlFederationEnabled, allQueryUseSQLFederation, executionPlanCache));
     }
     
     @Override

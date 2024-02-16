@@ -82,7 +82,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), connectionProps, isTrunkThread);
             T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode(), storageType);
             sqlExecutionHook.finishSuccess();
-            processEngine.completeSQLUnitExecution();
+            processEngine.completeSQLUnitExecution(jdbcExecutionUnit);
             return result;
         } catch (final SQLException ex) {
             if (!storageType.equals(protocolType)) {

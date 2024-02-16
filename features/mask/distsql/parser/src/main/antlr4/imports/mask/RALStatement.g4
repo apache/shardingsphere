@@ -19,6 +19,6 @@ grammar RALStatement;
 
 import BaseRule;
 
-showMaskAlgorithmImplementations
-    : SHOW MASK ALGORITHM IMPLEMENTATIONS
+showMaskAlgorithmPlugins
+    : SHOW MASK ALGORITHM PLUGINS
     ;

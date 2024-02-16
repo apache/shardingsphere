@@ -51,7 +51,7 @@ public final class SystemSchemaBuilder {
      * 
      * @param databaseName database name
      * @param databaseType database type
-     * @param props configuration properties                         
+     * @param props configuration properties
      * @return ShardingSphere system schema map
      */
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType, final ConfigurationProperties props) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableReferenceRulesStatement;
@@ -38,7 +38,7 @@ public final class ShowShardingTableReferenceRuleExecutor implements DistSQLQuer
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingTableReferenceRulesStatement sqlStatement) {
         return Arrays.asList("name", "sharding_table_reference");
     }
     

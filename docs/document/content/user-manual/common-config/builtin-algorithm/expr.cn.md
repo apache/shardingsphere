@@ -73,7 +73,10 @@ weight = 10
 
 ## 基于 GraalVM Truffle 的 Espresso 实现的使用 Groovy 语法的行表达式
 
-此为可选实现，你需要在自有项目的 `pom.xml` 主动声明如下依赖。并且请确保自有项目通过 GraalVM CE 23.0.1 For JDK 17.0.9 编译。
+此为可选实现，你需要在自有项目的 `pom.xml` 主动声明如下依赖。并且请确保自有项目通过 OpenJDK 21+ 或其下游发行版编译。
+
+由于 https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too 的限制，
+当此模块在非 GraalVM Native Image 的环境中被使用时，仅在 Linux 上就绪。
 
 ```xml
 <dependencies>
@@ -82,13 +85,18 @@ weight = 10
         <artifactId>shardingsphere-infra-expr-espresso</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.graalvm.polyglot</groupId>
+        <artifactId>polyglot</artifactId>
+        <version>23.1.2</version>
+    </dependency>
+    <dependency>
+        <groupId>org.graalvm.polyglot</groupId>
+        <artifactId>java-community</artifactId>
+        <version>23.1.2</version>
+        <type>pom</type>
+    </dependency>
 </dependencies>
-```
-
-用户必须通过 GraalVM Updater 安装 Espresso 组件，即在 bash 执行如下命令
-
-```bash
-gu install espresso
 ```
 
 `ESPRESSO` 仍为实验性模块，其允许在 GraalVM Native Image 下通过 GraalVM Truffle 的 Espresso 实现来使用带 Groovy 语法的行表达式。

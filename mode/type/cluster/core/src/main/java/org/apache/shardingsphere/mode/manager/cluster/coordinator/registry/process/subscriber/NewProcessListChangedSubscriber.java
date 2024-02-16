@@ -40,7 +40,6 @@ import java.util.Collection;
  * TODO replace the old ProcessListChangedSubscriber after meta data refactor completed
  * New process list changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class NewProcessListChangedSubscriber {
     
     private final NewRegistryCenter registryCenter;
@@ -96,7 +95,8 @@ public final class NewProcessListChangedSubscriber {
         }
         Process process = ProcessRegistry.getInstance().get(event.getProcessId());
         if (null != process) {
-            for (Statement each : process.getProcessStatements()) {
+            process.setInterrupted(true);
+            for (Statement each : process.getProcessStatements().values()) {
                 each.cancel();
             }
         }

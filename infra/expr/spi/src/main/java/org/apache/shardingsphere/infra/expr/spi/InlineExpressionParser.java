@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.expr.spi;
 
-import groovy.lang.Closure;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Inline expression parser.
@@ -50,12 +50,13 @@ public interface InlineExpressionParser extends TypedSPI {
     List<String> splitAndEvaluate();
     
     /**
-     * Evaluate closure.
+     * Evaluate with arguments.
      *
+     * @param map map
      * @return closure
-     * @throws UnsupportedOperationException In most cases, users should not implement this method, and the return value of this method can only be a Groovy closure
+     * @throws UnsupportedOperationException By default, users do not need to consider passing in additional parameters.
      */
-    default Closure<?> evaluateClosure() {
+    default String evaluateWithArgs(final Map<String, Comparable<?>> map) {
         throw new UnsupportedOperationException("This SPI implementation does not support the use of this method.");
     }
 }

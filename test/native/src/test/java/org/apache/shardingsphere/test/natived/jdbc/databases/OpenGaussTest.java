@@ -100,7 +100,7 @@ class OpenGaussTest {
         }
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath-system-props:test-native/yaml/databases/opengauss.yaml");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/opengauss.yaml?placeholder-type=system_props");
         try {
             assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds0.jdbc-url"), is(nullValue()));
             assertThat(System.getProperty(SYSTEM_PROP_KEY_PREFIX + "ds1.jdbc-url"), is(nullValue()));

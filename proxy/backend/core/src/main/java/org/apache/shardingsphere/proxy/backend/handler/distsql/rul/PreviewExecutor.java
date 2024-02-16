@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
-import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -81,7 +81,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     private DistSQLConnectionContext connectionContext;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final PreviewStatement sqlStatement) {
         return Arrays.asList("data_source_name", "actual_sql");
     }
     

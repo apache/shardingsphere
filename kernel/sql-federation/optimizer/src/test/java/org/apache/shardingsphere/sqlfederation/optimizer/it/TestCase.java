@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.it;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * JAXB definition of test case.
+ * XML definition of test case.
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Getter
 @Setter
 public final class TestCase {
     
-    @JacksonXmlProperty(localName = "sql", isAttribute = true)
+    @JacksonXmlProperty(isAttribute = true, localName = "sql")
     private String sql;
     
     @JacksonXmlProperty(localName = "assertion")

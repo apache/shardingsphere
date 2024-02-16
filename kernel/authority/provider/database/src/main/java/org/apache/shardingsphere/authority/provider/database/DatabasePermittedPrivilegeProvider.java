@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.authority.provider.database;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -55,9 +56,9 @@ public final class DatabasePermittedPrivilegeProvider implements PrivilegeProvid
     }
     
     @Override
-    public Map<Grantee, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users) {
+    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig) {
         Map<ShardingSphereUser, Collection<String>> userDatabaseMappings = convertUserDatabases();
-        return users.stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
+        return ruleConfig.getUsers().stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new DatabasePermittedPrivileges(getUserDatabases(each, userDatabaseMappings))));
     }
     
     private Map<ShardingSphereUser, Collection<String>> convertUserDatabases() {

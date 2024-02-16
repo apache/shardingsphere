@@ -55,7 +55,12 @@ public final class RuleItemChangedSubscriber {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
             processor.changeRuleItemConfiguration(event, currentRuleConfig, processor.swapRuleItemConfiguration(event, yamlContent));
-            contextManager.getInstanceContext().getEventBusContext().post(new AlterDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
+            // TODO Remove isCluster judgment
+            if (contextManager.getInstanceContext().isCluster()) {
+                contextManager.getInstanceContext().getEventBusContext().post(new AlterDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
+                return;
+            }
+            contextManager.getConfigurationContextManager().alterRuleConfiguration(event.getDatabaseName(), currentRuleConfig);
         }
     }
     
@@ -75,7 +80,12 @@ public final class RuleItemChangedSubscriber {
         RuleConfiguration currentRuleConfig = processor.findRuleConfiguration(database);
         synchronized (this) {
             processor.dropRuleItemConfiguration(event, currentRuleConfig);
-            contextManager.getInstanceContext().getEventBusContext().post(new DropDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
+            // TODO Remove isCluster judgment
+            if (contextManager.getInstanceContext().isCluster()) {
+                contextManager.getInstanceContext().getEventBusContext().post(new DropDatabaseRuleConfigurationEvent(event.getDatabaseName(), currentRuleConfig));
+                return;
+            }
+            contextManager.getConfigurationContextManager().dropRuleConfiguration(event.getDatabaseName(), currentRuleConfig);
         }
     }
 }

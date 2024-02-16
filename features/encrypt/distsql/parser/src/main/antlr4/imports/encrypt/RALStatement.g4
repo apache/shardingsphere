@@ -19,6 +19,6 @@ grammar RALStatement;
 
 import BaseRule;
 
-showEncryptAlgorithmImplementations
-    : SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS
+showEncryptAlgorithmPlugins
+    : SHOW ENCRYPT ALGORITHM PLUGINS
     ;

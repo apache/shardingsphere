@@ -41,8 +41,7 @@ public final class AuthorityRule implements GlobalRule {
     
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        PrivilegeProvider provider = TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps());
-        privileges = provider.build(ruleConfig.getUsers());
+        privileges = TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps()).build(ruleConfig);
     }
     
     /**
@@ -52,9 +51,13 @@ public final class AuthorityRule implements GlobalRule {
      * @return authenticator type
      */
     public String getAuthenticatorType(final ShardingSphereUser user) {
-        return configuration.getAuthenticators().containsKey(user.getAuthenticationMethodName())
-                ? configuration.getAuthenticators().get(user.getAuthenticationMethodName()).getType()
-                : Optional.ofNullable(configuration.getDefaultAuthenticator()).orElse("");
+        if (configuration.getAuthenticators().containsKey(user.getAuthenticationMethodName())) {
+            return configuration.getAuthenticators().get(user.getAuthenticationMethodName()).getType();
+        }
+        if (configuration.getAuthenticators().containsKey(configuration.getDefaultAuthenticator())) {
+            return configuration.getAuthenticators().get(configuration.getDefaultAuthenticator()).getType();
+        }
+        return "";
     }
     
     /**

@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.type.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Refresh database meta data executor.
@@ -36,9 +34,7 @@ public final class RefreshDatabaseMetaDataExecutor implements DistSQLUpdateExecu
     
     @Override
     public void executeUpdate(final RefreshDatabaseMetaDataStatement sqlStatement, final ContextManager contextManager) throws SQLException {
-        Optional<String> toBeRefreshedDatabaseName = sqlStatement.getDatabaseName();
-        Map<String, ShardingSphereDatabase> databases = toBeRefreshedDatabaseName
-                .map(optional -> Collections.singletonMap(optional, ProxyContext.getInstance().getContextManager().getDatabase(optional)))
+        Map<String, ShardingSphereDatabase> databases = sqlStatement.getDatabaseName().map(optional -> Collections.singletonMap(optional, contextManager.getDatabase(optional)))
                 .orElseGet(() -> contextManager.getMetaDataContexts().getMetaData().getDatabases());
         for (ShardingSphereDatabase each : databases.values()) {
             if (!SystemSchemaUtils.isSystemSchema(each)) {

@@ -34,11 +34,17 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ShardingTest"},
     "pattern":"\\Qtest-native/yaml/features/sharding.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.mode.cluster.ZookeeperTest"},
-    "pattern":"\\Qtest-native/yaml/mode/cluster/zookeeper.yaml\\E"
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.modes.cluster.ZookeeperTest"},
+    "pattern":"\\Qtest-native/yaml/modes/cluster/zookeeper.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.mode.cluster.EtcdTest"},
-    "pattern":"\\Qtest-native/yaml/mode/cluster/etcd.yaml\\E"
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest"},
+    "pattern":"\\Qtest-native/yaml/modes/cluster/etcd.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.AtomikosTest"},
+    "pattern":"\\Qtest-native/yaml/transactions/xa/atomikos.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.transactions.xa.NarayanaTest"},
+    "pattern":"\\Qtest-native/yaml/transactions/xa/narayana.yaml\\E"
   }]},
   "bundles":[]
 }

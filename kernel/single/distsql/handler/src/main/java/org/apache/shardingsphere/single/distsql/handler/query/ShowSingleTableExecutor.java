@@ -19,13 +19,13 @@ package org.apache.shardingsphere.single.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,7 +44,7 @@ public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowS
     private SingleRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowSingleTableStatement sqlStatement) {
         return Arrays.asList("table_name", "storage_unit_name");
     }
     
@@ -58,7 +58,7 @@ public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowS
     
     private Optional<Pattern> getPattern(final ShowSingleTableStatement sqlStatement) {
         return sqlStatement.getLikePattern().isPresent()
-                ? Optional.of(Pattern.compile(SQLUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get()), Pattern.CASE_INSENSITIVE))
+                ? Optional.of(Pattern.compile(RegexUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get()), Pattern.CASE_INSENSITIVE))
                 : Optional.empty();
     }
     

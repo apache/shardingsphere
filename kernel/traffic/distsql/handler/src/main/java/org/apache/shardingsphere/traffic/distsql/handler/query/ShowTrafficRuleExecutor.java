@@ -19,10 +19,9 @@ package org.apache.shardingsphere.traffic.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -42,7 +41,7 @@ public final class ShowTrafficRuleExecutor implements DistSQLQueryExecutor<ShowT
     private TrafficRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowTrafficRulesStatement sqlStatement) {
         return Arrays.asList("name", "labels", "algorithm_type", "algorithm_props", "load_balancer_type", "load_balancer_props");
     }
     
@@ -56,9 +55,8 @@ public final class ShowTrafficRuleExecutor implements DistSQLQueryExecutor<ShowT
     }
     
     private LocalDataQueryResultRow buildRow(final TrafficStrategyConfiguration strategy, final AlgorithmConfiguration trafficAlgorithm, final AlgorithmConfiguration loadBalancer) {
-        return new LocalDataQueryResultRow(strategy.getName(), String.join(",", strategy.getLabels()), null != trafficAlgorithm ? trafficAlgorithm.getType() : "",
-                null != trafficAlgorithm ? PropertiesConverter.convert(trafficAlgorithm.getProps()) : "", null != loadBalancer ? loadBalancer.getType() : "",
-                null != loadBalancer ? PropertiesConverter.convert(loadBalancer.getProps()) : "");
+        return new LocalDataQueryResultRow(strategy.getName(), String.join(",", strategy.getLabels()), null == trafficAlgorithm ? null : trafficAlgorithm.getType(),
+                null == trafficAlgorithm ? null : trafficAlgorithm.getProps(), null == loadBalancer ? null : loadBalancer.getType(), null == loadBalancer ? null : loadBalancer.getProps());
     }
     
     @Override

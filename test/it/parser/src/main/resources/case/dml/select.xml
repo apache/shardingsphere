@@ -8427,6 +8427,157 @@
         </from>
     </select>
     
+    <select sql-case-id="select_dm_exec_requests">
+        <from start-index="461" stop-index="556">
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="dm_exec_requests" alias="req" start-index="461" stop-index="493" start-delimiter="[" end-delimiter="]">
+                        <owner name="sys" start-index="461" stop-index="465" start-delimiter="[" end-delimiter="]" />
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="ST">
+                        <table-function function-name="[sys].dm_exec_sql_text" text="[sys].dm_exec_sql_text([req].[sql_handle])" start-index="507" stop-index="548">
+                            <parameter>
+                                <column name="sql_handle" start-index="530" stop-index="547">
+                                    <owner name="req" start-index="530"  stop-index="534" />
+                                </column>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="454">
+            <column-projection name="session_id" start-index="7" stop-index="24" start-delimiter="[" end-delimiter="]">
+                <owner name="req" start-index="7" stop-index="11" start-delimiter="[" end-delimiter="]" />
+            </column-projection>
+            <column-projection name="start_time" start-index="26" stop-index="43" start-delimiter="[" end-delimiter="]">
+                <owner name="req" start-index="26" stop-index="30" start-delimiter="[" end-delimiter="]" />
+            </column-projection>
+            <column-projection name="cpu_time" alias="cpu_time_ms" start-index="45" stop-index="77" start-delimiter="[" end-delimiter="]">
+                <owner name="req" start-index="45" stop-index="49" start-delimiter="[" end-delimiter="]" />
+            </column-projection>
+            <expression-projection text="OBJECT_NAME([ST].[objectid], [ST].[dbid])" alias="ObjectName" start-index="79" stop-index="135">
+                <expr>
+                    <function function-name="OBJECT_NAME" text="OBJECT_NAME([ST].[objectid], [ST].[dbid])" start-index="79" stop-index="119">
+                        <parameter>
+                            <column name="objectid" start-index="91" stop-index="105" start-delimiter="[" end-delimiter="]">
+                                <owner name="ST" start-index="91" stop-index="94" start-delimiter="[" end-delimiter="]" />
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <column name="dbid" start-index="108" stop-index="118" start-delimiter="[" end-delimiter="]">
+                                <owner name="ST" start-index="108" stop-index="111" start-delimiter="[" end-delimiter="]" />
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="SUBSTRING(REPLACE(REPLACE(SUBSTRING([ST].[text],
+    ([req].[statement_start_offset] / 2) + 1, ((CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]) / 2) + 1 ), CHAR(10), ' ' ), CHAR(13), ' ' ), 1, 512 )" alias="statement_text" start-index="137" stop-index="454">
+                <expr>
+                    <function function-name="SUBSTRING" text="SUBSTRING(REPLACE(REPLACE(SUBSTRING([ST].[text],
+    ([req].[statement_start_offset] / 2) + 1, ((CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]) / 2) + 1 ), CHAR(10), ' ' ), CHAR(13), ' ' ), 1, 512 )" start-index="137" stop-index="430">
+                        <parameter>
+                            <function function-name="REPLACE" text="REPLACE(REPLACE(SUBSTRING([ST].[text],
+    ([req].[statement_start_offset] / 2) + 1, ((CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]) / 2) + 1 ), CHAR(10), ' ' ), CHAR(13), ' ' )" start-index="147" stop-index="420">
+                                <parameter>
+                                    <function function-name="REPLACE" text="REPLACE(SUBSTRING([ST].[text],
+    ([req].[statement_start_offset] / 2) + 1, ((CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]) / 2) + 1 ), CHAR(10), ' ' )" start-index="155" stop-index="403">
+                                        <parameter>
+                                            <function function-name="SUBSTRING" text="SUBSTRING([ST].[text],
+    ([req].[statement_start_offset] / 2) + 1, ((CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]) / 2) + 1 )" start-index="163" stop-index="386">
+                                                <parameter>
+                                                    <column name="text" start-index="173" stop-index="183" start-delimiter="[" end-delimiter="]">
+                                                        <owner name="ST" start-index="173" stop-index="176" start-delimiter="[" end-delimiter="]" />
+                                                    </column>
+                                                </parameter>
+                                                <parameter>
+                                                    <binary-operation-expression text="([req].[statement_start_offset] / 2) + 1" start-index="190" stop-index="229">
+                                                        <left>
+                                                            <binary-operation-expression text="[req].[statement_start_offset] / 2" start-index="191" stop-index="224">
+                                                                <left>
+                                                                    <column name="statement_start_offset" start-index="191" stop-index="220" start-delimiter="[" end-delimiter="]">
+                                                                        <owner name="req" start-index="191" stop-index="195" start-delimiter="[" end-delimiter="]" />
+                                                                    </column>
+                                                                </left>
+                                                                <right>
+                                                                    <literal-expression value="2" start-index="224" stop-index="224" />
+                                                                </right>
+                                                                <operator>/</operator>
+                                                            </binary-operation-expression>
+                                                        </left>
+                                                        <operator>+</operator>
+                                                        <right>
+                                                            <literal-expression value="1" start-index="229" stop-index="229" />
+                                                        </right>
+                                                    </binary-operation-expression>
+                                                </parameter>
+                                                <parameter>
+                                                    <binary-operation-expression text="((CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]) / 2) + 1" start-index="232" stop-index="384">
+                                                        <left>
+                                                            <binary-operation-expression text="(CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]) / 2" start-index="233" stop-index="379">
+                                                                <left>
+                                                                    <binary-operation-expression text="CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]" start-index="234" stop-index="374">
+                                                                        <left>
+                                                                            <common-expression text="CASE[req].[statement_end_offset]WHEN-1THENDATALENGTH([ST].[text])ELSE[req].[statement_end_offset]END" start-index="234" stop-index="341" />
+                                                                        </left>
+                                                                        <right>
+                                                                            <column name="statement_start_offset" start-index="345" stop-index="374" start-delimiter="[" end-delimiter="]">
+                                                                                <owner name="req" start-index="345" stop-index="349" start-delimiter="[" end-delimiter="]" />
+                                                                            </column>
+                                                                        </right>
+                                                                        <operator>-</operator>
+                                                                    </binary-operation-expression>
+                                                                </left>
+                                                                <right>
+                                                                    <literal-expression value="2" start-index="379" stop-index="379" />
+                                                                </right>
+                                                                <operator>/</operator>
+                                                            </binary-operation-expression>
+                                                        </left>
+                                                        <operator>+</operator>
+                                                        <right>
+                                                            <literal-expression value="1" start-index="384" stop-index="384" />
+                                                        </right>
+                                                    </binary-operation-expression>
+                                                </parameter>
+                                            </function>
+                                        </parameter>
+                                        <parameter>
+                                            <function function-name="CHAR" text="CHAR(10)" start-index="389" stop-index="396" />
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value=" " start-index="399" stop-index="401" />
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                                <parameter>
+                                    <function function-name="CHAR" text="CHAR(13)" start-index="406" stop-index="413" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value=" " start-index="416" stop-index="418" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="423" stop-index="423"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="512" start-index="426" stop-index="428"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <order-by>
+            <column-item name="cpu_time" start-index="567" stop-index="582" order-direction="DESC" start-delimiter="[" end-delimiter="]">
+                <owner name="req" start-index="567" stop-index="571" start-delimiter="[" end-delimiter="]" />
+            </column-item>
+        </order-by>
+    </select>
+    
     <select sql-case-id="select_mdx">
         <projections start-index="7" stop-index="153">
             <expression-projection start-index="7" stop-index="94" text="{[Measures].[Internet Sales Count], [Measures].[Internet Sales-Sales Amount]} ON COLUMNS">

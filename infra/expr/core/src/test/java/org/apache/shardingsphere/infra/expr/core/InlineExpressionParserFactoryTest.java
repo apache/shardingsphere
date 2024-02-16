@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.expr.core;
 
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledInNativeImage;
 
 import java.util.Arrays;
 
@@ -30,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class InlineExpressionParserFactoryTest {
     
     @Test
-    @DisabledInNativeImage
     void assertNewInstance() {
         assertThat(InlineExpressionParserFactory.newInstance("t_order_0, t_order_1").getType(), is("GROOVY"));
         assertThat(InlineExpressionParserFactory.newInstance("t_order_0, t_order_1").handlePlaceHolder(), is("t_order_0, t_order_1"));

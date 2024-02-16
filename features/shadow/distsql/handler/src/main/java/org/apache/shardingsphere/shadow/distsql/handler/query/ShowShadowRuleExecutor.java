@@ -19,10 +19,9 @@ package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -46,7 +45,7 @@ public final class ShowShadowRuleExecutor implements DistSQLQueryExecutor<ShowSh
     private ShadowRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShadowRulesStatement sqlStatement) {
         return Arrays.asList("shadow_table", "rule_name", "source_name", "shadow_name", "algorithm_type", "algorithm_props");
     }
     
@@ -77,8 +76,8 @@ public final class ShowShadowRuleExecutor implements DistSQLQueryExecutor<ShowSh
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         dataSourceTable.forEach((key, value) -> value.getShadowAlgorithmNames().forEach(each -> {
             AlgorithmConfiguration algorithmConfig = algorithmConfigs.get(each);
-            result.add(new LocalDataQueryResultRow(Arrays.asList(key, dataSourceConfig.getName(), dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(),
-                    algorithmConfig.getType(), PropertiesConverter.convert(algorithmConfig.getProps()))));
+            result.add(new LocalDataQueryResultRow(key,
+                    dataSourceConfig.getName(), dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), algorithmConfig.getType(), algorithmConfig.getProps()));
         }));
         return result;
     }

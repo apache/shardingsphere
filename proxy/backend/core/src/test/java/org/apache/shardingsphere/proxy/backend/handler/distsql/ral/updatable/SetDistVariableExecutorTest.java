@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.StandaloneModeContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidVariableValueException;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -99,7 +99,7 @@ class SetDistVariableExecutorTest {
     void assertExecuteWithWrongSystemLogLevel() {
         ContextManager contextManager = mockContextManager();
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");
-        assertThrows(InvalidValueException.class, () -> executor.executeUpdate(statement, contextManager));
+        assertThrows(InvalidVariableValueException.class, () -> executor.executeUpdate(statement, contextManager));
     }
     
     private ContextManager mockContextManager() {

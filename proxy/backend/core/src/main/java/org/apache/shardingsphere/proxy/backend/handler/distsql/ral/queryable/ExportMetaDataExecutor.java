@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportMetaDataStatement;
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
@@ -53,7 +53,7 @@ import java.util.Properties;
 public final class ExportMetaDataExecutor implements DistSQLQueryExecutor<ExportMetaDataStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ExportMetaDataStatement sqlStatement) {
         return Arrays.asList("id", "create_time", "cluster_info");
     }
     

@@ -19,9 +19,8 @@ package org.apache.shardingsphere.transaction.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -39,14 +38,13 @@ public final class ShowTransactionRuleExecutor implements DistSQLQueryExecutor<S
     private TransactionRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowTransactionRuleStatement sqlStatement) {
         return Arrays.asList("default_type", "provider_type", "props");
     }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowTransactionRuleStatement sqlStatement, final ContextManager contextManager) {
-        return Collections.singleton(new LocalDataQueryResultRow(rule.getDefaultType().name(), null != rule.getProviderType() ? rule.getProviderType() : "",
-                rule.getProps().isEmpty() ? "" : PropertiesConverter.convert(rule.getProps())));
+        return Collections.singleton(new LocalDataQueryResultRow(rule.getDefaultType().name(), rule.getProviderType(), rule.getProps()));
     }
     
     @Override

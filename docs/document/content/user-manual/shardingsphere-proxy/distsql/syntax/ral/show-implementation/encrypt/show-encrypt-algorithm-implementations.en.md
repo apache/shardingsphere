@@ -23,11 +23,11 @@ showEncryptAlgorithmImplementations ::=
 
 ### Return Value Description
 
-| Columns     | Description                           |
-|-------------|---------------------------------------|
-| name        | class name of the implementation      |
-| type        | type of the implementation            |
-| class_path  | full class name of the implementation |
+| Columns      | Description  |
+|--------------|--------------|
+| type         | type         |
+| type_aliases | type aliases |
+| description  | description  |
 
 ### Example
 
@@ -39,12 +39,12 @@ SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS
 
 ```sql
 SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS;
-+-----------------------------+------+----------------------------------------------------------------------------------+
-| name                        | type | class_path                                                                       |
-+-----------------------------+------+----------------------------------------------------------------------------------+
-| AESEncryptAlgorithm         | AES  | org.apache.shardingsphere.encrypt.algorithm.standard.AESEncryptAlgorithm         |
-| MD5AssistedEncryptAlgorithm | MD5  | org.apache.shardingsphere.encrypt.algorithm.assisted.MD5AssistedEncryptAlgorithm |
-+-----------------------------+------+----------------------------------------------------------------------------------+
++------+--------------+-------------+
+| type | type_aliases | description |
++------+--------------+-------------+
+| AES  |              |             |
+| MD5  |              |             |
++------+--------------+-------------+
 2 rows in set (0.06 sec)
 ```
 

@@ -19,10 +19,9 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -40,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +51,7 @@ public final class ShowShardingTableRuleExecutor implements DistSQLQueryExecutor
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShardingTableRulesStatement sqlStatement) {
         return Arrays.asList("table", "actual_data_nodes", "actual_data_sources", "database_strategy_type", "database_sharding_column", "database_sharding_algorithm_type",
                 "database_sharding_algorithm_props", "table_strategy_type", "table_sharding_column", "table_sharding_algorithm_type", "table_sharding_algorithm_props",
                 "key_generate_column", "key_generator_type", "key_generator_props", "auditor_types", "allow_hint_disable");
@@ -83,12 +83,12 @@ public final class ShowShardingTableRuleExecutor implements DistSQLQueryExecutor
         Optional<ShardingStrategyConfiguration> databaseShardingStrategyConfig = getDatabaseShardingStrategy(ruleConfig, shardingTableRuleConfig);
         Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(ruleConfig, shardingTableRuleConfig.getTableShardingStrategy());
         return new LocalDataQueryResultRow(shardingTableRuleConfig.getLogicTable(), shardingTableRuleConfig.getActualDataNodes(), "",
-                databaseShardingStrategyConfig.map(this::getStrategyType).orElse(""), databaseShardingStrategyConfig.map(this::getShardingColumn).orElse(""),
-                databaseShardingStrategyConfig.map(optional -> getAlgorithmType(ruleConfig, optional)).orElse(""),
-                databaseShardingStrategyConfig.map(optional -> getAlgorithmProperties(ruleConfig, optional)).orElse(""),
-                tableShardingStrategyConfig.map(this::getStrategyType).orElse(""), tableShardingStrategyConfig.map(this::getShardingColumn).orElse(""),
-                tableShardingStrategyConfig.map(optional -> getAlgorithmType(ruleConfig, optional)).orElse(""),
-                tableShardingStrategyConfig.map(optional -> getAlgorithmProperties(ruleConfig, optional)).orElse(""),
+                databaseShardingStrategyConfig.map(this::getStrategyType), databaseShardingStrategyConfig.map(this::getShardingColumn),
+                databaseShardingStrategyConfig.map(optional -> getAlgorithmType(ruleConfig, optional)),
+                databaseShardingStrategyConfig.map(optional -> getAlgorithmProperties(ruleConfig, optional)),
+                tableShardingStrategyConfig.map(this::getStrategyType).orElse(""), tableShardingStrategyConfig.map(this::getShardingColumn),
+                tableShardingStrategyConfig.map(optional -> getAlgorithmType(ruleConfig, optional)),
+                tableShardingStrategyConfig.map(optional -> getAlgorithmProperties(ruleConfig, optional)),
                 getKeyGenerateColumn(ruleConfig, shardingTableRuleConfig.getKeyGenerateStrategy()), getKeyGeneratorType(ruleConfig, shardingTableRuleConfig.getKeyGenerateStrategy()),
                 getKeyGeneratorProps(ruleConfig, shardingTableRuleConfig.getKeyGenerateStrategy()), getAuditorTypes(ruleConfig, shardingTableRuleConfig.getAuditStrategy()),
                 getAllowHintDisable(ruleConfig, shardingTableRuleConfig.getAuditStrategy()));
@@ -97,9 +97,9 @@ public final class ShowShardingTableRuleExecutor implements DistSQLQueryExecutor
     private LocalDataQueryResultRow buildAutoTableRowData(final ShardingRuleConfiguration ruleConfig, final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
         Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(ruleConfig, shardingAutoTableRuleConfig.getShardingStrategy());
         return new LocalDataQueryResultRow(shardingAutoTableRuleConfig.getLogicTable(), "", shardingAutoTableRuleConfig.getActualDataSources(), "", "", "", "",
-                tableShardingStrategyConfig.map(this::getStrategyType).orElse(""), tableShardingStrategyConfig.map(this::getShardingColumn).orElse(""),
-                tableShardingStrategyConfig.map(optional -> getAlgorithmType(ruleConfig, optional)).orElse(""),
-                tableShardingStrategyConfig.map(optional -> getAlgorithmProperties(ruleConfig, optional)).orElse(""),
+                tableShardingStrategyConfig.map(this::getStrategyType), tableShardingStrategyConfig.map(this::getShardingColumn),
+                tableShardingStrategyConfig.map(optional -> getAlgorithmType(ruleConfig, optional)),
+                tableShardingStrategyConfig.map(optional -> getAlgorithmProperties(ruleConfig, optional)),
                 getKeyGenerateColumn(ruleConfig, shardingAutoTableRuleConfig.getKeyGenerateStrategy()), getKeyGeneratorType(ruleConfig, shardingAutoTableRuleConfig.getKeyGenerateStrategy()),
                 getKeyGeneratorProps(ruleConfig, shardingAutoTableRuleConfig.getKeyGenerateStrategy()), getAuditorTypes(ruleConfig, shardingAutoTableRuleConfig.getAuditStrategy()),
                 getAllowHintDisable(ruleConfig, shardingAutoTableRuleConfig.getAuditStrategy()));
@@ -119,10 +119,10 @@ public final class ShowShardingTableRuleExecutor implements DistSQLQueryExecutor
         return shardingStrategyConfig instanceof NoneShardingStrategyConfiguration ? "" : getAlgorithmConfiguration(ruleConfig, shardingStrategyConfig.getShardingAlgorithmName()).getType();
     }
     
-    private String getAlgorithmProperties(final ShardingRuleConfiguration ruleConfig, final ShardingStrategyConfiguration shardingStrategyConfig) {
+    private Properties getAlgorithmProperties(final ShardingRuleConfiguration ruleConfig, final ShardingStrategyConfiguration shardingStrategyConfig) {
         return shardingStrategyConfig instanceof NoneShardingStrategyConfiguration
-                ? ""
-                : PropertiesConverter.convert(getAlgorithmConfiguration(ruleConfig, shardingStrategyConfig.getShardingAlgorithmName()).getProps());
+                ? new Properties()
+                : getAlgorithmConfiguration(ruleConfig, shardingStrategyConfig.getShardingAlgorithmName()).getProps();
     }
     
     private Optional<ShardingStrategyConfiguration> getDatabaseShardingStrategy(final ShardingRuleConfiguration ruleConfig, final ShardingTableRuleConfiguration shardingTableRuleConfig) {
@@ -154,9 +154,9 @@ public final class ShowShardingTableRuleExecutor implements DistSQLQueryExecutor
         return keyGenerateStrategyConfig.isPresent() ? ruleConfig.getKeyGenerators().get(keyGenerateStrategyConfig.get().getKeyGeneratorName()).getType() : "";
     }
     
-    private String getKeyGeneratorProps(final ShardingRuleConfiguration ruleConfig, final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
+    private Properties getKeyGeneratorProps(final ShardingRuleConfiguration ruleConfig, final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         return getKeyGenerateStrategyConfiguration(ruleConfig, keyGenerateStrategyConfig)
-                .map(optional -> PropertiesConverter.convert(ruleConfig.getKeyGenerators().get(optional.getKeyGeneratorName()).getProps())).orElse("");
+                .map(optional -> ruleConfig.getKeyGenerators().get(optional.getKeyGeneratorName()).getProps()).orElse(new Properties());
     }
     
     private Optional<KeyGenerateStrategyConfiguration> getKeyGenerateStrategyConfiguration(final ShardingRuleConfiguration ruleConfig,

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
-import org.apache.shardingsphere.distsql.handler.type.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
@@ -54,8 +54,7 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
     }
     
     private void checkState(final ContextManager contextManager) {
-        ClusterState currentState = contextManager.getClusterStateContext().getCurrentState();
-        ShardingSpherePreconditions.checkState(ClusterState.OK == currentState, () -> new IllegalStateException("Cluster is already locked"));
+        ShardingSpherePreconditions.checkState(ClusterState.OK == contextManager.getClusterStateContext().getCurrentState(), () -> new IllegalStateException("Cluster is already locked"));
     }
     
     private void checkAlgorithm(final LockClusterStatement sqlStatement) {

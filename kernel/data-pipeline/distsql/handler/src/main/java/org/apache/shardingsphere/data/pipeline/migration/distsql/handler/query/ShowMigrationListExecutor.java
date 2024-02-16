@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationListStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -38,16 +38,14 @@ public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<Sho
     private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new MigrationJobType());
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement, final ContextManager contextManager) {
-        return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
-                each.getTableName(), each.getJobMetaData().getJobItemCount(),
-                each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
-                each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());
+    public Collection<String> getColumnNames(final ShowMigrationListStatement sqlStatement) {
+        return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement, final ContextManager contextManager) {
+        return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(), each.getTableName(),
+                each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive(), each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());
     }
     
     @Override

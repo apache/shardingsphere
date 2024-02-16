@@ -948,7 +948,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         return result;
     }
     
-    private Collection<ExpressionSegment> getExpressions(final List<ExprContext> exprList) {
+    protected Collection<ExpressionSegment> getExpressions(final List<ExprContext> exprList) {
         if (null == exprList) {
             return Collections.emptyList();
         }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,7 +43,7 @@ public final class ShowDefaultShardingStrategyExecutor implements DistSQLQueryEx
     private ShardingRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowDefaultShardingStrategyStatement sqlStatement) {
         return Arrays.asList("name", "type", "sharding_column", "sharding_algorithm_name", "sharding_algorithm_type", "sharding_algorithm_props");
     }
     
@@ -67,7 +67,7 @@ public final class ShowDefaultShardingStrategyExecutor implements DistSQLQueryEx
         Iterator<String> iterator = strategyType.getConfigurationContents(strategyConfig).iterator();
         String shardingColumn = iterator.next();
         String algorithmName = iterator.next();
-        return new LocalDataQueryResultRow(defaultType, strategyType.toString(), shardingColumn, algorithmName, algorithmConfig.getType(), algorithmConfig.getProps().toString());
+        return new LocalDataQueryResultRow(defaultType, strategyType, shardingColumn, algorithmName, algorithmConfig.getType(), algorithmConfig.getProps());
     }
     
     @Override

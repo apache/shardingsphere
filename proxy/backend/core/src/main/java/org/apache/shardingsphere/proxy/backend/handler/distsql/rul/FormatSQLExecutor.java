@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
-import org.apache.shardingsphere.distsql.handler.type.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -41,7 +41,7 @@ public final class FormatSQLExecutor implements DistSQLQueryExecutor<FormatState
     private DistSQLConnectionContext connectionContext;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final FormatStatement sqlStatement) {
         return Collections.singleton("formatted_result");
     }
     

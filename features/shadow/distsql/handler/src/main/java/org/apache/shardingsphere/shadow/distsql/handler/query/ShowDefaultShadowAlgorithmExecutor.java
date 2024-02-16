@@ -19,10 +19,9 @@ package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -31,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +41,7 @@ public final class ShowDefaultShadowAlgorithmExecutor implements DistSQLQueryExe
     private ShadowRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowDefaultShadowAlgorithmStatement sqlStatement) {
         return Arrays.asList("shadow_algorithm_name", "type", "props");
     }
     
@@ -53,13 +51,9 @@ public final class ShowDefaultShadowAlgorithmExecutor implements DistSQLQueryExe
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : rule.getConfiguration().getShadowAlgorithms().entrySet().stream()
                 .filter(each -> each.getKey().equals(defaultAlgorithm)).collect(Collectors.toMap(Entry::getKey, Entry::getValue)).entrySet()) {
-            result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), convertToString(entry.getValue().getProps())));
+            result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps()));
         }
         return result;
-    }
-    
-    private String convertToString(final Properties props) {
-        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override

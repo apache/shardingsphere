@@ -22,12 +22,13 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobM
 import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationStatusStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,11 @@ import java.util.stream.Collectors;
  * Show migration job status executor.
  */
 public final class ShowMigrationJobStatusExecutor implements DistSQLQueryExecutor<ShowMigrationStatusStatement> {
+    
+    @Override
+    public Collection<String> getColumnNames(final ShowMigrationStatusStatement sqlStatement) {
+        return Arrays.asList("item", "data_source", "tables", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "error_message");
+    }
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationStatusStatement sqlStatement, final ContextManager contextManager) {
@@ -48,19 +54,17 @@ public final class ShowMigrationJobStatusExecutor implements DistSQLQueryExecuto
         if (null == jobItemProgress) {
             return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", "", jobItemInfo.getErrorMessage());
         }
-        String incrementalIdleSeconds = "";
-        if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
-            long latestActiveTimeMillis = Math.max(jobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
-            incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
-        }
-        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemInfo.getTableNames(), jobItemProgress.getStatus(),
-                jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(),
-                incrementalIdleSeconds, jobItemInfo.getErrorMessage());
+        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemInfo.getTableNames(), jobItemProgress.getStatus(), jobItemProgress.isActive(),
+                jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(), getIncrementalIdleSeconds(jobItemProgress, jobItemInfo, currentTimeMillis),
+                jobItemInfo.getErrorMessage());
     }
     
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "tables", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "error_message");
+    private Optional<Long> getIncrementalIdleSeconds(final TransmissionJobItemProgress jobItemProgress, final TransmissionJobItemInfo jobItemInfo, final long currentTimeMillis) {
+        if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
+            long latestActiveTimeMillis = Math.max(jobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
+            return Optional.of(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
+        }
+        return Optional.empty();
     }
     
     @Override

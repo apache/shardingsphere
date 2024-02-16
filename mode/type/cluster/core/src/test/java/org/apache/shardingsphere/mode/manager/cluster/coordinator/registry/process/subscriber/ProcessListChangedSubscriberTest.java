@@ -108,18 +108,19 @@ class ProcessListChangedSubscriberTest {
     
     @Test
     void assertReportLocalProcesses() {
-        String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         Process process = mock(Process.class);
         String processId = "foo_id";
         when(process.getId()).thenReturn(processId);
+        when(process.isInterrupted()).thenReturn(false);
         ProcessRegistry.getInstance().add(process);
+        String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         subscriber.reportLocalProcesses(new ReportLocalProcessesEvent(instanceId, processId));
         ClusterPersistRepository repository = registryCenter.getRepository();
         verify(repository).persist("/execution_nodes/foo_id/" + instanceId,
                 "processes:" + System.lineSeparator() + "- completedUnitCount: 0" + System.lineSeparator()
-                        + "  heldByConnection: false" + System.lineSeparator()
                         + "  id: foo_id" + System.lineSeparator()
                         + "  idle: false" + System.lineSeparator()
+                        + "  interrupted: false" + System.lineSeparator()
                         + "  startMillis: 0" + System.lineSeparator()
                         + "  totalUnitCount: 0" + System.lineSeparator());
         verify(repository).delete("/nodes/compute_nodes/show_process_list_trigger/" + instanceId + ":foo_id");

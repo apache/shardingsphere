@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.type.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -35,7 +35,7 @@ import java.util.Collections;
 public final class ShowComputeNodeInfoExecutor implements DistSQLQueryExecutor<ShowComputeNodeInfoStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowComputeNodeInfoStatement sqlStatement) {
         return Arrays.asList("instance_id", "host", "port", "status", "mode_type", "worker_id", "labels", "version");
     }
     
@@ -46,7 +46,7 @@ public final class ShowComputeNodeInfoExecutor implements DistSQLQueryExecutor<S
         String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
         return Collections.singletonList(new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
-                instance.getState().getCurrentState().name(), modeType, instance.getWorkerId(), String.join(",", instance.getLabels()),
+                instance.getState().getCurrentState(), modeType, instance.getWorkerId(), String.join(",", instance.getLabels()),
                 instanceMetaData.getVersion()));
     }
     

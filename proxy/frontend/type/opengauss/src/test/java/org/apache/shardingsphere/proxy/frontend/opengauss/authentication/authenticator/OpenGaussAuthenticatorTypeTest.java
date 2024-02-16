@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authen
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.authentication.Authenticator;
+import org.apache.shardingsphere.authentication.AuthenticatorFactory;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -44,7 +44,7 @@ class OpenGaussAuthenticatorTypeTest {
     void assertAuthenticator(final String name, final String authenticatorType, final String expectedAuthenticatorMethodName) {
         when(rule.getAuthenticatorType(any())).thenReturn(authenticatorType);
         Authenticator actual = new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
-        assertThat(actual.getAuthenticationMethod().getMethodName(), is(expectedAuthenticatorMethodName));
+        assertThat(actual.getAuthenticationMethodName(), is(expectedAuthenticatorMethodName));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

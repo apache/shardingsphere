@@ -18,19 +18,14 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml.YamlStorageNodeDataSourceSwapper;
-import org.apache.shardingsphere.mode.event.storage.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.storage.node.StorageNode;
 
 /**
  * Storage node status subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class StorageNodeStatusSubscriber {
     
     private final ClusterPersistRepository repository;
@@ -38,17 +33,6 @@ public final class StorageNodeStatusSubscriber {
     public StorageNodeStatusSubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
         this.repository = repository;
         eventBusContext.register(this);
-    }
-    
-    /**
-     * Update data source disabled state.
-     *
-     * @param event data source disabled event
-     */
-    @Subscribe
-    public void update(final DataSourceDisabledEvent event) {
-        repository.persist(StorageNode.getStorageNodeDataSourcePath(new QualifiedDatabase(event.getDatabaseName(), event.getGroupName(), event.getDataSourceName())),
-                YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(event.getStorageNodeDataSource())));
     }
     
     /**
