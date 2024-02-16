@@ -20,6 +20,8 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.url;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
+import java.util.Map;
+
 /**
  * ShardingSphere URL loader.
  */
@@ -27,10 +29,11 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 public interface ShardingSphereURLLoader extends TypedSPI {
     
     /**
-     * Get configuration content from URL.
-     *
-     * @param url ShardingSphere URL
-     * @return configuration content
+     * Load configuration content.
+     * 
+     * @param configurationSubject configuration subject
+     * @param parameters parameters
+     * @return loaded content
      */
-    byte[] getContent(ShardingSphereURL url);
+    String load(String configurationSubject, Map<String, String> parameters);
 }

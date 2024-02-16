@@ -19,8 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoader;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoadEngine;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -52,8 +51,7 @@ public final class DriverDataSourceCache {
     @SuppressWarnings("unchecked")
     private <T extends Throwable> DataSource createDataSource(final ShardingSphereURL url) throws T {
         try {
-            ShardingSphereURLLoader urlLoader = TypedSPILoader.getService(ShardingSphereURLLoader.class, url.getSourceType());
-            return YamlShardingSphereDataSourceFactory.createDataSource(urlLoader.getContent(url));
+            return YamlShardingSphereDataSourceFactory.createDataSource(ShardingSphereURLLoadEngine.loadContent(url));
         } catch (final IOException ex) {
             throw (T) new SQLException(ex);
         } catch (final SQLException ex) {
