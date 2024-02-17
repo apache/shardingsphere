@@ -25,9 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.url.exception.URLProviderNotFoundException;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * ShardingSphere URL.
@@ -40,7 +38,7 @@ public final class ShardingSphereURL {
     
     private final String configurationSubject;
     
-    private final Map<String, String> parameters;
+    private final Properties props;
     
     /**
      * Parse ShardingSphere URL.
@@ -51,7 +49,7 @@ public final class ShardingSphereURL {
     public static ShardingSphereURL parse(final String url) {
         ShardingSpherePreconditions.checkNotNull(url, () -> new URLProviderNotFoundException(url));
         String sourceType = parseSourceType(url);
-        return new ShardingSphereURL(sourceType, parseConfigurationSubject(url.substring(sourceType.length())), parseParameters(url));
+        return new ShardingSphereURL(sourceType, parseConfigurationSubject(url.substring(sourceType.length())), parseProperties(url));
     }
     
     private static String parseSourceType(final String url) {
@@ -64,16 +62,16 @@ public final class ShardingSphereURL {
         return result;
     }
     
-    private static Map<String, String> parseParameters(final String url) {
+    private static Properties parseProperties(final String url) {
         if (!url.contains("?")) {
-            return Collections.emptyMap();
+            return new Properties();
         }
         String queryProps = url.substring(url.indexOf('?') + 1);
         if (Strings.isNullOrEmpty(queryProps)) {
-            return Collections.emptyMap();
+            return new Properties();
         }
         String[] pairs = queryProps.split("&");
-        Map<String, String> result = new HashMap<>(pairs.length, 1F);
+        Properties result = new Properties();
         for (String each : pairs) {
             int index = each.indexOf("=");
             if (index > 0) {
