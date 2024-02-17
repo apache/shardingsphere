@@ -132,4 +132,14 @@
     FROM sales s, products p WHERE s.prod_id = p.prod_id
     GROUP BY p.prod_name;" db-types="Oracle" />
     <sql-case id="create_materialized_view_refresh_fast_on_remand_as_select" value="CREATE MATERIALIZED VIEW unionall_inside_view_mv REFRESH FAST ON DEMAND AS SELECT * FROM view_with_unionall" db-types="Oracle" />
+    <sql-case id="create_materialized_view_refresh_with_date" value="CREATE MATERIALIZED VIEW all_customers
+    PCTFREE 5 PCTUSED 60
+    TABLESPACE example
+    STORAGE (INITIAL 50K)
+    USING INDEX STORAGE (INITIAL 25K)
+    REFRESH START WITH ROUND(SYSDATE + 1) + 11/24
+    NEXT NEXT_DAY(TRUNC(SYSDATE), 'MONDAY') + 15/24
+    AS SELECT * FROM sh.customers@remote
+          UNION
+       SELECT * FROM sh.customers@local;" db-types="Oracle" />
 </sql-cases>
