@@ -20,32 +20,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-infra-url-type</artifactId>
         <version>5.4.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-infra-url-absolutepath</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>spi</module>
-        <module>exception</module>
-        <module>database</module>
-        <module>data-source-pool</module>
-        <module>common</module>
-        <module>context</module>
-        <module>url</module>
-        <module>distsql-handler</module>
-        <module>parser</module>
-        <module>binder</module>
-        <module>rewrite</module>
-        <module>route</module>
-        <module>merge</module>
-        <module>executor</module>
-        <module>session</module>
-        <module>expr</module>
-        <module>util</module>
-        <module>reachability-metadata</module>
-        <module>algorithm</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-url-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
