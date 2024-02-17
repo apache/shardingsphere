@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURL;
-import org.apache.shardingsphere.driver.jdbc.core.driver.url.ShardingSphereURLLoadEngine;
+import org.apache.shardingsphere.infra.url.ShardingSphereURL;
+import org.apache.shardingsphere.infra.url.ShardingSphereURLLoadEngine;
 
 import javax.sql.DataSource;
 import java.io.IOException;
