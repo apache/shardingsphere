@@ -35,11 +35,11 @@ class ShardingSphereURLTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertParse(final String url, final String expectedSourceType, final String expectedConfigurationSubject, final Map<String, String> expectedParameters) {
+    void assertParse(final String url, final String expectedSourceType, final String expectedConfigurationSubject, final Map<String, String> expectedProps) {
         ShardingSphereURL actual = ShardingSphereURL.parse(url);
         assertThat(actual.getSourceType(), is(expectedSourceType));
         assertThat(actual.getConfigurationSubject(), is(expectedConfigurationSubject));
-        assertThat(actual.getParameters(), is(expectedParameters));
+        assertThat(actual.getQueryProps(), is(expectedProps));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

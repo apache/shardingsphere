@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.url.arg;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * URL argument placeholder type factory.
@@ -33,15 +33,12 @@ public final class URLArgumentPlaceholderTypeFactory {
     /**
      * Get value of placeholder type.
      *
-     * @param params parameters
+     * @param queryProps query properties
      * @return placeholder type
      */
-    public static URLArgumentPlaceholderType valueOf(final Map<String, String> params) {
-        if (!params.containsKey(KEY)) {
-            return URLArgumentPlaceholderType.NONE;
-        }
+    public static URLArgumentPlaceholderType valueOf(final Properties queryProps) {
         try {
-            return URLArgumentPlaceholderType.valueOf(params.get(KEY).toUpperCase());
+            return URLArgumentPlaceholderType.valueOf(queryProps.getProperty(KEY, URLArgumentPlaceholderType.NONE.name()).toUpperCase());
         } catch (final IllegalArgumentException ex) {
             return URLArgumentPlaceholderType.NONE;
         }

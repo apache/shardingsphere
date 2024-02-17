@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,6 +41,6 @@ class ClassPathURLLoaderTest {
     }
     
     private void assertGetContent(final int expectedLength) {
-        assertThat(new ClassPathURLLoader().load("config/classpath/fixture.yaml", Collections.emptyMap()).length(), is(expectedLength));
+        assertThat(new ClassPathURLLoader().load("config/classpath/fixture.yaml", new Properties()).length(), is(expectedLength));
     }
 }
