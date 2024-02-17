@@ -23,6 +23,7 @@ import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfigur
 import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
@@ -52,13 +53,15 @@ public final class YamlJDBCConfiguration implements YamlConfiguration {
     
     private YamlModeConfiguration mode;
     
-    private Properties props = new Properties();
-    
     private YamlAuthorityRuleConfiguration authority;
+    
+    private YamlSQLParserRuleConfiguration sqlParser;
     
     private YamlTransactionRuleConfiguration transaction;
     
-    private YamlSQLParserRuleConfiguration sqlParser;
+    private YamlGlobalClockRuleConfiguration globalClock;
+    
+    private YamlSQLFederationRuleConfiguration sqlFederation;
     
     private YamlSQLTranslatorRuleConfiguration sqlTranslator;
     
@@ -66,7 +69,36 @@ public final class YamlJDBCConfiguration implements YamlConfiguration {
     
     private YamlLoggingRuleConfiguration logging;
     
-    private YamlGlobalClockRuleConfiguration globalClock;
+    private Properties props = new Properties();
     
-    private YamlSQLFederationRuleConfiguration sqlFederation;
+    /**
+     * Rebuild YAML JDBC configuration.
+     */
+    public void rebuild() {
+        rules.removeIf(YamlGlobalRuleConfiguration.class::isInstance);
+        if (null != authority) {
+            rules.add(authority);
+        }
+        if (null != sqlParser) {
+            rules.add(sqlParser);
+        }
+        if (null != transaction) {
+            rules.add(transaction);
+        }
+        if (null != globalClock) {
+            rules.add(globalClock);
+        }
+        if (null != sqlFederation) {
+            rules.add(sqlFederation);
+        }
+        if (null != sqlTranslator) {
+            rules.add(sqlTranslator);
+        }
+        if (null != traffic) {
+            rules.add(traffic);
+        }
+        if (null != logging) {
+            rules.add(logging);
+        }
+    }
 }
