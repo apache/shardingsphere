@@ -24,9 +24,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -50,31 +48,6 @@ public final class YamlShardingSphereDataSourceFactory {
     private static final YamlRuleConfigurationSwapperEngine RULE_CONFIG_SWAPPER = new YamlRuleConfigurationSwapperEngine();
     
     private static final YamlDataSourceConfigurationSwapper DATA_SOURCE_SWAPPER = new YamlDataSourceConfigurationSwapper();
-    
-    /**
-     * Create ShardingSphere data source without cache.
-     * 
-     * @param rootConfig rule configurations
-     * @return ShardingSphere data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSourceWithoutCache(final YamlRootConfiguration rootConfig) throws SQLException {
-        Map<String, DataSource> dataSourceMap = DATA_SOURCE_SWAPPER.swapToDataSources(rootConfig.getDataSources(), false);
-        try {
-            return createDataSource(dataSourceMap, rootConfig);
-            // CHECKSTYLE:OFF
-        } catch (final SQLException | RuntimeException ex) {
-            // CHECKSTYLE:ON
-            dataSourceMap.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
-            throw ex;
-        }
-    }
-    
-    private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig) throws SQLException {
-        ModeConfiguration modeConfig = null == rootConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
-        Collection<RuleConfiguration> ruleConfigs = RULE_CONFIG_SWAPPER.swapToRuleConfigurations(rootConfig.getRules());
-        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, rootConfig.getProps());
-    }
     
     /**
      * Create ShardingSphere data source.
