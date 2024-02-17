@@ -72,9 +72,9 @@ public final class YamlJDBCConfiguration implements YamlConfiguration {
     private Properties props = new Properties();
     
     /**
-     * Build YAML JDBC configuration.
+     * Rebuild YAML JDBC configuration.
      */
-    public void build() {
+    public void rebuild() {
         rules.removeIf(YamlGlobalRuleConfiguration.class::isInstance);
         if (null != authority) {
             rules.add(authority);
