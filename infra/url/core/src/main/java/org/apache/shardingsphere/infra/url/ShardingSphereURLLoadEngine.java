@@ -44,7 +44,7 @@ public final class ShardingSphereURLLoadEngine {
      * @return loaded content
      */
     public byte[] loadContent() {
-        Collection<String> lines = Arrays.asList(urlLoader.load(url.getConfigurationSubject(), url.getProps()).split(System.lineSeparator()));
-        return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getProps()));
+        Collection<String> lines = Arrays.asList(urlLoader.load(url.getConfigurationSubject(), url.getQueryProps()).split(System.lineSeparator()));
+        return URLArgumentLineRender.render(lines, URLArgumentPlaceholderTypeFactory.valueOf(url.getQueryProps()));
     }
 }

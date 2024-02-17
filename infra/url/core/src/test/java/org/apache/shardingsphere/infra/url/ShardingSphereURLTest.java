@@ -39,7 +39,7 @@ class ShardingSphereURLTest {
         ShardingSphereURL actual = ShardingSphereURL.parse(url);
         assertThat(actual.getSourceType(), is(expectedSourceType));
         assertThat(actual.getConfigurationSubject(), is(expectedConfigurationSubject));
-        assertThat(actual.getProps(), is(expectedProps));
+        assertThat(actual.getQueryProps(), is(expectedProps));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

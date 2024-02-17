@@ -32,8 +32,8 @@ public interface ShardingSphereURLLoader extends TypedSPI {
      * Load configuration content.
      * 
      * @param configurationSubject configuration subject
-     * @param props properties
+     * @param queryProps query properties
      * @return loaded content
      */
-    String load(String configurationSubject, Properties props);
+    String load(String configurationSubject, Properties queryProps);
 }

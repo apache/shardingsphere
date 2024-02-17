@@ -33,12 +33,12 @@ public final class URLArgumentPlaceholderTypeFactory {
     /**
      * Get value of placeholder type.
      *
-     * @param props properties
+     * @param queryProps query properties
      * @return placeholder type
      */
-    public static URLArgumentPlaceholderType valueOf(final Properties props) {
+    public static URLArgumentPlaceholderType valueOf(final Properties queryProps) {
         try {
-            return URLArgumentPlaceholderType.valueOf(props.getProperty(KEY, URLArgumentPlaceholderType.NONE.name()).toUpperCase());
+            return URLArgumentPlaceholderType.valueOf(queryProps.getProperty(KEY, URLArgumentPlaceholderType.NONE.name()).toUpperCase());
         } catch (final IllegalArgumentException ex) {
             return URLArgumentPlaceholderType.NONE;
         }

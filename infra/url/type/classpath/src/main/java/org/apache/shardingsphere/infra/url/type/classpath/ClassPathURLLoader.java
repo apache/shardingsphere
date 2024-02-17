@@ -35,7 +35,7 @@ public final class ClassPathURLLoader implements ShardingSphereURLLoader {
     
     @Override
     @SneakyThrows(IOException.class)
-    public String load(final String configurationSubject, final Properties props) {
+    public String load(final String configurationSubject, final Properties queryProps) {
         return Files.readAllLines(getResourceFile(configurationSubject).toPath()).stream().collect(Collectors.joining(System.lineSeparator()));
     }
     

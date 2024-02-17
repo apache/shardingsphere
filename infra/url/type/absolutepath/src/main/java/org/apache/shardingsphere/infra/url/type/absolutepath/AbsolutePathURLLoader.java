@@ -34,7 +34,7 @@ public final class AbsolutePathURLLoader implements ShardingSphereURLLoader {
     
     @Override
     @SneakyThrows(IOException.class)
-    public String load(final String configurationSubject, final Properties props) {
+    public String load(final String configurationSubject, final Properties queryProps) {
         return Files.readAllLines(getAbsoluteFile(configurationSubject).toPath(), StandardCharsets.UTF_8).stream().collect(Collectors.joining(System.lineSeparator()));
     }
     

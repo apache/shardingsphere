@@ -38,7 +38,7 @@ public final class ShardingSphereURL {
     
     private final String configurationSubject;
     
-    private final Properties props;
+    private final Properties queryProps;
     
     /**
      * Parse ShardingSphere URL.
