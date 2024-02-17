@@ -25,10 +25,10 @@ import lombok.Setter;
 /**
  * Exported storage node.
  */
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class ExportedStorageNode {
     
     private String ip;

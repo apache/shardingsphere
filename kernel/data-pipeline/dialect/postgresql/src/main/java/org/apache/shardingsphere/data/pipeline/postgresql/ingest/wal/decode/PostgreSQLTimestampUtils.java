@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.postgresql.jdbc.TimestampUtils;
 
 import java.sql.SQLException;
@@ -28,7 +28,7 @@ import java.util.Calendar;
 /**
  * Timestamp utility class of PostgreSQL.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class PostgreSQLTimestampUtils implements BaseTimestampUtils {
     
     private final TimestampUtils timestampUtils;

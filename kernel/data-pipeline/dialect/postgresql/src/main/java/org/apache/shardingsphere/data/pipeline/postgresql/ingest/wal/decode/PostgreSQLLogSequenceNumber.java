@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.postgresql.replication.LogSequenceNumber;
 
 /**
  * PostgreSQL sequence.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @ToString
 public final class PostgreSQLLogSequenceNumber implements BaseLogSequenceNumber {
     
