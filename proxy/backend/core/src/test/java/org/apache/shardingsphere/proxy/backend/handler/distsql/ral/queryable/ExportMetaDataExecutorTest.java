@@ -252,7 +252,6 @@ class ExportMetaDataExecutorTest {
     
     private void assertDatabaseConfig(final YamlProxyDatabaseConfiguration actual, final YamlProxyDatabaseConfiguration expected) {
         assertThat(actual.getDatabaseName(), is(expected.getDatabaseName()));
-        assertThat(actual.getSchemaName(), is(expected.getSchemaName()));
         assertDataSources(actual.getDataSources(), expected.getDataSources());
         assertRules(actual.getRules(), expected.getRules());
     }
