@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.url;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * ShardingSphere URL loader.
@@ -32,8 +32,8 @@ public interface ShardingSphereURLLoader extends TypedSPI {
      * Load configuration content.
      * 
      * @param configurationSubject configuration subject
-     * @param parameters parameters
+     * @param queryProps query properties
      * @return loaded content
      */
-    String load(String configurationSubject, Map<String, String> parameters);
+    String load(String configurationSubject, Properties queryProps);
 }

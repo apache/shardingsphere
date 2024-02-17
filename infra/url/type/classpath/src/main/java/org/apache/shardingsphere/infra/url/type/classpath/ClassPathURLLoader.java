@@ -24,8 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +35,7 @@ public final class ClassPathURLLoader implements ShardingSphereURLLoader {
     
     @Override
     @SneakyThrows(IOException.class)
-    public String load(final String configurationSubject, final Map<String, String> parameters) {
+    public String load(final String configurationSubject, final Properties queryProps) {
         return Files.readAllLines(getResourceFile(configurationSubject).toPath()).stream().collect(Collectors.joining(System.lineSeparator()));
     }
     

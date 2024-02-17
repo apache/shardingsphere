@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-import java.util.Collections;
 import java.util.Objects;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,7 +43,7 @@ class AbsolutePathURLLoaderTest {
     
     private void assertGetContent(final int expectedLength) {
         String actual = new AbsolutePathURLLoader().load(
-                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/absolutepath/fixture.yaml")).getPath(), Collections.emptyMap());
+                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/absolutepath/fixture.yaml")).getPath(), new Properties());
         assertThat(actual.length(), is(expectedLength));
     }
 }
