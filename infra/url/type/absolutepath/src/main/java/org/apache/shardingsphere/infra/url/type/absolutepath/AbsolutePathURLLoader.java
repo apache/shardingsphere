@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.type.absolute;
+package org.apache.shardingsphere.infra.url.type.absolutepath;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.url.ShardingSphereURLLoader;
