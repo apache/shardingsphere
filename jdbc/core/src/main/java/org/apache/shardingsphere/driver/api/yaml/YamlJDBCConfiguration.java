@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.api.yaml;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
@@ -47,14 +46,6 @@ public final class YamlJDBCConfiguration implements YamlConfiguration {
     
     private String databaseName;
     
-    /**
-     * Schema name.
-     * 
-     * @deprecated Should use databaseName, schemaName will remove in next version.
-     */
-    @Deprecated
-    private String schemaName;
-    
     private Map<String, Map<String, Object>> dataSources = new HashMap<>();
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
@@ -78,13 +69,4 @@ public final class YamlJDBCConfiguration implements YamlConfiguration {
     private YamlGlobalClockRuleConfiguration globalClock;
     
     private YamlSQLFederationRuleConfiguration sqlFederation;
-    
-    /**
-     * Get database name.
-     * 
-     * @return database name
-     */
-    public String getDatabaseName() {
-        return Strings.isNullOrEmpty(databaseName) ? schemaName : databaseName;
-    }
 }
