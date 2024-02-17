@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -130,37 +129,9 @@ public final class YamlShardingSphereDataSourceFactory {
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlJDBCConfiguration jdbcConfig) throws SQLException {
-        rebuildGlobalRuleConfiguration(jdbcConfig);
         ModeConfiguration modeConfig = null == jdbcConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(jdbcConfig.getMode());
+        jdbcConfig.build();
         Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(jdbcConfig.getRules());
         return ShardingSphereDataSourceFactory.createDataSource(jdbcConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, jdbcConfig.getProps());
-    }
-    
-    private static void rebuildGlobalRuleConfiguration(final YamlJDBCConfiguration jdbcConfig) {
-        jdbcConfig.getRules().removeIf(YamlGlobalRuleConfiguration.class::isInstance);
-        if (null != jdbcConfig.getAuthority()) {
-            jdbcConfig.getRules().add(jdbcConfig.getAuthority());
-        }
-        if (null != jdbcConfig.getTransaction()) {
-            jdbcConfig.getRules().add(jdbcConfig.getTransaction());
-        }
-        if (null != jdbcConfig.getGlobalClock()) {
-            jdbcConfig.getRules().add(jdbcConfig.getGlobalClock());
-        }
-        if (null != jdbcConfig.getSqlParser()) {
-            jdbcConfig.getRules().add(jdbcConfig.getSqlParser());
-        }
-        if (null != jdbcConfig.getSqlTranslator()) {
-            jdbcConfig.getRules().add(jdbcConfig.getSqlTranslator());
-        }
-        if (null != jdbcConfig.getTraffic()) {
-            jdbcConfig.getRules().add(jdbcConfig.getTraffic());
-        }
-        if (null != jdbcConfig.getLogging()) {
-            jdbcConfig.getRules().add(jdbcConfig.getLogging());
-        }
-        if (null != jdbcConfig.getSqlFederation()) {
-            jdbcConfig.getRules().add(jdbcConfig.getSqlFederation());
-        }
     }
 }
