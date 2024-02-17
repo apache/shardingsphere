@@ -938,6 +938,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
             result.setFrom(tableSource);
         }
+        if (null != ctx.withTableHint()) {
+            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
+        }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
