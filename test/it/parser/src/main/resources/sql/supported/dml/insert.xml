@@ -141,4 +141,5 @@
     <sql-case id="insert_with_currency_value_2" value="INSERT INTO [HR].[Employees]([SSN], [FirstName], [LastName], [Salary]) VALUES ('990-00-6818', N'Kim', N'Abercrombie', $55415)" db-types="SQLServer"/>
     <sql-case id="insert_with_cross_database_values" value="INSERT [SourceDatabase].[dbo].[SourceTable] VALUES (1, N'Bob'),(2, N'Susan')" db-types="SQLServer"/>
     <sql-case id="insert_with_cross_database_select" value="INSERT [DestinationDatabase].[dbo].[DestTable_InMem] SELECT * FROM [SourceDatabase].[dbo].[SourceTable]" db-types="SQLServer"/>
+    <sql-case id="insert_with_select_with_table_hint_no_with_keyword" value="INSERT INTO #tmpdbs ([dbid], [dbname], [isdone]) SELECT database_id, name, 0 FROM master.sys.databases (NOLOCK) WHERE is_read_only = 0 AND state = 0" db-types="SQLServer"/>
 </sql-cases>

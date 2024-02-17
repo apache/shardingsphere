@@ -261,4 +261,5 @@
     <sql-case id="select_dm_exec_requests" value="SELECT [req].[session_id],[req].[start_time],[req].[cpu_time] AS [cpu_time_ms],OBJECT_NAME([ST].[objectid], [ST].[dbid]) AS [ObjectName],SUBSTRING(REPLACE(REPLACE(SUBSTRING([ST].[text],
     ([req].[statement_start_offset] / 2) + 1, ((CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]) / 2) + 1 ), CHAR(10), ' ' ), CHAR(13), ' ' ), 1, 512 )
     AS [statement_text] FROM [sys].[dm_exec_requests] AS [req] CROSS APPLY [sys].dm_exec_sql_text([req].[sql_handle]) AS [ST] ORDER BY [req].[cpu_time] DESC" db-types="SQLServer"/>
+    <sql-case id="select_mdx" value="SELECT {[Measures].[Internet Sales Count], [Measures].[Internet Sales-Sales Amount]} ON COLUMNS, {[Product].[Product Line].[Product Line].MEMBERS} ON ROWS FROM [Analysis Services Tutorial] WHERE [Sales Territory].[Sales Territory Country].[Australia]" db-types="SQLServer"/>
 </sql-cases>

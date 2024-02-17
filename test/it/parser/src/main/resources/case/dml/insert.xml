@@ -3711,4 +3711,63 @@
             </from>
         </select>
     </insert>
+    
+    <insert sql-case-id="insert_with_select_with_table_hint_no_with_keyword">
+        <table name="#tmpdbs" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="47">
+            <column name="dbid" start-index="21" stop-index="26" start-delimiter="[" end-delimiter="]" />
+            <column name="dbname" start-index="29" stop-index="36" start-delimiter="[" end-delimiter="]" />
+            <column name="isdone" start-index="39" stop-index="46" start-delimiter="[" end-delimiter="]" />
+        </columns>
+        <select>
+            <projections start-index="56" stop-index="75">
+                <column-projection name="database_id" start-index="56" stop-index="66" />
+                <column-projection name="name" start-index="69" stop-index="72" />
+                <expression-projection text="0" start-index="75" stop-index="75">
+                    <expr>
+                        <literal-expression value="0" start-index="75" stop-index="75" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="databases" start-index="82" stop-index="101">
+                    <owner name="sys" start-index="89" stop-index="91">
+                        <owner name="master" start-index="82" stop-index="87" />
+                    </owner>
+                </simple-table>
+            </from>
+            <table-hints start-index="103" stop-index="110">
+                <table-hint value="NOLOCK" start-index="104" stop-index="109" />
+            </table-hints>
+            <where start-index="112" stop-index="147">
+                <expr>
+                    <binary-operation-expression start-index="118" stop-index="147">
+                        <left>
+                            <binary-operation-expression start-index="118" stop-index="133">
+                                <left>
+                                    <column name="is_read_only" start-index="118" stop-index="129" />
+                                </left>
+                                <right>
+                                    <literal-expression value="0" start-index="133" stop-index="133" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="139" stop-index="147">
+                                <left>
+                                    <column name="state" start-index="139" stop-index="143" />
+                                </left>
+                                <right>
+                                    <literal-expression value="0" start-index="147" stop-index="147" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>AND</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </insert>
 </sql-parser-test-cases>

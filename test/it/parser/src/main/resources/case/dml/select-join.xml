@@ -2961,4 +2961,112 @@
             </column-item>
         </order-by>
     </select>
+    
+    <select sql-case-id="select_sys_databases_join_sys_logins">
+        <projections start-index="7" stop-index="34">
+            <column-projection name="name" start-index="7" stop-index="12">
+                <owner name="d" start-index="7" stop-index="7" />
+            </column-projection>
+            <column-projection name="owner_sid" start-index="15" stop-index="25">
+                <owner name="d" start-index="15" stop-index="15" />
+            </column-projection>
+            <column-projection name="name" start-index="28" stop-index="34">
+                <owner name="sl" start-index="28" stop-index="29" />
+            </column-projection>
+        </projections>
+        <from start-index="41" stop-index="108">
+            <join-table natural="false" join-type="INNER">
+                <left>
+                    <simple-table start-index="41" stop-index="58" alias="d" name="databases">
+                        <owner name="sys" start-index="41" stop-index="43" />
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table start-index="65" stop-index="84" alias="sl" name="sql_logins">
+                        <owner name="sys" start-index="65" stop-index="67" />
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="89" stop-index="108">
+                        <left>
+                            <column name="owner_sid" start-index="89" stop-index="99">
+                                <owner name="d" stop-index="89" start-index="89" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="sid" start-index="103" stop-index="108">
+                                <owner name="sl" start-index="103" stop-index="104" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_distinct_with_inner_join_subquery">
+        <projections distinct-row="true" start-index="16" stop-index="44">
+            <column-projection name="FirstName" start-index="16" stop-index="29">
+                <owner name="user" start-index="16" stop-index="19" />
+            </column-projection>
+            <column-projection name="LastName" start-index="32" stop-index="44">
+                <owner name="user" start-index="32" stop-index="35" />
+            </column-projection>
+        </projections>
+        <into>
+            <simple-table name="ms_user" start-index="51" stop-index="57" />
+        </into>
+        <from start-index="64" stop-index="176">
+            <join-table join-type="INNER" natural="false">
+                <left>
+                    <simple-table name="user" start-index="64" stop-index="67" />
+                </left>
+                <right>
+                    <subquery-table alias="ms">
+                        <subquery>
+                            <select>
+                                <projections start-index="88" stop-index="88">
+                                    <shorthand-projection start-index="88" stop-index="88" />
+                                </projections>
+                                <from start-index="95" stop-index="105">
+                                    <simple-table name="ClickStream" start-index="95" stop-index="105" />
+                                </from>
+                                <where start-index="107" stop-index="140">
+                                    <expr>
+                                        <binary-operation-expression start-index="113" stop-index="140">
+                                            <left>
+                                                <column name="url" start-index="113" stop-index="118">
+                                                    <owner name="cs" start-index="113" stop-index="114" />
+                                                </column>
+                                            </left>
+                                            <right>
+                                                <literal-expression value="www.microsoft.com" start-index="122" stop-index="140" />
+                                            </right>
+                                            <operator>=</operator>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </subquery-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="152" stop-index="176">
+                        <left>
+                            <column name="user_ip" start-index="152" stop-index="163">
+                                <owner name="user" start-index="152" stop-index="155" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="user_ip" start-index="167" stop-index="176">
+                                <owner name="ms" start-index="167" stop-index="168" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

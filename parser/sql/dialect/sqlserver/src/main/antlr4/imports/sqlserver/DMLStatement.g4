@@ -40,7 +40,7 @@ insertExecClause
     ;
 
 withTableHint
-    : WITH LP_ (tableHintLimited+) RP_
+    : WITH? LP_ (tableHintLimited+) RP_
     ;
 
 exec
@@ -98,7 +98,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections intoClause? fromClause? whereClause? groupByClause? havingClause? orderByClause? forClause?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
     ;
 
 duplicateSpecification
@@ -149,7 +149,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias) ? | LP_ tableReferences RP_
+    : tableName (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias)? | LP_ tableReferences RP_
     ;
 
 joinedTable
@@ -176,6 +176,10 @@ havingClause
 
 subquery
     : LP_ aggregationClause RP_
+    ;
+
+withTempTable
+    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_
     ;
 
 withClause
