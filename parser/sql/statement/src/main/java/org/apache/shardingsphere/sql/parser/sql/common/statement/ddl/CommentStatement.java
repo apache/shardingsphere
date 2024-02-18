@@ -34,6 +34,6 @@ public abstract class CommentStatement extends AbstractSQLStatement implements D
     private SimpleTableSegment table;
     
     private ColumnSegment column;
-
+    
     private IdentifierValue comment;
 }
