@@ -43,7 +43,7 @@ public abstract class AbstractShardingDriverTest extends AbstractDriverTest {
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "single_jdbc");
     
-    private static final String CONFIG_FILE = "config/config-sharding.yaml";
+    private static final String CONFIG_FILE = "config/database-sharding.yaml";
     
     @BeforeAll
     static void initShardingSphereDataSource() throws SQLException, IOException {

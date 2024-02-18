@@ -35,7 +35,7 @@ If the following problems emerge, please make sure Docker daemon Process is runn
 I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused？
 ```
 
-2. Configure `conf/global.yaml` and `conf/config-*.yaml`
+2. Configure `conf/global.yaml` and `conf/database-*.yaml`
 
 Configuration file template can be attained from the Docker container and can be copied to any directory on the host:
 ```bash
@@ -44,7 +44,7 @@ docker cp tmp:/opt/shardingsphere-proxy/conf /host/path/to/conf
 docker rm tmp
 ```
 
-Since the network conditions inside the container may differ from those of the host, if errors such as "cannot connect to the database" occurs, please make sure that the IP of the database specified in the `conf/config-*.yaml` configuration file can be accessed from inside the Docker container.
+Since the network conditions inside the container may differ from those of the host, if errors such as "cannot connect to the database" occurs, please make sure that the IP of the database specified in the `conf/database-*.yaml` configuration file can be accessed from inside the Docker container.
 
 For details, please refer to [ShardingSphere-Proxy quick start manual - binary distribution packages](/en/user-manual/shardingsphere-proxy/startup/bin/).
 

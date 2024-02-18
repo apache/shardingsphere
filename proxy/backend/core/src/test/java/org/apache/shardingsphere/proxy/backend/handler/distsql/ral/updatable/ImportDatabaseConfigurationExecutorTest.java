@@ -69,54 +69,54 @@ class ImportDatabaseConfigurationExecutorTest {
     
     @Test
     void assertImportDatabaseExecutorForSharding() throws SQLException {
-        assertExecute("sharding_db", "/conf/import/config-sharding.yaml");
+        assertExecute("sharding_db", "/conf/import/database-sharding.yaml");
     }
     
     @Test
     void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
-        assertExecute("readwrite_splitting_db", "/conf/import/config-readwrite-splitting.yaml");
+        assertExecute("readwrite_splitting_db", "/conf/import/database-readwrite-splitting.yaml");
     }
     
     @Test
     void assertImportDatabaseExecutorForEncrypt() throws SQLException {
-        assertExecute("encrypt_db", "/conf/import/config-encrypt.yaml");
+        assertExecute("encrypt_db", "/conf/import/database-encrypt.yaml");
     }
     
     @Test
     void assertImportDatabaseExecutorForShadow() throws SQLException {
-        assertExecute("shadow_db", "/conf/import/config-shadow.yaml");
+        assertExecute("shadow_db", "/conf/import/database-shadow.yaml");
     }
     
     @Test
     void assertImportDatabaseExecutorForMask() throws SQLException {
-        assertExecute("mask_db", "/conf/import/config-mask.yaml");
+        assertExecute("mask_db", "/conf/import/database-mask.yaml");
     }
     
     @Test
     void assertImportExistedDatabase() {
         String databaseName = "sharding_db";
         when(ProxyContext.getInstance().databaseExists(databaseName)).thenReturn(true);
-        assertThrows(UnsupportedSQLOperationException.class, () -> assertExecute(databaseName, "/conf/import/config-sharding.yaml"));
+        assertThrows(UnsupportedSQLOperationException.class, () -> assertExecute(databaseName, "/conf/import/database-sharding.yaml"));
     }
     
     @Test
     void assertImportEmptyDatabaseName() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-database-name.yaml"));
+        assertThrows(UnsupportedSQLOperationException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-database-name.yaml"));
     }
     
     @Test
     void assertImportEmptyDataSource() {
-        assertThrows(MissingRequiredDataSourcesException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-data-source.yaml"));
+        assertThrows(MissingRequiredDataSourcesException.class, () -> assertExecute("sharding_db", "/conf/import/database-empty-data-source.yaml"));
     }
     
     @Test
     void assertImportDuplicatedLogicTable() {
-        assertThrows(DuplicateRuleException.class, () -> assertExecute("sharding_db", "/conf/import/config-duplicated-logic-table.yaml"));
+        assertThrows(DuplicateRuleException.class, () -> assertExecute("sharding_db", "/conf/import/database-duplicated-logic-table.yaml"));
     }
     
     @Test
     void assertImportInvalidAlgorithm() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> assertExecute("sharding_db", "/conf/import/config-invalid-algorithm.yaml"));
+        assertThrows(ServiceProviderNotFoundException.class, () -> assertExecute("sharding_db", "/conf/import/database-invalid-algorithm.yaml"));
     }
     
     private void assertExecute(final String databaseName, final String filePath) throws SQLException {

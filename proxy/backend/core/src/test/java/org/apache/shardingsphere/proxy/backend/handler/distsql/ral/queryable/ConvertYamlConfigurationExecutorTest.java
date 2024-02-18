@@ -45,32 +45,32 @@ class ConvertYamlConfigurationExecutorTest {
     
     @Test
     void assertExecuteWithSharding() {
-        assertExecute("/conf/convert/config-sharding.yaml", "/expected/convert-sharding.yaml");
+        assertExecute("/conf/convert/database-sharding.yaml", "/expected/convert-sharding.yaml");
     }
     
     @Test
     void assertExecuteWithShardingAutoTables() {
-        assertExecute("/conf/convert/config-sharding-auto-tables.yaml", "/expected/convert-sharding-auto-tables.yaml");
+        assertExecute("/conf/convert/database-sharding-auto-tables.yaml", "/expected/convert-sharding-auto-tables.yaml");
     }
     
     @Test
     void assertExecuteWithReadWriteSplitting() {
-        assertExecute("/conf/convert/config-readwrite-splitting.yaml", "/expected/convert-readwrite-splitting.yaml");
+        assertExecute("/conf/convert/database-readwrite-splitting.yaml", "/expected/convert-readwrite-splitting.yaml");
     }
     
     @Test
     void assertExecuteWithEncrypt() {
-        assertExecute("/conf/convert/config-encrypt.yaml", "/expected/convert-encrypt.yaml");
+        assertExecute("/conf/convert/database-encrypt.yaml", "/expected/convert-encrypt.yaml");
     }
     
     @Test
     void assertExecuteWithShadow() {
-        assertExecute("/conf/convert/config-shadow.yaml", "/expected/convert-shadow.yaml");
+        assertExecute("/conf/convert/database-shadow.yaml", "/expected/convert-shadow.yaml");
     }
     
     @Test
     void assertExecuteWithMix() {
-        assertExecute("/conf/convert/config-mix.yaml", "/expected/convert-mix.yaml");
+        assertExecute("/conf/convert/database-mix.yaml", "/expected/convert-mix.yaml");
     }
     
     private void assertExecute(final String configFilePath, final String expectedFilePath) {

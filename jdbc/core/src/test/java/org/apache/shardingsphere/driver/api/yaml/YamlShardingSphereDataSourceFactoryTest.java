@@ -76,7 +76,7 @@ class YamlShardingSphereDataSourceFactoryTest {
     }
     
     private URL getYamlFileUrl() {
-        return Objects.requireNonNull(YamlShardingSphereDataSourceFactoryTest.class.getResource("/config/factory/config-for-factory-test.yaml"));
+        return Objects.requireNonNull(YamlShardingSphereDataSourceFactoryTest.class.getResource("/config/factory/database-for-factory-test.yaml"));
     }
     
     private String readFile(final URL url) throws IOException {

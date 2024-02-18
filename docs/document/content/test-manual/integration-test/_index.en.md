@@ -115,7 +115,7 @@ Directory: `src/test/resources/env/${SCENARIO-TYPE}`
 Directory: `src/test/resources/docker/${SCENARIO-TYPE}`
 
   - `docker-compose.yml`: Docker-Compose config files, used for Docker environment startup；
-  - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: rule configuration。
+  - `proxy/conf/database-${SCENARIO-TYPE}.yaml`: rule configuration。
 
 **The Docker environment configuration provides a remote debugging port for ShardingSphere-Proxy. You can find the second exposed port for remote debugging in `shardingsphere-proxy` of the `docker-comemage. yml` file. **
 

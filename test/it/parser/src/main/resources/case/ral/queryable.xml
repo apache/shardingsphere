@@ -45,6 +45,6 @@
     <export-metadata sql-case-id="export-metadata" />
     <export-storage-nodes sql-case-id="export-storage-nodes" />
     <convert-yaml-config sql-case-id="convert-yaml-config">
-        <file-path>/yaml/config-sharding.yaml</file-path>
+        <file-path>/yaml/database-sharding.yaml</file-path>
     </convert-yaml-config>
 </sql-parser-test-cases>

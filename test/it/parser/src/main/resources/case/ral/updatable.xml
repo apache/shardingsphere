@@ -70,7 +70,7 @@
     </unlabel-compute-node>
     
     <import-database-config sql-case-id="import-database-config">
-        <file-path>/yaml/config-sharding.yaml</file-path>
+        <file-path>/yaml/database-sharding.yaml</file-path>
     </import-database-config>
     <import-metadata sql-case-id="import-metadata">
         <file-path>/json/exported-metadata.json</file-path>

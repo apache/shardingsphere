@@ -25,11 +25,11 @@ Please refer to the following links for other configuration items:
 * [Permission configuration](/en/user-manual/shardingsphere-proxy/yaml-config/authority/)
 * [Property configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/)
 
-3. Configure `conf/config-*.yaml`
+3. Configure `conf/database-*.yaml`
 
-Modify files named with the prefix `config-` in the `conf` directory, such as `conf/config-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Confuguration Mannual](/en/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `config-*.yaml` file can be named whatever you want.
+Modify files named with the prefix `database-` in the `conf` directory, such as `conf/database-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Confuguration Mannual](/en/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `database-*.yaml` file can be named whatever you want.
 
-ShardingSphere-Proxy supports multiple logical data sources. Each YAML configuration file named with the prefix `config-` is a logical data source.
+ShardingSphere-Proxy supports multiple logical data sources. Each YAML configuration file named with the prefix `database-` is a logical data source.
 
 4. Introduce database driver (Optional)
 

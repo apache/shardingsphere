@@ -25,10 +25,10 @@ ShardingSphere-Proxy 运行模式在 `global.yaml` 中配置，配置格式与 S
 * [权限配置](/cn/user-manual/shardingsphere-proxy/yaml-config/authority/)
 * [属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)
 
-3. 配置 `conf/config-*.yaml`
+3. 配置 `conf/database-*.yaml`
 
-修改 `conf` 目录下以 `config-` 前缀开头的文件，如：`conf/config-sharding.yaml` 文件，进行分片规则、读写分离规则配置。配置方式请参考[配置手册](/cn/user-manual/shardingsphere-proxy/yaml-config/)。`config-*.yaml` 文件的 `*` 部分可以任意命名。
-ShardingSphere-Proxy 支持配置多个逻辑数据源，每个以 `config-` 前缀命名的 YAML 配置文件，即为一个逻辑数据源。
+修改 `conf` 目录下以 `database-` 前缀开头的文件，如：`conf/database-sharding.yaml` 文件，进行分片规则、读写分离规则配置。配置方式请参考[配置手册](/cn/user-manual/shardingsphere-proxy/yaml-config/)。`database-*.yaml` 文件的 `*` 部分可以任意命名。
+ShardingSphere-Proxy 支持配置多个逻辑数据源，每个以 `database-` 前缀命名的 YAML 配置文件，即为一个逻辑数据源。
 
 4. （可选）引入数据库驱动
 
