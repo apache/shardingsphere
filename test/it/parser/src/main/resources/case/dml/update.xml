@@ -2119,4 +2119,141 @@
             </expr>
         </where>
     </update>
+
+    <update sql-case-id="update_with_inner_join">
+        <table start-index="7" stop-index="16">
+            <simple-table name="Table2" start-index="7" stop-index="16">
+                <owner name="dbo" start-index="7" stop-index="9"/>
+            </simple-table>
+        </table>
+        <set start-index="18" stop-index="149">
+            <assignment start-index="22" stop-index="72">
+                <column name="ColB" start-index="22" stop-index="36">
+                    <owner name="Table2" start-index="26" stop-index="31">
+                        <owner name="dbo" start-index="22" stop-index="24"/>
+                    </owner>
+                </column>
+                <assignment-value>
+                    <binary-operation-expression start-index="40" stop-index="72">
+                        <left>
+                            <column name="ColB" start-index="40" stop-index="54">
+                                <owner name="Table2" start-index="44" stop-index="49">
+                                    <owner name="dbo" start-index="40" stop-index="42"/>
+                                </owner>
+                            </column>
+                        </left>
+                        <right>
+                            <column name="ColB" start-index="58" stop-index="72">
+                                <owner name="Table1" start-index="62" stop-index="67">
+                                    <owner name="dbo" start-index="58" stop-index="60"/>
+                                </owner>
+                            </column>
+                        </right>
+                        <operator>+</operator>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+            <from start-index="79" stop-index="149">
+                <join-table join-type="INNER">
+                    <left>
+                        <simple-table name="Table2" start-index="79" stop-index="88">
+                            <owner name="dbo" start-index="79" stop-index="81"/>
+                        </simple-table>
+                    </left>
+                    <right>
+                        <simple-table name="Table1" start-index="101" stop-index="110">
+                            <owner name="dbo" start-index="101" stop-index="103"/>
+                        </simple-table>
+                    </right>
+                    <on-condition>
+                        <binary-operation-expression start-index="116" stop-index="148">
+                            <left>
+                                <column name="ColA" start-index="116" stop-index="130">
+                                    <owner name="Table2" start-index="120" stop-index="125">
+                                        <owner name="dbo" start-index="116" stop-index="118"/>
+                                    </owner>
+                                </column>
+                            </left>
+                            <right>
+                                <column name="ColA" start-index="134" stop-index="148">
+                                    <owner name="Table1" start-index="138" stop-index="143">
+                                        <owner name="dbo" start-index="134" stop-index="136"/>
+                                    </owner>
+                                </column>
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </on-condition>
+                </join-table>
+            </from>
+        </set>
+    </update>
+
+    <update sql-case-id="update_with_current_of_abc">
+        <table start-index="7" stop-index="16">
+            <simple-table name="Table1" start-index="7" stop-index="16">
+                <owner name="dbo" start-index="7" stop-index="9"/>
+            </simple-table>
+        </table>
+        <set start-index="18" stop-index="49">
+            <assignment start-index="22" stop-index="33">
+                <column name="c2" start-index="22" stop-index="23"/>
+                <assignment-value>
+                    <binary-operation-expression start-index="27" stop-index="33">
+                        <left>
+                            <column name="c2" start-index="27" stop-index="28"/>
+                        </left>
+                        <right>
+                            <column name="d2" start-index="32" stop-index="33"/>
+                        </right>
+                        <operator>+</operator>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+            <from start-index="40" stop-index="49">
+                <simple-table name="Table2" start-index="40" stop-index="49">
+                    <owner name="dbo" start-index="40" stop-index="42"/>
+                </simple-table>
+            </from>
+        </set>
+        <where start-index="51" stop-index="70">
+            <expr>
+                <common-expression text="CURRENT OF abc" start-index="57" stop-index="70"/>
+            </expr>
+        </where>
+    </update>
+
+    <update sql-case-id="update_with_location_setXY">
+        <table start-index="7" stop-index="12">
+            <simple-table name="Cities" start-index="7" stop-index="12"/>
+        </table>
+        <set start-index="14" stop-index="43">
+            <assignment start-index="14" stop-index="43">
+                <column name="Location" start-index="18" stop-index="25"/>
+                <assignment-value>
+                    <function text="SetXY(23.5, 23.5)" function-name="SetXY" start-index="27" stop-index="43">
+                        <parameter>
+                            <literal-expression value="23.5" start-index="33" stop-index="36"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="23.5" start-index="39" stop-index="42"/>
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="45" stop-index="68">
+            <expr>
+                <binary-operation-expression start-index="51" stop-index="68">
+                    <left>
+                        <column name="Name" start-index="51" stop-index="54"/>
+                    </left>
+                    <right>
+                        <literal-expression value="Anchorage" start-index="58" stop-index="68"/>
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
 </sql-parser-test-cases>
