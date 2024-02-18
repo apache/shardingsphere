@@ -16,7 +16,7 @@ weight = 1
 
 1. 获取 ShardingSphere-Proxy。详情请参见 [proxy 启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
 
-2. 修改配置文件 `conf/server.yaml`，详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
+2. 修改配置文件 `conf/global.yaml`，详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
 
 目前 `mode` 必须是 `Cluster`，需要提前启动对应的注册中心。
 

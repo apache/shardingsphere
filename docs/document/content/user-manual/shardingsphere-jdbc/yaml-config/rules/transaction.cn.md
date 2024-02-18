@@ -19,7 +19,7 @@ transaction:
 
 ### 使用 LOCAL 模式
 
-server.yaml 配置文件内容如下：
+global.yaml 配置文件内容如下：
 
 ```yaml
 transaction:
@@ -28,7 +28,7 @@ transaction:
 
 ### 使用 XA 模式
 
-server.yaml 配置文件内容如下：
+global.yaml 配置文件内容如下：
 
 ```yaml
 transaction:
@@ -51,7 +51,7 @@ shardingsphere-transaction-xa-narayana-x.x.x-SNAPSHOT.jar
 
 ### 使用 BASE 模式
 
-server.yaml 配置文件内容如下：
+global.yaml 配置文件内容如下：
 
 ```yaml
 transaction:

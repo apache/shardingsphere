@@ -198,7 +198,7 @@ public final class Bootstrap {
 There are mainly 4 steps
 1. Construct CDCClient, pass in CDCClientConfiguration
 2. Call CDCClient.connect(), this step is to establish a connection with the CDC Server
-3. Call CDCClient.login(), log in with the username and password configured in server.yaml
+3. Call CDCClient.login(), log in with the username and password configured in global.yaml
 4. Call CDCClient.startStreaming(), start subscribing, you need to ensure that the subscribed database and table exist in ShardingSphere-Proxy, otherwise an error will be reported
 
 > CDCClient.await is to block the main thread, it is not a necessary step, other methods can also be used, as long as the CDC thread is always working.

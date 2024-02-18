@@ -16,7 +16,7 @@ For systems running on a single database that urgently need to securely and simp
 
 1. Get ShardingSphere-Proxy. Please refer to [proxy startup guide](/en/user-manual/shardingsphere-proxy/startup/bin/) for details.
 
-2. Modify the configuration file `conf/server.yaml`. Please refer to [mode configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/) for details.
+2. Modify the configuration file `conf/global.yaml`. Please refer to [mode configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/) for details.
 
 Currently, `mode` must be `Cluster`, and the corresponding registry must be started in advance.
 

@@ -6,7 +6,7 @@ chapter = true
 
 ## Background
 
-Apache ShardingSphere provides a wealth of system configuration properties, which users can configure through `server.yaml`.
+Apache ShardingSphere provides a wealth of system configuration properties, which users can configure through `global.yaml`.
 
 ## Parameters
 
@@ -34,4 +34,4 @@ Properties that support dynamic change can take effect immediately. For the ones
 
 ## Sample
 
-For a complete sample, please refer to `server.yaml` in ShardingSphere's repository：<https://github.com/apache/shardingsphere/blob/aac0d3026e00575114701be603ec189a02a45747/shardingsphere-proxy/shardingsphere-proxy-bootstrap/src/main/resources/conf/server.yaml#L71-L93>
+For a complete sample, please refer to `global.yaml` in ShardingSphere's repository：<https://github.com/apache/shardingsphere/blob/612cd5d8e802d0d712a3a4d89da8fdc048d23879/proxy/bootstrap/src/main/resources/conf/global.yaml#L71-L89>

@@ -129,7 +129,7 @@ After startup, you can find the plugin info in the log of ShardingSphere-Proxy, 
 
 - Assume that the following corresponding configurations have been completed locally.
   - Folder `./custom/agent/` that contains all files after unpacking ShardingSphere-Agent binary package
-  - The folder containing the configuration files of ShardingSphere-Proxy such as `server.yaml` is `./custom/conf/`
+  - The folder containing the configuration files of ShardingSphere-Proxy such as `global.yaml` is `./custom/conf/`
 
 - At this point, the use of ShardingSphere-Agent can be configured through the environment variable `JVM_OPT`.
   Taking starting in the Docker Compose environment as an example, a reasonable `docker-compose.yml` example is as

@@ -79,7 +79,7 @@ Attributes:
 
 ## Procedure
 
-1. Configure running mode in server.yaml.
+1. Configure running mode in global.yaml.
 1. Configure metadata persistence warehouse type.
 
 ## Sample

@@ -26,7 +26,7 @@ Module path: `test/e2e/operation/pipeline`.
 
 Directory: `src/test/resources/env/`
 - `it-env.properties`: Environment setup configuration file.
-- `${DATABASE-TYPE}/server.yaml`: ShardingSphere-Proxy configuration fi;e.
+- `${DATABASE-TYPE}/global.yaml`: ShardingSphere-Proxy configuration fi;e.
 - `${DATABASE-TYPE}/initdb.sql`: Database initialization SQL file.
 - `${DATABASE-TYPE}/*.cnf,*.conf`: Database configuration files.
 - `common/*.xml`: DistSQL files.
@@ -50,12 +50,12 @@ Any property of `it-env.properties` could be defined by Maven command line param
 
 #### NATIVE environment setup
 
-1. Start ShardingSphere-Proxy (port should be 3307): refer to [proxy startup guide](/en/user-manual/shardingsphere-proxy/startup/bin/), or run `org.apache.shardingsphere.proxy.Bootstrap` in IDE after modifying `proxy/bootstrap/src/main/resources/conf/server.yaml`.
+1. Start ShardingSphere-Proxy (port should be 3307): refer to [proxy startup guide](/en/user-manual/shardingsphere-proxy/startup/bin/), or run `org.apache.shardingsphere.proxy.Bootstrap` in IDE after modifying `proxy/bootstrap/src/main/resources/conf/global.yaml`.
 
-Refer to following files for proxy `server.yaml` configuration:
+Refer to following files for proxy `global.yaml` configuration:
 - test/e2e/operation/pipeline/src/test/resources/env/mysql/server-8.yaml
-- test/e2e/operation/pipeline/src/test/resources/env/postgresql/server.yaml
-- test/e2e/operation/pipeline/src/test/resources/env/opengauss/server.yaml
+- test/e2e/operation/pipeline/src/test/resources/env/postgresql/global.yaml
+- test/e2e/operation/pipeline/src/test/resources/env/opengauss/global.yaml
 
 2. Start registry center (e.g. ZooKeeper) and database.
 

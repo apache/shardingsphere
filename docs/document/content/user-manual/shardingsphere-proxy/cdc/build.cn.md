@@ -26,7 +26,7 @@ ShardingSphere CDC 分为两个部分，一个是 CDC Server，另一个是 CDC 
 
 官网发布的二进制包默认不包含 GLT 模块，如果使用的是包含 GLT 功能的 openGauss 数据库，则可以额外引入 GLT 模块，保证 XA 事务的完整性。
 
-目前有两种方式引入 GLT 模块，并且需要在 server.yaml 中也进行相应的配置。
+目前有两种方式引入 GLT 模块，并且需要在 global.yaml 中也进行相应的配置。
 
 #### 1. 源码编译安装
 
@@ -47,11 +47,11 @@ ShardingSphere CDC 分为两个部分，一个是 CDC Server，另一个是 CDC 
 
 ### CDC Server 使用手册
 
-1. 修改配置文件 `conf/server.yaml`，打开 CDC 功能。 目前 `mode` 必须是 `Cluster`，需要提前启动对应的注册中心。如果 GLT provider 使用 Redis，需要提前启动 Redis。
+1. 修改配置文件 `conf/global.yaml`，打开 CDC 功能。 目前 `mode` 必须是 `Cluster`，需要提前启动对应的注册中心。如果 GLT provider 使用 Redis，需要提前启动 Redis。
 
 配置示例：
 
-1. 在 `server.yaml` 中开启 CDC 功能。
+1. 在 `global.yaml` 中开启 CDC 功能。
 
 ```yaml
 mode:

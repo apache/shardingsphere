@@ -35,7 +35,7 @@ cd shardingsphere-distribution/shardingsphere-proxy-distribution
 I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused？
 ```
 
-2. 配置 `conf/server.yaml` 和 `conf/config-*.yaml`
+2. 配置 `conf/global.yaml` 和 `conf/config-*.yaml`
 
 可以从 Docker 容器中获取配置文件模板，拷贝到宿主机任意目录中：
 ```bash

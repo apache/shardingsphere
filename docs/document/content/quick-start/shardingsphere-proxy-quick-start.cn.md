@@ -30,9 +30,9 @@ ShardingSphere-Proxy 对系统库/表（如 information_schema、pg_catalog）�
 
 2. 规则配置
 
-编辑 `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`。
+编辑 `%SHARDINGSPHERE_PROXY_HOME%/conf/global.yaml`。
 
-编辑 `%SHARDINGSPHERE_PROXY_HOME%/conf/config-xxx.yaml`。
+编辑 `%SHARDINGSPHERE_PROXY_HOME%/conf/database-xxx.yaml`。
 
 > %SHARDINGSPHERE_PROXY_HOME% 为 Proxy 解压后的路径，例：`/opt/shardingsphere-proxy-bin/`
 

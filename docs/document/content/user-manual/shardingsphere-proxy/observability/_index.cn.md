@@ -127,7 +127,7 @@ bin/start.sh
 
 - 假设本地已完成如下的对应配置。
   - 包含 ShardingSphere-Agent 二进制包解压后的所有文件的文件夹 `./custom/agent/`
-  - 包含 `server.yaml` 等 ShardingSphere-Proxy 的配置文件的文件夹为 `./custom/conf/`
+  - 包含 `global.yaml` 等 ShardingSphere-Proxy 的配置文件的文件夹为 `./custom/conf/`
 
 - 此时可通过环境变量 `JVM_OPT` 来配置 ShardingSphere-Agent 的使用。
   以在 Docker Compose 环境下启动为例，合理的 `docker-compose.yml` 示例如下。
