@@ -71,7 +71,7 @@ public final class ProxyConfigurationLoader {
      * @throws IOException IO exception
      */
     public static YamlProxyConfiguration load(final String path) throws IOException {
-        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, GLOBAL_CONFIG_FILE)));
+        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getGlobalConfigFile(path));
         File configPath = getResourceFile(path);
         Collection<YamlProxyDatabaseConfiguration> databaseConfigs = loadDatabaseConfigurations(configPath);
         YamlProxyConfigurationChecker.checkDataSources(serverConfig.getDataSources(), databaseConfigs);
@@ -79,15 +79,15 @@ public final class ProxyConfigurationLoader {
                 YamlProxyDatabaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
+    private static File getGlobalConfigFile(final String path) {
+        File result = getResourceFile(String.join("/", path, GLOBAL_CONFIG_FILE));
+        return result.exists() ? result : getResourceFile(String.join("/", path, COMPATIBLE_GLOBAL_CONFIG_FILE));
+    }
+    
     @SneakyThrows(URISyntaxException.class)
     private static File getResourceFile(final String path) {
-        try {
-            URL url = ProxyConfigurationLoader.class.getResource(path);
-            return null == url ? new File(path) : new File(url.toURI().getPath());
-        } catch (final URISyntaxException ignore) {
-            URL url = ProxyConfigurationLoader.class.getResource(COMPATIBLE_GLOBAL_CONFIG_FILE);
-            return null == url ? new File(COMPATIBLE_GLOBAL_CONFIG_FILE) : new File(url.toURI().getPath());
-        }
+        URL url = ProxyConfigurationLoader.class.getResource(path);
+        return null == url ? new File(path) : new File(url.toURI().getPath());
     }
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
