@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.context;
+package org.apache.shardingsphere.infra.algorithm.core.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+
+import java.util.Properties;
 
 /**
- * Algorithm SQL context.
+ * Algorithm configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AlgorithmSQLContext {
+@Setter
+public final class YamlAlgorithmConfiguration implements YamlConfiguration {
     
-    private final String databaseName;
+    private String type;
     
-    private final String schemaName;
-    
-    private final String tableName;
-    
-    private final String columnName;
+    private Properties props = new Properties();
 }

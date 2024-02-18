@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.config;
+package org.apache.shardingsphere.infra.algorithm.core;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.Getter;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Algorithm configuration.
+ * ShardingSphere algorithm SPI.
  */
-@Getter
-public final class AlgorithmConfiguration {
+public interface ShardingSphereAlgorithm extends TypedSPI {
     
-    private final String type;
-    
-    private final Properties props;
-    
-    public AlgorithmConfiguration(final String type, final Properties props) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
-        this.type = type;
-        this.props = null == props ? new Properties() : props;
+    @Override
+    default String getType() {
+        return "";
     }
 }

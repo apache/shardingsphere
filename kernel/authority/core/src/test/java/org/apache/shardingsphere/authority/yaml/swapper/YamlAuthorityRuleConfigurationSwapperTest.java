@@ -20,8 +20,8 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.algorithm.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.yaml.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

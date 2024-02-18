@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 
 /**
  * Job rate limit algorithm.
