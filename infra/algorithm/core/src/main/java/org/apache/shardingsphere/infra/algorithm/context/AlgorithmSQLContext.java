@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.infra.algorithm.context;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
-
-import java.util.Properties;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Algorithm configuration.
+ * Algorithm SQL context.
  */
+@RequiredArgsConstructor
 @Getter
-public final class AlgorithmConfiguration {
+public final class AlgorithmSQLContext {
     
-    private final String type;
+    private final String databaseName;
     
-    private final Properties props;
+    private final String schemaName;
     
-    public AlgorithmConfiguration(final String type, final Properties props) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
-        this.type = type;
-        this.props = null == props ? new Properties() : props;
-    }
+    private final String tableName;
+    
+    private final String columnName;
 }

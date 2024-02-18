@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.keygen.uuid.algorithm;
 
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.algorithm.context.AlgorithmSQLContext;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,7 +30,7 @@ class UUIDKeyGenerateAlgorithmTest {
     
     @Test
     void assertGenerateKeys() {
-        assertThat(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).size(), is(1));
-        assertThat(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().length(), is(32));
+        assertThat(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).size(), is(1));
+        assertThat(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next().length(), is(32));
     }
 }

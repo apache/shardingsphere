@@ -28,6 +28,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>core</module>
         <module>key-generator</module>
     </modules>
 </project>

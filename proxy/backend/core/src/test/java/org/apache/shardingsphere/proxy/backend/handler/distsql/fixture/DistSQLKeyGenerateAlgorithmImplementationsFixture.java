@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
 import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.algorithm.context.AlgorithmSQLContext;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -27,7 +27,7 @@ import java.util.stream.IntStream;
 public final class DistSQLKeyGenerateAlgorithmImplementationsFixture implements KeyGenerateAlgorithm {
     
     @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+    public Collection<Comparable<?>> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
         return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
         
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.fixture;
 
 import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.algorithm.context.AlgorithmSQLContext;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
@@ -30,7 +30,7 @@ public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGene
     private final AtomicLong idGenerator = new AtomicLong(1L);
     
     @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+    public Collection<Comparable<?>> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
         return IntStream.range(0, keyGenerateCount).mapToObj(each -> idGenerator.getAndIncrement()).collect(Collectors.toList());
     }
     

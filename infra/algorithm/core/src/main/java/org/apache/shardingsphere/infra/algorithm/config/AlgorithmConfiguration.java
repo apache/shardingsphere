@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.keygen.core.context;
+package org.apache.shardingsphere.infra.algorithm.config;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
+import java.util.Properties;
 
 /**
- * Key generate context.
+ * Algorithm configuration.
  */
-@RequiredArgsConstructor
 @Getter
-public final class KeyGenerateContext {
+public final class AlgorithmConfiguration {
     
-    private final String databaseName;
+    private final String type;
     
-    private final String schemaName;
+    private final Properties props;
     
-    private final String tableName;
-    
-    private final String columnName;
+    public AlgorithmConfiguration(final String type, final Properties props) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+        this.type = type;
+        this.props = null == props ? new Properties() : props;
+    }
 }

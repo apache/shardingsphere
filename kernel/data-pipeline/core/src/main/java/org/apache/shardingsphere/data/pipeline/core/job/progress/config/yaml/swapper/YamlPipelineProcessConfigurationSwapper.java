@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.sw
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
+import org.apache.shardingsphere.infra.algorithm.yaml.YamlAlgorithmConfigurationSwapper;
 
 /**
  * YAML pipeline process configuration swapper.

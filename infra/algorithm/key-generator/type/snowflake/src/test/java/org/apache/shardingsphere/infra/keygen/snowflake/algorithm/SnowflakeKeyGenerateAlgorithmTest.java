@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.algorithm.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.keygen.core.exception.KeyGenerateAlgorithmInitializationException;
 import org.apache.shardingsphere.infra.keygen.snowflake.exception.SnowflakeClockMoveBackException;
 import org.apache.shardingsphere.infra.keygen.snowflake.fixture.FixedTimeService;
@@ -84,7 +84,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         }
         Set<Comparable<?>> actual = new HashSet<>(taskNumber, 1F);
         for (int i = 0; i < taskNumber; i++) {
-            actual.addAll(executor.submit(() -> algorithm.generateKeys(mock(KeyGenerateContext.class), 1)).get());
+            actual.addAll(executor.submit(() -> algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1)).get());
         }
         assertThat(actual.size(), is(taskNumber));
     }
@@ -98,7 +98,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         }
         List<Comparable<?>> expected = Arrays.asList(0L, 4194305L, 4194306L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
-        actual.addAll(algorithm.generateKeys(mock(KeyGenerateContext.class), DEFAULT_KEY_AMOUNT));
+        actual.addAll(algorithm.generateKeys(mock(AlgorithmSQLContext.class), DEFAULT_KEY_AMOUNT));
         assertThat(actual, is(expected));
     }
     
@@ -109,7 +109,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        Collection<? extends Comparable<?>> actual = algorithm.generateKeys(mock(KeyGenerateContext.class), 5);
+        Collection<? extends Comparable<?>> actual = algorithm.generateKeys(mock(AlgorithmSQLContext.class), 5);
         assertThat(actual.size(), is(5));
         Iterator<? extends Comparable<?>> iterator = actual.iterator();
         assertThat(iterator.next(), is(0L));
@@ -126,19 +126,19 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
+        String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey0.substring(actualGenerateKey0.length() - 3), 2), is(0));
         Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
-        String actualGenerateKey1 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
+        String actualGenerateKey1 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey1.substring(actualGenerateKey1.length() - 3), 2), is(1));
         Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
-        String actualGenerateKey2 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
+        String actualGenerateKey2 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey2.substring(actualGenerateKey2.length() - 3), 2), is(2));
         Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
-        String actualGenerateKey3 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
+        String actualGenerateKey3 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey3.substring(actualGenerateKey3.length() - 3), 2), is(3));
         Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
-        String actualGenerateKey4 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
+        String actualGenerateKey4 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey4.substring(actualGenerateKey4.length() - 3), 2), is(0));
     }
     
@@ -153,7 +153,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         setLastMillis(algorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
-        actual.addAll(algorithm.generateKeys(mock(KeyGenerateContext.class), DEFAULT_KEY_AMOUNT));
+        actual.addAll(algorithm.generateKeys(mock(AlgorithmSQLContext.class), DEFAULT_KEY_AMOUNT));
         assertThat(actual, is(expected));
     }
     
@@ -170,7 +170,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     private void batchGenerate(final KeyGenerateAlgorithm algorithm) {
-        algorithm.generateKeys(mock(KeyGenerateContext.class), DEFAULT_KEY_AMOUNT);
+        algorithm.generateKeys(mock(AlgorithmSQLContext.class), DEFAULT_KEY_AMOUNT);
     }
     
     @Test
@@ -185,7 +185,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         setSequence(algorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1L);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
-        actual.addAll(algorithm.generateKeys(mock(KeyGenerateContext.class), DEFAULT_KEY_AMOUNT));
+        actual.addAll(algorithm.generateKeys(mock(AlgorithmSQLContext.class), DEFAULT_KEY_AMOUNT));
         assertThat(actual, is(expected));
     }
     
@@ -211,7 +211,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     void assertSetMaxVibrationOffsetFailureWhenNegative() {
         assertThrows(KeyGenerateAlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1")))
-                        .generateKeys(mock(KeyGenerateContext.class), 1));
+                        .generateKeys(mock(AlgorithmSQLContext.class), 1));
     }
     
     @Test
@@ -226,7 +226,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
         assertThrows(KeyGenerateAlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "4096")))
-                        .generateKeys(mock(KeyGenerateContext.class), 1));
+                        .generateKeys(mock(AlgorithmSQLContext.class), 1));
     }
     
     @Test
@@ -239,6 +239,6 @@ class SnowflakeKeyGenerateAlgorithmTest {
     void assertMaxTolerateTimeDifferenceMillisecondsWhenNegative() {
         assertThrows(KeyGenerateAlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "-1")))
-                        .generateKeys(mock(KeyGenerateContext.class), 1));
+                        .generateKeys(mock(AlgorithmSQLContext.class), 1));
     }
 }
