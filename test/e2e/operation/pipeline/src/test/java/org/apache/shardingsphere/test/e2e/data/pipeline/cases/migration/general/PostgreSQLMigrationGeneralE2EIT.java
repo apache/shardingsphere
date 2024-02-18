@@ -22,8 +22,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
-import org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
@@ -103,7 +103,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     private void checkOrderMigration(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
         containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(containerComposer, jobId);
-        long recordId = new SnowflakeKeyGenerateAlgorithm().generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
+        long recordId = new SnowflakeKeyGenerateAlgorithm().generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
         containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')",
                 String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME), recordId, 1, "afterStop"));
         startMigrationByJobId(containerComposer, jobId);

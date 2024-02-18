@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -30,10 +30,10 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
-import org.apache.shardingsphere.keygen.core.exception.algorithm.GenerateKeyStrategyNotFoundException;
-import org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.GenerateKeyStrategyNotFoundException;
+import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.audit.DMLShardingConditionsShardingAuditAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -334,7 +334,7 @@ class ShardingRuleTest {
     
     @Test
     void assertGenerateKeyFailure() {
-        KeyGenerateContext generateContext = mock(KeyGenerateContext.class);
+        AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
         when(generateContext.getTableName()).thenReturn("table_0");
         assertThrows(GenerateKeyStrategyNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
     }
@@ -414,7 +414,7 @@ class ShardingRuleTest {
     
     @Test
     void assertGenerateKeyWithDefaultKeyGenerator() {
-        KeyGenerateContext generateContext = mock(KeyGenerateContext.class);
+        AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
         when(generateContext.getTableName()).thenReturn("logic_table");
         Collection<? extends Comparable<?>> actual = createMinimumShardingRule().generateKeys(generateContext, 1);
         assertThat(actual.size(), is(1));
@@ -423,7 +423,7 @@ class ShardingRuleTest {
     
     @Test
     void assertGenerateKeyWithKeyGenerator() {
-        KeyGenerateContext generateContext = mock(KeyGenerateContext.class);
+        AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
         when(generateContext.getTableName()).thenReturn("logic_table");
         Collection<? extends Comparable<?>> actual = createMaximumShardingRule().generateKeys(generateContext, 1);
         assertThat(actual.size(), is(1));

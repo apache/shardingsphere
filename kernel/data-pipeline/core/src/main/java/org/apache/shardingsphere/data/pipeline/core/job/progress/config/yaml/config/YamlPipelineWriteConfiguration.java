@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.co
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 
 /**
  * YAML pipeline write configuration.

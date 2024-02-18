@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.junit.jupiter.api.Test;

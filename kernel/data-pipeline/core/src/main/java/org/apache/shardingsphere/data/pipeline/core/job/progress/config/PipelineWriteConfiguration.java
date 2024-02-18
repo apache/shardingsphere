@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 
 /**
  * Pipeline write configuration.

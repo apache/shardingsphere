@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.distsql.handler.util.CollectionUtils;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -59,8 +58,7 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     
     private void checkToBeDroppedShardingTableNames(final DropShardingTableRuleStatement sqlStatement) {
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames();
-        Collection<String> notExistedTableNames =
-                getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> !CollectionUtils.containsIgnoreCase(currentShardingTableNames, each)).collect(Collectors.toList());
+        Collection<String> notExistedTableNames = getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> !currentShardingTableNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("sharding", database.getName(), notExistedTableNames));
     }
     
@@ -69,7 +67,7 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     }
     
     private Collection<String> getCurrentShardingTableNames() {
-        Collection<String> result = new LinkedList<>();
+        Collection<String> result = new CaseInsensitiveSet<>();
         result.addAll(rule.getConfiguration().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         result.addAll(rule.getConfiguration().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         return result;
@@ -77,15 +75,14 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
     
     private void checkBindingTables(final DropShardingTableRuleStatement sqlStatement) {
         Collection<String> bindingTables = getBindingTables();
-        Collection<String> usedTableNames =
-                getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> CollectionUtils.containsIgnoreCase(bindingTables, each)).collect(Collectors.toList());
+        Collection<String> usedTableNames = getToBeDroppedShardingTableNames(sqlStatement).stream().filter(bindingTables::contains).collect(Collectors.toList());
         if (!usedTableNames.isEmpty()) {
             throw new RuleInUsedException("Sharding", database.getName(), usedTableNames, "sharding table reference");
         }
     }
     
     private Collection<String> getBindingTables() {
-        Collection<String> result = new LinkedHashSet<>();
+        Collection<String> result = new CaseInsensitiveSet<>();
         rule.getConfiguration().getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").splitToList(each.getReference())));
         return result;
     }

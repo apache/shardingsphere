@@ -28,7 +28,7 @@ import org.apache.shardingsphere.encrypt.exception.metadata.EncryptCipherColumnN
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingEncryptorException;
 import org.apache.shardingsphere.encrypt.exception.metadata.UnregisteredEncryptorException;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;

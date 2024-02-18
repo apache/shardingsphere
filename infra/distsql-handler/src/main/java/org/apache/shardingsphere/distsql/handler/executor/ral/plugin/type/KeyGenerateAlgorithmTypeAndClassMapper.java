@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 
 /**
  * Key generate algorithm type and class mapper.

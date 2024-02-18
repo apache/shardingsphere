@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.checker;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleExc
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.util.CollectionUtils;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -348,27 +348,27 @@ public final class ShardingTableRuleStatementChecker {
                 ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedRuleNames));
             }
         } else {
-            Collection<String> notExistsRules = getNotExistsRules(requiredTables, currentShardingTables);
-            ShardingSpherePreconditions.checkState(notExistsRules.isEmpty(), () -> new MissingRequiredRuleException("sharding", databaseName, notExistsRules));
+            Collection<String> notExistedRules = getNotExistedRules(requiredTables, currentShardingTables);
+            ShardingSpherePreconditions.checkState(notExistedRules.isEmpty(), () -> new MissingRequiredRuleException("sharding", databaseName, notExistedRules));
         }
     }
     
     private static Collection<String> getDuplicatedRuleNames(final Collection<String> collection) {
-        Collection<String> duplicate = collection.stream().collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        return collection.stream().filter(each -> CollectionUtils.containsIgnoreCase(duplicate, each)).collect(Collectors.toSet());
+        Collection<String> duplicatedNames = collection.stream().collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting())).entrySet().stream()
+                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toCollection(CaseInsensitiveSet::new));
+        return collection.stream().filter(duplicatedNames::contains).collect(Collectors.toSet());
     }
     
-    private static Collection<String> getDuplicatedRuleNames(final Collection<String> require, final Collection<String> current) {
-        return require.stream().filter(each -> CollectionUtils.containsIgnoreCase(current, each)).collect(Collectors.toSet());
+    private static Collection<String> getDuplicatedRuleNames(final Collection<String> requiredRuleNames, final Collection<String> currentRuleNames) {
+        return requiredRuleNames.stream().filter(currentRuleNames::contains).collect(Collectors.toSet());
     }
     
-    private static Set<String> getNotExistsRules(final Collection<String> require, final Collection<String> current) {
-        return require.stream().filter(each -> !CollectionUtils.containsIgnoreCase(current, each)).collect(Collectors.toSet());
+    private static Set<String> getNotExistedRules(final Collection<String> requiredRuleNames, final Collection<String> currentRuleNames) {
+        return requiredRuleNames.stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
     }
     
     private static Collection<String> getCurrentShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> result = new LinkedList<>();
+        Collection<String> result = new CaseInsensitiveSet<>();
         result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         result.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         return result;

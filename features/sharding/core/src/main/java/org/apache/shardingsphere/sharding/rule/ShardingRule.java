@@ -36,9 +36,9 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRul
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
-import org.apache.shardingsphere.keygen.core.exception.algorithm.GenerateKeyStrategyNotFoundException;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.GenerateKeyStrategyNotFoundException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -631,12 +631,12 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     /**
      * Find the generated keys of logic table.
      *
-     * @param keyGenerateContext key generate context 
+     * @param algorithmSQLContext key generate context 
      * @param keyGenerateCount key generate count
      * @return generated keys
      */
-    public Collection<? extends Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return getKeyGenerateAlgorithm(keyGenerateContext.getTableName()).generateKeys(keyGenerateContext, keyGenerateCount);
+    public Collection<? extends Comparable<?>> generateKeys(final AlgorithmSQLContext algorithmSQLContext, final int keyGenerateCount) {
+        return getKeyGenerateAlgorithm(algorithmSQLContext.getTableName()).generateKeys(algorithmSQLContext, keyGenerateCount);
     }
     
     private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {
