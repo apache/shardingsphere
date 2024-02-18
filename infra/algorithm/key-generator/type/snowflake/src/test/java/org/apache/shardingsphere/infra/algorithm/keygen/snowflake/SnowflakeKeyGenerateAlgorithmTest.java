@@ -63,7 +63,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     
     private static final long DEFAULT_SEQUENCE_BITS = 12L;
     
-    private static final int DEFAULT_KEY_AMOUNT = 10; 
+    private static final int DEFAULT_KEY_AMOUNT = 10;
     
     private static final InstanceContext INSTANCE;
     
