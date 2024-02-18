@@ -29,11 +29,11 @@ import java.util.Map;
 /**
  * Exported storage nodes.
  */
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class ExportedStorageNodes {
+public final class ExportedStorageNodes {
     
     @JsonProperty("storage_nodes")
     private Map<String, Collection<ExportedStorageNode>> storageNodes;

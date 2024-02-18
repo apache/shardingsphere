@@ -23,9 +23,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class OrderItem implements Serializable {
     
     private static final long serialVersionUID = 1332162822494069342L;
