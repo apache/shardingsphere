@@ -67,6 +67,16 @@ rules:
      keyGenerateStrategy:
        column: order_item_id
        keyGeneratorName: snowflake
+ autoTables:
+   t_account:
+     actualDataSources: ds_0,ds_1
+     shardingStrategy:
+       standard:
+         shardingAlgorithmName: auto_mod
+     keyGenerateStrategy:
+       column: account_id
+       keyGeneratorName: snowflake
+
  defaultDatabaseStrategy:
    standard:
      shardingColumn: user_id
@@ -98,6 +108,10 @@ rules:
      type: HINT_INLINE
      props:
        algorithm-expression: ds_${Integer.valueOf(value) % 2}
+   auto_mod:
+     type: MOD
+     props:
+       sharding-count: 4
 
  keyGenerators:
    snowflake:

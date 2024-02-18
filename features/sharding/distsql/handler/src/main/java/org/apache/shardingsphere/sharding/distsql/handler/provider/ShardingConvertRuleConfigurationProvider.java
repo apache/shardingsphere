@@ -60,7 +60,7 @@ public final class ShardingConvertRuleConfigurationProvider implements ConvertRu
         String autoTableRules = getAutoTableRules(ruleConfig);
         stringBuilder.append(ShardingDistSQLConstants.CREATE_SHARDING_TABLE).append(tableRules);
         if (!Strings.isNullOrEmpty(tableRules) && !Strings.isNullOrEmpty(autoTableRules)) {
-            stringBuilder.append(ShardingDistSQLConstants.COMMA).append(System.lineSeparator());
+            stringBuilder.append(ShardingDistSQLConstants.COMMA);
         }
         stringBuilder.append(autoTableRules).append(ShardingDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
