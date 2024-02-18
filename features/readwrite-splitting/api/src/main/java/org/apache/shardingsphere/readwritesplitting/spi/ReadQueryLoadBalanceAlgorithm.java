@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 
 import java.util.List;
 

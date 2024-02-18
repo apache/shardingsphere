@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm;
+package org.apache.shardingsphere.infra.algorithm.core.context;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * ShardingSphere algorithm SPI.
+ * Algorithm SQL context.
  */
-public interface ShardingSphereAlgorithm extends TypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class AlgorithmSQLContext {
     
-    @Override
-    default String getType() {
-        return "";
-    }
+    private final String databaseName;
+    
+    private final String schemaName;
+    
+    private final String tableName;
+    
+    private final String columnName;
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 
 /**
  * Traffic algorithm.
