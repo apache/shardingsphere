@@ -20,13 +20,14 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 
 /**
  * Mppdb decoding json related class.
  */
 @Setter
 @Getter
-public final class MppTableData {
+public final class MppTableData implements JsonConfiguration {
     
     @JsonProperty("table_name")
     private String tableName;

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.common.util;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.io.IOException;
@@ -62,7 +63,7 @@ public final class OkHttpUtils {
      * @return type parameter class bean
      * @throws IOException IO exception
      */
-    public <T> T get(final String url, final Class<T> clazz) throws IOException {
+    public <T extends JsonConfiguration> T get(final String url, final Class<T> clazz) throws IOException {
         return JsonUtils.fromJsonString(get(url), clazz);
     }
     

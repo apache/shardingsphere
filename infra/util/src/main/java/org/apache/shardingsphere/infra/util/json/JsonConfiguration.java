@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.common.result;
+package org.apache.shardingsphere.infra.util.json;
 
 /**
  * JSON configuration.
