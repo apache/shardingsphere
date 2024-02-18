@@ -86,12 +86,6 @@ class PipelineMetaDataNodeTest {
     }
     
     @Test
-    void assertGetCheckJobIdPath() {
-        String checkJobId = "j0201001";
-        assertThat(PipelineMetaDataNode.getCheckJobIdPath(jobId, checkJobId), is(jobCheckRootPath + "/job_ids/" + checkJobId));
-    }
-    
-    @Test
     void assertGetJobBarrierEnablePath() {
         assertThat(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), is(jobRootPath + "/barrier/enable"));
     }

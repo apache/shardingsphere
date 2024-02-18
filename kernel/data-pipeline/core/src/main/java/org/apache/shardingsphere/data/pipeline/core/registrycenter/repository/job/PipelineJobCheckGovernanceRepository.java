@@ -105,6 +105,16 @@ public final class PipelineJobCheckGovernanceRepository {
     }
     
     /**
+     * Init check job result.
+     *
+     * @param parentJobId parent job id
+     * @param checkJobId check job id
+     */
+    public void initCheckJobResult(final String parentJobId, final String checkJobId) {
+        repository.persist(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId), "");
+    }
+    
+    /**
      * Persist check job result.
      *
      * @param parentJobId parent job id
