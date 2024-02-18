@@ -63,6 +63,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     private final Map<String, ReadQueryLoadBalanceAlgorithm> loadBalancers;
     
+    @Getter
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
     private final InstanceContext instanceContext;

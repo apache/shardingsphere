@@ -58,7 +58,7 @@ public final class CreateDefaultShardingStrategyExecutor implements DatabaseRule
     }
     
     private void checkAlgorithm(final CreateDefaultShardingStrategyStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(ShardingStrategyType.contains(sqlStatement.getStrategyType()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
+        ShardingSpherePreconditions.checkState(ShardingStrategyType.isValidType(sqlStatement.getStrategyType()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         ShardingSpherePreconditions.checkState(ShardingStrategyType.getValueOf(sqlStatement.getStrategyType())
                 .isValid(sqlStatement.getShardingColumn()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         ShardingSpherePreconditions.checkNotNull(sqlStatement.getAlgorithmSegment(), MissingRequiredAlgorithmException::new);
