@@ -48,8 +48,9 @@ public final class ShowMigrationCheckStatusExecutor implements DistSQLQueryExecu
     }
     
     private LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
+        String incrementalIdleSeconds = null == info.getIncrementalIdleSeconds() ? "" : String.valueOf(info.getIncrementalIdleSeconds());
         return new LocalDataQueryResultRow(info.getTableNames(), info.getCheckSuccess(), info.getCheckFailedTableNames(), info.isActive(),
-                info.getInventoryFinishedPercentage(), info.getInventoryRemainingSeconds(), info.getIncrementalIdleSeconds(),
+                info.getInventoryFinishedPercentage(), info.getInventoryRemainingSeconds(), incrementalIdleSeconds,
                 info.getCheckBeginTime(), info.getCheckEndTime(), info.getDurationSeconds(), info.getAlgorithmType(), info.getAlgorithmProps(), info.getErrorMessage());
     }
     
