@@ -15,23 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.keygen.core;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+
+import java.util.Collection;
 
 /**
- * Key generate algorithm type and class mapper.
+ * Key generate algorithm.
  */
-public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm {
     
-    @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
-    }
+    /**
+     * Generate keys.
+     * 
+     * @param context algorithm SQL context 
+     * @param keyGenerateCount key generate count
+     * @return generated keys
+     */
+    Collection<? extends Comparable<?>> generateKeys(AlgorithmSQLContext context, int keyGenerateCount);
     
-    @Override
-    public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+    /**
+     * Judge whether support auto increment or not.
+     * 
+     * @return whether support auto increment or not
+     */
+    default boolean isSupportAutoIncrement() {
+        return false;
     }
 }

@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.keygen.core.exception;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Key generate algorithm type and class mapper.
+ * Generate key strategy not found exception.
  */
-public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public final class GenerateKeyStrategyNotFoundException extends KeyGenerateSQLException {
     
-    @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
-    }
+    private static final long serialVersionUID = 7456922260524630374L;
     
-    @Override
-    public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+    public GenerateKeyStrategyNotFoundException(final String tableName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 90, "Can not find strategy for generate keys with table `%s`.", tableName);
     }
 }

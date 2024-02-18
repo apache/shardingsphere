@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
-
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+package org.apache.shardingsphere.infra.algorithm.keygen.snowflake;
 
 /**
- * Key generate algorithm type and class mapper.
+ * Time service.
  */
-public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public class TimeService {
     
-    @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
-    }
-    
-    @Override
-    public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+    /**
+     * Get current millis.
+     * 
+     * @return current millis
+     */
+    public long getCurrentMillis() {
+        return System.currentTimeMillis();
     }
 }

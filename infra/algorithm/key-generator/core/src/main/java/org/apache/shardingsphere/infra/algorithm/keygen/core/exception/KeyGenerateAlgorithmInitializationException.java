@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.keygen.core.exception;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Key generate algorithm type and class mapper.
+ * Key generate algorithm initialization exception.
  */
-public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public final class KeyGenerateAlgorithmInitializationException extends KeyGenerateSQLException {
     
-    @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
-    }
+    private static final long serialVersionUID = 4137100879778822323L;
     
-    @Override
-    public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+    public KeyGenerateAlgorithmInitializationException(final String keyGenerateType, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 91, "Key generate algorithm `%s` initialization failed, reason is: %s.", keyGenerateType, reason);
     }
 }

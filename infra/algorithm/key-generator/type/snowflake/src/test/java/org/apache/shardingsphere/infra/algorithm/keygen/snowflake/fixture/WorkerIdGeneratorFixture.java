@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 
-/**
- * Key generate algorithm type and class mapper.
- */
-public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+import java.util.Properties;
+
+@RequiredArgsConstructor
+public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
+    
+    private final int fixtureWorkerId;
     
     @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
-    }
-    
-    @Override
-    public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+    public int generate(final Properties props) {
+        Preconditions.checkArgument(fixtureWorkerId >= 0L && fixtureWorkerId <= MAX_WORKER_ID, "Illegal worker id.");
+        return fixtureWorkerId;
     }
 }

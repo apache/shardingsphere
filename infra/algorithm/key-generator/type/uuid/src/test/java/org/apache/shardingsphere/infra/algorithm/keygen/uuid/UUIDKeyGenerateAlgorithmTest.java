@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.keygen.uuid;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.junit.jupiter.api.Test;
 
-/**
- * Key generate algorithm type and class mapper.
- */
-public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+
+class UUIDKeyGenerateAlgorithmTest {
     
-    @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
-    }
+    private final UUIDKeyGenerateAlgorithm algorithm = new UUIDKeyGenerateAlgorithm();
     
-    @Override
-    public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+    @Test
+    void assertGenerateKeys() {
+        assertThat(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).size(), is(1));
+        assertThat(algorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next().length(), is(32));
     }
 }
