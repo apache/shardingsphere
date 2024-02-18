@@ -71,7 +71,7 @@ public final class LiteralExpressionConverter {
         if (TIME_UNIT_NAMES.contains(literalValue)) {
             return Optional.of(new SqlIntervalQualifier(TimeUnit.valueOf(literalValue), null, SqlParserPos.ZERO));
         }
-        if (segment.getLiterals() instanceof Integer || segment.getLiterals() instanceof BigDecimal) {
+        if (segment.getLiterals() instanceof Integer || segment.getLiterals() instanceof BigDecimal || segment.getLiterals() instanceof Long) {
             return Optional.of(SqlLiteral.createExactNumeric(literalValue, SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof String) {
