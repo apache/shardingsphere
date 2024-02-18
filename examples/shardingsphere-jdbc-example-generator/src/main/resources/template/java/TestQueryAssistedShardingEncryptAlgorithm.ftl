@@ -38,8 +38,7 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptA
     @Override
     public void init(final Properties props) {
         this.properties = props;
-        EncryptAlgorithmMetaData algorithmMetaData = new EncryptAlgorithmMetaData();
-        algorithmMetaData.setSupportDecrypt(false);
+        EncryptAlgorithmMetaData algorithmMetaData = new EncryptAlgorithmMetaData(false, true, false);
         metaData = algorithmMetaData;
     }
     

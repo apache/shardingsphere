@@ -42,9 +42,7 @@ public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public void init(final Properties props) {
         this.salt = props.getProperty(SALT_KEY, "");
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
-        encryptAlgorithmMetaData.setSupportDecrypt(false);
-        metaData = encryptAlgorithmMetaData;
+        metaData = new EncryptAlgorithmMetaData(false, true, false);
     }
     
     @Override

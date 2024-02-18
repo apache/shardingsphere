@@ -31,11 +31,7 @@ public final class CoreQueryLikeEncryptAlgorithmFixture implements EncryptAlgori
     
     @Override
     public void init(final Properties props) {
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
-        encryptAlgorithmMetaData.setSupportLike(true);
-        encryptAlgorithmMetaData.setSupportDecrypt(false);
-        encryptAlgorithmMetaData.setSupportEquivalentFilter(false);
-        metaData = encryptAlgorithmMetaData;
+        metaData = new EncryptAlgorithmMetaData(false, false, true);
     }
     
     @Override

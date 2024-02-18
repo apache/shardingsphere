@@ -69,10 +69,7 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
         mask = createMask(props);
         start = createStart(props);
         charIndexes = createCharIndexes(props);
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
-        encryptAlgorithmMetaData.setSupportLike(true);
-        encryptAlgorithmMetaData.setSupportDecrypt(false);
-        metaData = encryptAlgorithmMetaData;
+        metaData = new EncryptAlgorithmMetaData(false, true, true);
     }
     
     private int createDelta(final Properties props) {

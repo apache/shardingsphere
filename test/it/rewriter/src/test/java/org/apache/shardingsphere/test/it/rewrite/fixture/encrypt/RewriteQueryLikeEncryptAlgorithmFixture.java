@@ -31,10 +31,7 @@ public final class RewriteQueryLikeEncryptAlgorithmFixture implements EncryptAlg
     
     @Override
     public void init(final Properties props) {
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
-        encryptAlgorithmMetaData.setSupportLike(true);
-        encryptAlgorithmMetaData.setSupportDecrypt(false);
-        metaData = encryptAlgorithmMetaData;
+        metaData = new EncryptAlgorithmMetaData(false, true, true);
     }
     
     @Override

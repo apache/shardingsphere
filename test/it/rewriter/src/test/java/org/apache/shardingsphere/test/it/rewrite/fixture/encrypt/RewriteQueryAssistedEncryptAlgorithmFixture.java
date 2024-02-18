@@ -31,9 +31,7 @@ public final class RewriteQueryAssistedEncryptAlgorithmFixture implements Encryp
     
     @Override
     public void init(final Properties props) {
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData();
-        encryptAlgorithmMetaData.setSupportDecrypt(false);
-        metaData = encryptAlgorithmMetaData;
+        metaData = new EncryptAlgorithmMetaData(false, true, false);
     }
     
     @Override

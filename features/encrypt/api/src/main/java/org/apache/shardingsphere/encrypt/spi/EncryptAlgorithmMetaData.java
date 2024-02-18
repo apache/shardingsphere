@@ -18,20 +18,18 @@
 package org.apache.shardingsphere.encrypt.spi;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Encrypt algorithm meta data.
  */
+@RequiredArgsConstructor
 @Getter
 public final class EncryptAlgorithmMetaData {
     
-    @Setter
-    private boolean supportDecrypt = true;
+    private final boolean supportDecrypt;
     
-    @Setter
-    private boolean supportEquivalentFilter = true;
+    private final boolean supportEquivalentFilter;
     
-    @Setter
-    private boolean supportLike;
+    private final boolean supportLike;
 }

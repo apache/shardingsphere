@@ -57,7 +57,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     @Override
     public void init(final Properties props) {
-        metaData = new EncryptAlgorithmMetaData();
+        metaData = new EncryptAlgorithmMetaData(true, true, false);
         secretKey = createSecretKey(props);
     }
     
