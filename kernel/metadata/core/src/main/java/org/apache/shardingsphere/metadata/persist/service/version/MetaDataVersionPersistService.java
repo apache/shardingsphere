@@ -20,9 +20,13 @@ package org.apache.shardingsphere.metadata.persist.service.version;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.identifier.NodePathTransactionAware;
+import org.apache.shardingsphere.mode.identifier.NodePathTransactionOperation;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Meta data version persist service.
@@ -30,20 +34,40 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class MetaDataVersionPersistService implements MetaDataVersionBasedPersistService {
     
-    private static final String ACTIVE_VERSION = "active_version";
+    private static final String ACTIVE_VERSION = "/active_version";
     
-    private static final String VERSIONS = "versions";
+    private static final String VERSIONS = "/versions/";
     
     private final PersistRepository repository;
     
-    // TODO Need to use transaction operation
     @Override
     public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
+        if (repository instanceof NodePathTransactionAware) {
+            switchActiveVersionWithTransaction(metaDataVersions);
+        } else {
+            switchActiveVersionWithoutTransaction(metaDataVersions);
+        }
+    }
+    
+    private void switchActiveVersionWithTransaction(final Collection<MetaDataVersion> metaDataVersions) {
+        ((NodePathTransactionAware) repository).executeInTransaction(buildNodePathTransactionOperations(metaDataVersions));
+    }
+    
+    private List<NodePathTransactionOperation> buildNodePathTransactionOperations(final Collection<MetaDataVersion> metaDataVersions) {
+        List<NodePathTransactionOperation> result = new ArrayList<>();
+        for (MetaDataVersion each : metaDataVersions) {
+            result.add(NodePathTransactionOperation.update(each.getKey() + ACTIVE_VERSION, each.getNextActiveVersion()));
+            result.add(NodePathTransactionOperation.delete(each.getKey() + VERSIONS + each.getCurrentActiveVersion()));
+        }
+        return result;
+    }
+    
+    private void switchActiveVersionWithoutTransaction(final Collection<MetaDataVersion> metaDataVersions) {
         for (MetaDataVersion each : metaDataVersions) {
             if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
                 continue;
             }
-            repository.persist(each.getKey() + "/" + ACTIVE_VERSION, each.getNextActiveVersion());
+            repository.persist(each.getKey()+ ACTIVE_VERSION, each.getNextActiveVersion());
             repository.delete(String.join("/", each.getKey(), VERSIONS, each.getCurrentActiveVersion()));
         }
     }
@@ -52,7 +76,6 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     public String getActiveVersionByFullPath(final String fullPath) {
         return repository.getDirectly(fullPath);
     }
-    
     @Override
     public String getVersionPathByActiveVersion(final String path, final String activeVersion) {
         return repository.getDirectly(NewDatabaseMetaDataNode.getVersionNodeByActiveVersionPath(path, activeVersion));
