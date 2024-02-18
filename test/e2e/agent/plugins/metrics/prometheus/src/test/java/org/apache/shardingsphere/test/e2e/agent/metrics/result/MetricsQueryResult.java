@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.metrics.result;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.agent.common.result.JsonConfiguration;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 
 import java.util.List;
 import java.util.Map;

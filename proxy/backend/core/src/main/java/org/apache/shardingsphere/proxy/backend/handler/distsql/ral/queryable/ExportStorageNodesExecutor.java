@@ -70,8 +70,11 @@ public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<Ex
     }
     
     private String generateExportData(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
-        return JsonUtils.toJsonString(new ExportedStorageNodes(null == sqlStatement.getDatabaseName() ? getAllStorageNodes(metaData)
-                : generateDatabaseExportStorageNodesData(metaData.getDatabase(sqlStatement.getDatabaseName()))));
+        ExportedStorageNodes storageNodes = new ExportedStorageNodes();
+        storageNodes.setStorageNodes(null == sqlStatement.getDatabaseName()
+                ? getAllStorageNodes(metaData)
+                : generateDatabaseExportStorageNodesData(metaData.getDatabase(sqlStatement.getDatabaseName())));
+        return JsonUtils.toJsonString(storageNodes);
     }
     
     private Map<String, Collection<ExportedStorageNode>> getAllStorageNodes(final ShardingSphereMetaData metaData) {

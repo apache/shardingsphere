@@ -70,7 +70,7 @@ public final class JsonUtils {
      * @return object
      */
     @SneakyThrows(JsonProcessingException.class)
-    public static <T> T fromJsonString(final String value, final Class<T> clazz) {
+    public static <T extends JsonConfiguration> T fromJsonString(final String value, final Class<T> clazz) {
         return MAPPER.readValue(value, clazz);
     }
     

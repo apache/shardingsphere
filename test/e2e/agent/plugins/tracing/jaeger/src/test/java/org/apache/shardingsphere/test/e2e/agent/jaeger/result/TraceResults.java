@@ -19,12 +19,13 @@ package org.apache.shardingsphere.test.e2e.agent.jaeger.result;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.json.JsonConfiguration;
 
 import java.util.Collection;
 
 @Getter
 @Setter
-public final class TraceResults {
+public final class TraceResults implements JsonConfiguration {
     
     private Collection<TraceResult> data;
 }
