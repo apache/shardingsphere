@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.exec.ExpectedExecClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hint.ExpectedWithTableHintClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertColumnsClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
@@ -91,4 +92,7 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "table-hints")
     private ExpectedWithTableHintClause expectedWithTableHintClause;
+    
+    @XmlElement(name = "rowset-function")
+    private ExpectedFunction expectedRowSetFunctionClause;
 }

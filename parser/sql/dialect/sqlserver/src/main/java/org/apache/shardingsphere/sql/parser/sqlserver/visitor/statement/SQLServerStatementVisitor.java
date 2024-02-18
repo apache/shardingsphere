@@ -129,6 +129,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RowSetFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenQueryFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -832,6 +834,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     @Override
+    public ASTNode visitOpenQueryFunction(final OpenQueryFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENQUERY().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
         Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
@@ -1100,9 +1111,23 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.withTableHint()) {
             result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
         }
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.tableName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        }
+        if (null != ctx.rowSetFunction()) {
+            result.setRowSetFunctionSegment((FunctionSegment) visit(ctx.rowSetFunction()));
+        }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitRowSetFunction(final RowSetFunctionContext ctx) {
+        if (null != ctx.openRowSetFunction()) {
+            return visit(ctx.openRowSetFunction());
+        } else {
+            return visit(ctx.openQueryFunction());
+        }
     }
     
     @Override

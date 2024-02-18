@@ -142,4 +142,8 @@
     <sql-case id="insert_with_cross_database_values" value="INSERT [SourceDatabase].[dbo].[SourceTable] VALUES (1, N'Bob'),(2, N'Susan')" db-types="SQLServer"/>
     <sql-case id="insert_with_cross_database_select" value="INSERT [DestinationDatabase].[dbo].[DestTable_InMem] SELECT * FROM [SourceDatabase].[dbo].[SourceTable]" db-types="SQLServer"/>
     <sql-case id="insert_with_select_with_table_hint_no_with_keyword" value="INSERT INTO #tmpdbs ([dbid], [dbname], [isdone]) SELECT database_id, name, 0 FROM master.sys.databases (NOLOCK) WHERE is_read_only = 0 AND state = 0" db-types="SQLServer"/>
+    <sql-case id="insert_with_open_query_function_limit" value="INSERT OPENQUERY (MyLinkServer, 'SELECT Name, GroupName FROM AdventureWorks2022.HumanResources.Department') VALUES ('Environmental Impact', 'Engineering')" db-types="SQLServer"/>
+    <sql-case id="insert_with_hint_and_open_row_set_function" value="INSERT INTO HumanResources.Department WITH (IGNORE_TRIGGERS) (Name, GroupName) SELECT b.Name, b.GroupName FROM OPENROWSET (BULK 'C:SQLFilesDepartmentData.txt', FORMATFILE = 'C:SQLFilesBulkloadFormatFile.xml', ROWS_PER_BATCH = 15000)AS b" db-types="SQLServer"/>
+    <sql-case id="insert_with_xlock_hint" value="INSERT INTO Production.Location WITH (XLOCK) (Name, CostRate, Availability) VALUES ( N'Final Inventory', 15.00, 80.00)" db-types="SQLServer"/>
+    <sql-case id="insert_with_output_input" value="INSERT Production.ScrapReason OUTPUT INSERTED.ScrapReasonID, INSERTED.Name, INSERTED.ModifiedDate INTO @MyTableVar VALUES (N'Operator error', GETDATE())" db-types="SQLServer"/>
 </sql-cases>
