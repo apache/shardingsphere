@@ -146,4 +146,5 @@
     <sql-case id="insert_with_hint_and_open_row_set_function" value="INSERT INTO HumanResources.Department WITH (IGNORE_TRIGGERS) (Name, GroupName) SELECT b.Name, b.GroupName FROM OPENROWSET (BULK 'C:SQLFilesDepartmentData.txt', FORMATFILE = 'C:SQLFilesBulkloadFormatFile.xml', ROWS_PER_BATCH = 15000)AS b" db-types="SQLServer"/>
     <sql-case id="insert_with_xlock_hint" value="INSERT INTO Production.Location WITH (XLOCK) (Name, CostRate, Availability) VALUES ( N'Final Inventory', 15.00, 80.00)" db-types="SQLServer"/>
     <sql-case id="insert_with_output_input" value="INSERT Production.ScrapReason OUTPUT INSERTED.ScrapReasonID, INSERTED.Name, INSERTED.ModifiedDate INTO @MyTableVar VALUES (N'Operator error', GETDATE())" db-types="SQLServer"/>
+    <sql-case id="insert_into_with_multi_nchar" value="INSERT INTO Production.UnitMeasure VALUES (N'FT2', N'Square Feet ', '20080923'), (N'Y', N'Yards', '20080923'), (N'Y3', N'Cubic Yards', '20080923')" db-types="SQLServer"/>
 </sql-cases>

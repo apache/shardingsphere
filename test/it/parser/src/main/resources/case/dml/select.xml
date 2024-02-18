@@ -8604,4 +8604,123 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_brackets_case_when_alias">
+        <projections start-index="7" stop-index="176">
+            <column-projection name="name" start-index="7" stop-index="25" alias="column_name"/>
+            <column-projection name="column_id" start-index="27" stop-index="35"/>
+            <expression-projection text="TYPE_NAME(user_type_id)" start-index="37" stop-index="72" alias="type_name">
+                <function text="TYPE_NAME(user_type_id)" function-name="TYPE_NAME" start-index="37" stop-index="59">
+                    <parameter>
+                        <column name="user_type_id" start-index="47" stop-index="58"/>
+                    </parameter>
+                </function>
+            </expression-projection>
+            <column-projection name="max_length" start-index="75" stop-index="84"/>
+            <expression-projection text="CASEWHENmax_length=-1ANDTYPE_NAME(user_type_id)&lt;&gt;'xml'THEN1ELSE0END" start-index="86" stop-index="176" alias="(max)" start-delimiter="[" end-delimiter="]">
+                <expr>
+                    <common-expression text="CASEWHENmax_length=-1ANDTYPE_NAME(user_type_id)&lt;&gt;'xml'THEN1ELSE0END" start-index="86" stop-index="165"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="183" stop-index="193">
+            <simple-table name="columns" start-index="183" stop-index="193">
+                <owner name="sys" start-index="183" stop-index="185"/>
+            </simple-table>
+        </from>
+        <where start-index="195" stop-index="400">
+            <expr>
+                <binary-operation-expression start-index="201" stop-index="400">
+                    <operator>AND</operator>
+                    <left>
+                        <binary-operation-expression start-index="201" stop-index="247">
+                            <left>
+                                <column name="object_id" start-index="201" stop-index="209"/>
+                            </left>
+                            <right>
+                                <function text="OBJECT_ID('&lt;schema_name.table_name&gt;')" function-name="OBJECT_ID" start-index="211" stop-index="247">
+                                    <parameter>
+                                        <literal-expression value="&lt;schema_name.table_name&gt;" start-index="221" stop-index="246"/>
+                                    </parameter>
+                                </function>
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <binary-operation-expression start-index="255" stop-index="399">
+                            <operator>OR</operator>
+                            <left>
+                                <in-expression start-index="255" stop-index="312">
+                                    <left>
+                                        <function text="TYPE_NAME(user_type_id)" start-index="255" stop-index="277" function-name="TYPE_NAME">
+                                            <parameter>
+                                                <column name="user_type_id" start-index="265" stop-index="276"/>
+                                            </parameter>
+                                        </function>
+                                    </left>
+                                    <right>
+                                        <list-expression start-index="282" stop-index="312">
+                                            <items>
+                                                <literal-expression value="xml" start-index="283" stop-index="287"/>
+                                            </items>
+                                            <items>
+                                                <literal-expression value="text" start-index="289" stop-index="294"/>
+                                            </items>
+                                            <items>
+                                                <literal-expression value="ntext" start-index="297" stop-index="303"/>
+                                            </items>
+                                            <items>
+                                                <literal-expression value="image" start-index="305" stop-index="311"/>
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                </in-expression>
+                            </left>
+                            <right>
+                                <binary-operation-expression start-index="318" stop-index="398">
+                                    <operator>AND</operator>
+                                    <left>
+                                        <in-expression start-index="318" stop-index="378">
+                                            <left>
+                                                <function text="TYPE_NAME(user_type_id)" start-index="318" stop-index="340" function-name="TYPE_NAME">
+                                                    <parameter>
+                                                        <column name="user_type_id" start-index="328" stop-index="339"/>
+                                                    </parameter>
+                                                </function>
+                                            </left>
+                                            <right>
+                                                <list-expression start-index="345" stop-index="378">
+                                                    <items>
+                                                        <literal-expression value="varchar" start-index="346" stop-index="354"/>
+                                                    </items>
+                                                    <items>
+                                                        <literal-expression value="nvarchar" start-index="356" stop-index="365"/>
+                                                    </items>
+                                                    <items>
+                                                        <literal-expression value="varbinary" start-index="367" stop-index="377"/>
+                                                    </items>
+                                                </list-expression>
+                                            </right>
+                                        </in-expression>
+                                    </left>
+                                    <right>
+                                        <binary-operation-expression start-index="384" stop-index="398">
+                                            <operator>=</operator>
+                                            <left>
+                                                <column name="max_length" start-index="384" stop-index="393"/>
+                                            </left>
+                                            <right>
+                                                <literal-expression value="-1" start-index="397" stop-index="398"/>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
