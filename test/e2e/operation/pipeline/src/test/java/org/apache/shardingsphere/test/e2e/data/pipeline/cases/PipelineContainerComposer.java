@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
@@ -456,10 +455,10 @@ public final class PipelineContainerComposer implements AutoCloseable {
     /**
      * Start increment task.
      *
-     * @param baseIncrementTask base increment task
+     * @param task increment task
      */
-    public void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
-        increaseTaskThread = new Thread(baseIncrementTask);
+    public void startIncrementTask(final Runnable task) {
+        increaseTaskThread = new Thread(task);
         increaseTaskThread.start();
     }
     
