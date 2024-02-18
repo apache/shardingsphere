@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
+package org.apache.shardingsphere.infra.keygen.core.context;
 
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+/**
+ * Key generate context.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class KeyGenerateContext {
     
-    @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
-        
-    }
+    private final String databaseName;
     
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
-    }
+    private final String schemaName;
+    
+    private final String tableName;
+    
+    private final String columnName;
 }

@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
+package org.apache.shardingsphere.infra.keygen.core.exception;
 
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+/**
+ * Generate key strategy not found exception.
+ */
+public final class GenerateKeyStrategyNotFoundException extends KeyGenerateSQLException {
     
-    @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
-        
-    }
+    private static final long serialVersionUID = 7456922260524630374L;
     
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
+    public GenerateKeyStrategyNotFoundException(final String tableName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 90, "Can not find strategy for generate keys with table `%s`.", tableName);
     }
 }

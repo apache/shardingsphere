@@ -15,25 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
+package org.apache.shardingsphere.infra.keygen.core.algorithm;
 
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+/**
+ * Key generate algorithm.
+ */
+public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm {
     
-    @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
-        
-    }
+    /**
+     * Generate keys.
+     * 
+     * @param keyGenerateContext key generate context 
+     * @param keyGenerateCount key generate count
+     * @return generated keys
+     */
+    Collection<? extends Comparable<?>> generateKeys(KeyGenerateContext keyGenerateContext, int keyGenerateCount);
     
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
+    /**
+     * Judge whether support auto increment or not.
+     * 
+     * @return whether support auto increment or not
+     */
+    default boolean isSupportAutoIncrement() {
+        return false;
     }
 }
