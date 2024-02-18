@@ -17,7 +17,7 @@ Introduce Maven dependencies and exclude the outdated Maven dependencies of `org
     <dependencies>
       <dependency>
          <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc-core</artifactId>
+         <artifactId>shardingsphere-jdbc</artifactId>
          <version>${shardingsphere.version}</version>
       </dependency>
       <dependency>

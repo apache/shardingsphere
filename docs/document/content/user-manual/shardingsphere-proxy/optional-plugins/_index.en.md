@@ -12,7 +12,7 @@ All the built-in plugins for ShardingSphere-Proxy are listed below in the form o
 
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd`, etcd implementation of persistent definition of cluster mode configuration information
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`, the zookeeper implementation of the persistent definition of cluster mode configuration information
-- `org.apache.shardingsphere:shardingsphere-jdbc-core`, JDBC core
+- `org.apache.shardingsphere:shardingsphere-jdbc`, JDBC module
 - `org.apache.shardingsphere:shardingsphere-db-protocol-core`, database protocol core
 - `org.apache.shardingsphere:shardingsphere-mysql-protocol`, the MySQL implementation of the database protocol
 - `org.apache.shardingsphere:shardingsphere-postgresql-protocol`, the PostgreSQL implementation of the database protocol
@@ -24,7 +24,7 @@ All the built-in plugins for ShardingSphere-Proxy are listed below in the form o
 - `org.apache.shardingsphere:shardingsphere-proxy-backend-core`, the backend core for ShardingSphere Proxy
 - `org.apache.shardingsphere:shardingsphere-standalone-mode-core`, the persistence definition core of single-machine mode configuration information
 
-For the core `org.apache.shardingsphere:shardingsphere-jdbc-core`,Its built-in plugins reference[ShardingSphere-JDBC Optional Plugins](/en/user-manual/shardingsphere-jdbc/optional-plugins/).
+For the core `org.apache.shardingsphere:shardingsphere-jdbc`,Its built-in plugins reference[ShardingSphere-JDBC Optional Plugins](/en/user-manual/shardingsphere-jdbc/optional-plugins/).
 
 If ShardingSphere Proxy needs to use optional plugins, you need to download the JAR containing its SPI implementation and its dependent JARs from Maven Central.
 
