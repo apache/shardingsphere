@@ -99,7 +99,7 @@ public final class ConsistencyCheckJobAPI {
         String result = PipelineJobIdUtils.marshal(
                 latestCheckJobId.map(optional -> new ConsistencyCheckJobId(contextKey, parentJobId, optional)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)));
         governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, result);
-        governanceFacade.getJobFacade().getCheck().deleteCheckJobResult(parentJobId, result);
+        governanceFacade.getJobFacade().getCheck().initCheckJobResult(parentJobId, result);
         jobManager.drop(result);
         jobManager.start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(getYamlConfiguration(result, parentJobId, param)));
         return result;

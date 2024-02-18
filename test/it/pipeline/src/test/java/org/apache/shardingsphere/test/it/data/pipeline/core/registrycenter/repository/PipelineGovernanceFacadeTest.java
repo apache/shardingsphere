@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.registrycenter.repository;
 
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.item.PipelineJobItemErrorMessageGovernanceRepository;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.item.PipelineJobItemProcessGovernanceRepository;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
@@ -44,6 +44,7 @@ import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContext
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -127,6 +128,18 @@ class PipelineGovernanceFacadeTest {
         assertThat(actualCheckJobIdOpt.get(), is(expectedCheckJobId));
         governanceFacade.getJobFacade().getCheck().deleteLatestCheckJobId(parentJobId);
         assertFalse(governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId).isPresent());
+    }
+    
+    @Test
+    void assertInitCheckJobResult() {
+        MigrationJobItemContext jobItemContext = mockJobItemContext();
+        String checkJobId = "j02101";
+        governanceFacade.getJobFacade().getCheck().initCheckJobResult(jobItemContext.getJobId(), checkJobId);
+        Collection<String> actualCheckJobIds = governanceFacade.getJobFacade().getCheck().listCheckJobIds(jobItemContext.getJobId());
+        assertThat(actualCheckJobIds.size(), is(1));
+        assertThat(actualCheckJobIds.iterator().next(), is(checkJobId));
+        governanceFacade.getJobFacade().getCheck().deleteCheckJobResult(jobItemContext.getJobId(), checkJobId);
+        assertThat(governanceFacade.getJobFacade().getCheck().listCheckJobIds(jobItemContext.getJobId()).size(), is(0));
     }
     
     @Test

@@ -147,17 +147,6 @@ public final class PipelineMetaDataNode {
     }
     
     /**
-     * Get check job id path.
-     *
-     * @param jobId job id
-     * @param checkJobId check job id
-     * @return check job id path
-     */
-    public static String getCheckJobIdPath(final String jobId, final String checkJobId) {
-        return String.join("/", getCheckJobIdsRootPath(jobId), checkJobId);
-    }
-    
-    /**
      * Get job barrier enable path.
      *
      * @param jobId job id
