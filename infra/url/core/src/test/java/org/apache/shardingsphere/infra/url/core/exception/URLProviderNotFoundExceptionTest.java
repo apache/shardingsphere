@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url;
+package org.apache.shardingsphere.infra.url.core.exception;
 
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.junit.jupiter.api.Test;
 
-import java.util.Properties;
+import java.sql.SQLException;
 
-/**
- * ShardingSphere URL loader.
- */
-@SingletonSPI
-public interface ShardingSphereURLLoader extends TypedSPI {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class URLProviderNotFoundExceptionTest {
     
-    /**
-     * Load configuration content.
-     * 
-     * @param configurationSubject configuration subject
-     * @param queryProps query properties
-     * @return loaded content
-     */
-    String load(String configurationSubject, Properties queryProps);
+    @Test
+    void assertToSQLException() {
+        SQLException sqlException = new URLProviderNotFoundException("invalid:xxx").toSQLException();
+        assertThat(sqlException.getMessage(), is("Can not find url provider for `invalid:xxx`."));
+        assertThat(sqlException.getSQLState(), is("42S02"));
+        assertThat(sqlException.getErrorCode(), is(12012));
+    }
 }
