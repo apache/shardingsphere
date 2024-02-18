@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
 
@@ -52,13 +52,14 @@ import static org.mockito.Mockito.when;
 
 class JDBCMemoryQueryResultTest {
     
-    private final DatabaseType databaseType = new MySQLDatabaseType();
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertConstructorWithSqlException() throws SQLException {
-        ResultSet resultSet = mockResultSet();
-        when(resultSet.next()).thenThrow(new SQLException(""));
-        assertThrows(SQLException.class, () -> new JDBCMemoryQueryResult(resultSet, databaseType));
+        try (ResultSet resultSet = mockResultSet()) {
+            when(resultSet.next()).thenThrow(new SQLException(""));
+            assertThrows(SQLException.class, () -> new JDBCMemoryQueryResult(resultSet, databaseType));
+        }
     }
     
     @Test

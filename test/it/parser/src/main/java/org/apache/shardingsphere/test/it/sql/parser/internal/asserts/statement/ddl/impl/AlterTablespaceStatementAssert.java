@@ -52,8 +52,8 @@ public final class AlterTablespaceStatementAssert {
         } else {
             assertNotNull(actual.getTablespaceSegment(), assertContext.getText("Actual tablespace should exist."));
             IdentifierValueAssert.assertIs(assertContext, actual.getTablespaceSegment().getIdentifier(), expected.getTablespace(), "Tablespace");
+            SQLSegmentAssert.assertIs(assertContext, actual.getTablespaceSegment(), expected.getTablespace());
         }
-        SQLSegmentAssert.assertIs(assertContext, actual.getTablespaceSegment(), expected.getTablespace());
     }
     
     private static void assertRenameTablespace(final SQLCaseAssertContext assertContext, final AlterTablespaceStatement actual, final AlterTablespaceStatementTestCase expected) {
@@ -62,7 +62,7 @@ public final class AlterTablespaceStatementAssert {
         } else {
             assertNotNull(actual.getRenameTablespaceSegment(), assertContext.getText("Actual rename tablespace should exist."));
             IdentifierValueAssert.assertIs(assertContext, actual.getRenameTablespaceSegment().getIdentifier(), expected.getRenameTablespace(), "Tablespace");
+            SQLSegmentAssert.assertIs(assertContext, actual.getRenameTablespaceSegment(), expected.getRenameTablespace());
         }
-        SQLSegmentAssert.assertIs(assertContext, actual.getRenameTablespaceSegment(), expected.getRenameTablespace());
     }
 }

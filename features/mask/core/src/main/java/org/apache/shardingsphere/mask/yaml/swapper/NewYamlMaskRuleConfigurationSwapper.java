@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
@@ -56,7 +56,7 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
     public Collection<YamlDataNode> swapToDataNodes(final MaskRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : data.getMaskAlgorithms().entrySet()) {
-            result.add(new YamlDataNode(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.ALGORITHMS).getPath(entry.getKey()),
+            result.add(new YamlDataNode(maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getPath(entry.getKey()),
                     YamlEngine.marshal(algorithmSwapper.swapToYamlConfiguration(entry.getValue()))));
         }
         for (MaskTableRuleConfiguration each : data.getTables()) {
@@ -76,7 +76,7 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
         for (YamlDataNode each : validDataNodes) {
             maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.TABLES).getName(each.getKey())
                     .ifPresent(optional -> tables.add(tableSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlMaskTableRuleConfiguration.class))));
-            maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.ALGORITHMS).getName(each.getKey())
+            maskRuleNodePath.getNamedItem(MaskRuleNodePathProvider.MASK_ALGORITHMS).getName(each.getKey())
                     .ifPresent(optional -> algorithms.put(optional, algorithmSwapper.swapToObject(YamlEngine.unmarshal(each.getValue(), YamlAlgorithmConfiguration.class))));
         }
         return Optional.of(new MaskRuleConfiguration(tables, algorithms));

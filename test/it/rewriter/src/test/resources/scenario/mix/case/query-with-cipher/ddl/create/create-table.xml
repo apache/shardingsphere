@@ -19,25 +19,25 @@
 <rewrite-assertions yaml-rule="scenario/mix/config/query-with-cipher.yaml">
     <rewrite-assertion id="create_table_with_single_cipher_column" db-types="MySQL">
         <input sql="CREATE TABLE t_account_detail_new(account_id INT, password VARCHAR(100));" />
-        <output sql="CREATE TABLE t_account_detail_new_0(account_id INT, cipher_password VARCHAR(100), assisted_query_password VARCHAR(100));" />
-        <output sql="CREATE TABLE t_account_detail_new_1(account_id INT, cipher_password VARCHAR(100), assisted_query_password VARCHAR(100));" />
+        <output sql="CREATE TABLE t_account_detail_new_0(account_id INT, cipher_password VARCHAR(4000), assisted_query_password VARCHAR(4000));" />
+        <output sql="CREATE TABLE t_account_detail_new_1(account_id INT, cipher_password VARCHAR(4000), assisted_query_password VARCHAR(4000));" />
     </rewrite-assertion>
     
     <rewrite-assertion id="create_table_with_multi_cipher_column" db-types="MySQL">
         <input sql="CREATE TABLE t_account_detail_new(account_id INT, password VARCHAR(100), amount VARCHAR(100));" />
-        <output sql="CREATE TABLE t_account_detail_new_0(account_id INT, cipher_password VARCHAR(100), assisted_query_password VARCHAR(100), cipher_amount VARCHAR(100));" />
-        <output sql="CREATE TABLE t_account_detail_new_1(account_id INT, cipher_password VARCHAR(100), assisted_query_password VARCHAR(100), cipher_amount VARCHAR(100));" />
+        <output sql="CREATE TABLE t_account_detail_new_0(account_id INT, cipher_password VARCHAR(4000), assisted_query_password VARCHAR(4000), cipher_amount VARCHAR(4000));" />
+        <output sql="CREATE TABLE t_account_detail_new_1(account_id INT, cipher_password VARCHAR(4000), assisted_query_password VARCHAR(4000), cipher_amount VARCHAR(4000));" />
     </rewrite-assertion>
     
     <rewrite-assertion id="create_table_with_all_cipher_column" db-types="MySQL">
         <input sql="CREATE TABLE t_account_detail_new(password VARCHAR(100), amount VARCHAR(100));" />
-        <output sql="CREATE TABLE t_account_detail_new_0(cipher_password VARCHAR(100), assisted_query_password VARCHAR(100), cipher_amount VARCHAR(100));" />
-        <output sql="CREATE TABLE t_account_detail_new_1(cipher_password VARCHAR(100), assisted_query_password VARCHAR(100), cipher_amount VARCHAR(100));" />
+        <output sql="CREATE TABLE t_account_detail_new_0(cipher_password VARCHAR(4000), assisted_query_password VARCHAR(4000), cipher_amount VARCHAR(4000));" />
+        <output sql="CREATE TABLE t_account_detail_new_1(cipher_password VARCHAR(4000), assisted_query_password VARCHAR(4000), cipher_amount VARCHAR(4000));" />
     </rewrite-assertion>
     
     <rewrite-assertion id="create_table_with_random_blank_cipher_column" db-types="MySQL">
         <input sql="CREATE TABLE t_account_detail_new( account_id INT  , password VARCHAR(100) ,  amount VARCHAR(100)); " />
-        <output sql="CREATE TABLE t_account_detail_new_0( account_id INT  , cipher_password VARCHAR(100) ,  assisted_query_password VARCHAR(100) ,  cipher_amount VARCHAR(100)); " />
-        <output sql="CREATE TABLE t_account_detail_new_1( account_id INT  , cipher_password VARCHAR(100) ,  assisted_query_password VARCHAR(100) ,  cipher_amount VARCHAR(100)); " />
+        <output sql="CREATE TABLE t_account_detail_new_0( account_id INT  , cipher_password VARCHAR(4000) ,  assisted_query_password VARCHAR(4000) ,  cipher_amount VARCHAR(4000)); " />
+        <output sql="CREATE TABLE t_account_detail_new_1( account_id INT  , cipher_password VARCHAR(4000) ,  assisted_query_password VARCHAR(4000) ,  cipher_amount VARCHAR(4000)); " />
     </rewrite-assertion>
 </rewrite-assertions>

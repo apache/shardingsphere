@@ -39,11 +39,6 @@ class LoggingRuleTest {
     }
     
     @Test
-    void assertGetType() {
-        assertThat(loggingRule.getType(), is(LoggingRule.class.getSimpleName()));
-    }
-    
-    @Test
     void assertFields() {
         assertThat(loggingRule.getConfiguration().getLoggers().size(), is(1));
         assertThat(loggingRule.getConfiguration().getAppenders().size(), is(1));

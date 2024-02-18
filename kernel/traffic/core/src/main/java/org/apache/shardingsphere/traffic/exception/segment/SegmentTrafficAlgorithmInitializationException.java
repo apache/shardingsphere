@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.exception.segment;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.traffic.exception.TrafficException;
 
 /**

@@ -23,4 +23,7 @@
     <sql-case id="alter_flashback_archive_purge_all" value="ALTER FLASHBACK ARCHIVE test_archive PURGE ALL;" db-types="Oracle" />
     <sql-case id="alter_flashback_archive_purge_before" value="ALTER FLASHBACK ARCHIVE test_archive PURGE BEFORE TIMESTAMP 2649009;" db-types="Oracle" />
     <sql-case id="alter_flashback_archive_no_optimize_data" value="ALTER FLASHBACK ARCHIVE test_archive NO OPTIMIZE DATA;" db-types="Oracle" />
+    <sql-case id="alter_flashback_archive_modify_retention_month" value="ALTER FLASHBACK ARCHIVE test_archive1 MODIFY RETENTION 1 MONTH" db-types="Oracle" />
+    <sql-case id="alter_flashback_archive_modify_retention_year" value="ALTER FLASHBACK ARCHIVE fla1 MODIFY RETENTION 2 YEAR" db-types="Oracle" />
+    <sql-case id="alter_flashback_archive_purge_before_timestamp_systimestamp_interval" value="ALTER FLASHBACK ARCHIVE fla1 PURGE BEFORE TIMESTAMP (SYSTIMESTAMP - INTERVAL '1' DAY)" db-types="Oracle" />
 </sql-cases>

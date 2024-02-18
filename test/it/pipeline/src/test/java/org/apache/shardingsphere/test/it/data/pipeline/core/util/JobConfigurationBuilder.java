@@ -20,22 +20,19 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.config.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.config.YamlMigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 
 import java.sql.Connection;
@@ -78,14 +75,14 @@ public final class JobConfigurationBuilder {
         result.setTargetTableSchemaMap(targetTableSchemaMap);
         result.setTablesFirstDataNodes("t_order:ds_0.t_order");
         result.setJobShardingDataNodes(Collections.singletonList("t_order:ds_0.t_order"));
-        PipelineContextKey contextKey = PipelineContextKey.build(RandomStringUtils.randomAlphabetic(32), InstanceType.PROXY);
-        result.setJobId(generateMigrationJobId(contextKey, result));
+        PipelineContextKey contextKey = new PipelineContextKey(RandomStringUtils.randomAlphabetic(32), InstanceType.PROXY);
+        result.setJobId(PipelineJobIdUtils.marshal(new MigrationJobId(contextKey, result.getJobShardingDataNodes())));
         Map<String, YamlPipelineDataSourceConfiguration> sources = new LinkedHashMap<>();
         String databaseNameSuffix = RandomStringUtils.randomAlphabetic(9);
         PipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(
                 ConfigurationFileUtils.readFile("migration_standard_jdbc_source.yaml").replace("${databaseNameSuffix}", databaseNameSuffix));
         try (
-                PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
+                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(sourceDataSourceConfig);
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(PipelineContextUtils.getCreateOrderTableSchema());
@@ -96,13 +93,7 @@ public final class JobConfigurationBuilder {
         result.setSources(sources);
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtils.readFile("migration_sharding_sphere_jdbc_target.yaml").replace("${databaseNameSuffix}", databaseNameSuffix))));
-        TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(contextKey, result);
         return result;
-    }
-    
-    private static String generateMigrationJobId(final PipelineContextKey contextKey, final YamlMigrationJobConfiguration yamlJobConfig) {
-        MigrationJobId migrationJobId = new MigrationJobId(contextKey, yamlJobConfig.getJobShardingDataNodes());
-        return new MigrationJobAPI().marshalJobId(migrationJobId);
     }
     
     private static YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final PipelineDataSourceConfiguration config) {

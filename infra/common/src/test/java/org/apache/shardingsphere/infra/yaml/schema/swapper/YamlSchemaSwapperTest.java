@@ -65,6 +65,7 @@ class YamlSchemaSwapperTest {
         assertFalse(idColumn.isGenerated());
         assertTrue(idColumn.isPrimaryKey());
         assertFalse(idColumn.isUnsigned());
+        assertFalse(idColumn.isNullable());
         assertTrue(idColumn.isVisible());
         YamlShardingSphereColumn nameColumn = columns.get("name");
         assertThat(nameColumn.getName(), is("name"));
@@ -73,6 +74,7 @@ class YamlSchemaSwapperTest {
         assertTrue(nameColumn.isGenerated());
         assertFalse(nameColumn.isPrimaryKey());
         assertTrue(nameColumn.isUnsigned());
+        assertFalse(nameColumn.isNullable());
         assertFalse(nameColumn.isVisible());
     }
     
@@ -92,8 +94,8 @@ class YamlSchemaSwapperTest {
     
     private void assertColumn(final ShardingSphereTable table) {
         assertThat(table.getColumnValues().size(), is(2));
-        assertThat(table.getColumn("id"), is(new ShardingSphereColumn("id", 0, true, false, false, true, false)));
-        assertThat(table.getColumn("name"), is(new ShardingSphereColumn("name", 10, false, true, true, false, true)));
+        assertThat(table.getColumn("id"), is(new ShardingSphereColumn("id", 0, true, false, false, true, false, false)));
+        assertThat(table.getColumn("name"), is(new ShardingSphereColumn("name", 10, false, true, true, false, true, false)));
     }
     
     @Test

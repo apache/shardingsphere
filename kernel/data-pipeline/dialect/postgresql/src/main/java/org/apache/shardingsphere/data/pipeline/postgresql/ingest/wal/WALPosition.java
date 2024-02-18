@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 
 /**
@@ -33,6 +33,6 @@ public final class WALPosition implements IngestPosition {
     
     @Override
     public String toString() {
-        return String.valueOf(logSequenceNumber.asLong());
+        return logSequenceNumber.asString();
     }
 }

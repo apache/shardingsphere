@@ -17,6 +17,13 @@
   -->
 
 <sql-cases>
+    <sql-case id="insert_into_values1" value="INSERT INTO test_nested VALUES(1)" db-types="MySQL" />
+    <sql-case id="insert_into_values2" value="insert into emp_table values(1,'John',1000.00,'Architect')" db-types="Oracle" />
+    <sql-case id="insert_into_values3" value="insert into emp_table values(2,'Robert',900.00,'Developer')" db-types="Oracle" />
+    <sql-case id="insert_into_values4" value="insert into emp_table values(3,'James',2000.00,'Director')" db-types="Oracle" />
+    <sql-case id="insert_into_values5" value="insert into dept values(1,'Sales','500 Oracle pkwy','Redwood S','CA','94065')" db-types="Oracle" />
+    <sql-case id="insert_into_values6" value="insert into dept values(2,'ST','400 Oracle Pkwy','Redwood S','CA','94065')" db-types="Oracle" />
+    <sql-case id="insert_into_values7" value="insert into dept values(3,'Apps','300 Oracle pkwy','Redwood S','CA','94065');" db-types="Oracle" />
     <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" />
     <sql-case id="insert_with_historical_type_cast_syntax" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?::int4, ?::text)" db-types="PostgreSQL,openGauss" />
     <sql-case id="insert_with_now_function" value="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL" />
@@ -83,8 +90,8 @@
     <sql-case id="insert_with_dml_table_expr_select" value="INSERT INTO (SELECT employee_id, last_name, email, hire_date, job_id, salary, commission_pct FROM employees) VALUES (207, 'Gregory', 'pgregory@example.com', sysdate, 'PU_CLERK', 1.2E3, NULL)" db-types="Oracle" />
     <sql-case id="insert_with_select_subquery" value="INSERT INTO bonuses SELECT employee_id, salary*1.1 FROM employees WHERE commission_pct > 0.25" db-types="Oracle" />
     <sql-case id="insert_with_multitable_element" value="INSERT ALL INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, weekly_start_date, sales_sun) INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, sales_mon, weekly_start_date+1) SELECT product_id, customer_id, weekly_start_date, sales_sun, sales_mon FROM sales_input_table" db-types="Oracle" />
-    <sql-case id="insert_all_with_multitable_with_conditional_when" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 1000000 AND order_total &lt;= 200000 THEN INTO medium_orders WHEN order_total > 200000 THEN INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
-    <sql-case id="insert_all_with_multitable_with_conditional_when_with_conditional_else" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 100000 AND order_total &lt;= 200000 THEN INTO medium_orders ELSE INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
+    <sql-case id="insert_all_with_multi_table_with_conditional_when" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 1000000 AND order_total &lt;= 200000 THEN INTO medium_orders WHEN order_total > 200000 THEN INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
+    <sql-case id="insert_all_with_multi_table_with_conditional_when_with_conditional_else" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 100000 AND order_total &lt;= 200000 THEN INTO medium_orders ELSE INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
     <sql-case id="insert_with_rank_column" value="INSERT INTO sales (rank) VALUES (1)" db-types="Oracle" />
     <sql-case id="insert_with_schema" value="INSERT INTO db1.t_order VALUES (1,2,3)" />
     <sql-case id="insert_on_duplicate_key_update_nothing" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE NOTHING" db-types="openGauss" />
@@ -93,4 +100,46 @@
     <sql-case id="insert_datetime_literals" value="INSERT INTO date_tab VALUES ( TIMESTAMP'1999-12-01 10:00:00', TIMESTAMP'1999-12-01 10:00:00', TIMESTAMP'1999-12-01 10:00:00');" db-types="Oracle" />
     <sql-case id="insert_with_content_keyword" value="INSERT INTO SYS_MQ_MSG (ID, CONTENT) VALUES (1, 'test');" db-types="Oracle" />
     <sql-case id="insert_with_connect_by_and_prior" value="Insert Into t (c1,c2,c3,c4,c5) select c1,c2,regexp_substr(c3, '[^,]+', 1, l) c3,c4,c5 from t where id=1 connect by l &lt;= regexp_count(c3, ',') + 1 and ID = prior ID and prior dbms_random.value is not null;" db-types="Oracle" />
+    <sql-case id="insert_with_national_character_set" value="INSERT INTO customers VALUES (1000, TO_NCHAR('John Smith'),N'500 Oracle Parkway',sysdate);" db-types="Oracle" />
+    <sql-case id="insert_with_oracle_datetime_type" value="INSERT INTO t_order (create_date, create_timestamp, create_interval_year, create_interval_day) VALUES (TO_DATE('2009', 'YYYY'), TO_DATE('2009', 'YYYY'), (TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) year to MONTH, (TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) DAY TO SECOND);" db-types="Oracle" />
+    <sql-case id="insert_all_into" value="INSERT ALL INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (1,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (2,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (3,'2','3','4','5') SELECT 1 FROM DUAL" db-types="Oracle" />
+    <sql-case id="insert_with_nchar_1" value="INSERT INTO dbo.T1 VALUES (1, N'Natalia')" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_2" value="INSERT INTO dbo.T1 VALUES (2, N'Mark')" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_3" value="INSERT INTO dbo.T1 VALUES (3, N'Randolph')" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_4" value="INSERT @table1 (c2, is_transient) VALUES (N'sample durable', 0)" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_5" value="INSERT @table1 (c2, is_transient) VALUES (N'sample non-durable', 1)" db-types="SQLServer"/>
+    <sql-case id="insert_with_batch_nchar" value="INSERT INTO TestSchema.Employees (Name, Location) VALUES (N'Jared',  N'Australia'), (N'Nikita', N'India'), (N'Tom', N'Germany')" db-types="SQLServer"/>
+    <sql-case id="insert_with_data_base_name" value="INSERT INTO AdventureWorks2022.dbo.VariableTest(Col1) VALUES('$(tablename)')" db-types="SQLServer"/>
+    <sql-case id="insert_with_exec" value="INSERT INTO iris_rx_data (&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;Petal.Length&quot;, &quot;Petal.Width&quot; , &quot;Species&quot;) EXECUTE sp_execute_external_script @language = N'R' , @script = N'iris_data &lt;- iris'" db-types="SQLServer"/>
+    <sql-case id="insert_with_db_schema_name" value="INSERT INTO ContosoWarehouse.dbo.Affiliation SELECT * FROM My_Lakehouse.dbo.Affiliation" db-types="SQLServer"/>
+    <sql-case id="insert_into_temp_table" value="INSERT INTO #NonExistentTable values (10)" db-types="SQLServer"/>
+    <sql-case id="insert_into_temp_table_with_null_value" value="INSERT INTO #SampleTempTable VALUES (10, null)" db-types="SQLServer"/>
+    <sql-case id="insert_into_temp_table_with_all_null_value" value="INSERT INTO #SampleTempTable VALUES (null, null)" db-types="SQLServer"/>
+    <sql-case id="insert_with_exec_mtcars" value="INSERT INTO dbo.MTCars EXEC sp_execute_external_script @language = N'R', @script = N'MTCars &lt;- mtcars' , @input_data_1 = N'', @output_data_1_name = N'MTCars'" db-types="SQLServer"/>
+    <sql-case id="insert_with_exec_model" value="INSERT INTO GLM_models(model) EXEC generate_GLM" db-types="SQLServer"/>
+    <sql-case id="insert_with_table_hint" value="INSERT INTO cci_target WITH (TABLOCK) SELECT TOP 300000 * FROM staging" db-types="SQLServer"/>
+    <sql-case id="insert_sales_with_nchar" value="INSERT INTO sales VALUES (N'Canada', N'British Columbia', 300)" db-types="SQLServer"/>
+    <sql-case id="insert_sales_with_nchar_2" value="INSERT INTO sales VALUES (N'United States', N'Montana', 100)" db-types="SQLServer"/>
+    <sql-case id="insert_sales_with_nchar_3" value="INSERT INTO sales VALUES (N'Canada', N'Alberta', 100)" db-types="SQLServer"/>
+    <sql-case id="insert_with_currency_value" value="INSERT INTO [HR].[Employees]([SSN], [FirstName], [LastName], [Salary]) VALUES ('795-73-9838', N'Catherine', N'Abel', $31692)" db-types="SQLServer"/>
+    <sql-case id="insert_with_select_from_open_row_1" value="INSERT INTO myTable(FileName, FileType, Document) SELECT 'Text1.txt' AS FileName, '.txt' AS FileType, * FROM OPENROWSET(BULK N'C:\Text1.txt', SINGLE_BLOB) AS Document" db-types="SQLServer"/>
+    <sql-case id="insert_with_select_from_open_row_2" value="INSERT INTO achievements with (TABLOCK) (id, description) SELECT * FROM OPENROWSET(BULK 'csv/achievements.csv', DATA_SOURCE = 'MyAzureBlobStorage', FORMAT ='CSV', FORMATFILE='csv/achievements-c.xml', FORMATFILE_DATA_SOURCE = 'MyAzureBlobStorage') AS DataFile" db-types="SQLServer"/>
+    <sql-case id="insert_into_table_get_date" value="INSERT INTO #Test VALUES (N'OC', N'Ounces', GETDATE())" db-types="SQLServer"/>
+    <sql-case id="insert_into_table_from_table" value="INSERT INTO #Test SELECT * FROM Production.UnitMeasure" db-types="SQLServer"/>
+    <sql-case id="insert_into_production_location" value="INSERT INTO AdventureWorks2022.Production.Location(Name, CostRate, Availability, ModifiedDate) VALUES (NEWID(), .5, 5.2, GETDATE())" db-types="SQLServer"/>
+    <sql-case id="insert_with_exec_prediction_results" value="INSERT INTO prediction_results (tipped_Pred,payment_type,tipped,passenger_count,trip_distance,trip_time_in_secs,direct_distance) EXECUTE [predict_per_partition]" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table" value="INSERT INTO #SampleTempTable VALUES (null, 'hello')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_2" value="INSERT INTO #SampleTempTable VALUES (10, null)" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_3" value="INSERT INTO #SampleTempTable VALUES (17, 'abc')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_4" value="INSERT INTO #SampleTempTable VALUES (17, 'yes')" db-types="SQLServer"/>
+    <sql-case id="insert_with_table_t" value="INSERT INTO #t VALUES (99)" db-types="SQLServer"/>
+    <sql-case id="insert_with_table_test" value="INSERT INTO ##test VALUES (1, 1)" db-types="SQLServer"/>
+    <sql-case id="insert_into_with_select_number" value="INSERT INTO #test SELECT 1" db-types="SQLServer"/>
+    <sql-case id="insert_into_player_with_compress_function" value="INSERT INTO player ( name,surname,info) VALUES (N'Ovidiu', N'Cracium',COMPRESS(N'{&quot;sport&quot;:&quot;Tennis&quot;,&quot;age&quot;: 28,&quot;rank&quot;:1,&quot;points&quot;:15258, &quot;turn&quot;:17}'))" db-types="SQLServer"/>
+    <sql-case id="insert_into_tmp_with_exec" value="INSERT INTO #temp (id, job_name, job_id, dynamic_filter_login,dynamic_filter_hostname, dynamic_snapshot_location,frequency_type, frequency_interval, frequency_subday_type,frequency_subday_interval, frequency_relative_interval, frequency_recurrence_factor, active_start_date, active_end_date, active_start_time,active_end_time) EXEC sp_helpdynamicsnapshot_job" db-types="SQLServer"/>
+    <sql-case id="insert_into_player_with_compress_function_2" value="INSERT INTO player (name,surname,info) VALUES (N'Michael',N'Raheem',COMPRESS(@info))" db-types="SQLServer"/>
+    <sql-case id="insert_with_currency_value_2" value="INSERT INTO [HR].[Employees]([SSN], [FirstName], [LastName], [Salary]) VALUES ('990-00-6818', N'Kim', N'Abercrombie', $55415)" db-types="SQLServer"/>
+    <sql-case id="insert_with_cross_database_values" value="INSERT [SourceDatabase].[dbo].[SourceTable] VALUES (1, N'Bob'),(2, N'Susan')" db-types="SQLServer"/>
+    <sql-case id="insert_with_cross_database_select" value="INSERT [DestinationDatabase].[dbo].[DestTable_InMem] SELECT * FROM [SourceDatabase].[dbo].[SourceTable]" db-types="SQLServer"/>
+    <sql-case id="insert_with_select_with_table_hint_no_with_keyword" value="INSERT INTO #tmpdbs ([dbid], [dbname], [isdone]) SELECT database_id, name, 0 FROM master.sys.databases (NOLOCK) WHERE is_read_only = 0 AND state = 0" db-types="SQLServer"/>
 </sql-cases>

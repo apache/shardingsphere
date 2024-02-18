@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 
 /**

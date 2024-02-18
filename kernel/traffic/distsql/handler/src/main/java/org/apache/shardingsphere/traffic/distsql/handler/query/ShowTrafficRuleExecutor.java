@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
-import org.apache.shardingsphere.traffic.distsql.parser.statement.queryable.ShowTrafficRulesStatement;
+import org.apache.shardingsphere.traffic.distsql.statement.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Arrays;
@@ -34,34 +35,37 @@ import java.util.LinkedList;
 /**
  * Show traffic rule executor.
  */
-public final class ShowTrafficRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowTrafficRulesStatement> {
+@Setter
+public final class ShowTrafficRuleExecutor implements DistSQLQueryExecutor<ShowTrafficRulesStatement>, DistSQLExecutorRuleAware<TrafficRule> {
+    
+    private TrafficRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowTrafficRulesStatement sqlStatement) {
-        TrafficRule rule = metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
-        return buildData(rule.getConfiguration(), sqlStatement.getRuleName());
+    public Collection<String> getColumnNames(final ShowTrafficRulesStatement sqlStatement) {
+        return Arrays.asList("name", "labels", "algorithm_type", "algorithm_props", "load_balancer_type", "load_balancer_props");
     }
     
-    private Collection<LocalDataQueryResultRow> buildData(final TrafficRuleConfiguration ruleConfig, final String ruleName) {
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowTrafficRulesStatement sqlStatement, final ContextManager contextManager) {
+        TrafficRuleConfiguration ruleConfig = rule.getConfiguration();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        ruleConfig.getTrafficStrategies().stream().filter(each -> null == ruleName || each.getName().equals(ruleName))
+        ruleConfig.getTrafficStrategies().stream().filter(each -> null == sqlStatement.getRuleName() || each.getName().equals(sqlStatement.getRuleName()))
                 .forEach(each -> result.add(buildRow(each, ruleConfig.getTrafficAlgorithms().get(each.getAlgorithmName()), ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()))));
         return result;
     }
     
     private LocalDataQueryResultRow buildRow(final TrafficStrategyConfiguration strategy, final AlgorithmConfiguration trafficAlgorithm, final AlgorithmConfiguration loadBalancer) {
-        return new LocalDataQueryResultRow(strategy.getName(), String.join(",", strategy.getLabels()), null != trafficAlgorithm ? trafficAlgorithm.getType() : "",
-                null != trafficAlgorithm ? PropertiesConverter.convert(trafficAlgorithm.getProps()) : "", null != loadBalancer ? loadBalancer.getType() : "",
-                null != loadBalancer ? PropertiesConverter.convert(loadBalancer.getProps()) : "");
+        return new LocalDataQueryResultRow(strategy.getName(), String.join(",", strategy.getLabels()), null == trafficAlgorithm ? null : trafficAlgorithm.getType(),
+                null == trafficAlgorithm ? null : trafficAlgorithm.getProps(), null == loadBalancer ? null : loadBalancer.getType(), null == loadBalancer ? null : loadBalancer.getProps());
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "labels", "algorithm_type", "algorithm_props", "load_balancer_type", "load_balancer_props");
+    public Class<TrafficRule> getRuleClass() {
+        return TrafficRule.class;
     }
     
     @Override
-    public String getType() {
-        return ShowTrafficRulesStatement.class.getName();
+    public Class<ShowTrafficRulesStatement> getType() {
+        return ShowTrafficRulesStatement.class;
     }
 }

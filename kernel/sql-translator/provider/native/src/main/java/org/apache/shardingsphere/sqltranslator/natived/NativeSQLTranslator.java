@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.sqltranslator.natived;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
+
+import java.util.List;
 
 /**
  * Native SQL translator.
@@ -27,9 +32,10 @@ import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 public final class NativeSQLTranslator implements SQLTranslator {
     
     @Override
-    public String translate(final String sql, final SQLStatement statement, final DatabaseType protocolType, final DatabaseType storageType) {
+    public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
+                                          final RuleMetaData globalRuleMetaData) {
         // TODO
-        return sql;
+        return new SQLTranslatorContext(sql, parameters);
     }
     
     @Override

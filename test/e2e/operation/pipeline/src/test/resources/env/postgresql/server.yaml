@@ -40,12 +40,6 @@ props:
   kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   sql-show: false
-  check-table-metadata-enabled: false
-  # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
-  # The default value is -1, which means set the minimum value for different JDBC drivers.
-  proxy-backend-query-fetch-size: -1
-  proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
-  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
-  proxy-frontend-database-protocol-type: PostgreSQL
   cdc-server-port: 33071 # CDC server port
   proxy-frontend-ssl-enabled: true
+  proxy-frontend-database-protocol-type: PostgreSQL

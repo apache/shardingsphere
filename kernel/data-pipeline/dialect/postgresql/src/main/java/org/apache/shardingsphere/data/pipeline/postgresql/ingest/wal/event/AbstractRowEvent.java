@@ -29,7 +29,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public abstract class AbstractRowEvent extends AbstractWALEvent {
     
-    private String databaseName;
+    private String schemaName;
     
     private String tableName;
     

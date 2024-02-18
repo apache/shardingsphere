@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
-import org.apache.shardingsphere.infra.binder.statement.dml.LoadDataStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadDataStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;

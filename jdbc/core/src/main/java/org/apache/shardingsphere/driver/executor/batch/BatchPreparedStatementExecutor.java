@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.executor.batch;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessIdContext;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -67,7 +69,7 @@ public final class BatchPreparedStatementExecutor {
         this.databaseName = databaseName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>(), new ExecutionGroupReportContext(databaseName));
+        executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>(), new ExecutionGroupReportContext(ProcessIdContext.get(), databaseName, new Grantee("", "")));
         batchExecutionUnits = new LinkedList<>();
     }
     

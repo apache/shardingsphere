@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -54,10 +54,10 @@ class DataSourceUnitPersistServiceTest {
     void assertLoad() {
         when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
         when(repository.getDirectly("/metadata/foo_db/versions/0/data_sources/units")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
-        Map<String, DataSourceProperties> actual = new DataSourceUnitPersistService(repository).load("foo_db");
+        Map<String, DataSourcePoolProperties> actual = new DataSourceUnitPersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
-        assertDataSourceProperties(actual.get("ds_0"), DataSourcePropertiesCreator.create(createDataSource("ds_0")));
-        assertDataSourceProperties(actual.get("ds_1"), DataSourcePropertiesCreator.create(createDataSource("ds_1")));
+        assertDataSourcePoolProperties(actual.get("ds_0"), DataSourcePoolPropertiesCreator.create(createDataSource("ds_0")));
+        assertDataSourcePoolProperties(actual.get("ds_1"), DataSourcePoolPropertiesCreator.create(createDataSource("ds_1")));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
@@ -66,8 +66,8 @@ class DataSourceUnitPersistServiceTest {
                 .stream().filter(each -> !"".equals(each.trim()) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
-    private void assertDataSourceProperties(final DataSourceProperties actual, final DataSourceProperties expected) {
-        assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
+    private void assertDataSourcePoolProperties(final DataSourcePoolProperties actual, final DataSourcePoolProperties expected) {
+        assertThat(actual.getPoolClassName(), is(expected.getPoolClassName()));
         assertThat(actual.getAllLocalProperties().get("url"), is(expected.getAllLocalProperties().get("url")));
         assertThat(actual.getAllLocalProperties().get("username"), is(expected.getAllLocalProperties().get("username")));
         assertThat(actual.getAllLocalProperties().get("password"), is(expected.getAllLocalProperties().get("password")));
@@ -77,14 +77,14 @@ class DataSourceUnitPersistServiceTest {
     @Test
     void assertLoadWithoutPath() {
         when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
-        Map<String, DataSourceProperties> actual = new DataSourceUnitPersistService(repository).load("foo_db");
+        Map<String, DataSourcePoolProperties> actual = new DataSourceUnitPersistService(repository).load("foo_db");
         assertTrue(actual.isEmpty());
     }
     
     @Test
     void assertAppend() {
         when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
-        new DataSourceUnitPersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourcePropertiesCreator.create(createDataSource("foo_ds"))));
+        new DataSourceUnitPersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourcePoolPropertiesCreator.create(createDataSource("foo_ds"))));
         String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
         verify(repository).persist("/metadata/foo_db/versions/0/data_sources/units", expected);
     }

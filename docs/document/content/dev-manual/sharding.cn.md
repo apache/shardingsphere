@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.7. </b>"
+pre = "<b>5.3. </b>"
 title = "数据分片"
-weight = 7
+weight = 3
 chapter = true
 +++
 
@@ -34,7 +34,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/api/src/main/java/org/apache/shardingsphere/sharding/spi/KeyGenerateAlgorithm.java)
+[`org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/core/src/main/java/org/apache/shardingsphere/keygen/core/algorithm/KeyGenerateAlgorithm.java)
 
 ### 定义
 
@@ -44,8 +44,8 @@ chapter = true
 
 | *配置标识*          | *详细说明*                  | *全限定类名*                                                                                                                                                                                                                                                                                               |
 |-----------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SNOWFLAKE       | 基于雪花算法的分布式主键生成算法        | [`org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/SnowflakeKeyGenerateAlgorithm.java)                               |
-| UUID            | 基于 UUID 的分布式主键生成算法      | [`org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/UUIDKeyGenerateAlgorithm.java)                                         |
+| SNOWFLAKE       | 基于雪花算法的分布式主键生成算法        | [`org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/snowflake/src/main/java/org/apache/shardingsphere/keygen/snowflake/algorithm/SnowflakeKeyGenerateAlgorithm.java)                               |
+| UUID            | 基于 UUID 的分布式主键生成算法      | [`org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/uuid/src/main/java/org/apache/shardingsphere/keygen/uuid/algorithm/UUIDKeyGenerateAlgorithm.java)                                         |
 
 ## ShardingAuditAlgorithm
 
@@ -75,7 +75,26 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识*                | *详细说明*                      | *全限定类名*                                                                                                                                                                                                                                                               |
-|--------------------------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DatabaseTimestampService | 从数据库中获取当前时间进行路由      | [`org.apache.shardingsphere.timeservice.type.database.DatabaseTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/database/src/main/java/org/apache/shardingsphere/timeservice/type/database/DatabaseTimestampService.java) |
+| *配置标识*                   | *详细说明*             | *全限定类名*                                                                                                                                                                                                                                                                  |
+|--------------------------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DatabaseTimestampService | 从数据库中获取当前时间进行路由    | [`org.apache.shardingsphere.timeservice.type.database.DatabaseTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/database/src/main/java/org/apache/shardingsphere/timeservice/type/database/DatabaseTimestampService.java) |
 | SystemTimestampService   | 从应用系统时间中获取当前时间进行路由 | [`org.apache.shardingsphere.timeservice.type.system.SystemTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/system/src/main/java/org/apache/shardingsphere/timeservice/type/system/SystemTimestampService.java)           |
+
+## InlineExpressionParser
+
+### 全限定类名
+
+`org.apache.shardingsphere.infra.expr.core.InlineExpressionParser`
+
+### 定义
+
+解析行表达式
+
+### 已知实现
+
+| *配置标识*   | *详细说明*                                             | *全限定类名*                                                                        |
+|----------|----------------------------------------------------|--------------------------------------------------------------------------------|
+| GROOVY   | 使用 Groovy 语法的行表达式                                  | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`     |
+| LITERAL  | 使用标准列表的行表达式                                        | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser`   |
+| INTERVAL | 基于固定时间范围的 Key-Value 语法的行表达式                        | `org.apache.shardingsphere.infra.expr.interval.IntervalInlineExpressionParser` |
+| ESPRESSO | 基于 GraalVM Truffle 的 Espresso 实现的使用 Groovy 语法的行表达式 | `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser` |

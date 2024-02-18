@@ -57,3 +57,11 @@ columns:
     primaryKey: false
     unsigned: false
     visible: true
+  default_encryption:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DEFAULT_ENCRYPTION
+    primaryKey: false
+    unsigned: false
+    visible: true

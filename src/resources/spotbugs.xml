@@ -61,10 +61,6 @@
         <Bug code="DP" />
     </Match>
     <Match>
-        <Class name="org.apache.shardingsphere.transaction.xa.bitronix.manager.BitronixRecoveryResource" />
-        <Bug code="Se" />
-    </Match>
-    <Match>
         <Class name="org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussStatementSQLVisitor" />
         <Bug code="BC" />
     </Match>

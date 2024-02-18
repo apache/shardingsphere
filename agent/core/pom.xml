@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-core</artifactId>
     <name>${project.artifactId}</name>
@@ -37,30 +37,34 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-backend-core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
+        
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>compile</scope>
+            <groupId>com.cedarsoftware</groupId>
+            <artifactId>java-util</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     
@@ -89,28 +93,12 @@
                             </transformers>
                             <relocations>
                                 <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>${shade.package}.com.google</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.yaml</pattern>
                                     <shadedPattern>${shade.package}.org.yaml</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>ch.qos.logback</pattern>
-                                    <shadedPattern>${shade.package}.ch.qos.logback</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.apache.commons.logging</pattern>
-                                    <shadedPattern>${shade.package}.org.apache.commons.logging</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

@@ -21,10 +21,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +53,10 @@ public final class JoinTableSegment implements TableSegment {
     
     private List<ColumnSegment> using = Collections.emptyList();
     
+    private List<ColumnSegment> derivedUsing = Collections.emptyList();
+    
+    private Collection<ProjectionSegment> derivedJoinTableProjectionSegments = new LinkedList<>();
+    
     @Override
     public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
@@ -58,5 +65,14 @@ public final class JoinTableSegment implements TableSegment {
     @Override
     public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
+    }
+    
+    /**
+     * Get alias segment.
+     * 
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
     }
 }

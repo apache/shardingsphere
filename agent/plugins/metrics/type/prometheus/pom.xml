@@ -21,15 +21,27 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-metrics-type</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-metrics-prometheus</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <prometheus.version>0.11.0</prometheus.version>
-        <prometheus.jmx.version>0.16.1</prometheus.jmx.version>
-    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient_bom</artifactId>
+                <version>${prometheus-simpleclient.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.prometheus.jmx</groupId>
+                <artifactId>collector</artifactId>
+                <version>${prometheus-jmx.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     
     <dependencies>
         <dependency>
@@ -79,22 +91,18 @@
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient</artifactId>
-            <version>${prometheus.version}</version>
         </dependency>
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_hotspot</artifactId>
-            <version>${prometheus.version}</version>
         </dependency>
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_httpserver</artifactId>
-            <version>${prometheus.version}</version>
         </dependency>
         <dependency>
             <groupId>io.prometheus.jmx</groupId>
             <artifactId>collector</artifactId>
-            <version>${prometheus.jmx.version}</version>
         </dependency>
     </dependencies>
     
@@ -114,10 +122,6 @@
                         <configuration>
                             <relocations>
                                 <relocation>
-                                    <pattern>com.google.common</pattern>
-                                    <shadedPattern>${shade.package}.com.google.common</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
                                 </relocation>
@@ -128,14 +132,6 @@
                                 <relocation>
                                     <pattern>io.prometheus.client</pattern>
                                     <shadedPattern>${shade.package}.io.prometheus.client</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.checkerframework</pattern>
-                                    <shadedPattern>${shade.package}.org.checkerframework</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.google.errorprone.annotations</pattern>
-                                    <shadedPattern>${shade.package}.com.google.errorprone.annotations</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

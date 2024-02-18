@@ -33,7 +33,6 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class ExecutorEngineTest {
@@ -77,13 +76,6 @@ class ExecutorEngineTest {
     }
     
     @Test
-    void assertParallelExecuteWithoutFirstCallback() throws SQLException, InterruptedException {
-        List<String> actual = executorEngine.execute(executionGroupContext, callback);
-        latch.await();
-        assertThat(actual.size(), is(4));
-    }
-    
-    @Test
     void assertParallelExecuteWithFirstCallback() throws SQLException, InterruptedException {
         List<String> actual = executorEngine.execute(executionGroupContext, firstCallback, callback, false);
         latch.await();
@@ -95,13 +87,5 @@ class ExecutorEngineTest {
         List<String> actual = executorEngine.execute(executionGroupContext, firstCallback, callback, true);
         latch.await();
         assertThat(actual.size(), is(4));
-    }
-    
-    @Test
-    void assertExecutionGroupIsEmpty() throws SQLException {
-        CountDownLatch latch = new CountDownLatch(1);
-        List<String> actual = executorEngine.execute(new ExecutionGroupContext<>(new LinkedList<>(), mock(ExecutionGroupReportContext.class)), new ExecutorCallbackFixture(latch));
-        latch.countDown();
-        assertTrue(actual.isEmpty());
     }
 }

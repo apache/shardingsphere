@@ -34,9 +34,8 @@ import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
@@ -63,7 +62,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@Slf4j
 class SeataATShardingSphereTransactionManagerTest {
     
     private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();

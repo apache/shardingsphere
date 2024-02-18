@@ -21,16 +21,10 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-transaction-xa-provider</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
     <name>${project.artifactId}</name>
-    
-    <properties>
-        <narayana.version>5.12.4.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-    </properties>
     
     <dependencies>
         <dependency>
@@ -62,23 +56,6 @@
             <artifactId>jboss-logging</artifactId>
             <version>${jboss-logging.version}</version>
             <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
         </dependency>
     </dependencies>
 </project>

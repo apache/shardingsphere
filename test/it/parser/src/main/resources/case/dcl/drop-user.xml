@@ -21,6 +21,7 @@
     <drop-user sql-case-id="drop_user_with_hostname" />
     <drop-user sql-case-id="drop_user_with_ip" />
     <drop-user sql-case-id="drop_user_cascade" />
+    <drop-user sql-case-id="drop_user_restrict" />
     <drop-user sql-case-id="drop_user" />
     <drop-user sql-case-id="drop_users" />
     <drop-user sql-case-id="drop_user_if_exists" />

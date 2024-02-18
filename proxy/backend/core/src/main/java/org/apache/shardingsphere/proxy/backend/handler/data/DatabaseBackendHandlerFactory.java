@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.data;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -30,6 +30,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 /**
  * Database backend handler factory.
@@ -54,9 +57,13 @@ public final class DatabaseBackendHandlerFactory {
         if (sqlStatement instanceof SetStatement && null == connectionSession.getDatabaseName()) {
             return () -> new UpdateResponseHeader(sqlStatement);
         }
-        if (sqlStatement instanceof DALStatement || sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom()) {
+        if (sqlStatement instanceof DALStatement && !isDatabaseRequiredDALStatement(sqlStatement) || sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom()) {
             return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
         }
         return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), preferPreparedStatement);
+    }
+    
+    private static boolean isDatabaseRequiredDALStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof MySQLShowTablesStatement || sqlStatement instanceof MySQLShowTableStatusStatement || sqlStatement instanceof MySQLShowCreateTableStatement;
     }
 }

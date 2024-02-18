@@ -24,11 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
@@ -45,6 +46,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static org.mockito.Mockito.mock;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -83,7 +86,7 @@ public final class PipelineCaseHelper {
         if (databaseType instanceof MySQLDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
                 int randomInt = generateInt(-100, 100);
-                Object orderId = keyGenerateAlgorithm.generateKey();
+                Object orderId = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
                 int randomUnsignedInt = generateInt(0, 100);
                 LocalDateTime now = LocalDateTime.now();
                 Object[] addObjs = {orderId, generateInt(0, 100), generateString(6), randomInt, randomInt, randomInt,
@@ -96,7 +99,7 @@ public final class PipelineCaseHelper {
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
-                Object orderId = keyGenerateAlgorithm.generateKey();
+                Object orderId = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
                 result.add(new Object[]{orderId, generateInt(0, 100), generateString(6), generateInt(-128, 127),
                         BigDecimal.valueOf(generateDouble()), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(),
                         generateJsonString(8, false), generateJsonString(12, true), emojiText, LocalDate.now(),
@@ -106,14 +109,14 @@ public final class PipelineCaseHelper {
         }
         if (databaseType instanceof OpenGaussDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
-                Object orderId = keyGenerateAlgorithm.generateKey();
-                // TODO openGauss mpp plugin parses single quotes incorrectly
-                result.add(new Object[]{orderId, generateInt(0, 1000), "status" + i, generateInt(-1000, 9999), generateInt(0, 100), generateFloat(), generateDouble(),
-                        BigDecimal.valueOf(generateDouble()), false, generateString(6), "texts", "bytea".getBytes(), LocalDate.now(), LocalTime.now(), "2001-10-01",
+                Object orderId = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
+                byte[] bytesValue = {Byte.MIN_VALUE, -1, 0, 1, Byte.MAX_VALUE};
+                result.add(new Object[]{orderId, generateInt(0, 1000), "'status'" + i, generateInt(-1000, 9999), generateInt(0, 100), generateFloat(), generateDouble(),
+                        BigDecimal.valueOf(generateDouble()), false, generateString(6), "texts", bytesValue, bytesValue, LocalDate.now(), LocalTime.now(), "2001-10-01",
                         Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), "0 years 0 mons 1 days 2 hours 3 mins 4 secs", "{1, 2, 3}", generateJsonString(8, false),
-                        generateJsonString(8, true), UUID.randomUUID().toString(), DigestUtils.md5Hex(orderId.toString()), null, "0000", "[1,1000)",
-                        "1 years 1 mons 10 days -06:00:00", "2000-01-02 00:00:00+00", "(1.0,1.0)", "[(0.0,0.0),(2.0,2.0)]", "(3.0,3.0),(1.0,1.0)", "<(5.0,5.0),5.0>", "1111",
-                        "192.168.0.0/16", "192.168.1.1", "08:00:2b:01:02:03", "\\x484c4c00000000002b05000000000000000000000000000000000000"});
+                        generateJsonString(8, true), UUID.randomUUID().toString(), DigestUtils.md5Hex(orderId.toString()), "'rat' 'sat'", "tsquery", "0000", "[1,1000)", "[2020-01-02,2021-01-01)",
+                        "[2020-01-01 00:00:00,2021-01-01 00:00:00)", "1 years 1 mons 10 days -06:00:00", "2000-01-02 00:00:00+00", "(1.0,1.0)", "[(0.0,0.0),(2.0,2.0)]", "(3.0,3.0),(1.0,1.0)",
+                        "<(5.0,5.0),5.0>", "1111", "192.168.0.0/16", "192.168.1.1", "08:00:2b:01:02:03", "\\x484c4c00000000002b05000000000000000000000000000000000000", 999});
             }
             return result;
         }
@@ -166,9 +169,9 @@ public final class PipelineCaseHelper {
     private static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
         List<Object[]> result = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
-            Object orderId = keyGenerateAlgorithm.generateKey();
+            Object orderId = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
             int userId = generateInt(0, 100);
-            result.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, "SUCCESS"});
+            result.add(new Object[]{keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next(), orderId, userId, "SUCCESS"});
         }
         return result;
     }
@@ -187,7 +190,7 @@ public final class PipelineCaseHelper {
         log.info("init data begin: {}", LocalDateTime.now());
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?,?,?)", tableName))) {
             for (int i = 0; i < recordCount; i++) {
-                preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
+                preparedStatement.setObject(1, keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next());
                 preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));
                 preparedStatement.setObject(3, "OK");
                 preparedStatement.addBatch();

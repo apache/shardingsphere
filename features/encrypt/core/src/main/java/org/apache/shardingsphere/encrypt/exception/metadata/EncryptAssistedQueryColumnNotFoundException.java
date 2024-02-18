@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.exception.metadata;
 
 import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Encrypt assisted query column not found exception.
@@ -29,9 +29,5 @@ public final class EncryptAssistedQueryColumnNotFoundException extends EncryptSQ
     
     public EncryptAssistedQueryColumnNotFoundException(final String logicColumnName, final String databaseName) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Assisted query column of `%s` can not be null in database `%s`.", logicColumnName, databaseName);
-    }
-    
-    public EncryptAssistedQueryColumnNotFoundException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Can not find assisted query column Name.");
     }
 }

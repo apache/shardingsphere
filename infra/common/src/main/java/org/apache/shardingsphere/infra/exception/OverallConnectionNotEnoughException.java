@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Overall connection not enough exception.
@@ -26,8 +27,8 @@ public final class OverallConnectionNotEnoughException extends ConnectionSQLExce
     
     private static final long serialVersionUID = -1297088138042287804L;
     
-    public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 20, "Can not get %d connections one time, partition succeed connection(%d) have released. "
-                + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties.", desiredSize, actualSize);
+    public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize, final Exception cause) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 20, String.format("Can not get %d connections one time, partition succeed connection(%d) have released. "
+                + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties.", desiredSize, actualSize), cause);
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.util.Collection;
@@ -54,7 +54,7 @@ public interface DatabaseBasedPersistService<T> {
      * @param name name
      * @return configurations
      */
-    default T load(String databaseName, String name) {
+    default T load(final String databaseName, final String name) {
         return null;
     }
     
@@ -64,7 +64,7 @@ public interface DatabaseBasedPersistService<T> {
      * @param databaseName database name
      * @param ruleName rule name
      */
-    default void delete(String databaseName, String ruleName) {
+    default void delete(final String databaseName, final String ruleName) {
     }
     
     /**
@@ -72,8 +72,10 @@ public interface DatabaseBasedPersistService<T> {
      *
      * @param databaseName database name
      * @param configs configurations
+     * @return meta data versions
      */
-    default void delete(String databaseName, T configs) {
+    default Collection<MetaDataVersion> deleteConfig(final String databaseName, final T configs) {
+        return Collections.emptyList();
     }
     
     /**
@@ -83,7 +85,7 @@ public interface DatabaseBasedPersistService<T> {
      * @param configs configurations
      * @return meta data versions
      */
-    default Collection<MetaDataVersion> persistConfig(String databaseName, T configs) {
+    default Collection<MetaDataVersion> persistConfig(final String databaseName, final T configs) {
         return Collections.emptyList();
     }
     
@@ -92,8 +94,8 @@ public interface DatabaseBasedPersistService<T> {
      * Append data source properties map.
      *
      * @param databaseName database name
-     * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
+     * @param toBeAppendedPropsMap data source pool properties map to be appended
      */
-    default void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
+    default void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedPropsMap) {
     }
 }

@@ -75,18 +75,6 @@ rules:
           cipher: 
             name: number_new_cipher
             encryptorName: aes_encryptor
-    t_user_encrypt_federate:
-      columns:
-        pwd:
-          cipher:
-            name: cipher_pwd
-            encryptorName: aes_encryptor
-    t_user_encrypt_federate_sharding:
-      columns:
-        pwd:
-          cipher:
-            name: cipher_pwd
-            encryptorName: aes_encryptor
     t_merchant:
       columns:
         business_code:

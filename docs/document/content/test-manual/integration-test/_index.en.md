@@ -92,6 +92,8 @@ The assertion file format is as follows:
 </dataset>
 ```
 
+> e2e operation module is E2E test，does not contains the assertion for `</dataset>` tag
+
 ### Environment configuration
 
 `${SCENARIO-TYPE}` Refers to the scenario name used to identify a unique scenario during the test engine run.
@@ -167,6 +169,16 @@ If you only modify the test code, you can reuse the existing test mirror without
 ```
 
 #### Remote debug Proxy code in Docker container
+First of all, you need to modify the configuration file it-env.properties, set function.it.env.type to `docker`, and then set the corresponding database image version like `transaction.it.docker.mysql.version=mysql:5.7`.
+Then generate the test image through the command, for example:
+
+```bash
+# for operation, replace ${operation} with transaction、pipeline or showprocesslist
+./mvnw -B clean install -am -pl test/e2e/operation/${operation} -Pit.env.docker -DskipTests
+
+# for e2e sql
+./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
+```
 
 ##### Remote debug Proxy started by docker image
 E2E Test Proxy image opens the 3308 port by default for remote debugging of the instance in the container.
@@ -177,7 +189,7 @@ IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 Edit the corresponding information:
   - Name: A descriptive name, such as e2e-debug.
   - Host: A IP that can access docker, such as 127.0.0.1
-  - Port: debugging port 3308.
+  - Port: debugging port(will set in next step).
   - use module classpath: The root directory of the project shardingsphere.
 
 After editing the above information, run Run -> Run -> e2e-debug in IDEA to start the remote debug of IDEA.
@@ -187,9 +199,9 @@ After editing the above information, run Run -> Run -> e2e-debug in IDEA to star
 Debug Testcontainer started Proxy container by the following method:
   - Set a breakpoint in the relevant startup class of Testcontainer, for example, after the line `containerComposer.start();` in BaseE2EIT#setUp() in the suite test, at this time, the relevant containers must have been started.
   - Access breakpoint debugging mode through shortcut key Alt + F8, and view the port mapped by the 3308 mapping of the Proxy object under the containerComposer (the external mapping port of Testcontainer is random). For example, the expression `((ShardingSphereProxyClusterContainer)((java.util.LinkedList)((ITContainers)((ClusterContainerComposer)containerComposer).containers).dockerContainers).getLast()).getMappedPort(3308)` get the mapped random port 51837.(or get mapped port by `docker ps`)
-  - See the `Remote debug Proxy started by docker image` method, set the Name, Host, Port, and use the port got in previous step.
+  - See the `Remote debug Proxy started by docker image` method, set the Name, Host, Port, and use the port got in previous step, e.g. 51837.
 
-After editing the above information, run Run -> Run -> e2e-debug in IDEA to start the remote debug of IDEA.
+After editing the above information, run Run -> Run -> e2e-debug -> debug in IDEA to start the remote debug of IDEA.
 
 #### Notice
 

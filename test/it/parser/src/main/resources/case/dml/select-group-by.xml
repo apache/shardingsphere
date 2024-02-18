@@ -22,7 +22,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection type="SUM" alias="orders_sum" inner-expression="(order_id)" start-index="7" stop-index="19" />
+            <aggregation-projection type="SUM" alias="orders_sum" expression="SUM(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -32,13 +32,54 @@
             <column-item name="user_id" start-index="83" stop-index="89" />
         </order-by>
     </select>
-
+    
+    <select sql-case-id="select_group_by_with_sum_where">
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="sales" alias="s" start-index="65" stop-index="71" />
+                </left>
+                <right>
+                    <simple-table name="products" alias="p" start-index="74" stop-index="83" />
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="58">
+            <column-projection name="prod_subcategory" start-index="7" stop-index="24">
+                <owner start-index="7" stop-index="7" name="p" />
+            </column-projection>
+            <aggregation-projection type="SUM" alias="sum_amount" expression="SUM(s.amount_sold)" start-index="27" stop-index="44" />
+        </projections>
+        <where start-index="85" stop-index="111">
+            <expr>
+                <binary-operation-expression start-index="91" stop-index="111">
+                    <left>
+                        <column name="prod_id" start-index="91" stop-index="99">
+                            <owner name="s" start-index="91" stop-index="91" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="prod_id" start-index="103" stop-index="111">
+                            <owner name="p" start-index="103" stop-index="103" />
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by>
+            <column-item name="prod_subcategory" start-index="122" stop-index="139">
+                <owner name="p" start-index="122" stop-index="122" />
+            </column-item>
+        </group-by>
+    </select>
+    
     <select sql-case-id="select_group_by_with_count">
         <from>
             <simple-table name="t_order" start-index="53" stop-index="59" />
         </from>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <aggregation-projection type="COUNT" alias="orders_count" expression="COUNT(order_id)" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
@@ -54,7 +95,7 @@
             <simple-table name="t_order" start-index="51" stop-index="57" />
         </from>
         <projections start-index="7" stop-index="44">
-            <aggregation-projection type="MAX" alias="max_order_id" inner-expression="(order_id)" start-index="7" stop-index="19" />
+            <aggregation-projection type="MAX" alias="max_order_id" expression="MAX(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
         <group-by>
@@ -70,7 +111,7 @@
             <simple-table name="t_order" start-index="51" stop-index="57" />
         </from>
         <projections start-index="7" stop-index="44">
-            <aggregation-projection type="MIN" alias="min_order_id" inner-expression="(order_id)" start-index="7" stop-index="19" />
+            <aggregation-projection type="MIN" alias="min_order_id" expression="MIN(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
         <group-by>
@@ -86,7 +127,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection type="AVG" alias="orders_avg" inner-expression="(order_id)" start-index="7" stop-index="19" />
+            <aggregation-projection type="AVG" alias="orders_avg" expression="AVG(order_id)" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -96,13 +137,54 @@
             <column-item name="user_id" start-index="83" stop-index="89" />
         </order-by>
     </select>
+    
+    <select sql-case-id="select_group_by_with_column_avg">
+        <projections start-index="7" stop-index="57">
+            <column-projection name="prod_subcategory" start-index="7" stop-index="24">
+                <owner start-index="7" stop-index="7" name="p" />
+            </column-projection>
+            <aggregation-projection type="AVG" expression="AVG(s.amount_sold)" alias="avg_sales" start-index="27" stop-index="44" />
+        </projections>
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="sales" alias="s" start-index="65" stop-index="71" />
+                </left>
+                <right>
+                    <simple-table name="products" alias="p" start-index="74" stop-index="83" />
+                </right>
+            </join-table>
+        </from>
+        <where start-index="85" stop-index="111">
+            <expr>
+                <binary-operation-expression start-index="91" stop-index="111">
+                    <left>
+                        <column name="prod_id" start-index="91" stop-index="99">
+                            <owner name="s" start-index="91" stop-index="91" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="prod_id" start-index="103" stop-index="111">
+                            <owner name="p" start-index="103" stop-index="103" />
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by>
+            <column-item name="prod_subcategory" start-index="122" stop-index="139">
+                <owner name="p" start-index="122" stop-index="122" />
+            </column-item>
+        </group-by>
+    </select>
 
     <select sql-case-id="select_group_by_with_order_by_desc">
         <from>
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection type="SUM" inner-expression="(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
+            <aggregation-projection type="SUM" expression="SUM(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by>
@@ -160,7 +242,7 @@
             </join-table>
         </from>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" inner-expression="(*)" alias="items_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="119" stop-index="174" literal-stop-index="175">
             <expr>
@@ -240,7 +322,7 @@
         </from>
         <projections start-index="7" stop-index="42">
             <column-projection name="user_id" start-index="7" stop-index="13" />
-            <aggregation-projection type="SUM"  inner-expression="(order_id)" alias="orders_sum" start-index="16" stop-index="28" />
+            <aggregation-projection type="SUM"  expression="SUM(order_id)" alias="orders_sum" start-index="16" stop-index="28" />
         </projections>
         <group-by>
             <column-item name="user_id" start-index="66" stop-index="72" />
@@ -291,7 +373,7 @@
                     </function>
                 </expr>
             </expression-projection>
-            <aggregation-projection type="COUNT" inner-expression="(*)" alias="c_number" start-index="65" stop-index="72" />
+            <aggregation-projection type="COUNT" expression="count(*)" alias="c_number" start-index="65" stop-index="72" />
         </projections>
         <where start-index="106" stop-index="129" literal-stop-index="135">
             <expr>
@@ -325,7 +407,7 @@
             <simple-table name="t_order" start-index="58" stop-index="64" />
         </from>
         <projections start-index="7" stop-index="51">
-            <aggregation-projection type="SUM" inner-expression="(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
+            <aggregation-projection type="SUM" expression="SUM(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" alias="key" start-index="36" stop-index="51" />
         </projections>
         <group-by>
@@ -338,7 +420,7 @@
             <simple-table name="t_order" start-index="53" stop-index="59" />
         </from>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection inner-expression="(order_id)" type="COUNT" alias="orders_count" start-index="7" stop-index="21" />
+            <aggregation-projection expression="COUNT(order_id)" type="COUNT" alias="orders_count" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
@@ -354,7 +436,7 @@
             <simple-table name="t_order" start-index="53" stop-index="59" />
         </from>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <aggregation-projection type="COUNT" alias="orders_count" expression="COUNT(order_id)" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
@@ -380,7 +462,7 @@
             <simple-table name="t_order" start-index="37" stop-index="43" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <aggregation-projection type="COUNT" expression="COUNT(order_id)" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="24" stop-index="30" />
         </projections>
         <group-by>
@@ -390,7 +472,7 @@
             <expr>
                 <binary-operation-expression start-index="69" stop-index="87">
                     <left>
-                        <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="69" stop-index="83" />
+                        <aggregation-projection type="COUNT" expression="COUNT(order_id)" start-index="69" stop-index="83" />
                     </left>
                     <operator>&gt;</operator>
                     <right>
@@ -406,7 +488,7 @@
             <simple-table name="t_order" start-index="53" stop-index="59" />
         </from>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <aggregation-projection type="COUNT" alias="orders_count" expression="COUNT(order_id)" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
@@ -425,7 +507,9 @@
                 </binary-operation-expression>
             </expr>
         </having>
-        <window start-index="102" stop-index="135" />
+        <window start-index="102" stop-index="135">
+            <window-item start-index="109" stop-index="135"/>
+        </window>
     </select>
 
     <select sql-case-id="select_group_by_cube">
@@ -442,7 +526,7 @@
         <projections start-index="7" stop-index="211">
             <expression-projection text="DECODE(GROUPING(department_name), 1, 'All Departments', department_name)" alias="department_name" start-index="7" stop-index="97" />
             <expression-projection text="DECODE(GROUPING(job_id), 1, 'All Jobs', job_id)" alias="job_id" start-index="100" stop-index="156" />
-            <aggregation-projection type="COUNT" alias="Total Empl" inner-expression="(*)" start-index="159" stop-index="166" />
+            <aggregation-projection type="COUNT" alias="Total Empl" expression="COUNT(*)" start-index="159" stop-index="166" />
             <expression-projection text="AVG(salary) * 12" alias="Average Sal" start-index="182" stop-index="211" />
         </projections>
         <where start-index="245" stop-index="283">
@@ -542,8 +626,8 @@
         </from>
         <projections start-index="7" stop-index="45">
             <column-projection name="department_id" start-index="7" stop-index="19" />
-            <aggregation-projection type="MIN" inner-expression="(salary)" start-index="22" stop-index="32" />
-            <aggregation-projection type="MAX" inner-expression="(salary)" start-index="35" stop-index="45" />
+            <aggregation-projection type="MIN" expression="MIN(salary)" start-index="22" stop-index="32" />
+            <aggregation-projection type="MAX" expression="MAX(salary)" start-index="35" stop-index="45" />
         </projections>
         <group-by>
             <column-item name="department_id" start-index="71" stop-index="83" />
@@ -552,7 +636,7 @@
             <expr>
                 <binary-operation-expression start-index="92" stop-index="109">
                     <left>
-                        <aggregation-projection type="MIN" inner-expression="(salary)" start-index="92" stop-index="102" />
+                        <aggregation-projection type="MIN" expression="MIN(salary)" start-index="92" stop-index="102" />
                     </left>
                     <operator>&lt;</operator>
                     <right>
@@ -583,7 +667,14 @@
                 <in-expression start-index="90" stop-index="219">
                     <not>false</not>
                     <left>
-                        <common-expression text="(department_id,manager_id)" start-index="90" stop-index="116" />
+                        <list-expression start-index="90" stop-index="116" literal-start-index="90" literal-stop-index="116">
+                            <items>
+                                <column name="department_id" start-index="91" stop-index="103" literal-start-index="91" literal-stop-index="103" />
+                            </items>
+                            <items>
+                                <column name="manager_id" start-index="106" stop-index="115" literal-start-index="106" literal-stop-index="115" />
+                            </items>
+                        </list-expression>
                     </left>
                     <right>
                         <subquery start-index="121" stop-index="219">
@@ -635,6 +726,239 @@
         </group-by>
         <order-by>
             <expression-item expression="CASE WHEN order_id > 0 AND order_id &lt;= 10 THEN '(0,10]' WHEN order_id > 10 THEN '(10,+∞)' ELSE '' END" start-index="149" stop-index="249" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_event_group_by_with_having_order_by">
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="syscolumns" alias="c" start-index="66" stop-index="85">
+                        <owner name="sys" start-index="66" stop-index="68" />
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="sysobjects" alias="o" start-index="92" stop-index="111">
+                        <owner name="sys" start-index="92" stop-index="94" />
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression text="o.id = c.id" start-index="116" stop-index="126">
+                        <left>
+                            <column name="id" start-index="116" stop-index="119">
+                                <owner name="o" start-index="116" stop-index="116" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="id" start-index="123" stop-index="126">
+                                <owner name="c" start-index="123" stop-index="123" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="59">
+            <column-projection name="name" start-index="7" stop-index="12">
+                <owner name="c" start-index="7" stop-index="7" />
+            </column-projection>
+            <aggregation-projection expression="Count(*)" type="COUNT" alias="Count-Per-Column-Repeated-Name" start-index="15" stop-index="22" />
+        </projections>
+        <where start-index="128" stop-index="171">
+            <expr>
+                <binary-operation-expression text="o.type = 'V' AND c.name like '%event%'" start-index="134" stop-index="171">
+                    <left>
+                        <binary-operation-expression text="o.type = 'V'" start-index="134" stop-index="145">
+                            <left>
+                                <column name="type" start-index="134" stop-index="139">
+                                    <owner name="o" start-index="134" stop-index="134" />
+                                </column>
+                            </left>
+                            <right>
+                                <literal-expression value="V" start-index="143" stop-index="145" />
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <binary-operation-expression text="c.name like '%event%'" start-index="151" stop-index="171">
+                            <left>
+                                <column name="name" start-index="151" stop-index="156">
+                                    <owner name="c" start-index="151" stop-index="151"/>
+                                </column>
+                            </left>
+                            <right>
+                                <list-expression start-index="163" stop-index="171">
+                                    <items>
+                                        <literal-expression value="%event%" start-index="163" stop-index="171"/>
+                                    </items>
+                                </list-expression>
+                            </right>
+                            <operator>LIKE</operator>
+                        </binary-operation-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by>
+            <column-item name="name" order-direction="ASC" start-index="182" stop-index="187">
+                <owner name="c" start-index="182" stop-index="182" />
+            </column-item>
+        </group-by>
+        <having start-index="189" stop-index="208">
+            <expr>
+                <binary-operation-expression text="Count(*) >= 3" start-index="196" stop-index="208">
+                    <left>
+                        <aggregation-projection expression="Count(*)" type="COUNT" start-index="196" stop-index="203" />
+                    </left>
+                    <right>
+                        <literal-expression value="3" start-index="208" stop-index="208" />
+                    </right>
+                    <operator>&gt;=</operator>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <column-item name="name" order-direction="ASC" start-index="219" stop-index="224">
+                <owner name="c" start-index="219" stop-index="219" />
+            </column-item>
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_with_datepart_group_by_with_order_by">
+        <projections start-index="7" stop-index="81">
+            <expression-projection text="DATEPART(yyyy,OrderDate)" alias="Year" start-index="7" stop-index="41">
+                <expr>
+                    <function function-name="DATEPART" text="DATEPART(yyyy,OrderDate)" start-index="7" stop-index="30">
+                        <parameter>
+                            <column name="yyyy" start-index="16" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <column name="OrderDate" start-index="21" stop-index="29" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <aggregation-projection type="SUM" expression="SUM(TotalDue)" alias="Total Order Amount" start-index="44" stop-index="56">
+                <paramters>
+                    <column name="TotalDue" start-index="48" stop-index="55" />
+                </paramters>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesOrderHeader"  start-index="88" stop-index="109">
+                <owner name="Sales" start-index="88" stop-index="92"/>
+            </simple-table>
+        </from>
+        <group-by>
+            <expression-item expression="DATEPART(yyyy,OrderDate)" start-index="120" stop-index="143" />
+        </group-by>
+        <order-by>
+            <expression-item expression="DATEPART(yyyy,OrderDate)" order-direction="ASC" start-index="154" stop-index="177" />
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_with_datepart_group_by_with_having_order_by">
+        <projections start-index="7" stop-index="81">
+            <expression-projection text="DATEPART(yyyy,OrderDate)" alias="Year" start-index="7" stop-index="41">
+                <expr>
+                    <function function-name="DATEPART" text="DATEPART(yyyy,OrderDate)" start-index="7" stop-index="30">
+                        <parameter>
+                            <column name="yyyy" start-index="16" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <column name="OrderDate" start-index="21" stop-index="29" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <aggregation-projection type="SUM" expression="SUM(TotalDue)" alias="Total Order Amount" start-index="44" stop-index="56">
+                <paramters>
+                    <column name="TotalDue" start-index="48" stop-index="55" />
+                </paramters>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesOrderHeader"  start-index="88" stop-index="109">
+                <owner name="Sales" start-index="88" stop-index="92"/>
+            </simple-table>
+        </from>
+        <group-by>
+            <expression-item expression="DATEPART(yyyy,OrderDate)" start-index="120" stop-index="143" />
+        </group-by>
+        <having start-index="145" stop-index="186">
+            <expr>
+                <binary-operation-expression text="DATEPART(yyyy,OrderDate) &gt;= N'2003'" start-index="152" stop-index="186">
+                    <left>
+                        <function function-name="DATEPART" text="DATEPART(yyyy,OrderDate)" start-index="152" stop-index="175">
+                            <parameter>
+                                <column name="yyyy" start-index="161" stop-index="164" />
+                            </parameter>
+                            <parameter>
+                                <column name="OrderDate" start-index="166" stop-index="174" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <right>
+                        <literal-expression value="2003" start-index="180" stop-index="186" />
+                    </right>
+                    <operator>&gt;=</operator>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <expression-item expression="DATEPART(yyyy,OrderDate)" order-direction="ASC" start-index="197" stop-index="220" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_from_input_table">
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" expression="count(*)" start-index="7" stop-index="14"/>
+        </projections>
+        <from start-index="21" stop-index="25">
+            <simple-table name="input" start-index="21" stop-index="25"/>
+        </from>
+        <group-by>
+            <column-item name="PartitionId" order-direction="ASC" start-index="36" stop-index="46"/>
+            <column-item name="clusterid" order-direction="ASC" start-index="49" stop-index="57"/>
+            <column-item name="tumblingwindow" order-direction="ASC" start-index="60" stop-index="73"/>
+        </group-by>
+    </select>
+    
+    <select sql-case-id="select_group_by_top_column_value">
+        <projections start-index="7" stop-index="34">
+            <top-projection start-index="7" stop-index="12">
+                <top-value value="10" start-index="26" stop-index="26" />
+            </top-projection>
+            <column-projection name="hash_unique_bigint_id" start-index="14" stop-index="34" />
+        </projections>
+        <from start-index="41" stop-index="55">
+            <simple-table name="TelemetryDS" start-index="41" stop-index="55">
+                <owner name="dbo" start-index="41" stop-index="43" />
+            </simple-table>
+        </from>
+        <where start-index="57" stop-index="103">
+            <expr>
+                <between-expression start-index="63" stop-index="103">
+                    <left>
+                        <column name="Timestamp" start-index="63" stop-index="71"/>
+                    </left>
+                    <between-expr>
+                        <column name="@StartTime" start-index="81" stop-index="90"/>
+                    </between-expr>
+                    <and-expr>
+                        <column name="@EndTime" start-index="96" stop-index="103" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+        <group-by start-index="57" stop-index="103">
+            <column-item name="hash_unique_bigint_id" order-direction="ASC" start-index="114" stop-index="134" />
+        </group-by>
+        <order-by start-index="136" stop-index="179">
+            <expression-item expression="MAX(max_elapsed_time_microsec)" order-direction="DESC" start-index="145" stop-index="174" />
         </order-by>
     </select>
 </sql-parser-test-cases>

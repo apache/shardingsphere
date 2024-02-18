@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
+import lombok.Getter;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,9 @@ public final class ConditionValue {
     private final Comparable<?> value;
     
     private final int parameterMarkerIndex;
+    
+    @Getter
+    private boolean isNull;
     
     public ConditionValue(final ExpressionSegment expressionSegment, final List<Object> params) {
         value = getValue(expressionSegment, params);
@@ -54,7 +58,8 @@ public final class ConditionValue {
         int parameterMarkerIndex = expressionSegment.getParameterMarkerIndex();
         if (parameterMarkerIndex < params.size()) {
             Object result = params.get(parameterMarkerIndex);
-            ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding", result));
+            isNull = null == result;
+            ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding", result));
             return (Comparable<?>) result;
         }
         return null;
@@ -62,7 +67,8 @@ public final class ConditionValue {
     
     private Comparable<?> getValue(final LiteralExpressionSegment expressionSegment) {
         Object result = expressionSegment.getLiterals();
-        ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding", result));
+        isNull = null == result;
+        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding", result));
         return (Comparable<?>) result;
     }
     

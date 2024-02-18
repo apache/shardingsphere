@@ -17,6 +17,162 @@
   -->
 
 <sql-parser-test-cases>
+    <insert sql-case-id="insert_into_values1">
+        <table name="test_nested" start-index="12" stop-index="22" />
+        <columns start-index="23" stop-index="23" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="31" stop-index="31" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values2">
+        <table name="emp_table" start-index="12" stop-index="20" />
+        <columns start-index="21" stop-index="21" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="29" stop-index="29" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="John" start-index="31" stop-index="36" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1000.00" start-index="38" stop-index="44" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Architect" start-index="46" stop-index="56" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values3">
+        <table name="emp_table" start-index="12" stop-index="20" />
+        <columns start-index="21" stop-index="21" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="29" stop-index="29" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Robert" start-index="31" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="900.00" start-index="40" stop-index="45" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Developer" start-index="47" stop-index="57" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values4">
+        <table name="emp_table" start-index="12" stop-index="20" />
+        <columns start-index="21" stop-index="21" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="3" start-index="29" stop-index="29" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="James" start-index="31" stop-index="37" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2000.00" start-index="39" stop-index="45" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Director" start-index="47" stop-index="56" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values5">
+        <table name="dept" start-index="12" stop-index="15" />
+        <columns start-index="16" stop-index="16" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="24" stop-index="24" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Sales" start-index="26" stop-index="32" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="500 Oracle pkwy" start-index="34" stop-index="50" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Redwood S" start-index="52" stop-index="62" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="CA" start-index="64" stop-index="67" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="94065" start-index="69" stop-index="75" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values6">
+        <table name="dept" start-index="12" stop-index="15" />
+        <columns start-index="16" stop-index="16" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="24" stop-index="24" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="ST" start-index="26" stop-index="29" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="400 Oracle Pkwy" start-index="31" stop-index="47" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Redwood S" start-index="49" stop-index="59" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="CA" start-index="61" stop-index="64" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="94065" start-index="66" stop-index="72" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values7">
+        <table name="dept" start-index="12" stop-index="15" />
+        <columns start-index="16" stop-index="16" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="3" start-index="24" stop-index="24" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Apps" start-index="26" stop-index="31" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="300 Oracle pkwy" start-index="33" stop-index="49" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Redwood S" start-index="51" stop-index="61" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="CA" start-index="63" stop-index="66" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="94065" start-index="68" stop-index="74" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
     <insert sql-case-id="insert_with_all_placeholders" parameters="1, 1, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="46">
@@ -1188,12 +1344,36 @@
             </value>
         </values>
         <on-duplicate-key-columns start-index="61" stop-index="126" literal-start-index="65" literal-stop-index="130">
-            <assignment start-index="85" stop-index="126" literal-start-index="89" literal-stop-index="130">
+            <assignment>
                 <column name="salary" start-index="85" stop-index="90" literal-start-index="89" literal-stop-index="94" />
                 <assignment-value>
-                    <!-- FIXME -->
-                    <!--<common-expression text="VALUES(salary)+VALUES(salary)*0.2" />-->
-                    <common-expression text="VALUES(salary)" />
+                    <binary-operation-expression start-index="94" stop-index="126" literal-start-index="98" literal-stop-index="130">
+                        <left>
+                            <binary-operation-expression start-index="94" stop-index="122" literal-start-index="98" literal-stop-index="126">
+                                <left>
+                                    <function function-name="VALUES" text="VALUES(salary)" start-index="94" stop-index="107" literal-start-index="98" literal-stop-index="111">
+                                        <parameter>
+                                            <column name="salary" start-index="101" stop-index="106" literal-start-index="105" literal-stop-index="110" />
+                                        </parameter>
+                                        <literalText>VALUES(salary)</literalText>
+                                    </function>
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <function function-name="VALUES" text="VALUES(salary)" start-index="109" stop-index="122" literal-start-index="113" literal-stop-index="126">
+                                        <parameter>
+                                            <column name="salary" start-index="116" stop-index="121" literal-start-index="120" literal-stop-index="125" />
+                                        </parameter>
+                                        <literalText>VALUES(salary)</literalText>
+                                    </function>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>*</operator>
+                        <right>
+                            <literal-expression value="0.2" start-index="124" stop-index="126" literal-start-index="128" literal-stop-index="130" />
+                        </right>
+                    </binary-operation-expression>
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
@@ -1326,8 +1506,9 @@
     </insert>
 
     <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 2, 2, 'init', 3, 3, 'init'">
-        <multi-table-element start-index="11" stop-index="183" literal-start-index="11" literal-stop-index="198">
-            <table-element>
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="183" literal-start-index="11" literal-stop-index="198">
+            <insert-statement parameters="1, 1, 'init'">
                 <table name="t_order" start-index="16" stop-index="22" />
                 <columns start-index="24" stop-index="50">
                     <column name="order_id" start-index="25" stop-index="32" />
@@ -1350,8 +1531,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-            <table-element>
+            </insert-statement>
+            <insert-statement parameters="2, 2, 'init'">
                 <table name="t_order" start-index="74" stop-index="80" literal-start-index="79" literal-stop-index="85" />
                 <columns start-index="82" stop-index="108" literal-start-index="87" literal-stop-index="113">
                     <column name="order_id" start-index="83" stop-index="90" literal-start-index="88" literal-stop-index="95" />
@@ -1374,8 +1555,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-            <table-element>
+            </insert-statement>
+            <insert-statement parameters="2, 2, 'init'">
                 <table name="t_order" start-index="132" stop-index="138" literal-start-index="142" literal-stop-index="148" />
                 <columns start-index="140" stop-index="166" literal-start-index="150" literal-stop-index="176">
                     <column name="order_id" start-index="141" stop-index="148" literal-start-index="151" literal-stop-index="158" />
@@ -1398,16 +1579,16 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-        </multi-table-element>
-        <select-subquery>
+            </insert-statement>
+        </multi-table-insert-into>
+        <select>
             <from>
                 <simple-table name="dual" start-index="199" stop-index="202" literal-start-index="214" literal-stop-index="217" />
             </from>
             <projections start-index="192" stop-index="192" literal-start-index="207" literal-stop-index="207">
                 <shorthand-projection start-index="192" stop-index="192" literal-start-index="207" literal-stop-index="207" />
             </projections>
-        </select-subquery>
+        </select>
     </insert>
 
     <insert sql-case-id="insert_with_str_date_add" parameters="1, 1, 1">
@@ -1456,7 +1637,7 @@
             <column name="user_id" start-index="31" stop-index="37" />
             <column name="status" start-index="40" stop-index="45" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order" start-index="86" stop-index="92" />
             </from>
@@ -1485,7 +1666,7 @@
     <insert sql-case-id="insert_select_without_columns" parameters="100">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="19" />
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order" start-index="58" stop-index="64" />
             </from>
@@ -1520,7 +1701,7 @@
             <column name="status" start-index="53" stop-index="58" />
             <column name="creation_date" start-index="61" stop-index="73" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order_item" start-index="139" stop-index="150" />
             </from>
@@ -1556,7 +1737,7 @@
             <column name="status" start-index="44" stop-index="49" />
             <column name="creation_date" start-index="52" stop-index="64" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order_item" start-index="121" stop-index="132" />
             </from>
@@ -1590,7 +1771,7 @@
             <column name="user_id" start-index="30" stop-index="36" />
             <column name="status" start-index="39" stop-index="44" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order" start-index="85" stop-index="91" />
             </from>
@@ -1808,12 +1989,8 @@
         </columns>
         <output start-index="40" stop-index="128">
             <output-columns start-index="47" stop-index="81">
-                <column-projection name="order_id" start-index="47" stop-index="63">
-                    <owner name="INSERTED" start-index="47" stop-index="54" />
-                </column-projection>
-                <column-projection name="user_id" start-index="66" stop-index="81">
-                    <owner name="INSERTED" start-index="66" stop-index="73" />
-                </column-projection>
+                <column-projection name="order_id" start-index="47" stop-index="63" />
+                <column-projection name="user_id" start-index="66" stop-index="81" />
             </output-columns>
             <output-table name="@MyTableVar" start-index="88" stop-index="98" />
             <output-table-columns start-index="100" stop-index="128">
@@ -1843,12 +2020,8 @@
         </columns>
         <output start-index="40" stop-index="98">
             <output-columns start-index="47" stop-index="81">
-                <column-projection name="order_id" start-index="47" stop-index="63">
-                    <owner name="INSERTED" start-index="47" stop-index="54" />
-                </column-projection>
-                <column-projection name="user_id" start-index="66" stop-index="81">
-                    <owner name="INSERTED" start-index="66" stop-index="73" />
-                </column-projection>
+                <column-projection name="order_id" start-index="47" stop-index="63" />
+                <column-projection name="user_id" start-index="66" stop-index="81" />
             </output-columns>
             <output-table name="@MyTableVar" start-index="88" stop-index="98" />
         </output>
@@ -1874,12 +2047,8 @@
         </columns>
         <output start-index="40" stop-index="81">
             <output-columns start-index="47" stop-index="81">
-                <column-projection name="order_id" start-index="47" stop-index="63">
-                    <owner name="INSERTED" start-index="47" stop-index="54" />
-                </column-projection>
-                <column-projection name="user_id" start-index="66" stop-index="81">
-                    <owner name="INSERTED" start-index="66" stop-index="73" />
-                </column-projection>
+                <column-projection name="order_id" start-index="47" stop-index="63" />
+                <column-projection name="user_id" start-index="66" stop-index="81" />
             </output-columns>
         </output>
         <values>
@@ -1984,7 +2153,7 @@
     <insert sql-case-id="insert_with_select_subquery">
         <table name="bonuses" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="19" />
-        <select-subquery>
+        <select>
             <from>
                 <simple-table name="employees" start-index="56" stop-index="64" />
             </from>
@@ -2005,12 +2174,13 @@
                     </binary-operation-expression>
                 </expr>
             </where>
-        </select-subquery>
+        </select>
     </insert>
 
     <insert sql-case-id="insert_with_multitable_element">
-        <multi-table-element start-index="11" stop-index="231">
-            <table-element>
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="231">
+            <insert-statement>
                 <table name="sales" start-index="16" stop-index="20" />
                 <columns start-index="22" stop-index="56">
                     <column name="prod_id" start-index="23" stop-index="29" />
@@ -2034,8 +2204,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-            <table-element>
+            </insert-statement>
+            <insert-statement>
                 <table name="sales" start-index="126" stop-index="130" />
                 <columns start-index="132" stop-index="166">
                     <column name="prod_id" start-index="133" stop-index="139" />
@@ -2055,13 +2225,21 @@
                             <column name="sales_mon" start-index="201" stop-index="209" />
                         </assignment-value>
                         <assignment-value>
-                            <common-expression text="weekly_start_date+1" start-index="212" stop-index="230" />
+                            <binary-operation-expression start-index="212" stop-index="230" literal-start-index="212" literal-stop-index="230">
+                                <left>
+                                    <column name="weekly_start_date" start-index="212" stop-index="228" literal-start-index="212" literal-stop-index="228" />
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression value="1" start-index="230" stop-index="230" literal-start-index="230" literal-stop-index="230" />
+                                </right>
+                            </binary-operation-expression>
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-        </multi-table-element>
-        <select-subquery>
+            </insert-statement>
+        </multi-table-insert-into>
+        <select>
             <from>
                 <simple-table name="sales_input_table" start-index="310" stop-index="326" />
             </from>
@@ -2072,25 +2250,87 @@
                 <column-projection name="sales_sun" start-index="284" stop-index="292" />
                 <column-projection name="sales_mon" start-index="295" stop-index="303" />
             </projections>
-        </select-subquery>
+        </select>
     </insert>
 
-    <insert sql-case-id="insert_all_with_multitable_with_conditional_when">
-        <multi-table-element start-index="7" stop-index="185">
-            <table-element>
-                <table name="small_orders" start-index="48" stop-index="59" />
-                <columns start-index="60" stop-index="60" />
-            </table-element>
-            <table-element>
-                <table name="medium_orders" start-index="124" stop-index="136" />
-                <columns start-index="137" stop-index="137" />
-            </table-element>
-            <table-element>
-                <table name="large_orders" start-index="174" stop-index="185" />
-                <columns start-index="186" stop-index="186" />
-            </table-element>
-        </multi-table-element>
-        <select-subquery>
+    <insert sql-case-id="insert_all_with_multi_table_with_conditional_when">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-conditional-into start-index="7" stop-index="185">
+            <conditional-into-when-then start-index="11" stop-index="59">
+                <when start-index="16" stop-index="36">
+                    <binary-operation-expression start-index="16" stop-index="36">
+                        <left>
+                            <column name="order_total" start-index="16" stop-index="26" />
+                        </left>
+                        <operator>&lt;=</operator>
+                        <right>
+                            <literal-expression value="100000" start-index="31" stop-index="36" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="43" stop-index="59">
+                    <insert-statement>
+                        <table name="small_orders" start-index="48" stop-index="59" />
+                        <columns start-index="60" stop-index="60" />
+                    </insert-statement>        
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-when-then start-index="61" stop-index="136">
+                <when start-index="66" stop-index="112">
+                    <binary-operation-expression start-index="66" stop-index="112">
+                        <left>
+                            <binary-operation-expression start-index="66" stop-index="86">
+                                <left>
+                                    <column name="order_total" start-index="66" stop-index="76" />
+                                </left>
+                                <operator>&gt;</operator>
+                                <right>
+                                    <literal-expression value="1000000" start-index="80" stop-index="86" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="92" stop-index="112">
+                                <left>
+                                    <column name="order_total" start-index="92" stop-index="102" />
+                                </left>
+                                <operator>&lt;=</operator>
+                                <right>
+                                    <literal-expression value="200000" start-index="107" stop-index="112" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="119" stop-index="136">
+                    <insert-statement>
+                        <table name="medium_orders" start-index="124" stop-index="136" />
+                        <columns start-index="137" stop-index="137" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-when-then start-index="138" stop-index="185">
+                <when start-index="143" stop-index="162">
+                    <binary-operation-expression start-index="143" stop-index="162">
+                        <left>
+                            <column name="order_total" start-index="143" stop-index="153" />
+                        </left>
+                        <operator>&gt;</operator>
+                        <right>
+                            <literal-expression value="200000" start-index="157" stop-index="162" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="169" stop-index="185">
+                    <insert-statement>
+                        <table name="large_orders" start-index="174" stop-index="185" />
+                        <columns start-index="186" stop-index="186" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+        </multi-table-conditional-into>
+        <select>
             <from>
                 <simple-table name="orders" start-index="248" stop-index="253" />
             </from>
@@ -2100,25 +2340,74 @@
                 <column-projection name="sales_rep_id" start-index="217" stop-index="228" />
                 <column-projection name="customer_id" start-index="231" stop-index="241" />
             </projections>
-        </select-subquery>
+        </select>
     </insert>
 
-    <insert sql-case-id="insert_all_with_multitable_with_conditional_when_with_conditional_else">
-        <multi-table-element start-index="7" stop-index="158">
-            <table-element>
-                <table name="small_orders" start-index="48" stop-index="59" />
-                <columns start-index="60" stop-index="60" />
-            </table-element>
-            <table-element>
-                <table name="medium_orders" start-index="123" stop-index="135" />
-                <columns start-index="136" stop-index="136" />
-            </table-element>
-            <table-element>
-                <table name="large_orders" start-index="147" stop-index="158" />
-                <columns start-index="159" stop-index="159" />
-            </table-element>
-        </multi-table-element>
-        <select-subquery>
+    <insert sql-case-id="insert_all_with_multi_table_with_conditional_when_with_conditional_else">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-conditional-into start-index="7" stop-index="158">
+            <conditional-into-when-then start-index="11" stop-index="59">
+                <when start-index="16" stop-index="36">
+                    <binary-operation-expression start-index="16" stop-index="36">
+                        <left>
+                            <column name="order_total" start-index="16" stop-index="26" />
+                        </left>
+                        <operator>&lt;=</operator>
+                        <right>
+                            <literal-expression value="100000" start-index="31" stop-index="36" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="43" stop-index="59">
+                    <insert-statement>
+                        <table name="small_orders" start-index="48" stop-index="59" />
+                        <columns start-index="60" stop-index="60" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-when-then start-index="61" stop-index="135">
+                <when start-index="66" stop-index="111">
+                    <binary-operation-expression start-index="66" stop-index="111">
+                        <left>
+                            <binary-operation-expression start-index="66" stop-index="85">
+                                <left>
+                                    <column name="order_total" start-index="66" stop-index="76" />
+                                </left>
+                                <operator>&gt;</operator>
+                                <right>
+                                    <literal-expression value="100000" start-index="80" stop-index="85" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="91" stop-index="111">
+                                <left>
+                                    <column name="order_total" start-index="91" stop-index="101" />
+                                </left>
+                                <operator>&lt;=</operator>
+                                <right>
+                                    <literal-expression value="200000" start-index="106" stop-index="111" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="118" stop-index="135">
+                    <insert-statement>
+                        <table name="medium_orders" start-index="123" stop-index="135" />
+                        <columns start-index="136" stop-index="136" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-else start-index="137" stop-index="158">
+                <insert-statement>
+                    <table name="large_orders" start-index="147" stop-index="158" />
+                    <columns start-index="159" stop-index="159" />
+                </insert-statement>
+            </conditional-into-else>
+        </multi-table-conditional-into>
+        <select>
             <from>
                 <simple-table name="orders" start-index="221" stop-index="226" />
             </from>
@@ -2128,7 +2417,7 @@
                 <column-projection name="sales_rep_id" start-index="190" stop-index="201" />
                 <column-projection name="customer_id" start-index="204" stop-index="214" />
             </projections>
-        </select-subquery>
+        </select>
     </insert>
 
     <insert sql-case-id="insert_with_rank_column">
@@ -2215,7 +2504,15 @@
             <assignment start-index="96" stop-index="116">
                 <column name="user_id" start-index="96" stop-index="102" />
                 <assignment-value>
-                    <common-expression literal-text="user_id + 1" start-index="106" stop-index="116" />
+                    <binary-operation-expression start-index="106" stop-index="116" literal-start-index="106" literal-stop-index="116">
+                        <left>
+                            <column name="user_id" start-index="106" stop-index="112" literal-start-index="106" literal-stop-index="112" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="1" start-index="116" stop-index="116" literal-start-index="116" literal-stop-index="116" />
+                        </right>
+                    </binary-operation-expression>
                 </assignment-value>
             </assignment>
             <assignment start-index="119" stop-index="133">
@@ -2258,13 +2555,13 @@
         <values>
             <value>
                 <assignment-value>
-                    <literal-expression value="1999-12-01 10:00:00" start-index="30" stop-index="59" />
+                    <common-expression text="TIMESTAMP'1999-12-01 10:00:00'" start-index="30" stop-index="59" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="1999-12-01 10:00:00" start-index="62" stop-index="91" />
+                    <common-expression text="TIMESTAMP'1999-12-01 10:00:00'" start-index="62" stop-index="91" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="1999-12-01 10:00:00" start-index="94" stop-index="123" />
+                    <common-expression text="TIMESTAMP'1999-12-01 10:00:00'" start-index="94" stop-index="123" />
                 </assignment-value>
             </value>
         </values>
@@ -2289,55 +2586,1188 @@
     </insert>
     
     <insert sql-case-id="insert_with_connect_by_and_prior">
-        <table name="t" start-index="12" stop-index="12" literal-start-index="12" literal-stop-index="12"/>
+        <table name="t" start-index="12" stop-index="12" literal-start-index="12" literal-stop-index="12" />
         <columns start-index="14" stop-index="29" literal-start-index="14" literal-stop-index="29">
-            <column name="c1" start-index="15" stop-index="16" literal-start-index="15" literal-stop-index="16"/>
-            <column name="c2" start-index="18" stop-index="19" literal-start-index="18" literal-stop-index="19"/>
-            <column name="c3" start-index="21" stop-index="22" literal-start-index="21" literal-stop-index="22"/>
-            <column name="c4" start-index="24" stop-index="25" literal-start-index="24" literal-stop-index="25"/>
-            <column name="c5" start-index="27" stop-index="28" literal-start-index="27" literal-stop-index="28"/>
+            <column name="c1" start-index="15" stop-index="16" literal-start-index="15" literal-stop-index="16" />
+            <column name="c2" start-index="18" stop-index="19" literal-start-index="18" literal-stop-index="19" />
+            <column name="c3" start-index="21" stop-index="22" literal-start-index="21" literal-stop-index="22" />
+            <column name="c4" start-index="24" stop-index="25" literal-start-index="24" literal-stop-index="25" />
+            <column name="c5" start-index="27" stop-index="28" literal-start-index="27" literal-stop-index="28" />
         </columns>
-        <select-subquery>
-            <from>
-                <simple-table name="t" start-index="91" stop-index="91" literal-start-index="91" literal-stop-index="91"/>
-            </from>
-            <projections distinct-row="false" start-index="38" stop-index="84" literal-start-index="38" literal-stop-index="84">
-                <column-projection name="c1" start-index="38" stop-index="39" literal-start-index="38" literal-stop-index="39"/>
-                <column-projection name="c2" start-index="41" stop-index="42" literal-start-index="41" literal-stop-index="42"/>
-                <column-projection name="c4" start-index="80" stop-index="81" literal-start-index="80" literal-stop-index="81"/>
-                <column-projection name="c5" start-index="83" stop-index="84" literal-start-index="83" literal-stop-index="84"/>
-                <expression-projection text="regexp_substr(c3, '[^,]+', 1, l)" literal-text="regexp_substr(c3, '[^,]+', 1, l)" alias="c3" start-index="44" stop-index="78" literal-start-index="44" literal-stop-index="78">
-                    <expr start-index="0">
-                        <function function-name="regexp_substr" text="regexp_substr(c3, '[^,]+', 1, l)" literal-text="regexp_substr(c3, '[^,]+', 1, l)" start-index="44" stop-index="75" literal-start-index="44" literal-stop-index="75">
+        <select>
+            <projections start-index="38" stop-index="84" literal-start-index="38" literal-stop-index="84">
+                <column-projection name="c1" start-index="38" stop-index="39" literal-start-index="38" literal-stop-index="39" />
+                <column-projection name="c2" start-index="41" stop-index="42" literal-start-index="41" literal-stop-index="42" />
+                <column-projection name="c4" start-index="80" stop-index="81" literal-start-index="80" literal-stop-index="81" />
+                <column-projection name="c5" start-index="83" stop-index="84" literal-start-index="83" literal-stop-index="84" />
+                <expression-projection text="regexp_substr(c3, '[^,]+', 1, l)" alias="c3" start-index="44" stop-index="78" literal-start-index="44" literal-stop-index="78">
+                    <literalText>regexp_substr(c3, '[^,]+', 1, l)</literalText>
+                    <expr>
+                        <function function-name="regexp_substr" text="regexp_substr(c3, '[^,]+', 1, l)" start-index="44" stop-index="75" literal-start-index="44" literal-stop-index="75">
                             <parameter>
-                                <column name="c3" start-index="58" stop-index="59" literal-start-index="58" literal-stop-index="59"/>
+                                <column name="c3" start-index="58" stop-index="59" literal-start-index="58" literal-stop-index="59" />
                             </parameter>
                             <parameter>
-                                <literal-expression value="[^,]+" start-index="62" stop-index="68" literal-start-index="62" literal-stop-index="68"/>
+                                <literal-expression value="[^,]+" start-index="62" stop-index="68" literal-start-index="62" literal-stop-index="68" />
                             </parameter>
                             <parameter>
-                                <literal-expression value="1" start-index="71" stop-index="71" literal-start-index="71" literal-stop-index="71"/>
+                                <literal-expression value="1" start-index="71" stop-index="71" literal-start-index="71" literal-stop-index="71" />
                             </parameter>
                             <parameter>
-                                <column name="l" start-index="74" stop-index="74" literal-start-index="74" literal-stop-index="74"/>
+                                <column name="l" start-index="74" stop-index="74" literal-start-index="74" literal-stop-index="74" />
                             </parameter>
+                            <literalText>regexp_substr(c3, '[^,]+', 1, l)</literalText>
                         </function>
                     </expr>
                 </expression-projection>
             </projections>
+            <from>
+                <simple-table name="t" start-index="91" stop-index="91" literal-start-index="91" literal-stop-index="91" />
+            </from>
             <where start-index="93" stop-index="102" literal-start-index="93" literal-stop-index="102">
-                <expr  >
+                <expr>
                     <binary-operation-expression start-index="99" stop-index="102" literal-start-index="99" literal-stop-index="102">
                         <left>
-                            <column name="id" start-index="99" stop-index="100" literal-start-index="99" literal-stop-index="100"/>
+                            <column name="id" start-index="99" stop-index="100" literal-start-index="99" literal-stop-index="100" />
                         </left>
                         <operator>=</operator>
                         <right>
-                            <literal-expression value="1" start-index="102" stop-index="102" literal-start-index="102" literal-stop-index="102"/>
+                            <literal-expression value="1" start-index="102" stop-index="102" literal-start-index="102" literal-stop-index="102" />
                         </right>
                     </binary-operation-expression>
                 </expr>
             </where>
-        </select-subquery>
+        </select>
+    </insert>
+    
+    <insert sql-case-id="insert_with_interval">
+        <table name="test" start-index="12" stop-index="15" literal-start-index="12" literal-stop-index="15" />
+        <columns start-index="16" stop-index="16" literal-start-index="16" literal-stop-index="16" />
+        <values>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '123-2' YEAR(3) TO MONTH" text="INTERVAL '123-2' YEAR(3) TO MONTH" start-index="25" stop-index="57" literal-start-index="25" literal-stop-index="57" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '123' YEAR(3)" text="INTERVAL '123' YEAR(3)" start-index="60" stop-index="81" literal-start-index="60" literal-stop-index="81" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '300' MONTH(3)" text="INTERVAL '300' MONTH(3)" start-index="84" stop-index="106" literal-start-index="84" literal-stop-index="106" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '4' YEAR" text="INTERVAL '4' YEAR" start-index="109" stop-index="125" literal-start-index="109" literal-stop-index="125" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '50' MONTH" text="INTERVAL '50' MONTH" start-index="128" stop-index="146" literal-start-index="128" literal-stop-index="146" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '4 5:12:10.222' DAY TO SECOND(3)" text="INTERVAL '4 5:12:10.222' DAY TO SECOND(3)" start-index="149" stop-index="189" literal-start-index="149" literal-stop-index="189" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression literal-text="INTERVAL '4 5:12' DAY TO MINUTE" text="INTERVAL '4 5:12' DAY TO MINUTE" start-index="192" stop-index="222" literal-start-index="192" literal-stop-index="222" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_national_character_set">
+        <table name="customers" start-index="12" stop-index="20" literal-start-index="12" literal-stop-index="20" />
+        <columns start-index="21" stop-index="21" literal-start-index="21" literal-stop-index="21" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1000" start-index="30" stop-index="33" literal-start-index="30" literal-stop-index="33" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="TO_NCHAR" text="TO_NCHAR('John Smith')" start-index="36" stop-index="57" literal-start-index="36" literal-stop-index="57">
+                        <parameter>
+                            <literal-expression value="John Smith" start-index="45" stop-index="56" literal-start-index="45" literal-stop-index="56" />
+                        </parameter>
+                        <literalText>TO_NCHAR('John Smith')</literalText>
+                    </function>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="500 Oracle Parkway" start-index="60" stop-index="79" literal-start-index="59" literal-stop-index="79" />
+                </assignment-value>
+                <assignment-value>
+                    <column name="sysdate" start-index="81" stop-index="87" literal-start-index="81" literal-stop-index="87" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_oracle_datetime_type">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="93">
+            <column name="create_date" start-index="21" stop-index="31" />
+            <column name="create_timestamp" start-index="34" stop-index="49" />
+            <column name="create_interval_year" start-index="52" stop-index="71" />
+            <column name="create_interval_day" start-index="74" stop-index="92" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="103" stop-index="125" literal-start-index="103" literal-stop-index="125">
+                        <parameter>
+                            <literal-expression value="'2009'" start-index="111" stop-index="116" literal-start-index="111" literal-stop-index="116" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'YYYY'" start-index="119" stop-index="124" literal-start-index="119" literal-stop-index="124" />
+                        </parameter>
+                        <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                    </function>
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="128" stop-index="150" literal-start-index="128" literal-stop-index="150">
+                        <parameter>
+                            <literal-expression value="'2009'" start-index="136" stop-index="141" literal-start-index="136" literal-stop-index="141" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'YYYY'" start-index="144" stop-index="149" literal-start-index="144" literal-stop-index="149" />
+                        </parameter>
+                        <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                    </function>
+                </assignment-value>
+                <assignment-value>
+                    <interval-expression>
+                        <left>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="154" stop-index="176" literal-start-index="154" literal-stop-index="176">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="162" stop-index="167" literal-start-index="162" literal-stop-index="167" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="170" stop-index="175" literal-start-index="170" literal-stop-index="175" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
+                        </left>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="180" stop-index="202" literal-start-index="180" literal-stop-index="202">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="188" stop-index="193" literal-start-index="188" literal-stop-index="193" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="196" stop-index="201" literal-start-index="196" literal-stop-index="201" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
+                        </right>
+                    </interval-expression>
+                </assignment-value>
+                <assignment-value>
+                    <interval-expression>
+                        <left>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="221" stop-index="243" literal-start-index="221" literal-stop-index="243">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="229" stop-index="234" literal-start-index="229" literal-stop-index="234" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="237" stop-index="242" literal-start-index="237" literal-stop-index="242" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
+                        </left>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="247" stop-index="269" literal-start-index="247" literal-stop-index="269">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="255" stop-index="260" literal-start-index="255" literal-stop-index="260" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="263" stop-index="268" literal-start-index="263" literal-stop-index="268" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
+                        </right>
+                    </interval-expression>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_all_into">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="213">
+            <insert-statement>
+                <table name="T_MASK" start-index="16" stop-index="21" />
+                <columns start-index="22" stop-index="50">
+                    <column name="ID" start-index="23" stop-index="24" />
+                    <column name="EMAIL" start-index="26" stop-index="30" />
+                    <column name="NAME" start-index="32" stop-index="35" />
+                    <column name="PHONE" start-index="37" stop-index="41" />
+                    <column name="ADDRESS" start-index="43" stop-index="49" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="1" start-index="60" stop-index="60" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="62" stop-index="64" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="66" stop-index="68" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="4" start-index="70" stop-index="72" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="5" start-index="74" stop-index="76" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert-statement>
+            <insert-statement>
+                <table name="T_MASK" start-index="84" stop-index="89" />
+                <columns start-index="90" stop-index="118">
+                    <column name="ID" start-index="91" stop-index="92" />
+                    <column name="EMAIL" start-index="94" stop-index="98" />
+                    <column name="NAME" start-index="100" stop-index="103" />
+                    <column name="PHONE" start-index="105" stop-index="109" />
+                    <column name="ADDRESS" start-index="111" stop-index="117" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="128" stop-index="128" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="130" stop-index="132" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="134" stop-index="136" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="4" start-index="138" stop-index="140" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="5" start-index="142" stop-index="144" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert-statement>
+            <insert-statement>
+                <table name="T_MASK" start-index="152" stop-index="157" />
+                <columns start-index="158" stop-index="186">
+                    <column name="ID" start-index="159" stop-index="160" />
+                    <column name="EMAIL" start-index="162" stop-index="166" />
+                    <column name="NAME" start-index="168" stop-index="171" />
+                    <column name="PHONE" start-index="173" stop-index="177" />
+                    <column name="ADDRESS" start-index="179" stop-index="185" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="196" stop-index="196" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="198" stop-index="200" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="202" stop-index="204" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="4" start-index="206" stop-index="208" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="5" start-index="210" stop-index="212" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert-statement>
+        </multi-table-insert-into>
+        <select>
+            <projections start-index="222" stop-index="222">
+                <expression-projection start-index="222" stop-index="222" text="1">
+                    <expr>
+                        <literal-expression start-index="222" stop-index="222" value="1" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="DUAL" start-index="229" stop-index="232" />
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_with_nchar_1">
+        <table name="T1" start-index="12" stop-index="17">
+            <owner name="dbo" start-index="12" stop-index="14" />
+        </table>
+        <columns start-index="18" stop-index="18" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="27" stop-index="27" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Natalia" start-index="30" stop-index="39" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_nchar_2">
+        <table name="T1" start-index="12" stop-index="17">
+            <owner name="dbo" start-index="12" stop-index="14" />
+        </table>
+        <columns start-index="18" stop-index="18" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="27" stop-index="27" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Mark" start-index="30" stop-index="36" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_nchar_3">
+        <table name="T1" start-index="12" stop-index="17">
+            <owner name="dbo" start-index="12" stop-index="14" />
+        </table>
+        <columns start-index="18" stop-index="18" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="3" start-index="27" stop-index="27" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Randolph" start-index="30" stop-index="40" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_nchar_4">
+        <table name="@table1" start-index="7" stop-index="13"/>
+        <columns start-index="15" stop-index="32">
+            <column name="c2" start-index="16" stop-index="17"/>
+            <column name="is_transient" start-index="20" stop-index="31"/>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="sample durable" start-index="42" stop-index="58"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="0" start-index="61" stop-index="61"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_nchar_5">
+        <table name="@table1" start-index="7" stop-index="13"/>
+        <columns start-index="15" stop-index="32">
+            <column name="c2" start-index="16" stop-index="17"/>
+            <column name="is_transient" start-index="20" stop-index="31"/>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="sample non-durable" start-index="42" stop-index="62"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="65" stop-index="65"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_data_base_name">
+        <table name="VariableTest" start-index="12" stop-index="46">
+            <owner name="dbo" start-index="31" stop-index="33">
+                <owner name="AdventureWorks2022" start-index="12" stop-index="29"/>
+            </owner>
+        </table>
+        <columns start-index="47" stop-index="52">
+            <column name="Col1" start-index="48" stop-index="51" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="$(tablename)" start-index="61" stop-index="74" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_batch_nchar">
+        <table name="Employees" start-index="12" stop-index="31">
+            <owner name="TestSchema" start-index="12" stop-index="21"/>
+        </table>
+        <columns start-index="33" stop-index="48">
+            <column name="Name" start-index="34" stop-index="37"/>
+            <column name="Location" start-index="40" stop-index="47"/>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Jared" start-index="58" stop-index="65"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Australia" start-index="69" stop-index="80"/>
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Nikita" start-index="85" stop-index="93"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="India" start-index="96" stop-index="103"/>
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Tom" start-index="108" stop-index="113"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Germany" start-index="116" stop-index="125"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_db_schema_name">
+        <table name="Affiliation" start-index="12" stop-index="43">
+            <owner name="dbo" start-index="29" stop-index="31">
+                <owner name="ContosoWarehouse" start-index="12" stop-index="27"/>
+            </owner>
+        </table>
+        <columns start-index="44" stop-index="44"/>
+        <select>
+            <projections start-index="52" stop-index="52">
+                <shorthand-projection start-index="52" stop-index="52"/>
+            </projections>
+            <from>
+                <simple-table name="Affiliation" start-index="59" stop-index="86">
+                    <owner name="dbo" start-index="72" stop-index="74">
+                        <owner name="My_Lakehouse" start-index="59" stop-index="70"/>
+                    </owner>
+                </simple-table>
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_with_exec">
+        <table name="iris_rx_data" start-index="12" stop-index="23" />
+        <columns start-index="25" stop-index="98">
+            <column name="Sepal.Length" start-delimiter="&quot;" end-delimiter="&quot;" start-index="26" stop-index="39"/>
+            <column name="Sepal.Width" start-delimiter="&quot;" end-delimiter="&quot;" start-index="42" stop-index="54"/>
+            <column name="Petal.Length" start-delimiter="&quot;" end-delimiter="&quot;" start-index="57" stop-index="70"/>
+            <column name="Petal.Width" start-delimiter="&quot;" end-delimiter="&quot;" start-index="73" stop-index="85"/>
+            <column name="Species" start-delimiter="&quot;" end-delimiter="&quot;" start-index="89" stop-index="97"/>
+        </columns>
+        <exec name="sp_execute_external_script" start-index="100" stop-index="183">
+            <parameter>
+                <binary-operation-expression start-index="135" stop-index="150">
+                    <left>
+                        <column start-index="135" stop-index="143" name="@language" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="R" start-index="147" stop-index="150" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="154" stop-index="183">
+                    <left>
+                        <column start-index="154" stop-index="160" name="@script" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="iris_data &lt;- iris" start-index="164" stop-index="183" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+        </exec>
+    </insert>
+
+    <insert sql-case-id="insert_into_temp_table">
+        <table name="#NonExistentTable" start-index="12" stop-index="28"/>
+        <columns start-index="29" stop-index="29"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="10" start-index="38" stop-index="39"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_temp_table_with_null_value">
+        <columns start-index="28" stop-index="28"/>
+        <table name="#SampleTempTable" start-index="12" stop-index="27"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="10" start-index="37" stop-index="38"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="41" stop-index="44"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_temp_table_with_all_null_value">
+        <columns start-index="28" stop-index="28"/>
+        <table name="#SampleTempTable" start-index="12" stop-index="27"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="37" stop-index="40"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="43" stop-index="46"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_exec_mtcars">
+        <table name="MTCars" start-index="12" stop-index="21">
+            <owner name="dbo" start-index="12" stop-index="14"/>
+        </table>
+        <columns start-index="22" stop-index="22" />
+        <exec name="sp_execute_external_script" start-index="23" stop-index="156">
+            <parameter>
+                <binary-operation-expression start-index="55" stop-index="70">
+                    <left>
+                        <column name="@language" start-index="55" stop-index="63" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="R" start-index="67" stop-index="70" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="73" stop-index="101">
+                    <left>
+                        <column name="@script" start-index="73" stop-index="79" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="MTCars &lt;- mtcars" start-index="83" stop-index="101" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="105" stop-index="123">
+                    <left>
+                        <column name="@input_data_1" start-index="105" stop-index="117" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="" start-index="121" stop-index="123" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+            <parameter>
+                <binary-operation-expression start-index="126" stop-index="156">
+                    <left>
+                        <column name="@output_data_1_name" start-index="126" stop-index="144" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="MTCars" start-index="148" stop-index="156" />
+                    </right>
+                </binary-operation-expression>
+            </parameter>
+        </exec>
+    </insert>
+
+    <insert sql-case-id="insert_with_exec_model">
+        <table name="GLM_models" start-index="12" stop-index="21" />
+        <columns start-index="22" stop-index="28">
+            <column name="model" start-index="23" stop-index="27" />
+        </columns>
+        <exec name="generate_GLM" start-index="30" stop-index="46" />
+    </insert>
+
+    <insert sql-case-id="insert_with_table_hint">
+        <table name="cci_target" start-index="12" stop-index="21" />
+        <columns start-index="37" stop-index="37"/>
+        <table-hints start-index="23" stop-index="36">
+            <table-hint value="TABLOCK" start-index="29" stop-index="35" />
+        </table-hints>
+        <select>
+            <projections start-index="45" stop-index="56">
+                <top-projection start-index="45" stop-index="54">
+                    <top-value value="300000" start-index="49" stop-index="54" />
+                </top-projection>
+                <shorthand-projection start-index="56" stop-index="56" />
+            </projections>
+            <from>
+                <simple-table name="staging" start-index="63" stop-index="69" />
+            </from>
+        </select>
+    </insert>
+    
+    <insert sql-case-id="insert_sales_with_nchar">
+        <table name="sales" start-index="12" stop-index="16" />
+        <columns start-index="17" stop-index="17" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Canada" start-index="26" stop-index="34" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="British Columbia" start-index="37" stop-index="55" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="300" start-index="58" stop-index="60" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_sales_with_nchar_2">
+        <table name="sales" start-index="12" stop-index="16" />
+        <columns start-index="17" stop-index="17" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="United States" start-index="26" stop-index="41" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Montana" start-index="44" stop-index="53" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="100" start-index="56" stop-index="58" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_currency_value">
+        <table name="Employees" start-index="12" stop-index="27" start-delimiter="[" end-delimiter="]">
+            <owner name="HR" start-index="12" stop-index="15" start-delimiter="[" end-delimiter="]" />
+        </table>
+        <columns start-index="28" stop-index="69">
+            <column name="SSN" start-index="29" stop-index="33" start-delimiter="[" end-delimiter="]" />
+            <column name="FirstName" start-index="36" stop-index="46" start-delimiter="[" end-delimiter="]" />
+            <column name="LastName" start-index="49" stop-index="58" start-delimiter="[" end-delimiter="]" />
+            <column name="Salary" start-index="61" stop-index="68" start-delimiter="[" end-delimiter="]" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="795-73-9838" start-index="79" stop-index="91" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Catherine" start-index="94" stop-index="105" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Abel" start-index="108" stop-index="114" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="$31692" start-index="117" stop-index="122" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_select_from_open_row_1">
+        <table name="myTable" start-index="12" stop-index="18"/>
+        <columns start-index="19" stop-index="48">
+            <column name="FileName" start-index="20" stop-index="27"/>
+            <column name="FileType" start-index="30" stop-index="37"/>
+            <column name="Document" start-index="40" stop-index="47"/>
+        </columns>
+        <select>
+            <projections start-index="57" stop-index="102">
+                <expression-projection text="Text1.txt" start-index="57" stop-index="79" alias="FileName"/>
+                <expression-projection text=".txt" start-index="82" stop-index="99" alias="FileType"/>
+                <shorthand-projection start-index="102" stop-index="102"/>
+            </projections>
+            <from>
+                <function-table start-index="109" stop-index="153" table-alias="Document">
+                <table-function text="OPENROWSET(BULK N'C:\Text1.txt', SINGLE_BLOB)" function-name="OPENROWSET">
+                    <parameter>
+                        <literal-expression value="C:\Text1.txt" start-index="125" stop-index="139"/>
+                    </parameter>
+                    <parameter>
+                        <column name="SINGLE_BLOB" start-index="142" stop-index="152"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_with_select_from_open_row_2">
+        <table name="achievements" start-index="12" stop-index="23"/>
+        <table-hints start-index="25" stop-index="38">
+            <table-hint value="TABLOCK" start-index="31" stop-index="37"/>
+        </table-hints>
+        <columns start-index="40" stop-index="56">
+            <column name="id" start-index="41" stop-index="42"/>
+            <column name="description" start-index="45" stop-index="55"/>
+        </columns>
+        <select>
+            <projections start-index="65" stop-index="65">
+                <shorthand-projection start-index="65" stop-index="65"/>
+            </projections>
+            <from>
+                <function-table start-index="72" stop-index="245" table-alias="DataFile">
+                    <table-function function-name="OPENROWSET" text="OPENROWSET(BULK 'csv/achievements.csv', DATA_SOURCE = 'MyAzureBlobStorage', FORMAT ='CSV', FORMATFILE='csv/achievements-c.xml', FORMATFILE_DATA_SOURCE = 'MyAzureBlobStorage')">
+                        <parameter>
+                            <literal-expression value="csv/achievements.csv" start-index="88" stop-index="109"/>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="112" stop-index="145">
+                                <left>
+                                    <column name="DATA_SOURCE" start-index="112" stop-index="122"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="MyAzureBlobStorage" start-index="126" stop-index="145"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="148" stop-index="160">
+                                <left>
+                                    <column name="FORMAT" start-index="148" stop-index="153"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="CSV" start-index="156" stop-index="140"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="163" stop-index="197">
+                                <left>
+                                    <column name="FORMATFILE" start-index="163" stop-index="172"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="csv/achievements-c.xml" start-index="174" stop-index="197"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="200" stop-index="244">
+                                <left>
+                                    <column name="FORMATFILE_DATA_SOURCE" start-index="200" stop-index="221"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="MyAzureBlobStorage" start-index="225" stop-index="244"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                    </table-function>
+                </function-table>
+            </from>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_into_table_get_date">
+        <table name="#Test" start-index="12" stop-index="16"/>
+        <columns start-index="17" stop-index="17"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="OC" start-index="26" stop-index="30"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Ounces" start-index="33" stop-index="41"/>
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="GETDATE" text="GETDATE()" start-index="44" stop-index="52" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_table_from_table">
+        <table name="#Test" start-index="12" stop-index="16"/>
+        <columns start-index="17" stop-index="17"/>
+        <select>
+            <projections start-index="25" stop-index="25">
+                <shorthand-projection start-index="25" stop-index="25"/>
+            </projections>
+            <from>
+                <simple-table name="UnitMeasure" start-index="32" stop-index="53">
+                    <owner name="Production" start-index="32" stop-index="41"/>
+                </simple-table>
+            </from>
+        </select>
+    </insert>
+    
+    <insert sql-case-id="insert_into_production_location">
+        <table name="Location" start-index="12" stop-index="49">
+            <owner name="Production" start-index="31" stop-index="40">
+                <owner name="AdventureWorks2022"  start-index="12" stop-index="29" />
+            </owner>
+        </table>
+        <columns start-index="50" stop-index="93">
+            <column name="Name" start-index="51" stop-index="54" />
+            <column name="CostRate" start-index="57" stop-index="64" />
+            <column name="Availability" start-index="67" stop-index="78" />
+            <column name="ModifiedDate" start-index="81" stop-index="92" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <function function-name="NEWID" text="NEWID()" start-index="103" stop-index="109" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="0.5" start-index="112" stop-index="113" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="5.2" start-index="116" stop-index="118" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="GETDATE" text="GETDATE()" start-index="121" stop-index="129" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_exec_prediction_results">
+        <table name="prediction_results" start-index="12" stop-index="29" />
+        <columns start-index="31" stop-index="127">
+            <column name="tipped_Pred" start-index="32" stop-index="42" />
+            <column name="payment_type" start-index="44" stop-index="55" />
+            <column name="tipped" start-index="57" stop-index="62" />
+            <column name="passenger_count" start-index="64" stop-index="78" />
+            <column name="trip_distance" start-index="80" stop-index="92" />
+            <column name="trip_time_in_secs" start-index="94" stop-index="110" />
+            <column name="direct_distance" start-index="112" stop-index="126" />
+        </columns>
+        <exec name="predict_per_partition" start-index="129" stop-index="159" start-delimiter="[" end-delimiter="]" />
+    </insert>
+    
+    <insert sql-case-id="insert_into_sample_temp_table">
+        <table name="#SampleTempTable" start-index="12" stop-index="27" />
+        <columns start-index="28" stop-index="28" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="37" stop-index="40" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="hello" start-index="43" stop-index="49" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_sample_temp_table_2">
+        <table name="#SampleTempTable" start-index="12" stop-index="27" />
+        <columns start-index="28" stop-index="28" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="10" start-index="37" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="41" stop-index="44" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_sample_temp_table_3">
+        <table name="#SampleTempTable" start-index="12" stop-index="27" />
+        <columns start-index="28" stop-index="28" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="17" start-index="37" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="abc" start-index="41" stop-index="45" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_sample_temp_table_4">
+        <table name="#SampleTempTable" start-index="12" stop-index="27" />
+        <columns start-index="28" stop-index="28" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="17" start-index="37" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="yes" start-index="41" stop-index="45" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_table_t">
+        <table name="#t" start-index="12" stop-index="13" />
+        <columns start-index="14" stop-index="14" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="99" start-index="23" stop-index="24" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_table_test">
+        <table name="##test" start-index="12" stop-index="17" />
+        <columns start-index="18" stop-index="18" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="27" stop-index="27" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="30" stop-index="30" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_with_select_number">
+        <table name="#test" start-index="12" stop-index="16"/>
+        <columns start-index="17" stop-index="17"/>
+        <select>
+            <projections start-index="25" stop-index="25">
+                <expression-projection start-index="25" stop-index="25" text="1"/>
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_sales_with_nchar_3">
+        <table name="sales" start-index="12" stop-index="16"/>
+        <columns start-index="17" stop-index="17"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Canada" start-index="26" stop-index="34"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Alberta" start-index="37" stop-index="46"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="100" start-index="49" stop-index="51"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_tmp_with_exec">
+        <table name="#temp" start-index="12" stop-index="16" />
+        <columns start-index="18" stop-index="325">
+            <column name="id" start-index="19" stop-index="20" />
+            <column name="job_name" start-index="23" stop-index="30" />
+            <column name="job_id" start-index="33" stop-index="38" />
+            <column name="dynamic_filter_login" start-index="41" stop-index="60" />
+            <column name="dynamic_filter_hostname" start-index="62" stop-index="84" />
+            <column name="dynamic_snapshot_location" start-index="87" stop-index="111" />
+            <column name="frequency_type" start-index="113" stop-index="126" />
+            <column name="frequency_interval" start-index="129" stop-index="146" />
+            <column name="frequency_subday_type" start-index="149" stop-index="169" />
+            <column name="frequency_subday_interval" start-index="171" stop-index="195" />
+            <column name="frequency_relative_interval" start-index="198" stop-index="224" />
+            <column name="frequency_recurrence_factor" start-index="227" stop-index="253" />
+            <column name="active_start_date" start-index="256" stop-index="272" />
+            <column name="active_end_date" start-index="275" stop-index="289" />
+            <column name="active_start_time" start-index="292" stop-index="308" />
+            <column name="active_end_time" start-index="310" stop-index="324" />
+        </columns>
+        <exec name="sp_helpdynamicsnapshot_job" start-index="327" stop-index="357" />
+    </insert>
+    
+    <insert sql-case-id="insert_into_player_with_compress_function">
+        <table name="player" start-index="12" stop-index="17" />
+        <columns start-index="19" stop-index="38">
+            <column name="name" start-index="21" stop-index="24" />
+            <column name="surname" start-index="26" stop-index="32" />
+            <column name="info" start-index="34" stop-index="37" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Ovidiu" start-index="48" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Cracium" start-index="59" stop-index="68" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="COMPRESS" text="COMPRESS(N'{&quot;sport&quot;:&quot;Tennis&quot;,&quot;age&quot;: 28,&quot;rank&quot;:1,&quot;points&quot;:15258, &quot;turn&quot;:17}')" start-index="70" stop-index="145">
+                        <parameter>
+                            <literal-expression value="{&quot;sport&quot;:&quot;Tennis&quot;,&quot;age&quot;: 28,&quot;rank&quot;:1,&quot;points&quot;:15258, &quot;turn&quot;:17}" start-index="79" stop-index="144" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_player_with_compress_function_2">
+        <table name="player" start-index="12" stop-index="17" />
+        <columns start-index="19" stop-index="37">
+            <column name="name" start-index="20" stop-index="23" />
+            <column name="surname" start-index="25" stop-index="31" />
+            <column name="info" start-index="33" stop-index="36" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Michael" start-index="47" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Raheem" start-index="58" stop-index="66" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="COMPRESS" text="COMPRESS(@info)" start-index="68" stop-index="82">
+                        <parameter>
+                            <column name="@info" start-index="77" stop-index="81" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_currency_value_2">
+        <table name="Employees" start-index="12" stop-index="27" start-delimiter="[" end-delimiter="]">
+            <owner name="HR" start-index="12" stop-index="15" start-delimiter="[" end-delimiter="]" />
+        </table>
+        <columns start-index="28" stop-index="69">
+            <column name="SSN" start-index="29" stop-index="33" start-delimiter="[" end-delimiter="]" />
+            <column name="FirstName" start-index="36" stop-index="46" start-delimiter="[" end-delimiter="]" />
+            <column name="LastName" start-index="49" stop-index="58" start-delimiter="[" end-delimiter="]" />
+            <column name="Salary" start-index="61" stop-index="68" start-delimiter="[" end-delimiter="]" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="990-00-6818" start-index="79" stop-index="91" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Kim" start-index="94" stop-index="99" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Abercrombie" start-index="102" stop-index="115" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="$55415" start-index="118" stop-index="123" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_cross_database_values">
+        <table name="SourceTable" start-index="7" stop-index="42" start-delimiter="[" end-delimiter="]">
+            <owner name="dbo" start-index="24" stop-index="28" start-delimiter="[" end-delimiter="]">
+                <owner name="SourceDatabase" start-index="7" stop-index="22" start-delimiter="[" end-delimiter="]" />
+            </owner>
+        </table>
+        <columns start-index="43" stop-index="43" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="52" stop-index="52" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Bob" start-index="55" stop-index="60" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="64" stop-index="64" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Susan" start-index="67" stop-index="74" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_with_cross_database_select">
+        <table name="DestTable_InMem" start-index="7" stop-index="51" start-delimiter="[" end-delimiter="]">
+            <owner name="dbo" start-index="29" stop-index="33" start-delimiter="[" end-delimiter="]">
+                <owner name="DestinationDatabase" start-index="7" stop-index="27" start-delimiter="[" end-delimiter="]" />
+            </owner>
+        </table>
+        <columns start-index="52" stop-index="52" />
+        <select>
+            <projections start-index="60" stop-index="60">
+                <shorthand-projection start-index="60" stop-index="60"/>
+            </projections>
+            <from>
+                <simple-table name="SourceTable" start-index="67" stop-index="102" start-delimiter="[" end-delimiter="]">
+                    <owner name="dbo" start-index="84" stop-index="88" start-delimiter="[" end-delimiter="]">
+                        <owner name="SourceDatabase" start-index="67" stop-index="82" start-delimiter="[" end-delimiter="]" />
+                    </owner>
+                </simple-table>
+            </from>
+        </select>
+    </insert>
+    
+    <insert sql-case-id="insert_with_select_with_table_hint_no_with_keyword">
+        <table name="#tmpdbs" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="47">
+            <column name="dbid" start-index="21" stop-index="26" start-delimiter="[" end-delimiter="]" />
+            <column name="dbname" start-index="29" stop-index="36" start-delimiter="[" end-delimiter="]" />
+            <column name="isdone" start-index="39" stop-index="46" start-delimiter="[" end-delimiter="]" />
+        </columns>
+        <select>
+            <projections start-index="56" stop-index="75">
+                <column-projection name="database_id" start-index="56" stop-index="66" />
+                <column-projection name="name" start-index="69" stop-index="72" />
+                <expression-projection text="0" start-index="75" stop-index="75">
+                    <expr>
+                        <literal-expression value="0" start-index="75" stop-index="75" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="databases" start-index="82" stop-index="101">
+                    <owner name="sys" start-index="89" stop-index="91">
+                        <owner name="master" start-index="82" stop-index="87" />
+                    </owner>
+                </simple-table>
+            </from>
+            <table-hints start-index="103" stop-index="110">
+                <table-hint value="NOLOCK" start-index="104" stop-index="109" />
+            </table-hints>
+            <where start-index="112" stop-index="147">
+                <expr>
+                    <binary-operation-expression start-index="118" stop-index="147">
+                        <left>
+                            <binary-operation-expression start-index="118" stop-index="133">
+                                <left>
+                                    <column name="is_read_only" start-index="118" stop-index="129" />
+                                </left>
+                                <right>
+                                    <literal-expression value="0" start-index="133" stop-index="133" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="139" stop-index="147">
+                                <left>
+                                    <column name="state" start-index="139" stop-index="143" />
+                                </left>
+                                <right>
+                                    <literal-expression value="0" start-index="147" stop-index="147" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>AND</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
     </insert>
 </sql-parser-test-cases>

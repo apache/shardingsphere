@@ -20,11 +20,11 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.compo
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -41,8 +41,8 @@ import java.util.Objects;
 /**
  * Composed container, include governance container and database container.
  */
-@Slf4j
 @Getter
+@Slf4j
 public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final DatabaseType databaseType;
@@ -59,8 +59,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         super(testParam.getScenario());
         this.databaseType = testParam.getDatabaseType();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(), testParam.getScenario(),
-                StorageContainerConfigurationFactory.newInstance(databaseType)));
+        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(),
+                StorageContainerConfigurationFactory.newInstance(databaseType, testParam.getScenario())));
         if (AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             jdbcContainer = null;
             proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(AdapterMode.CLUSTER, AdapterType.PROXY,

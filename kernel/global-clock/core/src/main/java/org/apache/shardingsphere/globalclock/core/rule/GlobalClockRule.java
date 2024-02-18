@@ -21,16 +21,17 @@ import lombok.Getter;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Global clock rule.
@@ -44,22 +45,23 @@ public final class GlobalClockRule implements GlobalRule {
         configuration = ruleConfig;
         if (ruleConfig.isEnabled()) {
             TypedSPILoader.getService(GlobalClockProvider.class, getGlobalClockProviderType(), configuration.getProps());
-            TypedSPILoader.getService(TransactionHook.class, "GLOBAL_CLOCK", getProps(databases));
+            TypedSPILoader.getService(TransactionHook.class, "GLOBAL_CLOCK", createProperties(databases));
         }
     }
     
-    private Properties getProps(final Map<String, ShardingSphereDatabase> databases) {
+    private Properties createProperties(final Map<String, ShardingSphereDatabase> databases) {
         Properties result = new Properties();
-        result.setProperty("trunkType", DatabaseTypeEngine.getTrunkDatabaseTypeName(DatabaseTypeEngine.getStorageType(getDataSources(databases))));
+        DatabaseType storageType = findStorageType(databases.values()).orElseGet(DatabaseTypeEngine::getDefaultStorageType);
+        result.setProperty("trunkType", storageType.getTrunkDatabaseType().orElse(storageType).getType());
         result.setProperty("enabled", String.valueOf(configuration.isEnabled()));
         result.setProperty("type", configuration.getType());
         result.setProperty("provider", configuration.getProvider());
         return result;
     }
     
-    private Collection<DataSource> getDataSources(final Map<String, ShardingSphereDatabase> databases) {
-        return databases.values().stream().filter(each -> !each.getResourceMetaData().getDataSources().isEmpty())
-                .flatMap(each -> each.getResourceMetaData().getDataSources().values().stream()).collect(Collectors.toList());
+    private Optional<DatabaseType> findStorageType(final Collection<ShardingSphereDatabase> databases) {
+        return databases.stream()
+                .flatMap(each -> each.getResourceMetaData().getStorageUnits().values().stream()).findFirst().map(StorageUnit::getStorageType);
     }
     
     /**
@@ -69,10 +71,5 @@ public final class GlobalClockRule implements GlobalRule {
      */
     public String getGlobalClockProviderType() {
         return String.join(".", configuration.getType(), configuration.getProvider());
-    }
-    
-    @Override
-    public String getType() {
-        return GlobalClockRule.class.getSimpleName();
     }
 }

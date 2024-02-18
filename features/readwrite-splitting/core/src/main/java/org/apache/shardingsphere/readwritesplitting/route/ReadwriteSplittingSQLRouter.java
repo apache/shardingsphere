@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.route;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -41,7 +41,7 @@ import java.util.Optional;
 public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSplittingRule> {
     
     @Override
-    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData,
+    public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData,
                                            final ShardingSphereDatabase database, final ReadwriteSplittingRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
         ReadwriteSplittingDataSourceRule singleDataSourceRule = rule.getSingleDataSourceRule();

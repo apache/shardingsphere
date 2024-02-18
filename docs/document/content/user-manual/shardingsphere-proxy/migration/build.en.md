@@ -37,14 +37,13 @@ mode:
 
 3. Introduce JDBC driver.
 
-Proxy has included JDBC driver of PostgreSQL.
+Proxy has included JDBC driver of PostgreSQL and openGauss.
 
 If the backend is connected to the following databases, download the corresponding JDBC driver jar package and put it into the `${shardingsphere-proxy}/ext-lib` directory.
 
-| Database  | JDBC Driver                                                                                                                           | Reference                                                                                        |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| MySQL     | [mysql-connector-java-5.1.49.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
-| openGauss | [opengauss-jdbc-3.0.0.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.0.0/opengauss-jdbc-3.0.0.jar )              |                                                                                                  |
+| Database | JDBC Driver                                                                                          |
+|----------|------------------------------------------------------------------------------------------------------|
+| MySQL    | [mysql-connector-java-8.0.31.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.31/) |
 
 If you are migrating to a heterogeneous database, then you could use more types of database. Introduce JDBC driver as above too.
 

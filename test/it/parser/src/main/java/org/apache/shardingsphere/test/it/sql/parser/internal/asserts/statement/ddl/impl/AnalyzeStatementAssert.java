@@ -25,6 +25,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ind
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AnalyzeStatementTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /**
  * Analyze statement assert.
  */
@@ -45,13 +48,19 @@ public final class AnalyzeStatementAssert {
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final OracleAnalyzeStatement actual, final AnalyzeStatementTestCase expected) {
         if (null != expected.getTable()) {
+            assertNotNull(actual.getTable(), assertContext.getText("Table should exist."));
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
+        } else {
+            assertNull(actual.getTable(), assertContext.getText("Table should not exist."));
         }
     }
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final OracleAnalyzeStatement actual, final AnalyzeStatementTestCase expected) {
         if (null != expected.getIndex()) {
+            assertNotNull(actual.getIndex(), assertContext.getText("Index should exist."));
             IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
+        } else {
+            assertNull(actual.getIndex(), assertContext.getText("Index should not exist."));
         }
     }
 }

@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ class TransactionReadOnlyValueProviderTest {
     
     @Test
     void assertGetSessionValue() {
-        ConnectionSession connectionSession = new ConnectionSession(new MySQLDatabaseType(), TransactionType.LOCAL, new DefaultAttributeMap());
+        ConnectionSession connectionSession = new ConnectionSession(TypedSPILoader.getService(DatabaseType.class, "MySQL"), TransactionType.LOCAL, new DefaultAttributeMap());
         assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TX_READ_ONLY), is("0"));
         assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_READ_ONLY), is("0"));
         connectionSession.setReadOnly(true);

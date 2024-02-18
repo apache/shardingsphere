@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
-import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceProvidedDatabaseConfigurationTest {
@@ -37,17 +37,15 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetDataSources() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
-        assertTrue(dataSource instanceof ShardingSphereStorageDataSourceWrapper);
-        ShardingSphereStorageDataSourceWrapper wrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
-        assertTrue(wrapper.getDataSource() instanceof MockedDataSource);
-        assertNull(wrapper.getCatalog());
+        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
+        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
+        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
     }
     
     @Test
     void assertGetStorageNodes() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getStorageResource().getStorageNodes().get("foo_ds");
+        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getDataSources().get(new StorageNode("foo_ds"));
         assertThat(dataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(dataSource.getUsername(), is("root"));
         assertThat(dataSource.getPassword(), is("root"));
@@ -56,11 +54,9 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetStorageUnits() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
-        assertTrue(dataSource instanceof ShardingSphereStorageDataSourceWrapper);
-        ShardingSphereStorageDataSourceWrapper wrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
-        assertTrue(wrapper.getDataSource() instanceof MockedDataSource);
-        assertNull(wrapper.getCatalog());
+        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
+        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
+        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
     }
     
     @Test
@@ -71,9 +67,9 @@ class DataSourceProvidedDatabaseConfigurationTest {
     }
     
     @Test
-    void assertGetDataSourceProperties() {
+    void assertGetDataSourcePoolProperties() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSourceProperties props = databaseConfig.getDataSourcePropsMap().get("foo_ds");
+        DataSourcePoolProperties props = databaseConfig.getStorageUnits().get("foo_ds").getDataSourcePoolProperties();
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
         assertThat(poolStandardProps.size(), is(0));
         Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();

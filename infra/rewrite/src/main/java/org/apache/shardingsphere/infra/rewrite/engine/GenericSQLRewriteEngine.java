@@ -18,11 +18,16 @@
 package org.apache.shardingsphere.infra.rewrite.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.Map;
@@ -35,20 +40,23 @@ public final class GenericSQLRewriteEngine {
     
     private final SQLTranslatorRule translatorRule;
     
-    private final DatabaseType protocolType;
+    private final ShardingSphereDatabase database;
     
-    private final Map<String, DatabaseType> storageTypes;
+    private final RuleMetaData globalRuleMetaData;
     
     /**
      * Rewrite SQL and parameters.
      *
      * @param sqlRewriteContext SQL rewrite context
+     * @param queryContext query context
      * @return SQL rewrite result
      */
-    public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        String sql = translatorRule.translate(
-                new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getSqlStatementContext().getSqlStatement(), protocolType,
-                storageTypes.isEmpty() ? protocolType : storageTypes.values().iterator().next());
-        return new GenericSQLRewriteResult(new SQLRewriteUnit(sql, sqlRewriteContext.getParameterBuilder().getParameters()));
+    public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext, final QueryContext queryContext) {
+        DatabaseType protocolType = database.getProtocolType();
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
+        DatabaseType storageType = storageUnits.isEmpty() ? protocolType : storageUnits.values().iterator().next().getStorageType();
+        SQLTranslatorContext sqlTranslatorContext = translatorRule.translate(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters(), queryContext,
+                storageType, database, globalRuleMetaData);
+        return new GenericSQLRewriteResult(new SQLRewriteUnit(sqlTranslatorContext.getSql(), sqlTranslatorContext.getParameters()));
     }
 }

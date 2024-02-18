@@ -24,7 +24,7 @@
 databaseName: sharding_db
 dataSources:
   ds_0:
-    url: jdbc:opengauss://opengauss.default.host:5432/transaction_it_0
+    url: jdbc:opengauss://opengauss.default.host:5432/ds_0
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -33,7 +33,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_1:
-    url: jdbc:opengauss://opengauss.default.host:5432/transaction_it_1
+    url: jdbc:opengauss://opengauss.default.host:5432/ds_1
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000

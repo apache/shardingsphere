@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.mask.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -37,7 +36,7 @@ import java.util.Optional;
 public final class MaskRule implements DatabaseRule, TableContainedRule {
     
     @Getter
-    private final RuleConfiguration configuration;
+    private final MaskRuleConfiguration configuration;
     
     private final Map<String, MaskAlgorithm> maskAlgorithms = new LinkedHashMap<>();
     
@@ -81,11 +80,6 @@ public final class MaskRule implements DatabaseRule, TableContainedRule {
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return getLogicTableMapper();
-    }
-    
-    @Override
-    public String getType() {
-        return MaskRule.class.getSimpleName();
+        return new TableNamesMapper();
     }
 }

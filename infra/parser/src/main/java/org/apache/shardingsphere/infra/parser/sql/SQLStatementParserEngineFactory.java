@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.parser.sql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 import java.util.Map;
@@ -30,25 +31,23 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementParserEngineFactory {
     
-    private static final Map<String, SQLStatementParserEngine> ENGINES = new ConcurrentHashMap<>();
+    private static final Map<DatabaseType, SQLStatementParserEngine> ENGINES = new ConcurrentHashMap<>();
     
     /**
      * Get SQL statement parser engine.
      *
-     * @param databaseType name of database type
+     * @param databaseType database type
      * @param sqlStatementCacheOption SQL statement cache option
      * @param parseTreeCacheOption parse tree cache option
-     * @param isParseComment is parse comment
      * @return SQL statement parser engine
      */
-    public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType,
-                                                                       final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+    public static SQLStatementParserEngine getSQLStatementParserEngine(final DatabaseType databaseType,
+                                                                       final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption) {
         SQLStatementParserEngine result = ENGINES.get(databaseType);
         if (null == result) {
-            result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlStatementCacheOption, parseTreeCacheOption, isParseComment));
-        } else if (!result.getSqlStatementCacheOption().equals(sqlStatementCacheOption) || !result.getParseTreeCacheOption().equals(parseTreeCacheOption)
-                || result.isParseComment() != isParseComment) {
-            result = new SQLStatementParserEngine(databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
+            result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlStatementCacheOption, parseTreeCacheOption));
+        } else if (!result.getSqlStatementCacheOption().equals(sqlStatementCacheOption) || !result.getParseTreeCacheOption().equals(parseTreeCacheOption)) {
+            result = new SQLStatementParserEngine(databaseType, sqlStatementCacheOption, parseTreeCacheOption);
             ENGINES.put(databaseType, result);
         }
         return result;

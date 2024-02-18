@@ -29,16 +29,23 @@ import java.util.Optional;
 /**
  * Column projection segment.
  */
+@Setter
+@Getter
 public final class ColumnProjectionSegment implements ProjectionSegment, AliasAvailable {
     
-    @Getter
     private final ColumnSegment column;
     
-    @Setter
     private AliasSegment alias;
+    
+    private boolean visible = true;
     
     public ColumnProjectionSegment(final ColumnSegment columnSegment) {
         column = columnSegment;
+    }
+    
+    @Override
+    public String getColumnLabel() {
+        return getAliasName().orElse(column.getIdentifier().getValue());
     }
     
     @Override
@@ -53,11 +60,19 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     
     @Override
     public int getStartIndex() {
-        return column.getStartIndex();
+        return null != alias && alias.getStartIndex() < column.getStartIndex() ? alias.getStartIndex() : column.getStartIndex();
     }
     
     @Override
     public int getStopIndex() {
-        return null == alias ? column.getStopIndex() : alias.getStopIndex();
+        return null != alias && alias.getStopIndex() > column.getStopIndex() ? alias.getStopIndex() : column.getStopIndex();
+    }
+    
+    /**
+     * Get alias segment.
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
     }
 }

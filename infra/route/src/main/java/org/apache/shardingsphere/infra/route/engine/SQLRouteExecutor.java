@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.route.engine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 /**
@@ -37,5 +37,5 @@ public interface SQLRouteExecutor {
      * @param database database
      * @return route context
      */
-    RouteContext route(ConnectionContext connectionContext, QueryContext queryContext, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database);
+    RouteContext route(ConnectionContext connectionContext, QueryContext queryContext, RuleMetaData globalRuleMetaData, ShardingSphereDatabase database);
 }

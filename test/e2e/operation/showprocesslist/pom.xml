@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-operation</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-showprocesslist</artifactId>
     <name>${project.artifactId}</name>
@@ -41,8 +41,8 @@
         </dependency>
         
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
         
         <dependency>

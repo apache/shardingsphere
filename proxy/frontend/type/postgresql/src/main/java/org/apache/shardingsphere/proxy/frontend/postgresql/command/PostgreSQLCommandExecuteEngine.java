@@ -31,8 +31,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -41,7 +39,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
-import org.apache.shardingsphere.proxy.frontend.postgresql.err.PostgreSQLErrPacketFactory;
+import org.apache.shardingsphere.proxy.frontend.postgresql.err.PostgreSQLErrorPacketFactory;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -58,9 +56,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public PostgreSQLCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final ConnectionSession connectionSession) {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return PostgreSQLCommandPacketFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLPacketPayload) payload, sqlParserRule.isSqlCommentParseEnabled());
+        return PostgreSQLCommandPacketFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLPacketPayload) payload);
     }
     
     @Override
@@ -71,7 +67,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public PostgreSQLPacket getErrorPacket(final Exception cause) {
-        return PostgreSQLErrPacketFactory.newInstance(cause);
+        return PostgreSQLErrorPacketFactory.newInstance(cause);
     }
     
     @Override

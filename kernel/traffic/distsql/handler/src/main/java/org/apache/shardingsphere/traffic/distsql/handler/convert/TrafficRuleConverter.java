@@ -19,11 +19,11 @@ package org.apache.shardingsphere.traffic.distsql.handler.convert;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
-import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
+import org.apache.shardingsphere.traffic.distsql.segment.TrafficRuleSegment;
 
 import java.util.Collection;
 import java.util.Optional;

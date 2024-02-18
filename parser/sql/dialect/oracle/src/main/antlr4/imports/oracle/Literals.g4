@@ -19,13 +19,16 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
+TIME_UNIT
+    : M | H
+    ;
+
 IDENTIFIER_
-    : [A-Za-z\u0080-\uFF0B\uFF0D-\uFFFF]+[A-Za-z_$#0-9\u0080-\uFF0B\uFF0D-\uFFFF]*
+    : [A-Za-z\u0080-\u2FFF\u3001-\uFF0B\uFF0D-\uFFFF]+[A-Za-z_$#0-9\u0080-\u2FFF\u3001-\uFF0B\uFF0D-\uFFFF]*
     ;
 
 STRING_
     : SINGLE_QUOTED_TEXT
-    | DOUBLE_QUOTED_TEXT
     ;
 
 SINGLE_QUOTED_TEXT
@@ -50,6 +53,14 @@ HEX_DIGIT_
 
 BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
+    ;
+
+NCHAR_TEXT
+    : N STRING_
+    ;
+
+UCHAR_TEXT
+    : U STRING_
     ;
 
 fragment INT_

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.representer;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.yaml.representer.processor.DefaultYamlTupleProcessor;
 import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessor;
 import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
@@ -39,7 +39,8 @@ import java.util.Map.Entry;
  */
 public final class ShardingSphereYamlRepresenter extends Representer {
     
-    public ShardingSphereYamlRepresenter() {
+    public ShardingSphereYamlRepresenter(final DumperOptions dumperOptions) {
+        super(dumperOptions);
         Map<String, Class<?>> yamlShortcuts = new HashMap<>();
         ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlShortcuts.class).stream().map(ShardingSphereYamlShortcuts::getYamlShortcuts).forEach(yamlShortcuts::putAll);
         yamlShortcuts.forEach((key, value) -> addClassTag(value, new Tag(key)));

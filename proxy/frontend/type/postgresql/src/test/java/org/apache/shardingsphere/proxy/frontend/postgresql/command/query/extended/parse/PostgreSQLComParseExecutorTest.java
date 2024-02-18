@@ -21,11 +21,18 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -44,7 +51,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,6 +68,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class PostgreSQLComParseExecutorTest {
     
     @Mock
@@ -73,6 +84,7 @@ class PostgreSQLComParseExecutorTest {
     void setup() {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
     }
     
     @Test
@@ -81,6 +93,7 @@ class PostgreSQLComParseExecutorTest {
         final String statementId = "S_1";
         when(parsePacket.getSQL()).thenReturn(expectedSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
+        when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Collection<DatabasePacket> actualPackets = executor.execute();
@@ -101,6 +114,7 @@ class PostgreSQLComParseExecutorTest {
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.INT4));
+        when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
         ContextManager contextManager = mockContextManager();
@@ -121,6 +135,7 @@ class PostgreSQLComParseExecutorTest {
         final String expectedSQL = "update t_test set name=? where id=?";
         final String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
+        when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Arrays.asList(PostgreSQLColumnType.JSON, PostgreSQLColumnType.INT4));
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
@@ -131,6 +146,22 @@ class PostgreSQLComParseExecutorTest {
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.JSON, PostgreSQLColumnType.INT4)));
         assertThat(actualPreparedStatement.getActualParameterMarkerIndexes(), is(Arrays.asList(1, 0)));
+    }
+    
+    @Test
+    void assertExecuteWithQuestionOperator() throws ReflectiveOperationException {
+        final String rawSQL = "update t_test set enabled = $1 where name ?& $2";
+        final String expectedSQL = "update t_test set enabled = ? where name ??& ?";
+        final String statementId = "S_2";
+        when(parsePacket.getSQL()).thenReturn(rawSQL);
+        when(parsePacket.getStatementId()).thenReturn(statementId);
+        when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
+        Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        executor.execute();
+        PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+        assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
     }
     
     @Test
@@ -153,10 +184,24 @@ class PostgreSQLComParseExecutorTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", new PostgreSQLDatabaseType()));
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
-                .thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
+                .thenReturn(new RuleMetaData(Collections.singleton(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
+        ShardingSphereTable testTable = new ShardingSphereTable("t_test", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
+                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
+                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false),
+                new ShardingSphereColumn("enabled", Types.VARCHAR, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable sbTestTable = new ShardingSphereTable("sbtest1", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
+                new ShardingSphereColumn("k", Types.VARCHAR, false, false, false, false, false, false),
+                new ShardingSphereColumn("c", Types.VARCHAR, false, false, false, false, true, false),
+                new ShardingSphereColumn("pad", Types.VARCHAR, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema();
+        schema.getTables().put("t_test", testTable);
+        schema.getTables().put("sbtest1", sbTestTable);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singletonMap("public", schema));
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         return result;
     }
 }

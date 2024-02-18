@@ -18,5 +18,3 @@
 plugins:
   logging:
     File:
-      props:
-        level: "INFO"

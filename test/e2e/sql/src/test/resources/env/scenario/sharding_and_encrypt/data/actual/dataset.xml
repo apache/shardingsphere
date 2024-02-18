@@ -70,41 +70,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="encrypt_ds_0.t_order_federate">
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_ds_1.t_order_item_federate">
-        <column name="item_id" type="numeric" />
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_ds_1.t_order_item_federate_sharding_${0..1}">
-        <column name="item_id" type="numeric" />
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-        <column name="remarks" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_ds_1.t_order_federate_sharding_${0..1}">
-        <column name="order_id_sharding" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_ds_1.t_user_encrypt_federate_sharding_${0..1}">
-        <column name="user_id" type="numeric" />
-        <column name="plain_pwd" type="varchar" />
-        <column name="cipher_pwd" type="varchar" />
-        <column name="username" type="varchar" />
-    </metadata>
-    <metadata data-nodes="encrypt_ds_1.t_user_encrypt_federate">
-        <column name="user_id" type="numeric" />
-        <column name="plain_pwd" type="varchar" />
-        <column name="cipher_pwd" type="varchar" />
-        <column name="username" type="varchar" />
-    </metadata>
     <metadata data-nodes="encrypt_ds_1.t_user_info">
         <column name="user_id" type="numeric" />
         <column name="information" type="varchar" />
@@ -793,34 +758,8 @@
     <row data-node="encrypt_ds_9.t_user_item_7" values="190007, 79, init, 2017-08-08" />
     <row data-node="encrypt_ds_9.t_user_item_8" values="190008, 89, init, 2017-08-08" />
     <row data-node="encrypt_ds_9.t_user_item_9" values="190009, 99, init, 2017-08-08" />
-    <row data-node="encrypt_ds_0.t_order_federate" values="1000, 10, init" />
-    <row data-node="encrypt_ds_0.t_order_federate" values="1001, 11, init" />
-    <row data-node="encrypt_ds_1.t_order_item_federate" values="100000, 1000, 10, init" />
-    <row data-node="encrypt_ds_1.t_order_item_federate" values="100001, 1000, 10, init" />
-    <row data-node="encrypt_ds_1.t_order_item_federate" values="100100, 1001, 10, init" />
-    <row data-node="encrypt_ds_1.t_order_item_federate" values="100101, 1001, 10, init" />
-    <row data-node="encrypt_ds_1.t_order_item_federate_sharding_0" values="1000, 10000, 10, init, t_order_item_federate_sharding" />
-    <row data-node="encrypt_ds_1.t_order_item_federate_sharding_0" values="1010, 10001, 10, init, t_order_item_federate_sharding" />
-    <row data-node="encrypt_ds_1.t_order_item_federate_sharding_1" values="1001, 10001, 11, init, t_order_item_federate_sharding" />
-    <row data-node="encrypt_ds_1.t_order_item_federate_sharding_1" values="1011, 10001, 10, init, t_order_item_federate_sharding" />
-    <row data-node="encrypt_ds_1.t_order_federate_sharding_0" values="1010, 10, init" />
-    <row data-node="encrypt_ds_1.t_order_federate_sharding_0" values="1100, 10, init" />
-    <row data-node="encrypt_ds_1.t_order_federate_sharding_1" values="1011, 11, init" />
-    <row data-node="encrypt_ds_1.t_order_federate_sharding_1" values="1101, 11, init" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate_sharding_0" values="0, plain passwordA, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate_sharding_1" values="1, plain passwordB, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate_sharding_0" values="2, plain passwordC, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate_sharding_1" values="3, plain passwordD, uqObdVp9XTGZ4Mnw0LolHg==, Ross" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate_sharding_0" values="4, plain passwordE, uqObdVp9XTGZ4Mnw0LolHg==, Chandler" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate_sharding_1" values="5, plain passwordF, uqObdVp9XTGZ4Mnw0LolHg==, Joey" />
     <row data-node="encrypt_ds_1.t_user_info" values="0, description0" />
     <row data-node="encrypt_ds_1.t_user_info" values="1, description1" />
     <row data-node="encrypt_ds_1.t_user_info" values="2, description2" />
     <row data-node="encrypt_ds_1.t_user_info" values="3, description3" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate" values="0, plain password1, uqObdVp9XTGZ4Mnw0LolHg==, Rachel" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate" values="1, plain password2, uqObdVp9XTGZ4Mnw0LolHg==, Monica" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate" values="2, plain password3, uqObdVp9XTGZ4Mnw0LolHg==, Phoebe" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate" values="3, plain password4, uqObdVp9XTGZ4Mnw0LolHg==, Ross" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate" values="4, plain password5, uqObdVp9XTGZ4Mnw0LolHg==, Chandler" />
-    <row data-node="encrypt_ds_1.t_user_encrypt_federate" values="5, plain password6, uqObdVp9XTGZ4Mnw0LolHg==, Joey" />
 </dataset>

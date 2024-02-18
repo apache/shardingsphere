@@ -19,7 +19,7 @@ package org.apache.shardingsphere.metadata.persist.service.config.database.datas
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
@@ -35,14 +35,14 @@ import java.util.stream.Collectors;
  * Data source node persist service.
  */
 @RequiredArgsConstructor
-public final class DataSourceNodePersistService implements DatabaseBasedPersistService<Map<String, DataSourceProperties>> {
+public final class DataSourceNodePersistService implements DatabaseBasedPersistService<Map<String, DataSourcePoolProperties>> {
     
     private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
     @Override
-    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
+    public void persist(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceConfigs) {
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
             repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
@@ -50,14 +50,14 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
                 YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
-    private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return dataSourcePropsMap.entrySet().stream()
+    private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourcePoolProperties> propsMap) {
+        return propsMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override
-    public Map<String, DataSourceProperties> load(final String databaseName) {
-        return isExisted(databaseName) ? getDataSourceProperties(repository.getDirectly(
+    public Map<String, DataSourcePoolProperties> load(final String databaseName) {
+        return isExisted(databaseName) ? getDataSourcePoolProperties(repository.getDirectly(
                 DatabaseMetaDataNode.getMetaDataDataSourceNodesPath(databaseName, getDatabaseActiveVersion(databaseName)))) : new LinkedHashMap<>();
     }
     
@@ -67,13 +67,13 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String, DataSourceProperties> getDataSourceProperties(final String yamlContent) {
+    private Map<String, DataSourcePoolProperties> getDataSourcePoolProperties(final String yamlContent) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
         if (yamlDataSources.isEmpty()) {
             return new LinkedHashMap<>();
         }
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSources.size());
-        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(value)));
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(yamlDataSources.size());
+        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(value)));
         return result;
     }
     
@@ -81,12 +81,12 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
      * Append data source properties map.
      * 
      * @param databaseName database name
-     * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
+     * @param toBeAppendedPropsMap data source properties map to be appended
      */
     @Override
-    public void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
-        Map<String, DataSourceProperties> dataSourceConfigs = load(databaseName);
-        dataSourceConfigs.putAll(toBeAppendedDataSourcePropsMap);
+    public void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedPropsMap) {
+        Map<String, DataSourcePoolProperties> dataSourceConfigs = load(databaseName);
+        dataSourceConfigs.putAll(toBeAppendedPropsMap);
         persist(databaseName, dataSourceConfigs);
     }
     

@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.sharding.distsql.converter;
 
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingAuditorSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;

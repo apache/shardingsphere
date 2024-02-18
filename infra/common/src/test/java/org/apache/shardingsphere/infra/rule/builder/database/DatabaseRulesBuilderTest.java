@@ -18,27 +18,28 @@
 package org.apache.shardingsphere.infra.rule.builder.database;
 
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 class DatabaseRulesBuilderTest {
     
     @Test
     void assertBuild() {
-        Iterator<ShardingSphereRule> actual = DatabaseRulesBuilder.build(
-                "foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration())), mock(InstanceContext.class)).iterator();
-        assertThat(actual.next(), instanceOf(FixtureDatabaseRule.class));
+        Iterator<ShardingSphereRule> actual = DatabaseRulesBuilder.build("foo_db", new MySQLDatabaseType(),
+                new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration())), mock(InstanceContext.class)).iterator();
+        assertThat(actual.next(), instanceOf(FixtureRule.class));
         assertFalse(actual.hasNext());
     }
 }

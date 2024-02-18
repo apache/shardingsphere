@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception.connection;
 
-import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ConnectionSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Result set closed exception.

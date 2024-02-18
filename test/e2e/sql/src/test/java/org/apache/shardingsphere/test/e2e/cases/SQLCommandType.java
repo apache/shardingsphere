@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.cases;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;

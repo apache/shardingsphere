@@ -17,6 +17,9 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_with_comment" value="/*FORCE_IMCI_NODES*/ select /*+ SET_VAR(cost_threshold_for_imci=0) */ * from t_order" db-types="MySQL" />
+    <sql-case id="select_position_function" value="select position(&quot;0&quot; in &quot;baaa&quot; in (1)),position(&quot;0&quot; in &quot;1&quot; in (1,2,3)),position(&quot;sql&quot; in (&quot;mysql&quot;))" db-types="MySQL" />
+    <sql-case id="select_extract_function_with_day_hour" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />
     <sql-case id="select_with_latin1" value="select _latin1'B' collate latin1_bin in (_latin1'a',_latin1'b')" db-types="MySQL" />
     <sql-case id="select_with_default_str" value="select * from t1 where str &lt;&gt; default(str)" db-types="MySQL" />
     <sql-case id="select_subquery_excpet" value="select * from (select * from t1 except all select * from t1 limit 2) a" db-types="MySQL" />
@@ -88,7 +91,18 @@
     <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL" />
     <sql-case id="select_with_json_separator" value="select content_json->>'$.nation' as nation,content_json->>'$.title' as title from tb_content_json b where b.content_id=1" db-types="MySQL" />
     <sql-case id="select_with_json_value_return_type" value="SELECT * FROM t_order WHERE JSON_VALUE(items, '$.name' RETURNING VARCHAR(100)) = 'jack'" db-types="MySQL" />
-    <sql-case id="select_with_convert_function" value="SELECT CONVERT(SUBSTRING(content, 5) , SIGNED) AS signed_content FROM t_order WHERE order_id = 1" db-types="MySQL" />
+    <sql-case id="select_with_convert_function1" value="SELECT CONVERT(SUBSTRING(content, 5) , SIGNED) AS signed_content FROM t_order WHERE order_id = 1" db-types="MySQL" />
+    <sql-case id="select_with_convert_function2" value="select sequence_name, sequence_catalog, sequence_schema, convert( bigint, start_value ) as start_value, convert( bigint, minimum_value ) as minimum_value, convert( bigint, maximum_value ) as maximum_value, convert( bigint, increment ) as increment from INFORMATION_SCHEMA.SEQUENCES" db-types="SQLServer" />
+    <sql-case id="select_with_convert_function3" value="SELECT CONVERT(NVARCHAR, GETDATE(), 0)" db-types="SQLServer" />
+    <sql-case id="select_with_convert_function4" value="SELECT CONVERT(DECIMAL(10, 5), CONVERT(VARBINARY(20), @myval))" db-types="SQLServer" />
+    <sql-case id="select_with_convert_function5" value="SELECT CONVERT(BINARY(8), 'Name', 0) AS [Style 0, character to binary]" db-types="SQLServer" />
+    <sql-case id="select_with_convert_xml1" value="SELECT CONVERT(XML, '&lt;root&gt;&lt;child/&gt;&lt;/root&gt;')" db-types="SQLServer" />
+    <sql-case id="select_with_convert_xml2" value="SELECT CONVERT(XML, '&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;', 1)" db-types="SQLServer" />
+    <sql-case id="select_cast_convert_function" value="SELECT GETDATE() AS UnconvertedDateTime, CAST(GETDATE() AS NVARCHAR(30)) AS UsingCast, CONVERT(NVARCHAR(30), GETDATE(), 126) AS UsingConvertTo_ISO8601" db-types="SQLServer" />
+    <sql-case id="select_cast_convert_datetime" value="SELECT '2006-04-25T15:50:59.997' AS UnconvertedText, CAST('2006-04-25T15:50:59.997' AS DATETIME) AS UsingCast, CONVERT(DATETIME, '2006-04-25T15:50:59.997', 126) AS UsingConvertFrom_ISO8601" db-types="SQLServer" />
+    <sql-case id="select_with_convert_hex1" value="SELECT CONVERT(CHAR(8), 0x4E616d65, 0) AS [Style 0, binary to character]" db-types="SQLServer" />
+    <sql-case id="select_with_convert_hex2" value="SELECT CONVERT(CHAR(8), 0x4E616d65, 1) AS [Style 1, binary to character]" db-types="SQLServer" />
+    <sql-case id="select_with_convert_hex3" value="SELECT CONVERT(BINARY(4), '0x4E616D65', 1) AS [Style 1, character to binary]" db-types="SQLServer" />
     <sql-case id="select_with_json_extract" value="SELECT content_json::json->'title', content_json::json->'nation' FROM tb_content_json WHERE content_id = 1" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_json_extract_text" value="SELECT * FROM tb_content_json WHERE content_json::json->>'nation'='CHINA'" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_json_path_extract" value="SELECT content_json::json#>'{keyword,1}' FROM tb_content_json" db-types="PostgreSQL,openGauss" />
@@ -182,9 +196,70 @@
     <sql-case id="select_constant_with_nested_type_cast" value="SELECT CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" db-types="PostgreSQL,openGauss"  />
     <sql-case id="select_projection_with_parameter" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Oracle"  />
     <sql-case id="select_with_chinese_comma" value="SELECT 1， 2，3 FROM DUAL" db-types="Oracle"  />
+    <sql-case id="select_with_chinese_whitespace" value="SELECT 1， 2，3 FROM　DUAL" db-types="Oracle"  />
     <sql-case id="select_with_keyword_system" value="SELECT * FROM vtx_project WHERE system = ?" />
     <sql-case id="select_with_keyword_groups_and_rank" value="SELECT t.groups, t.rank FROM t_order t" db-types="MySQL" />
     <sql-case id="select_with_format_function" value="SELECT wi.code.format(null,'PURE_IDENTITY') as PURE_IDENTITY FROM warehouse_info wi;" db-types="Oracle" />
     <sql-case id="select_with_xml_is_schema_valid_function" value="SELECT x.xmlcol.isSchemaValid('http://www.example.com/schemas/ipo.xsd','purchaseOrder') FROM po_tab x;" db-types="Oracle" />
     <sql-case id="select_with_last_value_function" value="SELECT LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE) from TEST;" db-types="Oracle" />
+    <sql-case id="select_with_lead_and_lag_function" value="SELECT hire_date, LAG(hire_date, 1) OVER (ORDER BY hire_date) AS LAG1, LEAD(hire_date, 1) OVER (ORDER BY hire_date) AS LEAD1 FROM employees WHERE department_id = 30 ORDER BY hire_date;" db-types="Oracle" />
+    <sql-case id="select_with_connect_by_root" value="SELECT CONNECT_BY_ROOT last_name 'Manager' FROM employees CONNECT BY PRIOR employee_id = manager_id" db-types="Oracle" />
+    <sql-case id="select_with_ntile_function" value="SELECT NTILE(4) OVER (ORDER BY salary DESC) AS quartile FROM employees WHERE department_id = 100 ORDER BY last_name" db-types="Oracle" />
+    <sql-case id="select_with_percentile_functions" value="SELECT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median cont', PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median disc' FROM employees GROUP BY department_id" db-types="Oracle" />
+    <sql-case id="select_with_keep_clause" value="SELECT salary,MIN(salary) KEEP (DENSE_RANK FIRST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Worst', MAX(salary) KEEP (DENSE_RANK LAST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Best' FROM employees ORDER BY department_id" db-types="Oracle" />
+    <sql-case id="select_with_corr_function" value="SELECT employee_id, CORR(SYSDATE - hire_date, salary) FROM employees WHERE department_id in (50, 80) ORDER BY employee_id" db-types="Oracle" />
+    <sql-case id="select_with_trim_function" value="select TRIM('  derby '), TRIM(BOTH ' ' FROM '  derby '), TRIM(TRAILING ' ' FROM '  derby '), TRIM(cast (null as char(1)) FROM '  derby '), TRIM(' ' FROM cast(null as varchar(30))), TRIM('y' FROM ' derby') FROM employees" db-types="Oracle" />
+    <sql-case id="select_with_ratio_to_report_function" value="SELECT TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999') AS RATIO_TO_REPORT FROM sales s GROUP BY s.channel_desc" db-types="Oracle" />
+    <sql-case id="select_with_sys_xmlagg_and_xmlgen" value="SELECT SYS_XMLAGG(last_name) a, SYS_XMLGEN(last_name) b FROM employees WHERE last_name LIKE 'R%' ORDER BY xmlagg;" db-types="Oracle" />
+    <sql-case id="select_with_cover_pop_and_covar_samp" value="SELECT product_id, supplier_id, COVAR_POP(list_price, min_price)  OVER (ORDER BY product_id, supplier_id) AS CUM_COVP, COVAR_SAMP(list_price, min_price) OVER (ORDER BY product_id, supplier_id) AS CUM_COVS  FROM product_information p WHERE category_id = 29 ORDER BY product_id, supplier_id" db-types="Oracle" />
+    <sql-case id="select_with_percent_rank_function" value="SELECT department_id, last_name, salary, PERCENT_RANK()  OVER (PARTITION BY department_id ORDER BY salary DESC) AS pr FROM employees ORDER BY pr, salary, last_name" db-types="Oracle" />
+    <sql-case id="select_with_rank_function" value="SELECT RANK(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct) 'Rank' FROM employees" db-types="Oracle" />
+    <sql-case id="select_with_rownumber_function" value="SELECT department_id, first_name, last_name, salary FROM (SELECT department_id, first_name, last_name, salary, ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary desc) rn  FROM employees) WHERE rn = 3 ORDER BY department_id, salary DESC, last_name" db-types="Oracle" />
+    <sql-case id="select_with_xml_functions" value="SELECT INSERTCHILDXML(warehouse_spec, '/Warehouse/Building', 'Owner', XMLType('&lt;Owner>LesserCo&lt;/Owner>')), SYS_DBURIGEN(employee_id, email), INSERTCHILDXMLAFTER(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner>ThirdOwner&lt;/Owner>')), INSERTCHILDXMLBEFORE(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner>ThirdOwner&lt;/Owner>')), INSERTXMLAFTER(warehouse_spec,'/Warehouse/Building/Owner[1]', XMLType('&lt;Owner>SecondOwner&lt;/Owner>')), INSERTXMLBEFORE(warehouse_spec, '/Warehouse/Building/Owner[2]', XMLType('&lt;Owner>ThirdOwner&lt;/Owner>')), EXTRACT(warehouse_spec, '/Warehouse/Docks') 'Number of Docks', EXTRACTVALUE(e.warehouse_spec, '/Warehouse/Docks') 'Docks', APPENDCHILDXML(warehouse_spec, 'Warehouse/Building', XMLType('&lt;Owner>Grandco&lt;/Owner>')), DELETEXML(warehouse_spec, '/Warehouse/Building/Owner')   FROM warehouses   WHERE EXISTSNODE(warehouse_spec, '/Warehouse/Docks') = 1   ORDER BY warehouse_id" db-types="Oracle" />
+    <sql-case id="select_with_more_xml_functions" value="SELECT XMLCOMMENT('OrderAnalysisComp imported, reconfigured, disassembled'), XMLCONCAT(XMLELEMENT('First', e.first_name), XMLELEMENT('Last', e.last_name)) AS 'Result', XMLPATCH(XMLTYPE('xml')), XMLDIFF(XMLTYPE('xml'),XMLTYPE('xml2')), XMLELEMENT('Emp', XMLATTRIBUTES(e.employee_id, e.last_name)), XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*')) FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_with_nested_object" value="SELECT o.item.line_item_id, o.item.quantity FROM short_orders o;" db-types="Oracle" />
+    <sql-case id="select_with_collection_table" value="SELECT VALUE(p) FROM warehouses w, TABLE(XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*'))) p;" db-types="Oracle" />
+    <sql-case id="select_with_group_by_and_having" value="select cfg_name from bmsql_config group by cfg_name having cfg_name='1';" db-types="openGauss" />
+    <sql-case id="select_with_to_date_function" value="SELECT TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.') FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_with_expressions_in_projection" value="SELECT ((a.enddate - term + term2 + 1) / (last_day(term) - term + 1)) cnt, a.empid FROM employee aWHERE nvl(disabled, 0) = 1  AND enddate BETWEEN term AND last_day(term)  AND EXISTS (SELECT 1 FROM post d WHERE a.orgid = d.orgid   AND a.postid = d.postid   AND d.title != 'TEST'   AND nvl(d.postid, 0) != 0)" db-types="Oracle" />
+    <sql-case id="select_with_custom_table_function" value="SELECT COUNT(empid) FROM EMPLOYEE b, custom_function(b.orgid) a WHERE a.postid = b.postid" db-types="Oracle" />
+    <sql-case id="select_numeric_operator" value="SELECT 5! AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_with_custom_distinct_function" value="select custom_concat(distinct a.P1) From TEST a;" db-types="Oracle" />
+    <sql-case id="select_with_unicode_string" value="SELECT u'test', U'test' from DUAL" db-types="Oracle" />
+    <sql-case id="select_wm_concat_function1" value="SELECT TO_CHAR(WM_CONCAT(DISTINCT TEST_ID) OVER(PARTITION BY TEST_ID)) ID FROM TEST_TABLE" db-types="Oracle" />
+    <sql-case id="select_wm_concat_function2" value="SELECT WM_CONCAT(NAME) NAME FROM TEST_TABLE" db-types="Oracle" />
+    <sql-case id="select_wm_concat_function3" value="SELECT REPLACE(WM_CONCAT(NAME),',','|') FROM TEST_TABLE" db-types="Oracle" />
+    <sql-case id="select_wm_concat_function4" value="SELECT NAME,WM_CONCAT(DECODE(SUBSTR((TO_CHAR(NAME)),0,1),'.','0'||TO_CHAR(NAME),TO_CHAR(NAME))) WM_NAME FROM TEST_TABLE WHERE NAME ='TEST' GROUP BY NAME" db-types="Oracle" />
+    <sql-case id="select_with_user_updatable_columns" value="SELECT column_name, updatable FROM user_updatable_columns WHERE table_name = 'LOCATIONS_VIEW' ORDER BY column_name, updatable" db-types="Oracle" />
+    <sql-case id="select_with_script_variables" value="SELECT x.$(ColumnName) FROM Person.Person x WHERE x.BusinessEntityID > 5" db-types="SQLServer" />
+    <sql-case id="select_not_expression" value="select !0,NOT 0=1,!(0=0),1 AND 1,1 &amp;&amp; 0,0 OR 1,1 || NULL, 1=1 or 1=1 and 1=0" db-types="MySQL" />
+    <sql-case id="select_with_unreserved_column" value="SELECT name, server_id, provider FROM sys.servers" db-types="SQLServer" />
+    <sql-case id="select_with_count_temp_table" value="SELECT COUNT(*) AS [Number of rows] FROM #Test" db-types="SQLServer"/>
+    <sql-case id="select_with_bracket_alias" value="SELECT obj1.name AS [XEvent-name], col2.name AS [XEvent-column], obj1.description AS [Descr-name], col2.description AS [Descr-column] FROM sys.dm_xe_objects AS obj1 INNER JOIN sys.dm_xe_object_columns AS col2 ON col2.object_name = obj1.name ORDER BY obj1.name, col2.name" db-types="SQLServer"/>
+    <sql-case id="select_with_cross_apply" value="SELECT query = a.text, start_time, percent_complete, eta = dateadd(second,estimated_completion_time/1000, getdate()) FROM sys.dm_exec_requests r CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) a WHERE r.command = 'RESTORE DATABASE'" db-types="SQLServer"/>
+    <sql-case id="select_with_top_restrict1" value="SELECT TOP 10 * FROM TableName" db-types="SQLServer"/>
+    <sql-case id="select_with_top_restrict2" value="SELECT TOP 10 columnName FROM TableName;" db-types="SQLServer"/>
+    <sql-case id="select_with_top_restrict3" value="SELECT TOP 10 alias1.columnName from TableName alias1" db-types="SQLServer"/>
+    <sql-case id="select_with_top_with_ties" value="SELECT TOP 10 WITH TIES alias1.columnName from TableName alias1" db-types="SQLServer"/>
+    <sql-case id="select_with_object_id_function" value="SELECT OBJECT_NAME(object_id) AS referencing_object_name,COALESCE(COL_NAME(object_id, column_id), '(n/a)') AS referencing_column_name,* FROM sys.sql_dependencies WHERE referenced_major_id = OBJECT_ID('&lt;schema_name.table_name&gt;') ORDER BY OBJECT_NAME(object_id), COL_NAME(object_id, column_id)" db-types="SQLServer"/>
+    <sql-case id="select_from_sys_views" value="SELECT name AS view_name,SCHEMA_NAME(schema_id) AS schema_name,OBJECTPROPERTYEX(object_id,'IsIndexed') AS IsIndexed,OBJECTPROPERTYEX(object_id,'IsIndexable') AS IsIndexable,create_date,modify_date FROM sys.views" db-types="SQLServer"/>
+    <sql-case id="select_with_substring_function" value="SELECT ProductID, Name, ProductNumber FROM [Production].[Product] WHERE SUBSTRING(ProductNumber, 0, 4) =  'HN-'" db-types="SQLServer"/>
+    <sql-case id="select_with_not_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS NOT DISTINCT FROM NULL" db-types="SQLServer"/>
+    <sql-case id="select_with_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS DISTINCT FROM 17;" db-types="SQLServer"/>
+    <sql-case id="select_with_contains_function" value="SELECT product_id FROM products WHERE CONTAINS(product_description, '&quot;Snap Happy 100EZ&quot; OR FORMSOF(THESAURUS,&quot;Snap Happy&quot;) OR &quot;100EZ&quot;') AND product_cost &lt; 200" db-types="SQLServer"/>
+    <sql-case id="select_with_default_schema" value="SELECT has_backup_checksums, database_name, * FROM msdb..backupset" db-types="SQLServer"/>
+    <sql-case id="select_from_dbms_table" value="select * from table(dbms_xplan.display);" db-types="Oracle"/>
+    <sql-case id="select_from_database_files" value="SELECT name, size / 128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS INT) / 128.0 AS AvailableSpaceInMB FROM sys.database_files" db-types="SQLServer"/>
+    <sql-case id="select_trim_2" value="SELECT TRIM( '     test    ') AS Result" db-types="SQLServer"/>
+    <sql-case id="select_from_table_test" value="SELECT * FROM ##test" db-types="SQLServer"/>
+    <sql-case id="select_from_table_openrowset" value="SELECT TOP 100 id=CAST(_id as VARBINARY(1000)) FROM OPENROWSET('CosmosDB', 'Your-account;Database=your-database;Key=your-key',HTAP) WITH (_id VARCHAR(1000)) as HTAP" db-types="SQLServer"/>
+    <sql-case id="select_from_with_contains_function" value="SELECT candidate_name,SSN FROM candidates WHERE CONTAINS(candidate_resume, '&quot;SQL Server&quot;') AND candidate_division = 'DBA'" db-types="SQLServer"/>
+    <sql-case id="select_escape_quotes_from_sys_table" value="SELECT 'DECLARE @serverName NVARCHAR(512) = N''' + value + '''' FROM sys.dm_hadr_fabric_config_parameters WHERE parameter_name = 'DnsRecordName'" db-types="SQLServer"/>
+    <sql-case id="select_from_physical_stats_function" value="SELECT page_count, compressed_page_count, forwarded_record_count, * FROM sys.dm_db_index_physical_stats(db_id(), object_id('t3'), NULL, NULL, 'SAMPLED')" db-types="SQLServer"/>
+    <sql-case id="select_from_msdb_default_schema" value="SELECT backup_size/compressed_backup_size FROM msdb..backupset" db-types="SQLServer"/>
+    <sql-case id="select_from_database_files_2" value="SELECT file_id, name, type_desc, physical_name, size, max_size FROM sys.database_files" db-types="SQLServer"/>
+    <sql-case id="select_dm_exec_requests" value="SELECT [req].[session_id],[req].[start_time],[req].[cpu_time] AS [cpu_time_ms],OBJECT_NAME([ST].[objectid], [ST].[dbid]) AS [ObjectName],SUBSTRING(REPLACE(REPLACE(SUBSTRING([ST].[text],
+    ([req].[statement_start_offset] / 2) + 1, ((CASE [req].[statement_end_offset] WHEN -1 THEN DATALENGTH([ST].[text]) ELSE [req].[statement_end_offset] END - [req].[statement_start_offset]) / 2) + 1 ), CHAR(10), ' ' ), CHAR(13), ' ' ), 1, 512 )
+    AS [statement_text] FROM [sys].[dm_exec_requests] AS [req] CROSS APPLY [sys].dm_exec_sql_text([req].[sql_handle]) AS [ST] ORDER BY [req].[cpu_time] DESC" db-types="SQLServer"/>
+    <sql-case id="select_mdx" value="SELECT {[Measures].[Internet Sales Count], [Measures].[Internet Sales-Sales Amount]} ON COLUMNS, {[Product].[Product Line].[Product Line].MEMBERS} ON ROWS FROM [Analysis Services Tutorial] WHERE [Sales Territory].[Sales Territory Country].[Australia]" db-types="SQLServer"/>
 </sql-cases>

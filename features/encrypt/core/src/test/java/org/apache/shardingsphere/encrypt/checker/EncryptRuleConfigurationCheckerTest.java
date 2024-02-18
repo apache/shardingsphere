@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.exception.metadata.UnregisteredEncryptorException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -48,8 +48,8 @@ class EncryptRuleConfigurationCheckerTest {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.singletonMap("aes_encryptor", mock(AlgorithmConfiguration.class)));
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(columnRuleConfig);
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns)));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singleton(columnRuleConfig);
+        when(result.getTables()).thenReturn(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", columns)));
         return result;
     }
     
@@ -65,8 +65,8 @@ class EncryptRuleConfigurationCheckerTest {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(columnRuleConfig);
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns)));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singleton(columnRuleConfig);
+        when(result.getTables()).thenReturn(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", columns)));
         return result;
     }
     
@@ -82,9 +82,9 @@ class EncryptRuleConfigurationCheckerTest {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(columnRuleConfig);
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singleton(columnRuleConfig);
         columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "aes_assisted_encryptor"));
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns)));
+        when(result.getTables()).thenReturn(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", columns)));
         return result;
     }
     
@@ -100,9 +100,9 @@ class EncryptRuleConfigurationCheckerTest {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "aes_encryptor"));
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(columnRuleConfig);
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singleton(columnRuleConfig);
         columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "like_cn_encryptor"));
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns)));
+        when(result.getTables()).thenReturn(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", columns)));
         return result;
     }
 }

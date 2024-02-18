@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Collections;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Process engine.
@@ -42,7 +44,11 @@ public final class ProcessEngine {
      * @return process ID
      */
     public String connect(final Grantee grantee, final String databaseName) {
-        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
+        // TODO remove processId return value, and use ProcessIdContext.get() instead
+        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+        ProcessIdContext.set(processId);
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
+                new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(processId, databaseName, grantee));
         Process process = new Process(executionGroupContext);
         ProcessRegistry.getInstance().add(process);
         return executionGroupContext.getReportContext().getProcessId();
@@ -54,8 +60,9 @@ public final class ProcessEngine {
      * @param processId process ID
      */
     public void disconnect(final String processId) {
+        // TODO remove processId parameter, and use ProcessIdContext.get() instead
         ProcessRegistry.getInstance().remove(processId);
-        
+        ProcessIdContext.remove();
     }
     
     /**
@@ -66,20 +73,25 @@ public final class ProcessEngine {
      */
     public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ProcessIdContext.set(executionGroupContext.getReportContext().getProcessId());
-            Process process = new Process(queryContext.getSql(), executionGroupContext);
-            ProcessRegistry.getInstance().add(process);
+            ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext));
         }
     }
     
     /**
      * Complete SQL unit execution.
+     * 
+     * @param executionUnit execution unit
      */
-    public void completeSQLUnitExecution() {
+    public void completeSQLUnitExecution(final SQLExecutionUnit executionUnit) {
         if (ProcessIdContext.isEmpty()) {
             return;
         }
-        ProcessRegistry.getInstance().get(ProcessIdContext.get()).completeExecutionUnit();
+        Process process = ProcessRegistry.getInstance().get(ProcessIdContext.get());
+        if (null == process) {
+            return;
+        }
+        process.completeExecutionUnit();
+        process.removeProcessStatement(executionUnit.getExecutionUnit());
     }
     
     /**
@@ -96,7 +108,6 @@ public final class ProcessEngine {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
                 Collections.emptyList(), new ExecutionGroupReportContext(ProcessIdContext.get(), process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
         ProcessRegistry.getInstance().add(new Process(executionGroupContext));
-        ProcessIdContext.remove();
     }
     
     private boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {

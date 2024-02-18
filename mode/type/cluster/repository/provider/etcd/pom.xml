@@ -21,10 +21,30 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-cluster-mode-repository-provider</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
     <name>${project.artifactId}</name>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.etcd</groupId>
+                <artifactId>jetcd-core</artifactId>
+                <version>${jetcd.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.android</groupId>
+                        <artifactId>annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.vertx</groupId>
+                        <artifactId>vertx-grpc</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     
     <dependencies>
         <dependency>
@@ -32,6 +52,7 @@
             <artifactId>shardingsphere-cluster-mode-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-util</artifactId>

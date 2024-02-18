@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleDeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
+
+import java.util.Optional;
 
 /**
  * Merge statement.
@@ -36,9 +36,27 @@ public abstract class MergeStatement extends AbstractSQLStatement implements DML
     
     private TableSegment source;
     
-    private ExpressionSegment expr;
+    private ExpressionWithParamsSegment expression;
     
-    private UpdateStatement update = new OracleUpdateStatement();
+    private UpdateStatement update;
     
-    private DeleteStatement delete = new OracleDeleteStatement();
+    private InsertStatement insert;
+    
+    /**
+     * Get update statement.
+     * 
+     * @return update statement
+     */
+    public Optional<UpdateStatement> getUpdate() {
+        return Optional.ofNullable(update);
+    }
+    
+    /**
+     * Get insert statement.
+     *
+     * @return insert statement
+     */
+    public Optional<InsertStatement> getInsert() {
+        return Optional.ofNullable(insert);
+    }
 }

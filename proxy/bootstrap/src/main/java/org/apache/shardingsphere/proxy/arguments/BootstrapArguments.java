@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.arguments;
 
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -32,7 +31,6 @@ import java.util.stream.Collectors;
 /**
  * Bootstrap arguments.
  */
-@Slf4j
 @RequiredArgsConstructor
 public final class BootstrapArguments {
     
@@ -125,7 +123,7 @@ public final class BootstrapArguments {
     private boolean isValidPath(final String path) {
         try {
             Paths.get(path);
-        } catch (InvalidPathException ignored) {
+        } catch (final InvalidPathException ignored) {
             throw new IllegalArgumentException(String.format("Invalid path `%s`.", path));
         }
         return true;

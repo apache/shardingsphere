@@ -19,14 +19,16 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.oracle.OracleDatabaseType;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -34,7 +36,6 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ProjectionsToken;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -100,7 +101,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         if (projection instanceof AggregationDistinctProjection) {
             return ((AggregationDistinctProjection) projection).getDistinctInnerExpression() + " AS " + projection.getAlias().get().getValue() + " ";
         }
-        return projection.getColumnName() + " AS " + projection.getAlias().get().getValue() + " ";
+        return projection.getExpression() + " AS " + projection.getAlias().get().getValue() + " ";
     }
     
     private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractor tableExtractor, final RouteUnit routeUnit,
@@ -135,13 +136,11 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         IdentifierValue newOwnerIdentifier = new IdentifierValue(ownerSegment.get().getIdentifier().getQuoteCharacter().wrap(actualTableName.get()));
         OwnerSegment newOwner = new OwnerSegment(0, 0, newOwnerIdentifier);
         newColumnSegment.setOwner(newOwner);
-        return new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection(), generateNewNullsOrderType(databaseType, old.getOrderDirection()));
+        return new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection(), generateNewNullsOrderType(old.getOrderDirection(), databaseType));
     }
     
-    private NullsOrderType generateNewNullsOrderType(final DatabaseType databaseType, final OrderDirection orderDirection) {
-        if (databaseType.getDefaultSchema().isPresent() || databaseType instanceof OracleDatabaseType) {
-            return OrderDirection.ASC == orderDirection ? NullsOrderType.LAST : NullsOrderType.FIRST;
-        }
-        return OrderDirection.ASC == orderDirection ? NullsOrderType.FIRST : NullsOrderType.LAST;
+    private NullsOrderType generateNewNullsOrderType(final OrderDirection orderDirection, final DatabaseType databaseType) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        return OrderDirection.ASC == orderDirection ? dialectDatabaseMetaData.getDefaultNullsOrderType() : dialectDatabaseMetaData.getDefaultNullsOrderType().getReversedOrderType();
     }
 }

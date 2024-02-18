@@ -20,10 +20,10 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -36,12 +36,12 @@ public final class JDBCExecutorCallbackFixture extends JDBCExecutorCallback<Obje
     
     private Object attachment;
     
-    public JDBCExecutorCallbackFixture(final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+    public JDBCExecutorCallbackFixture(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
         super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
     }
     
     @Override
-    protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
+    protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) {
         return null;
     }
     

@@ -22,11 +22,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.constant;
  */
 public enum ClientConnectionStatus {
     
-    CONNECTED,
-    
     NOT_LOGGED_IN,
     
-    LOGGING_IN,
-    
-    STREAMING
+    LOGGED_IN
 }

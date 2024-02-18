@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 
 import java.lang.reflect.Method;
 
@@ -33,18 +33,19 @@ import java.lang.reflect.Method;
  * 
  * @param <T> type of root span
  */
-public abstract class TracingJDBCExecutorCallbackAdvice<T> implements InstanceMethodAdvice {
+public abstract class TracingJDBCExecutorCallbackAdvice<T> extends AbstractInstanceMethodAdvice {
     
     protected static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
     public final void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        ShardingSphereResourceMetaData resourceMetaData = AgentReflectionUtils.getFieldValue(target, "resourceMetaData");
-        DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(executionUnit.getExecutionUnit().getDataSourceName());
-        DatabaseType storageType = resourceMetaData.getStorageType(executionUnit.getExecutionUnit().getDataSourceName());
-        recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], metaData, storageType);
+        ResourceMetaData resourceMetaData = AgentReflectionUtils.getFieldValue(target, "resourceMetaData");
+        ConnectionProperties connectionProps = resourceMetaData.getStorageUnits().get(executionUnit.getExecutionUnit().getDataSourceName()).getConnectionProperties();
+        DatabaseType storageType = resourceMetaData.getStorageUnits().get(executionUnit.getExecutionUnit().getDataSourceName()).getStorageType();
+        recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], connectionProps, storageType);
     }
     
-    protected abstract void recordExecuteInfo(T parentSpan, TargetAdviceObject target, JDBCExecutionUnit executionUnit, boolean isTrunkThread, DataSourceMetaData metaData, DatabaseType databaseType);
+    protected abstract void recordExecuteInfo(T parentSpan, TargetAdviceObject target, JDBCExecutionUnit executionUnit,
+                                              boolean isTrunkThread, ConnectionProperties connectionProps, DatabaseType databaseType);
 }

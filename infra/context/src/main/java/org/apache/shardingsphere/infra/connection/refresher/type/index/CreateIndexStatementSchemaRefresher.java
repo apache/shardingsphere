@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.index;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -37,9 +38,10 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) {
-        String indexName = null != sqlStatement.getIndex() ? sqlStatement.getIndex().getIndexName().getIdentifier().getValue()
-                : IndexMetaDataUtils.getGeneratedLogicIndexName(sqlStatement.getColumns());
+                        final String schemaName, final DatabaseType databaseType, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) {
+        String indexName = null == sqlStatement.getIndex()
+                ? IndexMetaDataUtils.getGeneratedLogicIndexName(sqlStatement.getColumns())
+                : sqlStatement.getIndex().getIndexName().getIdentifier().getValue();
         if (Strings.isNullOrEmpty(indexName)) {
             return;
         }
@@ -52,7 +54,7 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
     }
     
     private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumnValues(), table.getIndexValues(), table.getConstraintValues());
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumnValues(), table.getIndexValues(), table.getConstraintValues(), table.getType());
         result.getColumnNames().addAll(table.getColumnNames());
         result.getVisibleColumns().addAll(table.getVisibleColumns());
         result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
@@ -60,7 +62,7 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
     }
     
     @Override
-    public String getType() {
-        return CreateIndexStatement.class.getName();
+    public Class<CreateIndexStatement> getType() {
+        return CreateIndexStatement.class;
     }
 }

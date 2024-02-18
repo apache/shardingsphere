@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.ReadQueryLoadBalanceAlgorithmInitializationExcpetion;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;

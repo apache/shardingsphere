@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.metadata;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
@@ -33,29 +32,29 @@ import java.util.Map.Entry;
 /**
  * Pipeline data source persist service.
  */
-public final class PipelineDataSourcePersistService implements PipelineMetaDataPersistService<Map<String, DataSourceProperties>> {
+public final class PipelineDataSourcePersistService implements PipelineMetaDataPersistService<Map<String, DataSourcePoolProperties>> {
     
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
     
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, DataSourceProperties> load(final PipelineContextKey contextKey, final JobType jobType) {
-        String dataSourcesProps = PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataDataSources(jobType);
+    public Map<String, DataSourcePoolProperties> load(final PipelineContextKey contextKey, final String jobType) {
+        String dataSourcesProps = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getMetaDataFacade().getDataSource().load(jobType);
         if (Strings.isNullOrEmpty(dataSourcesProps)) {
             return Collections.emptyMap();
         }
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSourcesProps, Map.class);
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSources.size(), 1F);
-        yamlDataSources.forEach((key, value) -> result.put(key, swapper.swapToDataSourceProperties(value)));
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(yamlDataSources.size(), 1F);
+        yamlDataSources.forEach((key, value) -> result.put(key, swapper.swapToDataSourcePoolProperties(value)));
         return result;
     }
     
     @Override
-    public void persist(final PipelineContextKey contextKey, final JobType jobType, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(dataSourcePropsMap.size(), 1F);
-        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+    public void persist(final PipelineContextKey contextKey, final String jobType, final Map<String, DataSourcePoolProperties> propsMap) {
+        Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(propsMap.size(), 1F);
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             dataSourceMap.put(entry.getKey(), swapper.swapToMap(entry.getValue()));
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).persistMetaDataDataSources(jobType, YamlEngine.marshal(dataSourceMap));
+        PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getMetaDataFacade().getDataSource().persist(jobType, YamlEngine.marshal(dataSourceMap));
     }
 }

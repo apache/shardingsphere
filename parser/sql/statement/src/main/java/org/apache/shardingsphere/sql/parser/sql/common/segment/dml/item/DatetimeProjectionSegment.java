@@ -53,4 +53,9 @@ public final class DatetimeProjectionSegment implements ProjectionSegment {
         this.right = null;
         this.text = text;
     }
+    
+    @Override
+    public String getColumnLabel() {
+        return text;
+    }
 }

@@ -89,14 +89,14 @@ Each module generated within this framework is a standalone project, allowing fo
 
 ## 1. Locate the Example Generation Module
 
-Navigate to the [ShardingSphere project directory](https://github.com/apache/shardingsphere) and find the `shardingsphere-example-generator` module within the corresponding example module. This module contains all the template files and generation logic required for generating examples.
+Navigate to the [ShardingSphere project directory](https://github.com/apache/shardingsphere) and find the `shardingsphere-jdbc-example-generator` module within the corresponding example module. This module contains all the template files and generation logic required for generating examples.
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md6.jpeg)Figure 5 — Project structure of the generation engine
 
 
 ## 2. Configure the Generation Engine Parameters
 
-The `shardingsphere-example-generator` module is a standard Java project. The project's configuration file can be found at `resources/config.yaml`. This file allows users to declare various parameters supported by the generation engine. In addition to the template parameters for specific functions, we have also provided convenient configurations that users can customize according to their needs. The specific parameters and their meanings are outlined in Table 2:
+The `shardingsphere-jdbc-example-generator` module is a standard Java project. The project's configuration file can be found at `resources/config.yaml`. This file allows users to declare various parameters supported by the generation engine. In addition to the template parameters for specific functions, we have also provided convenient configurations that users can customize according to their needs. The specific parameters and their meanings are outlined in Table 2:
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md7.jpeg)
 
@@ -104,21 +104,21 @@ The `shardingsphere-example-generator` module is a standard Java project. The pr
 
 After configuring the parameters, it’s time to generate the corresponding configuration module. This can be done in two ways:
 
-- **Running the Main Class:** Locate the `ExampleGeneratorMain` class under the `shardingsphere-example-generator` module and run the main method. This will generate the example in the configured output directory.
+- **Running the Main Class:** Locate the `ExampleGeneratorMain` class under the `shardingsphere-jdbc-example-generator` module and run the main method. This will generate the example in the configured output directory.
 
 - **Using Maven Command Line:** Alternatively, you can use the Maven command line to trigger the generation process. The command should be executed as follows:
 
 ```
 // generate configuration based on config.yaml
-./mvnw -B clean install -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
+./mvnw -B clean install -f examples/shardingsphere-jdbc-example-generator/pom.xml -Pexample-generator
 
 // generation configuration based on command parameters
-./mvnw -B clean install -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=jdbc -Dmodes=cluster-zookeeper -Dtransactions=local -Dfeatures=shadow -Dframeworks=jdbc
+./mvnw -B clean install -f examples/shardingsphere-jdbc-example-generator/pom.xml -Pexample-generator -Dproducts=jdbc -Dmodes=cluster-zookeeper -Dtransactions=local -Dfeatures=shadow -Dframeworks=jdbc
 ```
 
 ## 4. View and Utilize the Examples
 
-Once the generation process is triggered, the associated example code will be generated in the configured output directory. Typically, this would be in the `shardingsphere-example-generator/target/generated-sources/ directory`. The generated directory structure can be seen in Figure 6 below:
+Once the generation process is triggered, the associated example code will be generated in the configured output directory. Typically, this would be in the `shardingsphere-jdbc-example-generator/target/generated-sources/ directory`. The generated directory structure can be seen in Figure 6 below:
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md8.jpeg)Figure 6 — Directory structure for generating examples
 

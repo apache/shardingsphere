@@ -24,8 +24,9 @@ import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTempla
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -55,25 +56,27 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private boolean closed;
     
-    protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final ExecutionContext executionContext) {
-        return isInDistributedTransaction(connection) && isModifiedSQL(executionContext) && executionContext.getExecutionUnits().size() > 1;
-    }
-    
-    private boolean isInDistributedTransaction(final ShardingSphereConnection connection) {
+    protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final SQLStatement sqlStatement, final boolean multiExecutionUnits) {
+        if (!connection.getAutoCommit()) {
+            return false;
+        }
         ConnectionTransaction connectionTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction();
         boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction();
-        return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction;
+        if (!TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) || isInTransaction) {
+            return false;
+        }
+        return isWriteDMLStatement(sqlStatement) && multiExecutionUnits;
     }
     
-    private boolean isModifiedSQL(final ExecutionContext executionContext) {
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
+    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
         return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
         if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {
             DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
-            if (databaseType.getDefaultSchema().isPresent()) {
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+            if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
                 connection.getDatabaseConnectionManager().getConnectionTransaction().setRollbackOnly(true);
             }
         }

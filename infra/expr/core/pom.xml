@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra-expr</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-expr-core</artifactId>
     <name>${project.artifactId}</name>
@@ -34,12 +34,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-expr-hotsopt</artifactId>
+            <artifactId>shardingsphere-infra-expr-groovy</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-expr-espresso</artifactId>
+            <artifactId>shardingsphere-infra-expr-literal</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-expr-interval</artifactId>
             <version>${project.version}</version>
         </dependency>
         
@@ -48,11 +53,6 @@
             <artifactId>shardingsphere-test-util</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy</artifactId>
         </dependency>
     </dependencies>
 </project>

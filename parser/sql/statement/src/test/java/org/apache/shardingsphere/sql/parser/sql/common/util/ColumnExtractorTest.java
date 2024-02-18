@@ -51,6 +51,6 @@ class ColumnExtractorTest {
                 new ColumnSegment(10, 13, new IdentifierValue("name")), new LiteralExpressionSegment(18, 22, "LiLei"), "=", "name = 'LiLei'");
         BinaryOperationExpression rightExpression = new BinaryOperationExpression(30, 44,
                 new ColumnSegment(30, 32, new IdentifierValue("pwd")), new LiteralExpressionSegment(40, 45, "123456"), "=", "pwd = '123456'");
-        return Collections.singletonList(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, leftExpression, rightExpression, "AND", "name = 'LiLei' AND pwd = '123456'")));
+        return Collections.singleton(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, leftExpression, rightExpression, "AND", "name = 'LiLei' AND pwd = '123456'")));
     }
 }

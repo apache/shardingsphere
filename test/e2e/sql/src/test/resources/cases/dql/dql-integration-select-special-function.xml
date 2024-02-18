@@ -17,9 +17,10 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="SELECT GROUP_CONCAT(i.item_id SEPARATOR ';') AS item_ids FROM t_order_federate o INNER JOIN t_order_item_federate_sharding i ON o.order_id = i.item_id WHERE i.order_id >= ?" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="SELECT GROUP_CONCAT(i.item_id SEPARATOR ';') AS item_ids FROM t_order_federate o INNER JOIN t_order_item_federate_sharding i ON o.order_id = i.item_id WHERE i.order_id >= ?" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <!-- TODO Fix https://github.com/apache/shardingsphere/issues/23499 -->
     <!-- <test-case sql="SELECT ?::money" db-types="PostgreSQL,openGauss" scenario-types="passthrough"-->

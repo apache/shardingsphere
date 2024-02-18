@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-data-pipeline-cdc</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-data-pipeline-cdc-core</artifactId>
     <name>${project.artifactId}</name>
@@ -37,6 +37,11 @@
             <artifactId>shardingsphere-data-pipeline-cdc-protocol</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-broadcast-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -46,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-fixture-jdbc</artifactId>
+            <artifactId>shardingsphere-test-fixture-database</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

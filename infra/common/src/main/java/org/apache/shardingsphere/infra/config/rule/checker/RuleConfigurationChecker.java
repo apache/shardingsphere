@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.config.rule.checker;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;

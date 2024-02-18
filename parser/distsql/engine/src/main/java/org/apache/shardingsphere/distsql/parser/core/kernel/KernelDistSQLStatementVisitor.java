@@ -32,10 +32,12 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ExportMetaDataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ExportStorageNodesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.FromSegmentContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.IgnoreBroadcastTablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.IgnoreSingleAndBroadcastTablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.IgnoreSingleTablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ImportDatabaseConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ImportMetaDataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InstanceIdContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InventoryIncrementalRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LockClusterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PasswordContext;
@@ -53,53 +55,57 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowKeyGenerateAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowLogicalTablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowPluginImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowStorageUnitsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StorageUnitDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StreamChannelContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.TransmissionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlockClusterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnregisterStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.WorkerThreadContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.WriteDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalRuleSegment;
-import org.apache.shardingsphere.distsql.parser.segment.ReadOrWriteSegment;
-import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportMetaDataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportStorageNodesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeInfoStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterComputeNodeStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelComputeNodeStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LockClusterStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInstanceStatusStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelComputeNodeStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlockClusterStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowLogicalTablesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
+import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
+import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.convert.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportStorageNodesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeInfoStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeModeStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowMigrationRuleStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterComputeNodeStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.SetInstanceStatusStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rql.resource.ShowLogicalTablesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
@@ -137,9 +143,10 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
         String user = getIdentifierValue(ctx.user());
         String password = null == ctx.password() ? "" : getPassword(ctx.password());
         Properties props = getProperties(ctx.propertiesDefinition());
-        return null != ctx.urlSource() ? new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props)
-                : new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.simpleSource().hostname()),
-                        ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props);
+        return null == ctx.urlSource()
+                ? new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()),
+                        getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props)
+                : new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
     }
     
     private String getPassword(final PasswordContext ctx) {
@@ -174,7 +181,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitLabelComputeNode(final LabelComputeNodeContext ctx) {
         Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
-        return new LabelComputeNodeStatement(ctx.RELABEL() != null, getIdentifierValue(ctx.instanceId()), labels);
+        return new LabelComputeNodeStatement(null != ctx.RELABEL(), getIdentifierValue(ctx.instanceId()), labels);
     }
     
     @Override
@@ -205,9 +212,11 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitUnregisterStorageUnit(final UnregisterStorageUnitContext ctx) {
-        boolean ignoreSingleTables = null != ctx.ignoreSingleTables();
-        return new UnregisterStorageUnitStatement(ctx.ifExists() != null,
-                ctx.storageUnitName().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()), ignoreSingleTables);
+        boolean ignoreSingleTables = ctx.ignoreTables() instanceof IgnoreSingleAndBroadcastTablesContext || ctx.ignoreTables() instanceof IgnoreSingleTablesContext;
+        boolean ignoreBroadcastTables = ctx.ignoreTables() instanceof IgnoreSingleAndBroadcastTablesContext || ctx.ignoreTables() instanceof IgnoreBroadcastTablesContext;
+        return new UnregisterStorageUnitStatement(null != ctx.ifExists(),
+                ctx.storageUnitName().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()),
+                ignoreSingleTables, ignoreBroadcastTables);
     }
     
     @Override
@@ -245,7 +254,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitRefreshDatabaseMetadata(final RefreshDatabaseMetadataContext ctx) {
-        return new RefreshDatabaseMetaDataStatement(null == ctx.databaseName() ? null : getIdentifierValue(ctx.databaseName()));
+        return new RefreshDatabaseMetaDataStatement(null == ctx.databaseName() ? null : getIdentifierValue(ctx.databaseName()), null != ctx.FORCE());
     }
     
     @Override
@@ -306,14 +315,14 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitAlterMigrationRule(final AlterMigrationRuleContext ctx) {
-        InventoryIncrementalRuleSegment segment = null == ctx.inventoryIncrementalRule() ? null
-                : (InventoryIncrementalRuleSegment) visit(ctx.inventoryIncrementalRule());
-        return new AlterInventoryIncrementalRuleStatement("MIGRATION", segment);
+        TransmissionRuleSegment segment = null == ctx.transmissionRule() ? null
+                : (TransmissionRuleSegment) visit(ctx.transmissionRule());
+        return new AlterTransmissionRuleStatement("MIGRATION", segment);
     }
     
     @Override
-    public ASTNode visitInventoryIncrementalRule(final InventoryIncrementalRuleContext ctx) {
-        InventoryIncrementalRuleSegment result = new InventoryIncrementalRuleSegment();
+    public ASTNode visitTransmissionRule(final TransmissionRuleContext ctx) {
+        TransmissionRuleSegment result = new TransmissionRuleSegment();
         if (null != ctx.readDefinition()) {
             result.setReadSegment((ReadOrWriteSegment) visit(ctx.readDefinition()));
         }
@@ -394,5 +403,15 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     private String getQuotedContent(final ParseTree context) {
         return IdentifierValue.getQuotedContent(context.getText());
+    }
+    
+    @Override
+    public ASTNode visitShowPluginImplementations(final ShowPluginImplementationsContext ctx) {
+        return new ShowPluginsStatement("COMMON", getIdentifierValue(ctx.pluginClass()));
+    }
+    
+    @Override
+    public ASTNode visitShowKeyGenerateAlgorithmPlugins(final ShowKeyGenerateAlgorithmPluginsContext ctx) {
+        return new ShowPluginsStatement("KEY_GENERATE_ALGORITHM");
     }
 }

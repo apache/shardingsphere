@@ -48,5 +48,5 @@ providerName
     ;
 
 buildInProviderTypeName
-    : ATOMIKOS | NARAYANA | BITRONIX
+    : ATOMIKOS | NARAYANA
     ;

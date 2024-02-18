@@ -20,12 +20,9 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnIndexOutOfRangeException;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -100,10 +97,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     public String getColumnLabel(final int column) throws SQLException {
         if (selectContainsEnhancedTable && hasSelectExpandProjections()) {
             checkColumnIndex(column);
-            Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
-            if (projection instanceof AggregationDistinctProjection) {
-                return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getColumnName() : projection.getColumnLabel();
-            }
+            return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnLabel();
         }
         return resultSetMetaData.getColumnLabel(column);
     }
@@ -112,13 +106,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     public String getColumnName(final int column) throws SQLException {
         if (selectContainsEnhancedTable && hasSelectExpandProjections()) {
             checkColumnIndex(column);
-            Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
-            if (projection instanceof ColumnProjection) {
-                return ((ColumnProjection) projection).getName().getValue();
-            }
-            if (projection instanceof AggregationDistinctProjection) {
-                return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getColumnName() : projection.getColumnLabel();
-            }
+            return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1).getColumnName();
         }
         return resultSetMetaData.getColumnName(column);
     }

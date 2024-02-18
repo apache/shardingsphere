@@ -39,24 +39,24 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authent
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
-import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
-import org.apache.shardingsphere.dialect.postgresql.exception.authority.PrivilegeNotGrantedException;
-import org.apache.shardingsphere.dialect.postgresql.exception.authority.UnknownUsernameException;
-import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.EmptyUsernameException;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.InvalidPasswordException;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.PrivilegeNotGrantedException;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.UnknownUsernameException;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLCharacterSets;
+import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
-import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.authentication.result.AuthenticationResult;
+import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
+import org.apache.shardingsphere.authentication.Authenticator;
+import org.apache.shardingsphere.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
@@ -144,7 +144,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username, final AuthorityRule rule) {
         Optional<Authenticator> authenticator = rule.findUser(new Grantee(username, "")).map(optional -> new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(optional));
-        if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD == authenticator.get().getAuthenticationMethod()) {
+        if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {
             return new PostgreSQLPasswordAuthenticationPacket();
         }
         md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);

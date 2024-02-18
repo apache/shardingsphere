@@ -17,6 +17,7 @@
   -->
 
 <configuration>
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>

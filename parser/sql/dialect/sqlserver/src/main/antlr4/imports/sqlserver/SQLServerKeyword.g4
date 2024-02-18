@@ -1910,3 +1910,51 @@ WITHOUT_ARRAY_WRAPPER
 XMLNAMESPACES
     : X M L N A M E S P A C E S
     ;
+
+APPLY
+    : A P P L Y
+    ;
+
+STATISTICS
+    : S T A T I S T I C S
+    ;
+
+FULLSCAN
+    : F U L L S C A N
+    ;
+
+SAMPLE
+    : S A M P L E
+    ;
+
+RESAMPLE
+    : R E S A M P L E
+    ;
+
+NORECOMPUTE
+    : N O R E C O M P U T E
+    ;
+
+AUTO_DROP
+    : A U T O UL_ D R O P
+    ;
+
+PERSIST_SAMPLE_PERCENT
+    : P E R S I S T UL_ S A M P L E UL_ P E R C E N T
+    ;
+
+OPENJSON
+    : O P E N J S O N
+    ;
+
+OPENROWSET
+    : O P E N R O W S E T
+    ;
+
+TRY_CAST
+    : T R Y UL_ C A S T
+    ;
+
+TRY_CONVERT
+    : T R Y UL_ C O N V E R T
+    ;

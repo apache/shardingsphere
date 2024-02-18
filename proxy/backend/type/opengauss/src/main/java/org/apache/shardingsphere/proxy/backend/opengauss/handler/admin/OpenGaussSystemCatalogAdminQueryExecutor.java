@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -100,10 +100,10 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionSession.getDatabaseConnectionManager(),
                 connectionSession.getStatementManager(), new StatementOption(false),
                 metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits());
     }
     
-    private JDBCExecutorCallback<ExecuteResult> createOpenGaussSystemCatalogAdminQueryCallback(final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData,
+    private JDBCExecutorCallback<ExecuteResult> createOpenGaussSystemCatalogAdminQueryCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
                                                                                                final SQLStatement sqlStatement) {
         return new JDBCExecutorCallback<ExecuteResult>(protocolType, resourceMetaData, sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()) {
             

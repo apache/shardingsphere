@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 

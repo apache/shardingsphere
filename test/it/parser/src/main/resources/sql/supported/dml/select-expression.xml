@@ -17,8 +17,15 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_with_performance_schema_global_status" value="SELECT 1 AS STATUS FROM performance_schema.global_status WHERE VARIABLE_NAME= 'MAX_EXECUTION_TIME_SET_FAILED' AND CONVERT(VARIABLE_VALUE, UNSIGNED) > @time_set_failed" db-types="MySQL" />
+    <sql-case id="select_udf_function_mysqltest1_f1" value="select mysqltest1.f1()" db-types="MySQL" />
+    <sql-case id="select_case_when_with_mul_condition" value="select case 1*0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_sub_condition" value="select case 1-0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_add_condition" value="select case 1+0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_div_condition" value="select case 1/0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
     <sql-case id="select_with_expression" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="MySQL, H2, SQL92, SQLServer" />
     <sql-case id="select_with_expression_for_postgresql" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_encode_function" value="SELECT ENCODE(test_datetype_col::bytea,'escape') FROM test_bytea" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_date_function" value="SELECT DATE(i.creation_date) AS creation_date FROM `t_order_item` AS i ORDER BY DATE(i.creation_date) DESC" db-types="MySQL" />
     <sql-case id="select_with_regexp" value="SELECT * FROM t_order_item t WHERE t.status REGEXP ? AND t.item_id IN (?, ?)" db-types="MySQL" />
     <sql-case id="select_with_rlike" value="SELECT * FROM t_order_item t WHERE t.status RLIKE ? AND t.item_id IN (?, ?)" db-types="MySQL" />
@@ -63,7 +70,7 @@
     <sql-case id="select_where_with_simple_expr_with_literals" value="SELECT * FROM t_order WHERE ? &lt; order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_column" value="SELECT * FROM t_order WHERE t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_function_call" value="SELECT * FROM t_order WHERE now() &lt; order_id" db-types="MySQL" />
-    <sql-case id="select_where_with_simple_expr_with_collate" value="SELECT * FROM t_order WHERE order_id collate 'utf8mb4_0900_ai_ci'" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_collate" value="SELECT * FROM t_order WHERE order_id collate utf8mb4_0900_ai_ci" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_variable" value="SELECT * FROM t_order WHERE @@max_connections &lt; order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_plus" value="SELECT * FROM t_order WHERE ? + t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_minus" value="SELECT * FROM t_order WHERE ? - t_order.order_id" db-types="MySQL" />
@@ -99,4 +106,35 @@
     <sql-case id="select_age_for_postgres" value="SELECT * FROM cypher('sharding_test_1', $$ CREATE (n) $$) as (a agtype)" db-types="PostgreSQL" />
     <sql-case id="select_datetime_expression" value="SELECT SYSTIMESTAMP AT TIME ZONE 'UTC' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_between_expression" value="SELECT item_id BETWEEN 1 AND order_id, status FROM t_order_item;" db-types="MySQL" />
+    <sql-case id="select_dbms_logmnr_mine_value_regular_function" value="SELECT DBMS_LOGMNR.MINE_VALUE(UNDO_VALUE, 'HR.EMPLOYEES.SALARY') FROM V$LOGMNR_CONTENTS;" db-types="Oracle" />
+    <sql-case id="select_interval_day_to_second_expression" value="SELECT (SYSTIMESTAMP - order_date) DAY(9) TO SECOND FROM orders" db-types="Oracle" />
+    <sql-case id="select_feature_function" value="SELECT FEATURE_VALUE(nmf_sh_sample, 3 USING *) FROM nmf_sh_sample_apply_prepared" db-types="Oracle" />
+    <sql-case id="select_cluster_function" value="SELECT CLUSTER_PROBABILITY(km_sh_clus_sample, 2 USING *) FROM mining_data_apply_v" db-types="Oracle" />
+    <sql-case id="select_with_multiset_except_expression" value="SELECT customer_id, cust_address_ntab MULTISET EXCEPT DISTINCT cust_address2_ntab multiset_except FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
+    <sql-case id="select_with_multiset_intersect_expression" value="SELECT customer_id, cust_address_ntab MULTISET INTERSECT DISTINCT cust_address2_ntab multiset_intersect FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
+    <sql-case id="select_with_multiset_union_expression" value="SELECT customer_id, cust_address_ntab MULTISET UNION cust_address2_ntab multiset_union FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
+    <sql-case id="select_collect_expression" value="SELECT CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t) &quot;Warehouses&quot; FROM warehouses;" db-types="Oracle" />
+    <sql-case id="select_expr_dot_expr" value="SELECT DBURIType('/HR/DEPARTMENTS').getXML() FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_arrow_symbol_in_function" value="SELECT DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression') compression_type FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_prediction_probability_function" value="SELECT PREDICTION_PROBABILITY(dt_sh_clas_sample, 1 USING *) cust_card_prob FROM mining_data_apply_v WHERE cust_id = 101488;" db-types="Oracle" />
+    <sql-case id="select_prediction_set_function" value="SELECT PREDICTION_SET(dt_sh_clas_sample COST MODEL USING *) pset FROM mining_data_apply_v WHERE cust_id = 100011" db-types="Oracle" />
+    <sql-case id="select_cursor_function" value="SELECT CURSOR(SELECT salary, commission_pct FROM employees e WHERE e.department_id = d.department_id) FROM departments d;" db-types="Oracle" />
+    <sql-case id="select_prediction_bounds_function" value="SELECT cust_id FROM mining_data_apply_v WHERE PREDICTION_BOUNDS(glmr_sh_regr_sample,0.98 USING *).LOWER = 24;" db-types="Oracle" />
+    <sql-case id="select_prediction_function" value="SELECT cust_gender FROM mining_data_apply_v WHERE PREDICTION (nb_sh_clas_sample COST MODEL AUTO USING cust_marital_status, aeducation, household_size) = 1;" db-types="Oracle" />
+    <sql-case id="select_prediction_details_function" value="SELECT PREDICTION_DETAILS(DT_SH_Clas_sample using *) FROM mining_data_apply_v WHERE occupation = 'TechSup'" db-types="Oracle" />
+    <sql-case id="select_predict_by_function" value="SELECT PREDICT BY point_kmeans (FEATURES position) as pos FROM (select * from kmeans_2d limit 10);" db-types="openGauss" />
+    <sql-case id="select_inet_function" value="SELECT inet '192.168.1.5' = inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_inet_function_with_inet_operator" value="SELECT inet '192.168.1.5' &lt;&lt;= inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_ts_rewrite_function" value="SELECT ts_rewrite('a &amp; b'::tsquery, 'a'::tsquery, 'c'::tsquery);" db-types="openGauss" />
+    <sql-case id="select_int_2_function" value="select int2(25.3);" db-types="openGauss" />
+    <sql-case id="select_elem_contained_by_range_function" value="SELECT elem_contained_by_range('2', numrange(1.1,2.2));" db-types="openGauss" />
+    <sql-case id="select_int8range" value="SELECT int8range(5,15) * int8range(10,20) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_int4range" value="SELECT int4range(2,4) &lt;@ int4range(1,7) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_lower_inf_function" value="SELECT lower_inf('(,)'::daterange) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_tsquery" value="SELECT 'super:*'::tsquery;" db-types="openGauss" />
+    <sql-case id="select_abbrev_function" value="SELECT abbrev(cidr '10.1.0.0/16') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_set_masklen_function" value="SELECT set_masklen('192.168.1.0/24'::cidr, 16) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_text_inet_function" value="SELECT text(inet '192.168.1.5') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_trunc_function" value="SELECT trunc(macaddr '12:34:56:78:90:ab') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_with_case_when_from_sys" value="SELECT FileName = df.name, current_file_size_MB = df.size*1.0/128, max_size = CASE df.max_size WHEN 0 THEN 'Autogrowth is off.' WHEN -1 THEN 'Autogrowth is on.' ELSE 'Log file grows to a maximum size of 2 TB.' END, growth_value = CASE WHEN df.growth = 0 THEN df.growth WHEN df.growth > 0 AND df.is_percent_growth = 0 THEN df.growth*1.0/128.0 WHEN df.growth > 0 AND df.is_percent_growth = 1 THEN df.growth END, growth_increment_unit = CASE WHEN df.growth = 0 THEN 'Size is fixed.' WHEN df.growth > 0 AND df.is_percent_growth = 0  THEN 'Growth value is MB.' WHEN df.growth > 0 AND df.is_percent_growth = 1  THEN 'Growth value is a percentage.' END FROM tempdb.sys.database_files AS df" db-types="SQLServer"/>
 </sql-cases>

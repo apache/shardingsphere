@@ -19,7 +19,7 @@ databaseName: encrypt
 
 dataSources:
   encrypt:
-    url: jdbc:mysql://mysql.encrypt.host:3306/encrypt?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.encrypt.host:3306/encrypt?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -39,7 +39,7 @@ rules:
       props:
         aes-key-value: 123456abc
     like_encryptor:
-      type: CHAR_DIGEST_LIKE
+      type: IT.ENCRYPT.LIKE.FIXTURE
       props:
         mask: 4093
   tables:
@@ -62,10 +62,10 @@ rules:
             encryptorName: aes_encryptor
         telephone:
           cipher:
-            name: telephone_cipher
+            name: user_telephone_cipher
             encryptorName: aes_encryptor
           likeQuery:
-            name: telephone_like
+            name: user_telephone_like
             encryptorName: like_encryptor
     t_user_details:
       columns:
@@ -88,8 +88,8 @@ rules:
             encryptorName: like_encryptor
         telephone:
           cipher:
-            name: telephone_cipher
+            name: merchant_telephone_cipher
             encryptorName: aes_encryptor
           likeQuery:
-            name: telephone_like
+            name: merchant_telephone_like
             encryptorName: like_encryptor

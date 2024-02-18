@@ -45,4 +45,6 @@ public final class YamlProcess implements YamlConfiguration {
     private int completedUnitCount;
     
     private boolean idle;
+    
+    private boolean interrupted;
 }

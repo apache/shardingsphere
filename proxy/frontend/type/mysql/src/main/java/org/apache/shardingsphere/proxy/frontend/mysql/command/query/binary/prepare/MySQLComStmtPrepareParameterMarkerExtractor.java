@@ -25,15 +25,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -48,16 +46,16 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
      *
      * @param sqlStatement SQL statement
      * @param schema schema
-     * @return map parameter marker segment to column
+     * @return corresponding columns of parameter markers
      */
-    public static Map<ParameterMarkerSegment, ShardingSphereColumn> findColumnsOfParameterMarkers(final SQLStatement sqlStatement, final ShardingSphereSchema schema) {
-        return sqlStatement instanceof InsertStatement ? findColumnsOfParameterMarkersForInsert((InsertStatement) sqlStatement, schema) : Collections.emptyMap();
+    public static List<ShardingSphereColumn> findColumnsOfParameterMarkers(final SQLStatement sqlStatement, final ShardingSphereSchema schema) {
+        return sqlStatement instanceof InsertStatement ? findColumnsOfParameterMarkersForInsert((InsertStatement) sqlStatement, schema) : Collections.emptyList();
     }
     
-    private static Map<ParameterMarkerSegment, ShardingSphereColumn> findColumnsOfParameterMarkersForInsert(final InsertStatement insertStatement, final ShardingSphereSchema schema) {
+    private static List<ShardingSphereColumn> findColumnsOfParameterMarkersForInsert(final InsertStatement insertStatement, final ShardingSphereSchema schema) {
         ShardingSphereTable table = schema.getTable(insertStatement.getTable().getTableName().getIdentifier().getValue());
         List<String> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
-        Map<ParameterMarkerSegment, ShardingSphereColumn> result = new LinkedHashMap<>(insertStatement.getParameterMarkerSegments().size(), 1F);
+        List<ShardingSphereColumn> result = new ArrayList<>(insertStatement.getParameterMarkerSegments().size());
         for (InsertValuesSegment each : insertStatement.getValues()) {
             ListIterator<ExpressionSegment> listIterator = each.getValues().listIterator();
             for (int columnIndex = listIterator.nextIndex(); listIterator.hasNext(); columnIndex = listIterator.nextIndex()) {
@@ -67,9 +65,7 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
                 }
                 String columnName = columnNamesOfInsert.get(columnIndex);
                 ShardingSphereColumn column = table.getColumn(columnName);
-                if (null != column) {
-                    result.put((ParameterMarkerSegment) value, column);
-                }
+                result.add(column);
             }
         }
         return result;

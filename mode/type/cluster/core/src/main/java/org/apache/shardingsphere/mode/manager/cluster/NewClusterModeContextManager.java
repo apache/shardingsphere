@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -98,27 +98,27 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
-    public void registerStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().persistConfig(databaseName, toBeRegisterStorageUnitProps);
+    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().persistConfig(databaseName, toBeRegisteredProps);
     }
     
     @Override
-    public void alterStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) {
-        DatabaseBasedPersistService<Map<String, DataSourceProperties>> dataSourceService = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService();
-        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(dataSourceService.persistConfig(databaseName, toBeUpdatedStorageUnitProps));
+    public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) {
+        DatabaseBasedPersistService<Map<String, DataSourcePoolProperties>> dataSourceService = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService();
+        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(dataSourceService.persistConfig(databaseName, toBeUpdatedProps));
     }
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().delete(databaseName,
-                getToBeDroppedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().deleteConfig(databaseName,
+                getToBeDroppedDataSourcePoolProperties(contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     
-    private Map<String, DataSourceProperties> getToBeDroppedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+    private Map<String, DataSourcePoolProperties> getToBeDroppedDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> propsMap, final Collection<String> toBeDroppedResourceNames) {
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
         for (String each : toBeDroppedResourceNames) {
-            if (dataSourcePropsMap.containsKey(each)) {
-                result.put(each, dataSourcePropsMap.get(each));
+            if (propsMap.containsKey(each)) {
+                result.put(each, propsMap.get(each));
             }
         }
         return result;
@@ -142,7 +142,7 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     @Override
     public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
         if (null != toBeRemovedRuleConfig) {
-            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().deleteConfig(databaseName, Collections.singleton(toBeRemovedRuleConfig));
         }
     }
     

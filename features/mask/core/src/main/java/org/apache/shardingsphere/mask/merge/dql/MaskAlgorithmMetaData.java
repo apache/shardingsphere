@@ -18,18 +18,13 @@
 package org.apache.shardingsphere.mask.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -38,8 +33,6 @@ import java.util.Optional;
 @SuppressWarnings("rawtypes")
 @RequiredArgsConstructor
 public final class MaskAlgorithmMetaData {
-    
-    private final ShardingSphereDatabase database;
     
     private final MaskRule maskRule;
     
@@ -56,11 +49,7 @@ public final class MaskAlgorithmMetaData {
         if (!columnProjection.isPresent()) {
             return Optional.empty();
         }
-        TablesContext tablesContext = selectStatementContext.getTablesContext();
-        String schemaName = tablesContext.getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
-        Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
-                Collections.singletonList(columnProjection.get()), database.getSchema(schemaName));
-        return findTableName(columnProjection.get(), expressionTableNames).flatMap(optional -> maskRule.findMaskAlgorithm(optional, columnProjection.get().getName().getValue()));
+        return maskRule.findMaskAlgorithm(columnProjection.get().getOriginalTable().getValue(), columnProjection.get().getName().getValue());
     }
     
     private Optional<ColumnProjection> findColumnProjection(final int columnIndex) {
@@ -70,18 +59,5 @@ public final class MaskAlgorithmMetaData {
         }
         Projection projection = expandProjections.get(columnIndex - 1);
         return projection instanceof ColumnProjection ? Optional.of((ColumnProjection) projection) : Optional.empty();
-    }
-    
-    private Optional<String> findTableName(final ColumnProjection columnProjection, final Map<String, String> columnTableNames) {
-        String tableName = columnTableNames.get(columnProjection.getColumnName());
-        if (null != tableName) {
-            return Optional.of(tableName);
-        }
-        for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            if (maskRule.findMaskAlgorithm(each, columnProjection.getName().getValue()).isPresent()) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
 }

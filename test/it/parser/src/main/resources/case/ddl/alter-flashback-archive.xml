@@ -23,4 +23,7 @@
     <alter-flashback-archive sql-case-id="alter_flashback_archive_purge_all" />
     <alter-flashback-archive sql-case-id="alter_flashback_archive_purge_before" />
     <alter-flashback-archive sql-case-id="alter_flashback_archive_no_optimize_data" />
+    <alter-flashback-archive sql-case-id="alter_flashback_archive_modify_retention_month" />
+    <alter-flashback-archive sql-case-id="alter_flashback_archive_modify_retention_year" />
+    <alter-flashback-archive sql-case-id="alter_flashback_archive_purge_before_timestamp_systimestamp_interval" />
 </sql-parser-test-cases>

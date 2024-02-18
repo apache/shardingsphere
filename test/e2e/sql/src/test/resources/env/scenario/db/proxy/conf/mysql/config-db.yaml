@@ -19,94 +19,94 @@ databaseName: db
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://mysql.db.host:3306/db_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_0?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
   ds_1:
-    url: jdbc:mysql://mysql.db.host:3306/db_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_1?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
   ds_2:
-    url: jdbc:mysql://mysql.db.host:3306/db_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_2?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
   ds_3:
-    url: jdbc:mysql://mysql.db.host:3306/db_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_3?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
   ds_4:
-    url: jdbc:mysql://mysql.db.host:3306/db_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_4?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
   ds_5:
-    url: jdbc:mysql://mysql.db.host:3306/db_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_5?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
   ds_6:
-    url: jdbc:mysql://mysql.db.host:3306/db_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_6?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
   ds_7:
-    url: jdbc:mysql://mysql.db.host:3306/db_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_7?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
   ds_8:
-    url: jdbc:mysql://mysql.db.host:3306/db_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_8?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
   ds_9:
-    url: jdbc:mysql://mysql.db.host:3306/db_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/db_9?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
 
 rules:
@@ -140,31 +140,11 @@ rules:
         standard:
           shardingColumn: user_id
           shardingAlgorithmName: it_standard_fixture
-    t_order_federate_sharding:
-      actualDataNodes: ds_${0..1}.t_order_federate_sharding
-      databaseStrategy:
-        standard:
-          shardingColumn: order_id_sharding
-          shardingAlgorithmName: db_inline_order_id
-    t_order_item_federate_sharding:
-      actualDataNodes: ds_${0..1}.t_order_item_federate_sharding
-      databaseStrategy:
-        standard:
-          shardingColumn: item_id
-          shardingAlgorithmName: db_inline_item_id
   bindingTables:
     - ref_0:t_order,t_order_item,t_order_details
   shardingAlgorithms:
     it_standard_fixture:
       type: IT.STANDARD.FIXTURE
-    db_inline_order_id:
-      type: INLINE
-      props:
-        algorithm-expression: ds_${order_id_sharding % 2}
-    db_inline_item_id:
-      type: INLINE
-      props:
-        algorithm-expression: ds_${db_inline_item_id % 2}
 
   keyGenerators:
       auto_increment:

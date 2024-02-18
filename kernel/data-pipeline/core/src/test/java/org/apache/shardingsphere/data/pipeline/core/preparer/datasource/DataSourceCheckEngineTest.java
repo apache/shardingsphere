@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +40,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,20 +84,23 @@ class DataSourceCheckEngineTest {
     }
     
     @Test
-    void assertCheckTargetTable() throws SQLException {
+    void assertCheckTargetDataSources() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        dataSourceCheckEngine.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));
+        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
+        when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new CaseInsensitiveQualifiedTable(null, "t_order")));
+        dataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig);
     }
     
     @Test
-    void assertCheckTargetTableFailed() throws SQLException {
+    void assertCheckTargetDataSourcesFailed() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
-        assertThrows(PrepareJobWithTargetTableNotEmptyException.class,
-                () -> dataSourceCheckEngine.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order")));
+        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
+        when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new CaseInsensitiveQualifiedTable(null, "t_order")));
+        assertThrows(PrepareJobWithTargetTableNotEmptyException.class, () -> dataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig));
     }
 }

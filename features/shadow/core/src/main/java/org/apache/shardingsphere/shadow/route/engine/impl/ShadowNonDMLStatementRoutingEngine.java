@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;

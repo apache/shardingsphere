@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
@@ -33,13 +34,13 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) {
+                        final String schemaName, final DatabaseType databaseType, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) {
         (sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : CreateSchemaStatementHandler.getUsername(sqlStatement))
                 .ifPresent(optional -> modeContextManager.createSchema(database.getName(), optional.getValue().toLowerCase()));
     }
     
     @Override
-    public String getType() {
-        return CreateSchemaStatement.class.getName();
+    public Class<CreateSchemaStatement> getType() {
+        return CreateSchemaStatement.class;
     }
 }

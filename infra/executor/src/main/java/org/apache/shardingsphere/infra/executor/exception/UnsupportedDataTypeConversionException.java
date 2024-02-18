@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.exception;
 
-import org.apache.shardingsphere.infra.exception.DataSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DataSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Objects;
 

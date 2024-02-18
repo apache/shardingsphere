@@ -18,15 +18,12 @@
 package org.apache.shardingsphere.encrypt.spi;
 
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 /**
  * Encrypt algorithm.
- *
- * @param <I> type of plain value
- * @param <O> type of cipher value
  */
-public interface EncryptAlgorithm<I, O> extends ShardingSphereAlgorithm {
+public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Encrypt.
@@ -35,5 +32,21 @@ public interface EncryptAlgorithm<I, O> extends ShardingSphereAlgorithm {
      * @param encryptContext encrypt context
      * @return cipher value
      */
-    O encrypt(I plainValue, EncryptContext encryptContext);
+    Object encrypt(Object plainValue, EncryptContext encryptContext);
+    
+    /**
+     * Decrypt.
+     *
+     * @param cipherValue cipher value
+     * @param encryptContext encrypt context
+     * @return plain value
+     */
+    Object decrypt(Object cipherValue, EncryptContext encryptContext);
+    
+    /**
+     * Get meta data.
+     *
+     * @return meta data.
+     */
+    EncryptAlgorithmMetaData getMetaData();
 }

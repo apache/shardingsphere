@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.props.temporary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +35,7 @@ public enum TemporaryConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy meta data collector enabled.
      */
-    PROXY_META_DATA_COLLECTOR_ENABLED("proxy-meta-data-collector-enabled", String.valueOf(Boolean.TRUE), boolean.class, true),
+    PROXY_META_DATA_COLLECTOR_ENABLED("proxy-meta-data-collector-enabled", String.valueOf(Boolean.FALSE), boolean.class, true),
     
     /**
      * System schema metadata enabled.

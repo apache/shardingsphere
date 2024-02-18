@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -30,13 +30,13 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelType;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingAuditorSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
 
 import java.util.Collection;
 import java.util.HashMap;

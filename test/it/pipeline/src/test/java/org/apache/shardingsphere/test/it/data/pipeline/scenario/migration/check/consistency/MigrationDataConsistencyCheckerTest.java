@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.scenario.migration.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.DataConsistencyCalculateAlgorithmFixture;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,8 +44,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MigrationDataConsistencyCheckerTest {
@@ -59,31 +60,37 @@ class MigrationDataConsistencyCheckerTest {
         jobConfigurationPOJO.setJobParameter(YamlEngine.marshal(new YamlMigrationJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));
         jobConfigurationPOJO.setJobName(jobConfig.getJobId());
         jobConfigurationPOJO.setShardingTotalCount(1);
-        GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
-        governanceRepositoryAPI.persist(String.format("/pipeline/jobs/%s/config", jobConfig.getJobId()), YamlEngine.marshal(jobConfigurationPOJO));
-        governanceRepositoryAPI.persistJobItemProgress(jobConfig.getJobId(), 0, "");
-        Map<String, DataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new MigrationProcessContext(jobConfig.getJobId(), null),
-                createConsistencyCheckJobItemProgressContext()).check(new DataConsistencyCalculateAlgorithmFixture());
-        String checkKey = "ds_0.t_order";
-        assertTrue(actual.get(checkKey).getCountCheckResult().isMatched());
-        assertThat(actual.get(checkKey).getCountCheckResult().getSourceRecordsCount(), is(actual.get(checkKey).getCountCheckResult().getTargetRecordsCount()));
-        assertTrue(actual.get(checkKey).getContentCheckResult().isMatched());
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
+        getClusterPersistRepository().persist(String.format("/pipeline/jobs/%s/config", jobConfig.getJobId()), YamlEngine.marshal(jobConfigurationPOJO));
+        governanceFacade.getJobItemFacade().getProcess().persist(jobConfig.getJobId(), 0, "");
+        Map<String, TableDataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new TransmissionProcessContext(jobConfig.getJobId(), null),
+                createConsistencyCheckJobItemProgressContext(jobConfig.getJobId())).check("FIXTURE", null);
+        String checkKey = "t_order";
+        assertTrue(actual.get(checkKey).isMatched());
+        assertTrue(actual.get(checkKey).isMatched());
     }
     
-    private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext() {
-        return new ConsistencyCheckJobItemProgressContext("", 0);
+    private ClusterPersistRepository getClusterPersistRepository() {
+        ContextManager contextManager = PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getContextManager();
+        return (ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository();
+    }
+    
+    private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext(final String jobId) {
+        return new ConsistencyCheckJobItemProgressContext(jobId, 0, "H2");
     }
     
     private MigrationJobConfiguration createJobConfiguration() throws SQLException {
         MigrationJobItemContext jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
-        initTableData(jobItemContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
+        initTableData(jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig());
         initTableData(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
         return jobItemContext.getJobConfig();
     }
     
     private void initTableData(final PipelineDataSourceConfiguration dataSourceConfig) throws SQLException {
         try (
-                Connection connection = new DefaultPipelineDataSourceManager().getDataSource(dataSourceConfig).getConnection();
+                PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dataSourceConfig);
+                Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT(11))");

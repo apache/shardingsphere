@@ -19,16 +19,14 @@ package org.apache.shardingsphere.mode.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Map;
@@ -37,18 +35,17 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class MetaDataContextsTest {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
     
     @Test
     void assertGetDefaultMetaData() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ShardingSphereResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
+                mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
         assertThat(new MetaDataContexts(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
     }
 }

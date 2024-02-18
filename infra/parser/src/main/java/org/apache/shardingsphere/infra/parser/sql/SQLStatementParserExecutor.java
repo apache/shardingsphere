@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.parser.sql;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
@@ -31,9 +32,9 @@ public final class SQLStatementParserExecutor {
     
     private final SQLStatementVisitorEngine visitorEngine;
     
-    public SQLStatementParserExecutor(final String databaseType, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+    public SQLStatementParserExecutor(final DatabaseType databaseType, final CacheOption parseTreeCacheOption) {
         parserEngine = new SQLParserEngine(databaseType, parseTreeCacheOption);
-        visitorEngine = new SQLStatementVisitorEngine(databaseType, isParseComment);
+        visitorEngine = new SQLStatementVisitorEngine(databaseType);
     }
     
     /**

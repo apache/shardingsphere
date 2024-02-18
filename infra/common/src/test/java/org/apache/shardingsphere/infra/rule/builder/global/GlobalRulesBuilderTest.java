@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.infra.rule.builder.global;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -51,6 +52,6 @@ class GlobalRulesBuilderTest {
     }
     
     private ShardingSphereDatabase buildDatabase() {
-        return ShardingSphereDatabase.create("logic_db", new MySQLDatabaseType(), new ConfigurationProperties(new Properties()));
+        return ShardingSphereDatabase.create("logic_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"), new ConfigurationProperties(new Properties()));
     }
 }

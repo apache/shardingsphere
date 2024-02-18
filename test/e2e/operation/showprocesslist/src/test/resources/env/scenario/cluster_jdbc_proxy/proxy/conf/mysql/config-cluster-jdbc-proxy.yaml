@@ -19,7 +19,7 @@ databaseName: cluster_jdbc_proxy
 
 dataSources:
   db:
-    url: jdbc:mysql://mysql.cluster_jdbc_proxy.host:3306/db?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.cluster_jdbc_proxy.host:3306/db?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000

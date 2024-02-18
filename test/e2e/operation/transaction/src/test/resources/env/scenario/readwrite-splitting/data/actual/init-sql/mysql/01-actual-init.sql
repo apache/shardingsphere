@@ -21,10 +21,12 @@ SET character_set_server='utf8';
 DROP DATABASE IF EXISTS write_ds;
 DROP DATABASE IF EXISTS read_ds_0;
 DROP DATABASE IF EXISTS read_ds_1;
+DROP DATABASE IF EXISTS read_ds_error;
 
 CREATE DATABASE write_ds;
 CREATE DATABASE read_ds_0;
 CREATE DATABASE read_ds_1;
+CREATE DATABASE read_ds_error;
 
 CREATE TABLE write_ds.`t_order` (`order_id` INT PRIMARY KEY, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL);
 CREATE TABLE write_ds.`t_order_item` (`item_id` INT PRIMARY KEY, `order_id` int NOT NULL, `user_id` int NOT NULL, `status` varchar(50) DEFAULT NULL);

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
-import org.apache.shardingsphere.agent.plugin.core.util.ShardingSphereDriverUtil;
+import org.apache.shardingsphere.agent.plugin.core.util.ShardingSphereDriverUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -47,7 +47,7 @@ public final class JDBCMetaDataInfoExporter implements MetricsExporter {
     
     @Override
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
-        Optional<ShardingSphereDriver> driver = ShardingSphereDriverUtil.getShardingSphereDriver();
+        Optional<ShardingSphereDriver> driver = ShardingSphereDriverUtils.getShardingSphereDriver();
         if (!driver.isPresent()) {
             return Optional.empty();
         }
@@ -59,7 +59,7 @@ public final class JDBCMetaDataInfoExporter implements MetricsExporter {
             ShardingSphereDataSource dataSource = (ShardingSphereDataSource) entry.getValue();
             String databaseName = AgentReflectionUtils.getFieldValue(dataSource, "databaseName");
             ContextManager contextManager = AgentReflectionUtils.getFieldValue(dataSource, "contextManager");
-            result.addMetric(Arrays.asList(databaseName, "storage_unit_count"), contextManager.getDataSourceMap(databaseName).size());
+            result.addMetric(Arrays.asList(databaseName, "storage_unit_count"), contextManager.getStorageUnits(databaseName).size());
         }
         return Optional.of(result);
     }

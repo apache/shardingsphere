@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;

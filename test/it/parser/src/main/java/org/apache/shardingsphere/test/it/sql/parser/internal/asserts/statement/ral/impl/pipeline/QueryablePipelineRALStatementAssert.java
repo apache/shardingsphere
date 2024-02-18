@@ -19,19 +19,19 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
-import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingStatusStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.QueryablePipelineRALStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckStatusStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceStorageUnitsStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreamingListStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreamingRuleStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreamingStatusStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationCheckStatusStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationListStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationSourceStorageUnitsStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationStatusStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.QueryablePipelineRALStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.cdc.ShowStreamingStatusStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.migration.query.ShowMigrationCheckStatusStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.migration.query.ShowMigrationStatusStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc.ShowStreamingStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckStatusStatementTestCase;
@@ -54,8 +54,6 @@ public final class QueryablePipelineRALStatementAssert {
         // TODO add more test case
         if (actual instanceof ShowMigrationListStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);
-        } else if (actual instanceof ShowMigrationCheckAlgorithmsStatement) {
-            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowMigrationCheckStatusStatement) {
             ShowMigrationCheckStatusStatementAssert.assertIs(assertContext, (ShowMigrationCheckStatusStatement) actual, (ShowMigrationCheckStatusStatementTestCase) expected);
         } else if (actual instanceof ShowMigrationStatusStatement) {
@@ -66,6 +64,8 @@ public final class QueryablePipelineRALStatementAssert {
             ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowStreamingStatusStatement) {
             ShowStreamingStatusStatementAssert.assertIs(assertContext, (ShowStreamingStatusStatement) actual, (ShowStreamingStatusStatementTestCase) expected);
+        } else if (actual instanceof ShowStreamingRuleStatement) {
+            ExistingAssert.assertIs(assertContext, actual, expected);
         }
     }
 }

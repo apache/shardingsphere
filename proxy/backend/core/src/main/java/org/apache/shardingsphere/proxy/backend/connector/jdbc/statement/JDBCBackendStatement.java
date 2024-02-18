@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.statement;
 
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,13 +56,16 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
         PreparedStatement result = option.isReturnGeneratedKeys()
                 ? connection.prepareStatement(executionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS)
                 : connection.prepareStatement(sql);
-        for (int i = 0; i < params.size(); i++) {
-            Object param = params.get(i);
+        Iterator<Object> paramIterator = params.iterator();
+        int index = 0;
+        while (paramIterator.hasNext()) {
+            Object param = paramIterator.next();
             if (param instanceof TypeUnspecifiedSQLParameter) {
-                result.setObject(i + 1, param, Types.OTHER);
+                result.setObject(index + 1, param, Types.OTHER);
             } else {
-                result.setObject(i + 1, param);
+                result.setObject(index + 1, param);
             }
+            index++;
         }
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
             setFetchSize(result, databaseType);

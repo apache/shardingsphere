@@ -156,6 +156,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/42492540?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/wgy8283335" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/22066046?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -173,6 +178,9 @@ chapter = true
         <td>
             <b>Hongsheng Zhong</b>
         </td>
+        <td>
+            <b>Guangyuan Wang</b>
+        </td>
     </tr>
 </table>
 
@@ -180,11 +188,6 @@ chapter = true
 
 <table style="table-layout:fixed">
     <tr>
-        <td>
-            <a href="https://github.com/wgy8283335" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/22066046?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/sunbufu" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/14866067?v=4" style="border-radius:50%; overflow:hidden">
@@ -217,9 +220,6 @@ chapter = true
         </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>Xiaoman Wang</b>
-        </td>
         <td>
             <b>Haisheng Sun</b>
         </td>
@@ -437,7 +437,7 @@ chapter = true
         </td>
        <td>
             <a href="https://github.com/taojintianxia" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/4112856?s=96&v=4" style="border-radius:50%; overflow:hidden">
+                <img src="https://avatars.githubusercontent.com/u/4112856?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
         <td>
@@ -500,6 +500,16 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/19788130?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/Pace2Car" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/37339007?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+         <td>
+            <a href="https://github.com/zihaoAK47" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/106047330?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -513,6 +523,12 @@ chapter = true
         </td>
         <td>
             <b>Cheng Zhang</b>
+        </td>
+        <td>
+            <b>Jiahao Chen</b>
+        </td>
+        <td>
+            <b>Zihao Niu</b>
         </td>
     </tr>
 </table>

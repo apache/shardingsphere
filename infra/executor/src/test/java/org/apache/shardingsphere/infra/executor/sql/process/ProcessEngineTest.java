@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -81,7 +81,7 @@ class ProcessEngineTest {
     void assertCompleteSQLUnitExecution() {
         ProcessIdContext.set("foo_id");
         when(processRegistry.get("foo_id")).thenReturn(mock(Process.class));
-        new ProcessEngine().completeSQLUnitExecution();
+        new ProcessEngine().completeSQLUnitExecution(mock(SQLExecutionUnit.class));
         verify(processRegistry).get("foo_id");
         ProcessIdContext.remove();
     }

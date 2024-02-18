@@ -19,10 +19,10 @@ chapter = true
 ## 代码提交行为规范
 
  - 确保遵守编码规范。
- - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Dmaven.javadoc.skip -Dmaven.jacoco.skip -e`。
+ - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Pcheck`。
  - 确保覆盖率不低于 master 分支。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
- - 通过 Spotless 统一代码风格，执行 `mvn spotless:apply` 格式化代码。
+ - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
  
 ## 编码规范
@@ -114,7 +114,7 @@ chapter = true
 - Workflow 文件名以 `.yml` 结尾。
 - Workflow 文件名由 `触发方式-执行操作` 的小写字母组成。例如：`nightly-check.yml`。pull_request 触发的任务省略触发方式，例如：`check.yml`。
 - 触发方式包括：pull_request（不加前缀）、nightly、schedule。
-- 执行操作包括：check、ci、e2e 、build。
+- 执行操作包括：check、ci、e2e 、build、report。
 - Workflow 文件内的 `name` 属性命名与文件名一致，单词以 `-` 作为分隔符，分隔符两侧要加空格，每个单词首字母大写。例如：`Nightly - Check`。
 - Step 下的 `name` 属性应该描述 step 的功能，每个单词首字母大写，介词小写。例如：`Build Project with Maven`。
 - Workflow 中的 `job` 属性命名，须在 Workflow 中保持唯一。

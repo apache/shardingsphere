@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.util.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -50,26 +51,39 @@ public final class JsonUtils {
     }
     
     /**
-     * Parse data to json string.
+     * Serialize object as json string.
      *
-     * @param data data
+     * @param obj object
      * @return json string
      */
     @SneakyThrows(JsonProcessingException.class)
-    public static String toJsonString(final Object data) {
-        return MAPPER.writeValueAsString(data);
+    public static String toJsonString(final Object obj) {
+        return MAPPER.writeValueAsString(obj);
     }
     
     /**
-     * Deserialize to Object from json string.
+     * Deserialize from json string to object.
      *
      * @param value json string
-     * @param clazz target Object
-     * @param <T> the type of return Object data
-     * @return target Object data
+     * @param clazz target object type
+     * @param <T> the type of target object
+     * @return object
      */
     @SneakyThrows(JsonProcessingException.class)
-    public static <T> T readValue(final String value, final Class<T> clazz) {
+    public static <T> T fromJsonString(final String value, final Class<T> clazz) {
         return MAPPER.readValue(value, clazz);
+    }
+    
+    /**
+     * Deserialize from json string to object.
+     *
+     * @param value json string
+     * @param typeReference target object type reference
+     * @param <T> the type of target object
+     * @return object
+     */
+    @SneakyThrows(JsonProcessingException.class)
+    public static <T> T fromJsonString(final String value, final TypeReference<T> typeReference) {
+        return MAPPER.readValue(value, typeReference);
     }
 }

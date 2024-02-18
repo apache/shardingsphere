@@ -25,13 +25,14 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleExc
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -44,19 +45,18 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingAuditorSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 
@@ -179,13 +179,13 @@ public final class ShardingTableRuleStatementChecker {
         }
         Collection<String> result = new LinkedHashSet<>();
         tableRuleConfigs.forEach(each -> result.addAll(getDataSourceNames(each)));
-        autoTableRuleConfigs.forEach(each -> result.addAll(InlineExpressionParserFactory.newInstance().splitAndEvaluate(each.getActualDataSources())));
+        autoTableRuleConfigs.forEach(each -> result.addAll(InlineExpressionParserFactory.newInstance(each.getActualDataSources()).splitAndEvaluate()));
         return result;
     }
     
     private static Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
-        return InlineExpressionParserFactory.newInstance()
-                .splitAndEvaluate(shardingTableRuleConfig.getActualDataNodes()).stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
+        return InlineExpressionParserFactory.newInstance(shardingTableRuleConfig.getActualDataNodes())
+                .splitAndEvaluate().stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
     private static Collection<String> getDataSourceNames(final Collection<String> actualDataNodes) {
@@ -316,7 +316,7 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> result = new LinkedHashSet<>();
         result.addAll(config.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getActualDataSources)
                 .map(each -> Splitter.on(",").trimResults().splitToList(each)).flatMap(Collection::stream).collect(Collectors.toSet()));
-        result.addAll(config.getTables().stream().map(each -> InlineExpressionParserFactory.newInstance().splitAndEvaluate(each.getActualDataNodes()))
+        result.addAll(config.getTables().stream().map(each -> InlineExpressionParserFactory.newInstance(each.getActualDataNodes()).splitAndEvaluate())
                 .flatMap(Collection::stream).distinct().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toSet()));
         return result;
     }
@@ -327,7 +327,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> parseDateSource(final String dateSource) {
-        return InlineExpressionParserFactory.newInstance().splitAndEvaluate(dateSource);
+        return InlineExpressionParserFactory.newInstance(dateSource).splitAndEvaluate();
     }
     
     private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {

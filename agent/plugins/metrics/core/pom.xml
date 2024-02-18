@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-metrics-core</artifactId>
     <name>${project.artifactId}</name>
@@ -82,6 +82,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-fixture-database</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-data-pipeline-distsql-statement</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -112,10 +118,6 @@
                         <phase>package</phase>
                         <configuration>
                             <relocations>
-                                <relocation>
-                                    <pattern>com.google.common</pattern>
-                                    <shadedPattern>${shade.package}.com.google.common</shadedPattern>
-                                </relocation>
                                 <relocation>
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>

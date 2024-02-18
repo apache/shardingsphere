@@ -26,13 +26,14 @@ import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTempla
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 import org.apache.shardingsphere.driver.jdbc.core.ShardingSphereSavepoint;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -54,6 +55,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 
@@ -65,6 +67,8 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     private final Map<String, DataSource> physicalDataSourceMap = new LinkedHashMap<>();
+    
+    private final Map<String, DataSource> trafficDataSourceMap = new LinkedHashMap<>();
     
     @Getter
     private final ConnectionTransaction connectionTransaction;
@@ -80,12 +84,27 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     @Getter
     private final ConnectionContext connectionContext;
     
+    private final ContextManager contextManager;
+    
+    private final String databaseName;
+    
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
-        dataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
-        dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
-        physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
-        connectionTransaction = createConnectionTransaction(databaseName, contextManager);
+        for (Entry<String, StorageUnit> entry : contextManager.getStorageUnits(databaseName).entrySet()) {
+            DataSource dataSource = entry.getValue().getDataSource();
+            String cacheKey = getKey(databaseName, entry.getKey());
+            dataSourceMap.put(cacheKey, dataSource);
+            physicalDataSourceMap.put(cacheKey, dataSource);
+        }
+        for (Entry<String, DataSource> entry : getTrafficDataSourceMap(databaseName, contextManager).entrySet()) {
+            String cacheKey = getKey(databaseName, entry.getKey());
+            dataSourceMap.put(cacheKey, entry.getValue());
+            trafficDataSourceMap.put(cacheKey, entry.getValue());
+        }
+        connectionTransaction = createConnectionTransaction(contextManager);
         connectionContext = new ConnectionContext(cachedConnections::keySet);
+        connectionContext.setCurrentDatabase(databaseName);
+        this.contextManager = contextManager;
+        this.databaseName = databaseName;
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String databaseName, final ContextManager contextManager) {
@@ -95,31 +114,31 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         }
         MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
-        Map<String, DataSourceProperties> dataSourcePropsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
-        Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
-        DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
+        Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
+        Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");
+        DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();
         Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels());
-        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, actualDatabaseName));
+        return DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
     }
     
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Collection<InstanceMetaData> instances, final Collection<ShardingSphereUser> users,
-                                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+    private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Collection<InstanceMetaData> instances, final Collection<ShardingSphereUser> users,
+                                                                                    final DataSourcePoolProperties propsSample, final String schema) {
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
         for (InstanceMetaData each : instances) {
-            result.put(each.getId(), createDataSourceProperties((ProxyInstanceMetaData) each, users, dataSourcePropsSample, schema));
+            result.put(each.getId(), createDataSourcePoolProperties((ProxyInstanceMetaData) each, users, propsSample, schema));
         }
         return result;
     }
     
-    private DataSourceProperties createDataSourceProperties(final ProxyInstanceMetaData instanceMetaData, final Collection<ShardingSphereUser> users,
-                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
-        Map<String, Object> props = dataSourcePropsSample.getAllLocalProperties();
+    private DataSourcePoolProperties createDataSourcePoolProperties(final ProxyInstanceMetaData instanceMetaData, final Collection<ShardingSphereUser> users,
+                                                                    final DataSourcePoolProperties propsSample, final String schema) {
+        Map<String, Object> props = propsSample.getAllLocalProperties();
         props.put("jdbcUrl", createJdbcUrl(instanceMetaData, schema, props));
         ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());
         props.put("password", user.getPassword());
-        return new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props);
+        return new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props);
     }
     
     private String createJdbcUrl(final ProxyInstanceMetaData instanceMetaData, final String schema, final Map<String, Object> props) {
@@ -129,9 +148,9 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceMetaData.getIp(), instanceMetaData.getPort(), schema, jdbcUrlSuffix);
     }
     
-    private ConnectionTransaction createConnectionTransaction(final String databaseName, final ContextManager contextManager) {
+    private ConnectionTransaction createConnectionTransaction(final ContextManager contextManager) {
         TransactionRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-        return new ConnectionTransaction(databaseName, rule);
+        return new ConnectionTransaction(rule);
     }
     
     /**
@@ -294,9 +313,13 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
+        return getRandomPhysicalDatabaseAndDataSourceName()[1];
+    }
+    
+    private String[] getRandomPhysicalDatabaseAndDataSourceName() {
         Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
-        Collection<String> datasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
-        return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
+        Collection<String> databaseAndDatasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
+        return new ArrayList<>(databaseAndDatasourceNames).get(random.nextInt(databaseAndDatasourceNames.size())).split("\\.");
     }
     
     /**
@@ -306,80 +329,96 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public Connection getRandomConnection() throws SQLException {
-        return getConnections(getRandomPhysicalDataSourceName(), 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        String[] databaseAndDataSourceName = getRandomPhysicalDatabaseAndDataSourceName();
+        return getConnections(databaseAndDataSourceName[0], databaseAndDataSourceName[1], 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        DataSource dataSource = dataSourceMap.get(dataSourceName);
+        return getConnections(connectionContext.getDatabaseName().orElse(databaseName), dataSourceName, connectionOffset, connectionSize, connectionMode);
+    }
+    
+    private List<Connection> getConnections(final String currentDatabaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
+                                            final ConnectionMode connectionMode) throws SQLException {
+        String cacheKey = getKey(currentDatabaseName, dataSourceName);
+        DataSource dataSource = databaseName.equals(currentDatabaseName)
+                ? dataSourceMap.get(cacheKey)
+                : contextManager.getStorageUnits(currentDatabaseName).get(dataSourceName).getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
-            connections = cachedConnections.get(dataSourceName);
+            connections = cachedConnections.get(cacheKey);
         }
         List<Connection> result;
         int maxConnectionSize = connectionOffset + connectionSize;
         if (connections.size() >= maxConnectionSize) {
             result = new ArrayList<>(connections).subList(connectionOffset, maxConnectionSize);
         } else if (connections.isEmpty()) {
-            Collection<Connection> newConnections = createConnections(dataSourceName, dataSource, maxConnectionSize, connectionMode);
+            Collection<Connection> newConnections = createConnections(currentDatabaseName, dataSourceName, dataSource, maxConnectionSize, connectionMode);
             result = new ArrayList<>(newConnections).subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, newConnections);
+                cachedConnections.putAll(cacheKey, newConnections);
             }
         } else {
             List<Connection> allConnections = new ArrayList<>(maxConnectionSize);
             allConnections.addAll(connections);
-            Collection<Connection> newConnections = createConnections(dataSourceName, dataSource, maxConnectionSize - connections.size(), connectionMode);
+            Collection<Connection> newConnections = createConnections(currentDatabaseName, dataSourceName, dataSource, maxConnectionSize - connections.size(), connectionMode);
             allConnections.addAll(newConnections);
             result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, newConnections);
+                cachedConnections.putAll(cacheKey, newConnections);
             }
         }
         return result;
     }
     
+    private String getKey(final String databaseName, final String dataSourceName) {
+        return databaseName.toLowerCase() + "." + dataSourceName;
+    }
+    
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+    private List<Connection> createConnections(final String databaseName, final String dataSourceName, final DataSource dataSource, final int connectionSize,
+                                               final ConnectionMode connectionMode) throws SQLException {
         if (1 == connectionSize) {
-            Connection connection = createConnection(dataSourceName, dataSource, connectionContext.getTransactionContext());
+            Connection connection = createConnection(databaseName, dataSourceName, dataSource, connectionContext.getTransactionContext());
             methodInvocationRecorder.replay(connection);
             return Collections.singletonList(connection);
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionContext());
+            return createConnections(databaseName, dataSourceName, dataSource, connectionSize, connectionContext.getTransactionContext());
         }
         synchronized (dataSource) {
-            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionContext());
+            return createConnections(databaseName, dataSourceName, dataSource, connectionSize, connectionContext.getTransactionContext());
         }
     }
     
-    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize,
+    private List<Connection> createConnections(final String databaseName, final String dataSourceName, final DataSource dataSource, final int connectionSize,
                                                final TransactionConnectionContext transactionConnectionContext) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                Connection connection = createConnection(dataSourceName, dataSource, transactionConnectionContext);
+                Connection connection = createConnection(databaseName, dataSourceName, dataSource, transactionConnectionContext);
                 methodInvocationRecorder.replay(connection);
                 result.add(connection);
-            } catch (final SQLException ignored) {
+            } catch (final SQLException ex) {
                 for (Connection each : result) {
                     each.close();
                 }
-                throw new OverallConnectionNotEnoughException(connectionSize, result.size()).toSQLException();
+                throw new OverallConnectionNotEnoughException(connectionSize, result.size(), ex).toSQLException();
             }
         }
         return result;
     }
     
-    private Connection createConnection(final String dataSourceName, final DataSource dataSource, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
-        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(dataSourceName) ? connectionTransaction.getConnection(dataSourceName, transactionConnectionContext) : Optional.empty();
+    private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource,
+                                        final TransactionConnectionContext transactionConnectionContext) throws SQLException {
+        Optional<Connection> connectionInTransaction =
+                isRawJdbcDataSource(databaseName, dataSourceName) ? connectionTransaction.getConnection(databaseName, dataSourceName, transactionConnectionContext) : Optional.empty();
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     
-    private boolean isRawJdbcDataSource(final String dataSourceName) {
-        return physicalDataSourceMap.containsKey(dataSourceName);
+    private boolean isRawJdbcDataSource(final String databaseName, final String dataSourceName) {
+        return !trafficDataSourceMap.containsKey(getKey(databaseName, dataSourceName));
     }
     
     @Override

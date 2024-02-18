@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.transaction.engine.base;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.test.e2e.transaction.framework.container.compos
 import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
 
 import javax.sql.DataSource;
-import java.util.Map;
 
 /**
  * Transaction container composer.
@@ -69,10 +68,6 @@ public final class TransactionContainerComposer implements AutoCloseable {
     
     private JdbcDataSource createJdbcDataSource() {
         DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
-        DockerStorageContainer storageContainer = dockerContainerComposer.getStorageContainer();
-        Map<String, DataSource> actualDataSourceMap = storageContainer.getActualDataSourceMap();
-        actualDataSourceMap.put("ds_0", createDataSource(storageContainer, "transaction_it_0"));
-        actualDataSourceMap.put("ds_1", createDataSource(storageContainer, "transaction_it_1"));
         return new JdbcDataSource(dockerContainerComposer);
     }
     

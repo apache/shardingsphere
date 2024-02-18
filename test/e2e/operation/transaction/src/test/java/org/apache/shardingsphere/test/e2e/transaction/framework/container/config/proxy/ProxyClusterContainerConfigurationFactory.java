@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.confi
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
@@ -43,7 +43,8 @@ public final class ProxyClusterContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage());
+        String containerCommand = "readwrite-splitting".equals(scenario) ? "-f" : "";
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), containerCommand);
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {

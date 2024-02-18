@@ -40,13 +40,9 @@ rules:
         name:
           cipher:
             name: name
-            encryptorName: rc4_encryptor
+            encryptorName: aes_encryptor
   encryptors:
     aes_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
-    rc4_encryptor:
-      type: RC4
-      props:
-        rc4-key-value: 123456abc

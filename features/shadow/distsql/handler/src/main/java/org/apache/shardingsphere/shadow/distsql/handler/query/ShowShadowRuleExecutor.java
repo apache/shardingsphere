@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
+import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Arrays;
@@ -34,30 +34,29 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Show shadow rule executor.
  */
-public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRulesStatement> {
+@Setter
+public final class ShowShadowRuleExecutor implements DistSQLQueryExecutor<ShowShadowRulesStatement>, DistSQLExecutorRuleAware<ShadowRule> {
+    
+    private ShadowRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowRulesStatement sqlStatement) {
-        Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        if (rule.isPresent()) {
-            result = buildData((ShadowRuleConfiguration) rule.get().getConfiguration(), sqlStatement);
-        }
-        return result;
+    public Collection<String> getColumnNames(final ShowShadowRulesStatement sqlStatement) {
+        return Arrays.asList("shadow_table", "rule_name", "source_name", "shadow_name", "algorithm_type", "algorithm_props");
     }
     
-    private Collection<LocalDataQueryResultRow> buildData(final ShadowRuleConfiguration ruleConfig, final ShowShadowRulesStatement sqlStatement) {
-        Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(ruleConfig.getTables());
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowRulesStatement sqlStatement, final ContextManager contextManager) {
+        Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(rule.getConfiguration().getTables());
         Collection<ShadowDataSourceConfiguration> specifiedConfigs = isSpecified(sqlStatement)
-                ? ruleConfig.getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())
-                : ruleConfig.getDataSources();
-        return specifiedConfigs.stream().map(each -> buildColumnData(each, dataSourceTableMap, ruleConfig.getShadowAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
+                ? rule.getConfiguration().getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())
+                : rule.getConfiguration().getDataSources();
+        return specifiedConfigs.stream()
+                .map(each -> buildColumnData(each, dataSourceTableMap, rule.getConfiguration().getShadowAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Map<String, Map<String, ShadowTableConfiguration>> convertToDataSourceTableMap(final Map<String, ShadowTableConfiguration> tables) {
@@ -77,19 +76,19 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         dataSourceTable.forEach((key, value) -> value.getShadowAlgorithmNames().forEach(each -> {
             AlgorithmConfiguration algorithmConfig = algorithmConfigs.get(each);
-            result.add(new LocalDataQueryResultRow(Arrays.asList(key, dataSourceConfig.getName(), dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(),
-                    algorithmConfig.getType(), PropertiesConverter.convert(algorithmConfig.getProps()))));
+            result.add(new LocalDataQueryResultRow(key,
+                    dataSourceConfig.getName(), dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(), algorithmConfig.getType(), algorithmConfig.getProps()));
         }));
         return result;
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("shadow_table", "rule_name", "source_name", "shadow_name", "algorithm_type", "algorithm_props");
+    public Class<ShadowRule> getRuleClass() {
+        return ShadowRule.class;
     }
     
     @Override
-    public String getType() {
-        return ShowShadowRulesStatement.class.getName();
+    public Class<ShowShadowRulesStatement> getType() {
+        return ShowShadowRulesStatement.class;
     }
 }

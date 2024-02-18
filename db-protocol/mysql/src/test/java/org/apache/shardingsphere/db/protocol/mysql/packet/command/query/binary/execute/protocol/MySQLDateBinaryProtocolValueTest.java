@@ -92,6 +92,29 @@ class MySQLDateBinaryProtocolValueTest {
     }
     
     @Test
+    void assertWriteLocalDateTimeTypeFourBytes() {
+        MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
+        actual.write(payload, LocalDateTime.of(1970, 1, 14, 0, 0, 0));
+        verify(payload).writeInt1(4);
+        verify(payload).writeInt2(1970);
+        verify(payload).writeInt1(1);
+        verify(payload).writeInt1(14);
+    }
+    
+    @Test
+    void assertWriteLocalDateTimeTypeSevenBytes() {
+        MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
+        actual.write(payload, LocalDateTime.of(1970, 1, 14, 12, 10, 30));
+        verify(payload).writeInt1(7);
+        verify(payload).writeInt2(1970);
+        verify(payload).writeInt1(1);
+        verify(payload).writeInt1(14);
+        verify(payload).writeInt1(12);
+        verify(payload).writeInt1(10);
+        verify(payload).writeInt1(30);
+    }
+    
+    @Test
     void assertWriteWithFourBytes() {
         MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
         actual.write(payload, Timestamp.valueOf("1970-01-14 0:0:0"));

@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;

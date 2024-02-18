@@ -21,7 +21,7 @@ import org.apache.shardingsphere.broadcast.route.engine.BroadcastRouteEngineFact
 import org.apache.shardingsphere.broadcast.route.engine.type.BroadcastRouteEngine;
 import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.BroadcastDatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;

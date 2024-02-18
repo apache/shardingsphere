@@ -27,9 +27,6 @@ rules:
           assistedQuery: 
             name: assisted_query_username
             encryptorName: assisted_encryptor
-          likeQuery: 
-            name: like_query_username
-            encryptorName: like_encryptor
   encryptors:
     aes_encryptor:
       type: AES
@@ -39,5 +36,3 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
-    like_encryptor:
-      type: CHAR_DIGEST_LIKE

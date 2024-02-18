@@ -22,4 +22,5 @@
     <sql-case id="alter_operator_set" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = non_existent_func);" db-types="PostgreSQL" />
     <sql-case id="alter_operator_set_restrict_join" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = customcontsel, JOIN = contjoinsel);" db-types="PostgreSQL" />
     <sql-case id="alter_operator_compile" value="ALTER OPERATOR eq_op COMPILE;" db-types="Oracle" />
+    <sql-case id="alter_operator_add_binding_return_number_using" value="ALTER OPERATOR Contains ADD BINDING (music.artist, music.artist) RETURN NUMBER USING music.contains" db-types="Oracle" />
 </sql-cases>

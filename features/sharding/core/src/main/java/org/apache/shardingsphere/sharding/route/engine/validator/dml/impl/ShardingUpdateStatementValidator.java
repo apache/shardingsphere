@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.connection.validator.ShardingSphereMetaDataValidateUtils;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLMultipleDataNodesWithLimitException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -44,7 +43,6 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final List<Object> params, final ShardingSphereDatabase database,
                             final ConfigurationProperties props) {
-        ShardingSphereMetaDataValidateUtils.validateTableExist(sqlStatementContext, database);
         validateMultipleTable(shardingRule, sqlStatementContext);
     }
     

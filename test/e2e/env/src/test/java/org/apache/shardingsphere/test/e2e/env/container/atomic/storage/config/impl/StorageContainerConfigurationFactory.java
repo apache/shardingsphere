@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.i
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
@@ -36,13 +36,37 @@ public final class StorageContainerConfigurationFactory {
      * Create new instance of storage container configuration.
      *
      * @param databaseType database type
+     * @param scenario scenario
      * @return created instance
      * @throws RuntimeException runtime exception
      */
-    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType) {
+    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String scenario) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return MySQLContainerConfigurationFactory.newInstance();
+                return MySQLContainerConfigurationFactory.newInstance(scenario);
+            case "PostgreSQL":
+                return PostgreSQLContainerConfigurationFactory.newInstance(scenario);
+            case "openGauss":
+                return OpenGaussContainerConfigurationFactory.newInstance(scenario);
+            case "H2":
+                return H2ContainerConfigurationFactory.newInstance(scenario);
+            default:
+                throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
+        }
+    }
+    
+    /**
+     * Create new instance of storage container configuration.
+     *
+     * @param databaseType database type
+     * @param majorVersion majorVersion
+     * @return created instance
+     * @throws RuntimeException runtime exception
+     */
+    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final int majorVersion) {
+        switch (databaseType.getType()) {
+            case "MySQL":
+                return MySQLContainerConfigurationFactory.newInstance(majorVersion);
             case "PostgreSQL":
                 return PostgreSQLContainerConfigurationFactory.newInstance();
             case "openGauss":

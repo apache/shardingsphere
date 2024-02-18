@@ -47,4 +47,13 @@ public abstract class UpdateStatement extends AbstractSQLStatement implements DM
     public Optional<WhereSegment> getWhere() {
         return Optional.ofNullable(where);
     }
+    
+    /**
+     * Get assignment segment.
+     * 
+     * @return assignment segment
+     */
+    public Optional<SetAssignmentSegment> getAssignmentSegment() {
+        return Optional.ofNullable(setAssignment);
+    }
 }

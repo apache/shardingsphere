@@ -19,15 +19,16 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
@@ -82,6 +83,9 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         }
         if (toBeAddedParamRewriter instanceof DatabaseNameAware) {
             ((DatabaseNameAware) toBeAddedParamRewriter).setDatabaseName(databaseName);
+        }
+        if (toBeAddedParamRewriter instanceof DatabaseTypeAware) {
+            ((DatabaseTypeAware) toBeAddedParamRewriter).setDatabaseType(sqlStatementContext.getDatabaseType());
         }
     }
 }

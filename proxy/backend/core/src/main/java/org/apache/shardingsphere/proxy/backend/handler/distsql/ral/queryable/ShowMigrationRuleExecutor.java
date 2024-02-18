@@ -17,45 +17,33 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
-import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationRuleStatement;
+import org.apache.shardingsphere.data.pipeline.distsql.ShowTransmissionRuleQueryResult;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Show migration rule executor.
  */
-public final class ShowMigrationRuleExecutor implements QueryableRALExecutor<ShowMigrationRuleStatement> {
+public final class ShowMigrationRuleExecutor implements DistSQLQueryExecutor<ShowMigrationRuleStatement> {
+    
+    private final ShowTransmissionRuleQueryResult queryResult = new ShowTransmissionRuleQueryResult("MIGRATION");
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationRuleStatement sqlStatement) {
-        PipelineProcessConfiguration processConfig = ((InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION"))
-                .showProcessConfiguration(PipelineContextKey.buildForProxy());
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        result.add(new LocalDataQueryResultRow(getString(processConfig.getRead()), getString(processConfig.getWrite()), getString(processConfig.getStreamChannel())));
-        return result;
-    }
-    
-    private String getString(final Object obj) {
-        return null == obj ? "" : JsonUtils.toJsonString(obj);
+    public Collection<String> getColumnNames(final ShowMigrationRuleStatement sqlStatement) {
+        return queryResult.getColumnNames();
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("read", "write", "stream_channel");
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationRuleStatement sqlStatement, final ContextManager contextManager) {
+        return queryResult.getRows();
     }
     
     @Override
-    public String getType() {
-        return ShowMigrationRuleStatement.class.getName();
+    public Class<ShowMigrationRuleStatement> getType() {
+        return ShowMigrationRuleStatement.class;
     }
 }

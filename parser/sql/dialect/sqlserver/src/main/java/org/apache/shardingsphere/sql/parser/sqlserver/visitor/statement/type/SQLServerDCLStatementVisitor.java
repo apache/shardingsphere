@@ -208,7 +208,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     }
     
     private Optional<SimpleTableSegment> findTableSegment(final OnClassTypeClauseContext ctx) {
-        return null != ctx && null != ctx.classType() && null != ctx.classType().OBJECT() ? Optional.of((SimpleTableSegment) visit(ctx.securable())) : Optional.empty();
+        return null == ctx || null == ctx.classType() || null == ctx.classType().OBJECT() ? Optional.empty() : Optional.of((SimpleTableSegment) visit(ctx.securable()));
     }
     
     @Override

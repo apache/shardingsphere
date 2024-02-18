@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.Shardi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -62,7 +60,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -75,9 +72,6 @@ class ShardingUpdateStatementValidatorTest {
     @Mock
     private ShardingSphereDatabase database;
     
-    @Mock
-    private ShardingSphereSchema schema;
-    
     @Test
     void assertPreValidateWhenUpdateSingleTable() {
         UpdateStatement updateStatement = createUpdateStatement();
@@ -86,9 +80,6 @@ class ShardingUpdateStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        when(schema.containsTable("user")).thenReturn(true);
-        when(database.getSchema(any())).thenReturn(schema);
-        when(database.getName()).thenReturn("sharding_db");
         assertDoesNotThrow(() -> new ShardingUpdateStatementValidator().preValidate(
                 shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
@@ -104,10 +95,6 @@ class ShardingUpdateStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        when(schema.containsTable("user")).thenReturn(true);
-        when(schema.containsTable("order")).thenReturn(true);
-        when(database.getSchema(any())).thenReturn(schema);
-        when(database.getName()).thenReturn("sharding_db");
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateStatementValidator().preValidate(
                 shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
@@ -176,7 +163,7 @@ class ShardingUpdateStatementValidatorTest {
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         List<ColumnSegment> columns = new LinkedList<>();
         columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));
-        AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, 1));
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, 1));
         result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(assignment)));
         return result;
     }

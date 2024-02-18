@@ -19,13 +19,15 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.common.ingest.channel.AckCallbacks;
-import org.apache.shardingsphere.data.pipeline.common.ingest.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.channel.MultiplexPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,51 +41,54 @@ public final class PipelineTaskUtils {
     /**
      * Generate inventory task id.
      *
-     * @param inventoryDumperConfig inventory dumper configuration
+     * @param inventoryDumperContext inventory dumper context
      * @return inventory task id
      */
-    public static String generateInventoryTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
-        String result = String.format("%s.%s", inventoryDumperConfig.getDataSourceName(), inventoryDumperConfig.getActualTableName());
-        return null == inventoryDumperConfig.getShardingItem() ? result : result + "#" + inventoryDumperConfig.getShardingItem();
+    public static String generateInventoryTaskId(final InventoryDumperContext inventoryDumperContext) {
+        String result = String.format("%s.%s", inventoryDumperContext.getCommonContext().getDataSourceName(), inventoryDumperContext.getActualTableName());
+        return result + "#" + inventoryDumperContext.getShardingItem();
     }
     
     /**
      * Create incremental task progress.
      *
      * @param position ingest position
-     * @param jobItemProgress job item progress
+     * @param initProgress initial job item progress
      * @return incremental task progress
      */
-    public static IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final InventoryIncrementalJobItemProgress jobItemProgress) {
+    public static IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final TransmissionJobItemProgress initProgress) {
         IncrementalTaskProgress result = new IncrementalTaskProgress(position);
-        if (null != jobItemProgress && null != jobItemProgress.getIncremental()) {
-            Optional.ofNullable(jobItemProgress.getIncremental().getIncrementalTaskProgress())
-                    .ifPresent(optional -> result.setIncrementalTaskDelay(jobItemProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
+        if (null != initProgress && null != initProgress.getIncremental()) {
+            Optional.ofNullable(initProgress.getIncremental().getIncrementalTaskProgress())
+                    .ifPresent(optional -> result.setIncrementalTaskDelay(initProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
         }
         return result;
     }
     
     /**
-     * Create channel for inventory task.
+     * Create pipeline channel for inventory task.
      *
-     * @param pipelineChannelCreator channel creator
-     * @param averageElementSize average element size
+     * @param channelConfig pipeline channel configuration
+     * @param importerBatchSize importer batch size
      * @param position ingest position
-     * @return channel
+     * @return created pipeline channel
      */
-    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int averageElementSize, final AtomicReference<IngestPosition> position) {
-        return pipelineChannelCreator.createPipelineChannel(1, averageElementSize, records -> AckCallbacks.inventoryCallback(records, position));
+    public static PipelineChannel createInventoryChannel(final AlgorithmConfiguration channelConfig, final int importerBatchSize, final AtomicReference<IngestPosition> position) {
+        return TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps()).newInstance(importerBatchSize, new InventoryTaskAckCallback(position));
     }
     
     /**
-     * Create incremental channel.
+     * Create pipeline channel for incremental task.
      *
      * @param concurrency output concurrency
-     * @param pipelineChannelCreator channel creator
+     * @param channelConfig pipeline channel configuration
      * @param progress incremental task progress
-     * @return channel
+     * @return created pipeline channel
      */
-    public static PipelineChannel createIncrementalChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
-        return pipelineChannelCreator.createPipelineChannel(concurrency, 5, records -> AckCallbacks.incrementalCallback(records, progress));
+    public static PipelineChannel createIncrementalChannel(final int concurrency, final AlgorithmConfiguration channelConfig, final IncrementalTaskProgress progress) {
+        PipelineChannelCreator channelCreator = TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps());
+        return 1 == concurrency
+                ? channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress))
+                : new MultiplexPipelineChannel(concurrency, channelCreator, 5, new IncrementalTaskAckCallback(progress));
     }
 }

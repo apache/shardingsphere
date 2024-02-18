@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.representer.processor;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 
 /**

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -68,7 +68,7 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
         ShardingSpherePreconditions.checkState(!digitalCodes.isEmpty(),
                 () -> new MaskAlgorithmInitializationException(getType(), String.format("'%s' must be not empty", DIGITAL_CODES)));
         specialCodes = splitPropsToList(props.getProperty(SPECIAL_CODES, DEFAULT_SPECIAL_CODES));
-        ShardingSpherePreconditions.checkState(!SPECIAL_CODES.isEmpty(),
+        ShardingSpherePreconditions.checkState(!specialCodes.isEmpty(),
                 () -> new MaskAlgorithmInitializationException(getType(), String.format("'%s' must be not empty", SPECIAL_CODES)));
     }
     

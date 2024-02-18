@@ -27,4 +27,7 @@
     <sql-case id="alter_view_set_view_option" value="ALTER VIEW order_view SET (security_barrier=TRUE)" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_view_reset" value="ALTER VIEW order_view RESET (security_barrier)" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_view_definition" value="ALTER VIEW order_view AS SELECT * FROM t_order" db-types="MySQL,SQLServer" />
+    <sql-case id="alter_view_add_constraint_primary_key1" value="ALTER VIEW time_view ADD (CONSTRAINT time_view_pk PRIMARY KEY (time_id) DISABLE NOVALIDATE)" db-types="Oracle" />
+    <sql-case id="alter_view_add_constraint_primary_key2" value="ALTER VIEW time_view ADD (CONSTRAINT time_view_pk PRIMARY KEY (time_id, name) DISABLE NOVALIDATE)" db-types="Oracle" />
+    <sql-case id="alter_view_modify_constraint_rely" value="ALTER VIEW time_view MODIFY CONSTRAINT time_view_pk RELY" db-types="Oracle" />
 </sql-cases>

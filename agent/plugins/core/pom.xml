@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugins</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-plugin-core</artifactId>
     <name>${project.artifactId}</name>
@@ -57,14 +57,6 @@
                             <goal>shade</goal>
                         </goals>
                         <phase>package</phase>
-                        <configuration>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.google.common</pattern>
-                                    <shadedPattern>${shade.package}.com.google.common</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

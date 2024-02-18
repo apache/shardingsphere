@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.agent.core.plugin.classloader;
 
-import com.google.common.io.ByteStreams;
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -94,8 +94,24 @@ public final class AgentPluginClassLoader extends ClassLoader {
     }
     
     private Class<?> defineClass(final String name, final JarFile extraJar, final ZipEntry entry) throws IOException {
-        byte[] data = ByteStreams.toByteArray(extraJar.getInputStream(entry));
+        byte[] data = toByteArray(extraJar.getInputStream(entry));
         return defineClass(name, data, 0, data.length);
+    }
+    
+    private static byte[] toByteArray(final InputStream inStream) throws IOException {
+        int buffSize = 2048;
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        try {
+            byte[] buffer = new byte[buffSize];
+            int len = -1;
+            while ((len = inStream.read(buffer)) != -1) {
+                result.write(buffer, 0, len);
+            }
+        } finally {
+            result.close();
+            inStream.close();
+        }
+        return result.toByteArray();
     }
     
     @Override

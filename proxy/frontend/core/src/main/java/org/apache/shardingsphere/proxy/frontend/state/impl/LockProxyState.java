@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyState;

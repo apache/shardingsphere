@@ -41,7 +41,7 @@ If the backend is connected to a MySQL database, please download [mysql-connecto
 
 ShardingSphere-Proxy integrates the ZooKeeper Curator client by default. ZooKeeper is used in cluster mode without introducing other dependencies.
 
-If the cluster mode uses Etcd, the client drivers of Etcd [jetcd-core 0.7.3](https://repo1.maven.org/maven2/io/etcd/jetcd-core/0.7.3/jetcd-core-0.7.3.jar) need to be copied into the `ext-lib` directory.
+If the cluster mode uses Etcd, please copy [vertx-grpc 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-grpc/4.5.1/vertx-grpc-4.5.1.jar) and [vertx-core 4.5.1](https://repo1.maven.org/maven2/io/vertx/vertx-core/4.5.1/vertx-core-4.5.1.jar) that Etcd depends on into the `ext-lib` directory.
 
 6. Introduce dependencies required by distributed transactions (Optional)
 
@@ -86,8 +86,3 @@ Connect ShardingSphere-Proxy with openGauss client:
 ```bash 
 gsql -r -h ${proxy_host} -p ${proxy_port} -U ${proxy_username} -W ${proxy_password}
 ```
-
-## Sample
-
-Please refer to samples on ShardingSphere repository for complete configuration:
-<https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-proxy-example>

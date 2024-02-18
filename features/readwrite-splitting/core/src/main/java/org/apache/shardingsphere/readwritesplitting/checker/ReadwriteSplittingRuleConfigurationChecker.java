@@ -19,17 +19,17 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameExistedException;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.InvalidWeightLoadBalancerConfigurationException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.LoadBalancerAlgorithmNotFoundException;
@@ -73,15 +73,15 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         ShardingSpherePreconditions.checkState(!config.getReadDataSourceNames().isEmpty(), () -> new MissingRequiredReadDataSourceNamesException(databaseName));
         checkWriteDataSourceNames(databaseName, dataSourceMap, addedWriteDataSourceNames, config, rules);
         for (String each : config.getReadDataSourceNames()) {
-            checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each);
+            checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each, rules);
         }
     }
     
     private void checkWriteDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedWriteDataSourceNames,
                                            final ReadwriteSplittingDataSourceRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
-        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(config.getWriteDataSourceName())) {
+        for (String each : InlineExpressionParserFactory.newInstance(config.getWriteDataSourceName()).splitAndEvaluate()) {
             ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, rules),
-                    () -> new DataSourceNameExistedException(String.format("Write data source name `%s` not in database `%s`.", each, databaseName)));
+                    () -> new DataSourceNameNotExistedException(String.format("Write data source name `%s` not in database `%s`.", each, databaseName)));
             ShardingSpherePreconditions.checkState(addedWriteDataSourceNames.add(each),
                     () -> new DuplicateDataSourceException(String.format("Can not config duplicate write data source `%s` in database `%s`.", each, databaseName)));
         }
@@ -96,10 +96,11 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         return false;
     }
     
-    private void checkReadeDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedReadDataSourceNames, final String readDataSourceName) {
-        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(readDataSourceName)) {
-            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each),
-                    () -> new DataSourceNameExistedException(String.format("Read data source name `%s` not in database `%s`.", each, databaseName)));
+    private void checkReadeDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap,
+                                           final Collection<String> addedReadDataSourceNames, final String readDataSourceName, final Collection<ShardingSphereRule> rules) {
+        for (String each : InlineExpressionParserFactory.newInstance(readDataSourceName).splitAndEvaluate()) {
+            ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, rules),
+                    () -> new DataSourceNameNotExistedException(String.format("Read data source name `%s` not in database `%s`.", each, databaseName)));
             ShardingSpherePreconditions.checkState(addedReadDataSourceNames.add(each),
                     () -> new DuplicateDataSourceException(String.format("Can not config duplicate read data source `%s` in database `%s`.", each, databaseName)));
         }

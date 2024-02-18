@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -75,7 +76,7 @@ public abstract class AbstractMigrationE2EIT {
                 .replace("${ds3}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true))
                 .replace("${ds4}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, true));
         containerComposer.proxyExecuteWithLog(addTargetResource, 0);
-        Awaitility.await().ignoreExceptions().atMost(5L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> 3 == containerComposer.showStorageUnitsName().size());
+        Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> 3 == containerComposer.showStorageUnitsName().size());
     }
     
     protected void createSourceSchema(final PipelineContainerComposer containerComposer, final String schemaName) throws SQLException {
@@ -103,7 +104,7 @@ public abstract class AbstractMigrationE2EIT {
     
     protected void createTargetOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableRule(), 0);
-        Awaitility.await().atMost(4L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
+        Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
     }
     
     protected void createTargetOrderTableEncryptRule(final PipelineContainerComposer containerComposer) throws SQLException {
@@ -150,7 +151,11 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
-        containerComposer.proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 0);
+        assertCheckMigrationSuccess(containerComposer, jobId, algorithmType, new Properties());
+    }
+    
+    protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType, final Properties algorithmProps) throws SQLException {
+        containerComposer.proxyExecuteWithLog(buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
         // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
         List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 30; i++) {
@@ -160,7 +165,7 @@ public abstract class AbstractMigrationE2EIT {
                 continue;
             }
             List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
-            Set<String> finishedPercentages = resultList.stream().map(map -> map.get("finished_percentage").toString()).collect(Collectors.toSet());
+            Set<String> finishedPercentages = resultList.stream().map(map -> map.get("inventory_finished_percentage").toString()).collect(Collectors.toSet());
             if (checkEndTimeList.size() == resultList.size() && 1 == finishedPercentages.size() && finishedPercentages.contains("100")) {
                 break;
             } else {
@@ -171,7 +176,17 @@ public abstract class AbstractMigrationE2EIT {
         assertFalse(resultList.isEmpty());
         for (Map<String, Object> each : resultList) {
             assertTrue(Boolean.parseBoolean(each.get("result").toString()), String.format("%s check result is false", each.get("tables")));
-            assertThat("finished_percentage is not 100", each.get("finished_percentage").toString(), is("100"));
+            assertThat("inventory_finished_percentage is not 100", each.get("inventory_finished_percentage").toString(), is("100"));
         }
+    }
+    
+    private String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Properties algorithmProps) {
+        if (null == algorithmProps || algorithmProps.isEmpty()) {
+            return String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType);
+        }
+        String sql = "CHECK MIGRATION '%s' BY TYPE (NAME='%s', PROPERTIES("
+                + algorithmProps.entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(","))
+                + "))";
+        return String.format(sql, jobId, algorithmType);
     }
 }

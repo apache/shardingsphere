@@ -18,12 +18,12 @@ CREATE DATABASE encrypt_db;
 USE encrypt_db;
 
 REGISTER STORAGE UNIT ds_0 (
-URL='jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_0?serverTimezone=UTC&useSSL=false',
+URL='jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_0?useSSL=false',
 USER='root',
 PASSWORD='12345678',
 PROPERTIES('minPoolSize'='1', 'connectionTimeoutMilliseconds'='30000', 'maxLifetimeMilliseconds'='1800000', 'idleTimeoutMilliseconds'='60000', 'maxPoolSize'='50')
 ), ds_1 (
-URL='jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_1?serverTimezone=UTC&useSSL=false',
+URL='jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_1?useSSL=false',
 USER='root',
 PASSWORD='12345678',
 PROPERTIES('minPoolSize'='1', 'connectionTimeoutMilliseconds'='30000', 'maxLifetimeMilliseconds'='1800000', 'idleTimeoutMilliseconds'='60000', 'maxPoolSize'='50')
@@ -31,6 +31,6 @@ PROPERTIES('minPoolSize'='1', 'connectionTimeoutMilliseconds'='30000', 'maxLifet
 
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='rc4', PROPERTIES('rc4-key-value'='123456abc'))), LIKE_QUERY_ALGORITHM(TYPE(NAME='char_digest_like'))),
-(NAME=order_id, CIPHER=order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='rc4', PROPERTIES('rc4-key-value'='123456abc'))))
+(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))), LIKE_QUERY_ALGORITHM(TYPE(NAME='core.query_like.fixture'))),
+(NAME=order_id, CIPHER=order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))))
 ));

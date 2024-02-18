@@ -56,7 +56,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY o.order_id DESC, 1" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY o.order_id DESC, 1" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -64,7 +64,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY i.creation_date DESC, o.order_id DESC, i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY i.creation_date DESC, o.order_id DESC, i.item_id" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -119,21 +119,23 @@
         <assertion parameters="100001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id order by t_user_encrypt_federate_sharding.user_id" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id order by t_user_encrypt_federate_sharding.user_id" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select t_order_federate.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id ORDER BY t_order_item_federate_sharding.user_id" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_order_federate.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id ORDER BY t_order_item_federate_sharding.user_id" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id ORDER BY o.item_id " scenario-types="db,tbl" />
     
-    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -193,11 +195,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id ORDER BY o.order_id ASC NULLS FIRST, i.item_id DESC" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id ORDER BY o.order_id ASC NULLS FIRST, i.item_id DESC" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id ORDER BY o.order_id ASC NULLS LAST, i.item_id DESC" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id ORDER BY o.order_id ASC NULLS LAST, i.item_id DESC" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db_tbl_sql_federation">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     

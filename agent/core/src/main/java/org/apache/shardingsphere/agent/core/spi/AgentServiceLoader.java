@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.spi;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.agent.core.util.AgentPreconditions;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,13 +39,8 @@ public final class AgentServiceLoader<T> {
     private final Collection<T> services;
     
     private AgentServiceLoader(final Class<T> service) {
-        validate(service);
+        AgentPreconditions.checkArgument(service.isInterface(), String.format("SPI class `%s` is not interface.", service));
         this.services = load(service);
-    }
-    
-    private void validate(final Class<T> service) {
-        Preconditions.checkNotNull(service, "SPI class is null.");
-        Preconditions.checkArgument(service.isInterface(), "SPI class `%s` is not interface.", service);
     }
     
     private Collection<T> load(final Class<T> service) {

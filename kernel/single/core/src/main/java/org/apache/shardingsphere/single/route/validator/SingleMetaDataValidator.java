@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.route.validator;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.rule.SingleRule;
 

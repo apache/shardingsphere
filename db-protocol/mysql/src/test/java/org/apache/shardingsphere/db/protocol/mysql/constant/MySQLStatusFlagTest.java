@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

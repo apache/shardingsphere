@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-distribution</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-jdbc-distribution</artifactId>
     <packaging>pom</packaging>
@@ -47,11 +47,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -66,6 +61,11 @@
     <profiles>
         <profile>
             <id>release</id>
+            <properties>
+                <maven.javadoc.skip>false</maven.javadoc.skip>
+                <checkstyle.skip>false</checkstyle.skip>
+                <rat.skip>false</rat.skip>
+            </properties>
             <build>
                 <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>
@@ -89,6 +89,21 @@
                     <plugin>
                         <groupId>net.nicoulaj.maven.plugins</groupId>
                         <artifactId>checksum-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>io.smallrye</groupId>
+                        <artifactId>jandex-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>make-index</id>
+                                <goals>
+                                    <goal>jandex</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.env;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
@@ -49,12 +49,15 @@ public final class PipelineE2EEnvironment {
     
     private final List<String> openGaussVersions;
     
+    private final List<String> oracleVersions;
+    
     private PipelineE2EEnvironment() {
         props = loadProperties();
         itEnvType = PipelineEnvTypeEnum.valueOf(props.getProperty("pipeline.it.env.type", PipelineEnvTypeEnum.NONE.name()).toUpperCase());
         mysqlVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.mysql.version", "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
         postgresqlVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.postgresql.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.opengauss.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
+        oracleVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.oracle.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
     }
     
     @SneakyThrows(IOException.class)
@@ -79,33 +82,15 @@ public final class PipelineE2EEnvironment {
     public int getActualDatabasePort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", 3307).toString());
-            case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", 5432).toString());
-            case "openGauss":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.opengauss.port", 5432).toString());
-            default:
-                throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
-        }
-    }
-    
-    /**
-     * Get actual data source default port.
-     *
-     * @param databaseType database type
-     * @return default port
-     * @throws IllegalArgumentException illegal argument exception
-     */
-    public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
-        switch (databaseType.getType()) {
-            case "MySQL":
                 return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", MySQLContainer.MYSQL_EXPOSED_PORT).toString());
             case "PostgreSQL":
                 return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", PostgreSQLContainer.POSTGRESQL_EXPOSED_PORT).toString());
             case "openGauss":
                 return Integer.parseInt(props.getOrDefault("pipeline.it.native.opengauss.port", OpenGaussContainer.OPENGAUSS_EXPOSED_PORT).toString());
+            case "Oracle":
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.oracle.port", 1521).toString());
             default:
-                throw new IllegalArgumentException("Unsupported database type: " + databaseType.getType());
+                throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
         }
     }
     
@@ -166,6 +151,8 @@ public final class PipelineE2EEnvironment {
                 return postgresqlVersions;
             case "openGauss":
                 return openGaussVersions;
+            case "Oracle":
+                return oracleVersions;
             default:
                 throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
         }

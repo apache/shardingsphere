@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 
@@ -30,7 +31,7 @@ public final class ParseTreeCacheLoader implements CacheLoader<String, ParseASTN
     
     private final SQLParserExecutor sqlParserExecutor;
     
-    public ParseTreeCacheLoader(final String databaseType) {
+    public ParseTreeCacheLoader(final DatabaseType databaseType) {
         sqlParserExecutor = new SQLParserExecutor(databaseType);
     }
     

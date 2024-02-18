@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.type.CreateRuleStatement;
 
 public final class CreateFixtureRuleStatement extends CreateRuleStatement {
 }

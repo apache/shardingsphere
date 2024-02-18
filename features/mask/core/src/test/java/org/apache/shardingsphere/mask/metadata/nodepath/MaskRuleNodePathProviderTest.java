@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.metadata.nodepath;
 
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.mode.spi.RuleNodePathProvider;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ class MaskRuleNodePathProviderTest {
         RuleNodePathProvider ruleNodePathProvider = new MaskRuleNodePathProvider();
         RuleNodePath actualRuleNodePath = ruleNodePathProvider.getRuleNodePath();
         assertThat(actualRuleNodePath.getNamedItems().size(), is(2));
-        assertTrue(actualRuleNodePath.getNamedItems().containsKey(MaskRuleNodePathProvider.ALGORITHMS));
+        assertTrue(actualRuleNodePath.getNamedItems().containsKey(MaskRuleNodePathProvider.MASK_ALGORITHMS));
         assertTrue(actualRuleNodePath.getNamedItems().containsKey(MaskRuleNodePathProvider.TABLES));
         assertTrue(actualRuleNodePath.getUniqueItems().isEmpty());
         assertThat(actualRuleNodePath.getRoot().getRuleType(), is(MaskRuleNodePathProvider.RULE_TYPE));

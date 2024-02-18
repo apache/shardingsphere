@@ -21,7 +21,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;

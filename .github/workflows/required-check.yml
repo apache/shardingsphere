@@ -18,37 +18,48 @@
 name: Required - Check
 
 on:
-  push:
   pull_request:
+    branches: [ master ]
   workflow_dispatch:
 
 concurrency:
-  group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
+  group: check-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  REPOSITORY_NAME: shardingsphere
-
 jobs:
-  check-checkstyle-and-spotless:
-    name: Check - CheckStyle and Spotless
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+
+  check-checkstyle:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
+    name: Check - CheckStyle
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Run CheckStyle and Spotless
-        run: ./mvnw checkstyle:check spotless:check -T1C
-  
+      - uses: actions/checkout@v4
+      - name: Run CheckStyle
+        run: ./mvnw checkstyle:check -Pcheck -T1C
+
+  check-spotless:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
+    name: Check - Spotless
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Spotless
+        run: ./mvnw spotless:check -Pcheck -T1C
+
   check-license:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - License
-    timeout-minutes: 10
+    needs: global-environment
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - uses: apache/skywalking-eyes@v0.4.0
+      - uses: actions/checkout@v4
+      - name: Run Apache Rat
+        run: ./mvnw apache-rat:check -Pcheck -T1C

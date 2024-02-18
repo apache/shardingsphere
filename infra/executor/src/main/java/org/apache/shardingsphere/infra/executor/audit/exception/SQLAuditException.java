@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.infra.executor.audit.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.AuditSQLException;
 
 /**
  * SQL audit exception.
  */
-public final class SQLAuditException extends KernelSQLException {
+public final class SQLAuditException extends AuditSQLException {
     
     private static final long serialVersionUID = 4183020614721058122L;
     
-    private static final int KERNEL_CODE = 6;
-    
     public SQLAuditException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 0, "SQL audit failed, error message: %s.", errorMessage);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "SQL audit failed, error message: %s.", errorMessage);
     }
 }

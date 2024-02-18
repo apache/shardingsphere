@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -39,28 +37,14 @@ class ShowDefaultSingleTableStorageUnitExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowDefaultSingleTableStorageUnitStatement> executor = new ShowDefaultSingleTableStorageUnitExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowDefaultSingleTableStorageUnitStatement.class));
+        ShowDefaultSingleTableStorageUnitExecutor executor = new ShowDefaultSingleTableStorageUnitExecutor();
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
+        executor.setRule(rule);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDefaultSingleTableStorageUnitStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         String defaultSingleTableStorageUnit = (String) rowData.next().getCell(1);
         assertThat(defaultSingleTableStorageUnit, is("foo_ds"));
-    }
-    
-    @Test
-    void assertGetColumns() {
-        RQLExecutor<ShowDefaultSingleTableStorageUnitStatement> executor = new ShowDefaultSingleTableStorageUnitExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(1));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("storage_unit_name"));
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        SingleRule singleRule = mock(SingleRule.class);
-        when(singleRule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(singleRule)));
-        return result;
     }
 }

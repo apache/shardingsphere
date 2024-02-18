@@ -19,14 +19,14 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.dump;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.ColumnValueReaderEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -36,22 +36,22 @@ class ColumnValueReaderEngineTest {
     
     @Test
     void assertReadValue() throws SQLException {
-        ColumnValueReaderEngine columnValueReaderEngine = new ColumnValueReaderEngine(new MySQLDatabaseType());
+        ColumnValueReaderEngine columnValueReaderEngine = new ColumnValueReaderEngine(TypedSPILoader.getService(DatabaseType.class, "H2"));
         try (
-                HikariDataSource hikariDataSource = createHikariDataSource(RandomStringUtils.randomAlphanumeric(6));
-                Connection connection = hikariDataSource.getConnection()) {
+                HikariDataSource dataSource = createDataSource(RandomStringUtils.randomAlphanumeric(6));
+                Connection connection = dataSource.getConnection()) {
             connection.createStatement().execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT, status VARCHAR(12), c_year year)");
             connection.createStatement().executeUpdate("INSERT INTO t_order(order_id, user_id, status, c_year) VALUES (1, 2,'ok', null)");
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM t_order");
             resultSet.next();
-            assertThat(((Long) Objects.requireNonNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 1))).intValue(), is(1));
-            assertThat(((Long) Objects.requireNonNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 2))).intValue(), is(2));
+            assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 1), is(1));
+            assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 2), is(2));
             assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 3), is("ok"));
             assertNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 4));
         }
     }
     
-    private static HikariDataSource createHikariDataSource(final String databaseName) {
+    private static HikariDataSource createDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", databaseName));
         result.setUsername("root");

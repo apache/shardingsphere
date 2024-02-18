@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceNodesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceUnitsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
@@ -61,18 +60,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DataSourceUnitsChangedEvent event) {
-        contextManager.getConfigurationContextManager().alterDataSourceUnitsConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
-        disableDataSources();
-    }
-    
-    /**
-     * Renew data source nodes configuration.
-     *
-     * @param event data source changed event.
-     */
-    @Subscribe
-    public synchronized void renew(final DataSourceNodesChangedEvent event) {
-        contextManager.getConfigurationContextManager().alterDataSourceNodesConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
+        contextManager.getConfigurationContextManager().alterDataSourceUnitsConfiguration(event.getDatabaseName(), event.getDataSourcePoolPropertiesMap());
         disableDataSources();
     }
     

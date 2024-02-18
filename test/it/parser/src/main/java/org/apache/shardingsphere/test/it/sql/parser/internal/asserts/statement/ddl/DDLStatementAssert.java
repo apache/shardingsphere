@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatem
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
@@ -53,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAuditStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleNoAuditStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.AlterIndexStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.AlterSessionStatementAssert;
@@ -68,6 +70,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.ClusterStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.CommentStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.CreateIndexStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.CreateSequenceStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.CreateTableStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.CreateViewStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.CursorStatementAssert;
@@ -87,6 +90,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.SecurityLabelStmtStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.TruncateStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.UnlistenStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.sqlserver.SQLServerUpdateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSessionStatementTestCase;
@@ -102,6 +106,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.ClusterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CommentStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateSequenceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CursorStatementTestCase;
@@ -121,6 +126,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.SecurityLabelStmtStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.UnlistenStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.UpdateStatisticsStatementTestCase;
 
 /**
  * DDL statement assert.
@@ -202,6 +208,10 @@ public final class DDLStatementAssert {
             DropViewStatementAssert.assertIs(assertContext, (DropViewStatement) actual, (DropViewStatementTestCase) expected);
         } else if (actual instanceof AlterTablespaceStatement) {
             AlterTablespaceStatementAssert.assertIs(assertContext, (AlterTablespaceStatement) actual, (AlterTablespaceStatementTestCase) expected);
+        } else if (actual instanceof CreateSequenceStatement) {
+            CreateSequenceStatementAssert.assertIs(assertContext, (CreateSequenceStatement) actual, (CreateSequenceStatementTestCase) expected);
+        } else if (actual instanceof SQLServerUpdateStatisticsStatement) {
+            SQLServerUpdateStatisticsStatementAssert.assertIs(assertContext, (SQLServerUpdateStatisticsStatement) actual, (UpdateStatisticsStatementTestCase) expected);
         }
     }
 }

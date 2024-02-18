@@ -32,13 +32,13 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 
 import java.util.Collection;
@@ -70,7 +70,7 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedHashSet<>();
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (EncryptCondition each : encryptConditions) {
             encryptRule.findEncryptTable(each.getTableName()).ifPresent(optional -> result.add(generateSQLToken(schemaName, optional, each)));
         }

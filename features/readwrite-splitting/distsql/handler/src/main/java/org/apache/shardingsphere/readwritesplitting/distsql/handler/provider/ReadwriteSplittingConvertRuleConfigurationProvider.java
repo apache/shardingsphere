@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.handler.ral.constant.DistSQLScriptConstants;
-import org.apache.shardingsphere.distsql.handler.ral.query.ConvertRuleConfigurationProvider;
+import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.distsql.handler.constant.ReadwriteSplittingDistSQLConstants;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
 
 /**
  * Readwrite-splitting convert rule configuration provider.
@@ -45,16 +43,15 @@ public final class ReadwriteSplittingConvertRuleConfigurationProvider implements
         if (ruleConfig.getDataSources().isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder();
-        result.append(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE);
+        StringBuilder result = new StringBuilder(ReadwriteSplittingDistSQLConstants.CREATE_READWRITE_SPLITTING_RULE);
         Iterator<ReadwriteSplittingDataSourceRuleConfiguration> iterator = ruleConfig.getDataSources().iterator();
         while (iterator.hasNext()) {
             appendStaticReadWriteSplittingRule(ruleConfig.getLoadBalancers(), iterator.next(), result);
             if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA);
+                result.append(ReadwriteSplittingDistSQLConstants.COMMA);
             }
         }
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        result.append(ReadwriteSplittingDistSQLConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
         return result.toString();
     }
     
@@ -63,7 +60,7 @@ public final class ReadwriteSplittingConvertRuleConfigurationProvider implements
         String readDataSourceNames = getReadDataSourceNames(dataSourceRuleConfig.getReadDataSourceNames());
         String transactionalReadQueryStrategy = dataSourceRuleConfig.getTransactionalReadQueryStrategy().name();
         String loadBalancerType = getLoadBalancerType(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
-        stringBuilder.append(String.format(DistSQLScriptConstants.READWRITE_SPLITTING_FOR_STATIC,
+        stringBuilder.append(String.format(ReadwriteSplittingDistSQLConstants.READWRITE_SPLITTING_FOR_STATIC,
                 dataSourceRuleConfig.getName(), dataSourceRuleConfig.getWriteDataSourceName(), readDataSourceNames, transactionalReadQueryStrategy, loadBalancerType));
     }
     
@@ -71,9 +68,9 @@ public final class ReadwriteSplittingConvertRuleConfigurationProvider implements
         StringBuilder result = new StringBuilder();
         Iterator<String> iterator = readDataSourceNames.iterator();
         while (iterator.hasNext()) {
-            result.append(String.format(DistSQLScriptConstants.READ_RESOURCE, iterator.next()));
+            result.append(String.format(ReadwriteSplittingDistSQLConstants.READ_RESOURCE, iterator.next()));
             if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA);
+                result.append(ReadwriteSplittingDistSQLConstants.COMMA);
             }
         }
         return result.toString();
@@ -83,45 +80,13 @@ public final class ReadwriteSplittingConvertRuleConfigurationProvider implements
         StringBuilder result = new StringBuilder();
         String loadBalancerType = getAlgorithmType(algorithmConfig);
         if (!Strings.isNullOrEmpty(loadBalancerType)) {
-            result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator()).append(loadBalancerType);
-        }
-        return result.toString();
-    }
-    
-    private String getAlgorithmType(final AlgorithmConfiguration algorithmConfig) {
-        StringBuilder result = new StringBuilder();
-        if (null == algorithmConfig) {
-            return result.toString();
-        }
-        String type = algorithmConfig.getType().toLowerCase();
-        if (algorithmConfig.getProps().isEmpty()) {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type));
-        } else {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
-        }
-        return result.toString();
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private String getAlgorithmProperties(final Properties props) {
-        StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = new TreeMap(props).keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            Object value = props.get(key);
-            if (null == value) {
-                continue;
-            }
-            result.append(String.format(DistSQLScriptConstants.PROPERTY, key, value));
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA).append(' ');
-            }
+            result.append(ReadwriteSplittingDistSQLConstants.COMMA).append(System.lineSeparator()).append(loadBalancerType);
         }
         return result.toString();
     }
     
     @Override
-    public String getType() {
-        return ReadwriteSplittingRuleConfiguration.class.getName();
+    public Class<ReadwriteSplittingRuleConfiguration> getType() {
+        return ReadwriteSplittingRuleConfiguration.class;
     }
 }

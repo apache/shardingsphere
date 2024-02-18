@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.single.rule.builder;
 
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,8 @@ class SingleRuleBuilderTest {
     @Test
     void assertBuild() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
-        DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
+        DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "", new MySQLDatabaseType(), Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)),
+                mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
     
@@ -47,7 +49,8 @@ class SingleRuleBuilderTest {
     void assertBuildWithDefaultDataSource() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
         DatabaseRule actual = builder.build(
-                new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
+                new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), "", new MySQLDatabaseType(), Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)),
+                mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
 }

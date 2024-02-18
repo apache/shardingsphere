@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -39,7 +40,7 @@ class TransactionIsolationValueProviderTest {
     
     @Test
     void assertGetSessionValue() {
-        ConnectionSession connectionSession = new ConnectionSession(new MySQLDatabaseType(), TransactionType.LOCAL, new DefaultAttributeMap());
+        ConnectionSession connectionSession = new ConnectionSession(TypedSPILoader.getService(DatabaseType.class, "MySQL"), TransactionType.LOCAL, new DefaultAttributeMap());
         assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
         assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
         connectionSession.setIsolationLevel(TransactionIsolationLevel.READ_COMMITTED);

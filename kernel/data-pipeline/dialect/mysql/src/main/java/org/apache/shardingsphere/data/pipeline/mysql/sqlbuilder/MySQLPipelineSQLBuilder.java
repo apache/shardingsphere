@@ -17,11 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.exception.syntax.CreateTableSQLGenerateException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -49,7 +57,7 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     }
     
     @Override
-    public String buildCheckEmptySQL(final String qualifiedTableName) {
+    public String buildCheckEmptyTableSQL(final String qualifiedTableName) {
         return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
     }
     
@@ -61,6 +69,19 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
     @Override
     public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
         return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s", columnName, qualifiedTableName));
+    }
+    
+    @Override
+    public Collection<String> buildCreateTableSQLs(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(String.format("SHOW CREATE TABLE %s", tableName))) {
+            if (resultSet.next()) {
+                return Collections.singleton(resultSet.getString("create table"));
+            }
+        }
+        throw new CreateTableSQLGenerateException(tableName);
     }
     
     @Override

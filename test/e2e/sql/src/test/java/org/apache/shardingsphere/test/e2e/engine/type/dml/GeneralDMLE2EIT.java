@@ -57,7 +57,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
                     ? executeUpdateForStatement(containerComposer, connection)
                     : executeUpdateForPreparedStatement(containerComposer, connection);
         }
-        assertDataSet(testParam, containerComposer, actualUpdateCount);
+        assertDataSet(containerComposer, actualUpdateCount, testParam.getDatabaseType());
     }
     
     private int executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
@@ -91,7 +91,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
                     ? executeForStatement(containerComposer, connection)
                     : executeForPreparedStatement(containerComposer, connection);
         }
-        assertDataSet(testParam, containerComposer, actualUpdateCount);
+        assertDataSet(containerComposer, actualUpdateCount, testParam.getDatabaseType());
     }
     
     private int executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {

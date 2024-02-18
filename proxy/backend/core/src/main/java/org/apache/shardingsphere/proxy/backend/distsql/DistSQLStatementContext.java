@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.backend.distsql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
  * SQL statement context for DistSQL.

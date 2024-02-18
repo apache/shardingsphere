@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mask.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 /**
  * Mask table.
@@ -32,7 +32,7 @@ public final class MaskTable {
     private final Map<String, MaskColumn> columns;
     
     public MaskTable(final MaskTableRuleConfiguration config) {
-        columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        columns = new CaseInsensitiveMap<>();
         for (MaskColumnRuleConfiguration each : config.getColumns()) {
             columns.put(each.getLogicColumn(), new MaskColumn(each.getLogicColumn(), each.getMaskAlgorithm()));
         }

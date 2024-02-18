@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rule.column.item;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,8 +35,7 @@ public final class CipherColumnItem {
     
     private final String name;
     
-    @SuppressWarnings("rawtypes")
-    private final StandardEncryptAlgorithm encryptor;
+    private final EncryptAlgorithm encryptor;
     
     /**
      * Encrypt.
@@ -48,7 +47,6 @@ public final class CipherColumnItem {
      * @param originalValue original value
      * @return encrypted value
      */
-    @SuppressWarnings("unchecked")
     public Object encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object originalValue) {
         if (null == originalValue) {
             return null;
@@ -67,7 +65,6 @@ public final class CipherColumnItem {
      * @param originalValues original values
      * @return encrypted values
      */
-    @SuppressWarnings("unchecked")
     public List<Object> encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final List<Object> originalValues) {
         EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
         List<Object> result = new LinkedList<>();
@@ -87,7 +84,6 @@ public final class CipherColumnItem {
      * @param cipherValue cipher value
      * @return decrypted value
      */
-    @SuppressWarnings("unchecked")
     public Object decrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object cipherValue) {
         if (null == cipherValue) {
             return null;

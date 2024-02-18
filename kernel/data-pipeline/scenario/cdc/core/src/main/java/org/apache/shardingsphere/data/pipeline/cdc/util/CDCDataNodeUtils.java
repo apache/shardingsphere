@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,7 @@ public final class CDCDataNodeUtils {
     public static Map<String, List<DataNode>> buildDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
+        Optional<BroadcastRule> broadcastRule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
         Map<String, List<DataNode>> result = new HashMap<>();
         // TODO support virtual data source name
         for (String each : tableNames) {
@@ -60,6 +63,10 @@ public final class CDCDataNodeUtils {
             if (shardingRule.isPresent() && shardingRule.get().findTableRule(each).isPresent()) {
                 TableRule tableRule = shardingRule.get().getTableRule(each);
                 result.put(each, tableRule.getActualDataNodes());
+                continue;
+            }
+            if (broadcastRule.isPresent() && broadcastRule.get().findFirstActualTable(each).isPresent()) {
+                result.put(each, Collections.singletonList(broadcastRule.get().getTableDataNodes().get(each).iterator().next()));
                 continue;
             }
             throw new PipelineInvalidParameterException(String.format("Not find actual data nodes of `%s`", each));

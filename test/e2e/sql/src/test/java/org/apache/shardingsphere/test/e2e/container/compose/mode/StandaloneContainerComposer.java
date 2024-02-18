@@ -48,8 +48,8 @@ public final class StandaloneContainerComposer implements ContainerComposer {
         String scenario = testParam.getScenario();
         containers = new ITContainers(scenario);
         // TODO add more version of databases
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", scenario,
-                StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType())));
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "",
+                StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType(), scenario)));
         adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(AdapterMode.valueOf(testParam.getMode().toUpperCase()),
                 AdapterType.valueOf(testParam.getAdapter().toUpperCase()),
                 testParam.getDatabaseType(), storageContainer, scenario, ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, testParam.getDatabaseType())));

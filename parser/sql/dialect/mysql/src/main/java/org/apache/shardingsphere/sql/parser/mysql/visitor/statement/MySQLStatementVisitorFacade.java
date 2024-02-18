@@ -67,7 +67,7 @@ public final class MySQLStatementVisitorFacade implements SQLStatementVisitorFac
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

@@ -24,19 +24,20 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
@@ -90,7 +91,7 @@ class ConfigurationChangedSubscriberTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereRuleMetaData globalRuleMetaData;
+    private RuleMetaData globalRuleMetaData;
     
     @BeforeEach
     void setUp() throws SQLException {
@@ -111,12 +112,11 @@ class ConfigurationChangedSubscriberTest {
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
         when(database.getName()).thenReturn("db");
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(resourceMetaData.getStorageNodeMetaData().getDataSources()).thenReturn(Collections.emptyMap());
-        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         when(database.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
-        when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
@@ -133,16 +133,16 @@ class ConfigurationChangedSubscriberTest {
     
     @Test
     void assertRenewForDataSourceChanged() {
-        subscriber.renew(new DataSourceUnitsChangedEvent("db", "0", createChangedDataSourcePropertiesMap()));
-        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getDataSources().containsKey("ds_2"));
+        subscriber.renew(new DataSourceUnitsChangedEvent("db", "0", createChangedDataSourcePoolPropertiesMap()));
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageUnits().containsKey("ds_2"));
     }
     
-    private Map<String, DataSourceProperties> createChangedDataSourcePropertiesMap() {
+    private Map<String, DataSourcePoolProperties> createChangedDataSourcePoolPropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1F);
-        result.put("primary_ds", DataSourcePropertiesCreator.create(dataSource));
-        result.put("ds_1", DataSourcePropertiesCreator.create(dataSource));
-        result.put("ds_2", DataSourcePropertiesCreator.create(dataSource));
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(3, 1F);
+        result.put("primary_ds", DataSourcePoolPropertiesCreator.create(dataSource));
+        result.put("ds_1", DataSourcePoolPropertiesCreator.create(dataSource));
+        result.put("ds_2", DataSourcePoolPropertiesCreator.create(dataSource));
         return result;
     }
     
@@ -158,7 +158,7 @@ class ConfigurationChangedSubscriberTest {
     }
     
     private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
-        RuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(getShardingSphereUsers(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
+        RuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(getShardingSphereUsers(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null);
         return Collections.singleton(authorityRuleConfig);
     }
     

@@ -38,18 +38,18 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.dialect.mysql.exception.AccessDeniedException;
-import org.apache.shardingsphere.dialect.mysql.exception.DatabaseAccessDeniedException;
-import org.apache.shardingsphere.dialect.mysql.exception.HandshakeException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.AccessDeniedException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.DatabaseAccessDeniedException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
-import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.authentication.result.AuthenticationResult;
+import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
+import org.apache.shardingsphere.authentication.Authenticator;
+import org.apache.shardingsphere.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
@@ -113,15 +113,16 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLHandshakeResponse41Packet handshakeResponsePacket;
         try {
             handshakeResponsePacket = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (final IndexOutOfBoundsException ex) {
             if (log.isWarnEnabled()) {
                 log.warn("Received bad handshake from client {}: \n{}", context.channel(), ByteBufUtil.prettyHexDump(payload.getByteBuf().resetReaderIndex()));
             }
             throw new HandshakeException();
         }
-        String database = handshakeResponsePacket.getDatabase();
         authResponse = handshakeResponsePacket.getAuthResponse();
+        setMultiStatementsOption(context, handshakeResponsePacket);
         setCharacterSet(context, handshakeResponsePacket);
+        String database = handshakeResponsePacket.getDatabase();
         if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().databaseExists(database)) {
             throw new UnknownDatabaseException(database);
         }
@@ -129,12 +130,16 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         String hostname = getHostAddress(context);
         ShardingSphereUser user = rule.findUser(new Grantee(username, hostname)).orElseGet(() -> new ShardingSphereUser(username, "", hostname));
         Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(user);
-        if (isClientPluginAuthenticate(handshakeResponsePacket) && !authenticator.getAuthenticationMethod().getMethodName().equals(handshakeResponsePacket.getAuthPluginName())) {
+        if (isClientPluginAuthenticate(handshakeResponsePacket) && !authenticator.getAuthenticationMethodName().equals(handshakeResponsePacket.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
-            context.writeAndFlush(new MySQLAuthSwitchRequestPacket(authenticator.getAuthenticationMethod().getMethodName(), authPluginData));
+            context.writeAndFlush(new MySQLAuthSwitchRequestPacket(authenticator.getAuthenticationMethodName(), authPluginData));
             return AuthenticationResultBuilder.continued(username, hostname, database);
         }
         return AuthenticationResultBuilder.finished(username, hostname, database);
+    }
+    
+    private void setMultiStatementsOption(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {
+        context.channel().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).set(handshakeResponsePacket.getMultiStatementsOption());
     }
     
     private void setCharacterSet(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {

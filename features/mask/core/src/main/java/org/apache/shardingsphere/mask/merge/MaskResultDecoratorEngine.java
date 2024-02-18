@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mask.merge;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
@@ -39,7 +39,7 @@ public final class MaskResultDecoratorEngine implements ResultDecoratorEngine<Ma
     public Optional<ResultDecorator<MaskRule>> newInstance(final ShardingSphereDatabase database,
                                                            final MaskRule maskRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext
-                ? Optional.of(new MaskDQLResultDecorator(new MaskAlgorithmMetaData(database, maskRule, (SelectStatementContext) sqlStatementContext)))
+                ? Optional.of(new MaskDQLResultDecorator(new MaskAlgorithmMetaData(maskRule, (SelectStatementContext) sqlStatementContext)))
                 : Optional.empty();
     }
     

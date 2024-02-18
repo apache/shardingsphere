@@ -108,10 +108,7 @@ selectWithParens
     ;
 
 selectNoParens
-    : selectClauseN
-    | selectClauseN sortClause
-    | selectClauseN sortClause? forLockingClause selectLimit?
-    | selectClauseN sortClause? selectLimit forLockingClause?
+    : selectClauseN sortClause? (forLockingClause selectLimit? | selectLimit forLockingClause?)?
     | withClause selectClauseN
     | withClause selectClauseN sortClause
     | withClause selectClauseN sortClause? forLockingClause selectLimit?
@@ -263,9 +260,7 @@ targetList
 
 targetEl
     : colId DOT_ASTERISK_
-    | aExpr AS identifier
-    | aExpr identifier
-    | aExpr
+    | aExpr AS? identifier?
     | ASTERISK_
     ;
 

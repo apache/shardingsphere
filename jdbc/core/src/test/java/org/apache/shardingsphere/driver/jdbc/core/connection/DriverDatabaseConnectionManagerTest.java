@@ -20,11 +20,12 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -55,6 +56,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -71,42 +73,47 @@ class DriverDatabaseConnectionManagerTest {
         databaseConnectionManager = new DriverDatabaseConnectionManager(DefaultDatabase.LOGIC_NAME, mockContextManager());
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        Map<String, DataSource> dataSourceMap = mockDataSourceMap();
-        when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
+        Map<String, StorageUnit> storageUnits = mockStorageUnits();
+        when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(storageUnits);
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
-                new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
+                new RuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
         when(result.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
                 Collections.singletonList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version")));
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
-        when(DataSourcePoolCreator.create((Map) any())).thenReturn(trafficDataSourceMap);
+        when(DataSourcePoolCreator.create(any(), eq(true))).thenReturn(trafficDataSourceMap);
         return result;
     }
     
-    private Map<String, DataSource> mockDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new HashMap<>(2, 1F);
-        result.put("ds", new MockedDataSource());
+    private Map<String, StorageUnit> mockStorageUnits() throws SQLException {
+        Map<String, StorageUnit> result = new HashMap<>(2, 1F);
+        result.put("ds", mockStorageUnit(new MockedDataSource()));
         DataSource invalidDataSource = mock(DataSource.class);
         when(invalidDataSource.getConnection()).thenThrow(new SQLException());
-        result.put("invalid_ds", invalidDataSource);
+        result.put("invalid_ds", mockStorageUnit(invalidDataSource));
+        return result;
+    }
+    
+    private StorageUnit mockStorageUnit(final DataSource dataSource) {
+        StorageUnit result = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(result.getDataSource()).thenReturn(dataSource);
         return result;
     }
     
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceUnitService().load(DefaultDatabase.LOGIC_NAME))
-                .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties())));
+                .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourcePoolProperties(HikariDataSource.class.getName(), createProperties())));
         when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;
     }
     
     private Map<String, Object> createProperties() {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        result.put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?useSSL=false");
         result.put("username", "root");
         result.put("password", "123456");
         return result;
@@ -114,7 +121,7 @@ class DriverDatabaseConnectionManagerTest {
     
     private Map<String, DataSource> mockTrafficDataSourceMap() throws SQLException {
         MockedDataSource result = new MockedDataSource(mock(Connection.class, RETURNS_DEEP_STUBS));
-        result.setUrl("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false");
+        result.setUrl("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false");
         result.setUsername("root");
         result.setPassword("123456");
         when(result.getConnection().getMetaData().getURL()).thenReturn(result.getUrl());
@@ -131,8 +138,9 @@ class DriverDatabaseConnectionManagerTest {
     @Test
     void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
         databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        String actual = databaseConnectionManager.getRandomPhysicalDataSourceName();
-        assertThat(actual, is("ds"));
+        assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
+        assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
+        assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
     }
     
     @Test
@@ -157,7 +165,7 @@ class DriverDatabaseConnectionManagerTest {
         assertThat(actual, is(databaseConnectionManager.getConnections("127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
     }
     
     @Test
@@ -175,7 +183,7 @@ class DriverDatabaseConnectionManagerTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
     }
     
     @Test
@@ -189,7 +197,7 @@ class DriverDatabaseConnectionManagerTest {
         List<Connection> actual = databaseConnectionManager.getConnections("127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
     }
     
     @Test

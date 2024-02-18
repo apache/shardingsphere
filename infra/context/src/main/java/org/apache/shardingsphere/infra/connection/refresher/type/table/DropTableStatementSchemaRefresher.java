@@ -20,9 +20,10 @@ package org.apache.shardingsphere.infra.connection.refresher.type.table;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -37,10 +38,10 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
+                        final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         sqlStatement.getTables().forEach(each -> alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTableName().getIdentifier().getValue()));
-        ShardingSphereRuleMetaData ruleMetaData = database.getRuleMetaData();
+        RuleMetaData ruleMetaData = database.getRuleMetaData();
         boolean isRuleRefreshRequired = TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, sqlStatement.getTables());
         modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
@@ -51,12 +52,12 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
         }
     }
     
-    private boolean isSingleTable(final String tableName, final ShardingSphereRuleMetaData ruleMetaData) {
+    private boolean isSingleTable(final String tableName, final RuleMetaData ruleMetaData) {
         return ruleMetaData.findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
     }
     
     @Override
-    public String getType() {
-        return DropTableStatement.class.getName();
+    public Class<DropTableStatement> getType() {
+        return DropTableStatement.class;
     }
 }

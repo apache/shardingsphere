@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -88,23 +88,23 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     }
     
     @Override
-    public void registerStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(databaseName, toBeRegisterStorageUnitProps);
+    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(databaseName, toBeRegisteredProps);
     }
     
     @Override
-    public void alterStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) {
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(databaseName, toBeUpdatedStorageUnitProps);
+    public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) {
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(databaseName, toBeUpdatedProps);
     }
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
         contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().persist(databaseName,
-                getToBeReversedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
+                getToBeReversedDataSourcePoolPropertiesMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     
-    private Map<String, DataSourceProperties> getToBeReversedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
-        return dataSourcePropsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    private Map<String, DataSourcePoolProperties> getToBeReversedDataSourcePoolPropertiesMap(final Map<String, DataSourcePoolProperties> propsMap, final Collection<String> toBeDroppedResourceNames) {
+        return propsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     @Override

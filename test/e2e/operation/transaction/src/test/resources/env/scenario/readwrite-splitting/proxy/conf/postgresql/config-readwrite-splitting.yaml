@@ -50,6 +50,16 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
+  read_ds_error:
+    url: jdbc:postgresql://postgresql.default.host:5432/read_ds_error
+    username: test_user
+    password: wrong_password
+    connectionTimeoutMilliseconds: 5000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 1
+    minPoolSize: 1
+
 rules:
   - !SINGLE
     tables:

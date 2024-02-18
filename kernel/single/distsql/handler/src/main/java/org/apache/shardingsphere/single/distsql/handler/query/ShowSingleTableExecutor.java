@@ -17,56 +17,67 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.regular.RegularUtils;
+import org.apache.shardingsphere.infra.util.regex.RegexUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.Objects;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Show single table executor.
  */
-public final class ShowSingleTableExecutor implements RQLExecutor<ShowSingleTableStatement> {
+@Setter
+public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowSingleTableStatement>, DistSQLExecutorRuleAware<SingleRule> {
+    
+    private SingleRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowSingleTableStatement sqlStatement) {
         return Arrays.asList("table_name", "storage_unit_name");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowSingleTableStatement sqlStatement) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Collection<DataNode> dataNodes = getDataNodes(database, sqlStatement);
-        dataNodes.forEach(each -> result.add(new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())));
-        return result;
+    public Collection<LocalDataQueryResultRow> getRows(final ShowSingleTableStatement sqlStatement, final ContextManager contextManager) {
+        Collection<DataNode> resultDataNodes = getPattern(sqlStatement)
+                .map(optional -> getDataNodesWithLikePattern(rule.getSingleTableDataNodes(), optional)).orElseGet(() -> getDataNodes(rule.getSingleTableDataNodes(), sqlStatement));
+        Collection<DataNode> sortedDataNodes = resultDataNodes.stream().sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
+        return sortedDataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
     }
     
-    private Collection<DataNode> getDataNodes(final ShardingSphereDatabase database, final ShowSingleTableStatement sqlStatement) {
-        Stream<DataNode> singleTableNodes = database.getRuleMetaData().findRules(SingleRule.class).stream()
-                .map(each -> each.getSingleTableDataNodes().values()).flatMap(Collection::stream).filter(Objects::nonNull).map(each -> each.iterator().next());
-        if (sqlStatement.getTableName().isPresent()) {
-            singleTableNodes = singleTableNodes.filter(each -> sqlStatement.getTableName().get().equals(each.getTableName()));
-        }
-        if (sqlStatement.getLikePattern().isPresent()) {
-            String pattern = SQLUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
-            singleTableNodes = singleTableNodes.filter(each -> RegularUtils.matchesCaseInsensitive(pattern, each.getTableName())).collect(Collectors.toList()).stream();
-        }
-        return singleTableNodes.sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
+    private Optional<Pattern> getPattern(final ShowSingleTableStatement sqlStatement) {
+        return sqlStatement.getLikePattern().isPresent()
+                ? Optional.of(Pattern.compile(RegexUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get()), Pattern.CASE_INSENSITIVE))
+                : Optional.empty();
+    }
+    
+    private Collection<DataNode> getDataNodesWithLikePattern(final Map<String, Collection<DataNode>> singleTableNodes, final Pattern pattern) {
+        return singleTableNodes.entrySet().stream().filter(entry -> pattern.matcher(entry.getKey()).matches()).map(entry -> entry.getValue().iterator().next()).collect(Collectors.toList());
+    }
+    
+    private Collection<DataNode> getDataNodes(final Map<String, Collection<DataNode>> singleTableNodes, final ShowSingleTableStatement sqlStatement) {
+        return singleTableNodes.entrySet().stream().filter(entry -> !sqlStatement.getTableName().isPresent() || sqlStatement.getTableName().get().equalsIgnoreCase(entry.getKey()))
+                .map(entry -> entry.getValue().iterator().next()).collect(Collectors.toList());
     }
     
     @Override
-    public String getType() {
-        return ShowSingleTableStatement.class.getName();
+    public Class<SingleRule> getRuleClass() {
+        return SingleRule.class;
+    }
+    
+    @Override
+    public Class<ShowSingleTableStatement> getType() {
+        return ShowSingleTableStatement.class;
     }
 }

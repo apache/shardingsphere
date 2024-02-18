@@ -23,12 +23,25 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallCon
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HandlerStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ImportStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadDataStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadXmlStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowingClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLHandlerStatement;
@@ -37,6 +50,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -70,7 +85,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadStatement(final LoadStatementContext ctx) {
-        return null != ctx.loadDataStatement() ? visit(ctx.loadDataStatement()) : visit(ctx.loadXmlStatement());
+        return null == ctx.loadDataStatement() ? visit(ctx.loadXmlStatement()) : visit(ctx.loadDataStatement());
     }
     
     @Override
@@ -81,5 +96,104 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
         return new MySQLLoadXMLStatement((SimpleTableSegment) visit(ctx.tableName()));
+    }
+    
+    @Override
+    public ASTNode visitIndexHint(final IndexHintContext ctx) {
+        Collection<String> indexNames = new LinkedList<>();
+        ctx.indexName().forEach(each -> indexNames.add(each.getText()));
+        String useType;
+        if (null != ctx.USE()) {
+            useType = ctx.USE().getText();
+        } else if (null != ctx.IGNORE()) {
+            useType = ctx.IGNORE().getText();
+        } else {
+            useType = ctx.FORCE().getText();
+        }
+        IndexHintSegment result = new IndexHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNames, useType,
+                null == ctx.INDEX() ? ctx.KEY().getText() : ctx.INDEX().getText(), getOriginalText(ctx));
+        if (null != ctx.FOR()) {
+            String hintScope;
+            if (null != ctx.JOIN()) {
+                hintScope = "JOIN";
+            } else if (null != ctx.ORDER()) {
+                hintScope = "ORDER BY";
+            } else {
+                hintScope = "GROUP BY";
+            }
+            result.setHintScope(hintScope);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWindowClause(final WindowClauseContext ctx) {
+        WindowSegment result = new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (WindowItemContext each : ctx.windowItem()) {
+            result.getItemSegments().add((WindowItemSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWindowItem(final WindowItemContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
+        WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+        result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+        result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+        result.setFrameClause(windowItemSegment.getFrameClause());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWindowSpecification(final WindowSpecificationContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.PARTITION()) {
+            result.setPartitionListSegments(getExpressions(ctx.expr()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.frameClause()) {
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
+        }
+        if (ctx.identifier() != null) {
+            result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
+        super.visitWindowFunction(ctx);
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        if (null != ctx.NTILE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
+        }
+        if (null != ctx.LEAD() || null != ctx.LAG() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        }
+        if (null != ctx.NTH_VALUE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+            result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
+        }
+        result.setWindow((WindowItemSegment) visit(ctx.windowingClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitWindowingClause(final WindowingClauseContext ctx) {
+        WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.windowName) {
+            result.setWindowName((IdentifierValue) visit(ctx.windowName));
+        }
+        if (null != ctx.windowSpecification()) {
+            WindowItemSegment windowItemSegment = (WindowItemSegment) visit(ctx.windowSpecification());
+            result.setPartitionListSegments(windowItemSegment.getPartitionListSegments());
+            result.setOrderBySegment(windowItemSegment.getOrderBySegment());
+            result.setFrameClause(windowItemSegment.getFrameClause());
+        }
+        return result;
     }
 }

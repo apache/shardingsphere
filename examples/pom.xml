@@ -27,28 +27,26 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>example-core</module>
-        <module>shardingsphere-proxy-example</module>
         <module>shardingsphere-parser-example</module>
-        <module>shardingsphere-example-generator</module>
+        <module>shardingsphere-jdbc-example-generator</module>
     </modules>
     
     <properties>
-        <revision>5.4.1-SNAPSHOT</revision>
+        <revision>5.4.2-SNAPSHOT</revision>
         <java.version>1.8</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
-        <spring-framework.version>5.2.15.RELEASE</spring-framework.version>
+        <spring-framework.version>5.2.22.RELEASE</spring-framework.version>
         <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
         <hikari-cp.version>3.4.2</hikari-cp.version>
-        <mysql-connector-java.version>5.1.49</mysql-connector-java.version>
-        <postgresql.version>42.4.1</postgresql.version>
-        <h2.version>2.1.214</h2.version>
+        <mysql-connector-java.version>8.0.31</mysql-connector-java.version>
+        <postgresql.version>42.4.3</postgresql.version>
+        <h2.version>2.2.224</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <logback.version>1.2.10</logback.version>
-        <lombok.version>1.18.20</lombok.version>
+        <logback.version>1.2.13</logback.version>
+        <lombok.version>1.18.30</lombok.version>
         <mybatis.version>3.5.9</mybatis.version>
         <mybatis-spring.version>2.0.5</mybatis-spring.version>
         <mybatis-spring-boot.version>2.1.3</mybatis-spring-boot.version>
@@ -58,7 +56,6 @@
         <narayana.version>5.9.1.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-        <btm.version>2.1.3</btm.version>
         
         <seata.version>1.6.1</seata.version>
         
@@ -102,11 +99,6 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -123,11 +115,6 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-cluster-mode-repository-nacos</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -280,11 +267,6 @@
                 <version>${jboss-logging.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.btm</groupId>
-                <artifactId>btm</artifactId>
-                <version>${btm.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>io.seata</groupId>
                 <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
@@ -325,8 +307,8 @@
             <version>${postgresql.version}</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>${mysql-connector-java.version}</version>
         </dependency>
         <dependency>

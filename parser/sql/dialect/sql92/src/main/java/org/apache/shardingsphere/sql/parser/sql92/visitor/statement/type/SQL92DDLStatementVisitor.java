@@ -205,8 +205,7 @@ public final class SQL92DDLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
-        return new DropColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList((ColumnSegment) visit(ctx.columnName())));
+        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singleton((ColumnSegment) visit(ctx.columnName())));
     }
     
     @SuppressWarnings("unchecked")

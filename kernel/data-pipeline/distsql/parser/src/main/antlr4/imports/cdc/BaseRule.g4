@@ -18,3 +18,39 @@
 grammar BaseRule;
 
 import Symbol, Keyword, Literals;
+
+algorithmDefinition
+    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
+    ;
+
+algorithmTypeName
+    : STRING_
+    ;
+
+propertiesDefinition
+    : PROPERTIES LP_ properties? RP_
+    ;
+
+properties
+    : property (COMMA_ property)*
+    ;
+
+property
+    : key=STRING_ EQ_ value=literal
+    ;
+
+literal
+    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
+    ;
+
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
+intValue
+    : INT_
+    ;

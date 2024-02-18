@@ -57,14 +57,14 @@ class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest {
     
     @Test
     void assertRoute() {
-        ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration =
+        ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_config", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null);
         ReadwriteSplittingDataSourceRule rule;
-        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfiguration, TransactionalReadQueryStrategy.PRIMARY, null);
+        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.PRIMARY, null);
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("write_ds"));
-        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfiguration, TransactionalReadQueryStrategy.FIXED, new RoundRobinReadQueryLoadBalanceAlgorithm());
+        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.FIXED, new RoundRobinReadQueryLoadBalanceAlgorithm());
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("read_ds_0"));
-        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfiguration, TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinReadQueryLoadBalanceAlgorithm());
+        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinReadQueryLoadBalanceAlgorithm());
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("read_ds_0"));
     }
 }

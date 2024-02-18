@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -40,8 +40,8 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -96,7 +96,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         ExecutionContext executionContext = null;
         if (parameterSetsIterator.hasNext()) {
             List<Object> firstGroupOfParam = parameterSetsIterator.next();
-            sqlStatementContext = createSQLStatementContext(firstGroupOfParam);
+            sqlStatementContext = createSQLStatementContext(firstGroupOfParam, preparedStatement.getHintValueContext());
             executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParam, preparedStatement.getHintValueContext()));
             for (ExecutionUnit each : executionContext.getExecutionUnits()) {
                 executionUnitParams.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
@@ -106,9 +106,8 @@ public final class PostgreSQLBatchedStatementsExecutor {
         prepareForRestOfParametersSet(parameterSetsIterator, sqlStatementContext, preparedStatement.getHintValueContext());
     }
     
-    private SQLStatementContext createSQLStatementContext(final List<Object> params) {
-        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), params, preparedStatement.getSqlStatementContext().getSqlStatement(),
-                connectionSession.getDatabaseName());
+    private SQLStatementContext createSQLStatementContext(final List<Object> params, final HintValueContext hintValueContext) {
+        return new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getDatabaseName(), hintValueContext).bind(preparedStatement.getSqlStatementContext().getSqlStatement(), params);
     }
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
@@ -129,7 +128,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
-        ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
+        RuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
         SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, null, queryContext.getHintValueContext());
         return kernelProcessor.generateExecutionContext(queryContext, currentDatabase, globalRuleMetaData, metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
@@ -152,7 +151,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT,
                 metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 connectionSession.getDatabaseConnectionManager(), (JDBCBackendStatement) connectionSession.getStatementManager(),
-                new StatementOption(false), rules, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes());
+                new StatementOption(false), rules, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageUnits());
         executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParams.keySet(),
                 new ExecutionGroupReportContext(connectionSession.getProcessId(), connectionSession.getDatabaseName(), connectionSession.getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
@@ -196,7 +195,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private static final class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
-        private BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
+        private BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
                                                       final boolean isExceptionThrown) {
             super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
         }

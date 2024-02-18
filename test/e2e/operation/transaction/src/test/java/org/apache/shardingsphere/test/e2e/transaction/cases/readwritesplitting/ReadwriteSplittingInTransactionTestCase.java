@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.readwritesplitting;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,8 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, scenario = "readwrite-splitting", adapters = TransactionTestConstants.PROXY)
 public final class ReadwriteSplittingInTransactionTestCase extends BaseTransactionTestCase {
     
-    public ReadwriteSplittingInTransactionTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
-        super(baseTransactionITCase, dataSource);
+    public ReadwriteSplittingInTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override
@@ -78,11 +76,14 @@ public final class ReadwriteSplittingInTransactionTestCase extends BaseTransacti
     }
     
     private String preview(final Connection connection, final String sql) throws SQLException {
-        ResultSet resultSet = connection.createStatement().executeQuery(String.format("PREVIEW %s;", sql));
-        if (resultSet.next()) {
-            return resultSet.getString("data_source_name");
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(String.format("PREVIEW %s;", sql));
+            ResultSet resultSet = statement.getResultSet();
+            if (resultSet.next()) {
+                return resultSet.getString("data_source_name");
+            }
+            return "";
         }
-        return "";
     }
     
     private void assertWriteDataSourceTableRowCount(final Connection connection, final int rowNum) throws SQLException {

@@ -17,15 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -42,27 +46,17 @@ import static org.mockito.Mockito.when;
 
 class ShowDistVariablesExecutorTest {
     
-    private final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-    
-    private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-    
-    @Test
-    void assertGetColumns() {
-        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("variable_name"));
-        assertThat(iterator.next(), is("variable_value"));
-    }
+    private final ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
     
     @Test
     void assertExecute() {
-        when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system_log_level", "INFO"))));
-        when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
-        when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
+        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
+                .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, mock(ShowDistVariablesStatement.class));
+        executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1,
+                mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDistVariablesStatement.class), contextManager);
         assertThat(actual.size(), is(21));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("agent_plugins_enabled"));
@@ -71,11 +65,15 @@ class ShowDistVariablesExecutorTest {
     
     @Test
     void assertExecuteWithLike() {
-        when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system_log_level", "INFO"))));
-        when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
-        when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
+        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
+                .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
+                .thenReturn(new RuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariablesStatement("sql_%"));
+        executor.setConnectionContext(new DistSQLConnectionContext(mock(ConnectionContext.class), 1,
+                mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement("sql_%"), contextManager);
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         assertThat(iterator.next().getCell(1), is("sql_show"));

@@ -28,9 +28,4 @@ public final class MergerRuleFixture implements ShardingSphereRule {
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
     }
-    
-    @Override
-    public String getType() {
-        return MergerRuleFixture.class.getSimpleName();
-    }
 }

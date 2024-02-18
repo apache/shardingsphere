@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
@@ -58,7 +58,7 @@ public final class CursorToken extends SQLToken implements Substitutable, RouteU
     
     private String getCursorValue(final RouteUnit routeUnit) {
         Map<String, String> logicAndActualTables = TokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule);
-        String actualTableName = logicAndActualTables.isEmpty() ? null : logicAndActualTables.values().iterator().next();
+        String actualTableName = logicAndActualTables.values().stream().sorted().findFirst().orElse(null);
         return Strings.isNullOrEmpty(actualTableName) ? identifier.getValue() : identifier.getValue() + "_" + actualTableName;
     }
 }

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-expr</artifactId>
     <packaging>pom</packaging>
@@ -30,7 +30,6 @@
     <modules>
         <module>spi</module>
         <module>core</module>
-        <module>hotsopt</module>
-        <module>espresso</module>
+        <module>type</module>
     </modules>
 </project>

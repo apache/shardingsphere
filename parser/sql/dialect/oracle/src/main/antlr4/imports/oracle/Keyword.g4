@@ -20,7 +20,7 @@ lexer grammar Keyword;
 import Alphabet, Number;
 
 WS
-    : [ \t\r\n] + ->skip
+    : [ \t\r\n\u3000] + ->skip
     ;
 
 SELECT
@@ -119,8 +119,20 @@ FUNCTION
     : F U N C T I O N
     ;
 
+CONSTRUCTOR
+    : C O N S T R U C T O R
+    ;
+
+RESULT
+    : R E S U L T
+    ;
+
 TRIGGER
     : T R I G G E R
+    ;
+
+MAP
+    : M A P
     ;
 
 PROCEDURE
@@ -233,6 +245,10 @@ IF
 
 ELSE
     : E L S E
+    ;
+
+ELSIF
+    : E L S I F
     ;
 
 THEN
@@ -402,6 +418,14 @@ LOCALTIME
 
 LOCALTIMESTAMP
     : L O C A L T I M E S T A M P
+    ;
+
+LOOP
+    : L O O P
+    ;
+
+EXIT
+    : E X I T
     ;
 
 YEAR
@@ -806,4 +830,80 @@ ANYTYPE
     
 ANYDATASET
     : A N Y D A T A S E T
+    ;
+
+AUTONOMOUS_TRANSACTION
+    : A U T O N O M O U S UL_ T R A N S A C T I O N
+    ;
+
+WM_CONCAT
+    : W M UL_ C O N C A T
+    ;
+
+DECLARE
+    : D E C L A R E
+    ;
+    
+BULK
+    : B U L K
+    ;
+
+COLLECT
+    : C O L L E C T
+    ;    
+
+INSERTING
+    : I N S E R T I N G
+    ;
+    
+UPDATING
+    : U P D A T I N G
+    ;
+    
+DELETING
+    : D E L E T I N G
+    ;
+    
+ROWCOUNT
+    : R O W C O U N T
+    ;
+    
+BULK_ROWCOUNT
+    : B U L K UL_ R O W C O U N T
+    ;
+    
+RAISE
+    : R A I S E
+    ;
+    
+WHILE
+    : W H I L E
+    ;
+    
+GOTO
+    : G O T O
+    ;
+    
+MUTABLE
+    : M U T A B L E
+    ;
+    
+IMMUTABLE
+    : I M M U T A B L E
+    ;
+    
+INDICES
+    : I N D I C E S
+    ;
+    
+PAIRS
+    : P A I R S
+    ;
+    
+PIPE
+    : P I P E
+    ;
+    
+FORALL
+    : F O R A L L
     ;

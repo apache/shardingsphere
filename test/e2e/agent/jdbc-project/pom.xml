@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-jdbc-project</artifactId>
     <name>${project.artifactId}</name>
@@ -34,8 +34,8 @@
         </dependency>
         
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -86,7 +86,6 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
                         <configuration>
                             <outputDirectory>${project.build.directory}/app/lib</outputDirectory>
@@ -99,7 +98,6 @@
                         </configuration>
                     </plugin>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
                             <execution>

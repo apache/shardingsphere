@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Mppdb decoding Gson related class.
+ * Mppdb decoding json related class.
  */
 @Setter
 @Getter

@@ -17,26 +17,18 @@
 
 package org.apache.shardingsphere.single.decider;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Single SQL federation decider.
@@ -45,40 +37,26 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     
     @Override
     public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters,
-                          final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule, final Collection<DataNode> includedDataNodes) {
-        Collection<QualifiedTable> singleTableNames = getSingleTableNames(selectStatementContext, database, rule);
-        if (singleTableNames.isEmpty()) {
+                          final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule, final Collection<DataNode> includedDataNodes) {
+        Collection<QualifiedTable> singleTables = getSingleTables(selectStatementContext, database, rule);
+        if (singleTables.isEmpty()) {
             return false;
         }
-        if (containsView(database, singleTableNames)) {
+        if (containsView(database, singleTables)) {
             return true;
         }
-        boolean isAllTablesInSameDataSource = isAllTablesInSameDataSource(includedDataNodes, rule, singleTableNames);
-        includedDataNodes.addAll(getTableDataNodes(rule, singleTableNames));
-        return !isAllTablesInSameDataSource;
+        boolean isAllTablesInSameComputeNode = rule.isAllTablesInSameComputeNode(includedDataNodes, singleTables);
+        includedDataNodes.addAll(getTableDataNodes(rule, singleTables));
+        return !isAllTablesInSameComputeNode;
     }
     
-    private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database, final SingleRule rule) {
-        DatabaseType databaseType = sqlStatementContext.getDatabaseType();
-        Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getSimpleTableSegments());
-        if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
-            result = IndexMetaDataUtils.getTableNames(database, databaseType, ((IndexAvailable) sqlStatementContext).getIndexes());
-        }
-        return rule.getSingleTableNames(result);
+    private Collection<QualifiedTable> getSingleTables(final SelectStatementContext selectStatementContext, final ShardingSphereDatabase database, final SingleRule rule) {
+        Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(selectStatementContext, database);
+        return rule.getSingleTables(qualifiedTables);
     }
     
-    private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
-        Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, database.getName());
-        for (SimpleTableSegment each : tableSegments) {
-            String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
-            result.add(new QualifiedTable(actualSchemaName, each.getTableName().getIdentifier().getValue()));
-        }
-        return result;
-    }
-    
-    private boolean containsView(final ShardingSphereDatabase database, final Collection<QualifiedTable> singleTableNames) {
-        for (QualifiedTable each : singleTableNames) {
+    private boolean containsView(final ShardingSphereDatabase database, final Collection<QualifiedTable> singleTables) {
+        for (QualifiedTable each : singleTables) {
             if (database.getSchema(each.getSchemaName()).containsView(each.getTableName())) {
                 return true;
             }
@@ -86,26 +64,9 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         return false;
     }
     
-    private boolean isAllTablesInSameDataSource(final Collection<DataNode> includedDataNodes, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
-        if (!rule.isSingleTablesInSameDataSource(singleTableNames)) {
-            return false;
-        }
-        QualifiedTable sampleTable = singleTableNames.iterator().next();
-        Optional<DataNode> dataNode = rule.findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
-        if (!dataNode.isPresent()) {
-            return true;
-        }
-        for (DataNode each : includedDataNodes) {
-            if (!each.getDataSourceName().equalsIgnoreCase(dataNode.get().getDataSourceName())) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
+    private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTables) {
         Collection<DataNode> result = new HashSet<>();
-        for (QualifiedTable each : singleTableNames) {
+        for (QualifiedTable each : singleTables) {
             rule.findTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
         }
         return result;

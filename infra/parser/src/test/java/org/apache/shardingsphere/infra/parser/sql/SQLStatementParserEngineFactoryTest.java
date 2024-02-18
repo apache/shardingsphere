@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.parser.sql;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.jupiter.api.Test;
 
@@ -25,17 +27,19 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 class SQLStatementParserEngineFactoryTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Test
     void assertGetSQLStatementParserEngineNotSame() {
-        SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine("MySQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
-        SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine("MySQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), true);
+        SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(64, 1024L));
+        SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
         assertNotSame(before, after);
     }
     
     @Test
     void assertGetSQLStatementParserEngineSame() {
-        SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine("MySQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
-        SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine("MySQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+        SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
+        SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
         assertSame(before, after);
     }
 }

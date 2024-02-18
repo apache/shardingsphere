@@ -125,7 +125,7 @@ sql-show: true
 
 ### /metadata/${databaseName}/data_sources/units/ds_0/versions/0
 
-Database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are to be configured by the user.
+Database connection pools, whose properties (e.g. HikariCP) are to be configured by the user.
 
 ```yaml
 ds_0:
@@ -146,7 +146,7 @@ ds_0:
 
 ### /metadata/${databaseName}/data_sources/nodes/ds_0/versions/0
 
-Database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are to be configured by the user.
+Database connection pools, whose properties (e.g. HikariCP) are to be configured by the user.
 
 ```yaml
 ds_0:

@@ -25,15 +25,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlSQLParserRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
         YamlSQLParserRuleConfiguration actual =
-                new YamlSQLParserRuleConfigurationSwapper().swapToYamlConfiguration(new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7)));
-        assertTrue(actual.isSqlCommentParseEnabled());
+                new YamlSQLParserRuleConfigurationSwapper().swapToYamlConfiguration(new SQLParserRuleConfiguration(new CacheOption(2, 5), new CacheOption(4, 7)));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(2));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(5L));
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(4));
@@ -43,7 +41,6 @@ class YamlSQLParserRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithDefaultConfig() {
         YamlSQLParserRuleConfiguration yamlConfig = new YamlSQLParserRuleConfiguration();
-        yamlConfig.setSqlCommentParseEnabled(true);
         SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(128));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(1024L));
@@ -54,7 +51,6 @@ class YamlSQLParserRuleConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         YamlSQLParserRuleConfiguration yamlConfig = new YamlSQLParserRuleConfiguration();
-        yamlConfig.setSqlCommentParseEnabled(true);
         yamlConfig.setParseTreeCache(new YamlSQLParserCacheOptionRuleConfiguration());
         yamlConfig.getParseTreeCache().setInitialCapacity(2);
         yamlConfig.getParseTreeCache().setMaximumSize(5L);

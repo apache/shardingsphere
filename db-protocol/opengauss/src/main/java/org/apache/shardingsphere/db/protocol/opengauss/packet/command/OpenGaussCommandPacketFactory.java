@@ -51,33 +51,32 @@ public final class OpenGaussCommandPacketFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL/openGauss
      * @param payload packet payload for PostgreSQL
-     * @param sqlCommentParseEnabled sql comment parse enabled
      * @return created instance
      */
-    public static PostgreSQLCommandPacket newInstance(final CommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
+    public static PostgreSQLCommandPacket newInstance(final CommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
         if (!OpenGaussCommandPacketType.isExtendedProtocolPacketType(commandPacketType)) {
             payload.getByteBuf().skipBytes(1);
-            return getCommandPacket(commandPacketType, payload, sqlCommentParseEnabled);
+            return getCommandPacket(commandPacketType, payload);
         }
         List<PostgreSQLCommandPacket> result = new ArrayList<>();
         while (payload.hasCompletePacket()) {
             CommandPacketType type = OpenGaussCommandPacketType.valueOf(payload.readInt1());
             int length = payload.getByteBuf().getInt(payload.getByteBuf().readerIndex());
             PostgreSQLPacketPayload slicedPayload = new PostgreSQLPacketPayload(payload.getByteBuf().readSlice(length), payload.getCharset());
-            result.add(getCommandPacket(type, slicedPayload, sqlCommentParseEnabled));
+            result.add(getCommandPacket(type, slicedPayload));
         }
         return new PostgreSQLAggregatedCommandPacket(result);
     }
     
-    private static PostgreSQLCommandPacket getCommandPacket(final CommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
+    private static PostgreSQLCommandPacket getCommandPacket(final CommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
         if (OpenGaussCommandPacketType.BATCH_BIND_COMMAND == commandPacketType) {
             return new OpenGaussComBatchBindPacket(payload);
         }
         switch ((PostgreSQLCommandPacketType) commandPacketType) {
             case SIMPLE_QUERY:
-                return new PostgreSQLComQueryPacket(payload, sqlCommentParseEnabled);
+                return new PostgreSQLComQueryPacket(payload);
             case PARSE_COMMAND:
-                return new PostgreSQLComParsePacket(payload, sqlCommentParseEnabled);
+                return new PostgreSQLComParsePacket(payload);
             case BIND_COMMAND:
                 return new PostgreSQLComBindPacket(payload);
             case DESCRIBE_COMMAND:

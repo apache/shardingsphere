@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.listener;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**

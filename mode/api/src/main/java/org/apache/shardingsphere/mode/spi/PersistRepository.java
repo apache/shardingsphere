@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.spi;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.List;
 

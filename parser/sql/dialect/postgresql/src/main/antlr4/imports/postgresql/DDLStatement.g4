@@ -975,7 +975,7 @@ alterMaterializedViewClauses
     ;
 
 executeStmt
-    : EXECUTE name executeParamClause
+    : EXECUTE name executeParamClause?
     ;
 
 createMaterializedView
@@ -1152,7 +1152,7 @@ alterTypeClauses
     | RENAME TO name
     | RENAME ATTRIBUTE name TO name dropBehavior?
     | SET SCHEMA name
-    | SET LP_ operatorDefList RP_
+    | SET LP_ typeDefList RP_
     | OWNER TO roleSpec
     ;
 
@@ -1164,6 +1164,22 @@ alterTypeCmd
     : ADD ATTRIBUTE tableFuncElement dropBehavior?
     | DROP ATTRIBUTE ifExists? colId dropBehavior?
     | ALTER ATTRIBUTE colId setData? TYPE typeName collateClause? dropBehavior?
+    ;
+
+typeDefList
+    : typeDefElem (COMMA_ typeDefElem)*
+    ;
+
+typeDefElem
+    : (RECEIVE | SEND | TYPMOD_IN | TYPMOD_OUT | ANALYZE | SUBSCRIPT | STORAGE) EQ_ (NONE | typeDefArg)
+    ;
+
+typeDefArg
+    : funcType
+    | reservedKeyword
+    | qualAllOp
+    | numericOnly
+    | STRING_
     ;
 
 alterUserMapping

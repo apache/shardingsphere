@@ -26,6 +26,6 @@ class WorkerIdNodeTest {
     
     @Test
     void assertGetWorkerIdGeneratorPath() {
-        assertThat(WorkerIdNode.getWorkerIdGeneratorPath("instanceId"), is("/worker_id/instanceId"));
+        assertThat(WorkerIdNode.getWorkerIdGeneratorPath("1"), is("/worker_id/1"));
     }
 }

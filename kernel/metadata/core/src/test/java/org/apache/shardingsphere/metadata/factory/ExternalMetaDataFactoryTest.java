@@ -41,7 +41,7 @@ class ExternalMetaDataFactoryTest {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
         ShardingSphereDatabase actual = ExternalMetaDataFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         assertThat(actual.getName(), is("foo_db"));
-        assertTrue(actual.getResourceMetaData().getDataSources().isEmpty());
+        assertTrue(actual.getResourceMetaData().getStorageUnits().isEmpty());
     }
     
     @Test
@@ -50,7 +50,7 @@ class ExternalMetaDataFactoryTest {
         Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
                 Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
-        assertTrue(actual.get("foo_db").getResourceMetaData().getDataSources().isEmpty());
+        assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
     }
     
     @Test
@@ -59,6 +59,6 @@ class ExternalMetaDataFactoryTest {
         Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
                 Collections.singletonMap("FOO_DB", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         assertTrue(actual.containsKey("foo_db"));
-        assertTrue(actual.get("foo_db").getResourceMetaData().getDataSources().isEmpty());
+        assertTrue(actual.get("foo_db").getResourceMetaData().getStorageUnits().isEmpty());
     }
 }

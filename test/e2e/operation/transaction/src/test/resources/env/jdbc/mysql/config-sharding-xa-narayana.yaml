@@ -100,4 +100,4 @@ transaction:
   providerType: Narayana
 
 props:
-  sql-show: false
+  sql-show: true

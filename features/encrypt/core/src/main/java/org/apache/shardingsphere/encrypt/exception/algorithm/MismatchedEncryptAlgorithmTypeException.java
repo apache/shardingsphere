@@ -18,16 +18,17 @@
 package org.apache.shardingsphere.encrypt.exception.algorithm;
 
 import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Mismatched encrypt algorithm type exception.
  */
 public final class MismatchedEncryptAlgorithmTypeException extends EncryptSQLException {
     
-    private static final long serialVersionUID = -3133058284863085899L;
+    private static final long serialVersionUID = 4258928279099223870L;
     
-    public MismatchedEncryptAlgorithmTypeException(final String columnType, final String encryptorName, final String encryptAlgorithmType) {
-        super(XOpenSQLState.GENERAL_ERROR, 81, "`%s` column's encryptor name `%s` does not match encrypt algorithm type `%s`.", columnType, encryptorName, encryptAlgorithmType);
+    public MismatchedEncryptAlgorithmTypeException(final String databaseName, final String columnType, final String encryptorName, final String algorithmFeature) {
+        super(XOpenSQLState.GENERAL_ERROR, 81, "`%s` column's encryptor `%s` should support `%s` in database `%s`.",
+                columnType, encryptorName, algorithmFeature, databaseName);
     }
 }

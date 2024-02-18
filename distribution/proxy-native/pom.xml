@@ -21,14 +21,13 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-distribution</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     
     <artifactId>shardingsphere-proxy-native-distribution</artifactId>
     
     <properties>
         <imageName>apache-shardingsphere-proxy-native</imageName>
-        <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
         <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
     </properties>
     
@@ -62,50 +61,32 @@
             <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
     
     <profiles>
         <profile>
             <id>release.native</id>
             <properties>
-                <truffle-api.version>22.3.1</truffle-api.version>
-                <jacoco.skip>true</jacoco.skip>
-                <maven.javadoc.skip>true</maven.javadoc.skip>
-                <checkstyle.skip>true</checkstyle.skip>
-                <rat.skip>true</rat.skip>
-                <spotless.apply.skip>true</spotless.apply.skip>
+                <java.version>21</java.version>
             </properties>
             <build>
                 <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>${maven-compiler-plugin.version}</version>
-                        <configuration>
-                            <source>17</source>
-                            <target>17</target>
-                            <compilerArgument>--enable-preview</compilerArgument>
-                        </configuration>
-                    </plugin>
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
                         <version>${native-maven-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <fallback>false</fallback>
-                            <verbose>true</verbose>
+                            <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
                             <buildArgs>
-                                <arg>--language:java</arg>
-                                <arg>--report-unsupported-elements-at-runtime</arg>
+                                <buildArg>-H:+AddAllCharsets</buildArg>
                             </buildArgs>
-                            <jvmArgs>
-                                <arg>--enable-preview</arg>
-                            </jvmArgs>
-                            <metadataRepository>
-                                <enabled>true</enabled>
-                            </metadataRepository>
                         </configuration>
                         <executions>
                             <execution>

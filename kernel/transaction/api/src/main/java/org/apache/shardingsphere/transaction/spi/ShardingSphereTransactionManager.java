@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
@@ -94,7 +94,7 @@ public interface ShardingSphereTransactionManager extends TypedSPI, AutoCloseabl
      * @param providerType transaction manager provider type 
      * @return contains provider type or not
      */
-    default boolean containsProviderType(String providerType) {
+    default boolean containsProviderType(final String providerType) {
         return true;
     }
     

@@ -23,9 +23,12 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSp
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.exception.connection.ConnectionClosedException;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Array;
 import java.sql.CallableStatement;
@@ -41,6 +44,8 @@ import java.sql.Statement;
  */
 public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     @Getter
     private final String databaseName;
     
@@ -49,6 +54,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Getter
     private final DriverDatabaseConnectionManager databaseConnectionManager;
+    
+    @Getter
+    private final String processId;
     
     private boolean autoCommit = true;
     
@@ -62,6 +70,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
         databaseConnectionManager = new DriverDatabaseConnectionManager(databaseName, contextManager);
+        processId = processEngine.connect(new Grantee("", ""), databaseName);
     }
     
     /**
@@ -152,7 +161,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         if (databaseConnectionManager.getConnectionTransaction().isLocalTransaction()) {
             processLocalTransaction();
         } else {
-            processDistributeTransaction();
+            processDistributedTransaction();
         }
     }
     
@@ -163,18 +172,37 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         }
     }
     
-    private void processDistributeTransaction() throws SQLException {
+    private void processDistributedTransaction() throws SQLException {
         switch (databaseConnectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit)) {
             case BEGIN:
-                databaseConnectionManager.close();
-                databaseConnectionManager.getConnectionTransaction().begin();
-                getConnectionContext().getTransactionContext().setInTransaction(true);
+                beginDistributedTransaction();
                 break;
             case COMMIT:
                 databaseConnectionManager.getConnectionTransaction().commit();
                 break;
             default:
                 break;
+        }
+    }
+    
+    private void beginDistributedTransaction() throws SQLException {
+        databaseConnectionManager.close();
+        databaseConnectionManager.getConnectionTransaction().begin();
+        getConnectionContext().getTransactionContext().setInTransaction(true);
+    }
+    
+    /**
+     * Handle auto commit.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void handleAutoCommit() throws SQLException {
+        if (!autoCommit && !databaseConnectionManager.getConnectionTransaction().isInTransaction()) {
+            if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
+                beginDistributedTransaction();
+            } else {
+                getConnectionContext().getTransactionContext().setInTransaction(true);
+            }
         }
     }
     
@@ -281,6 +309,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public void close() throws SQLException {
         closed = true;
         databaseConnectionManager.close();
+        processEngine.disconnect(processId);
     }
     
     private ConnectionContext getConnectionContext() {

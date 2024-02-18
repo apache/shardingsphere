@@ -26,8 +26,9 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -98,17 +99,11 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         return getConnection();
     }
     
-    /**
-     * Close data sources.
-     *
-     * @param dataSourceNames data source names to be closed
-     * @throws SQLException SQL exception
-     */
-    // TODO Replace public to private?
-    public void close(final Collection<String> dataSourceNames) throws SQLException {
-        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(databaseName);
-        for (String each : dataSourceNames) {
-            close(dataSourceMap.get(each));
+    @Override
+    public void close() throws SQLException {
+        contextManagerDestroyedCallback(databaseName);
+        for (StorageUnit each : contextManager.getStorageUnits(databaseName).values()) {
+            close(each.getDataSource());
         }
         contextManager.close();
     }
@@ -125,12 +120,6 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         }
     }
     
-    @Override
-    public void close() throws SQLException {
-        contextManagerDestroyedCallback(databaseName);
-        close(contextManager.getDataSourceMap(databaseName).keySet());
-    }
-    
     private void contextManagerDestroyedCallback(final String databaseName) {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
             try {
@@ -144,14 +133,14 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public int getLoginTimeout() throws SQLException {
-        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(databaseName);
-        return dataSourceMap.isEmpty() ? 0 : dataSourceMap.values().iterator().next().getLoginTimeout();
+        Map<String, StorageUnit> storageUnits = contextManager.getStorageUnits(databaseName);
+        return storageUnits.isEmpty() ? 0 : storageUnits.values().iterator().next().getDataSource().getLoginTimeout();
     }
     
     @Override
     public void setLoginTimeout(final int seconds) throws SQLException {
-        for (DataSource each : contextManager.getDataSourceMap(databaseName).values()) {
-            each.setLoginTimeout(seconds);
+        for (StorageUnit each : contextManager.getStorageUnits(databaseName).values()) {
+            each.getDataSource().setLoginTimeout(seconds);
         }
     }
 }

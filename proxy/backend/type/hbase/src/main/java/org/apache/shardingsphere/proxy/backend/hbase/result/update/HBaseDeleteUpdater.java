@@ -43,7 +43,7 @@ public final class HBaseDeleteUpdater implements HBaseUpdater {
     }
     
     @Override
-    public String getType() {
-        return MySQLDeleteStatement.class.getCanonicalName();
+    public Class<MySQLDeleteStatement> getType() {
+        return MySQLDeleteStatement.class;
     }
 }

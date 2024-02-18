@@ -17,7 +17,7 @@
 
 grammar ShadowDistSQLStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RDLStatement, RQLStatement, RALStatement;
 
 execute
     : (createShadowRule
@@ -32,5 +32,6 @@ execute
     | createDefaultShadowAlgorithm
     | alterDefaultShadowAlgorithm
     | countShadowRule
+    | showShadowAlgorithmPlugins
     ) SEMI_? EOF
     ;

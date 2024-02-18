@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.algorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 
 import java.util.Properties;

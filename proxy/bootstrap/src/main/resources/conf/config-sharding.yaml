@@ -16,10 +16,10 @@
 #
 
 ######################################################################################################
-# 
+#
 # Here you can configure the rules for the proxy.
 # This example is configuration of sharding rule.
-# 
+#
 ######################################################################################################
 #
 #databaseName: sharding_db
@@ -118,7 +118,7 @@
 #
 #dataSources:
 #  ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?useSSL=false
 #    username: root
 #    password:
 #    connectionTimeoutMilliseconds: 30000
@@ -127,7 +127,7 @@
 #    maxPoolSize: 50
 #    minPoolSize: 1
 #  ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?useSSL=false
 #    username: root
 #    password:
 #    connectionTimeoutMilliseconds: 30000

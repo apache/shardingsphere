@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -40,8 +42,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,6 +50,8 @@ import static org.mockito.Mockito.when;
 class EncryptOrderByItemTokenGeneratorTest {
     
     private final EncryptOrderByItemTokenGenerator generator = new EncryptOrderByItemTokenGenerator();
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @BeforeEach
     void setup() {
@@ -70,7 +73,7 @@ class EncryptOrderByItemTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokens() {
-        assertThat(generator.generateSQLTokens(buildSelectStatementContext()).size(), is(1));
+        assertThrows(UnsupportedEncryptSQLException.class, () -> generator.generateSQLTokens(buildSelectStatementContext()));
     }
     
     private SelectStatementContext buildSelectStatementContext() {
@@ -79,12 +82,13 @@ class EncryptOrderByItemTokenGeneratorTest {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("certificate_number"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabaseType()).thenReturn(databaseType);
         ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);
         OrderByItem orderByItem = new OrderByItem(columnOrderByItemSegment);
-        when(result.getOrderByContext().getItems()).thenReturn(Collections.singletonList(orderByItem));
+        when(result.getOrderByContext().getItems()).thenReturn(Collections.singleton(orderByItem));
         when(result.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
-        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singletonList(simpleTableSegment), DatabaseTypeFactory.get("MySQL")));
+        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singleton(simpleTableSegment), databaseType));
         return result;
     }
 }

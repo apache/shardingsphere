@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.session.query;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -43,6 +43,9 @@ public final class QueryContext {
     @Getter(AccessLevel.NONE)
     private final String databaseName;
     
+    @Getter(AccessLevel.NONE)
+    private final String schemaName;
+    
     private final HintValueContext hintValueContext;
     
     private final boolean useCache;
@@ -60,6 +63,7 @@ public final class QueryContext {
         this.sql = sql;
         parameters = params;
         databaseName = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(null) : null;
+        schemaName = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().orElse(null) : null;
         this.hintValueContext = sqlStatementContext.getSqlStatement() instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().isEmpty()
                 ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().iterator().next().getText()).orElse(hintValueContext)
                 : hintValueContext;
@@ -73,5 +77,14 @@ public final class QueryContext {
      */
     public Optional<String> getDatabaseNameFromSQLStatement() {
         return Optional.ofNullable(databaseName);
+    }
+    
+    /**
+     * Get schema name from SQL statement.
+     *
+     * @return got schema name
+     */
+    public Optional<String> getSchemaNameFromSQLStatement() {
+        return Optional.ofNullable(schemaName);
     }
 }

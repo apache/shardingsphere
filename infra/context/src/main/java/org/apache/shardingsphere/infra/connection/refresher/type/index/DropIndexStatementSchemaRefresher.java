@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.index;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -41,7 +42,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) {
+                        final String schemaName, final DatabaseType databaseType, final DropIndexStatement sqlStatement, final ConfigurationProperties props) {
         for (IndexSegment each : sqlStatement.getIndexes()) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElse(schemaName);
             Optional<String> logicTableName = findLogicTableName(database, sqlStatement, Collections.singletonList(each));
@@ -66,7 +67,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumnValues(), table.getIndexValues(), table.getConstraintValues());
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumnValues(), table.getIndexValues(), table.getConstraintValues(), table.getType());
         result.getColumnNames().addAll(table.getColumnNames());
         result.getVisibleColumns().addAll(table.getVisibleColumns());
         result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
@@ -74,7 +75,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     @Override
-    public String getType() {
-        return DropIndexStatement.class.getName();
+    public Class<DropIndexStatement> getType() {
+        return DropIndexStatement.class;
     }
 }

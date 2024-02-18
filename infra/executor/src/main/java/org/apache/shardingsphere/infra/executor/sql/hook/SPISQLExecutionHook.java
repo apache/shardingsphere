@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.hook;
 
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,9 +31,9 @@ public final class SPISQLExecutionHook implements SQLExecutionHook {
     private final Collection<SQLExecutionHook> sqlExecutionHooks = ShardingSphereServiceLoader.getServiceInstances(SQLExecutionHook.class);
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> params, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
+    public void start(final String dataSourceName, final String sql, final List<Object> params, final ConnectionProperties connectionProps, final boolean isTrunkThread) {
         for (SQLExecutionHook each : sqlExecutionHooks) {
-            each.start(dataSourceName, sql, params, dataSourceMetaData, isTrunkThread);
+            each.start(dataSourceName, sql, params, connectionProps, isTrunkThread);
         }
     }
     

@@ -18,19 +18,22 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Column segment.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
@@ -41,7 +44,24 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     private final IdentifierValue identifier;
     
+    private List<IdentifierValue> nestedObjectAttributes;
+    
     private OwnerSegment owner;
+    
+    private ColumnSegmentBoundedInfo columnBoundedInfo;
+    
+    private ColumnSegmentBoundedInfo otherUsingColumnBoundedInfo;
+    
+    private boolean isVariable;
+    
+    private List<ParenthesesSegment> parentheses = new LinkedList<>();
+    
+    public ColumnSegment(final int startIndex, final int stopIndex, final IdentifierValue identifier) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.identifier = identifier;
+        columnBoundedInfo = new ColumnSegmentBoundedInfo(identifier);
+    }
     
     /**
      * Get qualified name with quote characters.
@@ -50,7 +70,11 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
      * @return qualified name with quote characters
      */
     public String getQualifiedName() {
-        return null == owner ? identifier.getValueWithQuoteCharacters() : String.join(".", owner.getIdentifier().getValueWithQuoteCharacters(), identifier.getValueWithQuoteCharacters());
+        String column = identifier.getValueWithQuoteCharacters();
+        if (null != nestedObjectAttributes && !nestedObjectAttributes.isEmpty()) {
+            column = String.join(".", column, nestedObjectAttributes.stream().map(IdentifierValue::getValueWithQuoteCharacters).collect(Collectors.joining(".")));
+        }
+        return null == owner ? column : String.join(".", owner.getIdentifier().getValueWithQuoteCharacters(), column);
     }
     
     /**
@@ -59,7 +83,11 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
      * @return expression
      */
     public String getExpression() {
-        return null == owner ? identifier.getValue() : String.join(".", owner.getIdentifier().getValue(), identifier.getValue());
+        String column = identifier.getValue();
+        if (null != nestedObjectAttributes && !nestedObjectAttributes.isEmpty()) {
+            column = String.join(".", column, nestedObjectAttributes.stream().map(IdentifierValue::getValue).collect(Collectors.joining(".")));
+        }
+        return null == owner ? column : String.join(".", owner.getIdentifier().getValue(), column);
     }
     
     @Override

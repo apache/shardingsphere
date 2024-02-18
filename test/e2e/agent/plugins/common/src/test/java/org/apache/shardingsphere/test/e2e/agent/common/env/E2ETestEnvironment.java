@@ -135,7 +135,7 @@ public final class E2ETestEnvironment {
     private boolean waitForJdbcEnvironmentReady() {
         log.info("Jdbc project with agent environment initializing ...");
         try {
-            Awaitility.await().atMost(2L, TimeUnit.MINUTES).pollInterval(5L, TimeUnit.SECONDS).until(() -> isJdbcReady());
+            Awaitility.await().atMost(2L, TimeUnit.MINUTES).pollInterval(5L, TimeUnit.SECONDS).until(this::isJdbcReady);
         } catch (final ConditionTimeoutException ignored) {
             log.info("Jdbc project with agent environment initialization failed ...");
             return false;

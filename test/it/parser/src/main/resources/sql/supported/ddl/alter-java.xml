@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="alter_java" value="ALTER JAVA CLASS &quot;Agent&quot; RESOLVER ((&quot;/usr/bin/bfile_dir/*&quot; pm)(* public)) RESOLVE;" db-types="Oracle" />
+    <sql-case id="alter_java_source_compile" value="ALTER JAVA SOURCE jsource_1 COMPILE" db-types="Oracle" />
 </sql-cases>

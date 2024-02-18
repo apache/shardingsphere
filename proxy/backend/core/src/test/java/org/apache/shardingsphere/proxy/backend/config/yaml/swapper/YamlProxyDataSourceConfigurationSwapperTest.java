@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;

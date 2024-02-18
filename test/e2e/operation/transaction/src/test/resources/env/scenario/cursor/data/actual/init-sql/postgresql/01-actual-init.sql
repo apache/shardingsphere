@@ -26,11 +26,11 @@
 -- limitations under the License.
 --
 
-DROP DATABASE IF EXISTS transaction_it_0;
-CREATE DATABASE transaction_it_0;
+DROP DATABASE IF EXISTS ds_0;
+CREATE DATABASE ds_0;
 
-DROP DATABASE IF EXISTS transaction_it_1;
-CREATE DATABASE transaction_it_1;
+DROP DATABASE IF EXISTS ds_1;
+CREATE DATABASE ds_1;
 
-DROP DATABASE IF EXISTS transaction_it_2;
-CREATE DATABASE transaction_it_2;
+DROP DATABASE IF EXISTS ds_2;
+CREATE DATABASE ds_2;

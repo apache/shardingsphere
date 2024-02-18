@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.statistics.collector;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 import java.util.Map;

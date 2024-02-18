@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.sharding.merge.dal;
 
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowIndexMergedResult;
@@ -138,7 +139,7 @@ class ShardingDALResultMergerTest {
         TablesContext tablesContext = mock(TablesContext.class);
         when(result.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
-        when(result.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }
 }

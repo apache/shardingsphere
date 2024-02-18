@@ -46,6 +46,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowDefaultShardingStrategyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingAuditorsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingKeyGeneratorsContext;
@@ -62,41 +63,42 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.StorageUnitsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.TableReferenceRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterDefaultShardingStrategyStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableReferenceRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CountShardingRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableReferenceRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropDefaultShardingStrategyStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAuditorStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingKeyGeneratorStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableReferenceRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowDefaultShardingStrategyStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAuditorsStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingKeyGeneratorsStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableReferenceRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAlgorithmStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAuditorStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAlgorithmsStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAuditorsStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingKeyGeneratorsStatement;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingAuditorSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.statement.AlterDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableReferenceRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.CreateDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableReferenceRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.DropDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAlgorithmStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAuditorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableReferenceRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.DropShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAuditorsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableReferenceRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedAlgorithmStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedAuditorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAuditorsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
@@ -273,8 +275,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if ("none".equalsIgnoreCase(strategyType)) {
             return new ShardingStrategySegment(strategyType, null, null);
         }
-        AlgorithmSegment algorithmSegment = null != ctx.shardingAlgorithm().algorithmDefinition() ? (AlgorithmSegment) visitAlgorithmDefinition(ctx.shardingAlgorithm().algorithmDefinition()) : null;
-        String shardingColumn = null != ctx.shardingColumnDefinition() ? buildShardingColumn(ctx.shardingColumnDefinition()) : null;
+        AlgorithmSegment algorithmSegment = null == ctx.shardingAlgorithm().algorithmDefinition() ? null : (AlgorithmSegment) visitAlgorithmDefinition(ctx.shardingAlgorithm().algorithmDefinition());
+        String shardingColumn = null == ctx.shardingColumnDefinition() ? null : buildShardingColumn(ctx.shardingColumnDefinition());
         return new ShardingStrategySegment(strategyType, shardingColumn, algorithmSegment);
     }
     
@@ -398,6 +400,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitCountShardingRule(final CountShardingRuleContext ctx) {
-        return new CountShardingRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "SHARDING");
+    }
+    
+    @Override
+    public ASTNode visitShowShardingAlgorithmPlugins(final ShowShardingAlgorithmPluginsContext ctx) {
+        return new ShowPluginsStatement("SHARDING_ALGORITHM");
     }
 }

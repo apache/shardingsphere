@@ -46,7 +46,7 @@ public final class PgNamespaceTableCollector implements ShardingSphereStatistics
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
         Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtils.collectRowData(shardingSphereDatabases.get(databaseName),
-                SELECT_SQL, table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()));
+                table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()), SELECT_SQL);
         ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE);
         result.getRows().addAll(rows);
         return Optional.of(result);

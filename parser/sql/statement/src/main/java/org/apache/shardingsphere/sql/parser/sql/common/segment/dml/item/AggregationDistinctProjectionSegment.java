@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 @Getter
 public final class AggregationDistinctProjectionSegment extends AggregationProjectionSegment {
     
-    private final String distinctExpression;
+    private final String distinctInnerExpression;
     
-    public AggregationDistinctProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String innerExpression, final String distinctExpression) {
-        super(startIndex, stopIndex, type, innerExpression);
-        this.distinctExpression = SQLUtils.getExpressionWithoutOutsideParentheses(distinctExpression);
+    public AggregationDistinctProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression, final String distinctExpression) {
+        super(startIndex, stopIndex, type, expression);
+        this.distinctInnerExpression = SQLUtils.getExpressionWithoutOutsideParentheses(distinctExpression);
     }
 }

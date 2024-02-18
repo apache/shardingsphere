@@ -97,10 +97,10 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     private void assertShardingCache(final YamlShardingRuleConfiguration actual) {
         YamlShardingCacheConfiguration actualShardingCache = actual.getShardingCache();
         assertThat(actualShardingCache.getAllowedMaxSqlLength(), is(512));
-        YamlShardingCacheOptionsConfiguration actualRouteCacheConfiguration = actualShardingCache.getRouteCache();
-        assertThat(actualRouteCacheConfiguration.getInitialCapacity(), is(65536));
-        assertThat(actualRouteCacheConfiguration.getMaximumSize(), is(262144));
-        assertTrue(actualRouteCacheConfiguration.isSoftValues());
+        YamlShardingCacheOptionsConfiguration actualRouteCacheConfig = actualShardingCache.getRouteCache();
+        assertThat(actualRouteCacheConfig.getInitialCapacity(), is(65536));
+        assertThat(actualRouteCacheConfig.getMaximumSize(), is(262144));
+        assertTrue(actualRouteCacheConfig.isSoftValues());
     }
     
     private void assertProps(final YamlRootConfiguration actual) {

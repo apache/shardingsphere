@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 /**
  * Governance watcher factory.

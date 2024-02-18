@@ -19,9 +19,8 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -37,9 +36,10 @@ class VersionValueProviderTest {
     
     @Test
     void assertGetValue() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         try (MockedStatic<DatabaseProtocolServerInfo> mockedStatic = Mockito.mockStatic(DatabaseProtocolServerInfo.class)) {
-            mockedStatic.when(() -> DatabaseProtocolServerInfo.getProtocolVersion(null, TypedSPILoader.getService(DatabaseType.class, "MySQL"))).thenReturn("8.0");
-            ConnectionSession connectionSession = new ConnectionSession(new MySQLDatabaseType(), TransactionType.LOCAL, new DefaultAttributeMap());
+            mockedStatic.when(() -> DatabaseProtocolServerInfo.getProtocolVersion(null, databaseType)).thenReturn("8.0");
+            ConnectionSession connectionSession = new ConnectionSession(databaseType, TransactionType.LOCAL, new DefaultAttributeMap());
             assertThat(new VersionValueProvider().get(Scope.GLOBAL, connectionSession, MySQLSystemVariable.VERSION), is("8.0"));
         }
     }

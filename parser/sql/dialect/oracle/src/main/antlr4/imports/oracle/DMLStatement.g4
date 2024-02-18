@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Comments, DDLStatement;
+import Comments, BaseRule;
 
 insert
     : INSERT hint? (insertSingleTable | insertMultiTable)
@@ -111,7 +111,7 @@ updateSetColumnClause
     ;
 
 updateSetValueClause
-    : VALUE LP_ alias RP_ EQ_ (expr | LP_ selectSubquery RP_)
+    : VALUE LP_ columnName RP_ EQ_ (expr | LP_ selectSubquery RP_)
     ;
 
 assignmentValues
@@ -136,11 +136,11 @@ select
     ;
 
 selectSubquery
-    : (queryBlock | selectCombineClause | parenthesisSelectSubquery) orderByClause? rowLimitingClause
+    : selectSubquery combineType selectSubquery | ((queryBlock | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause)
     ;
 
-selectCombineClause
-    : ((queryBlock | parenthesisSelectSubquery) orderByClause? rowLimitingClause) ((UNION ALL? | INTERSECT | MINUS) selectSubquery)+
+combineType
+    : UNION ALL? | INTERSECT | MINUS
     ;
 
 parenthesisSelectSubquery
@@ -148,7 +148,19 @@ parenthesisSelectSubquery
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    : withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    ;
+
+selectIntoClause
+    : (BULK COLLECT)? INTO variableNames
+    ;
+
+variableNames
+    : variableName (COMMA_ variableName)*
+    ;
+
+variableName
+    : identifier | stringLiterals
     ;
 
 withClause
@@ -431,15 +443,7 @@ fromClauseOption
     | LP_ joinClause RP_
     | selectTableReference
     | inlineAnalyticView
-    | xmlTable
-    ;
-
-xmlTable
-    : tableName alias? COMMA_ xmlTableFunction xmlTableFunctionAlias
-    ;
-
-xmlTableFunctionAlias
-    : alias
+    | (regularFunction | xmlTableFunction) alias?
     ;
 
 selectTableReference
@@ -452,7 +456,11 @@ queryTableExprClause
 
 flashbackQueryClause
     : VERSIONS (BETWEEN (SCN | TIMESTAMP) | PERIOD FOR validTimeColumn BETWEEN) (expr | MINVALUE) AND (expr | MAXVALUE)
-    | AS OF ((SCN | TIMESTAMP) expr | PERIOD FOR validTimeColumn expr)
+    | AS OF ((SCN | TIMESTAMP) (expr | intervalExprClause) | PERIOD FOR validTimeColumn expr)
+    ;
+
+intervalExprClause
+    : LP_ SYSTIMESTAMP  (PLUS_ | MINUS_)  INTERVAL (INTEGER_ | STRING_) (HOUR | MINUTE | SECOND) RP_
     ;
 
 queryTableExpr
@@ -470,8 +478,7 @@ queryTableExprSampleClause
     : (queryTableExprTableClause
     | queryTableExprViewClause
     | hierarchyName
-    | queryTableExprAnalyticClause
-    | (owner DOT_)? inlineExternalTable) sampleClause?
+    | queryTableExprAnalyticClause) sampleClause?
     ;
 
 queryTableExprTableClause
@@ -484,10 +491,6 @@ queryTableExprViewClause
 
 queryTableExprAnalyticClause
     : analyticViewName (HIERARCHIES LP_ ((attrDim DOT_)? hierarchyName (COMMA_ (attrDim DOT_)? hierarchyName)*)? RP_)?
-    ;
-
-inlineExternalTable
-    : EXTERNAL LP_ LP_ columnDefinition (COMMA_ columnDefinition)* RP_ inlineExternalTableProperties RP_
     ;
 
 inlineExternalTableProperties
@@ -510,7 +513,7 @@ modifyExternalTableProperties
 
 pivotClause
     : PIVOT XML?
-    LP_ aggregationFunctionName LP_ expr RP_ (AS? alias)? (COMMA_ aggregationFunctionName LP_ expr RP_ (AS? alias)?)* pivotForClause pivotInClause RP_
+    LP_ aggregationFunction (AS? alias)? (COMMA_ aggregationFunction (AS? alias)?)* pivotForClause pivotInClause RP_
     ;
 
 pivotForClause
@@ -518,9 +521,13 @@ pivotForClause
     ;
 
 pivotInClause
-    : IN LP_ ((expr | exprList) (AS? alias)? (COMMA_ (expr | exprList) (AS? alias)?)*
+    : IN LP_ (pivotInClauseExpr (COMMA_ pivotInClauseExpr)*
     | selectSubquery
     | ANY (COMMA_ ANY)*) RP_
+    ;
+
+pivotInClauseExpr
+    : (expr | exprList) (AS? alias)?
     ;
 
 unpivotClause
@@ -528,7 +535,11 @@ unpivotClause
     ;
 
 unpivotInClause
-    : IN LP_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))? (COMMA_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?)* RP_
+    : IN LP_ unpivotInClauseExpr (COMMA_ unpivotInClauseExpr)* RP_
+    ;
+
+unpivotInClauseExpr
+    : (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?
     ;
 
 sampleClause
@@ -703,7 +714,7 @@ hint
     ;
 
 intoClause
-    : INTO (tableName | viewName) alias?
+    : INTO (tableName | viewName | subquery) alias?
     ;
 
 usingClause

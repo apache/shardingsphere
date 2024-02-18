@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedConstraintDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedConvertTableDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyColumnDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyCollectionRetrievalDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameIndexDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
@@ -56,6 +57,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "add-constraint")
     private final List<ExpectedConstraintDefinition> addConstraints = new LinkedList<>();
     
+    @XmlElement(name = "modify-constraint")
+    private final List<ExpectedConstraintDefinition> modifyConstraints = new LinkedList<>();
+    
     @XmlElement(name = "modify-column")
     private final List<ExpectedModifyColumnDefinition> modifyColumns = new LinkedList<>();
     
@@ -70,4 +74,7 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "drop-column")
     private final List<ExpectedColumn> dropColumns = new LinkedList<>();
+    
+    @XmlElement(name = "modify-collection-retrieval")
+    private ExpectedModifyCollectionRetrievalDefinition modifyCollectionRetrievalDefinition;
 }

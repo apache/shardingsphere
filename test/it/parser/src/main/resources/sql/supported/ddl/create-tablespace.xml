@@ -25,4 +25,88 @@
     <sql-case id="create_undo_tablespace_for_myisam" value="CREATE UNDO TABLESPACE ndb_ts1 ADD DATAFILE 'ndb_ts1.dat' USE LOGFILE GROUP ndb_lg1 ENGINE=MyISAM" db-types="MySQL" />
     <sql-case id="create_permanent_tablespace_online" value="CREATE TABLESPACE test_space ONLINE" db-types="Oracle" />
     <sql-case id="create_permanent_tablespace_offline" value="CREATE TABLESPACE test_space OFFLINE" db-types="Oracle" />
+    <sql-case id="create_permanent_tablespace_bigfile" value="CREATE BIGFILE TABLESPACE test_space ONLINE" db-types="Oracle" />
+    <sql-case id="create_permanent_tablespace_smallfile" value="CREATE SMALLFILE TABLESPACE test_space ONLINE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_multi_filespecification" value="CREATE
+        DATAFILE 'disk1:df1.dbf' AUTOEXTEND ON,
+        'disk2:df2.dbf' AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
+        TABLESPACE test_space ONLINE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_filespecification_next" value="CREATE
+         DATAFILE '/u01/app/oracle/oradata/newcdb/system01.dbf'
+         SIZE 700M REUSE AUTOEXTEND ON NEXT 10240K MAXSIZE UNLIMITED
+         TABLESPACE test_space ONLINE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_filespecification" value="CREATE
+         DATAFILE '/u01/app/oracle/oradata/pdbseed/usertbs01.dbf'
+         SIZE 200M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
+         TABLESPACE test_space ONLINE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_k" value="CREATE TABLESPACE test_space MINIMUM EXTEND 1K" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_m" value="CREATE TABLESPACE test_space MINIMUM EXTEND 12M" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_g" value="CREATE TABLESPACE test_space MINIMUM EXTEND 31G" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_t" value="CREATE TABLESPACE test_space MINIMUM EXTEND 13T" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_p" value="CREATE TABLESPACE test_space MINIMUM EXTEND 41P" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_minimum_extend_e" value="CREATE TABLESPACE test_space MINIMUM EXTEND 14E" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_blocksize" value="CREATE TABLESPACE test_space BLOCKSIZE 8K" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_logging_clause" value="CREATE TABLESPACE test_space LOGGING" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_nologging_clause" value="CREATE TABLESPACE test_space NOLOGGING" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_filesystem_like_logging" value="CREATE TABLESPACE test_space FILESYSTEM_LIKE_LOGGING" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_force_logging" value="CREATE TABLESPACE test_space FORCE LOGGING" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_encrypt" value="CREATE TABLESPACE test_space ENCRYPTION USING 'encrypt_algorithm'" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_compress" value="CREATE TABLESPACE test_space DEFAULT COMPRESS" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_nocompress" value="CREATE TABLESPACE test_space DEFAULT NOCOMPRESS" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_compress_basic" value="CREATE TABLESPACE test_space DEFAULT COMPRESS BASIC" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_query_low" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR QUERY LOW" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_query_high" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR QUERY HIGH" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_query" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR QUERY" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_archive_high" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR ARCHIVE HIGH" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_archive_low" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR ARCHIVE LOW" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_archive" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR ARCHIVE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_oltp" value="CREATE TABLESPACE test_space DEFAULT COMPRESS FOR OLTP" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_initial" value="CREATE TABLESPACE test_space DEFAULT STORAGE (INITIAL 1K)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_next" value="CREATE TABLESPACE test_space DEFAULT STORAGE (NEXT 1K)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_minextents" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MINEXTENTS 2)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_maxextents" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MAXEXTENTS 2)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_maxextents_unlimited" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MAXEXTENTS UNLIMITED)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_maxsize_unlimited" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MAXSIZE UNLIMITED)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_maxsize" value="CREATE TABLESPACE test_space DEFAULT STORAGE (MAXSIZE 3)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_pctincrease" value="CREATE TABLESPACE test_space DEFAULT STORAGE (PCTINCREASE 3)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_freelists" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FREELISTS 3)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_freelist_group" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FREELIST GROUPS 3)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_optimal_integer" value="CREATE TABLESPACE test_space DEFAULT STORAGE (OPTIMAL 34M)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_optimal" value="CREATE TABLESPACE test_space DEFAULT STORAGE (OPTIMAL)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_optimal_null" value="CREATE TABLESPACE test_space DEFAULT STORAGE (OPTIMAL NULL)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_buffer_pool_keep" value="CREATE TABLESPACE test_space DEFAULT STORAGE (BUFFER_POOL KEEP)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_buffer_pool_recycle" value="CREATE TABLESPACE test_space DEFAULT STORAGE (BUFFER_POOL RECYCLE)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_buffer_pool_default" value="CREATE TABLESPACE test_space DEFAULT STORAGE (BUFFER_POOL DEFAULT)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_flashcache_keep" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FLASH_CACHE KEEP)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_flashcache_none" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FLASH_CACHE NONE)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_flashcache_default" value="CREATE TABLESPACE test_space DEFAULT STORAGE (FLASH_CACHE DEFAULT)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_storage_encrypt" value="CREATE TABLESPACE test_space DEFAULT STORAGE (ENCRYPT)" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_extent_management" value="CREATE TABLESPACE test_space EXTENT MANAGEMENT LOCAL" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_extent_management_autoallocate" value="CREATE TABLESPACE test_space EXTENT MANAGEMENT LOCAL AUTOALLOCATE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_extent_management_uniform_size" value="CREATE TABLESPACE test_space EXTENT MANAGEMENT LOCAL UNIFORM SIZE 5K" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_extent_management_uniform" value="CREATE TABLESPACE test_space EXTENT MANAGEMENT LOCAL UNIFORM" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_segment_auto" value="CREATE TABLESPACE test_space SEGMENT SPACE MANAGEMENT AUTO" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_segment_manual" value="CREATE TABLESPACE test_space SEGMENT SPACE MANAGEMENT MANUAL" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_flashback_on" value="CREATE TABLESPACE test_space FLASHBACK ON" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_flashback_off" value="CREATE TABLESPACE test_space FLASHBACK OFF" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary" value="CREATE TEMPORARY TABLESPACE test_space" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_spec" value="CREATE TEMPORARY TABLESPACE test_space TEMPFILE file_specification1, file_specification2" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_tablespace_group" value="CREATE TEMPORARY TABLESPACE test_space ON TABLESPACE GROUP tablespace_group_name" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_extent" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_extent_autoallocate" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL AUTOALLOCATE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_extent_uniform_size" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL UNIFORM SIZE 5K" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_tempfile_spec" value="CREATE TEMPORARY TABLESPACE lmtemp TEMPFILE '/u02/oracle/data/lmtemp01.dbf' SIZE 20M REUSE EXTENT MANAGEMENT LOCAL UNIFORM SIZE 16M;" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_tempfile_spec_group" value="CREATE TEMPORARY TABLESPACE lmtemp3 TEMPFILE '/u02/oracle/data/lmtemp301.dbf'SIZE 25M TABLESPACE GROUP group1;" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_tempfile_spec_extent_management" value="CREATE TEMPORARY TABLESPACE tbs_t1 TEMPFILE 'tbs_t1.f' SIZE 50m REUSE AUTOEXTEND ON MAXSIZE UNLIMITED EXTENT MANAGEMENT LOCAL UNIFORM SIZE 64K;" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_tempfile_spec_size_autoextend" value="CREATE TEMPORARY TABLESPACE temp_demo TEMPFILE 'temp01.dbf' SIZE 5M AUTOEXTEND ON;" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_tempfile_spec_size_autoextend_group" value="CREATE TEMPORARY TABLESPACE tbs_temp_02 TEMPFILE 'temp02.dbf' SIZE 5M AUTOEXTEND ON TABLESPACE GROUP tbs_grp_01;" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_temporary_extent_uniform" value="CREATE TEMPORARY TABLESPACE test_space EXTENT MANAGEMENT LOCAL UNIFORM" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace" value="CREATE UNDO TABLESPACE tablespaceName" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_spec" value="CREATE UNDO TABLESPACE tablespaceName DATATFILE file_specification" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_extent" value="CREATE UNDO TABLESPACE tablespaceName EXTENT MANAGEMENT LOCAL" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_extent_autoallocate" value="CREATE UNDO TABLESPACE tablespaceName EXTENT MANAGEMENT LOCAL AUTOALLOCATE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_extent_uniform" value="CREATE UNDO TABLESPACE tablespaceName EXTENT MANAGEMENT LOCAL UNIFORM SIZE 5K" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_retention_guarantee" value="CREATE UNDO TABLESPACE tablespaceName RETENTION GUARANTEE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_undo_tablespace_retention_noguarantee" value="CREATE UNDO TABLESPACE tablespaceName RETENTION NOGUARANTEE" db-types="Oracle" />
+    <sql-case id="create_tablespace_with_relative_location" value="CREATE TABLESPACE example2 RELATIVE LOCATION 'tablespace2/tablespace_2'" db-types="openGauss" />
 </sql-cases>

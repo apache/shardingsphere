@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.route.engine.condition;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -178,9 +178,8 @@ public final class ShardingConditions {
         return true;
     }
     
-    private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
-        return shardingValue1.getTableName().equals(shardingValue2.getTableName())
-                && shardingValue1.getColumnName().equals(shardingValue2.getColumnName()) || isBindingTable(shardingRule, shardingValue1, shardingValue2);
+    private boolean isSameShardingCondition(final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
+        return shardingValue1.getTableName().equals(shardingValue2.getTableName()) && shardingValue1.getColumnName().equals(shardingValue2.getColumnName());
     }
     
     private Collection<String> findHintStrategyTables(final SQLStatementContext sqlStatementContext) {
@@ -208,7 +207,10 @@ public final class ShardingConditions {
     }
     
     private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
-        return isSameShardingCondition(shardingRule, shardingValue1, shardingValue2) && isSameShardingValue(shardingValue1, shardingValue2);
+        if (isBindingTable(shardingRule, shardingValue1, shardingValue2)) {
+            return true;
+        }
+        return isSameShardingCondition(shardingValue1, shardingValue2) && isSameShardingValue(shardingValue1, shardingValue2);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

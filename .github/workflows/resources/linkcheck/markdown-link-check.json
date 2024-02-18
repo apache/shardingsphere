@@ -14,6 +14,15 @@
     },
     {
       "pattern": "^https://central.sonatype.com/"
+    },
+    {
+      "pattern": "^https://starchart.cc/"
+    },
+    {
+      "pattern": "^https://www.apiseven.com"
+    },
+    {
+      "pattern": "^https://whimsy.apache.org"
     }
   ], "replacementPatterns": [
   {

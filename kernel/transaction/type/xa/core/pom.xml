@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-transaction-xa</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <name>${project.artifactId}</name>
@@ -40,7 +40,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-fixture-jdbc</artifactId>
+            <artifactId>shardingsphere-test-fixture-database</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -50,8 +50,8 @@
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>

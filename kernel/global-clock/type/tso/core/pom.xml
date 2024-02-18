@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-global-clock-tso</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-global-clock-tso-core</artifactId>
     <name>${project.artifactId}</name>
@@ -32,12 +32,7 @@
             <artifactId>shardingsphere-global-clock-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-fixture-infra</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-global-clock-tso-spi</artifactId>
@@ -48,6 +43,13 @@
             <artifactId>shardingsphere-global-clock-tso-provider-redis</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-fixture-database</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

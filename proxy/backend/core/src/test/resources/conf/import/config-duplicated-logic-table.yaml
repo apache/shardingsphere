@@ -19,7 +19,8 @@ databaseName: sharding_db
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
+    url: jdbc:mock://127.0.0.1/demo_ds_0
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +29,8 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 1
   ds_1:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
+    url: jdbc:mock://127.0.0.1/demo_ds_1
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -64,7 +66,7 @@ rules:
         shardingStrategy:
           standard:
             shardingColumn: order_id
-            shardingAlgorithmName: auto-mod
+            shardingAlgorithmName: auto_mod
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
@@ -90,7 +92,7 @@ rules:
         type: INLINE
         props:
           algorithm-expression: t_order_item_${order_id % 2}
-      auto-mod:
+      auto_mod:
         type: MOD
         props:
           sharding-count: 4

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;

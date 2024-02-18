@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.junit.jupiter.api.Test;

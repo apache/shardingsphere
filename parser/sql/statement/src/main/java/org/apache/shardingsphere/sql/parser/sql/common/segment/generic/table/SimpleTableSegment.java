@@ -23,8 +23,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -41,6 +44,17 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     
     @Setter
     private AliasSegment alias;
+    
+    private final Collection<IndexHintSegment> indexHintSegments = new LinkedList<>();
+    
+    @Setter
+    private PivotSegment pivot;
+    
+    @Setter
+    private IdentifierValue dbLink;
+    
+    @Setter
+    private IdentifierValue at;
     
     @Override
     public int getStartIndex() {
@@ -60,6 +74,14 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
         return Optional.ofNullable(owner);
     }
     
+    public Optional<IdentifierValue> getDbLink() {
+        return Optional.ofNullable(dbLink);
+    }
+    
+    public Optional<IdentifierValue> getAt() {
+        return Optional.ofNullable(at);
+    }
+    
     @Override
     public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
@@ -68,5 +90,23 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     @Override
     public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
+    }
+    
+    /**
+     * Get alias segment.
+     * 
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
+    }
+    
+    /**
+     * Get pivot segment.
+     * 
+     * @return pivot segment
+     */
+    public Optional<PivotSegment> getPivot() {
+        return Optional.ofNullable(pivot);
     }
 }

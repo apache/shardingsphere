@@ -66,6 +66,6 @@ public final class MaskAlgorithmChangedProcessor implements RuleItemConfiguratio
     
     @Override
     public String getType() {
-        return MaskRuleNodePathProvider.RULE_TYPE + "." + MaskRuleNodePathProvider.ALGORITHMS;
+        return MaskRuleNodePathProvider.RULE_TYPE + "." + MaskRuleNodePathProvider.MASK_ALGORITHMS;
     }
 }

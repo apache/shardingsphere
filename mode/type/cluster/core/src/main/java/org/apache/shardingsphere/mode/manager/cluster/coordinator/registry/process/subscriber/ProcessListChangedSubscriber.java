@@ -27,8 +27,8 @@ import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessCompletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesEvent;
 
@@ -39,7 +39,6 @@ import java.util.Collection;
 /**
  * Process list changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class ProcessListChangedSubscriber {
     
     private final RegistryCenter registryCenter;
@@ -95,7 +94,8 @@ public final class ProcessListChangedSubscriber {
         }
         Process process = ProcessRegistry.getInstance().get(event.getProcessId());
         if (null != process) {
-            for (Statement each : process.getProcessStatements()) {
+            process.setInterrupted(true);
+            for (Statement each : process.getProcessStatements().values()) {
                 each.cancel();
             }
         }

@@ -20,7 +20,7 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
+    : withClause? INSERT top? INTO? tableName (AS? alias)? withTableHint?  (insertDefaultValue | insertValuesClause | insertSelectClause | insertExecClause)
     ;
 
 insertDefaultValue
@@ -35,12 +35,24 @@ insertSelectClause
     : columnNames? outputClause? select
     ;
 
+insertExecClause
+    : columnNames? exec
+    ;
+
+withTableHint
+    : WITH? LP_ (tableHintLimited+) RP_
+    ;
+
+exec
+    : (EXEC | EXECUTE) procedureName (expr (COMMA_ expr)*)?
+    ;
+
 update
-    : withClause? UPDATE top? tableReferences setAssignmentsClause whereClause? (OPTION queryHint)?
+    : withClause? UPDATE top? tableReferences withTableHint? setAssignmentsClause outputClause? whereClause? optionHint?
     ;
 
 assignment
-    : columnName EQ_ assignmentValue
+    : columnName ((PLUS_ | MINUS_ | ASTERISK_ | SLASH_ | MOD_)? EQ_ | DOT_) assignmentValue
     ;
 
 setAssignmentsClause
@@ -49,6 +61,7 @@ setAssignmentsClause
 
 assignmentValues
     : LP_ assignmentValue (COMMA_ assignmentValue)* RP_
+    | assignmentValue
     | LP_ RP_
     ;
 
@@ -57,7 +70,11 @@ assignmentValue
     ;
 
 delete
-    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause? (OPTION queryHint)?
+    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause? optionHint?
+    ;
+
+optionHint
+    : OPTION queryHint
     ;
 
 singleTableClause
@@ -81,7 +98,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? forClause?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
     ;
 
 duplicateSpecification
@@ -89,15 +106,18 @@ duplicateSpecification
     ;
 
 projections
-    : (unqualifiedShorthand | projection) (COMMA_ projection)*
+    : (projection | top projection?) (COMMA_ projection)*
     ;
 
 projection
-    : (top | columnName | expr) (AS? alias)? | qualifiedShorthand
+    : qualifiedShorthand
+    | unqualifiedShorthand
+    | (alias EQ_)? (columnName | expr)
+    | (columnName | expr) (AS? alias)?
     ;
 
 top
-    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_)?
+    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ (AS? alias)?)?
     ;
 
 topNum
@@ -110,6 +130,10 @@ unqualifiedShorthand
 
 qualifiedShorthand
     : identifier DOT_ASTERISK_
+    ;
+
+intoClause
+    : INTO tableName
     ;
 
 fromClause
@@ -125,12 +149,13 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : tableName (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias)? | LP_ tableReferences RP_
     ;
 
 joinedTable
     : NATURAL? ((INNER | CROSS)? JOIN) tableFactor joinSpecification?
     | NATURAL? (LEFT | RIGHT | FULL) OUTER? JOIN tableFactor joinSpecification?
+    | (CROSS | OUTER) APPLY tableFactor joinSpecification?
     ;
 
 joinSpecification
@@ -153,6 +178,10 @@ subquery
     : LP_ aggregationClause RP_
     ;
 
+withTempTable
+    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_
+    ;
+
 withClause
     : WITH cteClauseSet
     ;
@@ -170,7 +199,11 @@ outputClause
     ;
 
 outputWithColumns
-    : outputWithColumn (COMMA_ outputWithColumn)*
+    : (outputWithColumn | scalarExpression) (COMMA_ (outputWithColumn | scalarExpression))*
+    ;
+
+scalarExpression
+    : expr (AS? alias)?
     ;
 
 outputWithColumn
@@ -182,7 +215,7 @@ outputWithAaterisk
     ;
 
 outputTableName
-    : (AT_ name) | tableName
+    : tableName
     ;
 
 queryHint
@@ -202,7 +235,7 @@ queryHint
     | MAXDOP INT_NUM_
     | MAXRECURSION INT_NUM_
     | NO_PERFORMANCE_SPOOL
-    | OPTIMIZE FOR LP_ AT_ name (UNKNOWN | EQ_ identifier)* RP_
+    | LP_ OPTIMIZE FOR LP_ variableName (UNKNOWN | EQ_ literals)* RP_ RP_
     | OPTIMIZE FOR UNKNOWN
     | PARAMETERIZATION (SIMPLE | FORCED)
     | QUERYTRACEON INT_NUM_

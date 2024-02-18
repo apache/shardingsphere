@@ -19,7 +19,7 @@ databaseName: encrypt_db
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_0?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_0?useSSL=false
     username: root
     password: 12345678
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 1
   ds_1:
-    url: jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_1?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_1?useSSL=false
     username: root
     password: 12345678
     connectionTimeoutMilliseconds: 30000
@@ -44,12 +44,8 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
-    rc4_encryptor:
-      type: RC4
-      props:
-        rc4-key-value: 123456abc
     like_encryptor:
-      type: CHAR_DIGEST_LIKE
+      type: CORE.QUERY_LIKE.FIXTURE
   tables:
     t_encrypt:
       columns:
@@ -59,11 +55,11 @@ rules:
             encryptorName: aes_encryptor
           assistedQuery:
             name: user_assisted
-            encryptorName: rc4_encryptor
+            encryptorName: aes_encryptor
           likeQuery:
             name: user_like
             encryptorName: like_encryptor
         order_id:
           cipher:
             name: order_cipher
-            encryptorName: rc4_encryptor
+            encryptorName: aes_encryptor

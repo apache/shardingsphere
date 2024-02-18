@@ -19,6 +19,10 @@ lexer grammar OracleKeyword;
 
 import Alphabet;
 
+BEQUEATH
+    : B E Q U E A T H
+    ;
+
 BINARY
     : B I N A R Y
     ;
@@ -57,6 +61,10 @@ CASCADE
 
 CHECK
     : C H E C K
+    ;
+
+CONVERSION
+    : C O N V E R S I O N
     ;
 
 GENERATED
@@ -217,6 +225,10 @@ DEFERRED
 
 DIRECTORY
     : D I R E C T O R Y
+    ;
+
+DIRECT_PATH
+    : D I R E C T UL_ P A T H
     ;
 
 CREDENTIALS
@@ -1739,6 +1751,10 @@ APPLY
     : A P P L Y
     ;
 
+APPROX_RANK
+    : A P P R O X UL_ R A N K
+    ;
+
 MAXIMIZE
     : M A X I M I Z E
     ;
@@ -2941,6 +2957,10 @@ ENFORCED
 
 TRUSTED
     : T R U S T E D
+    ;
+
+TRUST
+    : T R U S T
     ;
 
 ID
@@ -4372,6 +4392,10 @@ ITERATION_NUMBER
     :I T E R A T I O N UL_ N U M B E R
     ;
 
+INACTIVE_ACCOUNT_TIME
+    : I N A C T I V E UL_ A C C O U N T UL_ T I M E
+    ;
+
 KERBEROS
     :K E R B E R O S
     ;
@@ -5360,6 +5384,10 @@ PARITY
     :P A R I T Y
     ;
 
+PARTIAL
+    : P A R T I A L
+    ;
+
 PARTIALLY
     :P A R T I A L L Y
     ;
@@ -5402,6 +5430,10 @@ PASSWORD_REUSE_TIME
 
 PASSWORD_VERIFY_FUNCTION
     :P A S S W O R D UL_ V E R I F Y UL_ F U N C T I O N
+    ;
+
+PASSWORD_ROLLOVER_TIME
+    : P A S S W O R D UL_ R O L L O V E R UL_ T I M E
     ;
 
 PATH
@@ -6018,6 +6050,34 @@ STATEMENT_ID
 
 STATEMENT_QUEUING
     :S T A T E M E N T UL_ Q U E U I N G
+    ;
+
+PRAGMA
+    : P R A G M A
+    ;
+
+RESTRICT_REFERENCES
+    : R E S T R I C T UL_ R E F E R E N C E S
+    ;
+
+RNDS
+    : R N D S
+    ;
+
+WNDS
+    : W N D S
+    ;
+
+RNPS
+    : R N P S
+    ;
+
+WNPS
+    : W N P S
+    ;
+
+OVERRIDING
+    : O V E R R I D I N G
     ;
 
 STATIC
@@ -6658,6 +6718,10 @@ SYS_XMLEXNSURI
 
 SYS_XMLGEN
     :S Y S UL_ X M L G E N
+    ;
+
+SYS_XMLAGG
+    :S Y S UL_ X M L A G G
     ;
 
 SYS_XMLI_LOC_ISNODE
@@ -7644,10 +7708,94 @@ XPATHTABLE
     :X P A T H T A B L E
     ;
 
+XMLSEQUENCE
+    :X M L S E Q U E N C E
+    ;
+
 XS_SYS_CONTEXT
     :X S UL_ S Y S UL_ C O N T E X T
     ;
 
 X_DYN_PRUNE
     :X UL_ D Y N UL_ P R U N E
+    ;
+
+FEATURE_COMPARE
+    : F E A T U R E UL_ C O M P A R E
+    ;
+
+FEATURE_DETAILS
+    : F E A T U R E UL_ D E T A I L S
+    ;
+
+CLUSTER_DETAILS
+    : C L U S T E R UL_ D E T A I L S
+    ;
+
+CLUSTER_DISTANCE
+    : C L U S T E R UL_ D I S T A N C E
+    ;
+
+PERSISTABLE
+    : P E R S I S T A B L E
+    ;
+
+DB_RECOVERY_FILE_DEST_SIZE
+    : D B UL_ R E C O V E R Y UL_ F I L E UL_ D E S T UL_ S I Z E
+    ;
+
+MANDATORY
+    : M A N D A T O R Y
+    ;
+
+BACKUPS
+    : B A C K U P S
+    ;
+
+NOPROMPT
+    : N O P R O M P T
+    ;
+
+IMMUTABLE
+    : I M M U T A B L E
+    ;
+
+BLOCKCHAIN
+    : B L O C K C H A I N
+    ;
+
+IDLE
+    : I D L E
+    ;
+
+HASHING
+    : H A S H I N G
+    ;
+
+DEFINITION
+    : D E F I N I T I O N
+    ;
+
+COLLATE
+    : C O L L A T E
+    ;
+
+XDB
+    : X D B
+    ;
+
+XMLINDEX
+    : X M L I N D E X
+    ;
+
+INDEX_ALL_PATHS
+    : I N D E X UL_ A L L UL_ P A T H S
+    ;
+
+NONBLOCKING
+    : N O N B L O C K I N G
+    ;
+
+MODIFY_COLUMN_TYPE
+    : M O D I F Y UL_ C O L U M N UL_ T Y P E
     ;

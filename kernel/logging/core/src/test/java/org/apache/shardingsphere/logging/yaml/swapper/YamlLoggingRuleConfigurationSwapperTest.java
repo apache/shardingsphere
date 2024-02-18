@@ -38,9 +38,9 @@ class YamlLoggingRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlLoggingRuleConfiguration yamlLoggingRuleConfiguration = swapper.swapToYamlConfiguration(createLoggingRuleConfiguration());
-        assertThat(yamlLoggingRuleConfiguration.getLoggers().size(), is(1));
-        assertThat(yamlLoggingRuleConfiguration.getAppenders().size(), is(1));
+        YamlLoggingRuleConfiguration yamlLoggingRuleConfig = swapper.swapToYamlConfiguration(createLoggingRuleConfiguration());
+        assertThat(yamlLoggingRuleConfig.getLoggers().size(), is(1));
+        assertThat(yamlLoggingRuleConfig.getAppenders().size(), is(1));
     }
     
     private LoggingRuleConfiguration createLoggingRuleConfiguration() {
@@ -50,9 +50,9 @@ class YamlLoggingRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        LoggingRuleConfiguration loggingRuleConfiguration = swapper.swapToObject(createYamlLoggingRuleConfiguration());
-        assertThat(loggingRuleConfiguration.getLoggers().size(), is(1));
-        assertThat(loggingRuleConfiguration.getAppenders().size(), is(1));
+        LoggingRuleConfiguration loggingRuleConfig = swapper.swapToObject(createYamlLoggingRuleConfiguration());
+        assertThat(loggingRuleConfig.getLoggers().size(), is(1));
+        assertThat(loggingRuleConfig.getAppenders().size(), is(1));
     }
     
     private YamlLoggingRuleConfiguration createYamlLoggingRuleConfiguration() {

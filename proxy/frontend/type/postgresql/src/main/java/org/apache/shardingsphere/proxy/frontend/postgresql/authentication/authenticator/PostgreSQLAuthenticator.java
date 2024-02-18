@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
-import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
+import org.apache.shardingsphere.authentication.Authenticator;
 
 /**
  * PostgreSQL authenticator.

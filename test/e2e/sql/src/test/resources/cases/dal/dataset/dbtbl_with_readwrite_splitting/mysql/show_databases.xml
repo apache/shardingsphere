@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="schema_name" />
+        <column name="database" />
     </metadata>
     <row values="dbtbl_with_readwrite_splitting" />
     <row values="information_schema" />

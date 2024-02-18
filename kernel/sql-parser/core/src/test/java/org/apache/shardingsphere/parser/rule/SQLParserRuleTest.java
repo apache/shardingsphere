@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.parser.rule;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLParserRuleTest {
     
@@ -33,23 +34,16 @@ class SQLParserRuleTest {
     
     @BeforeEach
     void setup() {
-        sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true, new CacheOption(2, 4), new CacheOption(3, 7)));
+        sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(2, 4), new CacheOption(3, 7)));
     }
     
     @Test
     void assertGetSQLParserEngine() {
-        assertNotNull(sqlParserRule.getSQLParserEngine("H2"));
-    }
-    
-    @Test
-    void assertGetType() {
-        assertThat(sqlParserRule.getType(), is(SQLParserRule.class.getSimpleName()));
+        assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "H2")));
     }
     
     @Test
     void assertFields() {
-        assertTrue(sqlParserRule.isSqlCommentParseEnabled());
-        assertTrue(sqlParserRule.getConfiguration().isSqlCommentParseEnabled());
         assertThat(sqlParserRule.getConfiguration().getParseTreeCache().getInitialCapacity(), is(2));
         assertThat(sqlParserRule.getConfiguration().getParseTreeCache().getMaximumSize(), is(4L));
         assertThat(sqlParserRule.getConfiguration().getSqlStatementCache().getInitialCapacity(), is(3));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -50,13 +50,20 @@ class ClassBasedShardingAlgorithmTest {
     
     @Test
     void assertInitWithWrongStrategy() {
-        assertThrows(IllegalArgumentException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "wrong"))));
+        assertThrows(ShardingAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "wrong"))));
     }
     
     @Test
     void assertInitWithNullClass() {
         assertThrows(ShardingAlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard"))));
+    }
+    
+    @Test
+    void assertInitWithEmptyClassName() {
+        assertThrows(ShardingAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard"), new Property("algorithmClassName", ""))));
     }
     
     @Test

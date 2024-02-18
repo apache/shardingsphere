@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="create_table_with_column_dec" value="create table test3(id int auto_increment, col1 dec default 0 not null, col2 DEC(6,2) default 0 not null, col3 FLOAT default 0 not null, col4 DECIMAL(8,3) default 0 not null, constraint test3_pk primary key (id))" db-types="MySQL" />
     <sql-case id="create_table_with_backtick_engine_with_string" value="create table `t``1`(a int) engine='Innodb'" db-types="MySQL" />
     <sql-case id="create_table_with_backtick_engine_innodb" value="create table `t``1`(a int) engine=INNODB" db-types="MySQL" />
     <sql-case id="create_table_with_backtick_engine_myisam" value="create table `t``1`(a int) engine=myisam" db-types="MySQL" />
@@ -38,6 +39,8 @@
     <sql-case id="create_table_with_sharing_none" value="CREATE TABLE t_log SHARING = NONE (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
     <sql-case id="create_table_with_optimize_read" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR READ" db-types="Oracle" />
     <sql-case id="create_table_with_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
+    <sql-case id="create_table_without_optimize_read" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) NO MEMOPTIMIZE FOR READ" db-types="Oracle" />
+    <sql-case id="create_table_without_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) NO MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
     <sql-case id="create_table_with_parent" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) PARENT t_log_parent" db-types="Oracle" />
     <sql-case id="create_object_table" value="CREATE TABLE t_log OF t_log_type" db-types="Oracle" />
     <sql-case id="create_table_with_char_varing" value="CREATE TABLE t_log(id char varying (20))" db-types="Oracle" />
@@ -146,4 +149,173 @@
     <sql-case id="create_table_with_unsigned_int_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED INT ARRAY))))" db-types="MySQL" />
     <sql-case id="create_table_with_unsigned_int" value="CREATE TABLE t_order (order_id INT, user_id INT, status UNSIGNED INT)" db-types="MySQL" />
     <sql-case id="create_table_with_partition_less_than" value="CREATE TABLE t_sales (order_id INTEGER NOT NULL, goods_name CHAR(20) NOT NULL, sales_date DATE NOT NULL, sales_volume INTEGER, sales_store CHAR(20), PRIMARY KEY ( order_id )) PARTITION BY RANGE (sales_date) (PARTITION season1 VALUES LESS THAN('2023-04-01 00:00:00'),PARTITION season2 VALUES LESS THAN('2023-07-01 00:00:00'),PARTITION season3 VALUES LESS THAN('2023-10-01 00:00:00'),PARTITION season4 VALUES LESS THAN(MAXVALUE))" db-types="openGauss"/>
+    <sql-case id="create_table_with_negative_data_type" value="CREATE TABLE T(COL1 NUMBER, COL2 NUMBER(3), COL3 NUMBER(3,2), COL4 NUMBER(6,-2))" db-types="Oracle" />
+    <sql-case id="create_table_with_ref_data_type" value="CREATE TABLE location_table (location_number NUMBER, building REF warehouse_typ SCOPE IS warehouse_table);" db-types="Oracle" />
+    <sql-case id="create_table_with_select" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Oracle"/>
+    <sql-case id="create_table_organization_index_parallel_with_select" value="CREATE TABLE admin_iot3(i PRIMARY KEY, j, k, l) ORGANIZATION INDEX PARALLEL AS SELECT * FROM hr.jobs" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range" value="CREATE TABLE costs_demo (prod_id NUMBER(6), time_id DATE, unit_cost NUMBER(10,2), unit_price NUMBER(10,2))
+    PARTITION BY RANGE (time_id) (PARTITION costs_old VALUES LESS THAN (TO_DATE('01-JAN-2003', 'DD-MON-YYYY')) COMPRESS,
+    PARTITION costs_q1_2003 VALUES LESS THAN (TO_DATE('01-APR-2003', 'DD-MON-YYYY')),
+    PARTITION costs_q2_2003 VALUES LESS THAN (TO_DATE('01-JUN-2003', 'DD-MON-YYYY')),
+    PARTITION costs_recent VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
+    <sql-case id="create_table_default_user" value="CREATE TABLE audit_trail (value1 NUMBER, value2 VARCHAR2(32), inserter VARCHAR2(30) DEFAULT USER)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_hash1" value="CREATE TABLE car_rentals
+    (id NUMBER NOT NULL,
+     customer_id  NUMBER NOT NULL,
+     confirmation_number  VARCHAR2(12) NOT NULL,
+     car_id   NUMBER,
+     car_type VARCHAR2(10),
+     requested_car_type   VARCHAR2(10) NOT NULL,
+     reservation_date DATE NOT NULL,
+     start_date   DATE NOT NULL,
+     end_date DATE,
+     country as (substr(confirmation_number,9,2))
+    ) PARTITION BY LIST (country)
+    SUBPARTITION BY HASH (customer_id)
+    SUBPARTITIONS 16
+    (PARTITION north_america VALUES ('US','CA','MX'),
+      PARTITION south_america VALUES ('BR','AR','PE'),
+      PARTITION europe VALUES ('GB','DE','NL','BE','FR','ES','IT','CH'),
+      PARTITION apac VALUES ('NZ','AU','IN','CN')
+    ) ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_hash2" value="CREATE TABLE credit_card_accounts
+    (account_number NUMBER(16) NOT NULL,
+    customer_id NUMBER NOT NULL,
+    customer_region VARCHAR2(2) NOT NULL,
+    is_active VARCHAR2(1) NOT NULL,
+    date_opened DATE NOT NULL)
+    PARTITION BY LIST (customer_region)
+    SUBPARTITION BY HASH (customer_id)
+    SUBPARTITIONS 16
+    (PARTITION emea VALUES ('EU','ME','AF'),
+    PARTITION amer VALUES ('NA','LA'),
+    PARTITION apac VALUES ('SA','AU','NZ','IN','CH')) PARALLEL" db-types="Oracle" />
+    <sql-case id="create_table_subpartition_by_range_subpartition_template" value="CREATE TABLE account_balance_history
+    (id NUMBER NOT NULL,
+     account_number NUMBER NOT NULL,
+     customer_id    NUMBER NOT NULL,
+     transaction_date   DATE NOT NULL,
+     amount_credited    NUMBER,
+     amount_debited NUMBER,
+     end_of_day_balance NUMBER NOT NULL
+    ) PARTITION BY RANGE(transaction_date)
+    INTERVAL (NUMTODSINTERVAL(7,'DAY'))
+    SUBPARTITION BY RANGE(end_of_day_balance)
+    SUBPARTITION TEMPLATE
+    (SUBPARTITION unacceptable VALUES LESS THAN (-1000),
+      SUBPARTITION credit VALUES LESS THAN (0),
+      SUBPARTITION low VALUES LESS THAN (500),
+      SUBPARTITION normal VALUES LESS THAN (5000),
+      SUBPARTITION high VALUES LESS THAN (20000),
+      SUBPARTITION extraordinary VALUES LESS THAN (MAXVALUE)
+    ) (PARTITION p0 VALUES LESS THAN (TO_DATE('01-JAN-2007','dd-MON-yyyy')))" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartition_by_list" value="CREATE TABLE call_detail_records
+    (id NUMBER,
+      from_number VARCHAR2(20),
+      to_number VARCHAR2(20),
+      date_of_call DATE,
+      distance VARCHAR2(1),
+      call_duration_in_s NUMBER(4)
+    ) PARTITION BY RANGE(date_of_call)
+    INTERVAL (NUMTODSINTERVAL(1,'DAY'))
+    SUBPARTITION BY LIST(distance)
+    SUBPARTITION TEMPLATE
+    (SUBPARTITION local VALUES('L') TABLESPACE tbs1,
+    SUBPARTITION medium_long VALUES ('M') TABLESPACE tbs2,
+    SUBPARTITION long_distance VALUES ('D') TABLESPACE tbs3,
+    SUBPARTITION international VALUES ('I') TABLESPACE tbs4)(PARTITION p0 VALUES LESS THAN (TO_DATE('01-JAN-2005','dd-MON-yyyy'))) PARALLEL" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartition_by_hash" value="CREATE TABLE composite_sales
+    ( prod_id NUMBER(6),
+      cust_id NUMBER,
+      time_id DATE,
+      channel_id CHAR(1),
+      promo_id NUMBER(6),
+      quantity_sold NUMBER(3),
+      amount_sold NUMBER(10,2)
+    )
+    PARTITION BY RANGE (time_id)
+    SUBPARTITION BY HASH (channel_id)
+    (PARTITION SALES_Q1_1998 VALUES LESS THAN (TO_DATE('01-APR-1998','DD-MON-YYYY')),
+    PARTITION SALES_Q2_1998 VALUES LESS THAN (TO_DATE('01-JUL-1998','DD-MON-YYYY')),
+    PARTITION SALES_Q3_1998 VALUES LESS THAN (TO_DATE('01-OCT-1998','DD-MON-YYYY')),
+    PARTITION SALES_Q4_1998 VALUES LESS THAN (TO_DATE('01-JAN-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q1_1999 VALUES LESS THAN (TO_DATE('01-APR-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q2_1999 VALUES LESS THAN (TO_DATE('01-JUL-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q3_1999 VALUES LESS THAN (TO_DATE('01-OCT-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q4_1999 VALUES LESS THAN (TO_DATE('01-JAN-2000','DD-MON-YYYY')),
+    PARTITION SALES_Q1_2000 VALUES LESS THAN (TO_DATE('01-APR-2000','DD-MON-YYYY')),
+    PARTITION SALES_Q2_2000 VALUES LESS THAN (TO_DATE('01-JUL-2000','DD-MON-YYYY')) SUBPARTITIONS 8,
+    PARTITION SALES_Q3_2000 VALUES LESS THAN (TO_DATE('01-OCT-2000','DD-MON-YYYY'))
+    (SUBPARTITION ch_c,
+    SUBPARTITION ch_i,
+    SUBPARTITION ch_p,
+    SUBPARTITION ch_s,
+    SUBPARTITION ch_t),
+    PARTITION SALES_Q4_2000 VALUES LESS THAN (MAXVALUE) SUBPARTITIONS 4)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_list" value="CREATE TABLE current_inventory
+    (warehouse_id NUMBER,
+    warehouse_region  VARCHAR2(2),
+    product_id NUMBER,
+    product_category VARCHAR2(12),
+    amount_in_stock NUMBER,
+    unit_of_shipping  VARCHAR2(20),
+    products_per_unit NUMBER,
+    last_updated DATE)
+    PARTITION BY LIST (warehouse_region)
+    SUBPARTITION BY LIST (product_category)
+    SUBPARTITION TEMPLATE (SUBPARTITION perishable VALUES ('DAIRY','PRODUCE','MEAT','BREAD'),
+    SUBPARTITION non_perishable VALUES ('CANNED','PACKAGED'),
+    SUBPARTITION durable VALUES ('TOYS','KITCHENWARE'))
+    (PARTITION p_northwest VALUES ('OR', 'WA'),
+    PARTITION p_southwest VALUES ('AZ', 'UT', 'NM'),
+    PARTITION p_northeast VALUES ('NY', 'VM', 'NJ'),
+    PARTITION p_southeast VALUES ('FL', 'GA'),
+    PARTITION p_northcentral VALUES ('SD', 'WI'),
+    PARTITION p_southcentral VALUES ('OK', 'TX'))" db-types="Oracle" />
+    <sql-case id="create_table_organization_index" value="CREATE TABLE admin_docindex
+    (token char(20),
+    doc_id NUMBER,
+    token_frequency NUMBER,
+    token_offsets VARCHAR2(2000),
+    CONSTRAINT pk_admin_docindex PRIMARY KEY (token, doc_id))
+    ORGANIZATION INDEX 
+    TABLESPACE admin_tbs
+    PCTTHRESHOLD 20
+    OVERFLOW TABLESPACE admin_tbs2" db-types="Oracle" />
+    <sql-case id="create_table_ref_type1" value="CREATE TABLE departments_t (d_no NUMBER, mgr_ref REF employees_typ SCOPE IS employees_obj_t)" db-types="Oracle" />
+    <sql-case id="create_table_ref_type2" value="CREATE TABLE departments_t (d_no NUMBER, mgr_ref REF employees_typ CONSTRAINT mgr_in_emp REFERENCES employees_obj_t)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartitions" value="CREATE TABLE customers_part
+    (customer_id       NUMBER(6),
+    cust_first_name    VARCHAR2(20),
+    cust_last_name     VARCHAR2(20),
+    nls_territory      VARCHAR2(30),
+    credit_limit       NUMBER(9,2)) 
+    PARTITION BY RANGE (credit_limit)
+    SUBPARTITION BY LIST (nls_territory)
+    SUBPARTITION TEMPLATE (SUBPARTITION east  VALUES ('CHINA', 'JAPAN', 'INDIA', 'THAILAND'),
+    SUBPARTITION west VALUES ('AMERICA', 'GERMANY', 'ITALY', 'SWITZERLAND'),
+    SUBPARTITION other VALUES (DEFAULT))
+    (PARTITION p1 VALUES LESS THAN (1000),
+    PARTITION p2 VALUES LESS THAN (2500),
+    PARTITION p3 VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
+    <sql-case id="create_table_with_queue" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) USAGE QUEUE" db-types="Oracle" />
+    <sql-case id="create_table_with_relational_and_physical_properties" value="CREATE TABLE &quot;C##TPCC2&quot;.&quot;TEST_BASIC2&quot;
+    (&quot;BS_COL01&quot; NUMBER,
+    &quot;BS_COL02&quot; NUMBER,
+    PRIMARY KEY (&quot;BS_COL01&quot;)
+    USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS
+    STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TPCCTAB&quot; ENABLE
+    ) SEGMENT CREATION IMMEDIATE
+    PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255
+    NOCOMPRESS LOGGING
+    STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TPCCTAB&quot;" db-types="Oracle" />
+    <sql-case id="create_table_cluster_with_select1" value="CREATE TABLE dept_10 CLUSTER personnel (department_id) AS SELECT * FROM employees WHERE department_id = 10" db-types="Oracle" />
+    <sql-case id="create_table_cluster_with_select2" value="CREATE TABLE dept_20 CLUSTER personnel (department_id) AS SELECT * FROM employees WHERE department_id = 20" db-types="Oracle" />
+    <sql-case id="create_table_cluster_with_select3" value="CREATE TABLE customers_demo AS SELECT * FROM customers" db-types="Oracle" />
 </sql-cases>

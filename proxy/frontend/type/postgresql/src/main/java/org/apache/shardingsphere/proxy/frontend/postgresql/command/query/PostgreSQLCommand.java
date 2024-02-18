@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
@@ -159,7 +159,7 @@ public enum PostgreSQLCommand {
      */
     private static Optional<PostgreSQLCommand> getPostgreSQLCommand(final Class<? extends SQLStatement> sqlStatementClass) {
         CachedResult result = COMPUTED_STATEMENTS.get(sqlStatementClass);
-        return null != result ? result.get() : COMPUTED_STATEMENTS.computeIfAbsent(sqlStatementClass, PostgreSQLCommand::compute).get();
+        return null == result ? COMPUTED_STATEMENTS.computeIfAbsent(sqlStatementClass, PostgreSQLCommand::compute).get() : result.get();
     }
     
     private static CachedResult compute(final Class<? extends SQLStatement> target) {
@@ -167,8 +167,8 @@ public enum PostgreSQLCommand {
         return result.map(CachedResult::new).orElse(CachedResult.EMPTY);
     }
     
-    private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand postgreSQLCommand) {
-        return postgreSQLCommand.sqlStatementClasses.stream().anyMatch(each -> each.isAssignableFrom(sqlStatementClass));
+    private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand command) {
+        return command.sqlStatementClasses.stream().anyMatch(each -> each.isAssignableFrom(sqlStatementClass));
     }
     
     @RequiredArgsConstructor

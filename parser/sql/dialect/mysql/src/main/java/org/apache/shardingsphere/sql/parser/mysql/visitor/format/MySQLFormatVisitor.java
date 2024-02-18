@@ -849,7 +849,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "MySQL";
     }
 }

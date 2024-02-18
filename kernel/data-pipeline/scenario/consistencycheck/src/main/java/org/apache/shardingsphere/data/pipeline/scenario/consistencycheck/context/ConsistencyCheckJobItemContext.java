@@ -19,10 +19,10 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.contex
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineProcessContext;
-import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 
@@ -56,10 +56,11 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
         jobId = jobConfig.getJobId();
         this.shardingItem = shardingItem;
         this.status = status;
-        progressContext = new ConsistencyCheckJobItemProgressContext(jobId, shardingItem);
+        progressContext = new ConsistencyCheckJobItemProgressContext(jobId, shardingItem, jobConfig.getSourceDatabaseType().getType());
         if (null != jobItemProgress) {
             progressContext.getCheckedRecordsCount().set(Optional.ofNullable(jobItemProgress.getCheckedRecordsCount()).orElse(0L));
-            Optional.ofNullable(jobItemProgress.getTableCheckPositions()).ifPresent(progressContext.getTableCheckPositions()::putAll);
+            Optional.ofNullable(jobItemProgress.getSourceTableCheckPositions()).ifPresent(progressContext.getSourceTableCheckPositions()::putAll);
+            Optional.ofNullable(jobItemProgress.getTargetTableCheckPositions()).ifPresent(progressContext.getTargetTableCheckPositions()::putAll);
         }
         processContext = new ConsistencyCheckProcessContext(jobId);
     }
@@ -67,5 +68,12 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     @Override
     public PipelineProcessContext getJobProcessContext() {
         return processContext;
+    }
+    
+    @Override
+    public ConsistencyCheckJobItemProgress toProgress() {
+        ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress(progressContext);
+        result.setStatus(status);
+        return result;
     }
 }

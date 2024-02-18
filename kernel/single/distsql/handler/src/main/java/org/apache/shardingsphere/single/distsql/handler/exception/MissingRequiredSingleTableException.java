@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.distsql.handler.exception;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Missing required single table exception.

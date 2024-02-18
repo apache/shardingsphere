@@ -28,9 +28,4 @@ public final class FixtureGlobalRule implements GlobalRule {
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
     }
-    
-    @Override
-    public String getType() {
-        return FixtureGlobalRule.class.getSimpleName();
-    }
 }

@@ -22,10 +22,9 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,6 +61,11 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         SQLParserEngine sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getDatabaseName());
         String sql = packet.getSQL();
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
+        String escapedSql = escape(sqlStatement, sql);
+        if (!escapedSql.equalsIgnoreCase(sql)) {
+            sqlStatement = sqlParserEngine.parse(escapedSql, true);
+            sql = escapedSql;
+        }
         List<Integer> actualParameterMarkerIndexes = new ArrayList<>();
         if (sqlStatement.getParameterCount() > 0) {
             List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(((AbstractSQLStatement) sqlStatement).getParameterMarkerSegments());
@@ -72,8 +77,8 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         }
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
-                : SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                        sqlStatement, connectionSession.getDefaultDatabaseName());
+                : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), connectionSession.getDefaultDatabaseName(), packet.getHintValueContext())
+                        .bind(sqlStatement, Collections.emptyList());
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, packet.getHintValueContext(), paddedColumnTypes,
                 actualParameterMarkerIndexes);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
@@ -83,7 +88,14 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     private SQLParserEngine createShardingSphereSQLParserEngine(final String databaseName) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType()));
+        return sqlParserRule.getSQLParserEngine(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+    }
+    
+    private String escape(final SQLStatement sqlStatement, final String sql) {
+        if (sqlStatement instanceof DMLStatement) {
+            return sql.replace("?", "??");
+        }
+        return sql;
     }
     
     private String convertSQLToJDBCStyle(final List<ParameterMarkerSegment> parameterMarkerSegments, final String sql) {

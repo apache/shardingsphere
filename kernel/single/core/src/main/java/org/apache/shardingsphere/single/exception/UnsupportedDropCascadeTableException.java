@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.single.exception;
 
-import org.apache.shardingsphere.infra.exception.SyntaxSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported drop cascade table exception.

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 
 import java.util.Collection;
@@ -54,7 +54,11 @@ public final class ConsistencyCheckJobItemProgressContext implements PipelineJob
     
     private volatile Long checkEndTimeMillis;
     
-    private final Map<String, Object> tableCheckPositions = new ConcurrentHashMap<>();
+    private final Map<String, Object> sourceTableCheckPositions = new ConcurrentHashMap<>();
+    
+    private final Map<String, Object> targetTableCheckPositions = new ConcurrentHashMap<>();
+    
+    private final String sourceDatabaseType;
     
     @Override
     public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {

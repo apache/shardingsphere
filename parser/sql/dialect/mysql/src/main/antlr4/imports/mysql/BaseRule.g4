@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Symbol, Keyword, MySQLKeyword, Literals;
+import Comments, Symbol, Keyword, MySQLKeyword, Literals;
 
 parameterMarker
     : QUESTION_
@@ -918,7 +918,7 @@ simpleExpr
     | columnRef
     | simpleExpr collateClause
     | variable
-    | simpleExpr OR_ simpleExpr
+    | simpleExpr VERTICAL_BAR_ VERTICAL_BAR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | notOperator | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
@@ -947,7 +947,7 @@ columnRefList
     ;
     
 functionCall
-    : aggregationFunction | specialFunction | regularFunction | jsonFunction | udfFunction
+    : aggregationFunction | specialFunction | jsonFunction | regularFunction | udfFunction
     ;
 
 udfFunction
@@ -1017,6 +1017,7 @@ specialFunction
     | weightStringFunction
     | windowFunction
     | groupingFunction
+    | timeStampDiffFunction
     ;
     
 currentUserFunction
@@ -1025,6 +1026,10 @@ currentUserFunction
     
 groupingFunction
     : GROUPING LP_ expr (COMMA_ expr)* RP_
+    ;
+
+timeStampDiffFunction
+    : TIMESTAMPDIFF LP_ intervalUnit COMMA_ expr COMMA_ expr RP_
     ;
 
 groupConcatFunction
@@ -1095,7 +1100,7 @@ substringFunction
     ;
     
 extractFunction
-    : EXTRACT LP_ identifier FROM expr RP_
+    : EXTRACT LP_ intervalUnit FROM expr RP_
     ;
     
 charFunction
@@ -1153,7 +1158,7 @@ matchSearchModifier
     ;
     
 caseExpression
-    : CASE simpleExpr? caseWhen+ caseElse? END
+    : CASE expr? caseWhen+ caseElse? END
     ;
     
 datetimeExpr
@@ -1201,7 +1206,7 @@ orderByItem
 dataType
     : dataTypeName = (INTEGER | INT | TINYINT | SMALLINT | MIDDLEINT | MEDIUMINT | BIGINT) fieldLength? fieldOptions?
     | (dataTypeName = REAL | dataTypeName = DOUBLE PRECISION?) precision? fieldOptions?
-    | dataTypeName = (FLOAT | DECIMAL | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
+    | dataTypeName = (FLOAT | DECIMAL | DEC | NUMERIC | FIXED) (fieldLength | precision)? fieldOptions?
     | dataTypeName = BIT fieldLength?
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?

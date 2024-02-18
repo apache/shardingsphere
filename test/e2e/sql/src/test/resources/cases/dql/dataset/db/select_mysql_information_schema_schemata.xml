@@ -22,5 +22,6 @@
         <column name="default_character_set_name" />
         <column name="default_collation_name" />
         <column name="sql_path" />
+        <column name="default_encryption" />        
     </metadata>
 </dataset>

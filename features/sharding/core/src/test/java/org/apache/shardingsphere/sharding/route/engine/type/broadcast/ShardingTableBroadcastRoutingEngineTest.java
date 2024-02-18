@@ -17,26 +17,28 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
+import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -51,6 +53,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingTableBroadcastRoutingEngineTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertRouteForEmptyTable() {
@@ -87,11 +91,11 @@ class ShardingTableBroadcastRoutingEngineTest {
         SQLStatementContext sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
         Collection<String> tableNames = Collections.emptyList();
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(((IndexAvailable) sqlStatementContext).getIndexes()).thenReturn(Collections.singletonList(segment));
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                new MySQLDatabaseType(), mock(ShardingSphereResourceMetaData.class), mock(ShardingSphereRuleMetaData.class), schemas);
+                databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas);
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, tableNames);
         RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule());
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
@@ -109,11 +113,12 @@ class ShardingTableBroadcastRoutingEngineTest {
         IndexSegment segment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         when(segment.getIndexName().getIdentifier().getValue()).thenReturn("t_order");
         SQLStatementContext sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         Collection<String> tableNames = Collections.emptyList();
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                new MySQLDatabaseType(), mock(ShardingSphereResourceMetaData.class), mock(ShardingSphereRuleMetaData.class), schemas);
+                databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas);
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, tableNames);
         RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule());
         assertRouteUnitWithoutTables(routeContext);
@@ -122,7 +127,7 @@ class ShardingTableBroadcastRoutingEngineTest {
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..1}"));
-        return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"), mock(InstanceContext.class));
+        return new ShardingRule(ruleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource()), mock(InstanceContext.class));
     }
     
     private SQLStatementContext createSQLStatementContext(final Collection<String> tableNames) {

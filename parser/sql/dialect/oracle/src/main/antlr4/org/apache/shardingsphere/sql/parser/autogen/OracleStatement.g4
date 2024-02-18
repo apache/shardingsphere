@@ -17,13 +17,14 @@
 
 grammar OracleStatement;
 
-import DMLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, PLSQL;
 
 execute
     : (select
     | insert
     | update
     | delete
+    | createView
     | createTable
     | alterTable
     | dropTable
@@ -116,14 +117,19 @@ execute
     | alterAuditPolicy
     | alterCluster
     | alterOperator
+    | alterProfile
+    | alterRollbackSegment
     | alterDiskgroup
     | alterIndexType
+    | createMaterializedView
+    | createMaterializedViewLog
     | alterMaterializedView
     | alterMaterializedViewLog
     | alterFunction
     | alterHierarchy
     | alterLockdownProfile
     | alterPluggableDatabase
+    | explain
     | createProcedure
     | dropProcedure
     | alterProcedure
@@ -138,10 +144,20 @@ execute
     | alterResourceCost
     | alterRole
     | createTablespace
+    | alterTablespace
     | dropSequence
     | dropProfile
     | dropFunction
     | dropCluster
     | systemAction
-    ) SEMI_?
+    | alterType
+    | createType
+    | createCluster
+    | createJava
+    | plsqlBlock
+    | createLibrary
+    | switch
+    | createProfile
+    | createTrigger
+    ) SEMI_? SLASH_? EOF
     ;

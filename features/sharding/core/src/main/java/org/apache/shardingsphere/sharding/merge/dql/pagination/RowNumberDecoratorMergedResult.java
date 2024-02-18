@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.pagination;
 
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
-import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 
 import java.sql.SQLException;
 
@@ -28,20 +28,20 @@ import java.sql.SQLException;
  */
 public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult {
     
-    private final PaginationContext pagination;
+    private final PaginationContext paginationContext;
     
     private final boolean skipAll;
     
     private long rowNumber;
     
-    public RowNumberDecoratorMergedResult(final MergedResult mergedResult, final PaginationContext pagination) throws SQLException {
+    public RowNumberDecoratorMergedResult(final MergedResult mergedResult, final PaginationContext paginationContext) throws SQLException {
         super(mergedResult);
-        this.pagination = pagination;
+        this.paginationContext = paginationContext;
         skipAll = skipOffset();
     }
     
     private boolean skipOffset() throws SQLException {
-        long end = pagination.getActualOffset();
+        long end = paginationContext.getActualOffset();
         for (int i = 0; i < end; i++) {
             if (!getMergedResult().next()) {
                 return true;
@@ -56,9 +56,9 @@ public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult 
         if (skipAll) {
             return false;
         }
-        if (!pagination.getActualRowCount().isPresent()) {
+        if (!paginationContext.getActualRowCount().isPresent()) {
             return getMergedResult().next();
         }
-        return rowNumber++ < pagination.getActualRowCount().get() && getMergedResult().next();
+        return rowNumber++ < paginationContext.getActualRowCount().get() && getMergedResult().next();
     }
 }

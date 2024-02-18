@@ -17,7 +17,7 @@
 
 grammar ShardingDistSQLStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RDLStatement, RQLStatement, RALStatement;
 
 execute
     : (createShardingTableRule
@@ -46,5 +46,6 @@ execute
     | showUnusedShardingKeyGenerators
     | showUnusedShardingAuditors
     | countShardingRule
+    | showShardingAlgorithmPlugins
     ) SEMI_? EOF
     ;

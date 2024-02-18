@@ -20,12 +20,14 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primary
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
@@ -34,6 +36,7 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.Pipeline
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -48,6 +51,7 @@ import java.util.function.Consumer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * E2E IT for different types of indexes, includes:
@@ -92,9 +96,9 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
             final Consumer<DataSource> incrementalTaskFn = dataSource -> {
                 if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
-                    doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
+                    doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next());
                 }
-                Object orderId = keyGenerateAlgorithm.generateKey();
+                Object orderId = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
                 insertOneOrder(containerComposer, orderId);
                 containerComposer.assertOrderRecordExist(dataSource, "t_order", orderId);
             };
@@ -169,10 +173,10 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 return;
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-            Object uniqueKey = keyGenerateAlgorithm.generateKey();
+            Object uniqueKey = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
-                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
+                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next());
                 containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
             });
         }
@@ -191,11 +195,11 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             } else {
                 return;
             }
-            KeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-            Object uniqueKey = keyGenerateAlgorithm.generateKey();
+            KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
+            Object uniqueKey = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
-                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
+                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next());
                 containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
             });
         }
@@ -252,6 +256,6 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private static boolean isEnabled() {
-        return PipelineE2ECondition.isEnabled(new MySQLDatabaseType(), new PostgreSQLDatabaseType());
+        return PipelineE2ECondition.isEnabled(TypedSPILoader.getService(DatabaseType.class, "MySQL"), TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
     }
 }

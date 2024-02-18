@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -29,21 +27,19 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRulesUsedKeyGeneratorExecutor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,14 +47,13 @@ class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
     
     @Test
     void assertGetRowData() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
-        RQLExecutor<ShowShardingTableRulesUsedKeyGeneratorStatement> executor = new ShowShardingTableRulesUsedKeyGeneratorExecutor();
+        ShowShardingTableRulesUsedKeyGeneratorExecutor executor = new ShowShardingTableRulesUsedKeyGeneratorExecutor();
+        executor.setRule(rule);
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = mock(ShowShardingTableRulesUsedKeyGeneratorStatement.class);
         when(statement.getKeyGeneratorName()).thenReturn(Optional.of("snowflake"));
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, statement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement, mock(ContextManager.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -67,16 +62,6 @@ class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
         row = iterator.next();
         assertThat(row.getCell(1), is("auto_table"));
         assertThat(row.getCell(2), is("t_order_auto"));
-    }
-    
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowShardingTableRulesUsedKeyGeneratorStatement> executor = new ShowShardingTableRulesUsedKeyGeneratorExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("name"));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {

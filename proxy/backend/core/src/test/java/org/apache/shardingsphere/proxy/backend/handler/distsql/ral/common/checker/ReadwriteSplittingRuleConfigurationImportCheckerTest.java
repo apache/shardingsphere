@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.check
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.junit.jupiter.api.Test;
@@ -52,7 +52,7 @@ class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     void assertCheckLoadBalancers() {
         ShardingSphereDatabase database = mockDatabase();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createInvalidLoadBalancerRuleConfig();
-        assertThrows(ServiceProviderNotFoundServerException.class, () -> importChecker.check(database, currentRuleConfig));
+        assertThrows(ServiceProviderNotFoundException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     private ShardingSphereDatabase mockDatabaseWithDataSource() {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.exception;
 
-import org.apache.shardingsphere.dialect.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.protocol.DatabaseProtocolException;
 
 /**
  * PostgreSQL protocol exception.

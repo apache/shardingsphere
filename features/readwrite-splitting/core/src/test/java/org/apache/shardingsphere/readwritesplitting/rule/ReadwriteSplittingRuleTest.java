@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
@@ -101,5 +101,25 @@ class ReadwriteSplittingRuleTest {
         Map<String, Collection<String>> actual = readwriteSplittingRule.getDataSourceMapper();
         Map<String, Collection<String>> expected = Collections.singletonMap("readwrite", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
         assertThat(actual, is(expected));
+    }
+    
+    @Test
+    void assertCreateReadwriteSplittingRuleWithRowValueExpressionImpl() {
+        ReadwriteSplittingDataSourceRuleConfiguration config = new ReadwriteSplittingDataSourceRuleConfiguration(
+                "<GROOVY>${['readwrite']}_ds",
+                "<GROOVY>${['write']}_ds",
+                Arrays.asList("<GROOVY>read_ds_${['0']}", "read_ds_${['1']}", "read_ds_2", "<LITERAL>read_ds_3"),
+                "random");
+        ReadwriteSplittingRule readwriteSplittingRule = new ReadwriteSplittingRule(
+                "logic_db",
+                new ReadwriteSplittingRuleConfiguration(
+                        Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))),
+                mock(InstanceContext.class));
+        Optional<ReadwriteSplittingDataSourceRule> actual = readwriteSplittingRule.findDataSourceRule("readwrite_ds");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is("readwrite_ds"));
+        assertThat(actual.get().getReadwriteSplittingGroup().getWriteDataSource(), is("write_ds"));
+        assertThat(actual.get().getReadwriteSplittingGroup().getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1", "read_ds_2", "read_ds_3")));
+        assertThat(actual.get().getLoadBalancer().getType(), is("RANDOM"));
     }
 }

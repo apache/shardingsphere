@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception.ClusterSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
 
 import java.io.IOException;
 

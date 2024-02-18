@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.transaction;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
 import org.junit.jupiter.api.Test;

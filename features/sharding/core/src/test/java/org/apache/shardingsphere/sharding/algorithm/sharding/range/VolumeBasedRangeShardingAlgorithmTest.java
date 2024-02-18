@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;

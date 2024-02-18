@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common.util;
 
-import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -33,8 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public final class OkHttpUtils {
     
     private static final OkHttpUtils OK_HTTP_UTILS = new OkHttpUtils();
-    
-    private static final Gson GSON = new Gson();
     
     private final OkHttpClient client;
     
@@ -65,7 +63,7 @@ public final class OkHttpUtils {
      * @throws IOException IO exception
      */
     public <T> T get(final String url, final Class<T> clazz) throws IOException {
-        return GSON.fromJson(get(url), clazz);
+        return JsonUtils.fromJsonString(get(url), clazz);
     }
     
     /**
@@ -80,17 +78,5 @@ public final class OkHttpUtils {
         Response response = client.newCall(request).execute();
         assertNotNull(response.body());
         return response.body().string();
-    }
-    
-    /**
-     * Get response.
-     *
-     * @param url url
-     * @return response
-     * @throws IOException IO exception
-     */
-    public Response getResponse(final String url) throws IOException {
-        Request request = new Request.Builder().url(url).build();
-        return client.newCall(request).execute();
     }
 }

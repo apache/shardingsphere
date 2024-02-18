@@ -19,14 +19,15 @@ package org.apache.shardingsphere.proxy.frontend.protocol;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -36,19 +37,24 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class FrontDatabaseProtocolTypeFactoryTest {
     
     @Test
@@ -79,14 +85,17 @@ class FrontDatabaseProtocolTypeFactoryTest {
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         return Collections.singletonMap("foo_db", database);
     }
     
     private ContextManager mockContextManager(final Map<String, ShardingSphereDatabase> databases, final Properties props) {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ShardingSphereResourceMetaData.class),
-                        mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(props)));
+        MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
+        ShardingSphereDataPersistService shardingSphereDataPersistService = mock(ShardingSphereDataPersistService.class);
+        when(shardingSphereDataPersistService.load(any())).thenReturn(Optional.empty());
+        when(metaDataPersistService.getShardingSphereDataPersistService()).thenReturn(shardingSphereDataPersistService);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaDataPersistService,
+                new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(props)));
         return new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
 }

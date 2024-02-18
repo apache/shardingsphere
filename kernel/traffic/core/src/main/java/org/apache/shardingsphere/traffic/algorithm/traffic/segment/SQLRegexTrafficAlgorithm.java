@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 import org.apache.shardingsphere.traffic.exception.segment.SegmentTrafficAlgorithmInitializationException;

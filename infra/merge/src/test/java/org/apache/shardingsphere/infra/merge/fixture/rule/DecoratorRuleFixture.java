@@ -28,9 +28,4 @@ public final class DecoratorRuleFixture implements ShardingSphereRule {
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
     }
-    
-    @Override
-    public String getType() {
-        return DecoratorRuleFixture.class.getSimpleName();
-    }
 }

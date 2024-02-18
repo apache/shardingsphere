@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen.GeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
@@ -51,7 +51,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
-        addParameterRewriter(result, new ShardingGeneratedKeyInsertValueParameterRewriter());
+        addParameterRewriter(result, new GeneratedKeyInsertValueParameterRewriter());
         addParameterRewriter(result, new ShardingPaginationParameterRewriter());
         return result;
     }

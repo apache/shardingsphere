@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-fixture</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>jdbc</module>
+        <module>database</module>
         <module>infra</module>
     </modules>
 </project>

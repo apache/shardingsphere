@@ -19,7 +19,7 @@ databaseName: sharding_db
 
 dataSources:
   ds_0:
-   url: jdbc:mysql://127.0.0.1:3306/demo_sharding_ds_0?serverTimezone=UTC&useSSL=false
+   url: jdbc:mysql://127.0.0.1:3306/demo_sharding_ds_0?useSSL=false
    username: root
    password: 12345678
    connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
    maxPoolSize: 50
    minPoolSize: 1
   ds_1:
-   url: jdbc:mysql://127.0.0.1:3306/demo_sharding_ds_1?serverTimezone=UTC&useSSL=false
+   url: jdbc:mysql://127.0.0.1:3306/demo_sharding_ds_1?useSSL=false
    username: root
    password: 12345678
    connectionTimeoutMilliseconds: 30000
@@ -67,6 +67,16 @@ rules:
      keyGenerateStrategy:
        column: order_item_id
        keyGeneratorName: snowflake
+ autoTables:
+   t_account:
+     actualDataSources: ds_0,ds_1
+     shardingStrategy:
+       standard:
+         shardingAlgorithmName: auto_mod
+     keyGenerateStrategy:
+       column: account_id
+       keyGeneratorName: snowflake
+
  defaultDatabaseStrategy:
    standard:
      shardingColumn: user_id
@@ -98,6 +108,10 @@ rules:
      type: HINT_INLINE
      props:
        algorithm-expression: ds_${Integer.valueOf(value) % 2}
+   auto_mod:
+     type: MOD
+     props:
+       sharding-count: 4
 
  keyGenerators:
    snowflake:

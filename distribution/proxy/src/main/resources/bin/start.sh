@@ -111,7 +111,7 @@ print_usage() {
     echo "  port: proxy listen port, default is 3307"
     echo "  config_dir: proxy config directory, default is 'conf'"
     echo ""
-    echo "start.sh [-a addresses] [-p port] [-c /path/to/conf]"
+    echo "start.sh [-a addresses] [-p port] [-c /path/to/conf] [-f] [-g] [-s /path/to/socket]"
     echo "The options are unordered."
     echo "-a  Bind addresses, can be IPv4, IPv6, hostname. In"
     echo "    case more than one address is specified in a"
@@ -173,7 +173,7 @@ if [ $# == 0 ]; then
 fi
 
 if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] || [[ $1 == -f ]] || [[ $1 == -s ]]; then
-    while getopts ":a:p:c:f:s:" opt
+    while getopts ":a:p:c:fs:" opt
     do
         case $opt in
         a)

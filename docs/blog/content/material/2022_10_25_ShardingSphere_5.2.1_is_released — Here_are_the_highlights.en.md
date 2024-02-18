@@ -94,7 +94,7 @@ CLEAR SHARDING HINT;
 
 As there are problems with both methods, version 5.2.1 adds the SQL Hint mandatory sharding routing feature. This allows users to control routes flexibly through SQL annotations. There’s no need to modify the logic of the original code and the thread processing model in the Proxy access port is not affected.
 
-Before using the SQL Hint mandatory sharding routing, users should enable configurations of parsing annotations in advance and set `sqlCommentParseEnabled` to `true`. The annotation format only supports `/* */` and content has to start with `SHARDINGSPHERE_HINT:`.
+The annotation format only supports `/* */` and content has to start with `SHARDINGSPHERE_HINT:`.
 
 Optional properties include:
 

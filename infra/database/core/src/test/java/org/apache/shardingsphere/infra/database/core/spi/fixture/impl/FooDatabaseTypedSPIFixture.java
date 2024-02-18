@@ -23,6 +23,6 @@ public final class FooDatabaseTypedSPIFixture implements DatabaseTypedSPIFixture
     
     @Override
     public String getDatabaseType() {
-        return "FIXTURE";
+        return "TRUNK";
     }
 }

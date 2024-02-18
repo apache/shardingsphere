@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -38,7 +35,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,9 +42,11 @@ class ShowEncryptRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        ShardingSphereDatabase database = mockDatabase();
-        RQLExecutor<ShowEncryptRulesStatement> executor = new ShowEncryptRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowEncryptRulesStatement.class));
+        ShowEncryptRuleExecutor executor = new ShowEncryptRuleExecutor();
+        EncryptRule rule = mock(EncryptRule.class);
+        when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
+        executor.setRule(rule);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowEncryptRulesStatement.class), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -65,34 +63,7 @@ class ShowEncryptRuleExecutorTest {
         assertThat(row.getCell(11), is(""));
     }
     
-    @Test
-    void assertGetColumnNames() {
-        RQLExecutor<ShowEncryptRulesStatement> executor = new ShowEncryptRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(11));
-        Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("table"));
-        assertThat(iterator.next(), is("logic_column"));
-        assertThat(iterator.next(), is("cipher_column"));
-        assertThat(iterator.next(), is("assisted_query_column"));
-        assertThat(iterator.next(), is("like_query_column"));
-        assertThat(iterator.next(), is("encryptor_type"));
-        assertThat(iterator.next(), is("encryptor_props"));
-        assertThat(iterator.next(), is("assisted_query_type"));
-        assertThat(iterator.next(), is("assisted_query_props"));
-        assertThat(iterator.next(), is("like_query_type"));
-        assertThat(iterator.next(), is("like_query_props"));
-    }
-    
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
-        return result;
-    }
-    
-    private RuleConfiguration getRuleConfiguration() {
+    private EncryptRuleConfiguration getRuleConfiguration() {
         EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "test"));
         encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "foo_assist_query_encryptor"));
         encryptColumnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "foo_like_encryptor"));

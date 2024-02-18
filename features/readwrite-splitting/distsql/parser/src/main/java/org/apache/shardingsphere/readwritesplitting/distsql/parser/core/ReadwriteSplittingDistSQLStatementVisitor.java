@@ -29,17 +29,19 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQ
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadQueryLoadBalanceAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowStatusFromReadwriteSplittingRulesContext;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CountReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowStatusFromReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.CreateReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
@@ -66,7 +68,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitDropReadwriteSplittingRule(final DropReadwriteSplittingRuleContext ctx) {
-        return new DropReadwriteSplittingRuleStatement(ctx.ifExists() != null, ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+        return new DropReadwriteSplittingRuleStatement(null != ctx.ifExists(), ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override
@@ -115,7 +117,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitCountReadwriteSplittingRule(final CountReadwriteSplittingRuleContext ctx) {
-        return new CountReadwriteSplittingRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "READWRITE_SPLITTING");
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {
@@ -127,5 +129,10 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowReadQueryLoadBalanceAlgorithmPlugins(final ShowReadQueryLoadBalanceAlgorithmPluginsContext ctx) {
+        return new ShowPluginsStatement("READ_QUERY_LOAD_BALANCE_ALGORITHM");
     }
 }

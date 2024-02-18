@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
+import org.apache.shardingsphere.infra.exception.UnknownColumnException;
 import org.apache.shardingsphere.test.e2e.driver.AbstractShardingDriverTest;
 import org.apache.shardingsphere.test.e2e.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     
     private static final String INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "INSERT INTO t_user (name) VALUES (?),(?),(?),(?)";
     
-    private static final String SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "SELECT name FROM t_user WHERE id=%dL";
+    private static final String SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "SELECT name FROM t_user WHERE id=%d";
     
     private static final String INSERT_WITH_GENERATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
     
@@ -69,6 +70,8 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     private static final String UPDATE_AUTO_SQL = "UPDATE t_order_auto SET status = ? WHERE order_id = ?";
     
     private static final String UPDATE_BATCH_SQL = "UPDATE t_order SET status=? WHERE status=?";
+    
+    private static final String UPDATE_ORDER_ITEM_BATCH_SQL = "UPDATE t_order_item SET status=? WHERE status=?";
     
     private static final String UPDATE_WITH_ERROR_COLUMN = "UPDATE t_order SET error_column=?";
     
@@ -366,6 +369,64 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     }
     
     @Test
+    void assertAddBatchWithMultiStatements() throws SQLException {
+        try (
+                Connection connection = getShardingSphereDataSource().getConnection();
+                PreparedStatement insertStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL);
+                PreparedStatement updateStatement = connection.prepareStatement(UPDATE_ORDER_ITEM_BATCH_SQL);
+                PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
+            connection.createStatement().execute("DELETE FROM t_order_item");
+            insertStatement.setInt(1, 3101);
+            insertStatement.setInt(2, 11);
+            insertStatement.setInt(3, 11);
+            insertStatement.setString(4, "BATCH");
+            insertStatement.addBatch();
+            queryStatement.setInt(1, 1);
+            queryStatement.setInt(2, 1);
+            try (ResultSet resultSet = queryStatement.executeQuery()) {
+                assertFalse(resultSet.next());
+            }
+            updateStatement.setString(1, "INIT");
+            updateStatement.setString(2, "BATCH");
+            updateStatement.addBatch();
+            insertStatement.setInt(1, 3102);
+            insertStatement.setInt(2, 12);
+            insertStatement.setInt(3, 12);
+            insertStatement.setString(4, "BATCH");
+            insertStatement.addBatch();
+            updateStatement.setString(1, "BATCH");
+            updateStatement.setString(2, "INIT");
+            updateStatement.addBatch();
+            queryStatement.setInt(1, 2);
+            queryStatement.setInt(2, 2);
+            try (ResultSet resultSet = queryStatement.executeQuery()) {
+                assertFalse(resultSet.next());
+            }
+            insertStatement.setInt(1, 3111);
+            insertStatement.setInt(2, 21);
+            insertStatement.setInt(3, 21);
+            insertStatement.setString(4, "BATCH");
+            insertStatement.addBatch();
+            updateStatement.setString(1, "INIT");
+            updateStatement.setString(2, "BATCH");
+            updateStatement.addBatch();
+            insertStatement.setInt(1, 3112);
+            insertStatement.setInt(2, 22);
+            insertStatement.setInt(3, 22);
+            insertStatement.setString(4, "BATCH");
+            insertStatement.addBatch();
+            int[] insertResult = insertStatement.executeBatch();
+            for (int each : insertResult) {
+                assertThat(each, is(1));
+            }
+            int[] updateResult = updateStatement.executeBatch();
+            for (int each : updateResult) {
+                assertThat(each, is(4));
+            }
+        }
+    }
+    
+    @Test
     void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
@@ -416,7 +477,6 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
                 assertThat(resultSet.getString(3), is(status));
             }
         }
-        
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
@@ -607,10 +667,7 @@ class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     }
     
     @Test
-    void assertColumnNotFoundException() throws SQLException {
-        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_WITH_ERROR_COLUMN)) {
-            preparedStatement.setString(1, "OK");
-            assertThrows(SQLException.class, preparedStatement::executeUpdate);
-        }
+    void assertColumnNotFoundException() {
+        assertThrows(UnknownColumnException.class, () -> getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_WITH_ERROR_COLUMN));
     }
 }

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra-database</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-database-type</artifactId>
     <packaging>pom</packaging>
@@ -36,5 +36,7 @@
         <module>sqlserver</module>
         <module>h2</module>
         <module>sql92</module>
+        <module>clickhouse</module>
+        <module>testcontainers</module>
     </modules>
 </project>

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Write
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -64,24 +65,30 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private AbstractRowEvent readTableEvent(final ByteBuffer data) {
-        AbstractRowEvent result;
         String tableName = readTableName(data);
         String rowEventType = readRowEventType(data);
-        switch (rowEventType) {
-            case IngestDataChangeType.INSERT:
+        PipelineSQLOperationType type;
+        try {
+            type = PipelineSQLOperationType.valueOf(rowEventType);
+        } catch (final IllegalArgumentException ex) {
+            throw new IngestException("Unknown rowEventType: " + rowEventType);
+        }
+        AbstractRowEvent result;
+        switch (type) {
+            case INSERT:
                 result = readWriteRowEvent(data);
                 break;
-            case IngestDataChangeType.UPDATE:
+            case UPDATE:
                 result = readUpdateRowEvent(data);
                 break;
-            case IngestDataChangeType.DELETE:
+            case DELETE:
                 result = readDeleteRowEvent(data);
                 break;
             default:
                 throw new IngestException("Unknown rowEventType: " + rowEventType);
         }
         String[] tableMetaData = tableName.split("\\.");
-        result.setDatabaseName(tableMetaData[0]);
+        result.setSchemaName(tableMetaData[0]);
         result.setTableName(tableMetaData[1].substring(0, tableMetaData[1].length() - 1));
         return result;
     }
@@ -252,7 +259,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         for (int i = 0; i < offset; i++) {
             result[i] = data.get(startPosition + i);
         }
-        return new String(result);
+        return new String(result, StandardCharsets.UTF_8);
     }
     
     private String readNextString(final ByteBuffer data) {

@@ -21,19 +21,16 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent-plugins</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins-common</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <okhttp.version>3.7.0</okhttp.version>
-    </properties>
-    
     <dependencies>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-util</artifactId>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>

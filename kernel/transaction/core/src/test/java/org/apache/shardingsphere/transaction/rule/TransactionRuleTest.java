@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.transaction.rule;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -38,6 +37,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,17 +61,15 @@ class TransactionRuleTest {
         assertNotNull(actual.getResource());
         assertThat(actual.getDatabases().size(), is(2));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_1));
-        ShardingSphereResourceMetaData resourceMetaData1 = actual.getDatabases().get(SHARDING_DB_1).getResourceMetaData();
-        assertThat(resourceMetaData1.getDataSources().size(), is(2));
-        assertTrue(resourceMetaData1.getDataSources().containsKey("ds_0"));
-        assertTrue(resourceMetaData1.getDataSources().containsKey("ds_1"));
-        assertThat(resourceMetaData1.getStorageTypes().size(), is(2));
+        ResourceMetaData resourceMetaData1 = actual.getDatabases().get(SHARDING_DB_1).getResourceMetaData();
+        assertThat(resourceMetaData1.getStorageUnits().size(), is(2));
+        assertTrue(resourceMetaData1.getStorageUnits().containsKey("ds_0"));
+        assertTrue(resourceMetaData1.getStorageUnits().containsKey("ds_1"));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_2));
-        ShardingSphereResourceMetaData resourceMetaData2 = actual.getDatabases().get(SHARDING_DB_2).getResourceMetaData();
-        assertThat(resourceMetaData2.getDataSources().size(), is(2));
-        assertTrue(resourceMetaData2.getDataSources().containsKey("ds_0"));
-        assertTrue(resourceMetaData2.getDataSources().containsKey("ds_1"));
-        assertThat(resourceMetaData2.getStorageTypes().size(), is(2));
+        ResourceMetaData resourceMetaData2 = actual.getDatabases().get(SHARDING_DB_2).getResourceMetaData();
+        assertThat(resourceMetaData2.getStorageUnits().size(), is(2));
+        assertTrue(resourceMetaData2.getStorageUnits().containsKey("ds_0"));
+        assertTrue(resourceMetaData2.getStorageUnits().containsKey("ds_1"));
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
@@ -93,43 +91,43 @@ class TransactionRuleTest {
     
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData();
+        ResourceMetaData resourceMetaData = createResourceMetaData();
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         when(result.getName()).thenReturn("sharding_db");
         return result;
     }
     
-    private ShardingSphereResourceMetaData createResourceMetaData() {
-        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
-        dataSourceMap.put("ds_0", new MockedDataSource());
-        dataSourceMap.put("ds_1", new MockedDataSource());
-        when(result.getDataSources()).thenReturn(dataSourceMap);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
-        databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
-        databaseTypes.put("ds_1", new OpenGaussDatabaseType());
-        when(result.getStorageTypes()).thenReturn(databaseTypes);
+    private ResourceMetaData createResourceMetaData() {
+        Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
+        DataSourcePoolProperties dataSourcePoolProps0 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps0.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/ds_0"));
+        storageUnits.put("ds_0", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps0, new MockedDataSource()));
+        DataSourcePoolProperties dataSourcePoolProps1 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps1.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/ds_1"));
+        storageUnits.put("ds_1", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps1, new MockedDataSource()));
+        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
     
     private ShardingSphereDatabase createAddDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        ShardingSphereResourceMetaData resourceMetaData = createAddResourceMetaData();
+        ResourceMetaData resourceMetaData = createAddResourceMetaData();
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         when(result.getName()).thenReturn(SHARDING_DB_2);
         return result;
     }
     
-    private ShardingSphereResourceMetaData createAddResourceMetaData() {
-        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
-        dataSourceMap.put("ds_0", new MockedDataSource());
-        dataSourceMap.put("ds_1", new MockedDataSource());
-        when(result.getDataSources()).thenReturn(dataSourceMap);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
-        databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
-        databaseTypes.put("ds_1", new OpenGaussDatabaseType());
-        when(result.getStorageTypes()).thenReturn(databaseTypes);
+    private ResourceMetaData createAddResourceMetaData() {
+        Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
+        DataSourcePoolProperties dataSourcePoolProps0 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps0.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/ds_0"));
+        storageUnits.put("ds_0", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps0, new MockedDataSource()));
+        DataSourcePoolProperties dataSourcePoolProps1 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps1.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/ds_1"));
+        storageUnits.put("ds_1", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps1, new MockedDataSource()));
+        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
     

@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -82,33 +82,33 @@ public final class ProxyConfigurationLoader {
         return null == result ? new YamlProxyServerConfiguration() : rebuildGlobalRuleConfiguration(result);
     }
     
-    private static YamlProxyServerConfiguration rebuildGlobalRuleConfiguration(final YamlProxyServerConfiguration serverConfiguration) {
-        serverConfiguration.getRules().removeIf(YamlGlobalRuleConfiguration.class::isInstance);
-        if (null != serverConfiguration.getAuthority()) {
-            serverConfiguration.getRules().add(serverConfiguration.getAuthority());
+    private static YamlProxyServerConfiguration rebuildGlobalRuleConfiguration(final YamlProxyServerConfiguration serverConfig) {
+        serverConfig.getRules().removeIf(YamlGlobalRuleConfiguration.class::isInstance);
+        if (null != serverConfig.getAuthority()) {
+            serverConfig.getRules().add(serverConfig.getAuthority());
         }
-        if (null != serverConfiguration.getTransaction()) {
-            serverConfiguration.getRules().add(serverConfiguration.getTransaction());
+        if (null != serverConfig.getTransaction()) {
+            serverConfig.getRules().add(serverConfig.getTransaction());
         }
-        if (null != serverConfiguration.getGlobalClock()) {
-            serverConfiguration.getRules().add(serverConfiguration.getGlobalClock());
+        if (null != serverConfig.getGlobalClock()) {
+            serverConfig.getRules().add(serverConfig.getGlobalClock());
         }
-        if (null != serverConfiguration.getSqlParser()) {
-            serverConfiguration.getRules().add(serverConfiguration.getSqlParser());
+        if (null != serverConfig.getSqlParser()) {
+            serverConfig.getRules().add(serverConfig.getSqlParser());
         }
-        if (null != serverConfiguration.getSqlTranslator()) {
-            serverConfiguration.getRules().add(serverConfiguration.getSqlTranslator());
+        if (null != serverConfig.getSqlTranslator()) {
+            serverConfig.getRules().add(serverConfig.getSqlTranslator());
         }
-        if (null != serverConfiguration.getTraffic()) {
-            serverConfiguration.getRules().add(serverConfiguration.getTraffic());
+        if (null != serverConfig.getTraffic()) {
+            serverConfig.getRules().add(serverConfig.getTraffic());
         }
-        if (null != serverConfiguration.getLogging()) {
-            serverConfiguration.getRules().add(serverConfiguration.getLogging());
+        if (null != serverConfig.getLogging()) {
+            serverConfig.getRules().add(serverConfig.getLogging());
         }
-        if (null != serverConfiguration.getSqlFederation()) {
-            serverConfiguration.getRules().add(serverConfiguration.getSqlFederation());
+        if (null != serverConfig.getSqlFederation()) {
+            serverConfig.getRules().add(serverConfig.getSqlFederation());
         }
-        return serverConfiguration;
+        return serverConfig;
     }
     
     private static Collection<YamlProxyDatabaseConfiguration> loadDatabaseConfigurations(final File configPath) throws IOException {
@@ -127,9 +127,6 @@ public final class ProxyConfigurationLoader {
         YamlProxyDatabaseConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyDatabaseConfiguration.class);
         if (null == result) {
             return Optional.empty();
-        }
-        if (null == result.getDatabaseName()) {
-            result.setDatabaseName(result.getSchemaName());
         }
         Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());
         checkDuplicateRule(result.getRules(), yamlFile);

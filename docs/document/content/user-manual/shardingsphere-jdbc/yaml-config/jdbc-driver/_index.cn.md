@@ -14,13 +14,9 @@ ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使
 
 `org.apache.shardingsphere.driver.ShardingSphereDriver`
 
-### URL 配置
+### URL 配置及配置示例
 
-- 以 `jdbc:shardingsphere:` 为前缀
-- 配置文件：`xxx.yaml`，配置文件格式与 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/)一致
-- 配置文件加载规则：
-  - 无前缀表示从指定路径加载配置文件
-  - `classpath:` 前缀表示从类路径中加载配置文件
+参考 [已知实现](./known-implementation/_index.cn.md) 。
 
 ## 操作步骤
 
@@ -79,16 +75,4 @@ try (
         }
     }
 }
-```
-
-## 配置示例
-
-加载 classpath 中 config.yaml 配置文件的 JDBC URL：
-```
-jdbc:shardingsphere:classpath:config.yaml
-```
-
-加载绝对路径中 config.yaml 配置文件的 JDBC URL：
-```
-jdbc:shardingsphere:absolutepath:/path/to/config.yaml
 ```

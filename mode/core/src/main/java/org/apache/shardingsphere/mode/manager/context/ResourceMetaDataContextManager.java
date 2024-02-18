@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.context;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -54,6 +54,7 @@ public final class ResourceMetaDataContextManager {
         metaDataContexts.get().getMetaData().addDatabase(databaseName, protocolType, metaDataContexts.get().getMetaData().getProps());
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         alterMetaDataHeldRule(database);
+        metaDataContexts.set(new MetaDataContexts(metaDataContexts.get().getPersistService(), metaDataContexts.get().getMetaData()));
     }
     
     private void alterMetaDataHeldRule(final ShardingSphereDatabase database) {
@@ -84,7 +85,7 @@ public final class ResourceMetaDataContextManager {
         if (database.containsSchema(schemaName)) {
             return;
         }
-        database.putSchema(schemaName, new ShardingSphereSchema());
+        database.addSchema(schemaName, new ShardingSphereSchema());
         alterMetaDataHeldRule(database);
     }
     
@@ -102,7 +103,7 @@ public final class ResourceMetaDataContextManager {
         if (!database.containsSchema(schemaName)) {
             return;
         }
-        database.removeSchema(schemaName);
+        database.dropSchema(schemaName);
         alterMetaDataHeldRule(database);
     }
     

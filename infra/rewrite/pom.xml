@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-rewrite</artifactId>
     <name>${project.artifactId}</name>
@@ -45,7 +45,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-fixture-infra</artifactId>
+            <artifactId>shardingsphere-test-fixture-database</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

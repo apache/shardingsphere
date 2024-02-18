@@ -41,6 +41,6 @@ public final class StandaloneYamlPersistRepositoryConfigurationSwapper implement
     
     @Override
     public String getType() {
-        return "Standalone";
+        return "Compatible_Standalone";
     }
 }

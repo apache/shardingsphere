@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.state.lock;
 
 import org.apache.shardingsphere.driver.state.DriverState;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;

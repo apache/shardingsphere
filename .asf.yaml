@@ -48,10 +48,12 @@ github:
     master:
       required_status_checks:
         contexts:
-          - Check - CheckStyle and Spotless
+          - Check - CheckStyle
+          - Check - Spotless
+          - Check - License
       required_pull_request_reviews:
         dismiss_stale_reviews: true
         required_approving_review_count: 1
   collaborators:
     - zhujunxxxxx
-    - wbcfwbe
+    - Mouqiuyu

@@ -139,7 +139,7 @@ class DDLE2EIT {
         if (null == containerComposer.getAssertion().getInitialSQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -159,7 +159,7 @@ class DDLE2EIT {
         if (null == containerComposer.getAssertion().getDestroySQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -170,7 +170,7 @@ class DDLE2EIT {
     private void assertTableMetaData(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
         String tableName = containerComposer.getAssertion().getInitialSQL().getAffectedTable();
         DataSetMetaData expected = containerComposer.getDataSet().findMetaData(tableName);
-        Collection<DataNode> dataNodes = InlineExpressionParserFactory.newInstance().splitAndEvaluate(expected.getDataNodes()).stream().map(DataNode::new).collect(Collectors.toList());
+        Collection<DataNode> dataNodes = InlineExpressionParserFactory.newInstance(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {
             assertNotContainsTable(containerComposer, dataNodes);
             return;

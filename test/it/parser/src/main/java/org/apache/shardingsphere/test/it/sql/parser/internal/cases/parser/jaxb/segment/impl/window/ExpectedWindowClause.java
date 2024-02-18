@@ -17,14 +17,22 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.window;
 
+import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Expected window clause.
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedWindowClause extends AbstractExpectedSQLSegment {
+    
+    @XmlElement(name = "window-item")
+    private final Collection<ExpectedWindowItem> windowItems = new LinkedList<>();
 }

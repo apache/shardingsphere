@@ -29,8 +29,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class OpenGaussErrorPacketFactoryTest {
     
@@ -70,14 +68,13 @@ class OpenGaussErrorPacketFactoryTest {
     
     @Test
     void assertNewInstanceWithUnknownException() {
-        Exception cause = mock(Exception.class);
-        when(cause.getLocalizedMessage()).thenReturn("LocalizedMessage");
+        Exception cause = new RuntimeException("No reason");
         OpenGaussErrorResponsePacket actual = OpenGaussErrorPacketFactory.newInstance(cause);
         Map<Character, String> actualFields = getFieldsInPacket(actual);
         assertThat(actualFields.size(), is(4));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY), is("ERROR"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE), is("58000"));
-        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE), is("LocalizedMessage"));
+        assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE), is("Unknown exception: No reason"));
         assertThat(actualFields.get(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE), is("0"));
     }
     

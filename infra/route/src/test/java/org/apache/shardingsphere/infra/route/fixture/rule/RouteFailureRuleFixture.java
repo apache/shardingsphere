@@ -28,9 +28,4 @@ public final class RouteFailureRuleFixture implements ShardingSphereRule {
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
     }
-    
-    @Override
-    public String getType() {
-        return RouteFailureRuleFixture.class.getSimpleName();
-    }
 }

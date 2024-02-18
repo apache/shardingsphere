@@ -21,14 +21,22 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-transaction-xa-provider</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <atomikos.version>5.0.9</atomikos.version>
-    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.atomikos</groupId>
+                <artifactId>transactions-essentials</artifactId>
+                <version>${atomikos.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     
     <dependencies>
         <dependency>
@@ -40,17 +48,14 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
-            <version>${atomikos.version}</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>${atomikos.version}</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
-            <version>${atomikos.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.showprocesslist.engine;
 
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.showprocesslist.container.composer.ClusterShowProcessListContainerComposer;
 import org.apache.shardingsphere.test.e2e.showprocesslist.env.ShowProcessListEnvironment;
 import org.apache.shardingsphere.test.e2e.showprocesslist.env.enums.ShowProcessListEnvTypeEnum;
@@ -122,7 +123,7 @@ class ShowProcessListE2EIT {
             for (String each : ENV.getScenarios()) {
                 for (String runMode : ENV.getRunModes()) {
                     for (String governanceType : ENV.getGovernanceCenters()) {
-                        result.add(Arguments.of(new ShowProcessListTestParameter(new MySQLDatabaseType(), each, runMode, governanceType)));
+                        result.add(Arguments.of(new ShowProcessListTestParameter(TypedSPILoader.getService(DatabaseType.class, "MySQL"), each, runMode, governanceType)));
                     }
                 }
             }

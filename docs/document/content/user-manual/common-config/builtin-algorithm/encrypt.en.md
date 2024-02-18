@@ -22,31 +22,6 @@ Attributes:
 | aes-key-value         | String     | AES KEY                                             |
 | digest-algorithm-name | String     | AES KEY DIGEST ALGORITHM (optional, default: SHA-1) |
 
-#### RC4 Encrypt Algorithm
-
-Type: RC4
-
-Attributes:
-
-| *Name*        | *DataType* | *Description* |
-|---------------|------------|---------------|
-| rc4-key-value | String     | RC4 KEY       |
-
-### Like Encrypt Algorithm
-
-#### CharDigestLike Encrypt Algorithm
-
-Type：CHAR_DIGEST_LIKE
-
-Attributes：
-
-| *Name* | *DataType* | *Description*                                   |
-|--------|------------|-------------------------------------------------|
-| delta  | int        | Character Unicode offset（decimal number）        |
-| mask   | int        | Character encryption mask（decimal number）       |
-| start  | int        | Ciphertext Unicode initial code（decimal number） |
-| dict   | String     | Common words                                    |
-
 ### Assisted Encrypt Algorithm
 
 #### MD5 Assisted Encrypt Algorithm

@@ -21,19 +21,13 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-operation</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-transaction</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        
-        <atomikos.version>5.0.9</atomikos.version>
-        <narayana.version>5.12.4.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-        <btm.version>2.1.3</btm.version>
     </properties>
     
     <dependencies>
@@ -72,8 +66,8 @@
         </dependency>
         
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -122,16 +116,6 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
             <version>${jboss-logging.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.btm</groupId>
-            <artifactId>btm</artifactId>
-            <version>${btm.version}</version>
         </dependency>
         <dependency>
             <groupId>org.awaitility</groupId>

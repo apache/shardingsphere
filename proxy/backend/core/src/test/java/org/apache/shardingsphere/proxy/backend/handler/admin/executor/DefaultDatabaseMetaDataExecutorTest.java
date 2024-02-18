@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
-import org.apache.shardingsphere.authority.provider.database.model.privilege.DatabasePermittedPrivileges;
+import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -117,14 +118,13 @@ class DefaultDatabaseMetaDataExecutorTest {
     }
     
     private ShardingSphereDatabase createDatabase(final Map<String, String> expectedResultSetMap) throws SQLException {
-        return new ShardingSphereDatabase("auth_db", new MySQLDatabaseType(),
-                new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))),
-                mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        return new ShardingSphereDatabase("auth_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
+                new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))),
+                mock(RuleMetaData.class), Collections.emptyMap());
     }
     
     private Connection mockConnection(final Map<String, String> expectedResultSetMap) throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/foo_ds");
         ResultSet resultSet = mockResultSet(expectedResultSetMap);
         when(result.prepareStatement(any(String.class)).executeQuery()).thenReturn(resultSet);
         return result;
@@ -148,9 +148,9 @@ class DefaultDatabaseMetaDataExecutorTest {
         when(authorityRule.findPrivileges(grantee)).thenReturn(Optional.of(new DatabasePermittedPrivileges(Collections.singleton("auth_db"))));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singletonMap("auth_db", database),
-                mock(ShardingSphereResourceMetaData.class), new ShardingSphereRuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
+                mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(ProxyContext.getInstance().getDatabase("auth_db")).thenReturn(database);
+        when(result.getDatabase("auth_db")).thenReturn(database);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
         return result;
     }

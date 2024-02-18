@@ -18,4 +18,8 @@
 
 <sql-cases>
     <sql-case id="create_type" value="create type avg_state as (total bigint, count bigint)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_type_as_table" value="CREATE TYPE address_book_t AS TABLE OF cust_address_typ;" db-types="Oracle" />
+    <sql-case id="create_type_as_varray" value="CREATE TYPE address_array_t AS VARRAY(3) OF cust_address_typ;" db-types="Oracle" />
+    <sql-case id="create_type_as_object" value="CREATE TYPE person_t AS OBJECT (name VARCHAR2(100), ssn NUMBER) NOT FINAL;" db-types="Oracle" />
+    <sql-case id="create_sub_type" value="CREATE TYPE employee_t UNDER person_t (department_id NUMBER, salary NUMBER) NOT FINAL;" db-types="Oracle" />
 </sql-cases>

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.spi;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatem
 /**
  * SQL statement visitor facade.
  */
-public interface SQLStatementVisitorFacade extends TypedSPI {
+public interface SQLStatementVisitorFacade extends DatabaseTypedSPI {
     
     /**
      * Get DML visitor class.

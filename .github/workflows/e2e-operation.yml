@@ -19,25 +19,28 @@ name: E2E - Operation
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ dev ]
   pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: e2e-pipeline-${{ github.workflow }}-${{ github.ref }}
+  group: e2e-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
-  REPOSITORY_NAME: shardingsphere
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+
   detect-changed-files:
     name: Detect Changed Files
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -46,10 +49,12 @@ jobs:
     outputs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
-  e2e-operation-job:
-    needs: detect-changed-files
+  e2e-operation:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
+    needs: [ detect-changed-files, global-environment ]
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     strategy:
       max-parallel: 20
       fail-fast: false
@@ -61,15 +66,15 @@ jobs:
             image: { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }
           - operation: showprocesslist
             image: { type: "it.docker.opengauss.version", version: "enmotech/opengauss:2.1.0" }
-    timeout-minutes: 40
     steps:
       - env:
           changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
           current_operation: ${{ matrix.operation }}
+        name: Check if ${{ matrix.operation }} is Changed
         run: |
           echo "skip_current_step=false" >> $GITHUB_ENV
           if [[ ${changed_operations} == '["ignore"]' ]]; then
-            echo "${current_operation} is ignore by ignore filter"
+            echo "${current_operation} is ignored by ignore filter"
             echo "skip_current_step=true" >> $GITHUB_ENV
           fi
           
@@ -81,31 +86,24 @@ jobs:
           fi
       - name: Checkout Project
         if: (env.skip_current_step == 'false')
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Retrieve Maven Caches
         if: (env.skip_current_step == 'false')
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Setup JDK 11
-        if: (env.skip_current_step == 'false')
-        uses: actions/setup-java@v3
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+      - if: (env.skip_current_step == 'false')
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 11
       - name: Build ${{ matrix.operation }} E2E Image
         if: (env.skip_current_step == 'false')
         run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pit.env.docker -DskipTests
-      - name: Setup JDK 8 for Test
-        if: (env.skip_current_step == 'false')
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
         if: (env.skip_current_step == 'false')
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}

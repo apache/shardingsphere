@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.sharding.metadata.reviser.index;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -36,17 +35,17 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     
     @Override
     public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final ShardingRule rule) {
-        for (DataNode each : tableRule.getActualDataNodes()) {
-            Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
-            if (logicIndexName.isPresent()) {
-                return Optional.of(new IndexMetaData(logicIndexName.get()));
-            }
+        if (tableRule.getActualDataNodes().isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        IndexMetaData result = new IndexMetaData(getLogicIndex(originalMetaData.getName(), tableRule.getActualDataNodes().iterator().next().getTableName()));
+        result.getColumns().addAll(originalMetaData.getColumns());
+        result.setUnique(originalMetaData.isUnique());
+        return Optional.of(result);
     }
     
-    private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
+    private String getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
-        return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
+        return actualIndexName.endsWith(indexNameSuffix) ? actualIndexName.replace(indexNameSuffix, "") : actualIndexName;
     }
 }

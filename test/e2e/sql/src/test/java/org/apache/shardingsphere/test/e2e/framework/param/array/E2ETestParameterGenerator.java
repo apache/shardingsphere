@@ -20,10 +20,10 @@ package org.apache.shardingsphere.test.e2e.framework.param.array;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.distsql.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCasesLoader;
@@ -163,14 +163,17 @@ public final class E2ETestParameterGenerator {
     
     private Collection<E2ETestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext, final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
-        for (String adapter : envAdapters) {
-            result.addAll(getCaseTestParameter(testCaseContext, adapter, databaseType, sqlCommandType));
+        for (String each : envAdapters) {
+            result.addAll(getCaseTestParameter(testCaseContext, each, databaseType, sqlCommandType));
         }
         return result;
     }
     
     private Collection<E2ETestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext, final String adapter,
                                                               final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
+        if (null != testCaseContext.getTestCase().getAdapters() && !testCaseContext.getTestCase().getAdapters().contains(adapter)) {
+            return Collections.emptyList();
+        }
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
                 .map(each -> new CaseTestParameter(testCaseContext, adapter, each, envMode, databaseType, sqlCommandType)).collect(Collectors.toList());

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.distsql.parser.core;
 
-import org.apache.shardingsphere.authority.distsql.parser.statement.ShowAuthorityRuleStatement;
+import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.autogen.AuthorityDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.AuthorityDistSQLStatementParser.ShowAuthorityRuleContext;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;

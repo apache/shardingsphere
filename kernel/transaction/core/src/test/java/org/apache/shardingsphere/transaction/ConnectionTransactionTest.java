@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction;
 
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -37,34 +36,34 @@ class ConnectionTransactionTest {
     
     @Test
     void assertDistributedTransactionOperationTypeCommit() {
-        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule());
+        connectionTransaction = new ConnectionTransaction(getXATransactionRule());
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(true);
         assertThat(operationType, is(DistributedTransactionOperationType.COMMIT));
     }
     
     @Test
     void assertDistributedTransactionOperationTypeIgnore() {
-        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule());
+        connectionTransaction = new ConnectionTransaction(getXATransactionRule());
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(false);
         assertThat(operationType, is(DistributedTransactionOperationType.IGNORE));
     }
     
     @Test
     void assertIsLocalTransaction() {
-        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getLocalTransactionRule());
+        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule());
         assertTrue(connectionTransaction.isLocalTransaction());
-        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule());
+        connectionTransaction = new ConnectionTransaction(getXATransactionRule());
         assertFalse(connectionTransaction.isLocalTransaction());
     }
     
     @Test
     void assertIsHoldTransaction() {
-        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getLocalTransactionRule());
+        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule());
         assertTrue(connectionTransaction.isHoldTransaction(false));
-        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule());
+        connectionTransaction = new ConnectionTransaction(getXATransactionRule());
         assertTrue(connectionTransaction.isInTransaction());
         assertTrue(connectionTransaction.isHoldTransaction(true));
-        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getLocalTransactionRule());
+        connectionTransaction = new ConnectionTransaction(getLocalTransactionRule());
         assertFalse(connectionTransaction.isHoldTransaction(true));
     }
     

@@ -22,8 +22,8 @@
         <column name="user_name_like" type="varchar" />
         <column name="password_cipher" type="varchar" />
         <column name="email_cipher" type="varchar" />
-        <column name="telephone_cipher" type="varchar" />
-        <column name="telephone_like" type="varchar" />
+        <column name="user_telephone_cipher" type="varchar" />
+        <column name="user_telephone_like" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
     <row data-node="encrypt.t_user" values="11, fQ7IzBxKVuNHtUF6h6WSBg==, mhth, wuhmEKgdgrWQYt+Ev0hgGA==, svATu3uWv9KfiloWJeWx3A==, 0kDFxndQdzauFwL/wyCsNQ==, 01454589810, 2017-08-08" />

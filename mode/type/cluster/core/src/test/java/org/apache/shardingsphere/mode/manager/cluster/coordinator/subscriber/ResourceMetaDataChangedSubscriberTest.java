@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -30,17 +30,18 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.event.schema.TableMetaDataChangedEvent;
+import org.apache.shardingsphere.mode.event.schema.ViewMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
-import org.apache.shardingsphere.mode.event.schema.TableMetaDataChangedEvent;
-import org.apache.shardingsphere.mode.event.schema.ViewMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,10 +100,8 @@ class ResourceMetaDataChangedSubscriberTest {
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
         when(database.getName()).thenReturn("db");
-        when(database.getResourceMetaData().getDataSources()).thenReturn(new LinkedHashMap<>());
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         when(database.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
-        when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
@@ -112,18 +111,18 @@ class ResourceMetaDataChangedSubscriberTest {
     
     @Test
     void assertRenewForDatabaseAdded() {
-        when(persistService.getDataSourceUnitService().load("db_added")).thenReturn(createDataSourcePropertiesMap());
+        when(persistService.getDataSourceUnitService().load("db_added")).thenReturn(createDataSourcePoolPropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
         subscriber.renew(new DatabaseAddedEvent("db_added"));
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getDataSources());
+        assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getStorageUnits());
     }
     
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
+    private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1F);
-        result.put("primary_ds", DataSourcePropertiesCreator.create(dataSource));
-        result.put("replica_ds_0", DataSourcePropertiesCreator.create(dataSource));
-        result.put("replica_ds_1", DataSourcePropertiesCreator.create(dataSource));
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(3, 1F);
+        result.put("primary_ds", DataSourcePoolPropertiesCreator.create(dataSource));
+        result.put("replica_ds_0", DataSourcePoolPropertiesCreator.create(dataSource));
+        result.put("replica_ds_1", DataSourcePoolPropertiesCreator.create(dataSource));
         return result;
     }
     
@@ -136,14 +135,14 @@ class ResourceMetaDataChangedSubscriberTest {
     @Test
     void assertRenewForSchemaAdded() {
         subscriber.renew(new SchemaAddedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).putSchema(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).addSchema(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
     }
     
     @Test
     void assertRenewForSchemaDeleted() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("foo_schema")).thenReturn(true);
         subscriber.renew(new SchemaDeletedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).removeSchema("foo_schema");
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).dropSchema("foo_schema");
     }
     
     @Test

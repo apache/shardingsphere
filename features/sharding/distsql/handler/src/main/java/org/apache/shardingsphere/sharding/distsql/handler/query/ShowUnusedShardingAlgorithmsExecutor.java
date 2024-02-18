@@ -18,42 +18,44 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAlgorithmsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Show unused sharding algorithms executor.
  */
-public final class ShowUnusedShardingAlgorithmsExecutor implements RQLExecutor<ShowUnusedShardingAlgorithmsStatement> {
+@Setter
+public final class ShowUnusedShardingAlgorithmsExecutor implements DistSQLQueryExecutor<ShowUnusedShardingAlgorithmsStatement>, DistSQLExecutorRuleAware<ShardingRule> {
+    
+    private ShardingRule rule;
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingAlgorithmsStatement sqlStatement) {
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!rule.isPresent()) {
-            return Collections.emptyList();
-        }
-        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) rule.get().getConfiguration();
+    public Collection<String> getColumnNames(final ShowUnusedShardingAlgorithmsStatement sqlStatement) {
+        return Arrays.asList("name", "type", "props");
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowUnusedShardingAlgorithmsStatement sqlStatement, final ContextManager contextManager) {
+        ShardingRuleConfiguration shardingRuleConfig = rule.getConfiguration();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<String> inUsedAlgorithms = getUsedShardingAlgorithms(shardingRuleConfig);
         for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getShardingAlgorithms().entrySet()) {
             if (!inUsedAlgorithms.contains(entry.getKey())) {
-                result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), buildProps(entry.getValue().getProps())));
+                result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps()));
             }
         }
         return result;
@@ -82,16 +84,12 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements RQLExecutor<S
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "props");
-    }
-    
-    private String buildProps(final Properties props) {
-        return null == props ? "" : PropertiesConverter.convert(props);
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override
-    public String getType() {
-        return ShowUnusedShardingAlgorithmsStatement.class.getName();
+    public Class<ShowUnusedShardingAlgorithmsStatement> getType() {
+        return ShowUnusedShardingAlgorithmsStatement.class;
     }
 }

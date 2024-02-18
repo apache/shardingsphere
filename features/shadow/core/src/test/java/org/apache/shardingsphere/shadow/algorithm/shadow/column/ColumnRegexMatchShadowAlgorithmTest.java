@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.exception.algorithm.ShadowAlgorithmInitializationException;
 import org.apache.shardingsphere.shadow.exception.data.UnsupportedShadowColumnTypeException;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;

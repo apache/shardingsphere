@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,51 +36,44 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Show table meta data handler.
+ * Show table meta data executor.
  */
-public final class ShowTableMetaDataExecutor implements ConnectionSessionRequiredQueryableRALExecutor<ShowTableMetaDataStatement> {
+@Setter
+public final class ShowTableMetaDataExecutor implements DistSQLQueryExecutor<ShowTableMetaDataStatement>, DistSQLExecutorDatabaseAware {
+    
+    private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("schema_name", "table_name", "type", "name");
+    public Collection<String> getColumnNames(final ShowTableMetaDataStatement sqlStatement) {
+        return Arrays.asList("database_name", "table_name", "type", "name", "value");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ShowTableMetaDataStatement sqlStatement) {
-        String databaseName = getDatabaseName(connectionSession, sqlStatement);
-        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getProtocolType(), connectionSession.getDatabaseName());
-        ShardingSphereSchema schema = ProxyContext.getInstance().getDatabase(databaseName).getSchema(defaultSchema);
-        return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
-                .map(each -> buildTableRows(databaseName, schema, each)).flatMap(Collection::stream).collect(Collectors.toList());
-    }
-    
-    private String getDatabaseName(final ConnectionSession connectionSession, final ShowTableMetaDataStatement sqlStatement) {
-        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
-        if (Strings.isNullOrEmpty(result)) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().databaseExists(result)) {
-            throw new UnknownDatabaseException(result);
-        }
-        return result;
+    public Collection<LocalDataQueryResultRow> getRows(final ShowTableMetaDataStatement sqlStatement, final ContextManager contextManager) {
+        String defaultSchema = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
+        ShardingSphereSchema schema = database.getSchema(defaultSchema);
+        return sqlStatement.getTableNames().stream().filter(each -> schema.getAllTableNames().contains(each.toLowerCase()))
+                .map(each -> buildTableRows(database.getName(), schema, each.toLowerCase())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Collection<LocalDataQueryResultRow> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(databaseName, tableName, "COLUMN", each)).collect(Collectors.toList());
-        Collection<LocalDataQueryResultRow> indexRows = schema.getTable(tableName).getIndexValues().stream().map(ShardingSphereIndex::getName)
-                .map(each -> buildRow(databaseName, tableName, "INDEX", each)).collect(Collectors.toList());
-        result.addAll(columnRows);
-        result.addAll(indexRows);
+        ShardingSphereTable table = schema.getTable(tableName);
+        result.addAll(table.getColumnValues().stream().map(each -> buildColumnRow(databaseName, tableName, each)).collect(Collectors.toList()));
+        result.addAll(table.getIndexValues().stream().map(each -> buildIndexRow(databaseName, tableName, each)).collect(Collectors.toList()));
         return result;
     }
     
-    private LocalDataQueryResultRow buildRow(final String databaseName, final String tableName, final String type, final String name) {
-        return new LocalDataQueryResultRow(databaseName, tableName, type, name);
+    private LocalDataQueryResultRow buildColumnRow(final String databaseName, final String tableName, final ShardingSphereColumn column) {
+        return new LocalDataQueryResultRow(databaseName, tableName, "COLUMN", column.getName(), column);
+    }
+    
+    private LocalDataQueryResultRow buildIndexRow(final String databaseName, final String tableName, final ShardingSphereIndex index) {
+        return new LocalDataQueryResultRow(databaseName, tableName, "INDEX", index.getName(), index);
     }
     
     @Override
-    public String getType() {
-        return ShowTableMetaDataStatement.class.getName();
+    public Class<ShowTableMetaDataStatement> getType() {
+        return ShowTableMetaDataStatement.class;
     }
 }

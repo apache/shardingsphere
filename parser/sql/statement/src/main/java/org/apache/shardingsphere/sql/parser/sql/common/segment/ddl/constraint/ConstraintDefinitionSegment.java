@@ -52,6 +52,10 @@ public final class ConstraintDefinitionSegment implements CreateDefinitionSegmen
     
     private SimpleTableSegment referencedTable;
     
+    private boolean uniqueKey;
+    
+    private boolean primaryKey;
+    
     /**
      * Get constraint name.
      *

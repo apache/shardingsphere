@@ -19,6 +19,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
 | 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\`.                      |
+| HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
+| 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
+| 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
@@ -36,16 +39,16 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 语法
 
-| SQL State | Vendor Code | 错误信息                                         |
-|-----------|-------------|----------------------------------------------|
-| 42000     | 12000       | You have an error in your SQL syntax: %s     |
-| 42000     | 12001       | Can not accept SQL type \`%s\`.              |
-| 42000     | 12002       | SQL String can not be NULL or empty.         |
-| 42000     | 12010       | Can not support variable \`%s\`.             |
-| 42S02     | 12011       | Can not find column label \`%s\`.            |
-| 42S02     | 12012       | Can not find driver url provider for \`%s`\. |
-| HV008     | 12020       | Column index \`%d\` is out of range.         |
-| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported.     |
+| SQL State | Vendor Code | 错误信息                                        |
+|-----------|-------------|---------------------------------------------|
+| 42000     | 12000       | You have an error in your SQL syntax: %s    |
+| 42000     | 12001       | Can not accept SQL type \`%s\`.             |
+| 42000     | 12002       | SQL String can not be NULL or empty.        |
+| 42000     | 12010       | Can not support variable \`%s\`.            |
+| 42S02     | 12011       | Can not find column label \`%s\`.           |
+| 42S02     | 12012       | Can not find url provider for \`%s`\. |
+| HV008     | 12020       | Column index \`%d\` is out of range.        |
+| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported.    |
 
 ### 连接
 
@@ -59,6 +62,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 08000     | 13020       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
 | 08000     | 13030       | Connection has been closed.                                                                                                                                                                                                 |
 | 08000     | 13031       | Result set has been closed.                                                                                                                                                                                                 |
+| 08000     | 13032       | SQL execution has been interrupted.                                                                                                                                                                                         |
 | HY000     | 13090       | Load datetime from database failed, reason: %s                                                                                                                                                                              |
 
 ### 事务
@@ -68,7 +72,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 25000     | 14000       | Switch transaction type failed, please terminate the current transaction.          |
 | 25000     | 14001       | Can not find transaction manager of \`%s\`.                                        |
 | 25000     | 14002       | Transaction timeout should more than 0s.                                           |
-| 25000     | 14100       | JDBC does not support operations across multiple logical databases in transaction. |
 | 25000     | 14200       | Can not start new XA transaction in a active transaction.                          |
 | 25000     | 14201       | Failed to create \`%s\` XA data source.                                            |
 | 25000     | 14202       | Max length of xa unique resource name \`%s\` exceeded: should be less than 45.     |
@@ -96,7 +99,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息                              |
 |-----------|-------------|-----------------------------------|
-| 44000     | 16500       | Access denied for operation `%s`. |
 
 ### 集群
 
@@ -117,6 +119,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18020       | Failed to get DDL for table \`%s\`.                                                |
 | 42S01     | 18030       | Duplicate storage unit names \`%s\`.                                               |
 | 42S02     | 18031       | Storage units names \`%s\` do not exist.                                           |
+| HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`.                         |
 | 08000     | 18051       | Data check table \`%s\` failed.                                                    |
 | 0A000     | 18052       | Unsupported pipeline database type \`%s\`.                                         |
 | 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`.  |
@@ -279,6 +282,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息                                                        |
 |-----------|-------------|-------------------------------------------------------------|
 | HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s. |
+| 42S02     | 20990       | Invalid mask algorithm \`%s\` in database \`%s\`.           |
 
 ## 其他异常
 

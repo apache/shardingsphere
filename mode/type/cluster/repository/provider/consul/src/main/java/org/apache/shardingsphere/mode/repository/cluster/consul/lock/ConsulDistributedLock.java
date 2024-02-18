@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.mode.repository.cluster.consul.lock;
 
 import com.ecwid.consul.ConsulException;
-import com.ecwid.consul.json.GsonFactory;
-import com.ecwid.consul.transport.RawResponse;
+import com.ecwid.consul.transport.HttpResponse;
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.OperationException;
 import com.ecwid.consul.v1.QueryParams;
@@ -28,8 +27,9 @@ import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import com.ecwid.consul.v1.session.model.Session.Behavior;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Strings;
-import com.google.common.reflect.TypeToken;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereConsulClient;
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereQueryParams;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
@@ -133,13 +133,10 @@ public final class ConsulDistributedLock implements DistributedLock {
         }
     }
     
-    private Response<GetValue> getResponse(final RawResponse rawResponse) {
+    private Response<GetValue> getResponse(final HttpResponse rawResponse) {
         if (200 == rawResponse.getStatusCode()) {
-            List<GetValue> value = GsonFactory.getGson().fromJson(rawResponse.getContent(), new TypeToken<List<GetValue>>() {
-                
-                private static final long serialVersionUID = -5065504617907914417L;
-                
-            }.getType());
+            List<GetValue> value = JsonUtils.fromJsonString(rawResponse.getContent(), new TypeReference<List<GetValue>>() {
+            });
             if (value.isEmpty()) {
                 return new Response<>(null, rawResponse);
             }

@@ -24,4 +24,6 @@
     <sql-case id="alter_session_change_parameter" value="ALTER SESSION SET NLS_DATE_LANGUAGE = French" db-types="Oracle" />
     <sql-case id="alter_session_set_container" value="ALTER SESSION SET CONTAINER = cdb$root" db-types="Oracle" />
     <sql-case id="alter_session_set_container_service" value="ALTER SESSION SET CONTAINER = pdb1 SERVICE = my_new_service" db-types="Oracle" />
+    <sql-case id="alter_session_set_events" value="ALTER SESSION SET EVENTS '19119 TRACE NAME CONTEXT FOREVER, LEVEL 0x8'" db-types="Oracle" />
+    <sql-case id="alter_session_set_parameter_recyclebin" value="ALTER SESSION SET recyclebin = ON" db-types="Oracle" />
 </sql-cases>

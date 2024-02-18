@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent</artifactId>
     <packaging>pom</packaging>
@@ -33,17 +33,8 @@
         <module>plugins</module>
     </modules>
     
-    <properties>
-        <bytebuddy.version>1.14.4</bytebuddy.version>
-    </properties>
-    
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>net.bytebuddy</groupId>
-                <artifactId>byte-buddy</artifactId>
-                <version>${bytebuddy.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-test-util</artifactId>
@@ -57,17 +48,14 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>jsr305</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.checkerframework</groupId>
-                    <artifactId>checker-qual</artifactId>
-                </exclusion>
-            </exclusions>
+            <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-util</artifactId>

@@ -20,16 +20,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-it</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <artifactId>shardingsphere-test-it</artifactId>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-it-rewriter</artifactId>
+    <artifactId>shardingsphere-test-it-rewriter</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-fixture-jdbc</artifactId>
+            <artifactId>shardingsphere-test-fixture-database</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

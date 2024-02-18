@@ -17,30 +17,29 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.common.ingest.channel.EmptyAckCallback;
-import org.apache.shardingsphere.data.pipeline.common.ingest.channel.memory.SimpleMemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.channel.memory.MemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.ActualAndLogicTableNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +48,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -60,7 +58,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -76,39 +73,40 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unchecked")
 class MySQLIncrementalDumperTest {
     
-    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-    
-    private DumperConfiguration dumperConfig;
-    
     private MySQLIncrementalDumper incrementalDumper;
     
     private PipelineTableMetaData pipelineTableMetaData;
     
+    @BeforeAll
+    static void init() throws ClassNotFoundException {
+        Class.forName(MockedDriver.class.getName());
+    }
+    
     @BeforeEach
-    void setUp() {
-        dumperConfig = mockDumperConfiguration();
-        initTableData(dumperConfig);
-        dumperConfig.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("mock:mysql://127.0.0.1:3306/test", "root", "root"));
+    void setUp() throws SQLException {
+        IncrementalDumperContext dumperContext = createDumperContext();
+        initTableData(dumperContext);
         PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
-        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
-        incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L, 0L), channel, metaDataLoader);
+        MemoryPipelineChannel channel = new MemoryPipelineChannel(10000, records -> {
+            
+        });
+        incrementalDumper = new MySQLIncrementalDumper(dumperContext, new BinlogPosition("binlog-000001", 4L, 0L), channel, metaDataLoader);
         pipelineTableMetaData = new PipelineTableMetaData("t_order", mockOrderColumnsMetaDataMap(), Collections.emptyList());
         when(metaDataLoader.getTableMetaData(any(), any())).thenReturn(pipelineTableMetaData);
     }
     
-    private DumperConfiguration mockDumperConfiguration() {
-        DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
-        result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
-        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
-        result.setTargetTableColumnsMap(Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id"))));
-        return result;
+    private IncrementalDumperContext createDumperContext() {
+        DumperCommonContext commonContext = new DumperCommonContext(null,
+                new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"),
+                new ActualAndLogicTableNameMapper(Collections.singletonMap(new CaseInsensitiveIdentifier("t_order"), new CaseInsensitiveIdentifier("t_order"))),
+                new TableAndSchemaNameMapper(Collections.emptyMap()));
+        return new IncrementalDumperContext(commonContext, null, false);
     }
     
-    @SneakyThrows(SQLException.class)
-    private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = new DefaultPipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
+    private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
         try (
+                PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -129,86 +127,71 @@ class MySQLIncrementalDumperTest {
         return result;
     }
     
-    @AfterEach
-    void tearDown() {
-        dataSourceManager.close();
-    }
-    
     @Test
-    void assertWriteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowsEvent0(null, 3);
+    void assertWriteRowsEvent() throws ReflectiveOperationException {
+        List<Record> actual = getRecordsByWriteRowsEvent(createWriteRowsEvent());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), instanceOf(DataRecord.class));
+        assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.INSERT));
+        assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
     }
     
-    @Test
-    void assertWriteRowsEventWithCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowsEvent0(mockTargetTableColumnsMap(), 1);
+    private WriteRowsEvent createWriteRowsEvent() {
+        WriteRowsEvent result = new WriteRowsEvent();
+        result.setDatabaseName("");
+        result.setTableName("t_order");
+        result.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
+        return result;
     }
     
-    private void assertWriteRowsEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
-        WriteRowsEvent rowsEvent = new WriteRowsEvent();
-        rowsEvent.setDatabaseName("");
-        rowsEvent.setTableName("t_order");
-        rowsEvent.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
+    private List<Record> getRecordsByWriteRowsEvent(final WriteRowsEvent rowsEvent) throws ReflectiveOperationException {
         Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleWriteRowsEvent", WriteRowsEvent.class, PipelineTableMetaData.class);
-        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
+        return (List<Record>) Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
+    }
+    
+    @Test
+    void assertUpdateRowsEvent() throws ReflectiveOperationException {
+        List<Record> actual = getRecordsByUpdateRowsEvent(createUpdateRowsEvent());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
-        assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.INSERT));
-        assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(expectedColumnCount));
+        assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.UPDATE));
+        assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
     }
     
-    private Map<LogicTableName, Set<ColumnName>> mockTargetTableColumnsMap() {
-        return Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id")));
+    private UpdateRowsEvent createUpdateRowsEvent() {
+        UpdateRowsEvent result = new UpdateRowsEvent();
+        result.setDatabaseName("test");
+        result.setTableName("t_order");
+        result.setBeforeRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
+        result.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK2"}));
+        return result;
     }
     
-    @Test
-    void assertUpdateRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertUpdateRowsEvent0(null, 3);
-    }
-    
-    @Test
-    void assertUpdateRowsEventWithCustomColumns() throws ReflectiveOperationException {
-        assertUpdateRowsEvent0(mockTargetTableColumnsMap(), 1);
-    }
-    
-    private void assertUpdateRowsEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
-        UpdateRowsEvent rowsEvent = new UpdateRowsEvent();
-        rowsEvent.setDatabaseName("test");
-        rowsEvent.setTableName("t_order");
-        rowsEvent.setBeforeRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
-        rowsEvent.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK2"}));
+    private List<Record> getRecordsByUpdateRowsEvent(final UpdateRowsEvent rowsEvent) throws ReflectiveOperationException {
         Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleUpdateRowsEvent", UpdateRowsEvent.class, PipelineTableMetaData.class);
-        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
+        return (List<Record>) Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
+    }
+    
+    @Test
+    void assertDeleteRowsEvent() throws ReflectiveOperationException {
+        List<Record> actual = getRecordsByDeleteRowsEvent(createDeleteRowsEvent());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
-        assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.UPDATE));
-        assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(expectedColumnCount));
+        assertThat(((DataRecord) actual.get(0)).getType(), is(PipelineSQLOperationType.DELETE));
+        assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(3));
     }
     
-    @Test
-    void assertDeleteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertDeleteRowsEvent0(null, 3);
+    private DeleteRowsEvent createDeleteRowsEvent() {
+        DeleteRowsEvent result = new DeleteRowsEvent();
+        result.setDatabaseName("");
+        result.setTableName("t_order");
+        result.setBeforeRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
+        return result;
     }
     
-    @Test
-    void assertDeleteRowsEventWithCustomColumns() throws ReflectiveOperationException {
-        assertDeleteRowsEvent0(mockTargetTableColumnsMap(), 1);
-    }
-    
-    private void assertDeleteRowsEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
-        DeleteRowsEvent rowsEvent = new DeleteRowsEvent();
-        rowsEvent.setDatabaseName("");
-        rowsEvent.setTableName("t_order");
-        rowsEvent.setBeforeRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
+    private List<Record> getRecordsByDeleteRowsEvent(final DeleteRowsEvent rowsEvent) throws ReflectiveOperationException {
         Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleDeleteRowsEvent", DeleteRowsEvent.class, PipelineTableMetaData.class);
-        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), instanceOf(DataRecord.class));
-        assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.DELETE));
-        assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(expectedColumnCount));
+        return (List<Record>) Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
     }
     
     @Test
@@ -220,13 +203,17 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertRowsEventFiltered() throws ReflectiveOperationException {
-        WriteRowsEvent rowsEvent = new WriteRowsEvent();
-        rowsEvent.setDatabaseName("test");
-        rowsEvent.setTableName("t_order");
-        rowsEvent.setAfterRows(Collections.singletonList(new Serializable[]{1}));
         List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class),
-                incrementalDumper, rowsEvent);
+                incrementalDumper, getFilteredWriteRowsEvent());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
+    }
+    
+    private WriteRowsEvent getFilteredWriteRowsEvent() {
+        WriteRowsEvent result = new WriteRowsEvent();
+        result.setDatabaseName("test");
+        result.setTableName("t_order");
+        result.setAfterRows(Collections.singletonList(new Serializable[]{1}));
+        return result;
     }
 }

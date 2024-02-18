@@ -27,7 +27,7 @@
                         </from>
                         <projections start-index="27" stop-index="65">
                             <column-projection name="department_name" start-index="27" stop-index="41" />
-                            <aggregation-projection type="SUM" alias="dept_total" inner-expression="(salary)" start-index="44" stop-index="54" />
+                            <aggregation-projection type="SUM" alias="dept_total" expression="SUM(salary)" start-index="44" stop-index="54" />
                         </projections>
                         <group-by>
                             <column-item name="department_name" start-index="95" stop-index="109" />
@@ -77,7 +77,7 @@
                         </from>
                         <projections start-index="27" stop-index="65">
                             <column-projection name="department_name" start-index="27" stop-index="41" />
-                            <aggregation-projection type="SUM" alias="dept_total" inner-expression="(salary)" start-index="44" stop-index="54" />
+                            <aggregation-projection type="SUM" alias="dept_total" expression="SUM(salary)" start-index="44" stop-index="54" />
                         </projections>
                         <where start-index="99" stop-index="137">
                             <expr>
@@ -363,5 +363,284 @@
             <column-projection name="user_id" start-index="136" stop-index="142" />
             <column-projection name="item_id" start-index="145" stop-index="151" />
         </projections>
+    </select>
+    
+    <select sql-case-id="select_with_single_subquery">
+        <with start-index="0" stop-index="33">
+            <common-table-expression name="t" start-index="5" stop-index="33">
+                <subquery-expression start-index="5" stop-index="33">
+                    <select>
+                        <from>
+                            <simple-table name="t1" start-index="31" stop-index="32" />
+                        </from>
+                        <projections start-index="18" stop-index="24">
+                            <expression-projection text="a+2" alias="c" start-index="18" stop-index="22">
+                                <expr>
+                                    <binary-operation-expression start-index="18" stop-index="20">
+                                        <left>
+                                            <column name="a" start-index="18" stop-index="18" />
+                                        </left>
+                                        <operator>+</operator>
+                                        <right>
+                                            <literal-expression value="2" start-index="20" stop-index="20" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </expr>
+                            </expression-projection>
+                            <column-projection name="b" start-index="24" stop-index="24" />
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <projections start-index="42" stop-index="44">
+            <column-projection name="c" start-index="42" stop-index="42" />
+            <column-projection name="b" start-index="44" stop-index="44" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="51" stop-index="51" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_with_multiple_subquery">
+        <with start-index="0" stop-index="198">
+            <common-table-expression name="cte1" start-index="5" stop-index="100">
+                <subquery-expression start-index="5" stop-index="100">
+                    <select>
+                        <from>
+                            <simple-table name="employees" start-index="72" stop-index="80" />
+                        </from>
+                        <projections start-index="39" stop-index="65">
+                            <column-projection name="emp_no" start-index="39" stop-index="44" />
+                            <column-projection name="first_name" start-index="46" stop-index="55" />
+                            <column-projection name="last_name" start-index="57" stop-index="65" />
+                        </projections>
+                        <where start-index="82" stop-index="99">
+                            <expr>
+                                <binary-operation-expression start-index="88" stop-index="99">
+                                    <left>
+                                        <column name="emp_no" start-index="88" stop-index="93" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="10012" start-index="95" stop-index="99" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery-expression>
+                <column name="col1" start-index="10" stop-index="13" />
+                <column name="col2" start-index="16" stop-index="19" />
+                <column name="col3" start-index="22" stop-index="25" />
+            </common-table-expression>
+            <common-table-expression name="cte2" start-index="103" stop-index="198">
+                <subquery-expression start-index="103" stop-index="198">
+                    <select>
+                        <from>
+                            <simple-table name="employees" start-index="170" stop-index="178" />
+                        </from>
+                        <projections start-index="137" stop-index="163">
+                            <column-projection name="emp_no" start-index="137" stop-index="142" />
+                            <column-projection name="first_name" start-index="144" stop-index="153" />
+                            <column-projection name="last_name" start-index="155" stop-index="163" />
+                        </projections>
+                        <where start-index="180" stop-index="197">
+                            <expr>
+                                <binary-operation-expression start-index="186" stop-index="197">
+                                    <left>
+                                        <column name="emp_no" start-index="186" stop-index="191" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="10012" start-index="193" stop-index="197" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery-expression>
+                <column name="col1" start-index="108" stop-index="111" />
+                <column name="col2" start-index="114" stop-index="117" />
+                <column name="col3" start-index="120" stop-index="123" />
+            </common-table-expression>
+        </with>
+        <projections start-index="207" stop-index="222">
+            <column-projection name="col1" start-index="207" stop-index="210" />
+            <column-projection name="col2" start-index="213" stop-index="216" />
+            <column-projection name="col3" start-index="219" stop-index="222" />
+        </projections>
+        <from>
+            <simple-table name="cte1" start-index="229" stop-index="232" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_with_recursive_union_all1">
+        <with start-index="0" stop-index="217">
+            <common-table-expression name="DirectoryCTE" start-index="15" stop-index="217">
+                <subquery-expression start-index="15" stop-index="217">
+                    <select>
+                        <from>
+                            <simple-table name="table1" start-index="46" stop-index="51" />
+                        </from>
+                        <projections start-index="39" stop-index="39">
+                            <shorthand-projection start-index="39" stop-index="39" />
+                        </projections>
+                        <combine combine-type="UNION_ALL" start-index="85" stop-index="216">
+                            <left>
+                                <projections start-index="39" stop-index="39">
+                                    <shorthand-projection start-index="39" stop-index="39" />
+                                </projections>
+                                <from>
+                                    <simple-table name="table1" start-index="46" stop-index="51" />
+                                </from>
+                                <where start-index="53" stop-index="83">
+                                    <expr>
+                                        <binary-operation-expression start-index="59" stop-index="83">
+                                            <left>
+                                                <binary-operation-expression start-index="59" stop-index="64">
+                                                    <left>
+                                                        <column name="id" start-index="59" stop-index="60" />
+                                                    </left>
+                                                    <operator>=</operator>
+                                                    <right>
+                                                        <literal-expression value="1" start-index="64" stop-index="64" />
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </left>
+                                            <operator>AND</operator>
+                                            <right>
+                                                <binary-operation-expression start-index="70" stop-index="83">
+                                                    <left>
+                                                        <column name="project_id" start-index="70" stop-index="79" />
+                                                    </left>
+                                                    <operator>=</operator>
+                                                    <right>
+                                                        <literal-expression value="2" start-index="83" stop-index="83" />
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </left>
+                            <right>
+                                <from>
+                                    <join-table join-type="INNER">
+                                        <left>
+                                            <simple-table name="project_file_catalog" alias="t" start-index="109" stop-index="130" />
+                                        </left>
+                                        <right>
+                                            <simple-table name="DirectoryCTE" alias="cte" start-index="143" stop-index="158" />
+                                        </right>
+                                        <on-condition>
+                                            <binary-operation-expression start-index="163" stop-index="216">
+                                                <left>
+                                                    <binary-operation-expression start-index="163" stop-index="191">
+                                                        <left>
+                                                            <column name="project_id" start-index="163" stop-index="174">
+                                                                <owner name="t" start-index="163" stop-index="163" />
+                                                            </column>
+                                                        </left>
+                                                        <right>
+                                                            <column name="project_id" start-index="178" stop-index="191">
+                                                                <owner name="cte" start-index="178" stop-index="180" />
+                                                            </column>
+                                                        </right>
+                                                        <operator>=</operator>
+                                                    </binary-operation-expression>
+                                                </left>
+                                                <operator>AND</operator>
+                                                <right>
+                                                    <binary-operation-expression start-index="197" stop-index="216">
+                                                        <left>
+                                                            <column name="parent_id" start-index="197" stop-index="207">
+                                                                <owner name="t" start-index="197" stop-index="197" />
+                                                            </column>
+                                                        </left>
+                                                        <operator>=</operator>
+                                                        <right>
+                                                            <column name="id" start-index="211" stop-index="216">
+                                                                <owner name="cte" start-index="211" stop-index="213" />
+                                                            </column>
+                                                        </right>
+                                                    </binary-operation-expression>
+                                                </right>
+                                            </binary-operation-expression>
+                                        </on-condition>
+                                    </join-table>
+                                </from>
+                                <projections start-index="102" stop-index="102">
+                                    <shorthand-projection start-index="102" stop-index="102" />
+                                </projections>
+                            </right>
+                        </combine>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <projections start-index="226" stop-index="226">
+            <shorthand-projection start-index="226" stop-index="226" />
+        </projections>
+        <from>
+            <simple-table name="DirectoryCTE" start-index="233" stop-index="244" />
+        </from>
+        <order-by>
+            <column-item name="level" order-direction="ASC" start-index="255" stop-index="259" />
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_with_recursive_union_all2">
+        <with start-index="0" stop-index="62">
+            <common-table-expression name="cte" start-index="5" stop-index="62">
+                <subquery-expression start-index="5" stop-index="62">
+                    <select>
+                        <projections start-index="20" stop-index="39">
+                            <expression-projection text="1" alias="col1" start-index="20" stop-index="28">
+                                <expr>
+                                    <literal-expression value="1" start-index="20" stop-index="20" />
+                                </expr>
+                            </expression-projection>
+                            <expression-projection text="2" alias="col2" start-index="31" stop-index="39">
+                                <literal-expression value="2" start-index="31" stop-index="31" />
+                            </expression-projection>
+                        </projections>
+                        <combine combine-type="UNION_ALL" start-index="41" stop-index="61">
+                            <left>
+                                <projections start-index="20" stop-index="39">
+                                    <expression-projection text="1" alias="col1" start-index="20" stop-index="28">
+                                        <expr>
+                                            <literal-expression value="1" start-index="20" stop-index="20" />
+                                        </expr>
+                                    </expression-projection>
+                                    <expression-projection text="2" alias="col2" start-index="31" stop-index="39">
+                                        <literal-expression value="2" start-index="31" stop-index="31" />
+                                    </expression-projection>
+                                </projections>
+                            </left>
+                            <right>
+                                <projections start-index="58" stop-index="61">
+                                    <expression-projection text="3" start-index="58" stop-index="58">
+                                        <expr>
+                                            <literal-expression value="3" start-index="58" stop-index="58" />
+                                        </expr>
+                                    </expression-projection>
+                                    <expression-projection text="4" start-index="61" stop-index="61">
+                                        <literal-expression value="4" start-index="61" stop-index="61" />
+                                    </expression-projection>
+                                </projections>
+                            </right>
+                        </combine>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <projections start-index="71" stop-index="80">
+            <column-projection name="col1" start-index="71" stop-index="74" />
+            <column-projection name="col2" start-index="77" stop-index="80" />
+        </projections>
+        <from>
+            <simple-table name="cte" start-index="87" stop-index="89" />
+        </from>
     </select>
 </sql-parser-test-cases>

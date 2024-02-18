@@ -19,16 +19,21 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.exec.ExpectedExecClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hint.ExpectedWithTableHintClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertColumnsClause;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertMultiTableElement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedMultiTableInsertType;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedMultiTableInsertIntoClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedMultiTableConditionalIntoClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedReturningClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.output.ExpectedOutputClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.where.ExpectedWhereClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedWithClause;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -63,12 +68,27 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "output")
     private ExpectedOutputClause outputClause;
     
-    @XmlElement(name = "multi-table-element")
-    private ExpectedInsertMultiTableElement insertTableElement;
+    @XmlElement(name = "multi-table-insert-type")
+    private ExpectedMultiTableInsertType multiTableInsertType;
+    
+    @XmlElement(name = "multi-table-insert-into")
+    private ExpectedMultiTableInsertIntoClause multiTableInsertInto;
+    
+    @XmlElement(name = "multi-table-conditional-into")
+    private ExpectedMultiTableConditionalIntoClause multiTableConditionalInto;
     
     @XmlElement(name = "select-subquery")
     private SelectStatementTestCase selectSubquery;
     
     @XmlElement(name = "returning")
     private ExpectedReturningClause returningClause;
+    
+    @XmlElement(name = "where")
+    private ExpectedWhereClause whereClause;
+    
+    @XmlElement(name = "exec")
+    private ExpectedExecClause execClause;
+    
+    @XmlElement(name = "table-hints")
+    private ExpectedWithTableHintClause expectedWithTableHintClause;
 }

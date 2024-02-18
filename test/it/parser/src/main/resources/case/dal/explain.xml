@@ -17,6 +17,62 @@
   -->
 
 <sql-parser-test-cases>
+    <describe sql-case-id="explain_extended_select">
+        <select>
+            <projections start-index="24" stop-index="49">
+                <expression-projection text="10 % 7" start-index="24" stop-index="29">
+                    <expr>
+                        <binary-operation-expression start-index="24" stop-index="29">
+                            <left>
+                                <literal-expression value="10" start-index="24" stop-index="25" />
+                            </left>
+                            <right>
+                                <literal-expression value="7" start-index="29" stop-index="29" />
+                            </right>
+                            <operator>%</operator>
+                        </binary-operation-expression>
+                    </expr>    
+                </expression-projection>
+                <expression-projection text="10 mod 7" start-index="32" stop-index="39">
+                    <expr>
+                        <binary-operation-expression start-index="32" stop-index="39">
+                            <left>
+                                <literal-expression value="10" start-index="32" stop-index="33" />
+                            </left>
+                            <right>
+                                <literal-expression value="7" start-index="39" stop-index="39" />
+                            </right>
+                            <operator>mod</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </expression-projection>
+                <expression-projection text="10 div 3" start-index="42" stop-index="49">
+                    <expr>
+                        <binary-operation-expression start-index="42" stop-index="49">
+                            <left>
+                                <literal-expression value="10" start-index="42" stop-index="43" />
+                            </left>
+                            <right>
+                                <literal-expression value="3" start-index="49" stop-index="49" />
+                            </right>
+                            <operator>div</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_partitions_select">
+        <select>
+            <projections start-index="26" stop-index="26">
+                <expression-projection text="1" start-index="26" stop-index="26">
+                    <literal-expression value="1" start-index="26" stop-index="26" />
+                </expression-projection>
+            </projections>
+        </select>
+    </describe>
+    
     <describe sql-case-id="explain_select_constant_without_table">
         <select>
             <projections start-index="15" stop-index="20">
@@ -24,7 +80,7 @@
             </projections>
         </select>
     </describe>
-
+    
     <describe sql-case-id="explain_update_without_condition">
         <update>
             <table start-index="15" stop-index="21">
@@ -40,7 +96,7 @@
             </set>
         </update>
     </describe>
-
+    
     <describe sql-case-id="explain_insert_without_parameters">
         <insert>
             <table name="t_order" start-index="20" stop-index="26" />
@@ -67,7 +123,7 @@
             </values>
         </insert>
     </describe>
-
+    
     <describe sql-case-id="explain_delete_without_sharding_value">
         <delete>
             <table name="t_order" start-index="20" stop-index="26" />
@@ -87,7 +143,7 @@
             </where>
         </delete>
     </describe>
-
+    
     <describe sql-case-id="explain_select_with_binding_tables">
         <select>
             <from>
@@ -123,7 +179,7 @@
             </where>
         </select>
     </describe>
-
+    
     <describe sql-case-id="explain_create_table_as_select">
         <create-table>
             <table name="t_order_new" start-index="21" stop-index="31" />
@@ -137,7 +193,7 @@
             </select>
         </create-table>
     </describe>
-
+    
     <describe sql-case-id="explain_create_table_as_select_with_explicit_column_names">
         <create-table>
             <table name="t_order_new" start-index="21" stop-index="31" />
@@ -154,7 +210,7 @@
             </select>
         </create-table>
     </describe>
-
+    
     <describe sql-case-id="explain_create_remote_table_as_select">
         <create-table>
             <table name="t_order_new" start-index="28" stop-index="38" />
@@ -192,6 +248,7 @@
             </select>
         </create-table>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze">
         <select>
             <projections start-index="23" stop-index="23">
@@ -215,6 +272,7 @@
             </where>
         </select>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_format">
         <select>
             <projections start-index="37" stop-index="37">
@@ -238,11 +296,13 @@
             </where>
         </select>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_delete">
         <delete>
             <table name="t_order" start-index="28" stop-index="34" />
         </delete>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_delete_condition">
         <delete>
             <table name="t1" start-index="23" stop-index="24" />
@@ -273,6 +333,7 @@
             </where>
         </delete>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_update">
         <update>
             <table start-index="7" stop-index="13">
@@ -288,6 +349,7 @@
             </set>
         </update>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_insert">
         <insert>
             <table name="t_order" start-index="28" stop-index="34" />
@@ -303,32 +365,40 @@
             </values>
         </insert>
     </describe>
+    
     <describe sql-case-id="desc_table">
         <simple-table name="tableName" start-index="5" stop-index="13" />
     </describe>
+    
     <describe sql-case-id="desc_table_with_col_name">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="colName" start-index="15" stop-index="21" />
     </describe>
+    
     <describe sql-case-id="desc_table_with_placeholder">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="___" start-index="15" stop-index="17" />
     </describe>
+    
     <describe sql-case-id="desc_table_with_wild">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
     </describe>
+    
     <describe sql-case-id="describe_table">
         <simple-table name="tableName" start-index="9" stop-index="17" />
     </describe>
+    
     <describe sql-case-id="describe_table_with_col_name">
         <simple-table name="tableName" start-index="9" stop-index="17" />
         <column-wild name="colName" start-index="19" stop-index="25" />
     </describe>
+    
     <describe sql-case-id="describe_table_with_placeholder">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="___" start-index="15" stop-index="17" />
     </describe>
+    
     <describe sql-case-id="describe_table_with_wild">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
@@ -353,6 +423,7 @@
     </describe>
     
     <describe sql-case-id="explain_create_materialized_view_with_data" />
+    
     <describe sql-case-id="explain_create_materialized_view_with_no_data" />
     
     <describe sql-case-id="explain_performance">
@@ -360,6 +431,1173 @@
             <projections start-index="27" stop-index="27">
                 <expression-projection text="1" start-index="27" stop-index="27" />
             </projections>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_for_select_alias_as_keyword">
+        <select>
+            <from>
+                <simple-table name="t_order_item" alias="length" start-index="53" stop-index="71" />
+            </from>
+            <projections start-index="24" stop-index="46">
+                <column-projection name="item_id" alias="password" start-index="24" stop-index="46">
+                    <owner name="length" start-index="24" stop-index="29" />
+                </column-projection>>
+            </projections>
+            <where start-index="73" stop-index="96">
+                <expr>
+                    <binary-operation-expression start-index="79" stop-index="96">
+                        <left>
+                            <column name="item_id" start-index="79" stop-index="92">
+                                <owner name="length" start-index="79" stop-index="84" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="96" stop-index="96" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_for_select_with_binding_tables">
+        <select>
+            <from>
+                <join-table join-type="INNER">
+                    <left>
+                        <simple-table name="t_order" alias="o" start-index="33" stop-index="41" />
+                    </left>
+                    <right>
+                        <simple-table name="t_order_item" alias="i" start-index="48" stop-index="61" />
+                    </right>
+                    <using-columns name="order_id" start-index="69" stop-index="76" />
+                </join-table>
+            </from>
+            <projections start-index="24" stop-index="26">
+                <shorthand-projection start-index="24" stop-index="26">
+                    <owner name="i" start-index="24" stop-index="24" />
+                </shorthand-projection>
+            </projections>
+            <where start-index="79" stop-index="99">
+                <expr>
+                    <binary-operation-expression start-index="85" stop-index="99">
+                        <left>
+                            <column name="order_id" start-index="85" stop-index="94">
+                                <owner name="o" start-index="85" stop-index="85" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="10" start-index="98" stop-index="99" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_for_select_with_analyze">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="31" stop-index="37" />
+            </from>
+            <where start-index="39" stop-index="56">
+                <expr>
+                    <binary-operation-expression start-index="45" stop-index="56">
+                        <left>
+                            <column name="order_id" start-index="45" stop-index="52" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="56" stop-index="56" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_for_select_with_statement">
+        <select>
+            <projections start-index="53" stop-index="53">
+                <shorthand-projection start-index="53" stop-index="53" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="60" stop-index="66" />
+            </from>
+            <where start-index="68" stop-index="85">
+                <expr>
+                    <binary-operation-expression start-index="74" stop-index="85">
+                        <left>
+                            <column name="order_id" start-index="74" stop-index="81" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="85" stop-index="85" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_for_select_with_into">
+        <select>
+            <projections start-index="37" stop-index="37">
+                <shorthand-projection start-index="37" stop-index="37" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="44" stop-index="50" />
+            </from>
+            <where start-index="52" stop-index="69">
+                <expr>
+                    <binary-operation-expression start-index="58" stop-index="69">
+                        <left>
+                            <column name="order_id" start-index="58" stop-index="65" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="69" stop-index="69" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_for_select_with_into_dblink">
+        <select>
+            <projections start-index="65" stop-index="65">
+                <shorthand-projection start-index="65" stop-index="65" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="72" stop-index="78" />
+            </from>
+            <where start-index="80" stop-index="97">
+                <expr>
+                    <binary-operation-expression start-index="86" stop-index="97">
+                        <left>
+                            <column name="order_id" start-index="86" stop-index="93" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="97" stop-index="97" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_for_update_without_condition">
+        <update>
+            <table start-index="24" stop-index="30">
+                <simple-table name="t_order" start-index="24" stop-index="30" />
+            </table>
+            <set start-index="32" stop-index="54">
+                <assignment start-index="32" stop-index="54">
+                    <column name="status" start-index="36" stop-index="41" />
+                    <assignment-value>
+                        <literal-expression value="finished" start-index="45" stop-index="54" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+    
+    <describe sql-case-id="explain_for_update">
+        <update>
+            <table start-index="8" stop-index="14">
+                <simple-table name="t_order" start-index="24" stop-index="30" />
+            </table>
+            <set start-index="32" stop-index="41" literal-stop-index="41">
+                <assignment start-index="36" stop-index="41" literal-stop-index="41">
+                    <column name="id" start-index="36" stop-index="37" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="41" stop-index="41" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+    
+    <describe sql-case-id="explain_for_update_with_statement">
+        <update>
+            <table start-index="37" stop-index="43">
+                <simple-table name="t_order" start-index="53" stop-index="59" />
+            </table>
+            <set start-index="61" stop-index="70" literal-stop-index="70">
+                <assignment start-index="65" stop-index="70" literal-stop-index="70">
+                    <column name="id" start-index="65" stop-index="66" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="70" stop-index="70" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+    
+    <describe sql-case-id="explain_for_update_with_into">
+        <update>
+            <table start-index="21" stop-index="27">
+                <simple-table name="t_order" start-index="37" stop-index="43" />
+            </table>
+            <set start-index="45" stop-index="54" literal-stop-index="54">
+                <assignment start-index="52" stop-index="57" literal-stop-index="54">
+                    <column name="id" start-index="49" stop-index="50" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="54" stop-index="54" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+    
+    <describe sql-case-id="explain_for_update_with_into_dblink">
+        <update>
+            <table start-index="48" stop-index="54">
+                <simple-table name="t_order" start-index="65" stop-index="71" />
+            </table>
+            <set start-index="73" stop-index="82" literal-stop-index="82">
+                <assignment start-index="79" stop-index="84" literal-stop-index="81">
+                    <column name="id" start-index="77" stop-index="78" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="82" stop-index="82" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+    
+    <describe sql-case-id="explain_for_insert_without_parameters">
+        <insert>
+            <table name="t_order" start-index="29" stop-index="35" />
+            <columns start-index="37" stop-index="63">
+                <column name="order_id" start-index="38" stop-index="45" />
+                <column name="user_id" start-index="48" stop-index="54" />
+                <column name="status" start-index="57" stop-index="62" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <parameter-marker-expression parameter-index="0" />
+                        <literal-expression value="1" start-index="73" stop-index="73" />
+                    </assignment-value>
+                    <assignment-value>
+                        <parameter-marker-expression parameter-index="1" />
+                        <literal-expression value="1" start-index="76" stop-index="76" />
+                    </assignment-value>
+                    <assignment-value>
+                        <parameter-marker-expression parameter-index="2" />
+                        <literal-expression value="insert" start-index="79" stop-index="86" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
+    
+    <describe sql-case-id="explain_for_with_analyze_insert">
+        <insert>
+            <table name="t_order" start-index="29" stop-index="35" />
+            <columns start-index="37" stop-index="46">
+                <column name="order_id" start-index="38" stop-index="45" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="55" stop-index="55" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
+    
+    <describe sql-case-id="explain_for_insert_statement">
+        <insert>
+            <table name="t_order" start-index="58" stop-index="64" />
+            <columns start-index="66" stop-index="75">
+                <column name="order_id" start-index="67" stop-index="74" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="84" stop-index="84" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
+    
+    <describe sql-case-id="explain_for_insert_into">
+        <insert>
+            <table name="t_order" start-index="42" stop-index="48" />
+            <columns start-index="50" stop-index="59">
+                <column name="order_id" start-index="51" stop-index="58" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="68" stop-index="68" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
+    
+    <describe sql-case-id="explain_for_insert_into_dblink">
+        <insert>
+            <table name="t_order" start-index="70" stop-index="76" />
+            <columns start-index="78" stop-index="87">
+                <column name="order_id" start-index="79" stop-index="86" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="96" stop-index="96" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
+    
+    <describe sql-case-id="explain_for_delete_without_sharding_value">
+        <delete>
+            <table name="t_order" start-index="29" stop-index="35" />
+            <where start-index="37" stop-index="50" literal-stop-index="55">
+                <expr>
+                    <binary-operation-expression start-index="43" stop-index="50" literal-stop-index="55">
+                        <left>
+                            <column name="status" start-index="43" stop-index="48" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="init" start-index="50" stop-index="55" />
+                            <parameter-marker-expression parameter-index="0" start-index="50" stop-index="50" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+    
+    <describe sql-case-id="explain_for_with_analyze_delete">
+        <delete>
+            <table name="t_order" start-index="29" stop-index="35" />
+        </delete>
+    </describe>
+    
+    <describe sql-case-id="explain_for_delete_condition">
+        <delete>
+            <table name="t_order" start-index="29" stop-index="35" />
+            <where start-index="37" stop-index="55">
+                <expr>
+                    <binary-operation-expression start-index="43" stop-index="55">
+                        <left>
+                            <column name="x" start-index="43" stop-index="51">
+                                <owner name="t_order" start-index="43" stop-index="49" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="55" stop-index="55" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+    
+    <describe sql-case-id="explain_for_delete_statement">
+        <delete>
+            <table name="t_order" start-index="58" stop-index="64" />
+            <where start-index="66" stop-index="84">
+                <expr>
+                    <binary-operation-expression start-index="72" stop-index="84">
+                        <left>
+                            <column name="x" start-index="72" stop-index="80">
+                                <owner name="t_order" start-index="72" stop-index="78" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="84" stop-index="84" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+    
+    <describe sql-case-id="explain_for_delete_into">
+        <delete>
+            <table name="t_order" start-index="42" stop-index="48" />
+            <where start-index="50" stop-index="68">
+                <expr>
+                    <binary-operation-expression start-index="56" stop-index="68">
+                        <left>
+                            <column name="x" start-index="56" stop-index="64">
+                                <owner name="t_order" start-index="56" stop-index="62" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="68" stop-index="68" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+    
+    <describe sql-case-id="explain_for_delete_into_dblink">
+        <delete>
+            <table name="t_order" start-index="70" stop-index="76" />
+            <where start-index="78" stop-index="96">
+                <expr>
+                    <binary-operation-expression start-index="84" stop-index="96">
+                        <left>
+                            <column name="x" start-index="84" stop-index="92">
+                                <owner name="t_order" start-index="84" stop-index="90" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="96" stop-index="96" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+    
+    <describe sql-case-id="explain_set_statement_id_with_select">
+        <select>
+            <projections start-index="68" stop-index="76">
+                <column-projection name="last_name" start-index="68" stop-index="76" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="83" stop-index="91" />
+            </from>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_set_statement_id_with_into_select1">
+        <select>
+            <projections start-index="109" stop-index="109">
+                <shorthand-projection start-index="109" stop-index="109" />
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <simple-table name="t" start-index="116" stop-index="116" />
+                    </left>
+                    <right>
+                        <simple-table name="v" start-index="119" stop-index="119" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="121" stop-index="159">
+                <expr>
+                    <binary-operation-expression start-index="127" stop-index="159">
+                        <left>
+                            <column name="department_id" start-index="127" stop-index="141">
+                                <owner name="t" start-index="127" stop-index="127" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="department_id" start-index="145" stop-index="159">
+                                <owner name="v" start-index="145" stop-index="145" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+        <comment start-index="69" stop-index="93" text="/*+ LEADING(E@SEL$2 D@SEL$2 T@SEL$1) */" />
+    </describe>
+    
+    <describe sql-case-id="explain_set_statement_id_with_into_select2">
+        <select>
+            <projections start-index="95" stop-index="95">
+                <shorthand-projection start-index="95" stop-index="95" />
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <simple-table name="t" start-index="102" stop-index="102" />
+                    </left>
+                    <right>
+                        <simple-table name="v" start-index="105" stop-index="105" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="107" stop-index="145">
+                <expr>
+                    <binary-operation-expression start-index="113" stop-index="145">
+                        <left>
+                            <column name="department_id" start-index="113" stop-index="127">
+                                <owner name="t" start-index="113" stop-index="113" />
+                            </column>
+                        </left>
+                        <right>
+                            <column name="department_id" start-index="131" stop-index="145">
+                                <owner name="v" start-index="131" stop-index="131" />
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+        <comment start-index="69" stop-index="93" text="/*+ LEADING(v.e v.d t) */" />
+    </describe>
+    
+    <describe sql-case-id="explain_set_statement_id_with_into_update">
+        <update>
+            <table start-index="76" stop-index="84">
+                <simple-table name="employees" start-index="76" stop-index="84" />
+            </table>
+            <set start-index="86" stop-index="111">
+                <assignment start-index="90" stop-index="111">
+                    <column name="salary" start-index="90" stop-index="95" />
+                    <assignment-value>
+                        <binary-operation-expression start-index="99" stop-index="111">
+                            <left>
+                                <column name="salary" start-index="99" stop-index="104" />
+                            </left>
+                            <right>
+                                <literal-expression value="1.10" start-index="108" stop-index="111" />
+                            </right>
+                            <operator>*</operator>
+                        </binary-operation-expression>
+                    </assignment-value>
+                </assignment>
+            </set>
+            <where start-index="113" stop-index="198">
+                <expr>
+                    <binary-operation-expression start-index="119" stop-index="198">
+                        <left>
+                            <column name="department_id" start-index="119" stop-index="131" />
+                        </left>
+                        <right>
+                            <subquery start-index="135" stop-index="198">
+                                <select>
+                                    <projections start-index="143" stop-index="155">
+                                        <column-projection name="department_id" start-index="143" stop-index="155" />
+                                    </projections>
+                                    <from>
+                                        <simple-table name="departments" start-index="162" stop-index="172" />
+                                    </from>
+                                    <where start-index="174" stop-index="197">
+                                        <expr>
+                                            <binary-operation-expression start-index="180" stop-index="197">
+                                                <left>
+                                                    <column name="location_id" start-index="180" stop-index="190" />
+                                                </left>
+                                                <operator>=</operator>
+                                                <right>
+                                                    <literal-expression value="1700" start-index="194" stop-index="197" />
+                                                </right>
+                                            </binary-operation-expression>
+                                        </expr>
+                                    </where>
+                                </select>
+                            </subquery>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </update>
+    </describe>
+    
+    <describe sql-case-id="explain_for_select_with_unique_partition_by">
+        <select>
+            <projections start-index="24" stop-index="49">
+                <column-projection name="country" start-index="24" stop-index="30" />
+                <column-projection name="prod" start-index="33" stop-index="36" />
+                <column-projection name="year" start-index="39" stop-index="42" />
+                <column-projection name="sales" start-index="45" stop-index="49" />
+            </projections>
+            <from>
+                <simple-table name="sales_view" start-index="56" stop-index="65" />
+            </from>
+            <where start-index="67" stop-index="101">
+                <expr>
+                    <in-expression start-index="73" stop-index="101">
+                        <not>false</not>
+                        <left>
+                            <column name="country" start-index="73" stop-index="79" />
+                        </left>
+                        <right>
+                            <list-expression start-index="84" stop-index="101">
+                                <items>
+                                    <literal-expression value="Italy" start-index="85" stop-index="91" />
+                                </items>
+                                <items>
+                                    <literal-expression value="Japan" start-index="94" stop-index="100" />
+                                </items>
+                            </list-expression>
+                        </right>
+                    </in-expression>
+                </expr>
+            </where>
+            <model start-index="103" stop-index="329">
+                <cell-assignment-column name="sales" start-index="215" stop-index="219" />
+                <cell-assignment-column name="sales" start-index="269" stop-index="273" />
+            </model>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_with_select_comment">
+        <select>
+            <projections start-index="78" stop-index="78">
+                <shorthand-projection start-index="78" stop-index="78" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="85" stop-index="91" />
+            </from>
+        </select>
+        <comment start-index="0" stop-index="19" text="/*FORCE_IMCI_NODES*/" />
+        <comment start-index="36" stop-index="76" text="/*+ SET_VAR(cost_threshold_for_imci=0) */" />
+    </describe>
+
+    <describe sql-case-id="explain_for_select_with_group_by">
+        <select>
+            <projections start-index="24" stop-index="64">
+                <column-projection name="calendar_month_desc" start-index="24" stop-index="44" >
+                    <owner name="t" start-index="24" stop-index="24" />
+                </column-projection>
+                <aggregation-projection type="SUM" expression="SUM(s.amount_sold)" start-index="47" stop-index="64" />
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <simple-table name="sales" alias="s" start-index="72" stop-index="78" />
+                    </left>
+                    <right>
+                        <simple-table name="times" alias="t" start-index="81" stop-index="87" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="89" stop-index="115">
+                <expr>
+                    <binary-operation-expression start-index="95" stop-index="115">
+                        <left>
+                            <column name="time_id" start-index="95" stop-index="103" >
+                                <owner name="s" start-index="95" stop-index="95" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="time_id" start-index="107" stop-index="115" >
+                                <owner name="t" start-index="107" stop-index="107" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="calendar_month_desc" start-index="126" stop-index="146" >
+                    <owner name="t" start-index="126" stop-index="126" />
+                </column-item>
+            </group-by>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_with_function">
+        <select>
+            <projections start-index="24" stop-index="39">
+                <aggregation-projection type="SUM" expression="SUM(amount_sold)" start-index="24" stop-index="39" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="46" stop-index="50" />
+            </from>
+            <where start-index="52" stop-index="89">
+                <expr>
+                    <binary-operation-expression start-index="58" stop-index="89">
+                        <left>
+                            <function function-name="TO_CHAR" text="TO_CHAR(time_id,'yyyy')" start-index="58" stop-index="80">
+                                <parameter>
+                                    <column name="time_id" start-index="66" stop-index="72" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="yyyy" start-index="74" stop-index="79" />
+                                </parameter>
+                            </function>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="2000" start-index="84" stop-index="89"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_with_function_and_function">
+        <select>
+            <projections start-index="24" stop-index="41">
+                <aggregation-projection type="SUM" expression="SUM(quantity_sold)" start-index="24" stop-index="41" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="48" stop-index="52" />
+            </from>
+            <where start-index="54" stop-index="110" >
+                <expr>
+                    <binary-operation-expression start-index="60" stop-index="110">
+                        <left>
+                            <column name="time_id" start-index="60" stop-index="66" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <function function-name="TO_TIMESTAMP" text="TO_TIMESTAMP('1-jan-2000', 'dd-mon-yyyy')" start-index="70" stop-index="110">
+                                <parameter>
+                                    <literal-expression value="1-jan-2000" start-index="83" stop-index="94" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="dd-mon-yyyy" start-index="97" stop-index="109" />
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24" />
+            </projections>
+            <from>
+                <simple-table name="customers" start-index="31" stop-index="42">
+                    <owner name="sh" start-index="31" stop-index="32" />
+                </simple-table>
+            </from>
+            <where start-index="44" stop-index="101" >
+                <expr>
+                    <binary-operation-expression start-index="50" stop-index="101">
+                        <left>
+                            <binary-operation-expression start-index="50" stop-index="72">
+                                <left>
+                                    <column name="cust_city" start-index="50" stop-index="58"/>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="Los Angeles" start-index="60" stop-index="72" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="78" stop-index="101">
+                                <left>
+                                    <column name="cust_state_province" start-index="78" stop-index="96" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="CA" start-index="98" stop-index="101"/>
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_emp_range" >
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="emp_range" start-index="31" stop-index="39"/>
+            </from>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_emp_comp" >
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="emp_comp" start-index="31" stop-index="38"/>
+            </from>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_with_comments">
+        <select>
+            <projections start-index="44" stop-index="59">
+                <column-projection name="deptno" start-index="44" stop-index="49"/>
+                <aggregation-projection type="AVG" expression="avg(sal)" start-index="52" stop-index="59"/>
+            </projections>
+            <from>
+                <simple-table name="emp" start-index="66" stop-index="68"/>
+            </from>
+            <group-by>
+                <column-item name="deptno" start-index="79" stop-index="84"/>
+            </group-by>
+        </select>
+        <comment text="/*+ result_cache */" start-index="24" stop-index="42"/>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_job_history" >
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="v_emp_job_history" start-index="31" stop-index="47"/>
+            </from>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_emp_comp_where">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24" />
+            </projections>
+            <from>
+                <simple-table name="emp_comp" start-index="31" stop-index="38" />
+            </from>
+            <where start-index="40" stop-index="63">
+                <expr>
+                    <binary-operation-expression start-index="46" stop-index="63">
+                        <left>
+                            <column name="department_id" start-index="46" stop-index="58" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="20" start-index="62" stop-index="63" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_emp_range_where">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24" />
+            </projections>
+            <from>
+                <simple-table name="emp_range" start-index="31" stop-index="39" />
+            </from>
+            <where start-index="41" stop-index="93" >
+                <expr>
+                    <binary-operation-expression start-index="47" stop-index="93">
+                        <left>
+                            <column name="hire_date" start-index="47" stop-index="55"/>
+                        </left>
+                        <operator>&lt;</operator>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('1-JAN-1992','DD-MON-YYYY')" start-index="59" stop-index="93" >
+                                <parameter>
+                                    <literal-expression value="'1-JAN-1992'" start-index="67" stop-index="78" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'DD-MON-YYYY'" start-index="80" stop-index="92"/>
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_where_and_function">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24" />
+            </projections>
+            <from>
+                <simple-table name="emp_range" start-index="31" stop-index="39" />
+            </from>
+            <where start-index="41" stop-index="94" >
+                <expr>
+                    <binary-operation-expression start-index="47" stop-index="94">
+                        <left>
+                            <column name="hire_date" start-index="47" stop-index="55"/>
+                        </left>
+                        <operator>>=</operator>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('1-JAN-1996','DD-MON-YYYY')" start-index="60" stop-index="94" >
+                                <parameter>
+                                    <literal-expression value="'1-JAN-1996'" start-index="68" stop-index="79" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'DD-MON-YYYY'" start-index="81" stop-index="93"/>
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_xml_query">
+        <select>
+            <projections start-index="24" stop-index="107">
+                <expression-projection text="XMLQUERY('/PurchaseOrder/LineItems/LineItem')" start-index="24" stop-index="107" />
+            </projections>
+            <from>
+                <simple-table name="po_clob" start-index="114" stop-index="120" />
+            </from>
+            <where start-index="122" stop-index="303">
+                <expr>
+                    <binary-operation-expression start-index="128" stop-index="303">
+                        <left>
+                            <xmlquery-projection function-name="XMLExists" xquerystring="'/PurchaseOrder/LineItems/LineItem [ora:contains(Description, &quot;Picnic&quot;) > 0]'" start-index="128" stop-index="236">
+                                <parameter>
+                                    <column name="OBJECT_VALUE" start-index="224" stop-index="235"/>
+                                </parameter>
+                            </xmlquery-projection>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <xmlquery-projection function-name="XMLExists" xquerystring="'/PurchaseOrder[User=&quot;SBELL&quot;]'" start-index="242" stop-index="303">
+                                <parameter>
+                                    <column name="OBJECT_VALUE" start-index="291" stop-index="302"/>
+                                </parameter>
+                            </xmlquery-projection>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_where_between">
+        <select>
+            <projections start-index="24" stop-index="53">
+                <aggregation-projection type="SUM" alias="total_revenue" expression="SUM(amount_sold)" start-index="24" stop-index="39"/>
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="60" stop-index="64"/>
+            </from>
+            <where start-index="66" stop-index="114">
+                <expr>
+                    <between-expression start-index="72" stop-index="114">
+                        <left>
+                            <column name="time_id" start-index="72" stop-index="78"/>
+                        </left>
+                        <between-expr>
+                            <literal-expression value="01-JAN-00" start-index="88" stop-index="98"/>
+                        </between-expr>
+                        <and-expr>
+                            <literal-expression value="31-DEC-00" start-index="104" stop-index="114"/>
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_where_between_groupby_having">
+        <select>
+            <projections start-index="24" stop-index="49">
+                <column-projection name="cust_last_name" start-index="24" stop-index="39">
+                    <owner name="c" start-index="24" stop-index="24"/>
+                </column-projection>
+                <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="42" stop-index="49"/>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <simple-table name="sales" alias="s" start-index="56" stop-index="62"/>
+                    </left>
+                    <right>
+                        <simple-table name="customers" alias="c" start-index="65" stop-index="75"/>
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="77" stop-index="205">
+                <expr>
+                    <binary-operation-expression start-index="83" stop-index="205">
+                        <left>
+                            <binary-operation-expression start-index="83" stop-index="103">
+                                <left>
+                                    <column name="cust_id" start-index="83" stop-index="91">
+                                        <owner name="s" start-index="83" stop-index="83"/>
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="cust_id" start-index="95" stop-index="103">
+                                        <owner name="c" start-index="95" stop-index="95"/>
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <between-expression start-index="109" stop-index="205">
+                                <left>
+                                    <column name="time_id" start-index="109" stop-index="117">
+                                        <owner name="s" start-index="109" stop-index="109"/>
+                                    </column>
+                                </left>
+                                <between-expr>
+                                    <function function-name="TO_DATE" text="TO_DATE('01-JUL-1999', 'DD-MON-YYYY')" start-index="127" stop-index="163">
+                                        <parameter>
+                                            <literal-expression value="'01-JUL-1999'" start-index="135" stop-index="147"/>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="'DD-MON-YYYY'" start-index="150" stop-index="162"/>
+                                        </parameter>
+                                    </function>
+                                </between-expr>
+                                <and-expr>
+                                    <function function-name="TO_DATE" text="TO_DATE('01-OCT-1999', 'DD-MON-YYYY')" start-index="169" stop-index="205">
+                                        <parameter>
+                                            <literal-expression value="'01-OCT-1999'" start-index="177" stop-index="189"/>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="'DD-MON-YYYY'" start-index="192" stop-index="204"/>
+                                        </parameter>
+                                    </function>
+                                </and-expr>
+                            </between-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="cust_last_name" start-index="216" stop-index="231">
+                    <owner name="c" start-index="216" stop-index="216"/>
+                </column-item>
+            </group-by>
+            <having start-index="233" stop-index="253">
+                <expr>
+                    <binary-operation-expression start-index="240" stop-index="253">
+                        <left>
+                            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="240" stop-index="247"/>
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="100" start-index="251" stop-index="253"/>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </having>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_alias_where_colon">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="sales" alias="s" start-index="31" stop-index="37"/>
+            </from>
+            <where start-index="39" stop-index="72">
+                <expr>
+                    <in-expression start-index="45" stop-index="72">
+                        <left>
+                            <column name="time_id" start-index="45" stop-index="51"/>
+                        </left>
+                        <right>
+                            <list-expression start-index="56" stop-index="72">
+                                <items>
+                                    <common-expression start-index="58" stop-index="59" text=":a"/>
+                                </items>
+                                <items>
+                                    <common-expression start-index="62" stop-index="63" text=":b"/>
+                                </items>
+                                <items>
+                                    <common-expression start-index="66" stop-index="67" text=":c"/>
+                                </items>
+                                <items>
+                                    <common-expression start-index="70" stop-index="71" text=":d"/>
+                                </items>
+                            </list-expression>
+                        </right>
+                    </in-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_where_todate_function">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="31" stop-index="35"/>
+            </from>
+            <where start-index="37" stop-index="89">
+                <expr>
+                    <binary-operation-expression start-index="43" stop-index="89">
+                        <left>
+                            <column name="time_id" start-index="43" stop-index="49"/>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <function function-name="to_date" text="to_date('01-jan-2001', 'dd-mon-yyyy')" start-index="53" stop-index="89">
+                                <parameter>
+                                    <literal-expression value="'01-jan-2001'" start-index="61" stop-index="73"/>
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'dd-mon-yyyy'" start-index="76" stop-index="88"/>
+                                </parameter>
+                            </function>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_where_colon">
+        <select>
+            <projections start-index="24" stop-index="24">
+                <shorthand-projection start-index="24" stop-index="24"/>
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="31" stop-index="35"/>
+            </from>
+            <where start-index="37" stop-index="69">
+                <expr>
+                    <in-expression start-index="43" stop-index="69">
+                        <left>
+                            <column name="time_id" start-index="43" stop-index="49"/>
+                        </left>
+                        <right>
+                            <list-expression start-index="54" stop-index="69">
+                                <items>
+                                    <common-expression start-index="55" stop-index="56" text=":a"/>
+                                </items>
+                                <items>
+                                    <common-expression start-index="59" stop-index="60" text=":b"/>
+                                </items>
+                                <items>
+                                    <common-expression start-index="63" stop-index="64" text=":c"/>
+                                </items>
+                                <items>
+                                    <common-expression start-index="67" stop-index="68" text=":d"/>
+                                </items>
+                            </list-expression>
+                        </right>
+                    </in-expression>
+                </expr>
+            </where>
         </select>
     </describe>
 </sql-parser-test-cases>

@@ -21,8 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
@@ -222,15 +221,23 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getActualCatalog(final String catalog) {
-        DataSourceMetaData metaData = connection.getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getDataSourceMetaData(getDataSourceName());
-        return null != catalog && catalog.contains(DefaultDatabase.LOGIC_NAME) ? metaData.getCatalog() : catalog;
+        if (null == catalog) {
+            return null;
+        }
+        // TODO consider get actual catalog by logic catalog rather than random physical datasource's catalog.
+        ConnectionProperties connectionProps = connection.getContextManager()
+                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageUnits().get(getDataSourceName()).getConnectionProperties();
+        return connectionProps.getCatalog();
     }
     
     private String getActualSchema(final String schema) {
-        DataSourceMetaData metaData = connection.getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getDataSourceMetaData(getDataSourceName());
-        return null != schema && schema.contains(DefaultDatabase.LOGIC_NAME) ? metaData.getSchema() : schema;
+        if (null == schema) {
+            return null;
+        }
+        // TODO consider get actual schema by logic catalog rather than random physical datasource's schema.
+        ConnectionProperties connectionProps = connection.getContextManager()
+                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageUnits().get(getDataSourceName()).getConnectionProperties();
+        return Optional.ofNullable(connectionProps.getSchema()).map(String::toUpperCase).orElse(null);
     }
     
     private String getDataSourceName() {

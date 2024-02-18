@@ -17,19 +17,14 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.task;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.dumper.InventoryDumper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
@@ -52,12 +47,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class InventoryTaskTest {
     
-    private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new DefaultPipelineDataSourceManager();
+    private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new PipelineDataSourceManager();
     
     private MigrationTaskConfiguration taskConfig;
     
@@ -77,35 +71,22 @@ class InventoryTaskTest {
     }
     
     @Test
-    void assertStartWithGetEstimatedRowsFailure() {
-        InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_non_exist", "t_non_exist");
-        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperConfig.getPosition());
-        PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(PipelineContextUtils.getPipelineChannelCreator(), 100, position);
-        PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
-        PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
-        InventoryTask inventoryTask = new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperConfig),
-                PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(),
-                new InventoryDumper(inventoryDumperConfig, channel, dataSource, metaDataLoader), mock(Importer.class), position);
-        assertThrows(ExecutionException.class, () -> CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS));
-    }
-    
-    @Test
     void assertGetProgress() throws SQLException, ExecutionException, InterruptedException, TimeoutException {
-        initTableData(taskConfig.getDumperConfig());
+        initTableData(taskConfig.getDumperContext());
         // TODO use t_order_0, and also others
-        InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_order", "t_order");
-        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperConfig.getPosition());
-        InventoryTask inventoryTask = new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperConfig),
+        InventoryDumperContext inventoryDumperContext = createInventoryDumperContext("t_order", "t_order");
+        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperContext.getCommonContext().getPosition());
+        InventoryTask inventoryTask = new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperContext),
                 PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), mock(Dumper.class), mock(Importer.class), position);
         CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
-        assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
+        assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyIngestPosition.class));
         inventoryTask.close();
     }
     
-    private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {
-        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
+        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         try (
-                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -115,12 +96,13 @@ class InventoryTaskTest {
         dataSourceManager.close();
     }
     
-    private InventoryDumperConfiguration createInventoryDumperConfiguration(final String logicTableName, final String actualTableName) {
-        InventoryDumperConfiguration result = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
+    private InventoryDumperContext createInventoryDumperContext(final String logicTableName, final String actualTableName) {
+        InventoryDumperContext result = new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext());
         result.setLogicTableName(logicTableName);
         result.setActualTableName(actualTableName);
         result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
-        result.setPosition(null == taskConfig.getDumperConfig().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperConfig().getPosition());
+        result.getCommonContext().setPosition(
+                null == taskConfig.getDumperContext().getCommonContext().getPosition() ? new IntegerPrimaryKeyIngestPosition(0, 1000) : taskConfig.getDumperContext().getCommonContext().getPosition());
         return result;
     }
 }

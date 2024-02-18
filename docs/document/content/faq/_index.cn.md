@@ -7,6 +7,10 @@ chapter = true
 
 ## MODE
 
+### [MODE] 单机模式 `Standalone` 和 `Compatible_Standalone` 区别?
+
+在 5.4.0 版本中调整了元数据存储结构，`Standalone` 代表新版本的元数据结构，`Compatible_Standalone` 则代表 5.4.0 之前版本的元数据结构。
+
 ### [MODE] 集群模式 `Cluster` 和 `Compatible_Cluster` 区别?
 
 回答:
@@ -118,7 +122,7 @@ DROP DATABASE sharding_db;
 
 回答：
 
-行表达式标识符可以使用 `${...}` 或 `$->{...}`，但前者与 Spring 本身的属性文件占位符冲突，因此在 Spring 环境中使用行表达式标识符建议使用 `$->{...}`。
+使用 `InlineExpressionParser` SPI 的默认实现的行表达式标识符可以使用 `${...}` 或 `$->{...}`，但前者与 Spring 本身的属性文件占位符冲突，因此在 Spring 环境中使用行表达式标识符建议使用 `$->{...}`。
 
 ### [分片] inline 表达式返回结果为何出现浮点数？
 
@@ -131,7 +135,7 @@ Java的整数相除结果是整数，但是对于 inline 表达式中的 Groovy 
 
 回答：
 
-不需要，ShardingSphere 会自动识别。
+不分库分表的表在 ShardingSphere 中叫做单表，可以使用 [LOAD 语句](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/)或者 [SINGLE 规则](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/single/)配置需要加载的单表。
 
 ### [分片] 指定了泛型为 Long 的 `SingleKeyTableShardingAlgorithm`，遇到 `ClassCastException: Integer can not cast to Long`?
 
@@ -218,7 +222,7 @@ ShardingSphere-Proxy 在部署过程中没有添加 jdbc 驱动，需要将 jdbc
 ShardingSphere 使用 lombok 实现极简代码。关于更多使用和安装细节，请参考 [lombok官网](https://projectlombok.org/download.html)。
 `org.apache.shardingsphere.sql.parser.autogen` 包下的代码由 ANTLR 生成，可以执行以下命令快速生成：
 ```bash
-./mvnw -Dcheckstyle.skip=true -Dspotbugs.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests install -T1C 
+./mvnw -DskipITs -DskipTests install -T1C
 ```
 生成的代码例如 `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` 等 Java 文件由于较大，默认配置的 IDEA 可能不会索引该文件。
 可以调整 IDEA 的属性：`idea.max.intellisense.filesize=10000`。

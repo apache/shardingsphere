@@ -19,16 +19,17 @@ package org.apache.shardingsphere.sqlfederation.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContextFactory;
-import org.apache.shardingsphere.sqlfederation.compiler.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.parser.OptimizerParserContextFactory;
-import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
 
 import java.util.Map;
 
@@ -49,7 +50,8 @@ public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
     
     @Override
     public void alterDatabase(final ShardingSphereDatabase database) {
-        OptimizerParserContext parserContext = OptimizerParserContextFactory.create(database.getProtocolType());
+        DatabaseType databaseType = database.getProtocolType();
+        OptimizerParserContext parserContext = new OptimizerParserContext(databaseType, new OptimizerSQLPropertiesBuilder(databaseType).build());
         optimizerContext.putParserContext(database.getName(), parserContext);
         OptimizerPlannerContext plannerContext = OptimizerPlannerContextFactory.create(database, parserContext, optimizerContext.getSqlParserRule());
         optimizerContext.putPlannerContext(database.getName(), plannerContext);
@@ -59,10 +61,5 @@ public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
     public void dropDatabase(final String databaseName) {
         optimizerContext.removeParserContext(databaseName);
         optimizerContext.removePlannerContext(databaseName);
-    }
-    
-    @Override
-    public String getType() {
-        return SQLFederationRule.class.getSimpleName();
     }
 }

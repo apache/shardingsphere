@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.datanode;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;

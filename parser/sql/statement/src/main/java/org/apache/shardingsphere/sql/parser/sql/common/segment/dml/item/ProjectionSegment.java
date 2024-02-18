@@ -23,4 +23,20 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
  * Projection segment.
  */
 public interface ProjectionSegment extends SQLSegment {
+    
+    /**
+     * Get column label.
+     *
+     * @return column label
+     */
+    String getColumnLabel();
+    
+    /**
+     * Judge whether column is visible or not.
+     * 
+     * @return whether column is visible or not
+     */
+    default boolean isVisible() {
+        return true;
+    }
 }

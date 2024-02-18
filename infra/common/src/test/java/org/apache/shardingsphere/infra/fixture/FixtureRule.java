@@ -38,9 +38,4 @@ public final class FixtureRule implements DatabaseRule, DataSourceContainedRule 
     public Map<String, Collection<String>> getDataSourceMapper() {
         return Collections.emptyMap();
     }
-    
-    @Override
-    public String getType() {
-        return FixtureRule.class.getSimpleName();
-    }
 }

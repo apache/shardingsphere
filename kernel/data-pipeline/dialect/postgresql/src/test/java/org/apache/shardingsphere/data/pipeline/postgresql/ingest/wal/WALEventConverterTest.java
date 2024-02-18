@@ -17,22 +17,21 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.ActualAndLogicTableNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
@@ -41,14 +40,13 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Delet
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.postgresql.replication.LogSequenceNumber;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -59,7 +57,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -68,45 +65,38 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WALEventConverterTest {
     
-    private DumperConfiguration dumperConfig;
-    
     private WALEventConverter walEventConverter;
-    
-    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
     private final LogSequenceNumber logSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
     
     private PipelineTableMetaData pipelineTableMetaData;
     
+    private PipelineDataSourceManager dataSourceManager;
+    
     @BeforeEach
-    void setUp() {
-        dumperConfig = mockDumperConfiguration();
-        walEventConverter = new WALEventConverter(dumperConfig, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())));
-        initTableData(dumperConfig);
+    void setUp() throws SQLException {
+        IncrementalDumperContext dumperContext = mockDumperContext();
+        dataSourceManager = new PipelineDataSourceManager();
+        walEventConverter = new WALEventConverter(dumperContext, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())));
+        initTableData(dumperContext);
         pipelineTableMetaData = new PipelineTableMetaData("t_order", mockOrderColumnsMetaDataMap(), Collections.emptyList());
     }
     
-    @AfterEach
-    void tearDown() {
-        dataSourceManager.close();
+    private IncrementalDumperContext mockDumperContext() {
+        DumperCommonContext commonContext = new DumperCommonContext(null,
+                new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"),
+                new ActualAndLogicTableNameMapper(Collections.singletonMap(new CaseInsensitiveIdentifier("t_order"), new CaseInsensitiveIdentifier("t_order"))),
+                new TableAndSchemaNameMapper(Collections.emptyMap()));
+        return new IncrementalDumperContext(commonContext, null, false);
     }
     
-    private DumperConfiguration mockDumperConfiguration() {
-        DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
-        result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
-        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
-        return result;
-    }
-    
-    @SneakyThrows(SQLException.class)
-    private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = new DefaultPipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
+    private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
         try (
+                PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -127,30 +117,29 @@ class WALEventConverterTest {
         return result;
     }
     
-    @Test
-    void assertWriteRowEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowEvent0(null, 3);
+    @AfterEach
+    void clean() {
+        dataSourceManager.close();
     }
     
     @Test
-    void assertWriteRowEventWithCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowEvent0(mockTargetTableColumnsMap(), 1);
+    void assertWriteRowEvent() throws ReflectiveOperationException {
+        DataRecord actual = getDataRecord(createWriteRowEvent());
+        assertThat(actual.getType(), is(PipelineSQLOperationType.INSERT));
+        assertThat(actual.getColumnCount(), is(3));
     }
     
-    private void assertWriteRowEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
-        WriteRowEvent rowsEvent = new WriteRowEvent();
-        rowsEvent.setDatabaseName("");
-        rowsEvent.setTableName("t_order");
-        rowsEvent.setAfterRow(Arrays.asList(101, 1, "OK"));
+    private WriteRowEvent createWriteRowEvent() {
+        WriteRowEvent result = new WriteRowEvent();
+        result.setSchemaName("");
+        result.setTableName("t_order");
+        result.setAfterRow(Arrays.asList(101, 1, "OK"));
+        return result;
+    }
+    
+    private DataRecord getDataRecord(final WriteRowEvent rowsEvent) throws ReflectiveOperationException {
         Method method = WALEventConverter.class.getDeclaredMethod("handleWriteRowEvent", WriteRowEvent.class, PipelineTableMetaData.class);
-        DataRecord actual = (DataRecord) Plugins.getMemberAccessor().invoke(method, walEventConverter, rowsEvent, pipelineTableMetaData);
-        assertThat(actual.getType(), is(IngestDataChangeType.INSERT));
-        assertThat(actual.getColumnCount(), is(expectedColumnCount));
-    }
-    
-    private Map<LogicTableName, Set<ColumnName>> mockTargetTableColumnsMap() {
-        return Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id")));
+        return (DataRecord) Plugins.getMemberAccessor().invoke(method, walEventConverter, rowsEvent, pipelineTableMetaData);
     }
     
     @Test
@@ -158,8 +147,8 @@ class WALEventConverterTest {
         BeginTXEvent beginTXEvent = new BeginTXEvent(100);
         beginTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(beginTXEvent);
-        assertTrue(record instanceof PlaceholderRecord);
-        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(21953976L));
+        assertInstanceOf(PlaceholderRecord.class, record);
+        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asString(), is(logSequenceNumber.asString()));
     }
     
     @Test
@@ -167,29 +156,29 @@ class WALEventConverterTest {
         CommitTXEvent commitTXEvent = new CommitTXEvent(1, 3468L);
         commitTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(commitTXEvent);
-        assertTrue(record instanceof PlaceholderRecord);
-        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(21953976L));
+        assertInstanceOf(PlaceholderRecord.class, record);
+        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asString(), is(logSequenceNumber.asString()));
     }
     
     @Test
     void assertConvertWriteRowEvent() {
         Record record = walEventConverter.convert(mockWriteRowEvent());
         assertThat(record, instanceOf(DataRecord.class));
-        assertThat(((DataRecord) record).getType(), is(IngestDataChangeType.INSERT));
+        assertThat(((DataRecord) record).getType(), is(PipelineSQLOperationType.INSERT));
     }
     
     @Test
     void assertConvertUpdateRowEvent() {
         Record record = walEventConverter.convert(mockUpdateRowEvent());
         assertThat(record, instanceOf(DataRecord.class));
-        assertThat(((DataRecord) record).getType(), is(IngestDataChangeType.UPDATE));
+        assertThat(((DataRecord) record).getType(), is(PipelineSQLOperationType.UPDATE));
     }
     
     @Test
     void assertConvertDeleteRowEvent() {
         Record record = walEventConverter.convert(mockDeleteRowEvent());
         assertThat(record, instanceOf(DataRecord.class));
-        assertThat(((DataRecord) record).getType(), is(IngestDataChangeType.DELETE));
+        assertThat(((DataRecord) record).getType(), is(PipelineSQLOperationType.DELETE));
     }
     
     @Test
@@ -207,14 +196,14 @@ class WALEventConverterTest {
     void assertConvertFailure() {
         AbstractRowEvent event = new AbstractRowEvent() {
         };
-        event.setDatabaseName("");
+        event.setSchemaName("");
         event.setTableName("t_order");
         assertThrows(UnsupportedSQLOperationException.class, () -> walEventConverter.convert(event));
     }
     
     private AbstractRowEvent mockWriteRowEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -222,7 +211,7 @@ class WALEventConverterTest {
     
     private AbstractRowEvent mockUpdateRowEvent() {
         UpdateRowEvent result = new UpdateRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -230,7 +219,7 @@ class WALEventConverterTest {
     
     private AbstractRowEvent mockDeleteRowEvent() {
         DeleteRowEvent result = new DeleteRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_order");
         result.setPrimaryKeys(Collections.singletonList("id"));
         return result;
@@ -238,7 +227,7 @@ class WALEventConverterTest {
     
     private AbstractRowEvent mockUnknownTableEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_other");
         return result;
     }

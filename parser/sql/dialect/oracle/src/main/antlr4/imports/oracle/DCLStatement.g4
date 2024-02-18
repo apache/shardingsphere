@@ -118,6 +118,7 @@ systemPrivilege
     | usersSystemPrivilege
     | viewsSystemPrivilege
     | miscellaneousSystemPrivilege
+    | ruleSystemPrivilege
     ;
 
 systemPrivilegeOperation
@@ -288,6 +289,14 @@ usersSystemPrivilege
     : systemPrivilegeOperation USER
     ;
 
+ruleSystemPrivilege
+    : createOperation* TO username
+    ;
+
+createOperation
+    : systemPrivilegeOperation (RULE SET? | EVALUATION CONTEXT) COMMA_?
+    ;
+
 viewsSystemPrivilege
     : (systemPrivilegeOperation | (UNDER | MERGE) ANY) VIEW
     ;
@@ -315,7 +324,7 @@ createRole
     ;
 
 dropRole
-    : DROP ROLE
+    : DROP ROLE roleName
     ;
 
 alterRole

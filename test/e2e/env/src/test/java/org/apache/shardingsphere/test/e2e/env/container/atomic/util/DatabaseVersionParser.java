@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Database version parser.
@@ -34,6 +34,6 @@ public final class DatabaseVersionParser {
      * @return major version
      */
     public static String parseMajorVersion(final String storageContainerImage) {
-        return StringUtils.isBlank(storageContainerImage) ? "" : storageContainerImage.substring(storageContainerImage.indexOf(':') + 1, storageContainerImage.indexOf('.'));
+        return Strings.isNullOrEmpty(storageContainerImage) ? "" : storageContainerImage.substring(storageContainerImage.indexOf(':') + 1, storageContainerImage.indexOf('.'));
     }
 }

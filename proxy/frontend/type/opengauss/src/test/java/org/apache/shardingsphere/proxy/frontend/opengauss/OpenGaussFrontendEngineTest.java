@@ -44,7 +44,7 @@ class OpenGaussFrontendEngineTest {
     
     @BeforeEach
     void setup() throws ReflectiveOperationException {
-        Plugins.getMemberAccessor().set(OpenGaussFrontendEngine.class.getDeclaredField("postgreSQLFrontendEngine"), openGaussFrontendEngine, mockPostgreSQLFrontendEngine);
+        Plugins.getMemberAccessor().set(OpenGaussFrontendEngine.class.getDeclaredField("postgresqlFrontendEngine"), openGaussFrontendEngine, mockPostgreSQLFrontendEngine);
     }
     
     @Test

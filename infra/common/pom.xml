@@ -21,15 +21,10 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-common</artifactId>
     <name>${project.artifactId}</name>
-    
-    <properties>
-        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
-        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-    </properties>
     
     <dependencies>
         <dependency>
@@ -75,10 +70,19 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-clickhouse</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-database-sql92</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-parser-sql-engine</artifactId>
@@ -93,7 +97,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-fixture-jdbc</artifactId>
+            <artifactId>shardingsphere-test-fixture-database</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -105,10 +109,6 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
         </dependency>
     </dependencies>
     

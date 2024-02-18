@@ -51,6 +51,10 @@ SHOW
     : S H O W
     ;
 
+FOR
+    : F O R
+    ;
+
 FROM
     : F R O M
     ;
@@ -167,7 +171,7 @@ FALSE
     : F A L S E
     ;
 
-IF  
+IF
     : I F
     ;
 
@@ -341,4 +345,32 @@ CLUSTER
 
 LOCK_STRATEGY
     : L O C K UL_ S T R A T E G Y
+    ;
+
+BROADCAST
+    : B R O A D C A S T
+    ;
+
+PLUGINS
+    : P L U G I N S
+    ;
+
+OF
+    : O F
+    ;
+
+KEY
+    : K E Y
+    ;
+
+GENERATE
+    : G E N E R A T E
+    ;
+
+ALGORITHM
+    : A L G O R I T H M
+    ;
+
+FORCE
+    : F O R C E
     ;

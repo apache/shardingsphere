@@ -17,69 +17,85 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.infra.util.regular.RegularUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * Show dist variables executor.
  */
-public final class ShowDistVariablesExecutor implements ConnectionSessionRequiredQueryableRALExecutor<ShowDistVariablesStatement> {
+@Setter
+public final class ShowDistVariablesExecutor implements DistSQLQueryExecutor<ShowDistVariablesStatement>, DistSQLExecutorConnectionContextAware {
+    
+    private DistSQLConnectionContext connectionContext;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowDistVariablesStatement sqlStatement) {
         return Arrays.asList("variable_name", "variable_value");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ShowDistVariablesStatement sqlStatement) {
-        Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream().filter(each -> !"sql_show".equalsIgnoreCase(each) && !"sql_simple".equalsIgnoreCase(each))
-                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(each)).toString())).collect(Collectors.toList());
+    public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariablesStatement sqlStatement, final ContextManager contextManager) {
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream()
+                .filter(each -> !ConfigurationPropertyKey.SQL_SHOW.name().equals(each) && !ConfigurationPropertyKey.SQL_SIMPLE.name().equals(each))
+                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(each))))).collect(Collectors.toList());
         result.addAll(TemporaryConfigurationPropertyKey.getKeyNames().stream()
-                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(each)).toString()))
+                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), getStringResult(metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(each)))))
                 .collect(Collectors.toList()));
-        result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), connectionSession.getDatabaseConnectionManager().getConnectionSize()));
+        result.add(new LocalDataQueryResultRow(DistSQLVariable.CACHED_CONNECTIONS.name().toLowerCase(), connectionContext.getConnectionSize()));
         addLoggingPropsRows(metaData, result);
         if (sqlStatement.getLikePattern().isPresent()) {
-            String pattern = SQLUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
-            result = result.stream().filter(each -> RegularUtils.matchesCaseInsensitive(pattern, (String) each.getCell(1))).collect(Collectors.toList());
+            String pattern = RegexUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
+            result = result.stream().filter(each -> Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher((String) each.getCell(1)).matches()).collect(Collectors.toList());
         }
         return result.stream().sorted(Comparator.comparing(each -> each.getCell(1).toString())).collect(Collectors.toList());
     }
     
-    private void addLoggingPropsRows(final ShardingSphereMetaData metaData, final Collection<LocalDataQueryResultRow> result) {
+    private String getStringResult(final Object value) {
+        if (null == value) {
+            return "";
+        }
+        return value instanceof TypedSPI ? ((TypedSPI) value).getType().toString() : value.toString();
+    }
+    
+    private void addLoggingPropsRows(final ShardingSphereMetaData metaData, final Collection<LocalDataQueryResultRow> rows) {
         Optional<ShardingSphereLogger> sqlLogger = LoggingUtils.getSQLLogger(metaData.getGlobalRuleMetaData());
         if (sqlLogger.isPresent()) {
             Properties sqlLoggerProps = sqlLogger.get().getProps();
-            result.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SHOW_VARIABLE_NAME, sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString()));
-            result.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME, sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE, Boolean.FALSE).toString()));
+            rows.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SHOW_VARIABLE_NAME, sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString()));
+            rows.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME, sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE, Boolean.FALSE).toString()));
         } else {
-            result.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SHOW_VARIABLE_NAME,
+            rows.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SHOW_VARIABLE_NAME,
                     metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(LoggingConstants.SQL_SHOW_VARIABLE_NAME.toUpperCase())).toString()));
-            result.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME,
+            rows.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME,
                     metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME.toUpperCase())).toString()));
         }
     }
     
     @Override
-    public String getType() {
-        return ShowDistVariablesStatement.class.getName();
+    public Class<ShowDistVariablesStatement> getType() {
+        return ShowDistVariablesStatement.class;
     }
 }

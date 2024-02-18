@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra-expr</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-expr-spi</artifactId>
     <name>${project.artifactId}</name>
@@ -31,11 +31,6 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-util</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy</artifactId>
         </dependency>
     </dependencies>
 </project>

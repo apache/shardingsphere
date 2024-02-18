@@ -17,38 +17,36 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * WAL event converter.
  */
 public final class WALEventConverter {
     
-    private final DumperConfiguration dumperConfig;
+    private final IncrementalDumperContext dumperContext;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
-    public WALEventConverter(final DumperConfiguration dumperConfig, final PipelineTableMetaDataLoader metaDataLoader) {
-        this.dumperConfig = dumperConfig;
+    public WALEventConverter(final IncrementalDumperContext dumperContext, final PipelineTableMetaDataLoader metaDataLoader) {
+        this.dumperContext = dumperContext;
         this.metaDataLoader = metaDataLoader;
     }
     
@@ -82,7 +80,7 @@ public final class WALEventConverter {
     private boolean filter(final AbstractWALEvent event) {
         if (event instanceof AbstractRowEvent) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !dumperConfig.containsTable(rowEvent.getTableName());
+            return !dumperContext.getCommonContext().getTableNameMapper().containsTable(rowEvent.getTableName());
         }
         return false;
     }
@@ -92,25 +90,25 @@ public final class WALEventConverter {
     }
     
     private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
-        return metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
+        CaseInsensitiveIdentifier logicTableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(actualTableName);
+        return metaDataLoader.getTableMetaData(dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(logicTableName), actualTableName);
     }
     
     private DataRecord handleWriteRowEvent(final WriteRowEvent writeRowEvent, final PipelineTableMetaData tableMetaData) {
-        DataRecord result = createDataRecord(IngestDataChangeType.INSERT, writeRowEvent, writeRowEvent.getAfterRow().size());
-        putColumnsIntoDataRecord(result, tableMetaData, writeRowEvent.getTableName(), writeRowEvent.getAfterRow());
+        DataRecord result = createDataRecord(PipelineSQLOperationType.INSERT, writeRowEvent, writeRowEvent.getAfterRow().size());
+        putColumnsIntoDataRecord(result, tableMetaData, writeRowEvent.getAfterRow());
         return result;
     }
     
     private DataRecord handleUpdateRowEvent(final UpdateRowEvent updateRowEvent, final PipelineTableMetaData tableMetaData) {
-        DataRecord result = createDataRecord(IngestDataChangeType.UPDATE, updateRowEvent, updateRowEvent.getAfterRow().size());
-        String actualTableName = updateRowEvent.getTableName();
-        putColumnsIntoDataRecord(result, tableMetaData, actualTableName, updateRowEvent.getAfterRow());
+        DataRecord result = createDataRecord(PipelineSQLOperationType.UPDATE, updateRowEvent, updateRowEvent.getAfterRow().size());
+        putColumnsIntoDataRecord(result, tableMetaData, updateRowEvent.getAfterRow());
         return result;
     }
     
     private DataRecord handleDeleteRowEvent(final DeleteRowEvent event, final PipelineTableMetaData tableMetaData) {
         // TODO completion columns
-        DataRecord result = createDataRecord(IngestDataChangeType.DELETE, event, event.getPrimaryKeys().size());
+        DataRecord result = createDataRecord(PipelineSQLOperationType.DELETE, event, event.getPrimaryKeys().size());
         // TODO Unique key may be a column within unique index
         List<String> primaryKeyColumns = tableMetaData.getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
@@ -119,28 +117,21 @@ public final class WALEventConverter {
         return result;
     }
     
-    private DataRecord createDataRecord(final String type, final AbstractRowEvent rowsEvent, final int columnCount) {
-        String tableName = dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal();
-        DataRecord result = new DataRecord(type, tableName, new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
+    private DataRecord createDataRecord(final PipelineSQLOperationType type, final AbstractRowEvent rowsEvent, final int columnCount) {
+        String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).toString();
+        DataRecord result = new DataRecord(type, rowsEvent.getSchemaName(), tableName, new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
+        result.setActualTableName(rowsEvent.getTableName());
         result.setCsn(rowsEvent.getCsn());
         return result;
     }
     
-    private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final String actualTableName, final List<Object> values) {
-        Set<ColumnName> columnNameSet = dumperConfig.getColumnNameSet(actualTableName).orElse(null);
+    private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final List<Object> values) {
         for (int i = 0, count = values.size(); i < count; i++) {
             PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
-            if (isColumnUnneeded(columnNameSet, columnMetaData.getName())) {
-                continue;
-            }
             boolean isUniqueKey = columnMetaData.isUniqueKey();
-            Object uniqueKeyOldValue = isUniqueKey && IngestDataChangeType.UPDATE.equals(dataRecord.getType()) ? values.get(i) : null;
+            Object uniqueKeyOldValue = isUniqueKey && PipelineSQLOperationType.UPDATE == dataRecord.getType() ? values.get(i) : null;
             Column column = new Column(columnMetaData.getName(), uniqueKeyOldValue, values.get(i), true, isUniqueKey);
             dataRecord.addColumn(column);
         }
-    }
-    
-    private boolean isColumnUnneeded(final Set<ColumnName> columnNameSet, final String columnName) {
-        return null != columnNameSet && !columnNameSet.contains(new ColumnName(columnName));
     }
 }

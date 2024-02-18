@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
-import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertSelectContext;
-import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.exception.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -81,10 +82,10 @@ class InsertClauseShardingConditionEngineTest {
         InsertStatement insertStatement = mockInsertStatement();
         shardingConditionEngine = new InsertClauseShardingConditionEngine(database, shardingRule, new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties())));
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
-        when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_col_1"));
+        when(insertStatementContext.getColumnNames()).thenReturn(Arrays.asList("foo_col_1", "foo_col_3"));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContext()));
         when(insertStatementContext.getInsertSelectContext()).thenReturn(null);
-        when(insertStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(insertStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(insertStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
     }
     
@@ -93,7 +94,7 @@ class InsertClauseShardingConditionEngineTest {
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         when(schema.containsTable("foo_table")).thenReturn(true);
-        when(schema.getTable("foo_table").getColumnNames()).thenReturn(Arrays.asList("foo_col_1", "foo_col_2"));
+        when(schema.getTable("foo_table").getColumnNames()).thenReturn(Arrays.asList("foo_col_1", "foo_col_2", "foo_Col_3"));
         when(result.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         return result;
     }
@@ -207,5 +208,13 @@ class InsertClauseShardingConditionEngineTest {
         assertThat(actual.get(0).getValues().size(), is(1));
         assertThat(actual.get(0).getValues().get(0).getColumnName(), is("foo_col_2"));
         assertThat(actual.get(0).getValues().get(0).getTableName(), is("foo_table"));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithCaseSensitiveField() {
+        when(shardingRule.findShardingColumn("foo_Col_3", "foo_table")).thenReturn(Optional.of("foo_Col_3"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
+        assertThat(actual.size(), is(1));
+        
     }
 }

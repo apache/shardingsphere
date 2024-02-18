@@ -21,11 +21,14 @@
     <sql-case id="select_window_function" value="SELECT order_id, ROW_NUMBER() OVER() FROM t_order" db-types="MySQL" />
     <sql-case id="select_cast_function" value="SELECT CAST('1' AS UNSIGNED)" db-types="MySQL" />
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
+    <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
     <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from 4)" db-types="MySQL" />
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
+    <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL" />
     <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL" />
+    <sql-case id="select_chr_using_nchar_cs" value="SELECT CHR (196 USING NCHAR_CS) FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL" />
     <sql-case id="select_trim_with_both" value="SELECT TRIM(BOTH ' ' from ' bar ')" db-types="MySQL" />
     <sql-case id="select_with_trim_expr" value="SELECT TRIM('#' FROM `name`) FROM t_order" db-types="MySQL" />
@@ -38,4 +41,20 @@
     <sql-case id="select_extract_function" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_for_oracle" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40') FROM DUAL" db-types="Oracle" />
     <sql-case id="select_mod_function" value="SELECT MOD(order_id, 1) from t_order" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_sys_xml_agg" value="SELECT SYS_XMLAGG(SYS_XMLGEN(last_name)) XMLAGG FROM employees WHERE last_name LIKE 'R%' ORDER BY xmlagg;" db-types="Oracle" />
+    <sql-case id="select_set_function" value="SELECT customer_id, SET(cust_address_ntab) address FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
+    <sql-case id="select_pivot" value="SELECT * FROM (SELECT * FROM sales) PIVOT (SUM(amount) FOR month IN ('Jan', 'Feb'))" db-types="Oracle"/>
+    <sql-case id="select_string_split_function" value="SELECT value as tag, COUNT(*) AS [number_of_articles] FROM Product CROSS APPLY STRING_SPLIT(Tags, ',') GROUP BY value HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC"  db-types="SQLServer"/>
+    <sql-case id="select_from_open_json_function" value="SELECT * FROM OPENJSON(@array) WITH (  month VARCHAR(3), temp int, month_id tinyint '$.sql:identity()') as months" db-types="SQLServer"/>
+    <sql-case id="select_from_open_json_function_with_path" value="SELECT [key], value FROM OPENJSON(@json,'$.path.to.&quot;sub-object&quot;')" db-types="SQLServer"/>
+    <sql-case id="select_from_open_row_set_with_provider_name" value="SELECT a.* FROM OPENROWSET('Microsoft.Jet.OLEDB.4.0', 'C:\SAMPLES\Northwind.mdb';'admin';'password', Customers) AS a;" db-types="SQLServer"/>
+    <sql-case id="select_from_open_row_set_with_provider_string" value="SELECT d.* FROM OPENROWSET('SQLNCLI','Server=Seattle1;Trusted_Connection=yes;',AdventureWorks2022.HumanResources.Department) AS d;" db-types="SQLServer"/>
+    <sql-case id="select_json_object_simple_key_value" value="SELECT JSON_OBJECT('name':'value', 'type':1)" db-types="SQLServer" />
+    <sql-case id="select_json_object_absent_not_null" value="SELECT JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" db-types="SQLServer" />
+    <sql-case id="select_json_array" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" db-types="SQLServer" />
+    <sql-case id="select_nest_json_object" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" db-types="SQLServer" />
+    <sql-case id="select_json_object_with_subquery" value="SELECT JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" db-types="SQLServer" />
+    <sql-case id="select_dm_exec_sessions_with_json_object_function" value="SELECT s.session_id, JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status) as info FROM sys.dm_exec_sessions AS s WHERE s.is_user_process = 1" db-types="SQLServer" />
+    <sql-case id="select_first_last_value_function" value="SELECT BusinessEntityID, DATEPART(QUARTER, QuotaDate) AS Quarter, YEAR(QuotaDate) AS SalesYear, SalesQuota AS QuotaThisQuarter, SalesQuota - FIRST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate)) AS DifferenceFromFirstQuarter, SalesQuota - LAST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate) RANGE BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING) AS DifferenceFromLastQuarter FROM Sales.SalesPersonQuotaHistory WHERE YEAR(QuotaDate) > 2005 AND BusinessEntityID BETWEEN 274 AND 275 ORDER BY BusinessEntityID, SalesYear, Quarter" db-types="SQLServer" />
+    <sql-case id="select_approx_percentile_cont_function" value="SELECT DeptId,APPROX_PERCENTILE_CONT(0.10) WITHIN GROUP(ORDER BY Salary) AS 'P10',APPROX_PERCENTILE_CONT(0.90) WITHIN GROUP(ORDER BY Salary) AS 'P90' FROM tblEmployee GROUP BY DeptId" db-types="SQLServer" />
 </sql-cases>

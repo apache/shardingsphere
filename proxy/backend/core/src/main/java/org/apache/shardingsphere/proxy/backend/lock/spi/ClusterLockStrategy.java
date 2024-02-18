@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.lock.spi;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Cluster lock strategy.
  */
+@SingletonSPI
 public interface ClusterLockStrategy extends TypedSPI {
     
     /**

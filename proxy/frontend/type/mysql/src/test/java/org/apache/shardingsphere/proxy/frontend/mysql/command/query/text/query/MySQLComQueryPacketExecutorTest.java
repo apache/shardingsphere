@@ -24,9 +24,14 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.que
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -56,6 +61,7 @@ import org.mockito.plugins.MemberAccessor;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -132,18 +138,23 @@ class MySQLComQueryPacketExecutorTest {
     }
     
     private MetaDataContexts mockMetaDataContexts() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", new MySQLDatabaseType()));
-        when(result.getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(new MySQLDatabaseType());
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(
+        when(result.getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(databaseType);
+        RuleMetaData globalRuleMetaData = new RuleMetaData(
                 Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
                         new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
         when(result.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(result.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(result.getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        ShardingSphereTable table = new ShardingSphereTable("t", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
+                new ShardingSphereColumn("v", Types.INTEGER, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema();
+        schema.getTables().put("t", table);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singletonMap("foo_db", schema));
         when(result.getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         return result;
         
     }

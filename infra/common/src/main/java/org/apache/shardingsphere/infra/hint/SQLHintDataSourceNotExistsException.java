@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.infra.hint;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.AuditSQLException;
 
 /**
  * SQL Hint data source not exists exception.
  */
-public final class SQLHintDataSourceNotExistsException extends KernelSQLException {
+public final class SQLHintDataSourceNotExistsException extends AuditSQLException {
     
     private static final long serialVersionUID = -8222967059220727514L;
     
-    private static final int KERNEL_CODE = 6;
-    
     public SQLHintDataSourceNotExistsException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 1, "Hint data source: %s is not exist.", errorMessage);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Hint data source: %s is not exist.", errorMessage);
     }
 }

@@ -125,4 +125,6 @@
     <sql-case id="revoke_execute_on_system_object" value="REVOKE EXECUTE ON sys.sp_addlinkedserver FROM public" db-types="SQLServer" />
     <sql-case id="revoke_view_definition_on_type" value="REVOKE VIEW DEFINITION ON TYPE::schema1.type1 FROM user1 CASCADE" db-types="SQLServer" />
     <sql-case id="revoke_execute_on_xml_schema_collection" value="REVOKE EXECUTE ON XML SCHEMA COLLECTION::schema1.xmlschemacollection1 FROM user1" db-types="SQLServer" />
+    <sql-case id="revoke_usage_on_column_encryption_key" value="REVOKE USAGE ON COLUMN_ENCRYPTION_KEY MyCEK1 FROM user1" db-types="openGauss" />
+    <sql-case id="revoke_usage_on_client_master_key" value="REVOKE USAGE ON CLIENT_MASTER_KEY MyCMK1 FROM user1" db-types="openGauss" />
 </sql-cases>

@@ -20,8 +20,9 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.general
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
@@ -42,6 +43,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -82,32 +84,37 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
                     new E2EIncrementalTask(containerComposer.getSourceDataSource(), SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 30));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30);
             containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", SOURCE_TABLE_NAME));
+            containerComposer.sourceExecuteWithLog("INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (10000, 10000, 1, 'OK')");
+            stopMigrationByJobId(containerComposer, orderJobId);
+            startMigrationByJobId(containerComposer, orderJobId);
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", 10000);
-            assertMigrationSuccessById(containerComposer, orderJobId, "DATA_MATCH");
+            containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order_item", 10000);
+            Properties algorithmProps = new Properties();
+            algorithmProps.setProperty("chunk-size", "300");
+            assertMigrationSuccessById(containerComposer, orderJobId, "DATA_MATCH", algorithmProps);
             String orderItemJobId = getJobIdByTableName(containerComposer, "ds_0.t_order_item");
-            assertMigrationSuccessById(containerComposer, orderItemJobId, "DATA_MATCH");
+            assertMigrationSuccessById(containerComposer, orderItemJobId, "DATA_MATCH", algorithmProps);
             Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
-            assertMigrationSuccessById(containerComposer, orderItemJobId, "CRC32_MATCH");
+            assertMigrationSuccessById(containerComposer, orderItemJobId, "CRC32_MATCH", new Properties());
             for (String each : listJobId(containerComposer)) {
                 commitMigrationByJobId(containerComposer, each);
             }
-            List<String> lastJobIds = listJobId(containerComposer);
-            assertTrue(lastJobIds.isEmpty());
+            assertTrue(listJobId(containerComposer).isEmpty());
             containerComposer.assertGreaterThanOrderTableInitRows(jdbcDataSource, PipelineContainerComposer.TABLE_INIT_ROW_COUNT, "");
         }
     }
     
-    private void assertMigrationSuccessById(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
+    private void assertMigrationSuccessById(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType, final Properties algorithmProps) throws SQLException {
         List<Map<String, Object>> jobStatus = containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
             assertThat(Integer.parseInt(each.get("inventory_finished_percentage").toString()), is(100));
         }
-        assertCheckMigrationSuccess(containerComposer, jobId, algorithmType);
+        assertCheckMigrationSuccess(containerComposer, jobId, algorithmType, algorithmProps);
     }
     
     private static boolean isEnabled() {
-        return PipelineE2ECondition.isEnabled(new MySQLDatabaseType());
+        return PipelineE2ECondition.isEnabled(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.rule;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
@@ -71,8 +71,8 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(databases.size(), 1F);
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             ShardingSphereDatabase database = entry.getValue();
-            database.getResourceMetaData().getDataSources().forEach((key, value) -> dataSourceMap.put(database.getName() + "." + key, value));
-            database.getResourceMetaData().getStorageTypes().forEach((key, value) -> databaseTypes.put(database.getName() + "." + key, value));
+            database.getResourceMetaData().getStorageUnits().forEach((key, value) -> dataSourceMap.put(database.getName() + "." + key, value.getDataSource()));
+            database.getResourceMetaData().getStorageUnits().forEach((key, value) -> databaseTypes.put(database.getName() + "." + key, value.getStorageType()));
         }
         if (dataSourceMap.isEmpty()) {
             return new ShardingSphereTransactionManagerEngine(defaultType);
@@ -140,10 +140,5 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
             // CHECKSTYLE:ON
             log.error("Close transaction engine failed", ex);
         }
-    }
-    
-    @Override
-    public String getType() {
-        return TransactionRule.class.getSimpleName();
     }
 }

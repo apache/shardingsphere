@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;

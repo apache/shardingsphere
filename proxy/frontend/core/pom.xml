@@ -21,14 +21,10 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-proxy-frontend</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-frontend-core</artifactId>
     <name>${project.artifactId}</name>
-    
-    <properties>
-        <netty.tcnative.version>2.0.59.Final</netty.tcnative.version>
-    </properties>
     
     <dependencies>
         <dependency>
@@ -64,13 +60,13 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-fixture-infra</artifactId>
+            <artifactId>shardingsphere-test-util</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-util</artifactId>
+            <artifactId>shardingsphere-test-fixture-database</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -87,27 +83,26 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-transport-native-epoll</artifactId>
             <classifier>linux-x86_64</classifier>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-transport-native-epoll</artifactId>
             <classifier>linux-aarch_64</classifier>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-tcnative-boringssl-static</artifactId>
-            <version>${netty.tcnative.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
-            <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bctls-jdk15on</artifactId>
-            <version>${bouncycastle.version}</version>
         </dependency>
     </dependencies>
 </project>

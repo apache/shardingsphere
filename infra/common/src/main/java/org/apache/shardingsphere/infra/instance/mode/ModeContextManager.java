@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.instance.mode;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
@@ -82,19 +82,19 @@ public interface ModeContextManager {
      * Register storage units.
      *
      * @param databaseName database name
-     * @param toBeRegisterStorageUnitProps to be register storage unit props
+     * @param toBeRegisteredProps to be registered storage unit properties
      * @throws SQLException SQL exception
      */
-    void registerStorageUnits(String databaseName, Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) throws SQLException;
+    void registerStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException;
     
     /**
      * Alter storage units.
      *
      * @param databaseName database name
-     * @param toBeUpdatedStorageUnitProps to be updated storage unit props
+     * @param toBeUpdatedProps to be updated storage unit properties
      * @throws SQLException SQL exception
      */
-    void alterStorageUnits(String databaseName, Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) throws SQLException;
+    void alterStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException;
     
     /**
      * Unregister storage units.
@@ -119,7 +119,7 @@ public interface ModeContextManager {
      * @param toBeAlteredRuleConfig to be altered rule config
      * @return meta data versions
      */
-    default Collection<MetaDataVersion> alterRuleConfiguration(String databaseName, RuleConfiguration toBeAlteredRuleConfig) {
+    default Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
         return Collections.emptyList();
     }
     
@@ -129,7 +129,7 @@ public interface ModeContextManager {
      * @param databaseName database name
      * @param toBeRemovedRuleConfig to be removed rule config
      */
-    default void removeRuleConfigurationItem(String databaseName, RuleConfiguration toBeRemovedRuleConfig) {
+    default void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
     }
     
     /**
@@ -138,7 +138,7 @@ public interface ModeContextManager {
      * @param databaseName database name
      * @param ruleName rule name
      */
-    default void removeRuleConfiguration(String databaseName, String ruleName) {
+    default void removeRuleConfiguration(final String databaseName, final String ruleName) {
     }
     
     /**
@@ -154,7 +154,7 @@ public interface ModeContextManager {
      *
      * @param globalRuleConfig global rule config
      */
-    default void alterGlobalRuleConfiguration(RuleConfiguration globalRuleConfig) {
+    default void alterGlobalRuleConfiguration(final RuleConfiguration globalRuleConfig) {
     }
     
     /**

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.database;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;

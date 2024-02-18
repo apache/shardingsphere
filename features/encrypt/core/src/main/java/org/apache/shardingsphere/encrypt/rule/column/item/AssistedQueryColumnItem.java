@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rule.column.item;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,13 +30,12 @@ import java.util.List;
  * Assisted query column item.
  */
 @RequiredArgsConstructor
+@Getter
 public final class AssistedQueryColumnItem {
     
-    @Getter
     private final String name;
     
-    @SuppressWarnings("rawtypes")
-    private final AssistedEncryptAlgorithm encryptor;
+    private final EncryptAlgorithm encryptor;
     
     /**
      * Get encrypt assisted query value.
@@ -48,7 +47,6 @@ public final class AssistedQueryColumnItem {
      * @param originalValue original value
      * @return assisted query values
      */
-    @SuppressWarnings("unchecked")
     public Object encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object originalValue) {
         if (null == originalValue) {
             return null;
@@ -67,7 +65,6 @@ public final class AssistedQueryColumnItem {
      * @param originalValues original values
      * @return assisted query values
      */
-    @SuppressWarnings("unchecked")
     public List<Object> encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final List<Object> originalValues) {
         EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
         List<Object> result = new LinkedList<>();

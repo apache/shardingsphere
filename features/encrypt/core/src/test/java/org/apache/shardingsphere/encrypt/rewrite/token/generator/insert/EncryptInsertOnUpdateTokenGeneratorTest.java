@@ -21,10 +21,9 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentTok
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -122,14 +121,14 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
         assertFalse(actual.hasNext());
     }
     
-    private Collection<AssignmentSegment> buildAssignmentSegment() {
+    private Collection<ColumnAssignmentSegment> buildAssignmentSegment() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
         List<ColumnSegment> columnSegments = Collections.singletonList(columnSegment);
-        AssignmentSegment assignmentSegment1 = new ColumnAssignmentSegment(0, 0, columnSegments, new ParameterMarkerExpressionSegment(0, 0, 0));
+        ColumnAssignmentSegment assignmentSegment1 = new ColumnAssignmentSegment(0, 0, columnSegments, new ParameterMarkerExpressionSegment(0, 0, 0));
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "VALUES", "VALUES (0)");
         functionSegment.getParameters().add(columnSegment);
-        AssignmentSegment assignmentSegment2 = new ColumnAssignmentSegment(0, 0, columnSegments, functionSegment);
-        AssignmentSegment assignmentSegment3 = new ColumnAssignmentSegment(0, 0, columnSegments, new LiteralExpressionSegment(0, 0, 0));
+        ColumnAssignmentSegment assignmentSegment2 = new ColumnAssignmentSegment(0, 0, columnSegments, functionSegment);
+        ColumnAssignmentSegment assignmentSegment3 = new ColumnAssignmentSegment(0, 0, columnSegments, new LiteralExpressionSegment(0, 0, 0));
         return Arrays.asList(assignmentSegment1, assignmentSegment2, assignmentSegment3);
     }
     

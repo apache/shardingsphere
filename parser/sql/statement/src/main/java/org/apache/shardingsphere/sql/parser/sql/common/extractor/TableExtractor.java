@@ -20,18 +20,20 @@ package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
@@ -87,7 +89,7 @@ public final class TableExtractor {
         if (selectStatement.getWhere().isPresent()) {
             extractTablesFromExpression(selectStatement.getWhere().get().getExpr());
         }
-        if (null != selectStatement.getProjections()) {
+        if (null != selectStatement.getProjections() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromProjections(selectStatement.getProjections());
         }
         if (selectStatement.getGroupBy().isPresent()) {
@@ -158,6 +160,11 @@ public final class TableExtractor {
             extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getLeft());
             extractTablesFromExpression(((BinaryOperationExpression) expressionSegment).getRight());
         }
+        if (expressionSegment instanceof FunctionSegment) {
+            for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {
+                extractTablesFromExpression(each);
+            }
+        }
     }
     
     private void extractTablesFromProjections(final ProjectionsSegment projections) {
@@ -176,6 +183,8 @@ public final class TableExtractor {
                 }
             } else if (each instanceof AggregationProjectionSegment) {
                 ((AggregationProjectionSegment) each).getParameters().forEach(this::extractTablesFromExpression);
+            } else if (each instanceof ExpressionProjectionSegment) {
+                extractTablesFromExpression(((ExpressionProjectionSegment) each).getExpr());
             }
         }
     }
@@ -233,7 +242,7 @@ public final class TableExtractor {
         }
     }
     
-    private void extractTablesFromAssignmentItems(final Collection<AssignmentSegment> assignmentItems) {
+    private void extractTablesFromAssignmentItems(final Collection<ColumnAssignmentSegment> assignmentItems) {
         assignmentItems.forEach(each -> extractTablesFromColumnSegments(each.getColumns()));
     }
     

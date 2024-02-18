@@ -19,13 +19,13 @@ package org.apache.shardingsphere.shadow.distsql.handler.checker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import java.util.Collection;

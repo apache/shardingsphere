@@ -19,20 +19,15 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,20 +84,20 @@ public final class ExportUtils {
     }
     
     private static void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
-        if (database.getResourceMetaData().getDataSourcePropsMap().isEmpty()) {
+        if (database.getResourceMetaData().getStorageUnits().isEmpty()) {
             return;
         }
         stringBuilder.append("dataSources:").append(System.lineSeparator());
-        for (Entry<String, DataSourceProperties> entry : database.getResourceMetaData().getDataSourcePropsMap().entrySet()) {
-            appendDataSourceConfiguration(entry.getKey(), entry.getValue(), stringBuilder);
+        for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
+            appendDataSourceConfiguration(entry.getKey(), entry.getValue().getDataSourcePoolProperties(), stringBuilder);
         }
     }
     
-    private static void appendDataSourceConfiguration(final String name, final DataSourceProperties dataSourceProps, final StringBuilder stringBuilder) {
+    private static void appendDataSourceConfiguration(final String name, final DataSourcePoolProperties props, final StringBuilder stringBuilder) {
         stringBuilder.append("  ").append(name).append(':').append(System.lineSeparator());
-        dataSourceProps.getConnectionPropertySynonyms().getStandardProperties()
+        props.getConnectionPropertySynonyms().getStandardProperties()
                 .forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));
-        for (Entry<String, Object> entry : dataSourceProps.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+        for (Entry<String, Object> entry : props.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
             if (null != entry.getValue()) {
                 stringBuilder.append("    ").append(entry.getKey()).append(": ").append(entry.getValue()).append(System.lineSeparator());
             }
@@ -111,35 +106,15 @@ public final class ExportUtils {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static void appendRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs, final StringBuilder stringBuilder) {
-        if (ruleConfigs.isEmpty()) {
+        if (ruleConfigs.isEmpty() || ruleConfigs.stream().allMatch(each -> ((DatabaseRuleConfiguration) each).isEmpty())) {
             return;
         }
         stringBuilder.append("rules:").append(System.lineSeparator());
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet()) {
-            if (checkRuleConfigIsEmpty(entry.getKey())) {
+            if (((DatabaseRuleConfiguration) entry.getKey()).isEmpty()) {
                 continue;
             }
             stringBuilder.append(YamlEngine.marshal(Collections.singletonList(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
         }
-    }
-    
-    private static boolean checkRuleConfigIsEmpty(final RuleConfiguration ruleConfig) {
-        if (ruleConfig instanceof ShardingRuleConfiguration) {
-            ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ruleConfig;
-            return shardingRuleConfig.getTables().isEmpty() && shardingRuleConfig.getAutoTables().isEmpty();
-        } else if (ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
-            return ((ReadwriteSplittingRuleConfiguration) ruleConfig).getDataSources().isEmpty();
-        } else if (ruleConfig instanceof EncryptRuleConfiguration) {
-            return ((EncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
-        } else if (ruleConfig instanceof CompatibleEncryptRuleConfiguration) {
-            return ((CompatibleEncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
-        } else if (ruleConfig instanceof ShadowRuleConfiguration) {
-            return ((ShadowRuleConfiguration) ruleConfig).getTables().isEmpty();
-        } else if (ruleConfig instanceof MaskRuleConfiguration) {
-            return ((MaskRuleConfiguration) ruleConfig).getTables().isEmpty();
-        } else if (ruleConfig instanceof SingleRuleConfiguration) {
-            return !((SingleRuleConfiguration) ruleConfig).getDefaultDataSource().isPresent();
-        }
-        return false;
     }
 }

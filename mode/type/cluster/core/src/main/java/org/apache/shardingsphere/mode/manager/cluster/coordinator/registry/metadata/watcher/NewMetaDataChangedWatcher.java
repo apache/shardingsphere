@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.metadata.builder.RuleConfigurationEventBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -48,7 +48,7 @@ showComputeNodes
     ;
 
 refreshDatabaseMetadata
-    : REFRESH DATABASE METADATA databaseName? FROM GOVERNANCE CENTER
+    : FORCE? REFRESH DATABASE METADATA databaseName?
     ;
 
 refreshTableMetadata
@@ -104,7 +104,7 @@ showMigrationRule
     ;
 
 alterMigrationRule
-    : ALTER MIGRATION RULE inventoryIncrementalRule?
+    : ALTER MIGRATION RULE transmissionRule?
     ;
 
 lockCluster
@@ -115,7 +115,15 @@ unlockCluster
     : UNLOCK CLUSTER
     ;
 
-inventoryIncrementalRule
+showPluginImplementations
+    : SHOW PLUGINS OF pluginClass
+    ;
+
+showKeyGenerateAlgorithmPlugins
+    : SHOW KEY GENERATE ALGORITHM PLUGINS
+    ;
+
+transmissionRule
     : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
 
@@ -200,5 +208,9 @@ showLike
     ;
 
 likePattern
+    : STRING_
+    ;
+
+pluginClass
     : STRING_
     ;

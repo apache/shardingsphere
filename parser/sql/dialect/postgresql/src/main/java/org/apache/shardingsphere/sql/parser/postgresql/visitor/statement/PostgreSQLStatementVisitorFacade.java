@@ -66,7 +66,7 @@ public final class PostgreSQLStatementVisitorFacade implements SQLStatementVisit
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "PostgreSQL";
     }
 }

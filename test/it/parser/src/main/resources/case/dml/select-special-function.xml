@@ -22,7 +22,7 @@
             <simple-table name="t_order" start-index="33" stop-index="39" />
         </from>
         <projections start-index="7" stop-index="26">
-            <aggregation-projection type="GROUP_CONCAT" inner-expression="(status)" text="GROUP_CONCAT(status)" start-index="7" stop-index="26">
+            <aggregation-projection type="GROUP_CONCAT" expression="GROUP_CONCAT(status)" text="GROUP_CONCAT(status)" start-index="7" stop-index="26">
                 <expr>
                     <function function-name="GROUP_CONCAT" start-index="7" stop-index="26" text="GROUP_CONCAT(status)">
                         <parameter>
@@ -41,7 +41,7 @@
             <column-projection name="order_id" start-index="7" stop-index="14" />
             <expression-projection text="ROW_NUMBER() OVER()" start-index="17" stop-index="35">
                 <expr>
-                    <function function-name="ROW_NUMBER" start-index="17" stop-index="35" text="ROW_NUMBER() OVER()" />
+                    <function function-name="ROW_NUMBER" start-index="17" stop-index="35" text="ROW_NUMBER() OVER()"/>
                 </expr>
             </expression-projection>
         </projections>
@@ -80,6 +80,51 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+    <select sql-case-id="select_cast_multiset">
+        <projections start-index="7" stop-index="119">
+            <expression-projection text="CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ)" start-index="7" stop-index="119">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="119" text="CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ)">
+                        <parameter>
+                            <subquery start-index="20" stop-index="94">
+                                <select>
+                                    <from start-index="46" stop-index="54">
+                                        <simple-table name="customers" alias="c" start-index="46" stop-index="56"/>
+                                    </from>
+                                    <projections start-index="28" stop-index="39">
+                                        <column-projection name="cust_address" start-index="28" stop-index="39"/>
+                                    </projections>
+                                    <where start-index="58" stop-index="93">
+                                        <expr>
+                                            <binary-operation-expression start-index="64" stop-index="93">
+                                                <left>
+                                                    <column name="customer_id" start-index="64" stop-index="76">
+                                                        <owner start-index="64" stop-index="64" name="c" />
+                                                    </column>
+                                                </left>
+                                                <operator>=</operator>
+                                                <right>
+                                                    <column name="customer_id" start-index="80" stop-index="93">
+                                                        <owner start-index="80" stop-index="81" name="cd" />
+                                                    </column>
+                                                </right>
+                                            </binary-operation-expression>
+                                        </expr>
+                                    </where>
+                                </select>
+                            </subquery>
+                        </parameter>
+                        <parameter>
+                            <data-type value="cust_address_tab_typ" start-index="99" stop-index="118" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="customer" start-index="126" stop-index="133" />
+        </from>
     </select>
     <select sql-case-id="select_convert_function">
         <projections start-index="7" stop-index="33">
@@ -138,6 +183,27 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_extract_from_column">
+        <projections start-index="7" stop-index="40">
+            <expression-projection text="EXTRACT(YEAR FROM o.creation_date)" start-index="7" stop-index="40">
+                <expr>
+                    <function function-name="EXTRACT" start-index="7" stop-index="40" text="EXTRACT(YEAR FROM o.creation_date)" >
+                        <parameter>
+                            <literal-expression value="YEAR" start-index="15" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <column name="creation_date" start-index="25" stop-index="39">
+                                <owner name="o" start-index="25" stop-index="25" />
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="47" stop-index="55" alias="o" />
+        </from>
+    </select>
     <select sql-case-id="select_char">
         <projections start-index="7" stop-index="29">
             <expression-projection text="CHAR(77,121,83,81,'76')" start-index="7" stop-index="29">
@@ -157,6 +223,22 @@
                         </parameter>
                         <parameter>
                             <literal-expression value="76" start-index="25" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_chr_using_nchar_cs">
+        <from>
+            <simple-table name="DUAL" start-index="37" stop-index="40" />
+        </from>
+        <projections start-index="7" stop-index="30">
+            <expression-projection text="CHR (196 USING NCHAR_CS)" start-index="7" stop-index="30">
+                <expr>
+                    <function function-name="CHR" start-index="7" stop-index="30" text="CHR (196 USING NCHAR_CS)" >
+                        <parameter>
+                            <literal-expression value="196" start-index="12" stop-index="14" />
                         </parameter>
                     </function>
                 </expr>
@@ -339,15 +421,21 @@
     </select>
 
     <select sql-case-id="select_extract_function_for_oracle">
-        <projections start-index="7" stop-index="56">
-            <expression-projection text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56">
+        <projections start-index="7" stop-index="56" literal-start-index="7" literal-stop-index="56">
+            <expression-projection text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56" literal-start-index="7" literal-stop-index="56">
+                <literalText>EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')</literalText>
                 <expr>
-                    <function function-name="EXTRACT" start-index="7" stop-index="56" text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" />
+                    <function function-name="EXTRACT" text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56" literal-start-index="7" literal-stop-index="56">
+                        <parameter>
+                            <common-expression text="TIMESTAMP '2001-02-16 20:38:40'" start-index="25" stop-index="55" literal-start-index="25" literal-stop-index="55" />
+                        </parameter>
+                        <literalText>EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
         <from>
-            <simple-table name="DUAL" start-index="63" stop-index="66" />
+            <simple-table name="DUAL" start-index="63" stop-index="66" literal-start-index="63" literal-stop-index="66" />
         </from>
     </select>
 
@@ -369,5 +457,674 @@
         <from>
             <simple-table name="t_order" start-index="29" stop-index="35" />
         </from>
+    </select>
+
+    <select sql-case-id="select_with_lead_and_lag_function">
+        <projections start-index="7" stop-index="123" literal-start-index="7" literal-stop-index="123">
+            <column-projection name="hire_date" start-index="7" stop-index="15" literal-start-index="7" literal-stop-index="15" />
+            <expression-projection text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" alias="LAG1" start-index="18" stop-index="68" literal-start-index="18" literal-stop-index="68">
+                <literalText>LAG(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
+                <expr>
+                    <function function-name="LAG" text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" start-index="18" stop-index="60" literal-start-index="18" literal-stop-index="60">
+                        <parameter>
+                            <column name="hire_date" start-index="22" stop-index="30" literal-start-index="22" literal-stop-index="30" />
+                        </parameter>
+                        <literalText>LAG(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" alias="LEAD1" start-index="71" stop-index="123" literal-start-index="71" literal-stop-index="123">
+                <literalText>LEAD(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
+                <expr>
+                    <function function-name="LEAD" text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" start-index="71" stop-index="114" literal-start-index="71" literal-stop-index="114">
+                        <parameter>
+                            <column name="hire_date" start-index="76" stop-index="84" literal-start-index="76" literal-stop-index="84" />
+                        </parameter>
+                        <literalText>LEAD(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="130" stop-index="138" literal-start-index="130" literal-stop-index="138" />
+        </from>
+        <where start-index="140" stop-index="163" literal-start-index="140" literal-stop-index="163">
+            <expr>
+                <binary-operation-expression start-index="146" stop-index="163" literal-start-index="146" literal-stop-index="163">
+                    <left>
+                        <column name="department_id" start-index="146" stop-index="158" literal-start-index="146" literal-stop-index="158" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="30" start-index="162" stop-index="163" literal-start-index="162" literal-stop-index="163" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="hire_date" order-direction="ASC" start-index="174" stop-index="182" literal-start-index="174" literal-stop-index="182" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_sys_xml_agg">
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="SYS_XMLAGG(SYS_XMLGEN(last_name))" alias="XMLAGG" start-index="7" stop-index="46">
+                <expr>
+                    <function function-name="SYS_XMLAGG" start-index="7" stop-index="39" text="SYS_XMLAGG(SYS_XMLGEN(last_name))">
+                        <parameter>
+                            <function function-name="SYS_XMLGEN" start-index="18" stop-index="38" text="SYS_XMLGEN(last_name)">
+                                <parameter>
+                                    <column name="last_name" start-index="29" stop-index="37"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="53" stop-index="61" />
+        </from>
+        <where start-index="63" stop-index="87">
+            <expr>
+                <binary-operation-expression start-index="69" stop-index="87" >
+                    <left>
+                        <column name="last_name" start-index="69" stop-index="77"/>
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="84" stop-index="87">
+                            <items>
+                                <literal-expression value="R%" start-index="84" stop-index="87" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="xmlagg" order-direction="ASC" start-index="98" stop-index="103"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_set_function">
+        <projections start-index="7" stop-index="49">
+            <column-projection name="customer_id" start-index="7" stop-index="17" />
+            <expression-projection text="SET(cust_address_ntab)" alias="address" start-index="20" stop-index="49">
+                <expr>
+                    <function function-name="SET" start-index="20" stop-index="41" text="SET(cust_address_ntab)">
+                        <parameter>
+                            <column name="cust_address_ntab" start-index="24" stop-index="40" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="customers_demo" start-index="56" stop-index="69" />
+        </from>
+        <order-by>
+            <column-item name="customer_id" order-direction="ASC" start-index="80" stop-index="90" literal-start-index="80" literal-stop-index="90" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_pivot">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <subquery-table>
+                <subquery>
+                    <select>
+                        <projections start-index="22" stop-index="22">
+                            <shorthand-projection start-index="22" stop-index="22"/>
+                        </projections>
+                        <from start-index="29" stop-index="33">
+                            <simple-table name="sales" start-index="29" stop-index="33"/>
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_string_split_function">
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="Product"  start-index="59" stop-index="65" />
+                </left>
+                <right>
+                    <function-table>
+                        <table-function function-name="STRING_SPLIT" text="STRING_SPLIT(Tags, ',')"/>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="52">
+            <column-projection name="value" alias="tag" start-index="7" stop-index="18" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="21" stop-index="28" alias="number_of_articles"/>
+        </projections>
+        <group-by>
+            <column-item name="value" start-index="112" stop-index="116"/>
+        </group-by>
+        <having start-index="118" stop-index="136">
+            <expr>
+                <binary-operation-expression start-index="125" stop-index="136">
+                    <left>
+                        <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="125" stop-index="132"/>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression start-index="136" stop-index="136" value="2"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <order-by>
+            <expression-item expression="COUNT(*)" order-direction="DESC"  start-index="147" stop-index="154"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_from_open_json_function">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="101">
+            <function-table start-index="14" stop-index="102" table-alias="months">
+                <table-function text="OPENJSON(@array) WITH (  month VARCHAR(3), temp int, month_id tinyint '$.sql:identity()')" function-name="OPENJSON">
+                    <parameter>
+                        <column name="@array" start-index="23" stop-index="28"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_open_json_function_with_path">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="key" start-index="7" stop-index="11" start-delimiter='[' end-delimiter=']'/>
+            <column-projection name="value" start-index="14" stop-index="18"/>
+        </projections>
+        <from start-index="25" stop-index="64">
+            <function-table start-index="25" stop-index="64">
+                <table-function text="OPENJSON(@json,'$.path.to.&quot;sub-object&quot;')" function-name="OPENJSON">
+                    <parameter>
+                        <column name="@json" start-index="34" stop-index="38"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="$.path.to.&quot;sub-object&quot;" start-index="40" stop-index="63"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_open_row_set_with_provider_name">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="a"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="16" stop-index="110">
+            <function-table start-index="16" stop-index="110" table-alias="a">
+                <table-function function-name="OPENROWSET" text="OPENROWSET('Microsoft.Jet.OLEDB.4.0', 'C:\SAMPLES\Northwind.mdb';'admin';'password', Customers)">
+                    <parameter>
+                        <literal-expression value="Microsoft.Jet.OLEDB.4.0" start-index="27" stop-index="51"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="C:\SAMPLES\Northwind.mdb" start-index="54" stop-index="79"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="admin" start-index="81" stop-index="87"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="password" start-index="89" stop-index="98"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="Customers" start-index="101" stop-index="109"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_open_row_set_with_provider_string">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="d"/>
+            </shorthand-projection>
+        </projections>
+        <from start-index="6" stop-index="123">
+            <function-table start-index="16" stop-index="123" table-alias="d">
+                <table-function function-name="OPENROWSET" text="OPENROWSET('SQLNCLI','Server=Seattle1;Trusted_Connection=yes;',AdventureWorks2022.HumanResources.Department)">
+                    <parameter>
+                        <literal-expression value="SQLNCLI" start-index="27" stop-index="35"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="Server=Seattle1;Trusted_Connection=yes;" start-index="37" stop-index="77"/>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="AdventureWorks2022.HumanResources.Department" start-index="79" stop-index="122"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_json_object_simple_key_value">
+        <projections start-index="7" stop-index="43">
+            <expression-projection start-index="7" stop-index="43" text="JSON_OBJECT('name':'value', 'type':1)">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name':'value', 'type':1)" start-index="7" stop-index="43">
+                        <parameter>
+                            <key-value start-index="19" stop-index="32" text="'name':'value'">
+                                <key>
+                                    <literal-expression start-index="19" stop-index="24" value="name"/>
+                                </key>
+                                <value>
+                                    <literal-expression start-index="26" stop-index="32" value="value"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value start-index="35" stop-index="42" text="'type':1">
+                                <key>
+                                    <literal-expression start-index="35" stop-index="40" value="type"/>
+                                </key>
+                                <value>
+                                    <literal-expression start-index="42" stop-index="42" value="1"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_nest_json_object">
+        <projections start-index="7" stop-index="78">
+            <expression-projection text="JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" start-index="7" stop-index="78">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" start-index="7" stop-index="78">
+                        <parameter>
+                            <key-value text="'name':'value'" start-index="19" stop-index="32">
+                                <key>
+                                    <literal-expression value="name" start-index="19" stop-index="24"/>
+                                </key>
+                                <value>
+                                    <literal-expression value="value" start-index="26" stop-index="32"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="'type':JSON_OBJECT('type_id':1,'name':'a')" start-index="35" stop-index="77">
+                                <key>
+                                    <literal-expression value="type" start-index="35" stop-index="40"/>
+                                </key>
+                                <value>
+                                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('type_id':1, 'name':'a')" start-index="42" stop-index="77">
+                                        <parameter>
+                                            <key-value text="'type_id':1" start-index="54" stop-index="64">
+                                                <key>
+                                                    <literal-expression value="type_id" start-index="54" stop-index="62"/>
+                                                </key>
+                                                <value>
+                                                    <literal-expression value="1" start-index="64" stop-index="64"/>
+                                                </value>
+                                            </key-value>
+                                        </parameter>
+                                        <parameter>
+                                            <key-value text="'name':'a'" start-index="67" stop-index="76">
+                                                <key>
+                                                    <literal-expression value="name" start-index="67" stop-index="72"/>
+                                                </key>
+                                                <value>
+                                                    <literal-expression value="a" start-index="74" stop-index="76"/>
+                                                </value>
+                                            </key-value>
+                                        </parameter>
+                                    </function>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_json_array">
+        <projections start-index="7" stop-index="58">
+            <expression-projection text="JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" start-index="7" stop-index="58">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" start-index="7" stop-index="58">
+                        <parameter>
+                            <key-value text="'name':'value'" start-index="19" stop-index="32">
+                                <key>
+                                    <literal-expression value="name" start-index="19" stop-index="24"/>
+                                </key>
+                                <value>
+                                    <literal-expression value="value" start-index="26" stop-index="32"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="'type':JSON_ARRAY(1,2)" start-index="35" stop-index="57">
+                                <key>
+                                    <literal-expression value="type" start-index="35" stop-index="40"/>
+                                </key>
+                                <value>
+                                    <function function-name="JSON_ARRAY" text="JSON_ARRAY(1, 2)" start-index="42" stop-index="57">
+                                        <parameter>
+                                            <literal-expression value="1" start-index="53" stop-index="53"/>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression value="2" start-index="56" stop-index="56"/>
+                                        </parameter>
+                                    </function>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_json_object_absent_not_null">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" start-index="7" stop-index="61">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" start-index="7" stop-index="61">
+                        <parameter>
+                            <key-value start-index="19" stop-index="32" text="'name':'value'">
+                                <key>
+                                    <literal-expression start-index="19" stop-index="24" value="name"/>
+                                </key>
+                                <value>
+                                    <literal-expression start-index="26" stop-index="32" value="value"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value start-index="35" stop-index="45" text="'type':NULL">
+                                <key>
+                                    <literal-expression start-index="35" stop-index="40" value="type"/>
+                                </key>
+                                <value>
+                                    <literal-expression start-index="42" stop-index="45" value="null"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <json-null-clause-expression text="ABSENT ON NULL" start-index="47" stop-index="60"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_json_object_with_subquery">
+        <projections start-index="7" stop-index="84">
+            <expression-projection text="JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" start-index="7" stop-index="84">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" start-index="7" stop-index="84">
+                        <parameter>
+                            <key-value text="'user_name':USER_NAME()" start-index="19" stop-index="41">
+                                <key>
+                                    <literal-expression value="user_name" start-index="19" stop-index="29"/>
+                                </key>
+                                <value>
+                                    <function function-name="USER_NAME" text="USER_NAME()" start-index="31" stop-index="41"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="@id_key:@id_value" start-index="44" stop-index="60">
+                                <key>
+                                    <column name="@id_key" start-index="44" stop-index="50"/>
+                                </key>
+                                <value>
+                                    <column name="@id_value" start-index="52" stop-index="60"/>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="'sid':(SELECT@@SPID)" start-index="63" stop-index="83">
+                                <key>
+                                    <literal-expression value="sid" start-index="63" stop-index="67"/>
+                                </key>
+                                <value>
+                                    <subquery start-index="69" stop-index="83">
+                                        <select>
+                                            <projections start-index="77" stop-index="82">
+                                                <column-projection name="@@SPID" start-index="77" stop-index="82"/>
+                                            </projections>
+                                        </select>
+                                    </subquery>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_dm_exec_sessions_with_json_object_function">
+        <projections start-index="7"  stop-index="109">
+            <column-projection name="session_id" start-index="7" stop-index="18">
+                <owner name="s" start-index="7" stop-index="7" />
+            </column-projection>
+            <expression-projection text="JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status)" alias="info" start-index="21" stop-index="109">
+                <expr>
+                    <function function-name="JSON_OBJECT" text="JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status)" start-index="21" stop-index="101">
+                        <parameter>
+                            <key-value text="'security_id':s.security_id" start-index="33" stop-index="59">
+                                <key>
+                                    <literal-expression value="security_id" start-index="33" stop-index="45"/>
+                                </key>
+                                <value>
+                                    <column name="security_id" start-index="47" stop-index="59">
+                                        <owner name="s" start-index="47" stop-index="47" />
+                                    </column>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="'login':s.login_name" start-index="62" stop-index="81">
+                                <key>
+                                    <literal-expression value="login" start-index="62" stop-index="68" />
+                                </key>
+                                <value>
+                                    <column name="login_name" start-index="70" stop-index="81">
+                                        <owner name="s" start-index="70" stop-index="70" />
+                                    </column>
+                                </value>
+                            </key-value>
+                        </parameter>
+                        <parameter>
+                            <key-value text="JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status)" start-index="84" stop-index="100">
+                                <key>
+                                    <literal-expression value="status" start-index="84" stop-index="91" />
+                                </key>
+                                <value>
+                                    <column name="status" start-index="93" stop-index="100">
+                                        <owner name="s" start-index="93" stop-index="93" />
+                                    </column>
+                                </value>
+                            </key-value>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="116" stop-index="140">
+            <simple-table name="dm_exec_sessions" alias="s" start-index="116" stop-index="140">
+                <owner name="sys" start-index="116" stop-index="118" />
+            </simple-table>
+        </from>
+        <where start-index="142" stop-index="168">
+            <expr>
+                <binary-operation-expression start-index="148" stop-index="168" text="s.is_user_process = 1">
+                    <left>
+                        <column name="is_user_process" start-index="148" stop-index="164">
+                            <owner name="s" start-index="148" stop-index="148" />
+                        </column>
+                    </left>
+                    <right>
+                        <literal-expression value="1" start-index="168" stop-index="168" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_first_last_value_function">
+        <projections start-index="7" stop-index="493">
+            <column-projection name="BusinessEntityID" start-index="7" stop-index="22" />
+            <expression-projection text="DATEPART(QUARTER, QuotaDate)" alias="Quarter" start-index="25" stop-index="63">
+                <expr>
+                    <function function-name="DATEPART" text="DATEPART(QUARTER, QuotaDate)" start-index="25" stop-index="52">
+                        <parameter>
+                            <column name="QUARTER" start-index="34" stop-index="40" />
+                        </parameter>
+                        <parameter>
+                            <column name="QuotaDate" start-index="43" stop-index="51" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="YEAR(QuotaDate)" start-index="66" stop-index="93" alias="SalesYear">
+                <expr>
+                    <function function-name="YEAR" text="YEAR(QuotaDate)" start-index="66" stop-index="80">
+                        <parameter>
+                            <column name="QuotaDate" start-index="71" stop-index="79" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="SalesQuota" alias="QuotaThisQuarter" start-index="96" stop-index="125" />
+            <expression-projection text="SalesQuota - FIRST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate))" alias="DifferenceFromFirstQuarter" start-index="128" stop-index="285">
+                <expr>
+                    <binary-operation-expression start-index="128" stop-index="255">
+                        <left>
+                            <column name="SalesQuota" start-index="128" stop-index="137" />
+                        </left>
+                        <right>
+                            <function function-name="FIRST_VALUE" text="FIRST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate))" start-index="141" stop-index="255">
+                                <parameter>
+                                    <column name="SalesQuota" start-index="153" stop-index="162" />
+                                </parameter>
+                            </function>
+                        </right>
+                        <operator>-</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="288" stop-index="493" text="SalesQuota - LAST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate) RANGE BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)" alias="DifferenceFromLastQuarter">
+                <expr>
+                    <binary-operation-expression start-index="288" stop-index="464">
+                        <left>
+                            <column name="SalesQuota" start-index="288" stop-index="297" />
+                        </left>
+                        <right>
+                            <function function-name="LAST_VALUE" text="LAST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate) RANGE BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)" start-index="301" stop-index="464">
+                                <parameter>
+                                    <column name="SalesQuota" start-index="312" stop-index="321" />
+                                </parameter>
+                            </function>
+                        </right>
+                        <operator>-</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesPersonQuotaHistory" start-index="500" stop-index="528">
+                <owner name="Sales" start-index="500" stop-index="504" />
+            </simple-table>
+        </from>
+        <where start-index="530" stop-index="598">
+            <expr>
+                <binary-operation-expression start-index="536" stop-index="598" text="YEAR(QuotaDate) > 2005 AND BusinessEntityID BETWEEN 274 AND 275">
+                    <left>
+                        <binary-operation-expression start-index="536" stop-index="557" text="YEAR(QuotaDate) > 2005">
+                            <left>
+                                <function function-name="YEAR" text="YEAR(QuotaDate)" start-index="536" stop-index="550">
+                                    <parameter>
+                                        <column name="QuotaDate" start-index="541" stop-index="549" />
+                                    </parameter>
+                                </function>
+                            </left>
+                            <right>
+                                <literal-expression value="2005" start-index="554" stop-index="557" />
+                            </right>
+                            <operator>></operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <between-expression start-index="563" stop-index="598">
+                            <not>false</not>
+                            <left>
+                                <column name="BusinessEntityID" start-index="563" stop-index="578" />
+                            </left>
+                            <between-expr>
+                                <literal-expression value="274" start-index="588" stop-index="590" />
+                            </between-expr>
+                            <and-expr>
+                                <literal-expression value="275" start-index="596" stop-index="598" />
+                            </and-expr>
+                        </between-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="BusinessEntityID" order-direction="ASC" start-index="609" stop-index="624" />
+            <column-item name="SalesYear" order-direction="ASC" start-index="627" stop-index="635" />
+            <column-item name="Quarter" order-direction="ASC" start-index="638" stop-index="644" />
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_approx_percentile_cont_function">
+        <projections start-index="7" stop-index="148">
+            <column-projection start-index="7" stop-index="12" name="DeptId" />
+            <expression-projection start-index="14" stop-index="80" text="APPROX_PERCENTILE_CONT(0.10) WITHIN GROUP(ORDER BY Salary)" alias="P10">
+                <expr>
+                    <function function-name="APPROX_PERCENTILE_CONT" text="APPROX_PERCENTILE_CONT(0.10) WITHIN GROUP(ORDER BY Salary)" start-index="14" stop-index="71">
+                        <parameter>
+                            <literal-expression value="0.10" start-index="37" stop-index="40" />
+                        </parameter>
+                        <parameter>
+                            <column name="Salary" start-index="65" stop-index="70" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="APPROX_PERCENTILE_CONT(0.90) WITHIN GROUP(ORDER BY Salary)" start-index="82" stop-index="148" alias="P90">
+                <expr>
+                    <function function-name="APPROX_PERCENTILE_CONT" text="APPROX_PERCENTILE_CONT(0.90) WITHIN GROUP(ORDER BY Salary)" start-index="82" stop-index="139">
+                        <parameter>
+                            <literal-expression value="0.90" start-index="105" stop-index="108" />
+                        </parameter>
+                        <parameter>
+                            <column name="Salary" start-index="133" stop-index="138" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="tblEmployee"  start-index="155" stop-index="165" />
+        </from>
+        <group-by start-index="167" stop-index="181">
+            <column-item name="DeptId" order-direction="ASC" start-index="176" stop-index="181" />
+        </group-by>
     </select>
 </sql-parser-test-cases>

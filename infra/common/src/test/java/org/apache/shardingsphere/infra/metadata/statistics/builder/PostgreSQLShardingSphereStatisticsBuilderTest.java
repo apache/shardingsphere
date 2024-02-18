@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +52,7 @@ class PostgreSQLShardingSphereStatisticsBuilderTest {
     }
     
     private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Map<String, ShardingSphereSchema> schemaMap = mockSchemaMap();
         when(database.getSchemas()).thenReturn(schemaMap);
         return Collections.singletonMap("logic_db", database);

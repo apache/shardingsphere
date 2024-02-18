@@ -26,19 +26,21 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -60,6 +62,7 @@ import org.mockito.quality.Strictness;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -88,7 +91,8 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     private static final int BATCH_SIZE = 10;
     
-    private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine("PostgreSQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+    private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine(
+            TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
     
     @Test
     void assertExecute() throws SQLException {
@@ -149,14 +153,21 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(result.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
-                new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(
+                new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", new PostgreSQLDatabaseType()));
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        when(database.containsSchema("public")).thenReturn(true);
+        when(database.getSchema("public").containsTable("t_order")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(database.getSchema("public").getTable("t_order").getColumnValues())
+                .thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
         return result;
     }
 }

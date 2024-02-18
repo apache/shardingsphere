@@ -21,14 +21,13 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent-plugins-logging</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins-logging-file</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <mysql-connector-java.version>8.0.31</mysql-connector-java.version>
         
         <docker.proxy.context.directory>target/proxy</docker.proxy.context.directory>
         <docker.proxy.compose.file>${project.basedir}/src/test/resources/docker/proxy/docker-compose.yml</docker.proxy.compose.file>
@@ -45,9 +44,8 @@
         </dependency>
         
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector-java.version}</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>

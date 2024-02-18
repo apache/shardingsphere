@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.index;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -40,7 +41,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) {
+                        final String schemaName, final DatabaseType databaseType, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) {
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
             return;
@@ -66,7 +67,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     }
     
     private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumnValues(), table.getIndexValues(), table.getConstraintValues());
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumnValues(), table.getIndexValues(), table.getConstraintValues(), table.getType());
         result.getColumnNames().addAll(table.getColumnNames());
         result.getVisibleColumns().addAll(table.getVisibleColumns());
         result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
@@ -74,7 +75,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     }
     
     @Override
-    public String getType() {
-        return AlterIndexStatement.class.getName();
+    public Class<AlterIndexStatement> getType() {
+        return AlterIndexStatement.class;
     }
 }

@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseRequiredQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
 
 import java.util.Collection;
@@ -29,26 +32,34 @@ import java.util.Collections;
 /**
  * Export database configuration executor.
  */
-public final class ExportDatabaseConfigurationExecutor implements DatabaseRequiredQueryableRALExecutor<ExportDatabaseConfigurationStatement> {
+@Setter
+public final class ExportDatabaseConfigurationExecutor implements DistSQLQueryExecutor<ExportDatabaseConfigurationStatement>, DistSQLExecutorDatabaseAware {
+    
+    private ShardingSphereDatabase database;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ExportDatabaseConfigurationStatement sqlStatement) {
         return Collections.singleton("result");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ExportDatabaseConfigurationStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ExportDatabaseConfigurationStatement sqlStatement, final ContextManager contextManager) {
         String exportedData = ExportUtils.generateExportDatabaseData(database);
-        if (sqlStatement.getFilePath().isPresent()) {
-            String filePath = sqlStatement.getFilePath().get();
-            ExportUtils.exportToFile(filePath, exportedData);
-            return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", filePath)));
+        if (!sqlStatement.getFilePath().isPresent()) {
+            return Collections.singleton(new LocalDataQueryResultRow(exportedData));
         }
-        return Collections.singleton(new LocalDataQueryResultRow(exportedData));
+        String filePath = sqlStatement.getFilePath().get();
+        ExportUtils.exportToFile(filePath, exportedData);
+        return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", filePath)));
     }
     
     @Override
-    public String getType() {
-        return ExportDatabaseConfigurationStatement.class.getName();
+    public void setDatabase(final ShardingSphereDatabase database) {
+        this.database = database;
+    }
+    
+    @Override
+    public Class<ExportDatabaseConfigurationStatement> getType() {
+        return ExportDatabaseConfigurationStatement.class;
     }
 }

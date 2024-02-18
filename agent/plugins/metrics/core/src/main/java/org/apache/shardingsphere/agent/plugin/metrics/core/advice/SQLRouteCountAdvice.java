@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.util.SQLStatementUtil;
+import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.util.SQLStatementUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * SQL route count advice.
  */
-public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
+public final class SQLRouteCountAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("routed_sql_total",
             MetricCollectorType.COUNTER, "Total count of routed SQL", Collections.singletonList("type"), Collections.emptyMap());
@@ -47,6 +47,6 @@ public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
     }
     
     private Optional<String> getSQLType(final SQLStatement sqlStatement) {
-        return Optional.of(SQLStatementUtil.getType(sqlStatement).name());
+        return Optional.of(SQLStatementUtils.getType(sqlStatement).name());
     }
 }

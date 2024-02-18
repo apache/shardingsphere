@@ -30,11 +30,4 @@ public interface ShardingSphereRule {
      * @return rule configuration
      */
     RuleConfiguration getConfiguration();
-    
-    /**
-     * Get type.
-     *
-     * @return rule type
-     */
-    String getType();
 }

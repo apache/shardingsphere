@@ -18,22 +18,17 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -44,87 +39,37 @@ import java.util.Optional;
  */
 public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
+    private final String databaseName;
+    
     @Getter
-    private final RuleConfiguration configuration;
+    private final EncryptRuleConfiguration configuration;
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
     private final TableNamesMapper tableNamesMapper = new TableNamesMapper();
     
-    public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
+    public EncryptRule(final String databaseName, final EncryptRuleConfiguration ruleConfig) {
+        this.databaseName = databaseName;
         configuration = ruleConfig;
-        @SuppressWarnings("rawtypes")
-        Map<String, StandardEncryptAlgorithm> standardEncryptors = new LinkedHashMap<>();
-        @SuppressWarnings("rawtypes")
-        Map<String, AssistedEncryptAlgorithm> assistedEncryptors = new LinkedHashMap<>();
-        @SuppressWarnings("rawtypes")
-        Map<String, LikeEncryptAlgorithm> likeEncryptors = new LinkedHashMap<>();
-        ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(
-                key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps()), standardEncryptors, assistedEncryptors, likeEncryptors));
+        Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
+        ruleConfig.getEncryptors().forEach((key, value) -> encryptors.put(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
-            each.getColumns().forEach(columnRuleConfig -> checkStandardEncryptorType(columnRuleConfig, standardEncryptors));
-            each.getColumns().forEach(columnRuleConfig -> checkAssistedQueryEncryptorType(columnRuleConfig, assistedEncryptors));
-            each.getColumns().forEach(columnRuleConfig -> checkLikeQueryEncryptorType(columnRuleConfig, likeEncryptors));
-            tables.put(each.getName().toLowerCase(), new EncryptTable(each, standardEncryptors, assistedEncryptors, likeEncryptors));
+            each.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, encryptors));
+            tables.put(each.getName().toLowerCase(), new EncryptTable(each, encryptors));
             tableNamesMapper.put(each.getName());
         }
     }
     
-    /**
-     * Encrypt rule constructor.
-     * 
-     * @deprecated deprecated by compatible encrypt rule configuration
-     */
-    @Deprecated
-    public EncryptRule(final CompatibleEncryptRuleConfiguration ruleConfig) {
-        configuration = ruleConfig;
-        @SuppressWarnings("rawtypes")
-        Map<String, StandardEncryptAlgorithm> standardEncryptors = new LinkedHashMap<>();
-        @SuppressWarnings("rawtypes")
-        Map<String, AssistedEncryptAlgorithm> assistedEncryptors = new LinkedHashMap<>();
-        @SuppressWarnings("rawtypes")
-        Map<String, LikeEncryptAlgorithm> likeEncryptors = new LinkedHashMap<>();
-        ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(
-                key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps()), standardEncryptors, assistedEncryptors, likeEncryptors));
-        for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
-            each.getColumns().forEach(columnRuleConfig -> checkStandardEncryptorType(columnRuleConfig, standardEncryptors));
-            each.getColumns().forEach(columnRuleConfig -> checkAssistedQueryEncryptorType(columnRuleConfig, assistedEncryptors));
-            each.getColumns().forEach(columnRuleConfig -> checkLikeQueryEncryptorType(columnRuleConfig, likeEncryptors));
-            tables.put(each.getName().toLowerCase(), new EncryptTable(each, standardEncryptors, assistedEncryptors, likeEncryptors));
-            tableNamesMapper.put(each.getName());
-        }
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private void putAllEncryptors(final String encryptorName, final EncryptAlgorithm algorithm, final Map<String, StandardEncryptAlgorithm> standardEncryptors,
-                                  final Map<String, AssistedEncryptAlgorithm> assistedEncryptors, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
-        if (algorithm instanceof StandardEncryptAlgorithm) {
-            standardEncryptors.put(encryptorName, (StandardEncryptAlgorithm) algorithm);
-        }
-        if (algorithm instanceof AssistedEncryptAlgorithm) {
-            assistedEncryptors.put(encryptorName, (AssistedEncryptAlgorithm) algorithm);
-        }
-        if (algorithm instanceof LikeEncryptAlgorithm) {
-            likeEncryptors.put(encryptorName, (LikeEncryptAlgorithm) algorithm);
-        }
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private void checkStandardEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, StandardEncryptAlgorithm> standardEncryptors) {
-        ShardingSpherePreconditions.checkState(standardEncryptors.containsKey(columnRuleConfig.getCipher().getEncryptorName()),
-                () -> new MismatchedEncryptAlgorithmTypeException("Cipher", columnRuleConfig.getCipher().getEncryptorName(), StandardEncryptAlgorithm.class.getSimpleName()));
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private void checkAssistedQueryEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, AssistedEncryptAlgorithm> assistedEncryptors) {
-        columnRuleConfig.getAssistedQuery().ifPresent(optional -> ShardingSpherePreconditions.checkState(assistedEncryptors.containsKey(optional.getEncryptorName()),
-                () -> new MismatchedEncryptAlgorithmTypeException("Assisted query", optional.getEncryptorName(), AssistedEncryptAlgorithm.class.getSimpleName())));
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private void checkLikeQueryEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
-        columnRuleConfig.getLikeQuery().ifPresent(optional -> ShardingSpherePreconditions.checkState(likeEncryptors.containsKey(optional.getEncryptorName()),
-                () -> new MismatchedEncryptAlgorithmTypeException("Like query", optional.getEncryptorName(), LikeEncryptAlgorithm.class.getSimpleName())));
+    private void checkEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, EncryptAlgorithm> encryptors) {
+        ShardingSpherePreconditions.checkState(encryptors.containsKey(columnRuleConfig.getCipher().getEncryptorName())
+                && encryptors.get(columnRuleConfig.getCipher().getEncryptorName()).getMetaData().isSupportDecrypt(),
+                () -> new MismatchedEncryptAlgorithmTypeException(databaseName, "Cipher", columnRuleConfig.getCipher().getEncryptorName(), "decrypt"));
+        columnRuleConfig.getAssistedQuery().ifPresent(optional -> ShardingSpherePreconditions.checkState(encryptors.containsKey(optional.getEncryptorName())
+                && encryptors.get(optional.getEncryptorName()).getMetaData().isSupportEquivalentFilter(),
+                () -> new MismatchedEncryptAlgorithmTypeException(databaseName, "Assisted query", columnRuleConfig.getCipher().getEncryptorName(), "equivalent filter")));
+        columnRuleConfig.getLikeQuery().ifPresent(optional -> ShardingSpherePreconditions.checkState(encryptors.containsKey(optional.getEncryptorName())
+                && encryptors.get(optional.getEncryptorName()).getMetaData().isSupportLike(),
+                () -> new MismatchedEncryptAlgorithmTypeException(databaseName, "Like query", columnRuleConfig.getCipher().getEncryptorName(), "like")));
     }
     
     /**
@@ -167,10 +112,5 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
         return getLogicTableMapper();
-    }
-    
-    @Override
-    public String getType() {
-        return EncryptRule.class.getSimpleName();
     }
 }

@@ -24,16 +24,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
 import javax.sql.DataSource;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere-Proxy version.
@@ -72,8 +75,11 @@ public final class ShardingSphereProxyVersion {
         DatabaseProtocolServerInfo.setProtocolVersion(database.getName(), databaseServerInfo.getDatabaseVersion());
     }
     
-    private static Optional<DataSource> findDataSourceByProtocolType(final String databaseName, final ShardingSphereResourceMetaData resourceMetaData, final DatabaseType protocolType) {
-        Optional<String> dataSourceName = resourceMetaData.getStorageTypes().entrySet().stream().filter(entry -> entry.getValue().equals(protocolType)).map(Entry::getKey).findFirst();
-        return dataSourceName.flatMap(optional -> Optional.ofNullable(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, resourceMetaData.getDataSources()).get(optional)));
+    private static Optional<DataSource> findDataSourceByProtocolType(final String databaseName, final ResourceMetaData resourceMetaData, final DatabaseType protocolType) {
+        Optional<String> dataSourceName = resourceMetaData.getStorageUnits().entrySet()
+                .stream().filter(entry -> entry.getValue().getStorageType().equals(protocolType)).map(Entry::getKey).findFirst();
+        Map<String, DataSource> dataSources = resourceMetaData.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSourceName.flatMap(optional -> Optional.ofNullable(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources).get(optional)));
     }
 }

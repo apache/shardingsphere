@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -54,17 +55,17 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("rawtypes")
     private final SQLExecutionUnitBuilder sqlExecutionUnitBuilder;
     
-    private final Map<String, DatabaseType> databaseTypes;
+    private final Map<String, StorageUnit> storageUnits;
     
     public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final DatabaseConnectionManager<C> databaseConnectionManager,
                                         final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules,
-                                        final Map<String, DatabaseType> databaseTypes) {
+                                        final Map<String, StorageUnit> storageUnits) {
         super(maxConnectionsSizePerQuery, rules);
         this.databaseConnectionManager = databaseConnectionManager;
         this.statementManager = statementManager;
         this.option = option;
         sqlExecutionUnitBuilder = getCachedSqlExecutionUnitBuilder(type);
-        this.databaseTypes = databaseTypes;
+        this.storageUnits = storageUnits;
     }
     
     /**
@@ -95,10 +96,11 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     
     @SuppressWarnings("unchecked")
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
-        List<T> result = new LinkedList<>();
+        List<T> inputs = new LinkedList<>();
+        DatabaseType databaseType = storageUnits.get(dataSourceName).getStorageType();
         for (SQLUnit each : sqlUnits) {
-            result.add((T) sqlExecutionUnitBuilder.build(new ExecutionUnit(dataSourceName, each), statementManager, connection, connectionMode, option, databaseTypes.get(dataSourceName)));
+            inputs.add((T) sqlExecutionUnitBuilder.build(new ExecutionUnit(dataSourceName, each), statementManager, connection, connectionMode, option, databaseType));
         }
-        return new ExecutionGroup<>(result);
+        return new ExecutionGroup<>(inputs);
     }
 }

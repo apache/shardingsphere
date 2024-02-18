@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;

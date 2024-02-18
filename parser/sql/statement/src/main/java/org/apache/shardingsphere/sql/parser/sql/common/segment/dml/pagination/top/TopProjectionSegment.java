@@ -36,4 +36,10 @@ public final class TopProjectionSegment implements ProjectionSegment {
     private final RowNumberValueSegment top;
     
     private final String alias;
+    
+    @Override
+    public String getColumnLabel() {
+        // TODO return column label according to database result
+        return "TOP";
+    }
 }

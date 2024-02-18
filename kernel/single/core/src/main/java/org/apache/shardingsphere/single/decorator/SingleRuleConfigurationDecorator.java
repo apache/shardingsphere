@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.single.decorator;
 
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
@@ -60,14 +61,14 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         if (!isExpandRequired(splitTables)) {
             return splitTables;
         }
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources);
         Map<String, DataSource> aggregatedDataSources = SingleTableLoadUtils.getAggregatedDataSourceMap(enabledDataSources, builtRules);
-        DatabaseType databaseType = DatabaseTypeEngine.getStorageType(enabledDataSources.values());
+        DatabaseType databaseType = enabledDataSources.isEmpty() ? DatabaseTypeEngine.getDefaultStorageType() : DatabaseTypeEngine.getStorageType(enabledDataSources.values().iterator().next());
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
-        Map<String, Collection<DataNode>> actualDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregatedDataSources, excludedTables);
+        Map<String, Collection<DataNode>> actualDataNodes = SingleTableDataNodeLoader.load(databaseName, aggregatedDataSources, excludedTables);
         Collection<DataNode> configuredDataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, databaseType, splitTables);
         checkRuleConfiguration(databaseName, aggregatedDataSources, excludedTables, configuredDataNodes);
-        boolean isSchemaSupportedDatabaseType = databaseType.getDefaultSchema().isPresent();
+        boolean isSchemaSupportedDatabaseType = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultSchema().isPresent();
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(isSchemaSupportedDatabaseType, actualDataNodes);
         }
@@ -172,7 +173,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
     }
     
     @Override
-    public String getType() {
-        return SingleRuleConfiguration.class.getName();
+    public Class<SingleRuleConfiguration> getType() {
+        return SingleRuleConfiguration.class;
     }
 }

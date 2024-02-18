@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBaseProperties;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBasePropertyKey;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.io.IOException;
 import java.util.ArrayList;

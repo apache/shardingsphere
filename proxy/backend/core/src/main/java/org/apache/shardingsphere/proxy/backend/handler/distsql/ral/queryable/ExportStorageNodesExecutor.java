@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportStorageNodesStatement;
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportStorageNodesStatement;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNode;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNodes;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
-import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,25 +43,25 @@ import java.util.Map.Entry;
 /**
  * Export storage nodes executor.
  */
-public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryableRALExecutor<ExportStorageNodesStatement> {
+public final class ExportStorageNodesExecutor implements DistSQLQueryExecutor<ExportStorageNodesStatement> {
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ExportStorageNodesStatement sqlStatement) {
         return Arrays.asList("id", "create_time", "storage_nodes");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
-        checkSQLStatement(metaData, sqlStatement);
-        String exportedData = generateExportData(metaData, sqlStatement);
+    public Collection<LocalDataQueryResultRow> getRows(final ExportStorageNodesStatement sqlStatement, final ContextManager contextManager) {
+        checkSQLStatement(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
+        String exportedData = generateExportData(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
             ExportUtils.exportToFile(filePath, exportedData);
-            return Collections.singleton(new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
+            return Collections.singleton(new LocalDataQueryResultRow(contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(),
                     String.format("Successfully exported to：'%s'", filePath)));
         }
         return Collections.singleton(
-                new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), exportedData));
+                new LocalDataQueryResultRow(contextManager.getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), exportedData));
     }
     
     private void checkSQLStatement(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
@@ -87,26 +87,26 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     
     private Map<String, Collection<ExportedStorageNode>> generateDatabaseExportStorageNodesData(final ShardingSphereDatabase database) {
         Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>();
-        for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
-            DataSourceMetaData dataSourceMetaData = database.getResourceMetaData().getDataSourceMetaData(entry.getKey());
-            String databaseInstanceIp = getDatabaseInstanceIp(dataSourceMetaData);
+        for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
+            ConnectionProperties connectionProps = database.getResourceMetaData().getStorageUnits().get(entry.getKey()).getConnectionProperties();
+            String databaseInstanceIp = getDatabaseInstanceIp(connectionProps);
             if (storageNodes.containsKey(databaseInstanceIp)) {
                 continue;
             }
-            Map<String, Object> standardProperties = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
-            ExportedStorageNode exportedStorageNode = new ExportedStorageNode(dataSourceMetaData.getHostname(), String.valueOf(dataSourceMetaData.getPort()),
-                    String.valueOf(standardProperties.get("username")), String.valueOf(standardProperties.get("password")), dataSourceMetaData.getCatalog());
+            Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(entry.getValue().getDataSource()).getConnectionPropertySynonyms().getStandardProperties();
+            ExportedStorageNode exportedStorageNode = new ExportedStorageNode(connectionProps.getHostname(), String.valueOf(connectionProps.getPort()),
+                    String.valueOf(standardProps.get("username")), String.valueOf(standardProps.get("password")), connectionProps.getCatalog());
             storageNodes.put(databaseInstanceIp, exportedStorageNode);
         }
         return Collections.singletonMap(database.getName(), storageNodes.values());
     }
     
-    private String getDatabaseInstanceIp(final DataSourceMetaData dataSourceMetaData) {
-        return String.format("%s:%s", dataSourceMetaData.getHostname(), dataSourceMetaData.getPort());
+    private String getDatabaseInstanceIp(final ConnectionProperties connectionProps) {
+        return String.format("%s:%s", connectionProps.getHostname(), connectionProps.getPort());
     }
     
     @Override
-    public String getType() {
-        return ExportStorageNodesStatement.class.getName();
+    public Class<ExportStorageNodesStatement> getType() {
+        return ExportStorageNodesStatement.class;
     }
 }

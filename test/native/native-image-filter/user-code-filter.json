@@ -1,0 +1,7 @@
+{
+  "rules": [
+    {"excludeClasses": "**"},
+    {"includeClasses": "org.apache.shardingsphere.**"},
+    {"excludeClasses": "org.apache.shardingsphere.test.natived.**"}
+  ]
+}

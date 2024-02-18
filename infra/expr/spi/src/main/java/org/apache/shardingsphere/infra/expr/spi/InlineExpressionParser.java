@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.expr.spi;
 
-import groovy.lang.Closure;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Inline expression parser.
@@ -30,26 +30,33 @@ import java.util.List;
 public interface InlineExpressionParser extends TypedSPI {
     
     /**
-     * Replace all inline expression placeholders.
-     *
-     * @param inlineExpression inline expression with {@code $->}
-     * @return result inline expression with {@code $}
+     * The expression used to build the InlineExpressionParser instance will be saved to the Properties instance via this key.
      */
-    String handlePlaceHolder(String inlineExpression);
+    String INLINE_EXPRESSION_KEY = "inlineExpression";
+    
+    /**
+     * This method is used to return the inlineExpression String itself. In some cases, you may want to do
+     * additional processing on inlineExpression to return a specific value, in which case you need to override this method.
+     *
+     * @return result processed inline expression defined by the SPI implementation
+     */
+    String handlePlaceHolder();
     
     /**
      * Split and evaluate inline expression.
      *
-     * @param inlineExpression inline expression
      * @return result list
      */
-    List<String> splitAndEvaluate(String inlineExpression);
+    List<String> splitAndEvaluate();
     
     /**
-     * Evaluate closure.
+     * Evaluate with arguments.
      *
-     * @param inlineExpression inline expression
+     * @param map map
      * @return closure
+     * @throws UnsupportedOperationException By default, users do not need to consider passing in additional parameters.
      */
-    Closure<?> evaluateClosure(String inlineExpression);
+    default String evaluateWithArgs(final Map<String, Comparable<?>> map) {
+        throw new UnsupportedOperationException("This SPI implementation does not support the use of this method.");
+    }
 }

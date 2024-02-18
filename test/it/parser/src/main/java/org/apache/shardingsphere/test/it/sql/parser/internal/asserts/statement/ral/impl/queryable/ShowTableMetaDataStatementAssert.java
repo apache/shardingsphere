@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Show table meta data statement assert.
@@ -43,6 +44,7 @@ public final class ShowTableMetaDataStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetaDataStatement actual, final ShowTableMetaDataStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
+            assertTrue(actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
             assertThat(assertContext.getText("Table assertion error:"), actual.getTableNames(), is(expected.getTableNames()));
         }

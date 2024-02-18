@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.spi;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 /**
  * Shadow algorithm.

@@ -13,16 +13,16 @@ weight = 1
 {{% tab name="语法" %}}
 ```sql
 CreateShardingTableRule ::=
-  'CREATE' 'SHARDING' 'TABLE' 'RULE' ifNotExists? (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
+  'CREATE' 'SHARDING' 'TABLE' 'RULE' ifNotExists? (tableRuleDefinition | autoTableRuleDefinition) (',' (tableRuleDefinition | autoTableRuleDefinition))*
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
-tableDefinition ::= 
-  tableName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+tableRuleDefinition ::= 
+  ruleName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
-autoTableDefinition ::=
-  tableName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
+autoTableRuleDefinition ::=
+  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
@@ -45,7 +45,7 @@ key ::=
 value ::=
   literal
 
-tableName ::=
+ruleName ::=
   identifier
 
 dataNode ::=
@@ -57,10 +57,10 @@ storageUnitName ::=
 columnName ::=
   identifier
 
-algorithmType ::=
-  identifier
-
 strategyType ::=
+  string
+
+algorithmType ::=
   string
 ```
 {{% /tab %}}
@@ -71,7 +71,7 @@ strategyType ::=
 
 ### 补充说明
 
-- `tableDefinition` 为标准分片规则定义；`autoTableDefinition`
+- `tableRuleDefinition` 为标准分片规则定义；`autoTableRuleDefinition`
   为自动分片规则定义。标准分片规则和自动分片规则可参考[数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)；
 - 当使用标准分片时：
     - `DATANODES` 只能使用已经添加到当前逻辑库的资源，且只能使用 INLINE 表达式指定需要的资源；
@@ -83,7 +83,7 @@ strategyType ::=
     - 只能使用自动分片算法，可参考[自动分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/#自动分片算法)。
 - `algorithmType` 为分片算法类型，分片算法类型请参考[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)；
 - 自动生成的算法命名规则为  `tableName` _ `strategyType` _ `algorithmType`；
-- 自动生成的主键策略命名规则为 `tableName` _ `strategyType；
+- 自动生成的主键策略命名规则为 `tableName` _ `strategyType`；
 - `KEY_GENERATE_STRATEGY`
   用于指定主键生成策略，为可选项，关于主键生成策略可参考[分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)；
 - `AUDIT_STRATEGY`

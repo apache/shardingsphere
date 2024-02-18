@@ -14,13 +14,9 @@ ShardingSphere-JDBC provides a JDBC Driver, which can be used only through confi
 
 `org.apache.shardingsphere.driver.ShardingSphereDriver`
 
-### URL Configuration
+### URL Configuration and sample
 
-- Use jdbc:shardingsphere: as prefix
-- Configuration file: xxx.yaml, keep consist format with [YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/)
-- Configuration file loading rule:
-  - No prefix means to load the configuration file from the specified path
-  - `classpath:` prefix indicates that the configuration file is loaded from the classpath
+Refer to [known Implementation](./known-implementation/_index.en.md).
 
 ## Procedure
 
@@ -79,16 +75,4 @@ try (
         }
     }
 }
-```
-
-## Sample
-
-Load JDBC URL of config.yaml profile in classpath:
-```
-jdbc:shardingsphere:classpath:config.yaml
-```
-
-Load JDBC URL of config.yaml profile in absolute path
-```
-jdbc:shardingsphere:absolutepath:/path/to/config.yaml
 ```

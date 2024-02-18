@@ -17,62 +17,69 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
+import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Show shadow table rules executor.
  */
-public final class ShowShadowTableRulesExecutor implements RQLExecutor<ShowShadowTableRulesStatement> {
+@Setter
+public final class ShowShadowTableRulesExecutor implements DistSQLQueryExecutor<ShowShadowTableRulesStatement>, DistSQLExecutorRuleAware<ShadowRule> {
     
     private static final String SHADOW_TABLE = "shadow_table";
     
     private static final String SHADOW_ALGORITHM_NAME = "shadow_algorithm_name";
     
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowTableRulesStatement sqlStatement) {
-        Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
-        Iterator<Map<String, String>> data = Collections.emptyIterator();
-        if (rule.isPresent()) {
-            data = buildData((ShadowRuleConfiguration) rule.get().getConfiguration()).iterator();
-        }
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (data.hasNext()) {
-            Map<String, String> row = data.next();
-            result.add(new LocalDataQueryResultRow(row.get(SHADOW_TABLE), row.get(SHADOW_ALGORITHM_NAME)));
-        }
-        return result;
-    }
-    
-    private List<Map<String, String>> buildData(final ShadowRuleConfiguration shadowRuleConfiguration) {
-        List<Map<String, String>> result = new ArrayList<>();
-        shadowRuleConfiguration.getTables().forEach((key, value) -> {
-            Map<String, String> map = new HashMap<>();
-            map.put(SHADOW_TABLE, key);
-            map.put(SHADOW_ALGORITHM_NAME, convertToString(value.getShadowAlgorithmNames()));
-            result.add(map);
-        });
-        return result;
-    }
+    private ShadowRule rule;
     
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames(final ShowShadowTableRulesStatement sqlStatement) {
         return Arrays.asList(SHADOW_TABLE, SHADOW_ALGORITHM_NAME);
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowShadowTableRulesStatement sqlStatement, final ContextManager contextManager) {
+        return buildData(rule.getConfiguration(), sqlStatement).stream()
+                .map(each -> new LocalDataQueryResultRow(each.get(SHADOW_TABLE), each.get(SHADOW_ALGORITHM_NAME))).collect(Collectors.toList());
+    }
+    
+    private Collection<Map<String, String>> buildData(final ShadowRuleConfiguration ruleConfig, final ShowShadowTableRulesStatement sqlStatement) {
+        Collection<Map<String, String>> result = new ArrayList<>();
+        if (isSpecified(sqlStatement)) {
+            ruleConfig.getTables().forEach((key, value) -> {
+                Map<String, String> map = new HashMap<>();
+                if (key.equalsIgnoreCase(sqlStatement.getTableName())) {
+                    map.put(SHADOW_TABLE, key);
+                    map.put(SHADOW_ALGORITHM_NAME, convertToString(value.getShadowAlgorithmNames()));
+                }
+                result.add(map);
+            });
+        } else {
+            ruleConfig.getTables().forEach((key, value) -> {
+                Map<String, String> map = new HashMap<>();
+                map.put(SHADOW_TABLE, key);
+                map.put(SHADOW_ALGORITHM_NAME, convertToString(value.getShadowAlgorithmNames()));
+                result.add(map);
+            });
+        }
+        return result;
+    }
+    
+    private boolean isSpecified(final ShowShadowTableRulesStatement sqlStatement) {
+        return null != sqlStatement.getTableName() && !sqlStatement.getTableName().isEmpty();
     }
     
     private String convertToString(final Collection<String> shadowTables) {
@@ -80,7 +87,12 @@ public final class ShowShadowTableRulesExecutor implements RQLExecutor<ShowShado
     }
     
     @Override
-    public String getType() {
-        return ShowShadowTableRulesStatement.class.getName();
+    public Class<ShadowRule> getRuleClass() {
+        return ShadowRule.class;
+    }
+    
+    @Override
+    public Class<ShowShadowTableRulesStatement> getType() {
+        return ShowShadowTableRulesStatement.class;
     }
 }

@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 
+import java.util.Optional;
+
 /**
  * Collate expression.
  */
@@ -34,8 +36,14 @@ public final class CollateExpression implements ExpressionSegment {
     
     private final SimpleExpressionSegment collateName;
     
+    private final ExpressionSegment expr;
+    
     @Override
     public String getText() {
         return collateName.getText();
+    }
+    
+    public Optional<ExpressionSegment> getExpr() {
+        return Optional.ofNullable(expr);
     }
 }

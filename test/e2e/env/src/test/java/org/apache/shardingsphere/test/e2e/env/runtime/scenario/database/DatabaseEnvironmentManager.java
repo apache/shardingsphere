@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.scenario.database;
 
+import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
@@ -27,6 +31,9 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Database environment manager.
@@ -35,30 +42,40 @@ import java.util.Collection;
 public final class DatabaseEnvironmentManager {
     
     /**
-     * Get database names.
+     * Get database types.
      *
      * @param scenario scenario
-     * @return database names
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
+     * @param defaultDatabaseType default database type
+     * @return database types
      */
-    public static Collection<String> getDatabaseNames(final String scenario) throws IOException, JAXBException {
-        return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.ACTUAL)).getDatabases();
+    public static Map<String, DatabaseType> getDatabaseTypes(final String scenario, final DatabaseType defaultDatabaseType) {
+        Collection<String> datasourceNames = unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.ACTUAL)).getDatabases();
+        return crateDatabaseTypes(datasourceNames, defaultDatabaseType);
+    }
+    
+    private static Map<String, DatabaseType> crateDatabaseTypes(final Collection<String> datasourceNames, final DatabaseType defaultDatabaseType) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>();
+        for (String each : datasourceNames) {
+            List<String> items = Splitter.on(":").splitToList(each);
+            DatabaseType databaseType = items.size() > 1 ? TypedSPILoader.getService(DatabaseType.class, items.get(1)) : defaultDatabaseType;
+            result.put(items.get(0), databaseType);
+        }
+        return result;
     }
     
     /**
-     * Get expected database names.
+     * Get expected database types.
      *
      * @param scenario scenario
-     * @return expected database names
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
+     * @param defaultDatabaseType default database type
+     * @return expected database types
      */
-    public static Collection<String> getExpectedDatabaseNames(final String scenario) throws IOException, JAXBException {
-        return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.EXPECTED)).getDatabases();
+    public static Map<String, DatabaseType> getExpectedDatabaseTypes(final String scenario, final DatabaseType defaultDatabaseType) {
+        return crateDatabaseTypes(unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.EXPECTED)).getDatabases(), defaultDatabaseType);
     }
     
-    private static DatabaseNameEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {
+    @SneakyThrows({IOException.class, JAXBException.class})
+    private static DatabaseNameEnvironment unmarshal(final String databasesFile) {
         try (FileReader reader = new FileReader(databasesFile)) {
             return (DatabaseNameEnvironment) JAXBContext.newInstance(DatabaseNameEnvironment.class).createUnmarshaller().unmarshal(reader);
         }

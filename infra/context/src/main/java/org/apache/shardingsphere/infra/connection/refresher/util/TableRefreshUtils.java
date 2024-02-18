@@ -21,12 +21,18 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -38,6 +44,28 @@ import java.util.Optional;
 public final class TableRefreshUtils {
     
     /**
+     * Get table name.
+     *
+     * @param databaseType database type
+     * @param identifierValue identifier value
+     * @return table name
+     */
+    public static String getTableName(final DatabaseType databaseType, final IdentifierValue identifierValue) {
+        return databaseType instanceof OracleDatabaseType && QuoteCharacter.NONE == identifierValue.getQuoteCharacter() ? identifierValue.getValue().toUpperCase() : identifierValue.getValue();
+    }
+    
+    /**
+     * Judge whether single table.
+     *
+     * @param tableName table name
+     * @param database database
+     * @return whether single table
+     */
+    public static boolean isSingleTable(final String tableName, final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
+    }
+    
+    /**
      * Judge whether the rule need to be refreshed.
      *
      * @param ruleMetaData rule meta data
@@ -45,7 +73,7 @@ public final class TableRefreshUtils {
      * @param tableSegments table segments
      * @return whether the rule need to be refreshed
      */
-    public static boolean isRuleRefreshRequired(final ShardingSphereRuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
+    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
         for (SimpleTableSegment each : tableSegments) {
             if (isRuleRefreshRequired(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue())) {
                 return true;
@@ -62,16 +90,16 @@ public final class TableRefreshUtils {
      * @param tableName table name
      * @return whether the rule need to be refreshed
      */
-    public static boolean isRuleRefreshRequired(final ShardingSphereRuleMetaData ruleMetaData, final String schemaName, final String tableName) {
+    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
         Optional<MutableDataNodeRule> singleRule = ruleMetaData.findSingleRule(MutableDataNodeRule.class);
         if (!singleRule.isPresent()) {
             return false;
         }
-        RuleConfiguration ruleConfiguration = singleRule.get().getConfiguration();
-        if (!(ruleConfiguration instanceof SingleRuleConfiguration)) {
+        RuleConfiguration ruleConfig = singleRule.get().getConfiguration();
+        if (!(ruleConfig instanceof SingleRuleConfiguration)) {
             return false;
         }
-        Collection<String> tablesConfig = ((SingleRuleConfiguration) ruleConfiguration).getTables();
+        Collection<String> tablesConfig = ((SingleRuleConfiguration) ruleConfig).getTables();
         if (tablesConfig.contains(SingleTableConstants.ALL_TABLES) || tablesConfig.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return false;
         }

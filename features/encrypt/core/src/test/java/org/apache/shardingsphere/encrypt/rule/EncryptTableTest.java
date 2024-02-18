@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rule;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +45,7 @@ class EncryptTableTest {
         columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assistedQueryColumn", "foo_assist_query_encryptor"));
         columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("likeQueryColumn", "foo_like_encryptor"));
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(columnRuleConfig)), Collections.singletonMap("myEncryptor", mock(StandardEncryptAlgorithm.class)), Collections.emptyMap(), Collections.emptyMap());
+                Collections.singleton(columnRuleConfig)), Collections.singletonMap("myEncryptor", mock(EncryptAlgorithm.class)));
     }
     
     @Test
@@ -74,8 +74,18 @@ class EncryptTableTest {
     }
     
     @Test
+    void assertIsEncryptColumn() {
+        assertTrue(encryptTable.isEncryptColumn("logicColumn"));
+    }
+    
+    @Test
     void assertGetLogicColumnByCipherColumn() {
-        assertNotNull(encryptTable.getLogicColumnByCipherColumn("cipherColumn"));
+        assertThat(encryptTable.getLogicColumnByCipherColumn("cipherColumn"), is("logicColumn"));
+    }
+    
+    @Test
+    void assertGetEncryptColumn() {
+        assertNotNull(encryptTable.getEncryptColumn("logicColumn"));
     }
     
     @Test

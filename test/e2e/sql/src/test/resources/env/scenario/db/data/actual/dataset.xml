@@ -84,29 +84,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="db_0.t_order_federate">
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="db_1.t_order_item_federate">
-        <column name="item_id" type="numeric" />
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="db_${0..1}.t_order_federate_sharding">
-        <column name="order_id_sharding" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="db_${0..1}.t_order_item_federate_sharding">
-        <column name="item_id" type="numeric" />
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-        <column name="remarks" type="varchar" />
-    </metadata>
     <row data-node="db_0.t_order" values="1000, 10, init, null, test, 2017-08-08" />
     <row data-node="db_0.t_order" values="1001, 10, init, 2, test, 2017-08-08" />
     <row data-node="db_0.t_order" values="2000, 20, init, null, test, 2017-08-08" />
@@ -491,18 +468,4 @@
     <row data-node="db_7.t_broadcast_table" values="1, init" />
     <row data-node="db_8.t_broadcast_table" values="1, init" />
     <row data-node="db_9.t_broadcast_table" values="1, init" />
-    <row data-node="db_0.t_order_federate" values="1000, 10, init" />
-    <row data-node="db_0.t_order_federate" values="1001, 11, init" />
-    <row data-node="db_1.t_order_item_federate" values="100000, 1000, 10, init" />
-    <row data-node="db_1.t_order_item_federate" values="100001, 1000, 10, init" />
-    <row data-node="db_1.t_order_item_federate" values="100100, 1001, 10, init" />
-    <row data-node="db_1.t_order_item_federate" values="100101, 1001, 10, init" />
-    <row data-node="db_0.t_order_federate_sharding" values="1010, 10, init" />
-    <row data-node="db_0.t_order_federate_sharding" values="1100, 10, init" />
-    <row data-node="db_1.t_order_federate_sharding" values="1011, 11, init" />
-    <row data-node="db_1.t_order_federate_sharding" values="1101, 11, init" />
-    <row data-node="db_0.t_order_item_federate_sharding" values="1000, 10000, 10, init, t_order_item_federate_sharding" />
-    <row data-node="db_0.t_order_item_federate_sharding" values="1010, 10001, 10, init, t_order_item_federate_sharding" />
-    <row data-node="db_1.t_order_item_federate_sharding" values="1001, 10001, 11, init, t_order_item_federate_sharding" />
-    <row data-node="db_1.t_order_item_federate_sharding" values="1011, 10001, 10, init, t_order_item_federate_sharding" />
 </dataset>

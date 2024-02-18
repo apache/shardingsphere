@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.config.checker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicatedDataSourceException;

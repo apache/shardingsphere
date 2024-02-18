@@ -15,8 +15,6 @@
 -- limitations under the License.
 --
 
-DROP TABLE IF EXISTS t_order_federate;
 DROP TABLE IF EXISTS t_single_table;
 
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));

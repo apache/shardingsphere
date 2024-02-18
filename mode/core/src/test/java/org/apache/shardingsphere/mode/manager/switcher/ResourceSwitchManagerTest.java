@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.switcher;
 
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -31,8 +32,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceSwitchManagerTest {
@@ -40,20 +41,20 @@ class ResourceSwitchManagerTest {
     @Test
     void assertCreate() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        SwitchingResource actual = new ResourceSwitchManager().create(new ShardingSphereResourceMetaData("sharding_db", dataSourceMap), createToBeChangedDataSourcePropsMap());
+        SwitchingResource actual = new ResourceSwitchManager().create(new ResourceMetaData(dataSourceMap), createToBeChangedDataSourcePoolPropertiesMap());
         assertNewDataSources(actual);
         actual.closeStaleDataSources();
         assertStaleDataSources(dataSourceMap);
     }
     
     @Test
-    void assertCreateByAlterDataSourceProps() {
+    void assertCreateByAlterDataSourcePoolProperties() {
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
-        SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourceProps(new ShardingSphereResourceMetaData("sharding_db", dataSourceMap), Collections.emptyMap());
-        assertTrue(actual.getNewStorageResource().getStorageNodes().isEmpty());
-        assertThat(actual.getStaleStorageResource().getStorageNodes().size(), is(2));
+        SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourcePoolProperties(new ResourceMetaData(dataSourceMap), Collections.emptyMap());
+        assertTrue(actual.getNewDataSources().isEmpty());
+        assertThat(actual.getStaleDataSources().size(), is(2));
         actual.closeStaleDataSources();
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_0"));
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_1"));
@@ -66,17 +67,17 @@ class ResourceSwitchManagerTest {
         return result;
     }
     
-    private Map<String, DataSourceProperties> createToBeChangedDataSourcePropsMap() {
-        Map<String, DataSourceProperties> result = new HashMap<>(3, 1F);
-        result.put("new", new DataSourceProperties(MockedDataSource.class.getName(), getDataSourceProps(2)));
-        result.put("not_change", new DataSourceProperties(MockedDataSource.class.getName(), getDataSourceProps(2)));
-        Map<String, Object> replaceProps = getDataSourceProps(3);
+    private Map<String, DataSourcePoolProperties> createToBeChangedDataSourcePoolPropertiesMap() {
+        Map<String, DataSourcePoolProperties> result = new HashMap<>(3, 1F);
+        result.put("new", new DataSourcePoolProperties(MockedDataSource.class.getName(), getDataSourcePoolProperties(2)));
+        result.put("not_change", new DataSourcePoolProperties(MockedDataSource.class.getName(), getDataSourcePoolProperties(2)));
+        Map<String, Object> replaceProps = getDataSourcePoolProperties(3);
         replaceProps.put("password", "new_pwd");
-        result.put("replace", new DataSourceProperties(MockedDataSource.class.getName(), replaceProps));
+        result.put("replace", new DataSourcePoolProperties(MockedDataSource.class.getName(), replaceProps));
         return result;
     }
     
-    private Map<String, Object> getDataSourceProps(final int initialCapacity) {
+    private Map<String, Object> getDataSourcePoolProperties(final int initialCapacity) {
         Map<String, Object> result = new LinkedHashMap<>(initialCapacity, 1F);
         result.put("url", new MockedDataSource().getUrl());
         result.put("username", "root");
@@ -84,10 +85,10 @@ class ResourceSwitchManagerTest {
     }
     
     private void assertNewDataSources(final SwitchingResource actual) {
-        assertThat(actual.getNewStorageResource().getStorageNodes().size(), is(3));
-        assertTrue(actual.getNewStorageResource().getStorageNodes().containsKey("not_change"));
-        assertTrue(actual.getNewStorageResource().getStorageNodes().containsKey("new"));
-        assertTrue(actual.getNewStorageResource().getStorageNodes().containsKey("replace"));
+        assertThat(actual.getNewDataSources().size(), is(3));
+        assertTrue(actual.getNewDataSources().containsKey(new StorageNode("not_change")));
+        assertTrue(actual.getNewDataSources().containsKey(new StorageNode("new")));
+        assertTrue(actual.getNewDataSources().containsKey(new StorageNode("replace")));
     }
     
     private void assertStaleDataSources(final Map<String, DataSource> originalDataSourceMap) {

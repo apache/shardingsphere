@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.reflection;
 
+import com.google.common.base.CaseFormat;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -30,6 +31,8 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionUtils {
+    
+    private static final String GETTER_PREFIX = "get";
     
     /**
      * Get field value.
@@ -133,5 +136,36 @@ public final class ReflectionUtils {
             method.setAccessible(false);
         }
         return result;
+    }
+    
+    /**
+     * Get field value by get method.
+     *
+     * @param target target
+     * @param fieldName field name
+     * @param <T> type of field value
+     * @return field value
+     */
+    public static <T> Optional<T> getFieldValueByGetMethod(final Object target, final String fieldName) {
+        String getterName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
+        final Optional<Method> method = findMethod(target.getClass(), getterName);
+        if (method.isPresent()) {
+            T value = invokeMethod(method.get(), target);
+            return Optional.ofNullable(value);
+        } else {
+            return Optional.empty();
+        }
+    }
+    
+    private static Optional<Method> findMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes) {
+        try {
+            return Optional.of(clazz.getMethod(methodName, parameterTypes));
+        } catch (final NoSuchMethodException ex) {
+            Class<?> superclass = clazz.getSuperclass();
+            if (null != superclass && Object.class != superclass) {
+                return findMethod(superclass, methodName, parameterTypes);
+            }
+        }
+        return Optional.empty();
     }
 }

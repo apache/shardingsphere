@@ -28,16 +28,18 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.UnknownSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -103,10 +105,9 @@ class PortalTest {
     
     @BeforeEach
     void setup() throws SQLException {
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = mockDatabase();
-        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
+        ContextManager contextManager = mockContextManager(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
         when(ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class)))
@@ -115,16 +116,17 @@ class PortalTest {
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
     
-    private ContextManager mockContextManager() {
+    private ContextManager mockContextManager(final ShardingSphereDatabase database) {
         ContextManager result = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        when(result.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         return result;
     }
     

@@ -19,12 +19,13 @@ package org.apache.shardingsphere.sqlfederation.resultset;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,8 +73,9 @@ class SQLFederationResultSetTest {
     
     private SelectStatementContext createSelectStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        List<Projection> projections = Arrays.asList(new ColumnProjection("o", "order_id", null), new ColumnProjection("o", "user_id", null), new ColumnProjection("o", "status", null),
-                new ColumnProjection("i", "item_id", null));
+        List<Projection> projections = Arrays.asList(new ColumnProjection("o", "order_id", null, mock(DatabaseType.class)), new ColumnProjection("o", "user_id", null, mock(DatabaseType.class)),
+                new ColumnProjection("o", "status", null, mock(DatabaseType.class)),
+                new ColumnProjection("i", "item_id", null, mock(DatabaseType.class)));
         when(result.getProjectionsContext().getExpandProjections()).thenReturn(projections);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());

@@ -118,4 +118,4 @@ authority:
 
 ## 相关参考
 
-权限提供者具体实现可以参考 [权限提供者](/cn/dev-manual/proxy)。
+权限提供者具体实现可以参考 [权限提供者](/cn/user-manual/shardingsphere-proxy/yaml-config/authority/)。

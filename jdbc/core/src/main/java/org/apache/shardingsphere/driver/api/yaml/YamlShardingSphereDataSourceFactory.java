@@ -24,10 +24,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -47,35 +44,6 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlShardingSphereDataSourceFactory {
     
-    private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
-    
-    private static final YamlDataSourceConfigurationSwapper DATA_SOURCE_SWAPPER = new YamlDataSourceConfigurationSwapper();
-    
-    /**
-     * Create ShardingSphere data source without cache.
-     * 
-     * @param rootConfig rule configurations
-     * @return ShardingSphere data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSourceWithoutCache(final YamlRootConfiguration rootConfig) throws SQLException {
-        Map<String, DataSource> dataSourceMap = DATA_SOURCE_SWAPPER.swapToDataSources(rootConfig.getDataSources(), false);
-        try {
-            return createDataSource(dataSourceMap, rootConfig);
-            // CHECKSTYLE:OFF
-        } catch (final SQLException | RuntimeException ex) {
-            // CHECKSTYLE:ON
-            dataSourceMap.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
-            throw ex;
-        }
-    }
-    
-    private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig) throws SQLException {
-        ModeConfiguration modeConfig = null == rootConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
-        Collection<RuleConfiguration> ruleConfigs = SWAPPER_ENGINE.swapToRuleConfigurations(rootConfig.getRules());
-        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, rootConfig.getProps());
-    }
-    
     /**
      * Create ShardingSphere data source.
      * 
@@ -86,7 +54,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlJDBCConfiguration rootConfig = YamlEngine.unmarshal(yamlFile, YamlJDBCConfiguration.class);
-        return createDataSource(DATA_SOURCE_SWAPPER.swapToDataSources(rootConfig.getDataSources()), rootConfig);
+        return createDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig);
     }
     
     /**
@@ -99,7 +67,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlJDBCConfiguration rootConfig = YamlEngine.unmarshal(yamlBytes, YamlJDBCConfiguration.class);
-        return createDataSource(DATA_SOURCE_SWAPPER.swapToDataSources(rootConfig.getDataSources()), rootConfig);
+        return createDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig);
     }
     
     /**
@@ -161,37 +129,9 @@ public final class YamlShardingSphereDataSourceFactory {
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlJDBCConfiguration jdbcConfig) throws SQLException {
-        rebuildGlobalRuleConfiguration(jdbcConfig);
         ModeConfiguration modeConfig = null == jdbcConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(jdbcConfig.getMode());
-        Collection<RuleConfiguration> ruleConfigs = SWAPPER_ENGINE.swapToRuleConfigurations(jdbcConfig.getRules());
+        jdbcConfig.rebuild();
+        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(jdbcConfig.getRules());
         return ShardingSphereDataSourceFactory.createDataSource(jdbcConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, jdbcConfig.getProps());
-    }
-    
-    private static void rebuildGlobalRuleConfiguration(final YamlJDBCConfiguration jdbcConfiguration) {
-        jdbcConfiguration.getRules().removeIf(YamlGlobalRuleConfiguration.class::isInstance);
-        if (null != jdbcConfiguration.getAuthority()) {
-            jdbcConfiguration.getRules().add(jdbcConfiguration.getAuthority());
-        }
-        if (null != jdbcConfiguration.getTransaction()) {
-            jdbcConfiguration.getRules().add(jdbcConfiguration.getTransaction());
-        }
-        if (null != jdbcConfiguration.getGlobalClock()) {
-            jdbcConfiguration.getRules().add(jdbcConfiguration.getGlobalClock());
-        }
-        if (null != jdbcConfiguration.getSqlParser()) {
-            jdbcConfiguration.getRules().add(jdbcConfiguration.getSqlParser());
-        }
-        if (null != jdbcConfiguration.getSqlTranslator()) {
-            jdbcConfiguration.getRules().add(jdbcConfiguration.getSqlTranslator());
-        }
-        if (null != jdbcConfiguration.getTraffic()) {
-            jdbcConfiguration.getRules().add(jdbcConfiguration.getTraffic());
-        }
-        if (null != jdbcConfiguration.getLogging()) {
-            jdbcConfiguration.getRules().add(jdbcConfiguration.getLogging());
-        }
-        if (null != jdbcConfiguration.getSqlFederation()) {
-            jdbcConfiguration.getRules().add(jdbcConfiguration.getSqlFederation());
-        }
     }
 }

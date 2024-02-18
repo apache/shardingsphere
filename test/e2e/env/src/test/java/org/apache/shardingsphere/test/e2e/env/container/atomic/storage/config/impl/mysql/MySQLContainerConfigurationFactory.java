@@ -19,14 +19,18 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.i
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * MySQL container configuration factory.
@@ -36,25 +40,24 @@ public final class MySQLContainerConfigurationFactory {
     
     /**
      * Create new instance of MySQL container configuration.
-     * 
+     *
+     * @param scenario scenario
      * @return created instance
      */
-    public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
+    public static StorageContainerConfiguration newInstance(final String scenario) {
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario),
+                DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "MySQL")),
+                DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
     
     /**
-     * Create new instance of MySQL container configuration with parameter.
+     * Create new instance of MySQL container configuration with major version.
      *
-     * @param command command
-     * @param containerEnvironments container environments
-     * @param mountedResources mounted resources
+     * @param majorVersion major version
      * @return created instance
      */
-    public static StorageContainerConfiguration newInstance(final String command, final Map<String, String> containerEnvironments, final Map<String, String> mountedResources) {
-        return new StorageContainerConfiguration(Optional.ofNullable(command).orElseGet(MySQLContainerConfigurationFactory::getCommand),
-                Optional.ofNullable(containerEnvironments).orElseGet(MySQLContainerConfigurationFactory::getContainerEnvironments),
-                Optional.ofNullable(mountedResources).orElseGet(MySQLContainerConfigurationFactory::getMountedResources));
+    public static StorageContainerConfiguration newInstance(final int majorVersion) {
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(majorVersion), Collections.emptyMap(), Collections.emptyMap());
     }
     
     private static String getCommand() {
@@ -68,7 +71,23 @@ public final class MySQLContainerConfigurationFactory {
         return result;
     }
     
-    private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/mysql/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+    private static Map<String, String> getMountedResources(final int majorVersion) {
+        Map<String, String> result = new HashMap<>(3, 1F);
+        result.put(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+        result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
+        if (majorVersion > 5) {
+            result.put("/env/mysql/mysql8/02-initdb.sql", "/docker-entrypoint-initdb.d/02-initdb.sql");
+        }
+        return result;
+    }
+    
+    private static Map<String, String> getMountedResources(final String scenario) {
+        Map<String, String> result = new HashMap<>(3, 1F);
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "MySQL")) + "/01-actual-init.sql",
+                "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "MySQL")) + "/01-expected-init.sql",
+                "/docker-entrypoint-initdb.d/01-expected-init.sql");
+        result.put("/env/mysql/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+        return result;
     }
 }

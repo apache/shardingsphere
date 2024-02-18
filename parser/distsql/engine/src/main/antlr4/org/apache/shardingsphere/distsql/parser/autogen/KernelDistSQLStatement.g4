@@ -50,5 +50,7 @@ execute
     | alterMigrationRule
     | lockCluster
     | unlockCluster
+    | showPluginImplementations
+    | showKeyGenerateAlgorithmPlugins
     ) SEMI_? EOF
     ;

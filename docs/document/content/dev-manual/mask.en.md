@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.12. </b>"
+pre = "<b>5.7. </b>"
 title = "Data Masking"
-weight = 12
+weight = 7
 chapter = true
 +++
 
@@ -26,9 +26,4 @@ Data masking algorithm definition
 | MASK_FROM_X_TO_Y                        | Mask from x to y data masking algorithm                        | [`org.apache.shardingsphere.mask.algorithm.cover.MaskFromXToYMaskAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/cover/MaskFromXToYMaskAlgorithm.java)                                           |
 | MASK_BEFORE_SPECIAL_CHARS               | Mask before special chars data masking algorithm               | [`org.apache.shardingsphere.mask.algorithm.cover.MaskBeforeSpecialCharsAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/cover/MaskBeforeSpecialCharsAlgorithm.java)                               |
 | MASK_AFTER_SPECIAL_CHARS                | Mask after special chars data masking algorithm                | [`org.apache.shardingsphere.mask.algorithm.cover.MaskAfterSpecialCharsAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/cover/MaskAfterSpecialCharsAlgorithm.java)                                 |
-| PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE | Personal identity number random replace data masking algorithm | [`org.apache.shardingsphere.mask.algorithm.replace.PersonalIdentityNumberRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/PersonalIdentityNumberRandomReplaceAlgorithm.java) |
-| MILITARY_IDENTITY_NUMBER_RANDOM_REPLACE | Military identity number random replace data masking algorithm | [`org.apache.shardingsphere.mask.algorithm.replace.MilitaryIdentityNumberRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/MilitaryIdentityNumberRandomReplaceAlgorithm.java) |
-| TELEPHONE_RANDOM_REPLACE                | Telephone random replace data masking algorithm                | [`org.apache.shardingsphere.mask.algorithm.replace.TelephoneRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/TelephoneRandomReplaceAlgorithm.java)                           |
-| LANDLINE_NUMBER_RANDOM_REPLACE          | Landline number random replace data masking algorithm          | [`org.apache.shardingsphere.mask.algorithm.replace.LandlineNumberRandomAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/LandlineNumberRandomAlgorithm.java)                               |
 | GENERIC_TABLE_RANDOM_REPLACE            | Generic table random replace algorithm                         | [`org.apache.shardingsphere.mask.algorithm.replace.GenericTableRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/GenericTableRandomReplaceAlgorithm.java)                     |
-| UNIFIED_CREDIT_CODE_RANDOM_REPLACE      | Unified credit code random replace algorithm                   | [`org.apache.shardingsphere.mask.algorithm.replace.UnifiedCreditCodeRandomReplaceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/mask/core/src/main/java/org/apache/shardingsphere/mask/algorithm/replace/UnifiedCreditCodeRandomReplaceAlgorithm.java)           |
