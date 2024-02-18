@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 @Getter
 public final class RewriteNormalEncryptAlgorithmFixture implements EncryptAlgorithm {
     
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData();
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(true, true, false);
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
