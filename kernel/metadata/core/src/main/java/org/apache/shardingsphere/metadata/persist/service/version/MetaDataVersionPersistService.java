@@ -68,7 +68,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
                 continue;
             }
             repository.persist(each.getKey() + ACTIVE_VERSION, each.getNextActiveVersion());
-            repository.delete(String.join("/", each.getKey(), VERSIONS, each.getCurrentActiveVersion()));
+            repository.delete(each.getKey() + VERSIONS + each.getCurrentActiveVersion());
         }
     }
     
