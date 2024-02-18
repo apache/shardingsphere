@@ -25,12 +25,13 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleExc
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.util.CollectionUtils;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -355,19 +356,15 @@ public final class ShardingTableRuleStatementChecker {
     private static Collection<String> getDuplicatedRuleNames(final Collection<String> collection) {
         Collection<String> duplicate = collection.stream().collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        return collection.stream().filter(each -> containsIgnoreCase(duplicate, each)).collect(Collectors.toSet());
+        return collection.stream().filter(each -> CollectionUtils.containsIgnoreCase(duplicate, each)).collect(Collectors.toSet());
     }
     
     private static Collection<String> getDuplicatedRuleNames(final Collection<String> require, final Collection<String> current) {
-        return require.stream().filter(each -> containsIgnoreCase(current, each)).collect(Collectors.toSet());
+        return require.stream().filter(each -> CollectionUtils.containsIgnoreCase(current, each)).collect(Collectors.toSet());
     }
     
     private static Set<String> getNotExistsRules(final Collection<String> require, final Collection<String> current) {
-        return require.stream().filter(each -> !containsIgnoreCase(current, each)).collect(Collectors.toSet());
-    }
-    
-    private static boolean containsIgnoreCase(final Collection<String> collection, final String str) {
-        return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
+        return require.stream().filter(each -> !CollectionUtils.containsIgnoreCase(current, each)).collect(Collectors.toSet());
     }
     
     private static Collection<String> getCurrentShardingTables(final ShardingRuleConfiguration currentRuleConfig) {

@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.util.CollectionUtils;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -57,16 +58,12 @@ public final class DropShardingTableReferenceExecutor implements DatabaseRuleDro
     
     private void checkToBeDroppedShardingTableReferenceRules(final DropShardingTableReferenceRuleStatement sqlStatement) {
         Collection<String> currentRuleNames = getCurrentShardingTableReferenceRuleNames();
-        Collection<String> notExistedRuleNames = sqlStatement.getNames().stream().filter(each -> !containsIgnoreCase(currentRuleNames, each)).collect(Collectors.toList());
+        Collection<String> notExistedRuleNames = sqlStatement.getNames().stream().filter(each -> !CollectionUtils.containsIgnoreCase(currentRuleNames, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Sharding table reference", database.getName(), notExistedRuleNames));
     }
     
     private Collection<String> getCurrentShardingTableReferenceRuleNames() {
         return rule.getConfiguration().getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toList());
-    }
-    
-    private boolean containsIgnoreCase(final Collection<String> ruleNames, final String name) {
-        return ruleNames.stream().anyMatch(each -> each.equalsIgnoreCase(name));
     }
     
     @Override
