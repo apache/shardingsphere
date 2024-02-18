@@ -67,6 +67,15 @@ class MySQLTime2BinlogProtocolValueTest {
     }
     
     @Test
+    void assertReadZeroTimeWithFraction1() {
+        columnDef.setColumnMeta(1);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(payload.readInt1()).thenReturn(1);
+        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000);
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.ZERO_OF_TIME + ".1"));
+    }
+    
+    @Test
     void assertReadWithFraction3() {
         columnDef.setColumnMeta(3);
         when(payload.getByteBuf()).thenReturn(byteBuf);
@@ -76,11 +85,28 @@ class MySQLTime2BinlogProtocolValueTest {
     }
     
     @Test
+    void assertReadZeroTimeWithFraction3() {
+        columnDef.setColumnMeta(3);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedShort()).thenReturn(159);
+        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000);
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.ZERO_OF_TIME + ".159"));
+    }
+    
+    @Test
     void assertReadWithFraction6() {
         columnDef.setColumnMeta(6);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04, 10123);
         assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is(LocalTime.of(16, 8, 4).withNano(10123000)));
+    }
+    
+    @Test
+    void assertReadZeroTimeWithFraction6() {
+        columnDef.setColumnMeta(6);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000, 123);
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.ZERO_OF_TIME + ".123000"));
     }
     
     @Test

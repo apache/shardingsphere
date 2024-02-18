@@ -69,6 +69,14 @@ class MySQLTimestamp2BinlogProtocolValueTest {
     }
     
     @Test
+    void assertReadZeroTimeWithFraction() {
+        columnDef.setColumnMeta(1);
+        when(byteBuf.readInt()).thenReturn(0);
+        when(payload.readInt1()).thenReturn(9);
+        assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO + ".9"));
+    }
+    
+    @Test
     void assertReadNullTime() {
         when(byteBuf.readInt()).thenReturn(0);
         assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));

@@ -66,6 +66,15 @@ class MySQLDatetime2BinlogProtocolValueTest {
     }
     
     @Test
+    void assertReadZeroTimeWithoutFraction1() {
+        columnDef.setColumnMeta(1);
+        when(payload.readInt1()).thenReturn(128, 0, 0, 0, 0);
+        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
+        when(payload.readInt1()).thenReturn(128, 0, 0, 0, 0, 1);
+        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO + ".1"));
+    }
+    
+    @Test
     void assertReadWithoutFraction3() {
         columnDef.setColumnMeta(3);
         when(payload.readInt1()).thenReturn(0xfe, 0xf3, 0xff, 0x7e, 0xfb);
@@ -73,6 +82,15 @@ class MySQLDatetime2BinlogProtocolValueTest {
         when(byteBuf.readUnsignedShort()).thenReturn(9990);
         LocalDateTime expected = LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999 * 1000 * 1000);
         assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(Timestamp.valueOf(expected)));
+    }
+    
+    @Test
+    void assertReadZeroTimeWithoutFraction3() {
+        columnDef.setColumnMeta(3);
+        when(payload.readInt1()).thenReturn(128, 0, 0, 0, 0);
+        when(byteBuf.readUnsignedShort()).thenReturn(246);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO + ".246"));
     }
     
     @Test
