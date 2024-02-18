@@ -43,23 +43,22 @@ public final class NodePathTransactionOperation {
     
     private final String value;
     
-    
     /**
-     * update.
+     * Update.
      *
      * @param key key
      * @param value value
-     * @return TransactionOperation
+     * @return NodePathTransactionOperation node path transaction operation
      */
     public static NodePathTransactionOperation update(final String key, final String value) {
         return new NodePathTransactionOperation(Type.UPDATE, key, value);
     }
     
     /**
-     * Operation delete.
+     * Delete.
      *
      * @param key key
-     * @return TransactionOperation
+     * @return NodePathTransactionOperation node path transaction operation
      */
     public static NodePathTransactionOperation delete(final String key) {
         return new NodePathTransactionOperation(Type.DELETE, key, null);
