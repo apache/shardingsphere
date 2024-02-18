@@ -69,6 +69,38 @@ Narayana configuration items can be customized by adding `jbossts-properties.xml
 
 See [Narayana's Official Documentation](https://narayana.io/documentation/index.html) for more details.
 
+For the minimum configuration of `jbossts-properties.xml`,
+ShardingSphere requires that Narayana's `CoreEnvironmentBean.nodeIdentifier` property be defined.
+If Narayana 's object store is not shared between different Narayana instances, you can set this value to `1`.
+A possible `jbossts-properties.xml` configuration is as follows,
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="CoreEnvironmentBean.nodeIdentifier">1</entry>
+</properties>
+```
+
+In certain cases, you may not want to use XML files,
+then you need to manually set `CoreEnvironmentBean.nodeIdentifier` in the bootstrap class of your own Java project.
+You can refer to the following methods to call Narayana Java API.
+
+```java
+import com.arjuna.ats.arjuna.common.CoreEnvironmentBeanException;
+import com.arjuna.ats.arjuna.common.arjPropertyManager;
+
+public class ExampleUtils {
+    public void initNarayanaInstance() {
+        try {
+            arjPropertyManager.getCoreEnvironmentBean().setNodeIdentifier("1");
+        } catch (CoreEnvironmentBeanException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
 ### Set the XA transaction type
 
 Yaml:

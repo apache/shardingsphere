@@ -193,6 +193,6 @@ Example:
 - `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=system_props`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=system_props`
 
-### Other implementations
+## Other implementations
 
 For details, please refer to https://github.com/apache/shardingsphere-plugin.
