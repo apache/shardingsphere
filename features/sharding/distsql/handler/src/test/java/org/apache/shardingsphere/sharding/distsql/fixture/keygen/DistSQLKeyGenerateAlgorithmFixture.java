@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
 
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 import java.util.Collection;

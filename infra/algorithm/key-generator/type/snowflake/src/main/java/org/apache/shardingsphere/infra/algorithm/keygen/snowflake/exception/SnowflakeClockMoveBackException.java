@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.keygen.snowflake.exception;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.KeyGenerateSQLException;
 
 /**
- * Key generate algorithm type and class mapper.
+ * Snowflake clock move back exception.
  */
-public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public final class SnowflakeClockMoveBackException extends KeyGenerateSQLException {
     
-    @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
-    }
+    private static final long serialVersionUID = 3076059285632288623L;
     
-    @Override
-    public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+    public SnowflakeClockMoveBackException(final long lastMillis, final long currentMillis) {
+        super(XOpenSQLState.GENERAL_ERROR, 92, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.", lastMillis, currentMillis);
     }
 }

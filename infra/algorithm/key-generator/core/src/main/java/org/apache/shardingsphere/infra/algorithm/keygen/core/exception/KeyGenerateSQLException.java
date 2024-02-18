@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.keygen.core.exception;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.feature.FeatureSQLException;
 
 /**
- * Key generate algorithm type and class mapper.
+ * Key generate SQL exception.
  */
-public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public abstract class KeyGenerateSQLException extends FeatureSQLException {
     
-    @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
-    }
+    private static final int FEATURE_CODE = 11;
     
-    @Override
-    public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+    private static final long serialVersionUID = 3124409584064186239L;
+    
+    protected KeyGenerateSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, FEATURE_CODE, errorCode, reason, messageArgs);
     }
 }

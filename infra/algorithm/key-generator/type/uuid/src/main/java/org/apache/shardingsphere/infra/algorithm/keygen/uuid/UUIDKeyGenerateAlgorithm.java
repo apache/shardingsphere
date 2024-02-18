@@ -15,32 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.driver.fixture.keygen;
+package org.apache.shardingsphere.infra.algorithm.keygen.uuid;
 
 import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.LinkedList;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
-public final class IncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
-    
-    private final AtomicInteger count = new AtomicInteger();
+/**
+ * UUID key generate algorithm.
+ */
+public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
-    public Collection<Comparable<?>> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> count.incrementAndGet()).collect(Collectors.toList());
+    public Collection<String> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
+        Collection<String> result = new LinkedList<>();
+        ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
+        for (int index = 0; index < keyGenerateCount; index++) {
+            result.add(generateKey(threadLocalRandom));
+        }
+        return result;
+    }
+    
+    private String generateKey(final ThreadLocalRandom threadLocalRandom) {
+        return new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString().replace("-", "");
     }
     
     @Override
     public String getType() {
-        return "JDBC.INCREMENT.FIXTURE";
-    }
-    
-    @Override
-    public boolean isSupportAutoIncrement() {
-        return true;
+        return "UUID";
     }
 }

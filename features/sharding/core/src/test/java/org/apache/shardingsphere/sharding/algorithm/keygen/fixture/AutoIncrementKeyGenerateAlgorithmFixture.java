@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 import java.util.Collection;

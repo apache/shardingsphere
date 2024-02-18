@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
+package org.apache.shardingsphere.infra.algorithm.keygen.snowflake.fixture;
 
-import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.TimeService;
+import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 
-/**
- * Key generate algorithm type and class mapper.
- */
-public final class KeyGenerateAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+import java.util.concurrent.atomic.AtomicInteger;
+
+@RequiredArgsConstructor
+public final class FixedTimeService extends TimeService {
+    
+    private final int expectedInvokedTimes;
+    
+    private final AtomicInteger invokedTimes = new AtomicInteger();
+    
+    private long current = SnowflakeKeyGenerateAlgorithm.EPOCH;
     
     @Override
-    public Class<KeyGenerateAlgorithm> getPluginClass() {
-        return KeyGenerateAlgorithm.class;
-    }
-    
-    @Override
-    public String getType() {
-        return "KEY_GENERATE_ALGORITHM";
+    public long getCurrentMillis() {
+        if (invokedTimes.getAndIncrement() < expectedInvokedTimes) {
+            return current;
+        }
+        invokedTimes.set(0);
+        return ++current;
     }
 }
