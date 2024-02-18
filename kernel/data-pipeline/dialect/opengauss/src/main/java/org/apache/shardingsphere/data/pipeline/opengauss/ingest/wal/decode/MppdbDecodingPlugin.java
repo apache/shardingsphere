@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
@@ -48,7 +48,7 @@ import java.util.List;
 /**
  * Mppdb decoding plugin in openGauss.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private final BaseTimestampUtils timestampUtils;
@@ -56,8 +56,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     private final boolean decodeWithTX;
     
     public MppdbDecodingPlugin(final BaseTimestampUtils timestampUtils) {
-        this.timestampUtils = timestampUtils;
-        decodeWithTX = false;
+        this(timestampUtils, false);
     }
     
     @Override
