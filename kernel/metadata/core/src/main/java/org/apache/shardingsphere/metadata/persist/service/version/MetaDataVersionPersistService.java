@@ -42,6 +42,9 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     
     @Override
     public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
+        if (metaDataVersions.isEmpty()) {
+            return;
+        }
         if (repository instanceof NodePathTransactionAware) {
             switchActiveVersionWithTransaction(metaDataVersions);
         } else {
