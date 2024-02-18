@@ -116,7 +116,7 @@ print_usage() {
     echo "-a  Bind addresses, can be IPv4, IPv6, hostname. In"
     echo "    case more than one address is specified in a"
     echo "    comma-separated list. The default value is '0.0.0.0'."
-    echo "-p  Bind port, default is '3307', which could be changed in server.yaml"
+    echo "-p  Bind port, default is '3307', which could be changed in global.yaml"
     echo "-c  Path to config directory of ShardingSphere-Proxy, default is 'conf'"
     echo "-f  Force start ShardingSphere-Proxy"
     echo "-g  Enable agent if shardingsphere-agent deployed in 'agent' directory"
