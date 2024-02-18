@@ -3069,4 +3069,47 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_cross_join_sys_log_info_with_count">
+        <projections start-index="7" stop-index="49">
+            <column-projection name="name" start-index="7" stop-index="12" start-delimiter="[" end-delimiter="]"/>
+            <aggregation-projection type="COUNT" alias="vlf_count" start-index="15" stop-index="34" expression="COUNT(l.database_id)"/>
+        </projections>
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="databases" start-index="56" stop-index="73" alias="s">
+                        <owner name="sys" start-index="56" stop-index="58"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table start-index="87" stop-index="119" table-alias="l">
+                        <table-function text="sys.dm_db_log_info(s.database_id)" function-name="sys.dm_db_log_info">
+                            <parameter>
+                                <column name="database_id" start-index="106" stop-index="118">
+                                    <owner name="s" start-index="106" stop-index="106"/>
+                                </column>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <group-by>
+            <column-item name="name" start-index="135" stop-index="140" order-direction="ASC" start-delimiter="[" end-delimiter="]"/>
+        </group-by>
+        <having start-index="142" stop-index="174">
+            <expr>
+                <binary-operation-expression start-index="149" stop-index="174">
+                    <left>
+                        <aggregation-projection type="COUNT" expression="COUNT(l.database_id)" start-index="149" stop-index="168"/>
+                    </left>
+                    <right>
+                        <literal-expression value="100" start-index="172" stop-index="174"/>
+                    </right>
+                    <operator>&gt;</operator>
+                </binary-operation-expression>
+            </expr>
+        </having>
+    </select>
 </sql-parser-test-cases>

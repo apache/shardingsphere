@@ -64,4 +64,7 @@
     <sql-case id="update_scrapreason_with_between_and" value="UPDATE Production.ScrapReason SET Name += ' - tool malfunction' WHERE ScrapReasonID BETWEEN 10 and 12" db-types="SQLServer"/>
     <sql-case id="update_sr_with_join_subquery" value="UPDATE sr SET sr.Name += ' - tool malfunction' FROM Production.ScrapReason AS sr JOIN Production.WorkOrder AS wo ON sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" db-types="SQLServer"/>
     <sql-case id="update_with_print" value="UPDATE HumanResources.Employee SET JobTitle = N'Executive' WHERE NationalIDNumber = 123456789  IF @@ROWCOUNT = 0  PRINT 'Warning: No rows were updated'" db-types="SQLServer" />
+    <sql-case id="update_with_inner_join" value="UPDATE dbo.Table2 SET dbo.Table2.ColB = dbo.Table2.ColB + dbo.Table1.ColB FROM dbo.Table2 INNER JOIN dbo.Table1 ON (dbo.Table2.ColA = dbo.Table1.ColA)" db-types="SQLServer"/>
+    <sql-case id="update_with_current_of_abc" value="UPDATE dbo.Table1 SET c2 = c2 + d2 FROM dbo.Table2 WHERE CURRENT OF abc" db-types="SQLServer"/>
+    <sql-case id="update_with_location_setXY" value="UPDATE Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
 </sql-cases>
