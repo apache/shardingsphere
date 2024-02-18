@@ -15,25 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
+package org.apache.shardingsphere.infra.keygen.uuid.algorithm;
 
 import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.LinkedList;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
-public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+/**
+ * UUID key generate algorithm.
+ */
+public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
-        
+    public Collection<String> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+        Collection<String> result = new LinkedList<>();
+        ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
+        for (int index = 0; index < keyGenerateCount; index++) {
+            result.add(generateKey(threadLocalRandom));
+        }
+        return result;
+    }
+    
+    private String generateKey(final ThreadLocalRandom threadLocalRandom) {
+        return new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString().replace("-", "");
     }
     
     @Override
     public String getType() {
-        return "DISTSQL.FIXTURE";
+        return "UUID";
     }
 }

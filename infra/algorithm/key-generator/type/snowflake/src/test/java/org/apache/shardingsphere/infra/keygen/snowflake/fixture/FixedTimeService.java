@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
+package org.apache.shardingsphere.infra.keygen.snowflake.fixture;
 
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.keygen.snowflake.algorithm.TimeService;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+@RequiredArgsConstructor
+public final class FixedTimeService extends TimeService {
+    
+    private final int expectedInvokedTimes;
+    
+    private final AtomicInteger invokedTimes = new AtomicInteger();
+    
+    private long current = SnowflakeKeyGenerateAlgorithm.EPOCH;
     
     @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
-        
-    }
-    
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
+    public long getCurrentMillis() {
+        if (invokedTimes.getAndIncrement() < expectedInvokedTimes) {
+            return current;
+        }
+        invokedTimes.set(0);
+        return ++current;
     }
 }

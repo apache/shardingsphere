@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
+package org.apache.shardingsphere.infra.keygen.core.exception;
 
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+/**
+ * Key generate algorithm initialization exception.
+ */
+public final class KeyGenerateAlgorithmInitializationException extends KeyGenerateSQLException {
     
-    @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
-        
-    }
+    private static final long serialVersionUID = 4137100879778822323L;
     
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
+    public KeyGenerateAlgorithmInitializationException(final String keyGenerateType, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 91, "Key generate algorithm `%s` initialization failed, reason is: %s.", keyGenerateType, reason);
     }
 }

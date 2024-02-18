@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
+package org.apache.shardingsphere.infra.keygen.snowflake.exception;
 
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.keygen.core.exception.KeyGenerateSQLException;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+/**
+ * Snowflake clock move back exception.
+ */
+public final class SnowflakeClockMoveBackException extends KeyGenerateSQLException {
     
-    @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
-        
-    }
+    private static final long serialVersionUID = 3076059285632288623L;
     
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
+    public SnowflakeClockMoveBackException(final long lastMillis, final long currentMillis) {
+        super(XOpenSQLState.GENERAL_ERROR, 92, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.", lastMillis, currentMillis);
     }
 }

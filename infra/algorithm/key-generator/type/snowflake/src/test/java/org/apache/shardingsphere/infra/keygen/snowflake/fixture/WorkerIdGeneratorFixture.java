@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
+package org.apache.shardingsphere.infra.keygen.snowflake.fixture;
 
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Properties;
 
-public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+@RequiredArgsConstructor
+public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
+    
+    private final int fixtureWorkerId;
     
     @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
-        
-    }
-    
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
+    public int generate(final Properties props) {
+        Preconditions.checkArgument(fixtureWorkerId >= 0L && fixtureWorkerId <= MAX_WORKER_ID, "Illegal worker id.");
+        return fixtureWorkerId;
     }
 }

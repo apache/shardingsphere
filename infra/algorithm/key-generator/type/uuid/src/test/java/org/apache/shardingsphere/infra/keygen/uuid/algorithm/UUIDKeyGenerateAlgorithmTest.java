@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
+package org.apache.shardingsphere.infra.keygen.uuid.algorithm;
 
-import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
-public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+class UUIDKeyGenerateAlgorithmTest {
     
-    @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
-        
-    }
+    private final UUIDKeyGenerateAlgorithm algorithm = new UUIDKeyGenerateAlgorithm();
     
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
+    @Test
+    void assertGenerateKeys() {
+        assertThat(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).size(), is(1));
+        assertThat(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().length(), is(32));
     }
 }
