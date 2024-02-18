@@ -24,10 +24,12 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -45,27 +47,22 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Dist
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement, final ContextManager contextManager) {
-        return buildRows(getReadDataSourceNames(sqlStatement), getDisabledDataSourceNames(sqlStatement));
+        Collection<ReadwriteSplittingDataSourceRule> dataSourceRules = getDataSourceRules(sqlStatement);
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        dataSourceRules.forEach(each -> result.addAll(buildRows(each)));
+        return result;
     }
     
-    private Collection<String> getReadDataSourceNames(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
+    private Collection<ReadwriteSplittingDataSourceRule> getDataSourceRules(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
         if (sqlStatement.getRuleName().isPresent()) {
-            return rule.getDataSourceRules().entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(sqlStatement.getRuleName().get()))
-                    .flatMap(entry -> entry.getValue().getReadwriteSplittingGroup().getReadDataSources().stream()).collect(Collectors.toList());
+            return rule.getDataSourceRules().values().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName().get())).collect(Collectors.toList());
         }
-        return rule.getDataSourceRules().entrySet().stream().flatMap(entry -> entry.getValue().getReadwriteSplittingGroup().getReadDataSources().stream()).collect(Collectors.toList());
+        return rule.getDataSourceRules().values();
     }
     
-    private Collection<String> getDisabledDataSourceNames(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
-        if (sqlStatement.getRuleName().isPresent()) {
-            return rule.getDataSourceRules().entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(sqlStatement.getRuleName().get()))
-                    .flatMap(entry -> entry.getValue().getDisabledDataSourceNames().stream()).collect(Collectors.toSet());
-        }
-        return rule.getDataSourceRules().entrySet().stream().flatMap(entry -> entry.getValue().getDisabledDataSourceNames().stream()).collect(Collectors.toSet());
-    }
-    
-    private Collection<LocalDataQueryResultRow> buildRows(final Collection<String> readDataSourceNames, final Collection<String> disabledDataSourceNames) {
-        return readDataSourceNames.stream().map(each -> buildRow(each, disabledDataSourceNames.contains(each))).collect(Collectors.toList());
+    private Collection<LocalDataQueryResultRow> buildRows(final ReadwriteSplittingDataSourceRule dataSourceRule) {
+        return dataSourceRule.getReadwriteSplittingGroup().getReadDataSources().stream()
+                .map(each -> buildRow(each, dataSourceRule.getDisabledDataSourceNames().contains(each))).collect(Collectors.toList());
     }
     
     private LocalDataQueryResultRow buildRow(final String dataSourceName, final boolean disabled) {
