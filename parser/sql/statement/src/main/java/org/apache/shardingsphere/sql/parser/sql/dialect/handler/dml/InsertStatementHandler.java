@@ -339,6 +339,7 @@ public final class InsertStatementHandler implements SQLStatementHandler {
     
     /**
      * Get rowSet function segment.
+     *
      * @param insertStatement insert statement
      * @return rowSet function segment
      */

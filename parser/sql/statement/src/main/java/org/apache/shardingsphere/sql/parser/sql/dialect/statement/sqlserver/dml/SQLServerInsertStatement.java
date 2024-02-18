@@ -82,6 +82,7 @@ public final class SQLServerInsertStatement extends InsertStatement implements S
     
     /**
      * Get rowSet function segment.
+     *
      * @return rowSet function segment.
      */
     public Optional<FunctionSegment> getRowSetFunctionSegment() {
