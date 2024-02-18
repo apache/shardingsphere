@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.api.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
 import java.util.Collection;

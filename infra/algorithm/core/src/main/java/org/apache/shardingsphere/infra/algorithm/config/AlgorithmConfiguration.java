@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.algorithm;
+package org.apache.shardingsphere.infra.algorithm.config;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 import java.util.Properties;
 
 /**
- * Algorithm configuration for YAML.
+ * Algorithm configuration.
  */
 @Getter
-@Setter
-public final class YamlAlgorithmConfiguration implements YamlConfiguration {
+public final class AlgorithmConfiguration {
     
-    private String type;
+    private final String type;
     
-    private Properties props = new Properties();
+    private final Properties props;
+    
+    public AlgorithmConfiguration(final String type, final Properties props) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+        this.type = type;
+        this.props = null == props ? new Properties() : props;
+    }
 }

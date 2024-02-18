@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.keygen.uuid.algorithm;
 
-import org.apache.shardingsphere.infra.algorithm.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.context.AlgorithmSQLContext;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.keygen.core.algorithm;
 
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.context.AlgorithmSQLContext;
 
 import java.util.Collection;
 
