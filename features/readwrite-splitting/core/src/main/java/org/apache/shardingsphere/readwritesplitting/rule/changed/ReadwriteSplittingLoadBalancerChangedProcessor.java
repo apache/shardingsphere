@@ -46,7 +46,7 @@ public final class ReadwriteSplittingLoadBalancerChangedProcessor implements Rul
     
     @Override
     public ReadwriteSplittingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class).map(optional -> (ReadwriteSplittingRuleConfiguration) optional.getConfiguration())
+        return database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class).map(ReadwriteSplittingRule::getConfiguration)
                 .orElseGet(() -> new ReadwriteSplittingRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     

@@ -57,7 +57,7 @@ public final class ReadwriteSplittingDataSourceChangedProcessor implements RuleI
     @Override
     public ReadwriteSplittingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
         Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        return rule.map(optional -> (ReadwriteSplittingRuleConfiguration) optional.getConfiguration())
+        return rule.map(ReadwriteSplittingRule::getConfiguration)
                 .orElseGet(() -> new ReadwriteSplittingRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>()));
     }
     
