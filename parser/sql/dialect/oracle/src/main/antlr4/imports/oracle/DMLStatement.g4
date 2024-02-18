@@ -686,7 +686,8 @@ subquery
 modelExpr
     : (numberLiterals ASTERISK_)? ((measureColumn LBT_ (condition | expr) (COMMA_ (condition | expr))* RBT_) 
     | (aggregationFunction LBT_ (((condition | expr) (COMMA_ (condition | expr))*) | (singleColumnForLoop (COMMA_ singleColumnForLoop)*) | multiColumnForLoop) RBT_) 
-    | analyticFunction) (PLUS_ modelExpr | ASTERISK_ numberLiterals (ASTERISK_ modelExpr)?)?
+    | analyticFunction) ((PLUS_|SLASH_) LP_? modelExpr* RP_? | ASTERISK_ numberLiterals (ASTERISK_ modelExpr)?)?
+    | expr
     ;
 
 forUpdateClause
