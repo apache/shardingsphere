@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.keygen.core.context;
+package org.apache.shardingsphere.infra.algorithm;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Key generate context.
+ * Algorithm SQL context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class KeyGenerateContext {
+public final class AlgorithmSQLContext {
     
     private final String databaseName;
     

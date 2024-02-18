@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.keygen.uuid.algorithm;
 
 import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.algorithm.AlgorithmSQLContext;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
-    public Collection<String> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+    public Collection<String> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
         Collection<String> result = new LinkedList<>();
         ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
         for (int index = 0; index < keyGenerateCount; index++) {

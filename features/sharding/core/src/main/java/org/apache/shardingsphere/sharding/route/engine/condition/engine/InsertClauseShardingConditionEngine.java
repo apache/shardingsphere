@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.data.InsertCo
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.algorithm.AlgorithmSQLContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
@@ -174,8 +174,8 @@ public final class InsertClauseShardingConditionEngine {
         if (generatedKey.isPresent() && generatedKey.get().isGenerated() && shardingRule.findTableRule(tableName).isPresent()) {
             String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
                     .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
-            KeyGenerateContext keyGenerateContext = new KeyGenerateContext(database.getName(), schemaName, tableName, generatedKey.get().getColumnName());
-            generatedKey.get().getGeneratedValues().addAll(shardingRule.generateKeys(keyGenerateContext, sqlStatementContext.getValueListCount()));
+            AlgorithmSQLContext algorithmSQLContext = new AlgorithmSQLContext(database.getName(), schemaName, tableName, generatedKey.get().getColumnName());
+            generatedKey.get().getGeneratedValues().addAll(shardingRule.generateKeys(algorithmSQLContext, sqlStatementContext.getValueListCount()));
             generatedKey.get().setSupportAutoIncrement(shardingRule.isSupportAutoIncrement(tableName));
             if (shardingRule.findShardingColumn(generatedKey.get().getColumnName(), tableName).isPresent()) {
                 appendGeneratedKeyCondition(generatedKey.get(), tableName, shardingConditions);

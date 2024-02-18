@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.keygen.core.algorithm;
 
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.algorithm.AlgorithmSQLContext;
 
 import java.util.Collection;
 
@@ -30,11 +30,11 @@ public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm {
     /**
      * Generate keys.
      * 
-     * @param keyGenerateContext key generate context 
+     * @param context algorithm SQL context 
      * @param keyGenerateCount key generate count
      * @return generated keys
      */
-    Collection<? extends Comparable<?>> generateKeys(KeyGenerateContext keyGenerateContext, int keyGenerateCount);
+    Collection<? extends Comparable<?>> generateKeys(AlgorithmSQLContext context, int keyGenerateCount);
     
     /**
      * Judge whether support auto increment or not.

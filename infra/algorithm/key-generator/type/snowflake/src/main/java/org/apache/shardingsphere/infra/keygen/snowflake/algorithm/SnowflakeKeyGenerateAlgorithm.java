@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.keygen.core.context.KeyGenerateContext;
+import org.apache.shardingsphere.infra.algorithm.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.keygen.core.exception.KeyGenerateAlgorithmInitializationException;
 import org.apache.shardingsphere.infra.keygen.snowflake.exception.SnowflakeClockMoveBackException;
 
@@ -121,7 +121,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     @Override
-    public Collection<Long> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+    public Collection<Long> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
         Collection<Long> result = new LinkedList<>();
         for (int index = 0; index < keyGenerateCount; index++) {
             result.add(generateKey());
