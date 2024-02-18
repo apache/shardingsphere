@@ -26,11 +26,11 @@ import static org.mockito.Mockito.mock;
 
 class UUIDKeyGenerateAlgorithmTest {
     
-    private final UUIDKeyGenerateAlgorithm uuidKeyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+    private final UUIDKeyGenerateAlgorithm algorithm = new UUIDKeyGenerateAlgorithm();
     
     @Test
-    void assertGenerateKey() {
-        assertThat(uuidKeyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).size(), is(1));
-        assertThat(uuidKeyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString().length(), is(32));
+    void assertGenerateKeys() {
+        assertThat(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).size(), is(1));
+        assertThat(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().length(), is(32));
     }
 }
