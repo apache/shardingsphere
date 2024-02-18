@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.url.type.classpath.ClassPathURLLoader
+org.apache.shardingsphere.infra.url.absolutepath.AbsolutePathURLLoader

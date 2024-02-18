@@ -15,35 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.type.absolutepath;
+package org.apache.shardingsphere.infra.url.core.arg;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 
-import java.util.Objects;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class AbsolutePathURLLoaderTest {
+class URLArgumentPlaceholderTypeFactoryTest {
     
     @Test
-    @EnabledOnOs({OS.LINUX, OS.MAC})
-    void assertGetContentOnLinux() {
-        assertGetContent(1783);
+    void assertValueOfWithValidQueryProperties() {
+        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(PropertiesBuilder.build(new Property("placeholder-type", "environment"))), is(URLArgumentPlaceholderType.ENVIRONMENT));
     }
     
     @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void assertGetContentOnWindows() {
-        assertGetContent(1824);
+    void assertValueOfWithInvalidQueryProperties() {
+        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(PropertiesBuilder.build(new Property("placeholder-type", "invalid"))), is(URLArgumentPlaceholderType.NONE));
     }
     
-    private void assertGetContent(final int expectedLength) {
-        String actual = new AbsolutePathURLLoader().load(
-                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/absolutepath/fixture.yaml")).getPath(), new Properties());
-        assertThat(actual.length(), is(expectedLength));
+    @Test
+    void assertValueOfWithEmptyQueryProperties() {
+        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(new Properties()), is(URLArgumentPlaceholderType.NONE));
     }
 }
