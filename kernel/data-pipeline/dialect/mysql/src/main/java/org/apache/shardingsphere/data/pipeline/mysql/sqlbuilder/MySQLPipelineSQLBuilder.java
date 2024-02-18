@@ -43,13 +43,6 @@ public final class MySQLPipelineSQLBuilder implements DialectPipelineSQLBuilder 
         PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
-            if (!column.isUpdated()) {
-                continue;
-            }
-            // TOOD not skip unique key
-            if (column.isUniqueKey()) {
-                continue;
-            }
             result.append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append("=VALUES(").append(sqlSegmentBuilder.getEscapedIdentifier(column.getName())).append("),");
         }
         result.setLength(result.length() - 1);
