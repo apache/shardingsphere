@@ -30,9 +30,9 @@ ShardingSphere-Proxy is available at:
 
 2. Rule configuration.
 
-Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`.
+Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/global.yaml`.
 
-Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/config-xxx.yaml`.
+Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/database-xxx.yaml`.
 
 > %SHARDINGSPHERE_PROXY_HOME% is the proxy extract path. for example: `/opt/shardingsphere-proxy-bin/`
 

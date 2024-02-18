@@ -35,7 +35,7 @@ If the following problems emerge, please make sure Docker daemon Process is runn
 I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused？
 ```
 
-2. Configure `conf/server.yaml` and `conf/config-*.yaml`
+2. Configure `conf/global.yaml` and `conf/config-*.yaml`
 
 Configuration file template can be attained from the Docker container and can be copied to any directory on the host:
 ```bash

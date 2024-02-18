@@ -6,7 +6,7 @@ chapter = true
 
 ## 背景信息
 
-Apache ShardingSphere 提供了丰富的系统配置属性，用户可通过 `server.yaml` 进行配置。
+Apache ShardingSphere 提供了丰富的系统配置属性，用户可通过 `global.yaml` 进行配置。
 
 ## 参数解释
 
@@ -34,4 +34,4 @@ Apache ShardingSphere 提供了丰富的系统配置属性，用户可通过 `se
 
 ## 配置示例
 
-完整配置示例请参考 ShardingSphere 仓库内的 `server.yaml`：<https://github.com/apache/shardingsphere/blob/aac0d3026e00575114701be603ec189a02a45747/shardingsphere-proxy/shardingsphere-proxy-bootstrap/src/main/resources/conf/server.yaml#L71-L93>
+完整配置示例请参考 ShardingSphere 仓库内的 `global.yaml`：<https://github.com/apache/shardingsphere/blob/612cd5d8e802d0d712a3a4d89da8fdc048d23879/proxy/bootstrap/src/main/resources/conf/global.yaml#L71-L89>

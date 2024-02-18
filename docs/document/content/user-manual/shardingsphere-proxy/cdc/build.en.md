@@ -26,7 +26,7 @@ Since the CDC Server is built into ShardingSphere-Proxy, you need to get Shardin
 
 The official website's released binary package does not include the GLT module by default, if you are using the openGauss database with GLT functionality, you can additionally introduce the GLT module to ensure the integrity of XA transactions.
 
-There are currently two ways to introduce the GLT module, and corresponding configurations need to be made in server.yaml.
+There are currently two ways to introduce the GLT module, and corresponding configurations need to be made in global.yaml.
 
 #### 1. Source code compilation and installation
 
@@ -46,11 +46,11 @@ Can be introduced from the maven repository
 
 ### CDC Server User Manual
 
-1. Modify the configuration file `conf/server.yaml` and turn on the CDC function. Currently, `mode` must be `Cluster`, and the corresponding registry center needs to be started in advance. If the GLT provider uses Redis, Redis needs to be started in advance.
+1. Modify the configuration file `conf/global.yaml` and turn on the CDC function. Currently, `mode` must be `Cluster`, and the corresponding registry center needs to be started in advance. If the GLT provider uses Redis, Redis needs to be started in advance.
 
 Configuration example:
 
-1. Enable CDC function in `server.yaml`.
+1. Enable CDC function in `global.yaml`.
 
 ```yaml
 mode:

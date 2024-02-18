@@ -11,7 +11,7 @@ weight = 2
 
 - ShardingSphere Proxy 尚未准备好与 GraalVM Native Image 集成。 Proxy 的 Native Image 产物在
   https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-proxy-native 存在每夜构建。假设存在包
-  含`server.yaml` 的 `conf` 文件夹为 `./custom/conf`，你可通过如下的 `docker-compose.yml` 文件进行测试。
+  含`global.yaml` 的 `conf` 文件夹为 `./custom/conf`，你可通过如下的 `docker-compose.yml` 文件进行测试。
 
 ```yaml
 version: "3.8"
@@ -86,7 +86,7 @@ sdk install java 21.0.2-graalce
 ```
 
 3. 通过命令行启动 Native Image, 需要带上 4 个参数。
-   第一个参数为 ShardingSphere Proxy 使用的端口，第二个参数为你编写的包含 `server.yaml` 的 `/conf` 文件夹，
+   第一个参数为 ShardingSphere Proxy 使用的端口，第二个参数为你编写的包含 `global.yaml` 的 `/conf` 文件夹，
    第三个参数为绑定端口的 Address，第四个参数为 Force Start，如果为 true 则保证 ShardingSphere Proxy Native 无论能否连接都能正常启动。
    假设已存在文件夹`./custom/conf`，示例为
 
@@ -100,7 +100,7 @@ sdk install java 21.0.2-graalce
 ./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,docker.native -DskipTests clean package
 ```
 
-- 假设存在包含`server.yaml` 的 `conf` 文件夹为 `./custom/conf`，可通过如下的 `docker-compose.yml` 文件启动 GraalVM Native
+- 假设存在包含`global.yaml` 的 `conf` 文件夹为 `./custom/conf`，可通过如下的 `docker-compose.yml` 文件启动 GraalVM Native
   Image 对应的 Docker Image。
 
 ```yaml

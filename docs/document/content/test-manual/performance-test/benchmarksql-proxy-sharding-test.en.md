@@ -96,13 +96,13 @@ user=benchmarksql
 password=PWbmsql
 ```
 
-### ShardingSphere-Proxy server.yaml parameter recommendations
+### ShardingSphere-Proxy global.yaml parameter recommendations
 
 The default value of `proxy-backend-query-fetch-size` is -1. Changing it to about `50` can minimize the number of fetch for multi-row result sets.
 
 The default value of `proxy-frontend-executor-size` is CPU * 2 and can be reduced to about CPU * 0.5 based on actual test results. If NUMA is involved, set this parameter to the number of physical cores per CPU based on actual test results.
 
-`server.yaml` file excerpt: 
+`global.yaml` file excerpt: 
 ```yaml
 props:
   proxy-backend-query-fetch-size: 50

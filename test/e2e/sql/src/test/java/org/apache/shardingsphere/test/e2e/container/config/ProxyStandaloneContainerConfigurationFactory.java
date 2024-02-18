@@ -49,13 +49,13 @@ public final class ProxyStandaloneContainerConfigurationFactory {
         Map<String, String> result = new HashMap<>(3, 1F);
         result.put("/env/common/standalone/proxy/conf/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
-        result.put(serverYamlExists(scenario) ? "/env/scenario/" + scenario + "/proxy/mode/standalone/server.yaml"
-                : "/env/common/standalone/proxy/conf/server.yaml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
+        result.put(serverYamlExists(scenario) ? "/env/scenario/" + scenario + "/proxy/mode/standalone/global.yaml"
+                : "/env/common/standalone/proxy/conf/global.yaml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         return result;
     }
     
     private static boolean serverYamlExists(final String scenario) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("env/scenario/" + scenario + "/proxy/mode/standalone/server.yaml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("env/scenario/" + scenario + "/proxy/mode/standalone/global.yaml");
         return null != url;
     }
 }

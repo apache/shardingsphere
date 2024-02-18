@@ -19,7 +19,7 @@ transaction:
 
 ### Use LOCAL Mode
 
-The content of the server.yaml configuration file is as follows:
+The content of the global.yaml configuration file is as follows:
 
 ```yaml
 transaction:
@@ -28,7 +28,7 @@ transaction:
 
 ### Use XA Mode
 
-The content of the server.yaml configuration file is as follows:
+The content of the global.yaml configuration file is as follows:
 
 ```yaml
 transaction:
@@ -51,7 +51,7 @@ shardingsphere-transaction-xa-narayana-x.x.x-SNAPSHOT.jar
 
 ### Use BASE Mode
 
-The content of the server.yaml configuration file is as follows:
+The content of the global.yaml configuration file is as follows:
 
 ```yaml
 transaction:

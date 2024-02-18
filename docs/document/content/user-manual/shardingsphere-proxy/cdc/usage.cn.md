@@ -198,7 +198,7 @@ public final class Bootstrap {
 主要有4个步骤
 1. 构造 CDCClient，传入 CDCClientConfiguration
 2. 调用 CDCClient.connect，这一步是和 CDC Server 建立连接
-3. 调用 CDCClient.login，使用 server.yaml 中配置好的用户名和密码登录
+3. 调用 CDCClient.login，使用 global.yaml 中配置好的用户名和密码登录
 4. 调用 CDCClient.startStreaming，开启订阅，需要保证订阅的库和表在 ShardingSphere-Proxy 存在，否则会报错。
 
 > CDCClient.await 是阻塞主线程，非必需的步骤，用其他方式也可以，只要保证 CDC 线程一直在工作就行。

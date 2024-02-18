@@ -17,9 +17,9 @@ weight = 1
 
 在[下载页面](https://shardingsphere.apache.org/document/current/cn/downloads/)获取。
 
-2. 配置 `conf/server.yaml`
+2. 配置 `conf/global.yaml`
 
-ShardingSphere-Proxy 运行模式在 `server.yaml` 中配置，配置格式与 ShardingSphere-JDBC 一致，请参考[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
+ShardingSphere-Proxy 运行模式在 `global.yaml` 中配置，配置格式与 ShardingSphere-JDBC 一致，请参考[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
 
 其他配置项请参考：
 * [权限配置](/cn/user-manual/shardingsphere-proxy/yaml-config/authority/)

@@ -79,7 +79,7 @@ Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久�
 
 ## 操作步骤
 
-1. 在 server.yaml 中配置 Mode 运行模式
+1. 在 global.yaml 中配置 Mode 运行模式
 1. 配置元数据持久化仓库类型
 
 ## 配置示例

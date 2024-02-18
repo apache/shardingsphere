@@ -17,9 +17,9 @@ Start the Proxy with a binary package requires an environment with Java JRE 8 or
 
 Obtain the binary release package of ShardingSphere-Proxy on the [download page](https://shardingsphere.apache.org/document/current/en/downloads/).
 
-2. Configure `conf/server.yaml`
+2. Configure `conf/global.yaml`
 
-ShardingSphere-Proxy's operational mode is configured on `server.yaml`, and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/).
+ShardingSphere-Proxy's operational mode is configured on `global.yaml`, and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/).
 
 Please refer to the following links for other configuration items:
 * [Permission configuration](/en/user-manual/shardingsphere-proxy/yaml-config/authority/)

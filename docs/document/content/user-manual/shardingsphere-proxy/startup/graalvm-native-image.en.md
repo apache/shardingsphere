@@ -12,7 +12,7 @@ corresponding `Docker Image` through the `native-image` component of `GraalVM`.
 
 - ShardingSphere Proxy is not yet ready to integrate with GraalVM Native Image. Proxy's Native Image artifacts are
   built nightly at https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-proxy-native .
-  Assuming there is a `conf` folder containing `server.yaml` as `./custom/conf`, you can test it with the
+  Assuming there is a `conf` folder containing `global.yaml` as `./custom/conf`, you can test it with the
   following `docker-compose.yml` file.
 
 ````yaml
@@ -91,7 +91,7 @@ sdk install java 21.0.2-graalce
 ```
 
 3. To start Native Image through the command line, you need to bring 4 parameters. The first parameter is the `Port`
-   used by ShardingSphere Proxy, the second parameter is the `/conf` folder containing `server.yaml` written by you, the
+   used by ShardingSphere Proxy, the second parameter is the `/conf` folder containing `global.yaml` written by you, the
    third parameter is the `Address` of the bound port, and the fourth parameter is `Force Start`, if it is true, it will
    ensure that ShardingSphere Proxy Native can start normally no matter whether it is connected or not. Assuming the
    folder `./custom/conf` already exists, the example is
@@ -107,7 +107,7 @@ sdk install java 21.0.2-graalce
 ./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native,docker.native -DskipTests clean package
 ```
 
-- Assuming that there is a `conf` folder containing `server.yaml` as `./custom/conf`, you can start the Docker Image
+- Assuming that there is a `conf` folder containing `global.yaml` as `./custom/conf`, you can start the Docker Image
   corresponding to GraalVM Native Image through the following `docker-compose.yml` file.
 
 ```yaml
