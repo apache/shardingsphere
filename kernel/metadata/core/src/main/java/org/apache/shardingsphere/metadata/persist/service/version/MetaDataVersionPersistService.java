@@ -42,9 +42,6 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     
     @Override
     public void switchActiveVersion(final Collection<MetaDataVersion> metaDataVersions) {
-        if (metaDataVersions.isEmpty()) {
-            return;
-        }
         if (repository instanceof NodePathTransactionAware) {
             switchActiveVersionWithTransaction(metaDataVersions);
         } else {
@@ -53,12 +50,18 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
     }
     
     private void switchActiveVersionWithTransaction(final Collection<MetaDataVersion> metaDataVersions) {
-        ((NodePathTransactionAware) repository).executeInTransaction(buildNodePathTransactionOperations(metaDataVersions));
+        List<NodePathTransactionOperation> nodePathTransactionOperations = buildNodePathTransactionOperations(metaDataVersions);
+        if (!nodePathTransactionOperations.isEmpty()) {
+            ((NodePathTransactionAware) repository).executeInTransaction(nodePathTransactionOperations);
+        }
     }
     
     private List<NodePathTransactionOperation> buildNodePathTransactionOperations(final Collection<MetaDataVersion> metaDataVersions) {
         List<NodePathTransactionOperation> result = new ArrayList<>();
         for (MetaDataVersion each : metaDataVersions) {
+            if (each.getNextActiveVersion().equals(each.getCurrentActiveVersion())) {
+                continue;
+            }
             result.add(NodePathTransactionOperation.update(each.getKey() + ACTIVE_VERSION, each.getNextActiveVersion()));
             result.add(NodePathTransactionOperation.delete(each.getKey() + VERSIONS + each.getCurrentActiveVersion()));
         }
