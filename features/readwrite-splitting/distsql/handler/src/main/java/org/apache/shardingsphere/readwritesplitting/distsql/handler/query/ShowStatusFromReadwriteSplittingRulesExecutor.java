@@ -17,43 +17,26 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import com.google.common.base.Strings;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
  * Show status from readwrite-splitting rules executor.
  */
 @Setter
-public final class ShowStatusFromReadwriteSplittingRulesExecutor implements DistSQLQueryExecutor<ShowStatusFromReadwriteSplittingRulesStatement>, DistSQLExecutorDatabaseAware {
+public final class ShowStatusFromReadwriteSplittingRulesExecutor implements DistSQLQueryExecutor<ShowStatusFromReadwriteSplittingRulesStatement>, DistSQLExecutorRuleAware<ReadwriteSplittingRule> {
     
-    private ShardingSphereDatabase database;
+    private ReadwriteSplittingRule rule;
     
     @Override
     public Collection<String> getColumnNames(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
@@ -62,58 +45,36 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Dist
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement, final ContextManager contextManager) {
-        Collection<String> allReadResources = getAllReadResources(sqlStatement.getGroupName());
-        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(database.getName(), contextManager);
-        return buildRows(allReadResources, persistentReadResources);
+        return buildRows(getReadDataSourceNames(sqlStatement), getDisabledDataSourceNames(sqlStatement));
     }
     
-    @SuppressWarnings("unchecked")
-    private Collection<String> getAllReadResources(final String groupName) {
-        Collection<String> exportKeys = Arrays.asList(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE);
-        Map<String, Object> exportMap = database.getRuleMetaData().findRules(ExportableRule.class).stream()
-                .filter(each -> new RuleExportEngine(each).containExportableKey(exportKeys)).findFirst().map(each -> new RuleExportEngine(each).export(exportKeys)).orElse(Collections.emptyMap());
-        Map<String, Map<String, String>> allReadwriteRuleMap = exportMap.values().stream().map(each -> ((Map<String, Map<String, String>>) each).entrySet())
-                .flatMap(Collection::stream).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
-        if (!Strings.isNullOrEmpty(groupName)) {
-            allReadwriteRuleMap = allReadwriteRuleMap.entrySet().stream().filter(each -> groupName.equalsIgnoreCase(each.getKey()))
-                    .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+    private Collection<String> getReadDataSourceNames(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
+        if (sqlStatement.getRuleName().isPresent()) {
+            return rule.getDataSourceRules().entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(sqlStatement.getRuleName().get()))
+                    .flatMap(entry -> entry.getValue().getReadwriteSplittingGroup().getReadDataSources().stream()).collect(Collectors.toList());
         }
-        return allReadwriteRuleMap.values().stream().map(each -> each.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES)).filter(each -> null != each && !each.isEmpty())
-                .map(this::deconstructString).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+        return rule.getDataSourceRules().entrySet().stream().flatMap(entry -> entry.getValue().getReadwriteSplittingGroup().getReadDataSources().stream()).collect(Collectors.toList());
     }
     
-    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String databaseName, final ContextManager contextManager) {
-        if (!contextManager.getInstanceContext().isCluster()) {
-            return Collections.emptyMap();
+    private Collection<String> getDisabledDataSourceNames(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
+        if (sqlStatement.getRuleName().isPresent()) {
+            return rule.getDataSourceRules().entrySet().stream().filter(entry -> entry.getKey().equalsIgnoreCase(sqlStatement.getRuleName().get()))
+                    .flatMap(entry -> entry.getValue().getDisabledDataSourceNames().stream()).collect(Collectors.toSet());
         }
-        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService(contextManager.getMetaDataContexts().getPersistService().getRepository()).loadStorageNodes();
-        Map<String, StorageNodeDataSource> result = new HashMap<>();
-        storageNodes.entrySet().stream().filter(entry -> StorageNodeRole.MEMBER == entry.getValue().getRole()).forEach(entry -> {
-            QualifiedDatabase qualifiedDatabase = new QualifiedDatabase(entry.getKey());
-            if (databaseName.equalsIgnoreCase(qualifiedDatabase.getDatabaseName())) {
-                result.put(qualifiedDatabase.getDataSourceName(), entry.getValue());
-            }
-        });
-        return result;
+        return rule.getDataSourceRules().entrySet().stream().flatMap(entry -> entry.getValue().getDisabledDataSourceNames().stream()).collect(Collectors.toSet());
     }
     
-    private Collection<LocalDataQueryResultRow> buildRows(final Collection<String> readResources, final Map<String, StorageNodeDataSource> persistentReadResources) {
-        Map<DataSourceState, Map<String, StorageNodeDataSource>> persistentReadResourceGroup = persistentReadResources.entrySet().stream()
-                .collect(Collectors.groupingBy(each -> each.getValue().getStatus(), Collectors.toMap(Entry::getKey, Entry::getValue)));
-        Map<String, StorageNodeDataSource> disabledReadResources = persistentReadResourceGroup.getOrDefault(DataSourceState.DISABLED, Collections.emptyMap());
-        Map<String, StorageNodeDataSource> enabledReadResources = persistentReadResourceGroup.getOrDefault(DataSourceState.ENABLED, Collections.emptyMap());
-        readResources.removeIf(disabledReadResources::containsKey);
-        readResources.addAll(enabledReadResources.keySet());
-        readResources.addAll(disabledReadResources.keySet());
-        return readResources.stream().map(each -> buildRow(each, disabledReadResources.get(each))).collect(Collectors.toList());
+    private Collection<LocalDataQueryResultRow> buildRows(final Collection<String> readDataSourceNames, final Collection<String> disabledDataSourceNames) {
+        return readDataSourceNames.stream().map(each -> buildRow(each, disabledDataSourceNames.contains(each))).collect(Collectors.toList());
     }
     
-    private List<String> deconstructString(final String str) {
-        return new LinkedList<>(Arrays.asList(str.split(",")));
+    private LocalDataQueryResultRow buildRow(final String dataSourceName, final boolean disabled) {
+        return new LocalDataQueryResultRow(dataSourceName, disabled ? DataSourceState.DISABLED : DataSourceState.ENABLED);
     }
     
-    private LocalDataQueryResultRow buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
-        return null == storageNodeDataSource ? new LocalDataQueryResultRow(resource, DataSourceState.ENABLED) : new LocalDataQueryResultRow(resource, storageNodeDataSource.getStatus());
+    @Override
+    public Class<ReadwriteSplittingRule> getRuleClass() {
+        return ReadwriteSplittingRule.class;
     }
     
     @Override

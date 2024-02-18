@@ -18,19 +18,16 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +41,7 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     @Test
     void assertGetRowData() {
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
-        executor.setDatabase(mockDatabase());
+        executor.setRule(mockRule());
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowStatusFromReadwriteSplittingRulesStatement.class), mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -53,21 +50,20 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
         assertThat(row.getCell(2), is("ENABLED"));
         row = iterator.next();
         assertThat(row.getCell(1), is("read_ds_1"));
-        assertThat(row.getCell(2), is("ENABLED"));
+        assertThat(row.getCell(2), is("DISABLED"));
     }
     
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ReadwriteSplittingRule readwriteSplittingRule = mock(ReadwriteSplittingRule.class);
-        when(readwriteSplittingRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportDataSources()));
-        when(result.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(readwriteSplittingRule));
+    private ReadwriteSplittingRule mockRule() {
+        ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
+        Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules = Collections.singletonMap("group_0", mockReadwriteSplittingDataSourceRule());
+        when(result.getDataSourceRules()).thenReturn(dataSourceRules);
         return result;
     }
     
-    private Map<String, Map<String, String>> exportDataSources() {
-        Map<String, String> exportedDataSources = new LinkedHashMap<>(2, 1F);
-        exportedDataSources.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, "write_ds");
-        exportedDataSources.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, "read_ds_0,read_ds_1");
-        return Collections.singletonMap("readwrite_ds", exportedDataSources);
+    private ReadwriteSplittingDataSourceRule mockReadwriteSplittingDataSourceRule() {
+        ReadwriteSplittingDataSourceRule result = mock(ReadwriteSplittingDataSourceRule.class, RETURNS_DEEP_STUBS);
+        when(result.getReadwriteSplittingGroup().getReadDataSources()).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
+        when(result.getDisabledDataSourceNames()).thenReturn(Collections.singleton("read_ds_1"));
+        return result;
     }
 }

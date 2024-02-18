@@ -29,11 +29,11 @@ import java.util.Collection;
 public final class CollectionUtils {
     
     /**
-     * Get database name.
+     * Judge whether the collection contains the specified element (case-insensitive).
      * 
      * @param collection collection
      * @param element element
-     * @return true if the collection contains the specified element (case-insensitive)
+     * @return true if the collection contains the specified element
      */
     public static boolean containsIgnoreCase(final Collection<String> collection, final String element) {
         return collection.stream().anyMatch(each -> each.equalsIgnoreCase(element));
