@@ -37,10 +37,10 @@ public final class MySQLTimestamp2BinlogProtocolValue implements MySQLBinlogProt
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int seconds = payload.getByteBuf().readInt();
+        int nanos = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload).getNanos();
         if (0 == seconds) {
-            return MySQLTimeValueUtils.DATETIME_OF_ZERO;
+            return nanos > 0 ? MySQLTimeValueUtils.DATETIME_OF_ZERO + "." + String.valueOf(nanos).substring(0, columnDef.getColumnMeta()) : MySQLTimeValueUtils.DATETIME_OF_ZERO;
         }
-        int nanos = columnDef.getColumnMeta() > 0 ? new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload).getNanos() : 0;
         Timestamp result = new Timestamp(seconds * 1000L);
         result.setNanos(nanos);
         return result;

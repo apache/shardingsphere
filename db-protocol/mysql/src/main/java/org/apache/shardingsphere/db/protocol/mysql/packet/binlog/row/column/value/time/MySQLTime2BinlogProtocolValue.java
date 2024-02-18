@@ -40,13 +40,13 @@ public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolV
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int time = payload.getByteBuf().readUnsignedMedium();
+        int nanos = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload).getNanos();
         if (0x800000 == time) {
-            return MySQLTimeValueUtils.ZERO_OF_TIME;
+            return nanos > 0 ? MySQLTimeValueUtils.ZERO_OF_TIME + "." + String.valueOf(nanos).substring(0, columnDef.getColumnMeta()) : MySQLTimeValueUtils.ZERO_OF_TIME;
         }
-        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
         int hour = (time >> 12) % (1 << 10);
         int minute = (time >> 6) % (1 << 6);
         int second = time % (1 << 6);
-        return LocalTime.of(hour, minute, second).withNano(fractionalSeconds.getNanos());
+        return LocalTime.of(hour, minute, second).withNano(nanos);
     }
 }

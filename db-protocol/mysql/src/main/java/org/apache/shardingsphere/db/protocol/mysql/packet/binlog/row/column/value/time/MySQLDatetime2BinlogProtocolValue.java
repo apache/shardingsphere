@@ -50,8 +50,9 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
     
     private Serializable readDatetime(final MySQLBinlogColumnDef columnDef, final long datetime, final MySQLPacketPayload payload) {
         long datetimeWithoutSign = datetime & (0x8000000000L - 1);
+        int nanos = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload).getNanos();
         if (0 == datetimeWithoutSign) {
-            return MySQLTimeValueUtils.DATETIME_OF_ZERO;
+            return nanos > 0 ? MySQLTimeValueUtils.DATETIME_OF_ZERO + "." + String.valueOf(nanos).substring(0, columnDef.getColumnMeta()) : MySQLTimeValueUtils.DATETIME_OF_ZERO;
         }
         long date = datetimeWithoutSign >> 17;
         long yearAndMonth = date >> 5;
@@ -62,7 +63,6 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
         int hour = (int) (time >> 12);
         int minute = (int) ((time >> 6) % (1 << 6));
         int second = (int) (time % (1 << 6));
-        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractionalSeconds.getNanos()));
+        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, nanos));
     }
 }
