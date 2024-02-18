@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url;
+package org.apache.shardingsphere.infra.url.core;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.url.exception.URLProviderNotFoundException;
+import org.apache.shardingsphere.infra.url.core.exception.URLProviderNotFoundException;
 
 import java.util.Properties;
 

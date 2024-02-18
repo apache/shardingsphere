@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url;
+package org.apache.shardingsphere.infra.url.core;
 
-import org.apache.shardingsphere.infra.url.arg.URLArgumentLineRender;
-import org.apache.shardingsphere.infra.url.arg.URLArgumentPlaceholderTypeFactory;
+import org.apache.shardingsphere.infra.url.core.arg.URLArgumentLineRender;
+import org.apache.shardingsphere.infra.url.core.arg.URLArgumentPlaceholderTypeFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
 
 import java.util.Arrays;
 import java.util.Collection;

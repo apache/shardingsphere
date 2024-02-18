@@ -15,35 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.type.absolutepath;
+package org.apache.shardingsphere.infra.url.classpath;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.url.ShardingSphereURLLoader;
+import org.apache.shardingsphere.infra.url.spi.ShardingSphereURLLoader;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Absolute path URL loader.
+ * Class path URL loader.
  */
-public final class AbsolutePathURLLoader implements ShardingSphereURLLoader {
+public final class ClassPathURLLoader implements ShardingSphereURLLoader {
     
     @Override
     @SneakyThrows(IOException.class)
     public String load(final String configurationSubject, final Properties queryProps) {
-        return Files.readAllLines(getAbsoluteFile(configurationSubject).toPath(), StandardCharsets.UTF_8).stream().collect(Collectors.joining(System.lineSeparator()));
+        return Files.readAllLines(getResourceFile(configurationSubject).toPath()).stream().collect(Collectors.joining(System.lineSeparator()));
     }
     
-    private File getAbsoluteFile(final String configurationSubject) {
-        return new File(configurationSubject);
+    @SneakyThrows(URISyntaxException.class)
+    private File getResourceFile(final String configurationSubject) {
+        return new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(configurationSubject)).toURI().getPath());
     }
     
     @Override
     public String getType() {
-        return "absolutepath:";
+        return "classpath:";
     }
 }

@@ -15,32 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.type.classpath;
+package org.apache.shardingsphere.infra.url.core.exception;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class ClassPathURLLoaderTest {
+/**
+ * URL provider not found exception.
+ */
+public final class URLProviderNotFoundException extends SyntaxSQLException {
     
-    @Test
-    @EnabledOnOs({OS.LINUX, OS.MAC})
-    void assertGetContentOnLinux() {
-        assertGetContent(1783);
-    }
+    private static final long serialVersionUID = 1017115393560838384L;
     
-    @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void assertGetContentOnWindows() {
-        assertGetContent(1824);
-    }
-    
-    private void assertGetContent(final int expectedLength) {
-        assertThat(new ClassPathURLLoader().load("config/classpath/fixture.yaml", new Properties()).length(), is(expectedLength));
+    public URLProviderNotFoundException(final String url) {
+        super(XOpenSQLState.NOT_FOUND, 12, "Can not find url provider for `%s`.", url);
     }
 }

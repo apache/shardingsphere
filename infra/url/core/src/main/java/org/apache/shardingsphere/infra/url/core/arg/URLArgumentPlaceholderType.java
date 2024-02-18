@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.exception;
+package org.apache.shardingsphere.infra.url.core.arg;
 
-import org.junit.jupiter.api.Test;
-
-import java.sql.SQLException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class URLProviderNotFoundExceptionTest {
+/**
+ * URL argument placeholder type.
+ */
+public enum URLArgumentPlaceholderType {
     
-    @Test
-    void assertToSQLException() {
-        SQLException sqlException = new URLProviderNotFoundException("invalid:xxx").toSQLException();
-        assertThat(sqlException.getMessage(), is("Can not find url provider for `invalid:xxx`."));
-        assertThat(sqlException.getSQLState(), is("42S02"));
-        assertThat(sqlException.getErrorCode(), is(12012));
-    }
+    NONE, ENVIRONMENT, SYSTEM_PROPS
 }

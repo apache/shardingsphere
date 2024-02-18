@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.arg;
+package org.apache.shardingsphere.infra.url.classpath;
 
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class URLArgumentPlaceholderTypeFactoryTest {
+class ClassPathURLLoaderTest {
     
     @Test
-    void assertValueOfWithValidQueryProperties() {
-        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(PropertiesBuilder.build(new Property("placeholder-type", "environment"))), is(URLArgumentPlaceholderType.ENVIRONMENT));
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void assertGetContentOnLinux() {
+        assertGetContent(1783);
     }
     
     @Test
-    void assertValueOfWithInvalidQueryProperties() {
-        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(PropertiesBuilder.build(new Property("placeholder-type", "invalid"))), is(URLArgumentPlaceholderType.NONE));
+    @EnabledOnOs(OS.WINDOWS)
+    void assertGetContentOnWindows() {
+        assertGetContent(1824);
     }
     
-    @Test
-    void assertValueOfWithEmptyQueryProperties() {
-        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(new Properties()), is(URLArgumentPlaceholderType.NONE));
+    private void assertGetContent(final int expectedLength) {
+        assertThat(new ClassPathURLLoader().load("config/classpath/fixture.yaml", new Properties()).length(), is(expectedLength));
     }
 }

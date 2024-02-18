@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.url.exception;
+package org.apache.shardingsphere.infra.url.spi;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+
+import java.util.Properties;
 
 /**
- * URL provider not found exception.
+ * ShardingSphere URL loader.
  */
-public final class URLProviderNotFoundException extends SyntaxSQLException {
+@SingletonSPI
+public interface ShardingSphereURLLoader extends TypedSPI {
     
-    private static final long serialVersionUID = 1017115393560838384L;
-    
-    public URLProviderNotFoundException(final String url) {
-        super(XOpenSQLState.NOT_FOUND, 12, "Can not find url provider for `%s`.", url);
-    }
+    /**
+     * Load configuration content.
+     * 
+     * @param configurationSubject configuration subject
+     * @param queryProps query properties
+     * @return loaded content
+     */
+    String load(String configurationSubject, Properties queryProps);
 }
