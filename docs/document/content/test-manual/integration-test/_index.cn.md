@@ -112,7 +112,7 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 
 目录：`src/test/resources/env/${SCENARIO-TYPE}`
 
-  - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: 规则配置。
+  - `proxy/conf/database-${SCENARIO-TYPE}.yaml`: 规则配置。
 
 **Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `test/e2e/fixture/src/test/assembly/bin/start.sh` 文件的 `JAVA_OPTS` 中找到第 2 个暴露的端口用于远程调试。**
 

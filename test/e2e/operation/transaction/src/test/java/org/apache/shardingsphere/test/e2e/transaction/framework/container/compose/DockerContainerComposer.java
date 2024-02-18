@@ -86,13 +86,13 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     }
     
     private String getDefaultResource(final TransactionTestParameter testParam) {
-        return String.format("env/%s/%s/config-sharding-%s%s.yaml", testParam.getAdapter().toLowerCase(),
+        return String.format("env/%s/%s/database-sharding-%s%s.yaml", testParam.getAdapter().toLowerCase(),
                 testParam.getDatabaseType().getType().toLowerCase(), testParam.getTransactionTypes().get(0).toString().toLowerCase(),
                 getTransactionProvider(testParam.getProviders().get(0)));
     }
     
     private String getScenarioResource(final TransactionTestParameter testParam) {
-        return String.format("env/scenario/%s/%s/conf/%s/config-%s-%s%s.yaml", testParam.getScenario(), testParam.getAdapter().toLowerCase(),
+        return String.format("env/scenario/%s/%s/conf/%s/database-%s-%s%s.yaml", testParam.getScenario(), testParam.getAdapter().toLowerCase(),
                 testParam.getDatabaseType().getType().toLowerCase(), testParam.getScenario(), testParam.getTransactionTypes().get(0).toString().toLowerCase(),
                 getTransactionProvider(testParam.getProviders().get(0)));
     }

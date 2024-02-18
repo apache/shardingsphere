@@ -39,5 +39,5 @@
     <sql-case id="export-database-config" value="EXPORT DATABASE CONFIGURATION FROM database_name" db-types="ShardingSphere" />
     <sql-case id="export-metadata" value="EXPORT METADATA" db-types="ShardingSphere" />
     <sql-case id="export-storage-nodes" value="EXPORT STORAGE NODES" db-types="ShardingSphere" />
-    <sql-case id="convert-yaml-config" value="CONVERT YAML CONFIGURATION FROM FILE '/yaml/config-sharding.yaml'" db-types="ShardingSphere" />
+    <sql-case id="convert-yaml-config" value="CONVERT YAML CONFIGURATION FROM FILE '/yaml/database-sharding.yaml'" db-types="ShardingSphere" />
 </sql-cases>
