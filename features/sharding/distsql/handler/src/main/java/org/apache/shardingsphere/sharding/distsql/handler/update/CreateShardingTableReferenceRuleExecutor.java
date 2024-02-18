@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.util.CollectionUtils;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -74,7 +75,8 @@ public final class CreateShardingTableReferenceRuleExecutor implements DatabaseR
     
     private void checkToBeReferencedShardingTablesExisted(final CreateShardingTableReferenceRuleStatement sqlStatement) {
         Collection<String> existedShardingTables = getCurrentLogicTables();
-        Collection<String> notExistedShardingTables = sqlStatement.getTableNames().stream().filter(each -> !containsIgnoreCase(existedShardingTables, each)).collect(Collectors.toSet());
+        Collection<String> notExistedShardingTables =
+                sqlStatement.getTableNames().stream().filter(each -> !CollectionUtils.containsIgnoreCase(existedShardingTables, each)).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(notExistedShardingTables.isEmpty(), () -> new MissingRequiredRuleException("Sharding", database.getName(), notExistedShardingTables));
     }
     
@@ -94,10 +96,6 @@ public final class CreateShardingTableReferenceRuleExecutor implements DatabaseR
     
     private Collection<String> getReferencedTableNames() {
         return rule.getConfiguration().getBindingTableGroups().stream().flatMap(each -> Arrays.stream(each.getReference().split(","))).map(String::trim).collect(Collectors.toList());
-    }
-    
-    private boolean containsIgnoreCase(final Collection<String> currentRules, final String ruleName) {
-        return currentRules.stream().anyMatch(each -> each.equalsIgnoreCase(ruleName));
     }
     
     @Override
