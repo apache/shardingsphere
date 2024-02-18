@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.distsql.handler.util.CollectionUtils;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -91,14 +91,13 @@ public final class AlterShardingTableReferenceRuleExecutor implements DatabaseRu
     }
     
     private void checkToBeReferencedShardingTablesExisted(final AlterShardingTableReferenceRuleStatement sqlStatement) {
-        Collection<String> existedShardingTables = getCurrentShardingTables();
-        Collection<String> notExistedShardingTables =
-                sqlStatement.getTableNames().stream().filter(each -> !CollectionUtils.containsIgnoreCase(existedShardingTables, each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistedShardingTables.isEmpty(), () -> new MissingRequiredRuleException("Sharding", database.getName(), notExistedShardingTables));
+        Collection<String> currentShardingTableNames = getCurrentShardingTableNames();
+        Collection<String> notExistedTableNames = sqlStatement.getTableNames().stream().filter(each -> !currentShardingTableNames.contains(each)).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("Sharding", database.getName(), notExistedTableNames));
     }
     
-    private Collection<String> getCurrentShardingTables() {
-        Collection<String> result = new HashSet<>();
+    private Collection<String> getCurrentShardingTableNames() {
+        Collection<String> result = new CaseInsensitiveSet<>();
         result.addAll(rule.getConfiguration().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         result.addAll(rule.getConfiguration().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         return result;
