@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtils;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.SQLBuilderUtils;
@@ -49,7 +48,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
 @Slf4j
-public final class E2EIncrementalTask extends BaseIncrementTask {
+public final class E2EIncrementalTask implements Runnable {
     
     private static final List<String> MYSQL_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "t_mediumint", "t_smallint", "t_tinyint", "t_unsigned_int", "t_unsigned_mediumint",
             "t_unsigned_smallint", "t_unsigned_tinyint", "t_float", "t_double", "t_decimal", "t_timestamp", "t_datetime", "t_date", "t_time", "t_year", "t_bit", "t_binary", "t_varbinary", "t_blob",
