@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
 
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
@@ -40,6 +41,8 @@ public final class SQLServerInsertStatement extends InsertStatement implements S
     private ExecSegment execSegment;
     
     private WithTableHintSegment withTableHintSegment;
+    
+    private FunctionSegment rowSetFunctionSegment;
     
     /**
      * Get with segment.
@@ -75,5 +78,13 @@ public final class SQLServerInsertStatement extends InsertStatement implements S
      */
     public Optional<WithTableHintSegment> getWithTableHintSegment() {
         return Optional.ofNullable(withTableHintSegment);
+    }
+    
+    /**
+     * Get rowSet function segment.
+     * @return rowSet function segment.
+     */
+    public Optional<FunctionSegment> getRowSetFunctionSegment() {
+        return Optional.ofNullable(rowSetFunctionSegment);
     }
 }

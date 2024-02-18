@@ -20,7 +20,7 @@ grammar DMLStatement;
 import BaseRule;
 
 insert
-    : withClause? INSERT top? INTO? tableName (AS? alias)? withTableHint?  (insertDefaultValue | insertValuesClause | insertSelectClause | insertExecClause)
+    : withClause? INSERT top? INTO? (tableName | rowSetFunction) (AS? alias)? withTableHint?  (insertDefaultValue | insertValuesClause | insertSelectClause | insertExecClause)
     ;
 
 insertDefaultValue

@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
@@ -332,6 +333,18 @@ public final class InsertStatementHandler implements SQLStatementHandler {
     public static Optional<WithTableHintSegment> getWithTableHintSegment(final InsertStatement insertStatement) {
         if (insertStatement instanceof SQLServerInsertStatement) {
             return ((SQLServerInsertStatement) insertStatement).getWithTableHintSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get rowSet function segment.
+     * @param insertStatement insert statement
+     * @return rowSet function segment
+     */
+    public static Optional<FunctionSegment> getRowSetFunctionSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof SQLServerInsertStatement) {
+            return ((SQLServerInsertStatement) insertStatement).getRowSetFunctionSegment();
         }
         return Optional.empty();
     }

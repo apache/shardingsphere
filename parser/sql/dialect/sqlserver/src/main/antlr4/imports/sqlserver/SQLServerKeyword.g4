@@ -1958,3 +1958,7 @@ TRY_CAST
 TRY_CONVERT
     : T R Y UL_ C O N V E R T
     ;
+
+OPENQUERY
+    : O P E N Q U E R Y
+    ;
