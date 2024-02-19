@@ -314,7 +314,11 @@ distinct
     ;
 
 specialFunction
-    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction | openDatasourceFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction
+    ;
+
+rowNumberFunction
+    : ROW_NUMBER LP_ RP_ overClause
     ;
 
 openDatasourceFunction

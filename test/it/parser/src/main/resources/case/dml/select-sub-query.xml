@@ -850,4 +850,57 @@
             </subquery-table>
         </from>
     </select>
+    
+    <select sql-case-id="select_sub_query_with_rownumber">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="110">
+            <function-table>
+                <subquery-table>
+                    <subquery start-index="14" stop-index="110">
+                        <select>
+                            <projections start-index="22" stop-index="82">
+                                <column-projection name="col1" start-index="22" stop-index="25" />
+                                <expression-projection alias="rn" text="ROW_NUMBER () OVER (PARTITION by col1 ORDER BY col1)" start-index="28" stop-index="82">
+                                    <expr>
+                                        <function function-name="ROW_NUMBER" text="ROW_NUMBER () OVER (PARTITION by col1 ORDER BY col1)" start-index="28" stop-index="79" />
+                                    </expr>
+                                </expression-projection>
+                            </projections>
+                            <from start-index="89" stop-index="92">
+                                <simple-table name="tab1" start-index="89" stop-index="92" />
+                            </from>
+                            <where start-index="94" stop-index="109">
+                                <expr>
+                                    <binary-operation-expression start-index="100" stop-index="109">
+                                        <left>
+                                            <column name="col1" start-index="100" stop-index="103" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="XYZ" start-index="105" stop-index="109" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </expr>
+                            </where>
+                        </select>
+                    </subquery>
+                </subquery-table>
+            </function-table>
+        </from>
+        <where start-index="112" stop-index="123">
+            <expr>
+                <binary-operation-expression start-index="118" stop-index="123">
+                    <left>
+                        <column name="rn" start-index="118" stop-index="119" />
+                    </left>
+                    <right>
+                        <literal-expression value="1" start-index="123" stop-index="123" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

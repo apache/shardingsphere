@@ -45,4 +45,5 @@
     <sql-case id="select_with_datepart_group_by_with_having_order_by" value="SELECT DATEPART(yyyy,OrderDate) AS N'Year', SUM(TotalDue) AS N'Total Order Amount' FROM Sales.SalesOrderHeader GROUP BY DATEPART(yyyy,OrderDate) HAVING DATEPART(yyyy,OrderDate) &gt;= N'2003' ORDER BY DATEPART(yyyy,OrderDate)" db-types="SQLServer"/>
     <sql-case id="select_from_input_table" value="SELECT count(*) FROM input GROUP BY PartitionId, clusterid, tumblingwindow;" db-types="SQLServer"/>
     <sql-case id="select_group_by_top_column_value" value="SELECT TOP 10 hash_unique_bigint_id FROM dbo.TelemetryDS WHERE Timestamp BETWEEN @StartTime AND @EndTime GROUP BY hash_unique_bigint_id ORDER BY MAX(max_elapsed_time_microsec) DESC" db-types="SQLServer" />
+    <sql-case id="select_group_by_count_with_tumblingwindow_function" value="SELECT count(*) FROM input GROUP BY clusterid,tumblingwindow(minutes, 5)" db-types="SQLServer" />
 </sql-cases>
