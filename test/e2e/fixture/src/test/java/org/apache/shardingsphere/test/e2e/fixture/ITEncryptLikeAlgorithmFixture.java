@@ -61,7 +61,7 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     private Map<Character, Integer> charIndexes;
     
     @Getter
-    private EncryptAlgorithmMetaData metaData;
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true);
     
     @Override
     public void init(final Properties props) {
@@ -69,7 +69,6 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
         mask = createMask(props);
         start = createStart(props);
         charIndexes = createCharIndexes(props);
-        metaData = new EncryptAlgorithmMetaData(false, true, true);
     }
     
     private int createDelta(final Properties props) {

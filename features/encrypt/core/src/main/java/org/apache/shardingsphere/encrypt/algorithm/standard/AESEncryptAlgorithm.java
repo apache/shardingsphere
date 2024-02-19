@@ -51,13 +51,12 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
     
     @Getter
-    private EncryptAlgorithmMetaData metaData;
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(true, true, false);
     
     private byte[] secretKey;
     
     @Override
     public void init(final Properties props) {
-        metaData = new EncryptAlgorithmMetaData(true, true, false);
         secretKey = createSecretKey(props);
     }
     
