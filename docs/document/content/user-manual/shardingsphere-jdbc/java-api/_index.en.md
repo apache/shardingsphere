@@ -38,11 +38,11 @@ Properties props = ... // Build properties
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
 ```
 
-Please refer to [Mode Confiugration](/en/user-manual/shardingsphere-jdbc/java-api/mode) for more mode details.
+Please refer to [Mode Configuration](/en/user-manual/shardingsphere-jdbc/java-api/mode) for more mode details.
 
-Please refer to [Data Source Confiugration](/en/user-manual/shardingsphere-jdbc/java-api/data-source) for more data source details.
+Please refer to [Data Source Configuration](/en/user-manual/shardingsphere-jdbc/java-api/data-source) for more data source details.
 
-Please refer to [Rules Confiugration](/en/user-manual/shardingsphere-jdbc/java-api/rules) for more rule details.
+Please refer to [Rules Configuration](/en/user-manual/shardingsphere-jdbc/java-api/rules) for more rule details.
 
 ### Use Data Source
 
