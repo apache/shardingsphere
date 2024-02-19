@@ -42,7 +42,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParse
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
 import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
+import org.apache.shardingsphere.data.pipeline.distsql.statement.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;

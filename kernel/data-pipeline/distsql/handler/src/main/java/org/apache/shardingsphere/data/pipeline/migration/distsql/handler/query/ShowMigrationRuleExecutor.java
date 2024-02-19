@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.distsql.ShowTransmissionRuleQueryResult;
+import org.apache.shardingsphere.data.pipeline.distsql.handler.query.ShowTransmissionRuleQueryResult;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 

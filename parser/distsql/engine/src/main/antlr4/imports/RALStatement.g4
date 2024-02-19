@@ -99,14 +99,6 @@ convertYamlConfiguration
     : CONVERT YAML CONFIGURATION FROM FILE filePath
     ;
 
-showMigrationRule
-    : SHOW MIGRATION RULE
-    ;
-
-alterMigrationRule
-    : ALTER MIGRATION RULE transmissionRule?
-    ;
-
 lockCluster
     : LOCK CLUSTER WITH lockStrategy
     ;
@@ -121,38 +113,6 @@ showPluginImplementations
 
 showKeyGenerateAlgorithmPlugins
     : SHOW KEY GENERATE ALGORITHM PLUGINS
-    ;
-
-transmissionRule
-    : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
-    ;
-
-readDefinition
-    : READ LP_ workerThread? (COMMA_? batchSize)? (COMMA_? shardingSize)? (COMMA_? rateLimiter)? RP_
-    ;
-
-writeDefinition
-    : WRITE LP_ workerThread? (COMMA_? batchSize)? (COMMA_? rateLimiter)? RP_
-    ;
-
-workerThread
-    : WORKER_THREAD EQ_ intValue
-    ;
-
-batchSize
-    : BATCH_SIZE EQ_ intValue
-    ;
-
-shardingSize
-    : SHARDING_SIZE EQ_ intValue
-    ;
-
-rateLimiter
-    : RATE_LIMITER LP_ algorithmDefinition RP_
-    ;
-
-streamChannel
-    : STREAM_CHANNEL LP_ algorithmDefinition RP_
     ;
 
 confPath
@@ -197,10 +157,6 @@ lockStrategy
 
 label
     : IDENTIFIER_
-    ;
-
-intValue
-    : INT_
     ;
 
 showLike

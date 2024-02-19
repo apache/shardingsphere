@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
+package org.apache.shardingsphere.data.pipeline.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
 
 /**
- * Show migration rule statement.
+ * Alter transmission rule statement.
  */
-public final class ShowMigrationRuleStatement extends QueryableMigrationRALStatement {
+@RequiredArgsConstructor
+@Getter
+public final class AlterTransmissionRuleStatement extends UpdatableMigrationRALStatement {
+    
+    private final String jobTypeName;
+    
+    private final TransmissionRuleSegment processConfigSegment;
 }

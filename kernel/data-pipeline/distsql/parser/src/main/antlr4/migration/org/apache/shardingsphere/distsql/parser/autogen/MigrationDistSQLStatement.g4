@@ -20,7 +20,9 @@ grammar MigrationDistSQLStatement;
 import Symbol, RALStatement, RQLStatement;
 
 execute
-    : (showMigrationList
+    : (showMigrationRule
+    | alterMigrationRule
+    | showMigrationList
     | showMigrationStatus
     | migrateTable
     | startMigration

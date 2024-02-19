@@ -21,9 +21,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterComputeNodeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterMigrationRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterStorageUnitContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.BatchSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ConvertYamlConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DisableComputeNodeContext;
@@ -43,13 +41,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RateLimiterContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ReadDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RefreshDatabaseMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RefreshTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RegisterStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetDistVariableContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShardingSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodeInfoContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodeModeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodesContext;
@@ -57,24 +52,17 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowKeyGenerateAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowLogicalTablesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowPluginImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowStorageUnitsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StorageUnitDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StreamChannelContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.TransmissionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlockClusterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnregisterStorageUnitContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.WorkerThreadContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.WriteDefinitionContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
-import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.convert.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
@@ -85,11 +73,9 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComput
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodesStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterComputeNodeStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
@@ -309,47 +295,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitShowMigrationRule(final ShowMigrationRuleContext ctx) {
-        return new ShowMigrationRuleStatement();
-    }
-    
-    @Override
-    public ASTNode visitAlterMigrationRule(final AlterMigrationRuleContext ctx) {
-        TransmissionRuleSegment segment = null == ctx.transmissionRule() ? null
-                : (TransmissionRuleSegment) visit(ctx.transmissionRule());
-        return new AlterTransmissionRuleStatement("MIGRATION", segment);
-    }
-    
-    @Override
-    public ASTNode visitTransmissionRule(final TransmissionRuleContext ctx) {
-        TransmissionRuleSegment result = new TransmissionRuleSegment();
-        if (null != ctx.readDefinition()) {
-            result.setReadSegment((ReadOrWriteSegment) visit(ctx.readDefinition()));
-        }
-        if (null != ctx.writeDefinition()) {
-            result.setWriteSegment((ReadOrWriteSegment) visit(ctx.writeDefinition()));
-        }
-        if (null != ctx.streamChannel()) {
-            result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitReadDefinition(final ReadDefinitionContext ctx) {
-        return new ReadOrWriteSegment(getWorkerThread(ctx.workerThread()), getBatchSize(ctx.batchSize()), getShardingSize(ctx.shardingSize()), getAlgorithmSegment(ctx.rateLimiter()));
-    }
-    
-    @Override
-    public ASTNode visitWriteDefinition(final WriteDefinitionContext ctx) {
-        return new ReadOrWriteSegment(getWorkerThread(ctx.workerThread()), getBatchSize(ctx.batchSize()), getAlgorithmSegment(ctx.rateLimiter()));
-    }
-    
-    private AlgorithmSegment getAlgorithmSegment(final RateLimiterContext ctx) {
-        return null == ctx ? null : (AlgorithmSegment) visit(ctx);
-    }
-    
-    @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
         return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), buildProperties(ctx.propertiesDefinition()));
     }
@@ -365,18 +310,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
         return result;
     }
     
-    private Integer getWorkerThread(final WorkerThreadContext ctx) {
-        return null == ctx ? null : Integer.parseInt(ctx.intValue().getText());
-    }
-    
-    private Integer getBatchSize(final BatchSizeContext ctx) {
-        return null == ctx ? null : Integer.parseInt(ctx.intValue().getText());
-    }
-    
-    private Integer getShardingSize(final ShardingSizeContext ctx) {
-        return null == ctx ? null : Integer.parseInt(ctx.intValue().getText());
-    }
-    
     @Override
     public ASTNode visitLockCluster(final LockClusterContext ctx) {
         return new LockClusterStatement((AlgorithmSegment) visitAlgorithmDefinition(ctx.lockStrategy().algorithmDefinition()));
@@ -385,16 +318,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitUnlockCluster(final UnlockClusterContext ctx) {
         return new UnlockClusterStatement();
-    }
-    
-    @Override
-    public ASTNode visitRateLimiter(final RateLimiterContext ctx) {
-        return visit(ctx.algorithmDefinition());
-    }
-    
-    @Override
-    public ASTNode visitStreamChannel(final StreamChannelContext ctx) {
-        return visit(ctx.algorithmDefinition());
     }
     
     private String getIdentifierValue(final ParseTree context) {
