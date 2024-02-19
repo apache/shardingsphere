@@ -28,7 +28,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
+            <artifactId>shardingsphere-jdbc</artifactId>
             <version>${r'${project.version}'}</version>
         </dependency>
     <#if mode=="cluster-zookeeper">

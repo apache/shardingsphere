@@ -15,7 +15,7 @@ ShardingSphere 提供 JDBC 驱动，开发者可以在 Spring Boot 中配置 `Sh
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -49,7 +49,7 @@ Quarkus 3，Micronaut Framework 4 和 Helidon 3。
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
+            <artifactId>shardingsphere-jdbc</artifactId>
             <version>${shardingsphere.version}</version>
         </dependency>
     </dependencies>
@@ -66,7 +66,7 @@ ShardingSphere 的所有特性均可在 Spring Boot OSS 2 上使用，但低版�
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
+            <artifactId>shardingsphere-jdbc</artifactId>
             <version>${shardingsphere.version}</version>
         </dependency>
         <dependency>
@@ -89,7 +89,7 @@ ShardingSphere 的所有特性均可在 Spring Boot OSS 2 上使用，但低版�
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
+            <artifactId>shardingsphere-jdbc</artifactId>
             <version>${shardingsphere.version}</version>
         </dependency>
     </dependencies>

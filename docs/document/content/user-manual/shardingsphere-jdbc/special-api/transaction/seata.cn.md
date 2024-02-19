@@ -16,7 +16,7 @@ Apache ShardingSphere 提供 BASE 事务，集成了 Seata 的实现。本文所
     <dependencies>
       <dependency>
          <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc-core</artifactId>
+         <artifactId>shardingsphere-jdbc</artifactId>
          <version>${shardingsphere.version}</version>
       </dependency>
       <dependency>

@@ -8,7 +8,7 @@ chapter = true
 
 ShardingSphere JDBC 已在 GraalVM Native Image 下完成可用性验证。
 
-构建包含 `org.apache.shardingsphere:shardingsphere-jdbc-core:${shardingsphere.version}` 的 Maven 依赖的 GraalVM Native 
+构建包含 `org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}` 的 Maven 依赖的 GraalVM Native 
 Image，你需要借助于 GraalVM Native Build Tools。GraalVM Native Build Tools 提供了 Maven Plugin 和 Gradle Plugin 来简化 GraalVM
 CE 的 `native-image` 命令行工具的长篇大论的 shell 命令。
 
@@ -27,7 +27,7 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
+            <artifactId>shardingsphere-jdbc</artifactId>
             <version>${shardingsphere.version}</version>
         </dependency>
     </dependencies>
@@ -77,7 +77,7 @@ plugins {
 }
 
 dependencies {
-   implementation 'org.apache.shardingsphere:shardingsphere-jdbc-core:${shardingsphere.version}'
+   implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
 }
 
 graalvmNative {

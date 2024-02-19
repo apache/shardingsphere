@@ -8,7 +8,7 @@ chapter = true
 
 ShardingSphere JDBC has been validated for availability under GraalVM Native Image.
 
-Build GraalVM Native containing Maven dependencies of `org.apache.shardingsphere:shardingsphere-jdbc-core:${shardingsphere.version}`
+Build GraalVM Native containing Maven dependencies of `org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}`
 Image, you need to resort to GraalVM Native Build Tools. GraalVM Native Build Tools provides Maven Plugin and Gradle Plugin 
 to simplify long list of shell commands for GraalVM CE's `native-image` command line tool.
 
@@ -29,7 +29,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
      <dependencies>
          <dependency>
              <groupId>org.apache.shardingsphere</groupId>
-             <artifactId>shardingsphere-jdbc-core</artifactId>
+             <artifactId>shardingsphere-jdbc</artifactId>
              <version>${shardingsphere.version}</version>
          </dependency>
      </dependencies>
@@ -80,7 +80,7 @@ plugins {
 }
 
 dependencies {
-     implementation 'org.apache.shardingsphere:shardingsphere-jdbc-core:${shardingsphere.version}'
+     implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
 }
 
 graalvmNative {

@@ -20,7 +20,7 @@ Apache ShardingSphere 提供 XA 事务，集成了 Narayana 的实现。
 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
