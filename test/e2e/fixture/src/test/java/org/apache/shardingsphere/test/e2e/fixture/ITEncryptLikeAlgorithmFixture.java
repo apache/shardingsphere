@@ -52,6 +52,9 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     
     private static final int MAX_NUMERIC_LETTER_CHAR = 255;
     
+    @Getter
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true);
+    
     private int delta;
     
     private int mask;
@@ -59,9 +62,6 @@ public final class ITEncryptLikeAlgorithmFixture implements EncryptAlgorithm {
     private int start;
     
     private Map<Character, Integer> charIndexes;
-    
-    @Getter
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, true);
     
     @Override
     public void init(final Properties props) {
