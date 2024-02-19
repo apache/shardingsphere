@@ -44,7 +44,7 @@ import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingSh
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingInsertStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -220,15 +220,15 @@ class ShardingInsertStatementValidatorTest {
     }
     
     private void mockShardingRuleForUpdateShardingColumn() {
-        TableRule tableRule = mock(TableRule.class);
-        when(tableRule.getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
-        when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
+        ShardingTable shardingTable = mock(ShardingTable.class);
+        when(shardingTable.getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(shardingTable.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
         when(shardingRule.findShardingColumn("id", "user")).thenReturn(Optional.of("id"));
-        when(shardingRule.getTableRule("user")).thenReturn(tableRule);
+        when(shardingRule.getShardingTable("user")).thenReturn(shardingTable);
         StandardShardingStrategyConfiguration databaseStrategyConfig = mock(StandardShardingStrategyConfiguration.class);
         when(databaseStrategyConfig.getShardingColumn()).thenReturn("id");
         when(databaseStrategyConfig.getShardingAlgorithmName()).thenReturn("database_inline");
-        when(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule)).thenReturn(databaseStrategyConfig);
+        when(shardingRule.getDatabaseShardingStrategyConfiguration(shardingTable)).thenReturn(databaseStrategyConfig);
         when(shardingRule.getShardingAlgorithms()).thenReturn(Collections.singletonMap("database_inline",
                 TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 2}")))));
     }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -49,17 +49,17 @@ class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     @Mock
     private ShardingRule shardingRule;
     
-    private Map<String, TableRule> mockTableRules(final List<List<String>> shards) {
-        Map<String, TableRule> result = new LinkedHashMap<>();
+    private Map<String, ShardingTable> mockShardingTables(final List<List<String>> shards) {
+        Map<String, ShardingTable> result = new LinkedHashMap<>();
         int index = 0;
         for (List<String> each : shards) {
-            result.put("table_" + index++, mockTableRule(each));
+            result.put("table_" + index++, mockShardingTable(each));
         }
         return result;
     }
     
-    private TableRule mockTableRule(final List<String> dataSources) {
-        TableRule result = mock(TableRule.class);
+    private ShardingTable mockShardingTable(final List<String> dataSources) {
+        ShardingTable result = mock(ShardingTable.class);
         Map<String, List<DataNode>> dataNodeGroups = new HashMap<>(dataSources.size(), 1F);
         for (String each : dataSources) {
             dataNodeGroups.put(each, null);
@@ -74,8 +74,8 @@ class ShardingDataSourceGroupBroadcastRoutingEngineTest {
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
-        Map<String, TableRule> tableRules = mockTableRules(shards);
-        when(shardingRule.getTableRules()).thenReturn(tableRules);
+        Map<String, ShardingTable> shardingTables = mockShardingTables(shards);
+        when(shardingRule.getShardingTables()).thenReturn(shardingTables);
         RouteContext routeContext = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
         assertThat(routeContext.getRouteUnits().size(), is(1));
         Iterator<RouteUnit> iterator = routeContext.getRouteUnits().iterator();

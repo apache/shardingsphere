@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.Optional;
 
@@ -32,11 +32,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ShardingConstraintReviser implements ConstraintReviser<ShardingRule> {
     
-    private final TableRule tableRule;
+    private final ShardingTable shardingTable;
     
     @Override
     public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final ShardingRule rule) {
-        for (DataNode each : tableRule.getActualDataNodes()) {
+        for (DataNode each : shardingTable.getActualDataNodes()) {
             String referencedTableName = originalMetaData.getReferencedTableName();
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {

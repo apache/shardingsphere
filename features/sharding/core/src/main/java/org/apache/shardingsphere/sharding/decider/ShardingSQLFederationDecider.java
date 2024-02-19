@@ -63,7 +63,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
     private Collection<DataNode> getTableDataNodes(final ShardingRule rule, final Collection<String> tableNames) {
         Collection<DataNode> result = new HashSet<>();
         for (String each : tableNames) {
-            rule.findTableRule(each).ifPresent(optional -> result.addAll(optional.getActualDataNodes()));
+            rule.findShardingTable(each).ifPresent(optional -> result.addAll(optional.getActualDataNodes()));
         }
         return result;
     }

@@ -51,11 +51,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Table rule.
+ * Sharding table.
  */
 @Getter
 @ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDataSourceNames", "dataSourceDataNode", "tableDataNode"})
-public final class TableRule {
+public final class ShardingTable {
     
     private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");
     
@@ -90,7 +90,7 @@ public final class TableRule {
     
     private final DataNodeInfo tableDataNode;
     
-    public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
+    public ShardingTable(final Collection<String> dataSourceNames, final String logicTableName) {
         logicTable = logicTableName;
         dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1F);
         actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
@@ -104,7 +104,7 @@ public final class TableRule {
         tableDataNode = actualDataNodes.isEmpty() ? null : createTableDataNode(actualDataNodes);
     }
     
-    public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
+    public ShardingTable(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable();
         List<String> dataNodes = InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1F);
@@ -121,8 +121,8 @@ public final class TableRule {
         checkRule(dataNodes);
     }
     
-    public TableRule(final ShardingAutoTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames,
-                     final ShardingAutoTableAlgorithm shardingAutoTableAlgorithm, final String defaultGenerateKeyColumn) {
+    public ShardingTable(final ShardingAutoTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames,
+                         final ShardingAutoTableAlgorithm shardingAutoTableAlgorithm, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable();
         databaseShardingStrategyConfig = new NoneShardingStrategyConfiguration();
         tableShardingStrategyConfig = tableRuleConfig.getShardingStrategy();

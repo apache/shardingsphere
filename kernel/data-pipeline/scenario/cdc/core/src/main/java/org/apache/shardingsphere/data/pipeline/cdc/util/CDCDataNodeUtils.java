@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.ArrayList;
@@ -60,9 +60,9 @@ public final class CDCDataNodeUtils {
                 result.put(each, new ArrayList<>(singleRule.get().getAllDataNodes().get(each)));
                 continue;
             }
-            if (shardingRule.isPresent() && shardingRule.get().findTableRule(each).isPresent()) {
-                TableRule tableRule = shardingRule.get().getTableRule(each);
-                result.put(each, tableRule.getActualDataNodes());
+            if (shardingRule.isPresent() && shardingRule.get().findShardingTable(each).isPresent()) {
+                ShardingTable shardingTable = shardingRule.get().getShardingTable(each);
+                result.put(each, shardingTable.getActualDataNodes());
                 continue;
             }
             if (broadcastRule.isPresent() && broadcastRule.get().findFirstActualTable(each).isPresent()) {
