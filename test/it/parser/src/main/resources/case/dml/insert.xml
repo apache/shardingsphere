@@ -3898,4 +3898,46 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_into_with_multi_nchar">
+        <table name="UnitMeasure" start-index="12" stop-index="33">
+            <owner name="Production" start-index="12" stop-index="21"/>
+        </table>
+        <columns start-index="34" stop-index="34"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="FT2" start-index="43" stop-index="48"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Square Feet " start-index="51" stop-index="65"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="20080923" start-index="68" stop-index="77"/>
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Y" start-index="82" stop-index="85"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Yards" start-index="88" stop-index="95"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="20080923" start-index="98" stop-index="107"/>
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Y3" start-index="112" stop-index="116"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Cubic Yards" start-index="119" stop-index="132"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="20080923" start-index="135" stop-index="144"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

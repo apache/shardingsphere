@@ -3112,4 +3112,106 @@
             </expr>
         </having>
     </select>
+
+    <select sql-case-id="select_from_sys_columns_inner_join_sys_types">
+        <projections start-index="7" stop-index="210">
+            <expression-projection text="OBJECT_NAME(object_id)" start-index="7" stop-index="43" alias="object_name">
+                <expr>
+                    <function text="OBJECT_NAME(object_id)" start-index="7" stop-index="28" function-name="OBJECT_NAME">
+                        <parameter>
+                            <column name="object_id" start-index="19" stop-index="27"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="name" start-index="45" stop-index="65" alias="column_name">
+                <owner name="c" start-index="45" stop-index="45"/>
+            </column-projection>
+            <expression-projection text="SCHEMA_NAME(t.schema_id)" start-index="67" stop-index="105" alias="schema_name">
+                <expr>
+                    <function text="SCHEMA_NAME(t.schema_id)" start-index="67" stop-index="90" function-name="SCHEMA_NAME">
+                        <parameter>
+                            <column name="schema_id" start-index="79" stop-index="89">
+                                <owner name="t" start-index="79" stop-index="79"/>
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TYPE_NAME(c.user_type_id)" start-index="107" stop-index="149" alias="user_type_name">
+                <expr>
+                    <function text="TYPE_NAME(c.user_type_id)" start-index="107" stop-index="131" function-name="TYPE_NAME">
+                        <parameter>
+                            <column name="user_type_id" start-index="117" stop-index="130">
+                                <owner name="c" start-index="117" stop-index="117"/>
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="max_length" start-index="151" stop-index="162">
+                <owner name="c" start-index="151" stop-index="151"/>
+            </column-projection>
+            <column-projection name="precision" start-index="164" stop-index="174">
+                <owner name="c" start-index="164" stop-index="164"/>
+            </column-projection>
+            <column-projection name="scale" start-index="176" stop-index="182">
+                <owner name="c" start-index="176" stop-index="176"/>
+            </column-projection>
+            <column-projection name="is_nullable" start-index="184" stop-index="196">
+                <owner name="c" start-index="184" stop-index="184"/>
+            </column-projection>
+            <column-projection name="is_computed" start-index="198" stop-index="210">
+                <owner name="c" start-index="198" stop-index="198"/>
+            </column-projection>
+        </projections>
+        <from start-index="217" stop-index="293">
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="columns" start-index="217" stop-index="232" alias="c">
+                        <owner name="sys" start-index="217" stop-index="219"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="types" start-index="245" stop-index="258" alias="t">
+                        <owner name="sys" start-index="245" stop-index="247"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="263" stop-index="293">
+                        <operator>=</operator>
+                        <left>
+                            <column name="user_type_id" start-index="263" stop-index="276">
+                                <owner name="c" start-index="263" stop-index="263"/>
+                            </column>
+                        </left>
+                        <right>
+                            <column name="user_type_id" start-index="280" stop-index="293">
+                                <owner name="t" start-index="280" stop-index="280"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <where start-index="295" stop-index="356">
+            <expr>
+                <binary-operation-expression start-index="301" stop-index="356">
+                    <left>
+                        <column name="user_type_id" start-index="301" stop-index="314">
+                            <owner name="c" start-index="301" stop-index="301"/>
+                        </column>
+                    </left>
+                    <right>
+                        <function text="TYPE_ID('&lt;schema_name.data_type_name&gt;')" start-index="318" stop-index="356" function-name="TYPE_ID">
+                            <parameter>
+                                <literal-expression value="&lt;schema_name.data_type_name&gt;" start-index="326" stop-index="355"/>
+                            </parameter>
+                        </function>
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
