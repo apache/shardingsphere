@@ -27,7 +27,6 @@ import org.apache.calcite.sql.fun.SqlTrimFunction.Flag;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
@@ -71,7 +70,7 @@ public final class LiteralExpressionConverter {
         if (TIME_UNIT_NAMES.contains(literalValue)) {
             return Optional.of(new SqlIntervalQualifier(TimeUnit.valueOf(literalValue), null, SqlParserPos.ZERO));
         }
-        if (segment.getLiterals() instanceof Integer || segment.getLiterals() instanceof BigDecimal || segment.getLiterals() instanceof Number) {
+        if (segment.getLiterals() instanceof Number) {
             return Optional.of(SqlLiteral.createExactNumeric(literalValue, SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof String) {
