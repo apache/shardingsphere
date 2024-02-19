@@ -53,7 +53,7 @@ class ShardingSQLRewriteContextDecoratorTest {
         when(insertStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
         when(sqlRewriteContext.getSqlStatementContext()).thenReturn(insertStatementContext);
         ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.findTableRule("t_order")).thenReturn(Optional.empty());
+        when(shardingRule.findShardingTable("t_order")).thenReturn(Optional.empty());
         new ShardingSQLRewriteContextDecorator().decorate(shardingRule, mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
     }

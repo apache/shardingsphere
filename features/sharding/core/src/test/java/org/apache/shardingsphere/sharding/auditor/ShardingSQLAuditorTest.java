@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,9 +72,9 @@ class ShardingSQLAuditorTest {
     void setUp() {
         when(hintValueContext.findDisableAuditNames()).thenReturn(new HashSet<>(Collections.singletonList("auditor_1")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_table"));
-        TableRule tableRule = mock(TableRule.class);
-        when(rule.findTableRule("foo_table")).thenReturn(Optional.of(tableRule));
-        when(rule.getAuditStrategyConfiguration(tableRule)).thenReturn(auditStrategy);
+        ShardingTable shardingTable = mock(ShardingTable.class);
+        when(rule.findShardingTable("foo_table")).thenReturn(Optional.of(shardingTable));
+        when(rule.getAuditStrategyConfiguration(shardingTable)).thenReturn(auditStrategy);
         when(auditStrategy.getAuditorNames()).thenReturn(Collections.singleton("auditor_1"));
     }
     

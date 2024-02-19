@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,12 +49,12 @@ public final class ShowShardingTableNodesExecutor implements DistSQLQueryExecuto
     public Collection<LocalDataQueryResultRow> getRows(final ShowShardingTableNodesStatement sqlStatement, final ContextManager contextManager) {
         String tableName = sqlStatement.getTableName();
         return null == tableName
-                ? rule.getTableRules().entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), getTableNodes(entry.getValue()))).collect(Collectors.toList())
-                : Collections.singleton(new LocalDataQueryResultRow(tableName, getTableNodes(rule.getTableRule(tableName))));
+                ? rule.getShardingTables().entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), getTableNodes(entry.getValue()))).collect(Collectors.toList())
+                : Collections.singleton(new LocalDataQueryResultRow(tableName, getTableNodes(rule.getShardingTable(tableName))));
     }
     
-    private String getTableNodes(final TableRule tableRule) {
-        return tableRule.getActualDataNodes().stream().map(DataNode::format).collect(Collectors.joining(", "));
+    private String getTableNodes(final ShardingTable shardingTable) {
+        return shardingTable.getActualDataNodes().stream().map(DataNode::format).collect(Collectors.joining(", "));
     }
     
     @Override

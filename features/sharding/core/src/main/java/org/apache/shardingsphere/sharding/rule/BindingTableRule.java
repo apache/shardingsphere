@@ -37,7 +37,7 @@ import java.util.Optional;
 @Getter
 public final class BindingTableRule {
     
-    private final Map<String, TableRule> tableRules = new CaseInsensitiveMap<>();
+    private final Map<String, ShardingTable> shardingTables = new CaseInsensitiveMap<>();
     
     /**
      * Judge contains this logic table in this rule.
@@ -46,7 +46,7 @@ public final class BindingTableRule {
      * @return contains this logic table or not
      */
     public boolean hasLogicTable(final String logicTable) {
-        return tableRules.containsKey(logicTable);
+        return shardingTables.containsKey(logicTable);
     }
     
     /**
@@ -61,14 +61,14 @@ public final class BindingTableRule {
      * @throws BindingTableNotFoundException binding table not found exception
      */
     public String getBindingActualTable(final String dataSource, final String logicTable, final String otherLogicTable, final String otherActualTable) {
-        Optional<TableRule> otherLogicTableRule = Optional.ofNullable(tableRules.get(otherLogicTable));
-        int index = otherLogicTableRule.map(optional -> optional.findActualTableIndex(dataSource, otherActualTable)).orElse(-1);
+        Optional<ShardingTable> otherShardingTable = Optional.ofNullable(shardingTables.get(otherLogicTable));
+        int index = otherShardingTable.map(optional -> optional.findActualTableIndex(dataSource, otherActualTable)).orElse(-1);
         if (-1 == index) {
             throw new ActualTableNotFoundException(dataSource, otherActualTable);
         }
-        Optional<TableRule> tableRule = Optional.ofNullable(tableRules.get(logicTable));
-        if (tableRule.isPresent()) {
-            return tableRule.get().getActualDataNodes().get(index).getTableName();
+        Optional<ShardingTable> shardingTable = Optional.ofNullable(shardingTables.get(logicTable));
+        if (shardingTable.isPresent()) {
+            return shardingTable.get().getActualDataNodes().get(index).getTableName();
         }
         throw new BindingTableNotFoundException(dataSource, logicTable, otherActualTable);
     }
@@ -79,7 +79,7 @@ public final class BindingTableRule {
      * @return logical tables.
      */
     public Collection<String> getAllLogicTables() {
-        return tableRules.keySet();
+        return shardingTables.keySet();
     }
     
     /**

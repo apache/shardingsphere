@@ -47,17 +47,17 @@ public final class ShardingMetaDataReviseEntry implements MetaDataReviseEntry<Sh
     
     @Override
     public Optional<ShardingColumnGeneratedReviser> getColumnGeneratedReviser(final ShardingRule rule, final String tableName) {
-        return rule.findTableRuleByActualTable(tableName).map(ShardingColumnGeneratedReviser::new);
+        return rule.findShardingTableByActualTable(tableName).map(ShardingColumnGeneratedReviser::new);
     }
     
     @Override
     public Optional<ShardingIndexReviser> getIndexReviser(final ShardingRule rule, final String tableName) {
-        return rule.findTableRuleByActualTable(tableName).map(ShardingIndexReviser::new);
+        return rule.findShardingTableByActualTable(tableName).map(ShardingIndexReviser::new);
     }
     
     @Override
     public Optional<ShardingConstraintReviser> getConstraintReviser(final ShardingRule rule, final String tableName) {
-        return rule.findTableRuleByActualTable(tableName).map(ShardingConstraintReviser::new);
+        return rule.findShardingTableByActualTable(tableName).map(ShardingConstraintReviser::new);
     }
     
     @Override

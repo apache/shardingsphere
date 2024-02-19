@@ -63,7 +63,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQ
         Collection<SQLToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
             TableNameSegment tableName = each.getTableName();
-            if (shardingRule.findTableRule(tableName.getIdentifier().getValue()).isPresent()) {
+            if (shardingRule.findShardingTable(tableName.getIdentifier().getValue()).isPresent()) {
                 result.add(new TableToken(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier(), (SQLStatementContext) sqlStatementContext, shardingRule));
             }
         }

@@ -77,7 +77,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     
     private void checkTableInUsed(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final RouteContext routeContext) {
         Collection<String> dropTables = sqlStatementContext.getTablesContext().getTableNames();
-        Collection<String> otherRuleActualTables = shardingRule.getTableRules().values().stream().filter(each -> !dropTables.contains(each.getLogicTable()))
+        Collection<String> otherRuleActualTables = shardingRule.getShardingTables().values().stream().filter(each -> !dropTables.contains(each.getLogicTable()))
                 .flatMap(each -> each.getActualDataNodes().stream().map(DataNode::getTableName)).collect(Collectors.toCollection(CaseInsensitiveSet::new));
         if (otherRuleActualTables.isEmpty()) {
             return;

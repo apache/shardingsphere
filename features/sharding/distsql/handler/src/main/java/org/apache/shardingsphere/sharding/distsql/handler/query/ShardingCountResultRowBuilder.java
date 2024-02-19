@@ -31,7 +31,7 @@ public final class ShardingCountResultRowBuilder implements CountResultRowBuilde
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final ShardingRule rule, final String databaseName) {
-        return Arrays.asList(new LocalDataQueryResultRow("sharding_table", databaseName, rule.getTableRules().size()),
+        return Arrays.asList(new LocalDataQueryResultRow("sharding_table", databaseName, rule.getShardingTables().size()),
                 new LocalDataQueryResultRow("sharding_table_reference", databaseName, rule.getConfiguration().getBindingTableGroups().size()));
     }
     

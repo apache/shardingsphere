@@ -54,7 +54,7 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     
     private boolean containsShardingTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            if (shardingRule.findTableRule(each).isPresent()) {
+            if (shardingRule.findShardingTable(each).isPresent()) {
                 return true;
             }
         }

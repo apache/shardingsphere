@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteE
 import org.apache.shardingsphere.sharding.exception.metadata.DropInUsedTablesException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropTableStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -71,10 +71,10 @@ class ShardingDropTableStatementValidatorTest {
     
     @BeforeEach
     void init() {
-        Map<String, TableRule> tableRules = new LinkedHashMap<>();
-        tableRules.put("t_order_item", generateShardingRule("t_order_item"));
-        tableRules.put("t_order", generateShardingRule("t_order"));
-        when(shardingRule.getTableRules()).thenReturn(tableRules);
+        Map<String, ShardingTable> shardingTables = new LinkedHashMap<>();
+        shardingTables.put("t_order_item", createShardingTable("t_order_item"));
+        shardingTables.put("t_order", createShardingTable("t_order"));
+        when(shardingRule.getShardingTables()).thenReturn(shardingTables);
     }
     
     @Test
@@ -101,8 +101,8 @@ class ShardingDropTableStatementValidatorTest {
                         mock(ConfigurationProperties.class), routeContext));
     }
     
-    private TableRule generateShardingRule(final String tableName) {
-        TableRule result = mock(TableRule.class);
+    private ShardingTable createShardingTable(final String tableName) {
+        ShardingTable result = mock(ShardingTable.class);
         when(result.getLogicTable()).thenReturn(tableName);
         List<DataNode> dataNodes = new LinkedList<>();
         DataNode d1 = mock(DataNode.class);
@@ -125,7 +125,7 @@ class ShardingDropTableStatementValidatorTest {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
-        when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
+        when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
@@ -140,7 +140,7 @@ class ShardingDropTableStatementValidatorTest {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
-        when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
+        when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
@@ -153,7 +153,7 @@ class ShardingDropTableStatementValidatorTest {
     void assertPostValidateDropTableWithSameRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
-        when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
+        when(shardingRule.getShardingTable("t_config")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_config"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_config", "t_config"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("t_config", "t_config"))));

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 
@@ -45,10 +45,10 @@ class CDCDataNodeUtilsTest {
         ShardingSphereDatabase mockDatabase = mock(ShardingSphereDatabase.class);
         RuleMetaData mockRuleMetaData = mock(RuleMetaData.class);
         ShardingRule mockShardingRule = mock(ShardingRule.class);
-        TableRule mockTableRule = mock(TableRule.class);
-        when(mockTableRule.getActualDataNodes()).thenReturn(Collections.singletonList(new DataNode("ds_0.t_order")));
-        when(mockShardingRule.findTableRule("t_order")).thenReturn(Optional.of(mockTableRule));
-        when(mockShardingRule.getTableRule("t_order")).thenReturn(mockTableRule);
+        ShardingTable mockShardingTable = mock(ShardingTable.class);
+        when(mockShardingTable.getActualDataNodes()).thenReturn(Collections.singletonList(new DataNode("ds_0.t_order")));
+        when(mockShardingRule.findShardingTable("t_order")).thenReturn(Optional.of(mockShardingTable));
+        when(mockShardingRule.getShardingTable("t_order")).thenReturn(mockShardingTable);
         when(mockRuleMetaData.findSingleRule(ShardingRule.class)).thenReturn(Optional.of(mockShardingRule));
         SingleRule mockSingleRule = mock(SingleRule.class);
         when(mockRuleMetaData.findSingleRule(SingleRule.class)).thenReturn(Optional.of(mockSingleRule));

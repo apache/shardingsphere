@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,7 +58,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngine implements Shar
     
     private Collection<Set<String>> getDataSourceGroup(final ShardingRule shardingRule) {
         Collection<Set<String>> result = new LinkedList<>();
-        for (TableRule each : shardingRule.getTableRules().values()) {
+        for (ShardingTable each : shardingRule.getShardingTables().values()) {
             result.add(each.getDataNodeGroups().keySet());
         }
         return result;

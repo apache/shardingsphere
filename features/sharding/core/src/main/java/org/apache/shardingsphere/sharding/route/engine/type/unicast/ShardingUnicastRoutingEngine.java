@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.syntax.DataSourceIntersectionNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,7 +64,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             result.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
-            if (!shardingRule.findTableRule(logicTableName).isPresent()) {
+            if (!shardingRule.findShardingTable(logicTableName).isPresent()) {
                 result.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
                 return result;
             }
@@ -90,11 +90,11 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         Set<String> availableDataSourceNames = Collections.emptySet();
         boolean first = true;
         for (String each : logicTables) {
-            TableRule tableRule = shardingRule.getTableRule(each);
-            DataNode dataNode = tableRule.getActualDataNodes().get(0);
+            ShardingTable shardingTable = shardingRule.getShardingTable(each);
+            DataNode dataNode = shardingTable.getActualDataNodes().get(0);
             tableMappers.add(new RouteMapper(each, dataNode.getTableName()));
-            Set<String> currentDataSourceNames = tableRule.getActualDataNodes().stream().map(DataNode::getDataSourceName).collect(
-                    Collectors.toCollection(() -> new LinkedHashSet<>(tableRule.getActualDataSourceNames().size(), 1F)));
+            Set<String> currentDataSourceNames = shardingTable.getActualDataNodes().stream().map(DataNode::getDataSourceName).collect(
+                    Collectors.toCollection(() -> new LinkedHashSet<>(shardingTable.getActualDataSourceNames().size(), 1F)));
             if (first) {
                 availableDataSourceNames = currentDataSourceNames;
                 first = false;

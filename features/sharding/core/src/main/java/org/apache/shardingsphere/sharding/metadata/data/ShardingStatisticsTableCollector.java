@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableDa
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.sharding.metadata.data.dialect.DialectShardingStatisticsTableCollector;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -73,7 +73,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
     
     private void collectForShardingStatisticTable(final ShardingSphereDatabase database, final ShardingRule shardingRule, final ShardingSphereTableData tableData) throws SQLException {
         int count = 1;
-        for (TableRule each : shardingRule.getTableRules().values()) {
+        for (ShardingTable each : shardingRule.getShardingTables().values()) {
             for (DataNode dataNode : each.getActualDataNodes()) {
                 List<Object> row = new LinkedList<>();
                 row.add(count++);
