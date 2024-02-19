@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.statement.status;
+package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +34,11 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatement extends Upd
     
     private final DatabaseSegment database;
     
-    private final String groupName;
+    private final String ruleName;
     
     private final String storageUnitName;
     
-    private final String status;
+    private final boolean enable;
     
     @Override
     public Optional<DatabaseSegment> getDatabase() {

@@ -14,49 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-grammar BaseRule;
 
-import Symbol, Keyword, Literals;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.exception;
 
-literal
-    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
-    ;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
-algorithmDefinition
-    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
-    ;
-
-algorithmTypeName
-    : STRING_ | buildInReadQueryLoadBalanceAlgorithmType
-    ;
-
-buildInReadQueryLoadBalanceAlgorithmType
-    : ROUND_ROBIN
-    | RANDOM
-    | WEIGHT
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP_ properties? RP_
-    ;
-
-properties
-    : property (COMMA_ property)*
-    ;
-
-property
-    : key=STRING_ EQ_ value=literal
-    ;
-
-databaseName
-    : IDENTIFIER_
-    ;
-
-ruleName
-    : IDENTIFIER_
-    ;
-
-storageUnitName
-    : IDENTIFIER_
-    ;
+/**
+ * Invalid storage unit status exception.
+ */
+public final class InvalidStorageUnitStatusException extends StorageUnitDefinitionViolationException {
+    
+    private static final long serialVersionUID = 4029749233439176539L;
+    
+    public InvalidStorageUnitStatusException(final String errorMessages) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Invalid storage unit status, error message is: %s", errorMessages);
+    }
+}

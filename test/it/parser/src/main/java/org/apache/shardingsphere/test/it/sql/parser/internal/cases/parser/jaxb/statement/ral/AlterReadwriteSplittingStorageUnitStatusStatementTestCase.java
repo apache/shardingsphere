@@ -30,12 +30,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class AlterReadwriteSplittingStorageUnitStatusStatementTestCase extends DatabaseContainedTestCase {
     
-    @XmlAttribute(name = "group-name")
-    private String groupName;
+    @XmlAttribute(name = "rule-name")
+    private String ruleName;
     
     @XmlAttribute(name = "storage-unit-name")
     private String storageUnitName;
     
-    @XmlAttribute(name = "status")
-    private String status;
+    @XmlAttribute(name = "enable")
+    private boolean enable;
 }
