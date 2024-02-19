@@ -20,11 +20,11 @@ grammar RALStatement;
 import BaseRule;
 
 alterReadwriteSplittingStorageUnitStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
+    : ALTER READWRITE_SPLITTING RULE ruleName (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
     ;
 
 showStatusFromReadwriteSplittingRules
-    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
+    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE ruleName) (FROM databaseName)?
     ;
 
 showReadQueryLoadBalanceAlgorithmPlugins

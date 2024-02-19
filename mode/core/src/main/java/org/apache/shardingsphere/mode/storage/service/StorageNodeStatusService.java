@@ -20,8 +20,10 @@ package org.apache.shardingsphere.mode.storage.service;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.mode.storage.node.StorageNode;
 import org.apache.shardingsphere.mode.storage.yaml.YamlStorageNodeDataSource;
@@ -57,14 +59,15 @@ public final class StorageNodeStatusService {
     }
     
     /**
-     * Change storage node status.
+     * Change member storage node status.
      *
      * @param databaseName database name
      * @param groupName group name
      * @param storageUnitName storage unit name
-     * @param storageNodeDataSource storage node data source
+     * @param dataSourceState data source state
      */
-    public void changeStorageNodeStatus(final String databaseName, final String groupName, final String storageUnitName, final StorageNodeDataSource storageNodeDataSource) {
+    public void changeMemberStorageNodeStatus(final String databaseName, final String groupName, final String storageUnitName, final DataSourceState dataSourceState) {
+        StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, dataSourceState);
         repository.persist(StorageNode.getStorageNodeDataSourcePath(new QualifiedDatabase(databaseName, groupName, storageUnitName)),
                 YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(storageNodeDataSource)));
     }
