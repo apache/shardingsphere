@@ -30,12 +30,9 @@ import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContex
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Properties;
@@ -88,7 +85,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         return new String(result, StandardCharsets.UTF_8);
     }
     
-    private Cipher getCipher(final int decryptMode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    private Cipher getCipher(final int decryptMode) throws GeneralSecurityException {
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(secretKey, getType()));
         return result;
