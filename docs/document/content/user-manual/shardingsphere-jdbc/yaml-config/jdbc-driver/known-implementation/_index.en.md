@@ -13,7 +13,7 @@ If there is no specific statement, the following implementations all use YAML 1.
 This does not prevent custom implementations of `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader` from being manually converted to YAML from files such as XML or JSON.
 
 After parsing and loading the YAML file into ShardingSphere's metadata, 
-the next behavior will be determined again through the relevant configuration of [Mode Configuration](../../../java-api/mode). 
+the next behavior will be determined again through the relevant configuration of [Mode Configuration](../../../../java-api/mode). 
 Discuss two situations,
 
 1. ShardingSphere’s metadata does not exist in the Metadata Repository, and local metadata will be stored in the Metadata Repository.
@@ -22,7 +22,7 @@ Discuss two situations,
    the local metadata will be overwritten by the metadata of the Metadata Repository.
 
 For the configuration of the Metadata Repository, 
-please refer to [Metadata Repository](../../../../common-config/builtin-algorithm/metadata-repository).
+please refer to [Metadata Repository](../../../../../common-config/builtin-algorithm/metadata-repository).
 
 ## How to load configuration files
 
