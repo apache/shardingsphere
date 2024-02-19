@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
  * TODO Rename ConfigurationChangedSubscriber when metadata structure adjustment completed. #25485
  * New configuration changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings("unused")
 public final class NewConfigurationChangedSubscriber {
     
     private final ContextManager contextManager;

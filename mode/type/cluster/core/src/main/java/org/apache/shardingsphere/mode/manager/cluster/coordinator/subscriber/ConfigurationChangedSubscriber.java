@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 /**
  * Configuration changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class ConfigurationChangedSubscriber {
     
     private final RegistryCenter registryCenter;
