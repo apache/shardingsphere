@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.DropStreamingStatement;
 import org.apache.shardingsphere.distsql.statement.ral.pipeline.UpdatablePipelineRALStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
+import org.apache.shardingsphere.data.pipeline.distsql.statement.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.CommitMigrationStatement;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.MigrateTableStatement;

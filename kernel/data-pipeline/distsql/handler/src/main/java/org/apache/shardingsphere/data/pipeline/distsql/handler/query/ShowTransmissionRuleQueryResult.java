@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.distsql;
+package org.apache.shardingsphere.data.pipeline.distsql.handler.query;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;

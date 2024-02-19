@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter;
+package org.apache.shardingsphere.data.pipeline.distsql.handler.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

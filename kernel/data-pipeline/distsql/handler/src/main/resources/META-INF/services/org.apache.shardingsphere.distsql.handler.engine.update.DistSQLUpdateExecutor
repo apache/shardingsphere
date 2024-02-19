@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.data.pipeline.distsql.handler.update.AlterTransmissionRuleExecutor
 org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update.MigrateTableExecutor
 org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update.StartMigrationExecutor
 org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update.StopMigrationExecutor

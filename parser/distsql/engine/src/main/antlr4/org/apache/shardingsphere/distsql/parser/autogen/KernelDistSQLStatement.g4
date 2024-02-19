@@ -46,8 +46,6 @@ execute
     | importMetaData
     | exportStorageNodes
     | convertYamlConfiguration
-    | showMigrationRule
-    | alterMigrationRule
     | lockCluster
     | unlockCluster
     | showPluginImplementations
