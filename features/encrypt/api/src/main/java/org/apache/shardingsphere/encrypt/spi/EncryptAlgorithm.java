@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.spi;
 
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 /**
  * Encrypt algorithm.
@@ -29,19 +29,19 @@ public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
      * Encrypt.
      *
      * @param plainValue plain value
-     * @param encryptContext encrypt context
+     * @param algorithmSQLContext algorithm SQL context
      * @return cipher value
      */
-    Object encrypt(Object plainValue, EncryptContext encryptContext);
+    Object encrypt(Object plainValue, AlgorithmSQLContext algorithmSQLContext);
     
     /**
      * Decrypt.
      *
      * @param cipherValue cipher value
-     * @param encryptContext encrypt context
+     * @param algorithmSQLContext algorithm SQL context
      * @return plain value
      */
-    Object decrypt(Object cipherValue, EncryptContext encryptContext);
+    Object decrypt(Object cipherValue, AlgorithmSQLContext algorithmSQLContext);
     
     /**
      * Get meta data.

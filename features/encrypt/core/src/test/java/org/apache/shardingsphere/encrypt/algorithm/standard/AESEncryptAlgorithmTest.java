@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -78,23 +78,23 @@ class AESEncryptAlgorithmTest {
     
     @Test
     void assertEncrypt() {
-        Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
+        Object actual = encryptAlgorithm.encrypt("test", mock(AlgorithmSQLContext.class));
         assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
     void assertEncryptNullValue() {
-        assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
+        assertNull(encryptAlgorithm.encrypt(null, mock(AlgorithmSQLContext.class)));
     }
     
     @Test
     void assertDecrypt() {
-        Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(EncryptContext.class));
+        Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(AlgorithmSQLContext.class));
         assertThat(actual.toString(), is("test"));
     }
     
     @Test
     void assertDecryptNullValue() {
-        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
+        assertNull(encryptAlgorithm.decrypt(null, mock(AlgorithmSQLContext.class)));
     }
 }

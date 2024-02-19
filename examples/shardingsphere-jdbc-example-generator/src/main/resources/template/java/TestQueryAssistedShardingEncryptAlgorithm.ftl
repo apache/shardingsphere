@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 
@@ -43,12 +43,12 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptA
     }
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
         return "assistedEncryptValue";
     }
 
     @Override
-    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+    public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
         throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
     }
     

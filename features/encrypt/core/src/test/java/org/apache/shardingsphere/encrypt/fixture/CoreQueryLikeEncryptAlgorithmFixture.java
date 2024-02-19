@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.encrypt.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 
 import java.util.Properties;
 
@@ -35,12 +35,12 @@ public final class CoreQueryLikeEncryptAlgorithmFixture implements EncryptAlgori
     }
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
         return "likeEncryptValue";
     }
     
     @Override
-    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+    public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
         throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
     }
     
