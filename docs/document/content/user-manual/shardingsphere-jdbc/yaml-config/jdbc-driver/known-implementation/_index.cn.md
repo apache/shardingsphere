@@ -13,12 +13,12 @@ chapter = true
 这并不阻止 `org.apache.shardingsphere.infra.url.ShardingSphereURLLoader` 的自定义实现从 XML 或 JSON 等文件手动转化为 YAML。
 
 在解析并加载 YAML 文件为 ShardingSphere 的元数据后，
-会再次通过[模式配置](../../../../java-api/mode)的相关配置决定下一步行为。讨论两种情况，
+会再次通过[模式配置](../../../java-api/mode)的相关配置决定下一步行为。讨论两种情况，
 
 1. 元数据持久化仓库中不存在 ShardingSphere 的元数据，本地元数据将被存储到元数据持久化仓库。
 2. 元数据持久化仓库中已存在 ShardingSphere 的元数据，无论是否与本地元数据相同，本地元数据将被元数据持久化仓库的元数据覆盖。
 
-对元数据持久化仓库的配置需参考[元数据持久化仓库](../../../../../common-config/builtin-algorithm/metadata-repository)。
+对元数据持久化仓库的配置需参考[元数据持久化仓库](../../../../common-config/builtin-algorithm/metadata-repository)。
 
 ## 加载配置文件的方式
 
