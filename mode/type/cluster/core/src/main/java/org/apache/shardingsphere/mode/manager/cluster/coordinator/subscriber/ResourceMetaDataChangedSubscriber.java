@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 /**
  * Resource meta data changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class ResourceMetaDataChangedSubscriber {
     
     private final ContextManager contextManager;

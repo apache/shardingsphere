@@ -36,7 +36,7 @@ import java.util.Map;
  * TODO Rename ResourceMetaDataChangedSubscriber when metadata structure adjustment completed. #25485
  * Resource meta data changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings("unused")
 public final class NewResourceMetaDataChangedSubscriber {
     
     private final ContextManager contextManager;

@@ -41,7 +41,6 @@ import java.util.Optional;
 /**
  * State changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class StateChangedSubscriber {
     
     private final RegistryCenter registryCenter;

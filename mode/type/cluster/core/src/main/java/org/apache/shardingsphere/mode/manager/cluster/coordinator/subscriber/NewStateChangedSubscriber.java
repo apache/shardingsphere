@@ -42,7 +42,7 @@ import java.util.Optional;
  * TODO replace the old StateChangedSubscriber after meta data refactor completed
  * New state changed subscriber.
  */
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings("unused")
 public final class NewStateChangedSubscriber {
     
     private final NewRegistryCenter registryCenter;
