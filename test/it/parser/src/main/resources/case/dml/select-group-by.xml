@@ -961,4 +961,28 @@
             <expression-item expression="MAX(max_elapsed_time_microsec)" order-direction="DESC" start-index="145" stop-index="174" />
         </order-by>
     </select>
+    
+    <select sql-case-id="select_group_by_count_with_tumblingwindow_function">
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection expression="count(*)" type="COUNT" start-index="7" stop-index="14" />
+        </projections>
+        <from start-index="21" stop-index="25">
+            <simple-table name="input" start-index="21" stop-index="25" />
+        </from>
+        <group-by start-index="27" stop-index="71">
+            <column-item name="clusterid" order-direction="ASC" start-index="36" stop-index="44" />
+            <expression-item expression="tumblingwindow(minutes, 5)" order-direction="ASC" start-index="46" stop-index="71">
+                <expr>
+                    <function function-name="tumblingwindow" text="tumblingwindow(minutes, 5)" start-index="46" stop-index="71">
+                        <parameter>
+                            <column name="minutes" start-index="61" stop-index="67" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="5" start-index="70" stop-index="70" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-item>
+        </group-by>
+    </select>
 </sql-parser-test-cases>

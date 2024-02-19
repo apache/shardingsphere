@@ -3214,4 +3214,81 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_cross_join_sys_dm_exec_requests">
+        <projections start-index="7" stop-index="168">
+            <column-projection name="session_id" alias="SPID" start-index="7" stop-index="24" />
+            <column-projection name="command" start-index="27" stop-index="33" />
+            <column-projection name="text" alias="Query" start-index="36" stop-index="50">
+                <owner name="a" start-index="36" stop-index="36" />
+            </column-projection>
+            <column-projection name="start_time" start-index="53" stop-index="62" />
+            <column-projection name="percent_complete" start-index="65" stop-index="80" />
+            <expression-projection text="dateadd(second,estimated_completion_time/1000, getdate())" alias="estimated_completion_time" start-index="83" stop-index="168">
+                <expr>
+                    <function function-name="dateadd" text="dateadd(second,estimated_completion_time/1000, getdate())" start-index="83" stop-index="139">
+                        <parameter>
+                            <column name="second" start-index="91" stop-index="96" />
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="98" stop-index="127">
+                                <left>
+                                    <column name="estimated_completion_time" start-index="98" stop-index="122" />
+                                </left>
+                                <right>
+                                    <literal-expression value="1000" start-index="124" stop-index="127" />
+                                </right>
+                                <operator>/</operator>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <function function-name="getdate" text="getdate()" start-index="130" stop-index="138" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="175" stop-index="245">
+            <join-table natural="false" join-type="CROSS">
+                <left>
+                    <simple-table name="dm_exec_requests" alias="r" start-index="175" stop-index="196">
+                        <owner name="sys" start-index="175" stop-index="177" />
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="a" start-index="210" stop-index="245">
+                        <table-function function-name="sys.dm_exec_sql_text" text="sys.dm_exec_sql_text(r.sql_handle)">
+                            <parameter>
+                                <column name="sql_handle" start-index="231" stop-index="242">
+                                    <owner name="r" start-index="231" stop-index="231" />
+                                </column>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="247" stop-index="303">
+            <expr>
+                <in-expression start-index="253" stop-index="303">
+                    <left>
+                        <column name="command" start-index="253" stop-index="261">
+                            <owner name="r" start-index="253" stop-index="253" />
+                        </column>
+                    </left>
+                    <right>
+                        <list-expression start-index="266" stop-index="303">
+                            <items>
+                                <literal-expression value="BACKUP DATABASE" start-index="267" stop-index="283" />
+                            </items>
+                            <items>
+                                <literal-expression value="RESTORE DATABASE" start-index="285" stop-index="302" />
+                            </items>
+                        </list-expression>
+                    </right>
+                    <not>false</not>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
