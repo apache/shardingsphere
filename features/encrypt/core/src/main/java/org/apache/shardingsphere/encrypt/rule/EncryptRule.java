@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -51,13 +53,20 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     public EncryptRule(final String databaseName, final EncryptRuleConfiguration ruleConfig) {
         this.databaseName = databaseName;
         configuration = ruleConfig;
-        Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
-        ruleConfig.getEncryptors().forEach((key, value) -> encryptors.put(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
+        Map<String, EncryptAlgorithm> encryptors = createEncryptors(ruleConfig);
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, encryptors));
             tables.put(each.getName().toLowerCase(), new EncryptTable(each, encryptors));
             tableNamesMapper.put(each.getName());
         }
+    }
+    
+    private Map<String, EncryptAlgorithm> createEncryptors(final EncryptRuleConfiguration ruleConfig) {
+        Map<String, EncryptAlgorithm> result = new LinkedHashMap<>(ruleConfig.getEncryptors().size(), 1F);
+        for (Entry<String, AlgorithmConfiguration> entry : ruleConfig.getEncryptors().entrySet()) {
+            result.put(entry.getKey(), TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps()));
+        }
+        return result;
     }
     
     private void checkEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, EncryptAlgorithm> encryptors) {
