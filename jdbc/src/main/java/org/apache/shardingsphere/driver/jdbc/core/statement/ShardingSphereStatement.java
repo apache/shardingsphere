@@ -122,6 +122,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
     
+    @Getter
+    private final String processId;
+    
     private final BatchStatementExecutor batchStatementExecutor;
     
     private boolean returnGeneratedKeys;
@@ -155,6 +158,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statementManager = new StatementManager();
         batchStatementExecutor = new BatchStatementExecutor(this);
         databaseName = connection.getDatabaseName();
+        processId = getProcessEngine().connect(new Grantee("", ""), databaseName);
     }
     
     @Override

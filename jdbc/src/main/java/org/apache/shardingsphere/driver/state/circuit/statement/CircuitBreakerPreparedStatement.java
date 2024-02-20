@@ -285,6 +285,11 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     }
     
     @Override
+    protected String getProcessId() {
+        return null;
+    }
+    
+    @Override
     public ResultSet executeQuery() {
         return new CircuitBreakerResultSet();
     }

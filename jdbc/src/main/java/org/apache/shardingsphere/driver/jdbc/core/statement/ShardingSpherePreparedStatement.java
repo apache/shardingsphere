@@ -151,6 +151,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private final StatementManager statementManager;
     
     @Getter
+    private final String processId;
+    
+    @Getter
     private final boolean selectContainsEnhancedTable;
     
     private ExecutionContext executionContext;
@@ -216,6 +219,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         statementManager = new StatementManager();
+        processId = getProcessEngine().connect(new Grantee("", ""), databaseName);
     }
     
     private boolean isStatementsCacheable(final RuleMetaData databaseRuleMetaData) {
