@@ -47,12 +47,10 @@ class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getCipher().getEncryptorName(), is("aes_encryptor"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getAssistedQuery().getName(), is("assisted_query_username"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getAssistedQuery().getEncryptorName(), is("assisted_encryptor"));
-        assertThat(actual.getTables().get("t_user").getColumns().get("username").getLikeQuery().getName(), is("like_query_username"));
-        assertThat(actual.getTables().get("t_user").getColumns().get("username").getLikeQuery().getEncryptorName(), is("like_encryptor"));
     }
     
     private void assertEncryptAlgorithm(final YamlEncryptRuleConfiguration actual) {
-        assertThat(actual.getEncryptors().size(), is(3));
+        assertThat(actual.getEncryptors().size(), is(2));
         assertThat(actual.getEncryptors().get("aes_encryptor").getType(), is("AES"));
         assertThat(actual.getEncryptors().get("aes_encryptor").getProps().get("aes-key-value"), is("123456abc"));
     }
