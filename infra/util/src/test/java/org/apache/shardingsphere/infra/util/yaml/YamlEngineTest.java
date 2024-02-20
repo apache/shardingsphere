@@ -94,6 +94,13 @@ class YamlEngineTest {
     }
     
     @Test
+    void assertUnmarshalWithEmptyProperties() {
+        Properties actual = YamlEngine.unmarshal("", Properties.class);
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
     void assertMarshal() {
         YamlShortcutsConfigurationFixture actual = new YamlShortcutsConfigurationFixture();
         actual.setName("test");
