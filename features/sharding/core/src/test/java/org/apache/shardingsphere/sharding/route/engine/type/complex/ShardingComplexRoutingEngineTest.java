@@ -76,7 +76,7 @@ class ShardingComplexRoutingEngineTest {
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("T_ORDER"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
     @Test
