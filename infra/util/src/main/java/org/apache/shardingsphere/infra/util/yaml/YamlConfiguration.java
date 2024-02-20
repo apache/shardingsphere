@@ -25,11 +25,11 @@ public interface YamlConfiguration {
     /**
      * Check if the YAML configuration is empty, indicating the absence of any valid configuration items.
      * 
-     * @return Judge whether the YAML configuration is empty or not
+     * @return Check whether the YAML configuration is empty or not
      */
     default boolean isEmpty() {
         // TODO Currently, only global.yaml and database.yaml handle the case of empty YAML file content. 
-        // TODO In the future, other scenarios that read YAML files should also consider whether to override this method to determine if the YAML file is empty.
+        // In the future, other scenarios that read YAML files should also consider whether to override this method to determine if the YAML file is empty.
         return false;
     }
 }
