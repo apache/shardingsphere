@@ -55,11 +55,11 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     private final ProcessEngine processEngine = new ProcessEngine();
     
     @Override
-    public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread) throws SQLException {
+    public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread, final String processId) throws SQLException {
         // TODO It is better to judge whether need sane result before execute, can avoid exception thrown
         Collection<T> result = new LinkedList<>();
         for (JDBCExecutionUnit each : executionUnits) {
-            T executeResult = execute(each, isTrunkThread);
+            T executeResult = execute(each, isTrunkThread, processId);
             if (null != executeResult) {
                 result.add(executeResult);
             }
@@ -72,7 +72,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
-    private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread) throws SQLException {
+    private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread, final String processId) throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         DatabaseType storageType = resourceMetaData.getStorageUnits().get(jdbcExecutionUnit.getExecutionUnit().getDataSourceName()).getStorageType();
         ConnectionProperties connectionProps = resourceMetaData.getStorageUnits().get(jdbcExecutionUnit.getExecutionUnit().getDataSourceName()).getConnectionProperties();
@@ -82,7 +82,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), connectionProps, isTrunkThread);
             T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode(), storageType);
             sqlExecutionHook.finishSuccess();
-            processEngine.completeSQLUnitExecution(jdbcExecutionUnit);
+            processEngine.completeSQLUnitExecution(jdbcExecutionUnit, processId);
             return result;
         } catch (final SQLException ex) {
             if (!storageType.equals(protocolType)) {

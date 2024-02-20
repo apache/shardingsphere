@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.executor.kernel;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -72,39 +72,41 @@ public final class ExecutorEngine implements AutoCloseable {
         if (executionGroupContext.getInputGroups().isEmpty()) {
             return Collections.emptyList();
         }
-        return serial ? serialExecute(executionGroupContext.getInputGroups().iterator(), firstCallback, callback)
-                : parallelExecute(executionGroupContext.getInputGroups().iterator(), firstCallback, callback);
+        return serial ? serialExecute(executionGroupContext.getInputGroups().iterator(), executionGroupContext.getReportContext().getProcessId(), firstCallback, callback)
+                : parallelExecute(executionGroupContext.getInputGroups().iterator(), executionGroupContext.getReportContext().getProcessId(), firstCallback, callback);
     }
     
-    private <I, O> List<O> serialExecute(final Iterator<ExecutionGroup<I>> executionGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
+    private <I, O> List<O> serialExecute(final Iterator<ExecutionGroup<I>> executionGroups, final String processId, final ExecutorCallback<I, O> firstCallback,
+                                         final ExecutorCallback<I, O> callback) throws SQLException {
         ExecutionGroup<I> firstInputs = executionGroups.next();
-        List<O> result = new LinkedList<>(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback));
+        List<O> result = new LinkedList<>(syncExecute(firstInputs, processId, null == firstCallback ? callback : firstCallback));
         while (executionGroups.hasNext()) {
-            result.addAll(syncExecute(executionGroups.next(), callback));
+            result.addAll(syncExecute(executionGroups.next(), processId, callback));
         }
         return result;
     }
     
-    private <I, O> List<O> parallelExecute(final Iterator<ExecutionGroup<I>> executionGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
+    private <I, O> List<O> parallelExecute(final Iterator<ExecutionGroup<I>> executionGroups, final String processId, final ExecutorCallback<I, O> firstCallback,
+                                           final ExecutorCallback<I, O> callback) throws SQLException {
         ExecutionGroup<I> firstInputs = executionGroups.next();
-        Collection<Future<Collection<O>>> restResultFutures = asyncExecute(executionGroups, callback);
-        return getGroupResults(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback), restResultFutures);
+        Collection<Future<Collection<O>>> restResultFutures = asyncExecute(executionGroups, processId, callback);
+        return getGroupResults(syncExecute(firstInputs, processId, null == firstCallback ? callback : firstCallback), restResultFutures);
     }
     
-    private <I, O> Collection<O> syncExecute(final ExecutionGroup<I> executionGroup, final ExecutorCallback<I, O> callback) throws SQLException {
-        return callback.execute(executionGroup.getInputs(), true);
+    private <I, O> Collection<O> syncExecute(final ExecutionGroup<I> executionGroup, final String processId, final ExecutorCallback<I, O> callback) throws SQLException {
+        return callback.execute(executionGroup.getInputs(), true, processId);
     }
     
-    private <I, O> Collection<Future<Collection<O>>> asyncExecute(final Iterator<ExecutionGroup<I>> executionGroups, final ExecutorCallback<I, O> callback) {
+    private <I, O> Collection<Future<Collection<O>>> asyncExecute(final Iterator<ExecutionGroup<I>> executionGroups, final String processId, final ExecutorCallback<I, O> callback) {
         Collection<Future<Collection<O>>> result = new LinkedList<>();
         while (executionGroups.hasNext()) {
-            result.add(asyncExecute(executionGroups.next(), callback));
+            result.add(asyncExecute(executionGroups.next(), processId, callback));
         }
         return result;
     }
     
-    private <I, O> Future<Collection<O>> asyncExecute(final ExecutionGroup<I> executionGroup, final ExecutorCallback<I, O> callback) {
-        return executorServiceManager.getExecutorService().submit(() -> callback.execute(executionGroup.getInputs(), false));
+    private <I, O> Future<Collection<O>> asyncExecute(final ExecutionGroup<I> executionGroup, final String processId, final ExecutorCallback<I, O> callback) {
+        return executorServiceManager.getExecutorService().submit(() -> callback.execute(executionGroup.getInputs(), false, processId));
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<Future<Collection<O>>> restFutures) throws SQLException {

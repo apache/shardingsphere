@@ -121,9 +121,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
     
-    @Getter
-    private final String processId;
-    
     private final BatchStatementExecutor batchStatementExecutor;
     
     private boolean returnGeneratedKeys;
@@ -157,7 +154,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statementManager = new StatementManager();
         batchStatementExecutor = new BatchStatementExecutor(this);
         databaseName = connection.getDatabaseName();
-        processId = getProcessEngine().connect(new Grantee("", ""), databaseName);
     }
     
     @Override
@@ -242,7 +238,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
                 metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), queryContext.getSqlStatementContext().getSqlStatement(),
                 SQLExecutorExceptionHandler.isExceptionThrown());
-        SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData());
+        SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData(), connection.getProcessId());
         return executor.getSqlFederationEngine().executeQuery(createDriverExecutionPrepareEngine(), callback, context);
     }
     
@@ -481,7 +477,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
         ExecutionUnit executionUnit = new ExecutionUnit(trafficInstanceId, new SQLUnit(queryContext.getSql(), queryContext.getParameters()));
         ExecutionGroupContext<JDBCExecutionUnit> context =
-                prepareEngine.prepare(new RouteContext(), Collections.singletonList(executionUnit), new ExecutionGroupReportContext(processId, databaseName, new Grantee("", "")));
+                prepareEngine.prepare(new RouteContext(), Collections.singletonList(executionUnit), new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", "")));
         return context.getInputGroups().stream().flatMap(each -> each.getInputs().stream()).findFirst().orElseThrow(EmptyTrafficExecutionUnitException::new);
     }
     
@@ -528,13 +524,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
         return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(),
-                new ExecutionGroupReportContext(processId, databaseName, new Grantee("", "")));
+                new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", "")));
     }
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionContext(final ExecutionContext executionContext) throws SQLException {
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules())
-                .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(processId, databaseName, new Grantee("", "")));
+                .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(connection.getProcessId(), databaseName, new Grantee("", "")));
     }
     
     private boolean executeWithExecutionContext(final ExecuteCallback executeCallback, final ExecutionContext executionContext) throws SQLException {

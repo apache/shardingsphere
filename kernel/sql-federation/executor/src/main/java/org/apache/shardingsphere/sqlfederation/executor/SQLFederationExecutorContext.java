@@ -40,4 +40,6 @@ public final class SQLFederationExecutorContext {
     private final QueryContext queryContext;
     
     private final ShardingSphereMetaData metaData;
+    
+    private final String processId;
 }

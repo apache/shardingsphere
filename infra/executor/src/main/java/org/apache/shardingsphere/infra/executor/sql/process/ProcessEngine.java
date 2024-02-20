@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -44,9 +45,7 @@ public final class ProcessEngine {
      * @return process ID
      */
     public String connect(final Grantee grantee, final String databaseName) {
-        // TODO remove processId return value, and use ProcessIdContext.get() instead
         String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
-        ProcessIdContext.set(processId);
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext =
                 new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(processId, databaseName, grantee));
         Process process = new Process(executionGroupContext);
@@ -60,9 +59,7 @@ public final class ProcessEngine {
      * @param processId process ID
      */
     public void disconnect(final String processId) {
-        // TODO remove processId parameter, and use ProcessIdContext.get() instead
         ProcessRegistry.getInstance().remove(processId);
-        ProcessIdContext.remove();
     }
     
     /**
@@ -81,12 +78,13 @@ public final class ProcessEngine {
      * Complete SQL unit execution.
      * 
      * @param executionUnit execution unit
+     * @param processId process ID
      */
-    public void completeSQLUnitExecution(final SQLExecutionUnit executionUnit) {
-        if (ProcessIdContext.isEmpty()) {
+    public void completeSQLUnitExecution(final SQLExecutionUnit executionUnit, final String processId) {
+        if (Strings.isNullOrEmpty(processId)) {
             return;
         }
-        Process process = ProcessRegistry.getInstance().get(ProcessIdContext.get());
+        Process process = ProcessRegistry.getInstance().get(processId);
         if (null == process) {
             return;
         }
@@ -96,17 +94,19 @@ public final class ProcessEngine {
     
     /**
      * Complete SQL execution.
+     * 
+     * @param processId process ID
      */
-    public void completeSQLExecution() {
-        if (ProcessIdContext.isEmpty()) {
+    public void completeSQLExecution(final String processId) {
+        if (Strings.isNullOrEmpty(processId)) {
             return;
         }
-        Process process = ProcessRegistry.getInstance().get(ProcessIdContext.get());
+        Process process = ProcessRegistry.getInstance().get(processId);
         if (null == process) {
             return;
         }
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
-                Collections.emptyList(), new ExecutionGroupReportContext(ProcessIdContext.get(), process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
+                Collections.emptyList(), new ExecutionGroupReportContext(processId, process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
         ProcessRegistry.getInstance().add(new Process(executionGroupContext));
     }
     

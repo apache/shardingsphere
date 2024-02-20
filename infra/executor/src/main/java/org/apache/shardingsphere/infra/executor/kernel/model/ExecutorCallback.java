@@ -33,8 +33,9 @@ public interface ExecutorCallback<I, O> {
      * 
      * @param inputs input values
      * @param isTrunkThread is execution in trunk thread
+     * @param processId process ID
      * @return execution results
      * @throws SQLException throw when execute failure
      */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread) throws SQLException;
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, String processId) throws SQLException;
 }
