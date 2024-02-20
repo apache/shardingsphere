@@ -26,8 +26,9 @@ public interface YamlConfiguration {
      * Check if the YAML configuration is empty, indicating the absence of any valid configuration items.
      * 
      * @return Judge whether the YAML configuration is empty or not
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     default boolean isEmpty() {
-        return false;
+        throw new UnsupportedOperationException("Must be overridden.");
     }
 }

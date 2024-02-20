@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -102,11 +103,11 @@ class YamlTableDataConsistencyCheckResultSwapperTest {
     
     @Test
     void assertSwapToObjectWithEmptyString() {
-        assertNull(yamlTableDataConsistencyCheckResultSwapper.swapToObject(""));
+        assertNotNull(yamlTableDataConsistencyCheckResultSwapper.swapToObject(""));
     }
     
     @Test
     void assertSwapToObjectWithBlankString() {
-        assertNull(yamlTableDataConsistencyCheckResultSwapper.swapToObject(" "));
+        assertNotNull(yamlTableDataConsistencyCheckResultSwapper.swapToObject(" "));
     }
 }
