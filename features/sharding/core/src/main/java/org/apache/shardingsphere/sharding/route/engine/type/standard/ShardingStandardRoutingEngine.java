@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -235,8 +236,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         List<ShardingConditionValue> result = new ArrayList<>(shardingColumns.size());
         for (ShardingConditionValue each : shardingCondition.getValues()) {
             Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each.getTableName());
-            if ((logicTableName.equals(each.getTableName()) || bindingTableRule.isPresent() && bindingTableRule.get().hasLogicTable(logicTableName))
-                    && shardingColumns.contains(each.getColumnName())) {
+            if ((logicTableName.equalsIgnoreCase(each.getTableName()) || bindingTableRule.isPresent() && bindingTableRule.get().hasLogicTable(logicTableName))
+                    && new CaseInsensitiveSet<>(shardingColumns).contains(each.getColumnName())) {
                 result.add(each);
             }
         }
