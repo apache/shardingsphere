@@ -86,3 +86,7 @@ jobs:
           java-version: 8
       - name: Run Tests with JDK 8
         run: ./mvnw install -T1C -B -ntp -fae
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          verbose: true
