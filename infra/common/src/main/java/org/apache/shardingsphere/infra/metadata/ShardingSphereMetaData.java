@@ -104,10 +104,10 @@ public final class ShardingSphereMetaData {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        closeResources(databases.remove(databaseName.toLowerCase()));
+        cleanResources(databases.remove(databaseName.toLowerCase()));
     }
     
-    private void closeResources(final ShardingSphereDatabase database) {
+    private void cleanResources(final ShardingSphereDatabase database) {
         String databaseName = database.getName();
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
         database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
