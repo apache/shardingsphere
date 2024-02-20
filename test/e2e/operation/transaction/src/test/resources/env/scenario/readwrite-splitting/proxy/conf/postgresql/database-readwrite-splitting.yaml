@@ -21,7 +21,7 @@
 # 
 ######################################################################################################
 
-databaseName: sharding_db
+databaseName: readwrite-splitting
 dataSources:
   write_ds:
     url: jdbc:postgresql://postgresql.default.host:5432/write_ds

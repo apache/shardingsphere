@@ -21,7 +21,7 @@
 # 
 ######################################################################################################
 
-databaseName: sharding_db
+databaseName: cursor
 dataSources:
   ds_0:
     url: jdbc:opengauss://opengauss.cursor.host:5432/ds_0

@@ -331,10 +331,6 @@ public abstract class TransactionBaseE2EIT {
             if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.NATIVE && "MySQL".equalsIgnoreCase(ENV.getNativeDatabaseType())) {
                 result.addAll(getTestParameters(currentTestCaseInfo, ENV.getMysqlVersions()));
             }
-            // TODO zhangcheng make sure the test cases should not empty
-            if (result.isEmpty()) {
-                result.add(null);
-            }
             return result;
         }
         

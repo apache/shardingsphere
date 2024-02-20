@@ -21,7 +21,7 @@
 # 
 ######################################################################################################
 
-databaseName: sharding_db
+databaseName: readwrite-splitting
 dataSources:
   write_ds:
     url: jdbc:mysql://mysql.readwrite-splitting.host:3306/write_ds?useSSL=false&characterEncoding=utf-8
