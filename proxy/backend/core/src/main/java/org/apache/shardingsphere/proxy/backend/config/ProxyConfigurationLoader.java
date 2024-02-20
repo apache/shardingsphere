@@ -92,7 +92,7 @@ public final class ProxyConfigurationLoader {
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
-        return null == result ? new YamlProxyServerConfiguration() : rebuildGlobalRuleConfiguration(result);
+        return rebuildGlobalRuleConfiguration(result);
     }
     
     private static YamlProxyServerConfiguration rebuildGlobalRuleConfiguration(final YamlProxyServerConfiguration serverConfig) {
@@ -138,7 +138,7 @@ public final class ProxyConfigurationLoader {
     
     private static Optional<YamlProxyDatabaseConfiguration> loadDatabaseConfiguration(final File yamlFile) throws IOException {
         YamlProxyDatabaseConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyDatabaseConfiguration.class);
-        if (null == result) {
+        if (result.isEmpty()) {
             return Optional.empty();
         }
         Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());

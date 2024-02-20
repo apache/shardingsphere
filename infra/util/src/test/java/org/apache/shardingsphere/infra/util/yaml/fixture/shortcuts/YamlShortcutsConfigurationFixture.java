@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
@@ -26,4 +27,9 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 public final class YamlShortcutsConfigurationFixture implements YamlConfiguration {
     
     private String name;
+    
+    @Override
+    public boolean isEmpty() {
+        return Strings.isNullOrEmpty(name);
+    }
 }
