@@ -61,7 +61,7 @@ public final class MySQLXATransactionPrivilegeChecker implements XATransactionPr
                 }
             }
         } catch (final SQLException ex) {
-            throw new XATransactionCheckPrivilegeFailedException(ex);
+            throw new XATransactionCheckPrivilegeFailedException(ex, "GRANT XA_RECOVER_ADMIN TO currentUser");
         }
         throw new XATransactionPrivilegeException("XA_RECOVER_ADMIN");
     }

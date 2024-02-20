@@ -30,6 +30,10 @@ public final class XATransactionCheckPrivilegeFailedException extends Transactio
     private static final long serialVersionUID = 6073175429050058508L;
     
     public XATransactionCheckPrivilegeFailedException(final SQLException cause) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 203, String.format("Check privileges failed on data source, reason is: %s", cause.getMessage()), cause);
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 203, String.format("Check xa transaction privileges failed on data source, reason is: `%s`", cause.getMessage()), cause);
+    }
+    
+    public XATransactionCheckPrivilegeFailedException(final SQLException cause, final String advice) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 203, String.format("Check xa transaction privileges failed on data source, reason is: `%s`, please `%s`", cause.getMessage(), advice), cause);
     }
 }
