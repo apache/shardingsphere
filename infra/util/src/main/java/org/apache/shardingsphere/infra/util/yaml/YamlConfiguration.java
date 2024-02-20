@@ -29,7 +29,8 @@ public interface YamlConfiguration {
      * @throws UnsupportedOperationException unsupported operation exception
      */
     default boolean isEmpty() {
-        // TODO Currently, only global.yaml and database.yaml handle the case of empty YAML file content. In the future, other scenarios that read YAML files should also consider whether to override
+        // TODO Currently, only global.yaml and database.yaml handle the case of empty YAML file content. 
+        // TODO In the future, other scenarios that read YAML files should also consider whether to override this method to determine if the YAML file is empty.
         return false;
     }
 }
