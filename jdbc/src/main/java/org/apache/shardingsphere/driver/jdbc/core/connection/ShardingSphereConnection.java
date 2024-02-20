@@ -24,8 +24,6 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.exception.connection.ConnectionClosedException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -44,8 +42,6 @@ import java.sql.Statement;
  */
 public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
-    private final ProcessEngine processEngine = new ProcessEngine();
-    
     @Getter
     private final String databaseName;
     
@@ -54,9 +50,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Getter
     private final DriverDatabaseConnectionManager databaseConnectionManager;
-    
-    @Getter
-    private final String processId;
     
     private boolean autoCommit = true;
     
@@ -70,7 +63,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
         databaseConnectionManager = new DriverDatabaseConnectionManager(databaseName, contextManager);
-        processId = processEngine.connect(new Grantee("", ""), databaseName);
     }
     
     /**
@@ -309,7 +301,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public void close() throws SQLException {
         closed = true;
         databaseConnectionManager.close();
-        processEngine.disconnect(processId);
     }
     
     private ConnectionContext getConnectionContext() {

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOper
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -47,6 +48,8 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     @Getter(AccessLevel.NONE)
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
+    
+    private final ProcessEngine processEngine = new ProcessEngine();
     
     private boolean poolable;
     
@@ -89,6 +92,8 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     protected abstract DriverExecutor getExecutor();
     
     protected abstract StatementManager getStatementManager();
+    
+    protected abstract String getProcessId();
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
@@ -229,6 +234,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             }
         } finally {
             getRoutedStatements().clear();
+            processEngine.disconnect(getProcessId());
         }
     }
 }
