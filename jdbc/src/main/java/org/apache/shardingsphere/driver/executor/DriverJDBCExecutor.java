@@ -75,7 +75,7 @@ public final class DriverJDBCExecutor {
             processEngine.executeSQL(executionGroupContext, queryContext);
             return jdbcExecutor.execute(executionGroupContext, callback);
         } finally {
-            processEngine.completeSQLExecution();
+            processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
         }
     }
     
@@ -99,7 +99,7 @@ public final class DriverJDBCExecutor {
                     ? accumulate(results)
                     : results.get(0);
         } finally {
-            processEngine.completeSQLExecution();
+            processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
         }
     }
     
@@ -137,7 +137,7 @@ public final class DriverJDBCExecutor {
             List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
             return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
         } finally {
-            processEngine.completeSQLExecution();
+            processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
         }
     }
     

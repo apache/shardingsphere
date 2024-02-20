@@ -85,7 +85,8 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         try (SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, PG_CATALOG, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor)) {
             DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaDataContexts, connectionSession);
-            SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, new QueryContext(sqlStatementContext, sql, parameters), metaDataContexts.getMetaData());
+            SQLFederationExecutorContext context =
+                    new SQLFederationExecutorContext(false, new QueryContext(sqlStatementContext, sql, parameters), metaDataContexts.getMetaData(), connectionSession.getProcessId());
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
             ResultSet resultSet = sqlFederationEngine.executeQuery(prepareEngine,
                     createOpenGaussSystemCatalogAdminQueryCallback(database.getProtocolType(), database.getResourceMetaData(), sqlStatementContext.getSqlStatement()), context);

@@ -41,7 +41,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessIdContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -142,7 +141,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
         try {
             return createEnumerable(queryContext, database, context);
         } finally {
-            processEngine.completeSQLExecution();
+            processEngine.completeSQLExecution(federationContext.getProcessId());
         }
     }
     
@@ -155,7 +154,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
                 computeConnectionOffsets(context);
                 // TODO pass grantee from proxy and jdbc adapter
                 ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(),
-                        new ExecutionGroupReportContext(ProcessIdContext.get(), database.getName(), new Grantee("", "")));
+                        new ExecutionGroupReportContext(executorContext.getFederationContext().getProcessId(), database.getName(), new Grantee("", "")));
                 setParameters(executionGroupContext.getInputGroups());
                 processEngine.executeSQL(executionGroupContext, context.getQueryContext());
                 List<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(QueryResult.class::cast).collect(Collectors.toList());
