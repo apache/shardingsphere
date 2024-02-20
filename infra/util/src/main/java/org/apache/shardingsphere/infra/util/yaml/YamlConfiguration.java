@@ -21,4 +21,13 @@ package org.apache.shardingsphere.infra.util.yaml;
  * YAML configuration.
  */
 public interface YamlConfiguration {
+    
+    /**
+     * Check if the YAML configuration is empty, indicating the absence of any valid configuration items.
+     * 
+     * @return Judge whether the YAML configuration is empty or not
+     */
+    default boolean isEmpty() {
+        return false;
+    }
 }

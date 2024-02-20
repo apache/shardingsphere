@@ -35,12 +35,8 @@ public final class YamlPipelineProcessConfiguration implements YamlConfiguration
     
     private YamlAlgorithmConfiguration streamChannel;
     
-    /**
-     * Check all fields is null.
-     *
-     * @return true if all fields is null, otherwise is false.
-     */
-    public boolean isAllFieldsNull() {
+    @Override
+    public boolean isEmpty() {
         return null == read && null == write && null == streamChannel;
     }
 }

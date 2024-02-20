@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.util.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.util.yaml.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
@@ -49,9 +50,11 @@ public final class YamlEngine {
      * @return object from YAML
      * @throws IOException IO Exception
      */
+    @SneakyThrows(ReflectiveOperationException.class)
     public static <T extends YamlConfiguration> T unmarshal(final File yamlFile, final Class<T> classType) throws IOException {
         try (BufferedReader inputStreamReader = Files.newBufferedReader(Paths.get(yamlFile.toURI()))) {
-            return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStreamReader, classType);
+            T result = new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStreamReader, classType);
+            return null == result ? classType.getConstructor().newInstance() : result;
         }
     }
     
@@ -64,9 +67,11 @@ public final class YamlEngine {
      * @return object from YAML
      * @throws IOException IO Exception
      */
+    @SneakyThrows(ReflectiveOperationException.class)
     public static <T extends YamlConfiguration> T unmarshal(final byte[] yamlBytes, final Class<T> classType) throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStream, classType);
+            T result = new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStream, classType);
+            return null == result ? classType.getConstructor().newInstance() : result;
         }
     }
     
@@ -78,8 +83,10 @@ public final class YamlEngine {
      * @param <T> type of class
      * @return object from YAML
      */
+    @SneakyThrows(ReflectiveOperationException.class)
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType) {
-        return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
+        T result = new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
+        return null == result ? classType.getConstructor().newInstance() : result;
     }
     
     /**
@@ -91,10 +98,12 @@ public final class YamlEngine {
      * @param <T> type of class
      * @return object from YAML
      */
+    @SneakyThrows(ReflectiveOperationException.class)
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final boolean skipMissingProps) {
         Representer representer = new Representer(new DumperOptions());
         representer.getPropertyUtils().setSkipMissingProperties(skipMissingProps);
-        return new Yaml(new ShardingSphereYamlConstructor(classType), representer).loadAs(yamlContent, classType);
+        T result = new Yaml(new ShardingSphereYamlConstructor(classType), representer).loadAs(yamlContent, classType);
+        return null == result ? classType.getConstructor().newInstance() : result;
     }
     
     /**
