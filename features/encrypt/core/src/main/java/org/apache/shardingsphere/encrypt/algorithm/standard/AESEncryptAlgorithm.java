@@ -54,13 +54,12 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     @Override
     public void init(final Properties props) {
-        secretKey = createSecretKey(props);
+        secretKey = getSecretKey(props);
     }
     
-    private byte[] createSecretKey(final Properties props) {
+    private byte[] getSecretKey(final Properties props) {
         String aesKey = props.getProperty(AES_KEY);
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey),
-                () -> new EncryptAlgorithmInitializationException(getType(), String.format("%s can not be null or empty", AES_KEY)));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey), () -> new EncryptAlgorithmInitializationException(getType(), String.format("%s can not be null or empty", AES_KEY)));
         String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_1);
         return Arrays.copyOf(DigestUtils.getDigest(digestAlgorithm.toUpperCase()).digest(aesKey.getBytes(StandardCharsets.UTF_8)), 16);
     }
