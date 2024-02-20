@@ -517,7 +517,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitColumnref(final ColumnrefContext ctx) {
-        if (null != ctx.indirection()) {
+        if (null != ctx.indirection() && null != ctx.indirection().indirectionEl().attrName()) {
             AttrNameContext attrName = ctx.indirection().indirectionEl().attrName();
             ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
             OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
