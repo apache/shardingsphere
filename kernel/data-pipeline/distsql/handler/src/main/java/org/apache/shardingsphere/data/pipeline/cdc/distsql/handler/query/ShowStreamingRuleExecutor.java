@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.ShowStreamingRuleStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.queryable.ShowStreamingRuleStatement;
 import org.apache.shardingsphere.data.pipeline.distsql.handler.query.ShowTransmissionRuleQueryResult;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
