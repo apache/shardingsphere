@@ -2349,4 +2349,38 @@
     <create-table sql-case-id="create_table_cluster_with_select3">
         <table name="customers_demo" start-index="13" stop-index="26" />
     </create-table>
+
+    <create-table sql-case-id="create_table_with_ref_type_column_department_typ">
+        <table name="employees_obj" start-index="13" stop-index="25"/>
+        <column-definition type="VARCHAR2" start-index="28" stop-index="49">
+            <column name="e_name" start-index="28" stop-index="33"/>
+        </column-definition>
+        <column-definition type="NUMBER" start-index="52" stop-index="66">
+            <column name="e_number" start-index="52" stop-index="59"/>
+        </column-definition>
+        <column-definition type="department_typ" start-index="69" stop-index="122">
+            <column name="e_dept" start-index="69" stop-index="74"/>
+            <referenced-table name="departments_obj_t" start-index="106" stop-index="122"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_result_cache_annotations">
+        <table name="foo" start-index="13" stop-index="15"/>
+        <column-definition type="NUMBER" start-index="18" stop-index="25">
+            <column name="a" start-index="18" stop-index="18"/>
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="28" stop-index="41">
+            <column name="b" start-index="28" stop-index="28"/>
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_as_sub_query">
+        <table name="employees_temp" start-index="13" stop-index="26"/>
+    </create-table>
+
+    <create-table sql-case-id="create_table_parallel_with_as_sub_query">
+        <table name="admin_emp_dept" start-index="13" stop-index="29">
+            <owner name="hr" start-index="13" stop-index="14"/>
+        </table>
+    </create-table>
 </sql-parser-test-cases>

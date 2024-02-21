@@ -318,4 +318,8 @@
     <sql-case id="create_table_cluster_with_select1" value="CREATE TABLE dept_10 CLUSTER personnel (department_id) AS SELECT * FROM employees WHERE department_id = 10" db-types="Oracle" />
     <sql-case id="create_table_cluster_with_select2" value="CREATE TABLE dept_20 CLUSTER personnel (department_id) AS SELECT * FROM employees WHERE department_id = 20" db-types="Oracle" />
     <sql-case id="create_table_cluster_with_select3" value="CREATE TABLE customers_demo AS SELECT * FROM customers" db-types="Oracle" />
+    <sql-case id="create_table_with_ref_type_column_department_typ" value="CREATE TABLE employees_obj( e_name   VARCHAR2(100), e_number NUMBER, e_dept   REF department_typ SCOPE IS departments_obj_t );" db-types="Oracle"/>
+    <sql-case id="create_table_with_result_cache_annotations" value="CREATE TABLE foo (a NUMBER, b VARCHAR2(20)) RESULT_CACHE (MODE FORCE);" db-types="Oracle"/>
+    <sql-case id="create_table_with_as_sub_query" value="CREATE TABLE employees_temp AS SELECT * FROM EMPLOYEES;" db-types="Oracle"/>
+    <sql-case id="create_table_parallel_with_as_sub_query" value="CREATE TABLE hr.admin_emp_dept PARALLEL COMPRESS AS SELECT * FROM hr.employees WHERE department_id = 10;" db-types="Oracle"/>
 </sql-cases>
