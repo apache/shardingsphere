@@ -111,4 +111,9 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             jdbcContainer.stop();
         }
     }
+    
+    @Override
+    public String getProxyJdbcUrl(final String databaseName) {
+        return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
+    }
 }

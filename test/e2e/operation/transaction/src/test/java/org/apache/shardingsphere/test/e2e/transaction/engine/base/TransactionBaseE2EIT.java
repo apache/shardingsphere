@@ -96,7 +96,11 @@ public abstract class TransactionBaseE2EIT {
             return;
         }
         try (TransactionContainerComposer containerComposer = new TransactionContainerComposer(testParam)) {
-            callTestCases(testParam, containerComposer);
+            try {
+                callTestCases(testParam, containerComposer);
+            } finally {
+                containerComposer.getDataSource().close();
+            }
         }
     }
     
@@ -141,6 +145,10 @@ public abstract class TransactionBaseE2EIT {
                 throw new RuntimeException(ex);
             }
             log.info("Transaction IT {} -> {} test end.", testParam, each.getSimpleName());
+            try {
+                containerComposer.getDataSource().close();
+            } catch (final SQLException ignored) {
+            }
         }
     }
     
@@ -160,6 +168,10 @@ public abstract class TransactionBaseE2EIT {
                 throw new RuntimeException(ex);
             }
             log.info("Call transaction IT {} -> {} -> {} -> {} test end.", testParam, transactionType, provider, each.getSimpleName());
+            try {
+                containerComposer.getDataSource().close();
+            } catch (final SQLException ignored) {
+            }
         }
     }
     
