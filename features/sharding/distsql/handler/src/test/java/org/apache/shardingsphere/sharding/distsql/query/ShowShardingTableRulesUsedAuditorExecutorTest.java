@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -26,13 +27,13 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRulesUsedAuditorExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedAuditorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -41,20 +42,32 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShowShardingTableRulesUsedAuditorExecutorTest {
     
-    @Test
-    void assertGetRowData() {
+    private DistSQLQueryExecuteEngine engine;
+    
+    DistSQLQueryExecuteEngine setUp(final ShowShardingTableRulesUsedAuditorStatement statement, final String auditorName) {
+        when(statement.getAuditorName()).thenReturn(Optional.of(auditorName));
+        return new DistSQLQueryExecuteEngine(statement, null, mockContextManager(), mock(DistSQLConnectionContext.class));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        ShowShardingTableRulesUsedAuditorExecutor executor = new ShowShardingTableRulesUsedAuditorExecutor();
-        executor.setRule(rule);
-        ShowShardingTableRulesUsedAuditorStatement statement = mock(ShowShardingTableRulesUsedAuditorStatement.class);
-        when(statement.getAuditorName()).thenReturn(Optional.of("shardingKeyAudit"));
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(statement, mock(ContextManager.class));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        return result;
+    }
+    
+    @Test
+    void assertGetRowData() throws SQLException {
+        engine = setUp(mock(ShowShardingTableRulesUsedAuditorStatement.class), "shardingKeyAudit");
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
