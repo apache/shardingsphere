@@ -90,9 +90,6 @@
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         
-        <calcite.version>1.35.0</calcite.version>
-        <immutables.version>2.9.3</immutables.version>
-        
         <atomikos.version>6.0.0</atomikos.version>
         <narayana.version>5.12.4.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
@@ -311,20 +308,9 @@
             </dependency>
             
             <dependency>
-                <groupId>org.apache.calcite</groupId>
-                <artifactId>calcite-core</artifactId>
-                <version>${calcite.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-math3</artifactId>
                 <version>${commons-math3.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.immutables</groupId>
-                <artifactId>value</artifactId>
-                <version>${immutables.version}</version>
-                <scope>provided</scope>
             </dependency>
             
             <dependency>
