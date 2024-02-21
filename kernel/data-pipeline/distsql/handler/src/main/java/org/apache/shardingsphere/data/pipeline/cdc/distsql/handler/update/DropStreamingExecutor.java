@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
-import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.DropStreamingStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.updatable.DropStreamingStatement;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
