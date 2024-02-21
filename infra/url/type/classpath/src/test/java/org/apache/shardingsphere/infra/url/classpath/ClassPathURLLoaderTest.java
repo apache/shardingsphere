@@ -37,7 +37,7 @@ class ClassPathURLLoaderTest {
     @Test
     @EnabledOnOs(OS.WINDOWS)
     void assertGetContentOnWindows() {
-        assertGetContent(1824);
+        assertGetContent(1839);
     }
     
     private void assertGetContent(final int expectedLength) {
