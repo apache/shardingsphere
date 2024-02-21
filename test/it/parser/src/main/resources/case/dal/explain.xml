@@ -1600,4 +1600,219 @@
             </where>
         </select>
     </describe>
+
+    <describe sql-case-id="explain_for_select_group_by_multi_columns">
+        <select>
+            <projections start-index="24" stop-index="65">
+                <column-projection name="prod_name" start-index="24" stop-index="34">
+                    <owner name="p" start-index="24" stop-index="24"/>
+                </column-projection>
+                <column-projection name="time_id" start-index="37" stop-index="45">
+                    <owner name="t" start-index="37" stop-index="37"/>
+                </column-projection>
+                <aggregation-projection type="SUM" expression="sum(s.amount_sold)" start-index="48" stop-index="65"/>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <join-table join-type="COMMA">
+                            <left>
+                                <simple-table name="sales" start-index="72" stop-index="78" alias="s"/>
+                            </left>
+                            <right>
+                                <simple-table name="times" start-index="81" stop-index="87" alias="t"/>
+                            </right>
+                        </join-table>
+                    </left>
+                    <right>
+                        <simple-table name="products" start-index="90" stop-index="99" alias="p"/>
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="101" stop-index="240">
+                <expr>
+                    <binary-operation-expression start-index="107" stop-index="240">
+                        <operator>and</operator>
+                        <left>
+                            <binary-operation-expression start-index="107" stop-index="207">
+                                <operator>and</operator>
+                                <left>
+                                    <binary-operation-expression start-index="107" stop-index="178">
+                                        <operator>and</operator>
+                                        <left>
+                                            <binary-operation-expression start-index="107" stop-index="153">
+                                                <operator>and</operator>
+                                                <left>
+                                                    <binary-operation-expression start-index="107" stop-index="127">
+                                                        <operator>=</operator>
+                                                        <left>
+                                                            <column name="time_id" start-index="107" stop-index="115">
+                                                                <owner name="s" start-index="107" stop-index="107"/>
+                                                            </column>
+                                                        </left>
+                                                        <right>
+                                                            <column name="time_id" start-index="119" stop-index="127">
+                                                                <owner name="t" start-index="119" stop-index="119"/>
+                                                            </column>
+                                                        </right>
+                                                    </binary-operation-expression>
+                                                </left>
+                                                <right>
+                                                    <binary-operation-expression start-index="133" stop-index="153">
+                                                        <operator>=</operator>
+                                                        <left>
+                                                            <column name="prod_id" start-index="133" stop-index="141">
+                                                                <owner name="s" start-index="133" stop-index="133"/>
+                                                            </column>
+                                                        </left>
+                                                        <right>
+                                                            <column name="prod_id" start-index="145" stop-index="153">
+                                                                <owner name="p" start-index="145" stop-index="145"/>
+                                                            </column>
+                                                        </right>
+                                                    </binary-operation-expression>
+                                                </right>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <right>
+                                            <binary-operation-expression start-index="159" stop-index="178">
+                                                <operator>=</operator>
+                                                <left>
+                                                    <column name="fiscal_year" start-index="159" stop-index="171">
+                                                        <owner name="t" start-index="159" stop-index="159"/>
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="2000" start-index="175" stop-index="178"/>
+                                                </right>
+                                            </binary-operation-expression>
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="184" stop-index="207">
+                                        <operator>=</operator>
+                                        <left>
+                                            <column name="fiscal_week_number" start-index="184" stop-index="203">
+                                                <owner name="t" start-index="184" stop-index="184"/>
+                                            </column>
+                                        </left>
+                                        <right>
+                                            <literal-expression value="3" start-index="207" stop-index="207"/>
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="213" stop-index="240">
+                                <operator>=</operator>
+                                <left>
+                                    <column name="prod_category" start-index="213" stop-index="227">
+                                        <owner name="p" start-index="213" stop-index="213"/>
+                                    </column>
+                                </left>
+                                <right>
+                                    <literal-expression value="Hardware" start-index="231" stop-index="240"/>
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="time_id" start-index="251" stop-index="259">
+                    <owner name="t" start-index="251" stop-index="251"/>
+                </column-item>
+                <column-item name="prod_name" start-index="262" stop-index="272">
+                    <owner name="p" start-index="262" stop-index="262"/>
+                </column-item>
+            </group-by>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_in_sub_query">
+        <select>
+            <projections start-index="24" stop-index="39">
+                <aggregation-projection type="SUM" expression="sum(amount_sold)" start-index="24" stop-index="39"/>
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="46" stop-index="50"/>
+            </from>
+            <where start-index="52" stop-index="120">
+                <expr>
+                    <in-expression start-index="58" stop-index="120">
+                        <left>
+                            <column name="time_id" start-index="58" stop-index="64"/>
+                        </left>
+                        <right>
+                            <subquery start-index="69" stop-index="120">
+                                <select>
+                                    <projections start-index="77" stop-index="83">
+                                        <column-projection name="time_id" start-index="77" stop-index="83"/>
+                                    </projections>
+                                    <from>
+                                        <simple-table name="times" start-index="90" stop-index="94"/>
+                                    </from>
+                                    <where start-index="96" stop-index="119">
+                                        <expr>
+                                            <binary-operation-expression start-index="102" stop-index="119">
+                                                <left>
+                                                    <column name="fiscal_year" start-index="102" stop-index="112"/>
+                                                </left>
+                                                <right>
+                                                    <literal-expression value="2000" start-index="116" stop-index="119"/>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </expr>
+                                    </where>
+                                </select>
+                            </subquery>
+                        </right>
+                    </in-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_for_select_between_to_date_function">
+        <select>
+            <projections start-index="24" stop-index="39">
+                <aggregation-projection type="SUM" expression="sum(amount_sold)" start-index="24" stop-index="39"/>
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="46" stop-index="50"/>
+            </from>
+            <where start-index="52" stop-index="150">
+                <expr>
+                    <between-expression start-index="58" stop-index="150">
+                        <left>
+                            <column name="time_id" start-index="58" stop-index="64"/>
+                        </left>
+                        <and-expr>
+                            <function text="to_date('31-DEC-2000','dd-MON-yyyy')" function-name="to_date" start-index="115" stop-index="150">
+                                <parameter>
+                                    <literal-expression value="'31-DEC-2000'" start-index="123" stop-index="135"/>
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'dd-MON-yyyy'" start-index="137" stop-index="149"/>
+                                </parameter>
+                            </function>
+                        </and-expr>
+                        <between-expr>
+                            <function text="to_date('01-JAN-2000','dd-MON-yyyy')" function-name="to_date" start-index="74" stop-index="109">
+                                <parameter>
+                                    <literal-expression value="'01-JAN-2000'" start-index="82" stop-index="94"/>
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'dd-MON-yyyy'" start-index="96" stop-index="108"/>
+                                </parameter>
+                            </function>
+                        </between-expr>
+                    </between-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
 </sql-parser-test-cases>
