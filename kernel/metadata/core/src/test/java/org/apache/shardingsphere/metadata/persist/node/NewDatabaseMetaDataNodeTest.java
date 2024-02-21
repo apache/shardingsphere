@@ -80,7 +80,7 @@ class NewDatabaseMetaDataNodeTest {
     
     @Test
     void assertGetTableName() {
-        Optional<String> actual = NewDatabaseMetaDataNode.getTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_table/versions/0");
+        Optional<String> actual = NewDatabaseMetaDataNode.getTableName("/metadata/foo_db/schemas/foo_schema/tables/foo_table/active_version");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("foo_table"));
     }
