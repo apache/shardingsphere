@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
