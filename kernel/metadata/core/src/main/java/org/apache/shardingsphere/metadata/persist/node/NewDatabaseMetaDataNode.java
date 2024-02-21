@@ -444,7 +444,7 @@ public final class NewDatabaseMetaDataNode {
      * @return table name
      */
     public static Optional<String> getTableName(final String path) {
-        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + TABLES_PATTERN + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + TABLES_PATTERN + "/([\\w\\-]+)/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
