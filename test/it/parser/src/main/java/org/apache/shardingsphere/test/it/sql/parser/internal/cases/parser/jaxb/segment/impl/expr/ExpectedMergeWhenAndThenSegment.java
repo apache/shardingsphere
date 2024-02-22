@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.MergeStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.InsertStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.UpdateStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected subquery.
+ * Expected merge and when then expression.
  */
 @Getter
 @Setter
-public final class ExpectedSubquery extends ExpectedBaseSimpleExpression {
+public final class ExpectedMergeWhenAndThenSegment extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    @XmlElement(name = "select")
-    private SelectStatementTestCase selectTestCases;
+    @XmlElement(name = "expr")
+    private ExpectedExpression expr;
     
-    @XmlElement(name = "merge")
-    private MergeStatementTestCase mergeTestCases;
+    @XmlElement(name = "update")
+    private UpdateStatementTestCase updateClause;
+    
+    @XmlElement(name = "insert")
+    private InsertStatementTestCase insertClause;
 }

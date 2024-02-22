@@ -36,6 +36,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.col
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.MergeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTableFunction;
@@ -166,7 +167,12 @@ public final class TableAssert {
      * @param expected expected subquery expression
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SubqueryTableSegment actual, final ExpectedSubqueryTable expected) {
-        SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
+        if (null != actual.getSubquery().getSelect()) {
+            SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
+        }
+        if (null != actual.getSubquery().getMerge()) {
+            MergeStatementAssert.assertIs(assertContext, actual.getSubquery().getMerge(), expected.getSubquery().getMergeTestCases());
+        }
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
     }
     

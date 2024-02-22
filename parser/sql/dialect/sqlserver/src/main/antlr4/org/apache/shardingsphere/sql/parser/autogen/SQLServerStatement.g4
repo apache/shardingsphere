@@ -79,5 +79,6 @@ execute
     | setUser
     | revert
     | updateStatistics
+    | merge
     ) SEMI_?
     ;

@@ -19,11 +19,18 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMergeWhenAndThenSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.hint.ExpectedWithTableHintClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.output.ExpectedOutputClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedWithClause;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Merge statement test case.
@@ -46,4 +53,19 @@ public final class MergeStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "insert")
     private InsertStatementTestCase insertClause;
+    
+    @XmlElement(name = "merge-items")
+    private List<ExpectedMergeWhenAndThenSegment> mergeWhenAndThenSegments = new LinkedList<>();
+    
+    @XmlElement(name = "with")
+    private ExpectedWithClause withClause;
+    
+    @XmlElement(name = "table-hints")
+    private ExpectedWithTableHintClause expectedWithTableHintClause;
+    
+    @XmlElement(name = "output")
+    private ExpectedOutputClause outputClause;
+    
+    @XmlElement(name = "index")
+    private List<ExpectedIndex> indexs = new LinkedList<>();
 }

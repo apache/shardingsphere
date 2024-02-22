@@ -39,6 +39,38 @@ insertExecClause
     : columnNames? exec
     ;
 
+merge
+    : withClause? MERGE top? mergeIntoClause withMergeHint? (AS? alias)? mergeUsingClause? mergeWhenClause* outputClause? optionHint?
+    ;
+
+mergeIntoClause
+    : INTO? tableReferences
+    ;
+
+mergeUsingClause
+    : USING tableReferences (AS? alias)? ON expr
+    ;
+
+withMergeHint
+    : withTableHint (COMMA_? INDEX LP_ indexName (COMMA_ indexName)* RP_ | INDEX EQ_ indexName)?
+    ;
+
+mergeWhenClause
+    : mergeUpdateClause | mergeDeleteClause | mergeInsertClause
+    ;
+
+mergeUpdateClause
+    : (WHEN MATCHED | WHEN NOT MATCHED BY SOURCE) (AND expr)? THEN UPDATE setAssignmentsClause
+    ;
+
+mergeDeleteClause
+    : (WHEN MATCHED | WHEN NOT MATCHED BY SOURCE) (AND expr)? THEN DELETE
+    ;
+
+mergeInsertClause
+    : WHEN NOT MATCHED (BY TARGET)? (AND expr)? THEN INSERT (insertDefaultValue | insertValuesClause)
+    ;
+
 withTableHint
     : WITH? LP_ (tableHintLimited+) RP_
     ;
@@ -175,7 +207,7 @@ havingClause
     ;
 
 subquery
-    : LP_ aggregationClause RP_
+    : LP_ (aggregationClause | merge) RP_
     ;
 
 withTempTable
