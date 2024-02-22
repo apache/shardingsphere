@@ -15,42 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.merge;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerUpdateStatement;
 
 /**
- * Subquery segment.
- */
+ * Merge when and then segment.
+ **/
 @RequiredArgsConstructor
 @Getter
-public final class SubquerySegment implements ExpressionSegment {
+public final class MergeWhenAndThenSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
     @Setter
-    private SelectStatement select;
+    private ExpressionSegment andExpr;
     
     @Setter
-    private MergeStatement merge;
+    private SQLServerInsertStatement insert;
+    
+    @Setter
+    private SQLServerUpdateStatement update;
     
     private final String text;
     
-    @Setter
-    private SubqueryType subqueryType;
-    
-    public SubquerySegment(final int startIndex, final int stopIndex, final SelectStatement select, final String text) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.select = select;
-        this.text = text;
-    }
 }
