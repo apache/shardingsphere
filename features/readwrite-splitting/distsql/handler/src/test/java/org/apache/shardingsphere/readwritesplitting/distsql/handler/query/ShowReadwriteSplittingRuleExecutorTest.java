@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
@@ -29,28 +31,43 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShowReadwriteSplittingRuleExecutorTest {
     
-    @Test
-    void assertGetRowData() {
+    private DistSQLQueryExecuteEngine engine;
+    
+    private DistSQLQueryExecuteEngine setUp(final ShowReadwriteSplittingRulesStatement statement, final ReadwriteSplittingRuleConfiguration configuration) {
+        return new DistSQLQueryExecuteEngine(statement, null, mockContextManager(configuration), mock(DistSQLConnectionContext.class));
+    }
+    
+    private ContextManager mockContextManager(final ReadwriteSplittingRuleConfiguration configuration) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(rule.getConfiguration()).thenReturn(configuration);
         when(rule.getExportData()).thenReturn(createExportedData());
-        ShowReadwriteSplittingRuleExecutor executor = new ShowReadwriteSplittingRuleExecutor();
-        executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowReadwriteSplittingRulesStatement.class), mock(ContextManager.class));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(rule));
+        return result;
+    }
+    
+    @Test
+    void assertGetRowData() throws SQLException {
+        engine = setUp(mock(ShowReadwriteSplittingRulesStatement.class), createRuleConfiguration());
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -63,13 +80,10 @@ class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    void assertGetRowDataWithSpecifiedRuleName() {
-        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(rule.getExportData()).thenReturn(createExportedData());
-        ShowReadwriteSplittingRuleExecutor executor = new ShowReadwriteSplittingRuleExecutor();
-        executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowReadwriteSplittingRulesStatement("readwrite_ds", null), mock(ContextManager.class));
+    void assertGetRowDataWithSpecifiedRuleName() throws SQLException {
+        engine = setUp(new ShowReadwriteSplittingRulesStatement("readwrite_ds", null), createRuleConfiguration());
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -96,13 +110,10 @@ class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    void assertGetRowDataWithoutLoadBalancer() {
-        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfigurationWithoutLoadBalancer());
-        when(rule.getExportData()).thenReturn(createExportedData());
-        ShowReadwriteSplittingRuleExecutor executor = new ShowReadwriteSplittingRuleExecutor();
-        executor.setRule(rule);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowReadwriteSplittingRulesStatement.class), mock(ContextManager.class));
+    void assertGetRowDataWithoutLoadBalancer() throws SQLException {
+        engine = setUp(mock(ShowReadwriteSplittingRulesStatement.class), createRuleConfigurationWithoutLoadBalancer());
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
