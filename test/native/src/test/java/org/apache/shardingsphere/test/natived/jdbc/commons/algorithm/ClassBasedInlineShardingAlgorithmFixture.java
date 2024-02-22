@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 
 import java.util.Collection;
 
-@SuppressWarnings("unused")
 public final class ClassBasedInlineShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     @Override

@@ -90,7 +90,7 @@ A fully configured `seata.conf` is as follows,
 
 ```conf
 sharding.transaction.seata.at.enable = true
-sharding.transaction.seata.tx.timeout = 30
+sharding.transaction.seata.tx.timeout = 60
 
 client {
     application.id = example
@@ -118,9 +118,11 @@ For ShardingSphere data source, discuss 5 situations,
 
 3. Using Jakarta EE 9/10’s `jakarta.transaction.Transactional` annotation on functions is allowed.
 
-4. Using the `io.seata.spring.annotation.GlobalTransactional` annotation on the function is not allowed.
+4. Using Spring Framework’s `org.springframework.transaction.annotation.Transactional` annotation on functions is allowed.
 
-5. Manually create `io.seata.tm.api.GlobalTransaction` instance from `io.seata.tm.api.GlobalTransactionContext`,
+5. Using the `io.seata.spring.annotation.GlobalTransactional` annotation on the function is not allowed.
+
+6. Manually create `io.seata.tm.api.GlobalTransaction` instance from `io.seata.tm.api.GlobalTransactionContext`,
 calling the `begin()`, `commit()` and `rollback()` methods of an `io.seata.tm.api.GlobalTransaction` instance is not allowed.
 
 Long story short, you should not use the Seata Java API when using ShardingSphere's Seata integration.

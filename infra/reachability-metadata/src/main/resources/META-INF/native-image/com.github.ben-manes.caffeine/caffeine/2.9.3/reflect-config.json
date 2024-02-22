@@ -40,13 +40,23 @@
   "fields":[{"name":"value"}]
 },
 {
-  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.NodeFactory"},
-  "name":"com.github.benmanes.caffeine.cache.PDMS",
+  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.PDW"},
+  "name":"com.github.benmanes.caffeine.cache.PDW",
+  "fields":[{"name":"writeTime"}]
+},
+{
+  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.SIMSW"},
+  "name":"com.github.benmanes.caffeine.cache.PDWMS",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.LocalCacheFactory"},
+  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.BoundedLocalCache$BoundedLocalLoadingCache"},
   "name":"com.github.benmanes.caffeine.cache.SIMS",
+  "methods":[{"name":"<init>","parameterTypes":["com.github.benmanes.caffeine.cache.Caffeine","com.github.benmanes.caffeine.cache.CacheLoader","boolean"] }]
+},
+{
+  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.BoundedLocalCache$BoundedLocalManualCache"},
+  "name":"com.github.benmanes.caffeine.cache.SIMSW",
   "methods":[{"name":"<init>","parameterTypes":["com.github.benmanes.caffeine.cache.Caffeine","com.github.benmanes.caffeine.cache.CacheLoader","boolean"] }]
 },
 {
@@ -58,5 +68,10 @@
   "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.StripedBuffer"},
   "name":"java.lang.Thread",
   "fields":[{"name":"threadLocalRandomProbe"}]
+},
+{
+  "condition":{"typeReachable":"com.github.benmanes.caffeine.cache.NodeFactory"},
+  "name":"com.github.benmanes.caffeine.cache.PDMS",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

@@ -78,6 +78,7 @@ plugins {
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.0', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
@@ -88,6 +89,9 @@ graalvmNative {
       test {
          buildArgs.add('-H:+AddAllCharsets')
       }
+   }
+   metadataRepository {
+        enabled.set(false)
    }
 }
 ```
@@ -181,7 +185,7 @@ Image 下使用。
 ```
 
 2. 对于 `读写分离` 的功能，你需要使用 `行表达式` SPI 的其他实现，以在配置 `logic database name`，`writeDataSourceName` 和 `readDataSourceNames` 
-时绕开对 GroovyShell 的调用。一个可能的配置是使用 `LITERAL` 的 `行表达式` SPI 的实现。对于 `数据分片` 的功能的 `actualDataNodes` 同理。
+时绕开对 GroovyShell 的调用。一个可能的配置是使用 `LITERAL` 的 `行表达式` SPI 的实现。
 ```yaml
 rules:
 - !READWRITE_SPLITTING
@@ -193,6 +197,18 @@ rules:
         - <LITERAL>ds_2
 ```
 
+对于 `数据分片` 的功能的 `actualDataNodes` 同理。
+
+```yaml
+- !SHARDING
+   tables:
+      t_order:
+         actualDataNodes: <LITERAL>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
+         keyGenerateStrategy:
+            column: order_id
+            keyGeneratorName: snowflake
+```
+
 3. 使用者依然需要在 `src/main/resources/META-INF/native-image` 文件夹或 `src/test/resources/META-INF/native-image` 文件夹配置独立
 文件的 GraalVM Reachability Metadata。使用者可通过 GraalVM Native Build Tools 的 GraalVM Tracing Agent 来快速采集 GraalVM 
 Reachability Metadata。
@@ -201,16 +217,42 @@ Reachability Metadata。
 当遇到如下 Error，使用者需要添加 `-H:+AddAllCharsets` 的 `buildArg` 到 GraalVM Native Build Tools 的配置中。
 
 ```shell
-Caused by: java.io.UnsupportedEncodingException: SQL Server collation SQL_Latin1_General_CP1_CI_AS is not supported by this driver.
- com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:506)
- com.microsoft.sqlserver.jdbc.SQLCollation.<init>(SQLCollation.java:63)
- com.microsoft.sqlserver.jdbc.SQLServerConnection.processEnvChange(SQLServerConnection.java:3174)
- [...]
 Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supported by the Java environment.
  com.microsoft.sqlserver.jdbc.Encoding.checkSupported(SQLCollation.java:572)
  com.microsoft.sqlserver.jdbc.SQLCollation$SortOrder.getEncoding(SQLCollation.java:473)
  com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:501)
  [...]
+```
+
+5. 当使用 Seata 的 BASE 集成时，用户需要使用特定的 `io.seata:seata-all:1.8.0` 版本以避开对 ByteBuddy Java API 的使用，
+并排除 `io.seata:seata-all:1.8.0` 中过时的 `org.antlr:antlr4-runtime:4.8` 的 Maven 依赖。可能的配置例子如下，
+
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>io.seata</groupId>
+         <artifactId>seata-all</artifactId>
+         <version>1.8.0</version>
+         <exclusions>
+            <exclusion>
+               <groupId>org.antlr</groupId>
+               <artifactId>antlr4-runtime</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+    </dependencies>
+</project>
 ```
 
 ## 贡献 GraalVM Reachability Metadata
