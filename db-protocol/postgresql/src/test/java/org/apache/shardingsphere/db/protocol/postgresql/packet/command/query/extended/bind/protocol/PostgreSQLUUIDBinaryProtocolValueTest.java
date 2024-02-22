@@ -50,15 +50,15 @@ class PostgreSQLUUIDBinaryProtocolValueTest {
     
     @Test
     void assertWrite() {
-        UUID randomUUID = UUID.randomUUID();
+        UUID uuid = UUID.fromString("00000000-000-0000-0000-000000000001");
         byte[] expected = new byte[16];
         ByteBuffer buffer = ByteBuffer.wrap(expected);
-        buffer.putLong(randomUUID.getMostSignificantBits());
-        buffer.putLong(randomUUID.getLeastSignificantBits());
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
         ByteBuf byteBuf = Unpooled.wrappedBuffer(expected);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf.writerIndex(0), StandardCharsets.UTF_8);
         PostgreSQLUUIDBinaryProtocolValue actual = new PostgreSQLUUIDBinaryProtocolValue();
-        actual.write(payload, randomUUID);
-        assertThat(actual.read(payload, 16), is(randomUUID));
+        actual.write(payload, uuid);
+        assertThat(actual.read(payload, 16), is(uuid));
     }
 }

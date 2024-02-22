@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -25,30 +27,44 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexSh
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShowDefaultShardingStrategyExecutor;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShowDefaultShardingStrategyExecutorTest {
     
+    private DistSQLQueryExecuteEngine engine;
+    
+    DistSQLQueryExecuteEngine setUp(final ShardingRuleConfiguration configuration) {
+        return new DistSQLQueryExecuteEngine(mock(ShowDefaultShardingStrategyStatement.class), null, mockContextManager(configuration), mock(DistSQLConnectionContext.class));
+    }
+    
+    private ContextManager mockContextManager(final ShardingRuleConfiguration configuration) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(configuration);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        return result;
+    }
+    
     @Test
-    void assertGetRowData() {
-        ShardingRule rule1 = mock(ShardingRule.class);
-        when(rule1.getConfiguration()).thenReturn(createRuleConfiguration1());
-        ShowDefaultShardingStrategyExecutor executor = new ShowDefaultShardingStrategyExecutor();
-        executor.setRule(rule1);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDefaultShardingStrategyStatement.class), mock(ContextManager.class));
+    void assertGetRowData1() throws SQLException {
+        engine = setUp(createRuleConfiguration1());
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -65,14 +81,24 @@ class ShowDefaultShardingStrategyExecutorTest {
         assertThat(row.getCell(4), is("database_inline"));
         assertThat(row.getCell(5), is("INLINE"));
         assertThat(row.getCell(6), is("{\"algorithm-expression\":\"ds_${user_id % 2}\"}"));
-        ShardingRule rule2 = mock(ShardingRule.class);
-        when(rule2.getConfiguration()).thenReturn(createRuleConfiguration2());
-        executor = new ShowDefaultShardingStrategyExecutor();
-        executor.setRule(rule2);
-        actual = executor.getRows(mock(ShowDefaultShardingStrategyStatement.class), mock(ContextManager.class));
+    }
+    
+    private ShardingRuleConfiguration createRuleConfiguration1() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
+        result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        result.setDefaultDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("use_id, order_id", "database_inline"));
+        return result;
+    }
+    
+    @Test
+    void assertGetRowData2() throws SQLException {
+        engine = setUp(createRuleConfiguration2());
+        engine.executeQuery();
+        Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(2));
-        iterator = actual.iterator();
-        row = iterator.next();
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("TABLE"));
         assertThat(row.getCell(2), is("STANDARD"));
         assertThat(row.getCell(3), is("use_id"));
@@ -86,14 +112,6 @@ class ShowDefaultShardingStrategyExecutorTest {
         assertThat(row.getCell(4), is("database_inline"));
         assertThat(row.getCell(5), is("INLINE"));
         assertThat(row.getCell(6), is("{\"algorithm-expression\":\"ds_${user_id % 2}\"}"));
-    }
-    
-    private ShardingRuleConfiguration createRuleConfiguration1() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
-        result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
-        result.setDefaultDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("use_id, order_id", "database_inline"));
-        return result;
     }
     
     private ShardingRuleConfiguration createRuleConfiguration2() {

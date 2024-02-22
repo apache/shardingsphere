@@ -28,6 +28,8 @@ import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequire
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -54,7 +56,7 @@ public final class DistSQLUpdateExecuteEngine {
     
     /**
      * Execute update.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     public void executeUpdate() throws SQLException {
@@ -78,20 +80,20 @@ public final class DistSQLUpdateExecuteEngine {
     @SuppressWarnings("rawtypes")
     private void executeDatabaseRuleDefinitionUpdate(final DatabaseRuleDefinitionExecutor executor) {
         if (isNormalRuleUpdater()) {
-            new DatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, contextManager.getDatabase(databaseName), executor).executeUpdate();
+            new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager, contextManager.getDatabase(databaseName), executor).executeUpdate();
         } else {
             // TODO Remove when metadata structure adjustment completed. #25485
-            new LegacyDatabaseRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, contextManager.getDatabase(databaseName), executor).executeUpdate();
+            new LegacyDatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager, contextManager.getDatabase(databaseName), executor).executeUpdate();
         }
     }
     
     @SuppressWarnings("rawtypes")
     private void executeGlobalRuleDefinitionUpdate(final GlobalRuleDefinitionExecutor executor) {
         if (isNormalRuleUpdater()) {
-            new GlobalRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, executor).executeUpdate();
+            new GlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement, contextManager, executor).executeUpdate();
         } else {
             // TODO Remove when metadata structure adjustment completed. #25485
-            new LegacyGlobalRuleDefinitionExecuteEngine((RuleDefinitionStatement) sqlStatement, contextManager, executor).executeUpdate();
+            new LegacyGlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement, contextManager, executor).executeUpdate();
         }
     }
     

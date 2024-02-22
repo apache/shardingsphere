@@ -3941,6 +3941,194 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_into_with_select_with_merge">
+        <table name="ZeroInventory" start-index="12" stop-index="35">
+            <owner name="Production" start-index="12" stop-index="21" />
+        </table>
+        <columns start-index="37" stop-index="69">
+            <column name="DeletedProductID" start-index="38" stop-index="53" />
+            <column name="RemovedOnDate" start-index="56" stop-index="68" />
+        </columns>
+        <select>
+            <projections start-index="78" stop-index="97">
+                <column-projection name="ProductID" start-index="78" stop-index="86" />
+                <expression-projection text="GETDATE()" start-index="89" stop-index="97">
+                    <expr>
+                        <function function-name="GETDATE" start-index="89" stop-index="97" text="GETDATE()" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <subquery-table alias="Changes">
+                   <subquery>
+                       <merge>
+                           <source>
+                               <subquery-table alias="src">
+                                   <subquery>
+                                       <select>
+                                           <projections start-index="159" stop-index="182">
+                                               <column-projection name="ProductID" start-index="159" stop-index="167" />
+                                               <aggregation-projection type="SUM" expression="SUM(OrderQty)" start-index="170" stop-index="182">
+                                                   <paramters>
+                                                       <column name="OrderQty" start-index="174" stop-index="181" />
+                                                   </paramters>
+                                               </aggregation-projection>
+                                           </projections>
+                                           <from>
+                                               <join-table join-type="INNER">
+                                                   <left>
+                                                       <simple-table name="SalesOrderDetail" alias="sod" start-index="189" stop-index="217">
+                                                           <owner name="Sales" start-index="189" stop-index="193" />
+                                                       </simple-table>
+                                                   </left>
+                                                   <right>
+                                                       <simple-table name="SalesOrderHeader" alias="soh" start-index="224" stop-index="252">
+                                                           <owner name="Sales" start-index="224" stop-index="228" />
+                                                       </simple-table>
+                                                   </right>
+                                                   <on-condition>
+                                                       <binary-operation-expression start-index="257" stop-index="322">
+                                                           <left>
+                                                               <binary-operation-expression start-index="257" stop-index="291">
+                                                                   <left>
+                                                                       <column name="SalesOrderID" start-index="257" stop-index="272">
+                                                                           <owner name="sod" start-index="257" stop-index="259" />
+                                                                       </column>
+                                                                   </left>
+                                                                   <right>
+                                                                       <column name="SalesOrderID" start-index="276" stop-index="291">
+                                                                           <owner name="soh" start-index="276" stop-index="278" />
+                                                                       </column>
+                                                                   </right>
+                                                                   <operator>=</operator>
+                                                               </binary-operation-expression>
+                                                           </left>
+                                                           <right>
+                                                               <binary-operation-expression start-index="297" stop-index="322">
+                                                                   <left>
+                                                                       <column name="OrderDate" start-index="297" stop-index="309">
+                                                                           <owner name="soh" start-index="297" stop-index="299" />
+                                                                       </column>
+                                                                   </left>
+                                                                   <right>
+                                                                       <literal-expression value="20070401" start-index="313" stop-index="322" />
+                                                                   </right>
+                                                                   <operator>=</operator>
+                                                               </binary-operation-expression>
+                                                           </right>
+                                                           <operator>AND</operator>
+                                                       </binary-operation-expression>
+                                                   </on-condition>
+                                               </join-table>
+                                           </from>
+                                           <group-by>
+                                               <column-item name="ProductID" order-direction="ASC" start-index="333" stop-index="341" />
+                                           </group-by>
+                                       </select>
+                                   </subquery>
+                               </subquery-table>
+                           </source>
+                           <target>
+                               <simple-table name="ProductInventory" alias="pi" start-index="111" stop-index="143">
+                                   <owner name="Production" start-index="111" stop-index="120" />
+                               </simple-table>
+                           </target>
+                           <expr>
+                               <binary-operation-expression start-index="377" stop-index="404">
+                                   <left>
+                                       <column name="ProductID" start-index="377" stop-index="388">
+                                           <owner name="pi" start-index="377" stop-index="378" />
+                                       </column>
+                                   </left>
+                                   <right>
+                                       <column name="ProductID" start-index="392" stop-index="404">
+                                           <owner name="src" start-index="392" stop-index="394" />
+                                       </column>
+                                   </right>
+                                   <operator>=</operator>
+                               </binary-operation-expression>
+                           </expr>
+                           <merge-items start-index="407" stop-index="466" text="WHEN MATCHED AND pi.Quantity - src.OrderQty &lt;= 0 THEN DELETE">
+                               <expr>
+                                   <binary-operation-expression start-index="424" stop-index="454">
+                                       <left>
+                                           <binary-operation-expression start-index="424" stop-index="449">
+                                               <left>
+                                                   <column name="Quantity" start-index="424" stop-index="434">
+                                                       <owner name="pi" start-index="424" stop-index="425" />
+                                                   </column>
+                                               </left>
+                                               <right>
+                                                   <column name="OrderQty" start-index="438" stop-index="449">
+                                                       <owner name="src" start-index="438" stop-index="440" />
+                                                   </column>
+                                               </right>
+                                               <operator>-</operator>
+                                           </binary-operation-expression>
+                                       </left>
+                                       <right>
+                                           <literal-expression value="0" start-index="454" stop-index="454" />
+                                       </right>
+                                       <operator>&lt;=</operator>
+                                   </binary-operation-expression>
+                               </expr>
+                           </merge-items>
+                           <merge-items text="WHEN MATCHED THEN UPDATE SET pi.Quantity = pi.Quantity - src.OrderQty" start-index="468" stop-index="536">
+                               <update>
+                                   <set start-index="493" stop-index="536">
+                                       <assignment start-index="497" stop-index="536">
+                                           <column name="Quantity" start-index="497" stop-index="507">
+                                               <owner name="pi" start-index="497" stop-index="498" />
+                                           </column>
+                                           <assignment-value>
+                                               <binary-operation-expression start-index="511" stop-index="536">
+                                                   <left>
+                                                       <column name="Quantity" start-index="511" stop-index="521">
+                                                           <owner name="pi" start-index="511" stop-index="512" />
+                                                       </column>
+                                                   </left>
+                                                   <right>
+                                                       <column name="OrderQty" start-index="525" stop-index="536">
+                                                           <owner name="src" start-index="525" stop-index="527" />
+                                                       </column>
+                                                   </right>
+                                                   <operator>-</operator>
+                                               </binary-operation-expression>
+                                           </assignment-value>
+                                       </assignment>
+                                   </set>
+                               </update>
+                           </merge-items>
+                           <output start-index="538" stop-index="570">
+                               <output-columns start-index="545" stop-index="570">
+                                   <column-projection name="ProductID" start-index="554" stop-index="570" />
+                                   <expression-projection text="$action" start-index="545" stop-index="551">
+                                       <expr>
+                                           <common-expression text="$action" start-index="545" stop-index="551" />
+                                       </expr>
+                                   </expression-projection>
+                               </output-columns>
+                           </output>
+                       </merge>
+                   </subquery>
+                </subquery-table>
+            </from>
+            <where start-index="604" stop-index="626">
+                <expr>
+                    <binary-operation-expression start-index="610" stop-index="626">
+                        <left>
+                            <column name="Action" start-index="610" stop-index="615" />
+                        </left>
+                        <right>
+                            <literal-expression value="DELETE" start-index="619" stop-index="626" />
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </insert>
+
     <insert sql-case-id="insert_into_sample_temp_table_5">
         <table name="#MyTempTable" start-index="12" stop-index="23"/>
         <columns start-index="24" stop-index="24"/>

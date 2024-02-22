@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global;
 
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -26,12 +26,12 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Global rule definition executor.
- * 
+ *
  * @param <T> type of rule definition statement
  * @param <R> type of rule
  */
 @SingletonSPI
-public interface GlobalRuleDefinitionExecutor<T extends RuleDefinitionStatement, R extends ShardingSphereRule> extends DistSQLExecutorRuleAware<R>, TypedSPI {
+public interface GlobalRuleDefinitionExecutor<T extends GlobalRuleDefinitionStatement, R extends ShardingSphereRule> extends DistSQLExecutorRuleAware<R>, TypedSPI {
     
     /**
      * Check before update.

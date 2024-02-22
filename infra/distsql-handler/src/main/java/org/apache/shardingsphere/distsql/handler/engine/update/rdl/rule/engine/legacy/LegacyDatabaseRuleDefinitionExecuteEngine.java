@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     
-    private final RuleDefinitionStatement sqlStatement;
+    private final DatabaseRuleDefinitionStatement sqlStatement;
     
     private final ContextManager contextManager;
     
@@ -83,8 +83,8 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings("rawtypes")
-    private Collection<RuleConfiguration> processSQLStatement(final ShardingSphereDatabase database,
-                                                              final RuleDefinitionStatement sqlStatement, final DatabaseRuleDefinitionExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private Collection<RuleConfiguration> processSQLStatement(final ShardingSphereDatabase database, final DatabaseRuleDefinitionStatement sqlStatement,
+                                                              final DatabaseRuleDefinitionExecutor executor, final RuleConfiguration currentRuleConfig) {
         Collection<RuleConfiguration> result = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         if (executor instanceof DatabaseRuleCreateExecutor) {
             if (null != currentRuleConfig) {
@@ -105,7 +105,7 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processCreate(final RuleDefinitionStatement sqlStatement, final DatabaseRuleCreateExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private RuleConfiguration processCreate(final DatabaseRuleDefinitionStatement sqlStatement, final DatabaseRuleCreateExecutor executor, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         if (null == currentRuleConfig) {
             return toBeCreatedRuleConfig;
@@ -115,14 +115,14 @@ public final class LegacyDatabaseRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private RuleConfiguration processAlter(final RuleDefinitionStatement sqlStatement, final DatabaseRuleAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private RuleConfiguration processAlter(final DatabaseRuleDefinitionStatement sqlStatement, final DatabaseRuleAlterExecutor executor, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         return currentRuleConfig;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processDrop(final ShardingSphereDatabase database, final Collection<RuleConfiguration> configs, final RuleDefinitionStatement sqlStatement,
+    private void processDrop(final ShardingSphereDatabase database, final Collection<RuleConfiguration> configs, final DatabaseRuleDefinitionStatement sqlStatement,
                              final DatabaseRuleDropExecutor executor, final RuleConfiguration currentRuleConfig) {
         if (!executor.hasAnyOneToBeDropped(sqlStatement)) {
             return;

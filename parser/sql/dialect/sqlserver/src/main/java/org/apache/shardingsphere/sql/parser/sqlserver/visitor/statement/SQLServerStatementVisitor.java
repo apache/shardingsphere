@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
@@ -78,11 +79,16 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Jso
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonNullClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonObjectFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MergeInsertClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MergeUpdateClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MergeWhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenJsonFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenQueryFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenRowSetFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OptionHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
@@ -99,6 +105,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Pro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularIdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RowSetFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SampleOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ScalarExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SchemaNameContext;
@@ -129,8 +136,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RowSetFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenQueryFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -148,6 +153,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Insert
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.KeyValueSegment;
@@ -197,6 +203,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -212,10 +219,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.O
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.TableHintLimitedSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.json.JsonNullClauseSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.merge.MergeWhenAndThenSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerMergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerUpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.SampleOptionSegment;
@@ -1199,11 +1208,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.outputWithColumns()) {
             OutputWithColumnsContext outputWithColumnsContext = ctx.outputWithColumns();
             ProjectionsSegment outputColumns = new ProjectionsSegment(outputWithColumnsContext.start.getStartIndex(), outputWithColumnsContext.stop.getStopIndex());
-            if (null != outputWithColumnsContext.outputWithColumn()) {
-                outputColumns.getProjections().addAll(visitOutputWithColumn(outputWithColumnsContext.outputWithColumn()));
-            }
-            if (null != outputWithColumnsContext.scalarExpression()) {
-                outputColumns.getProjections().addAll(visitScalarExpression(outputWithColumnsContext.scalarExpression()));
+            for (int i = 0; i < outputWithColumnsContext.getChildCount(); i += 2) {
+                ParseTree each = outputWithColumnsContext.getChild(i);
+                if (each instanceof OutputWithColumnContext) {
+                    outputColumns.getProjections().add(createColumnProjectionSegment((OutputWithColumnContext) each));
+                }
+                if (each instanceof ScalarExpressionContext) {
+                    outputColumns.getProjections().add(createScalarExpressionContext((ScalarExpressionContext) each));
+                }
             }
             result.setOutputColumns(outputColumns);
         }
@@ -1220,28 +1232,20 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return result;
     }
     
-    private Collection<ProjectionSegment> visitOutputWithColumn(final List<OutputWithColumnContext> outputWithColumnContexts) {
-        Collection<ProjectionSegment> result = new LinkedList<>();
-        for (OutputWithColumnContext each : outputWithColumnContexts) {
-            ColumnSegment column = new ColumnSegment(each.start.getStartIndex(), each.stop.getStopIndex(), new IdentifierValue(each.name().getText()));
-            ColumnProjectionSegment outputColumn = new ColumnProjectionSegment(column);
-            if (null != each.alias()) {
-                outputColumn.setAlias(new AliasSegment(each.alias().start.getStartIndex(), each.alias().stop.getStopIndex(), new IdentifierValue(each.alias().getText())));
-            }
-            result.add(outputColumn);
+    private ProjectionSegment createScalarExpressionContext(final ScalarExpressionContext context) {
+        ExpressionProjectionSegment result = new ExpressionProjectionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
+                getOriginalText(context), (ExpressionSegment) visit(context.expr()));
+        if (null != context.alias()) {
+            result.setAlias(new AliasSegment(context.alias().start.getStartIndex(), context.alias().stop.getStopIndex(), new IdentifierValue(context.alias().getText())));
         }
         return result;
     }
     
-    private Collection<ProjectionSegment> visitScalarExpression(final List<ScalarExpressionContext> scalarExpressionContexts) {
-        Collection<ProjectionSegment> result = new LinkedList<>();
-        for (ScalarExpressionContext each : scalarExpressionContexts) {
-            ExpressionProjectionSegment outputColumn = new ExpressionProjectionSegment(each.start.getStartIndex(), each.stop.getStopIndex(),
-                    getOriginalText(each), (ExpressionSegment) visit(each.expr()));
-            if (null != each.alias()) {
-                outputColumn.setAlias(new AliasSegment(each.alias().start.getStartIndex(), each.alias().stop.getStopIndex(), new IdentifierValue(each.alias().getText())));
-            }
-            result.add(outputColumn);
+    private ProjectionSegment createColumnProjectionSegment(final OutputWithColumnContext context) {
+        ColumnSegment column = new ColumnSegment(context.start.getStartIndex(), context.stop.getStopIndex(), new IdentifierValue(context.name().getText()));
+        ColumnProjectionSegment result = new ColumnProjectionSegment(column);
+        if (null != context.alias()) {
+            result.setAlias(new AliasSegment(context.alias().start.getStartIndex(), context.alias().stop.getStopIndex(), new IdentifierValue(context.alias().getText())));
         }
         return result;
     }
@@ -1557,8 +1561,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
-            SQLServerSelectStatement subquery = (SQLServerSelectStatement) visit(ctx.subquery());
-            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), getOriginalText(ctx.subquery()));
+            if (null != ctx.subquery().merge()) {
+                subquerySegment.setMerge((MergeStatement) visit(ctx.subquery()));
+            } else {
+                subquerySegment.setSelect((SQLServerSelectStatement) visit(ctx.subquery()));
+            }
             SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));
@@ -1624,6 +1632,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
+        if (null != ctx.merge()) {
+            return visit(ctx.merge());
+        }
         return visit(ctx.aggregationClause());
     }
     
@@ -1733,6 +1744,82 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                 result.setAutoDrop(null != option.ON());
             }
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMerge(final MergeContext ctx) {
+        SQLServerMergeStatement result = new SQLServerMergeStatement();
+        result.setTarget((TableSegment) visit(ctx.mergeIntoClause().tableReferences()));
+        if (null != ctx.withClause()) {
+            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+        }
+        if (null != ctx.withMergeHint()) {
+            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withMergeHint().withTableHint()));
+            if (null != ctx.withMergeHint().indexName()) {
+                Collection<IndexSegment> indexSegments = new LinkedList<>();
+                for (IndexNameContext each : ctx.withMergeHint().indexName()) {
+                    indexSegments.add((IndexSegment) visit(each));
+                }
+                result.setIndexes(indexSegments);
+            }
+        }
+        if (null != ctx.mergeUsingClause()) {
+            result.setSource((TableSegment) visit(ctx.mergeUsingClause().tableReferences()));
+            ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.mergeUsingClause().expr().start.getStartIndex(), ctx.mergeUsingClause().expr().stop.getStopIndex(),
+                    (ExpressionSegment) visit(ctx.mergeUsingClause().expr()));
+            result.setExpression(onExpression);
+        }
+        if (null != ctx.mergeWhenClause()) {
+            for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
+                result.getWhenAndThenSegments().add((MergeWhenAndThenSegment) visit(each));
+            }
+        }
+        if (null != ctx.outputClause()) {
+            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+        }
+        if (null != ctx.optionHint()) {
+            result.setOptionHintSegment((OptionHintSegment) visit(ctx.optionHint()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMergeWhenClause(final MergeWhenClauseContext ctx) {
+        MergeWhenAndThenSegment result = new MergeWhenAndThenSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
+        if (null != ctx.mergeDeleteClause() && null != ctx.mergeDeleteClause().expr()) {
+            result.setAndExpr((ExpressionSegment) visit(ctx.mergeDeleteClause().expr()));
+        }
+        if (null != ctx.mergeUpdateClause()) {
+            result.setUpdate((SQLServerUpdateStatement) visit(ctx.mergeUpdateClause()));
+            if (null != ctx.mergeUpdateClause().expr()) {
+                result.setAndExpr((ExpressionSegment) visit(ctx.mergeUpdateClause().expr()));
+            }
+        }
+        if (null != ctx.mergeInsertClause()) {
+            result.setInsert((SQLServerInsertStatement) visit(ctx.mergeInsertClause()));
+            if (null != ctx.mergeInsertClause().expr()) {
+                result.setAndExpr((ExpressionSegment) visit(ctx.mergeInsertClause().expr()));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMergeInsertClause(final MergeInsertClauseContext ctx) {
+        SQLServerInsertStatement result;
+        if (null != ctx.insertDefaultValue()) {
+            result = (SQLServerInsertStatement) visit(ctx.insertDefaultValue());
+        } else {
+            result = (SQLServerInsertStatement) visit(ctx.insertValuesClause());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
+        SQLServerUpdateStatement result = new SQLServerUpdateStatement();
+        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         return result;
     }
 }
