@@ -15,7 +15,9 @@ cd shardingsphere
 mvn clean install -DskipITs -DskipTests -Prelease
 ```
 
-Artifact is distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
+Agent artifact is `distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz`
+
+Proxy artifact is `distribution/proxy/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz`
 
 ### Directory structure
 
@@ -42,7 +44,6 @@ tree
 │       ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
 └── shardingsphere-agent-${latest.release.version}.jar
 ```
-Agent log output location is `agent/logs/stdout.log`.
 
 ### Configuration
 
@@ -103,53 +104,17 @@ OpenTelemetry can export tracing data to Jaeger, Zipkin.
 
 Parameter reference [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)
 
-## Usage in ShardingSphere-Proxy
+## Usage
 
-### Using via a non-container environment
-
-* Edit the startup script
-
-Configure the absolute path of shardingsphere-agent-${latest.release.version}.jar to the start.sh startup script of shardingsphere proxy. 
+Start ShardingSphere-Proxy
 
 ```shell
-nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} \
--javaagent:/xxxxx/agent/shardingsphere-agent-${latest.release.version}.jar \
--classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
-```
-
-* Start ShardingSphere-Proxy
-
-```shell
-bin/start.sh
+tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz
+cd apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin
+./bin/start.sh -g
 ```
 
 After startup, you can find the plugin info in the log of ShardingSphere-Proxy, `Metric` and `Tracing` data can be viewed through the configured monitoring address.
-
-### Use via container environment
-
-- Assume that the following corresponding configurations have been completed locally.
-  - Folder `./custom/agent/` that contains all files after unpacking ShardingSphere-Agent binary package
-  - The folder containing the configuration files of ShardingSphere-Proxy such as `global.yaml` is `./custom/conf/`
-
-- At this point, the use of ShardingSphere-Agent can be configured through the environment variable `JVM_OPT`.
-  Taking starting in the Docker Compose environment as an example, a reasonable `docker-compose.yml` example is as
-  follows.
-
-```yaml
-version: "3.8"
-
-services:
-  apache-shardingsphere-proxy:
-    image: apache/shardingsphere-proxy:latest
-    environment:
-      JVM_OPTS: "-javaagent:/agent/shardingsphere-agent-${latest.release.version}.jar"
-      PORT: 3308
-    volumes:
-      - ./custom/agent:/agent/
-      - ./custom/conf:/opt/shardingsphere-proxy/conf/
-    ports:
-      - "13308:3308"
-```
 
 ## Metrics
 

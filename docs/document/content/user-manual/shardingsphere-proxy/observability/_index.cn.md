@@ -14,7 +14,9 @@ git clone --depth 1 https://github.com/apache/shardingsphere.git
 cd shardingsphere
 mvn clean install -DskipITs -DskipTests -Prelease
 ```
-agent 包输出目录为 distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
+Agent 制品 `distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz`
+
+Proxy 制品 `distribution/proxy/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz`
 
 ### 目录说明
 
@@ -41,7 +43,6 @@ tree
 │       ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
 └── shardingsphere-agent-${latest.release.version}.jar
 ```
-Agent 日志输出位置在 `agent/logs/stdout.log`。
 
 ### 配置说明
 
@@ -102,51 +103,17 @@ OpenTelemetry 可以导出 tracing 数据到 Jaeger，Zipkin。
 参数参考 [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)
 
 
-## ShardingSphere-Proxy 中使用
+## 使用方式
 
-### 通过非容器环境使用
-
-* 编辑启动脚本
-
-配置 shardingsphere-agent-${latest.release.version}.jar 的绝对路径到 ShardingSphere-Proxy 的 start.sh 启动脚本中，请注意配置自己对应的绝对路径。
+启动 ShardingSphere-Proxy
 
 ```shell
-nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} \
--javaagent:/xxxxx/agent/shardingsphere-agent-${latest.release.version}.jar \
--classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
+tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz
+cd apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin
+./bin/start.sh -g
 ```
 
-* 启动 ShardingSphere-Proxy
-
-```shell
-bin/start.sh
-```
 正常启动后，可以在 ShardingSphere-Proxy 日志中找到 plugin 的加载信息，访问 Proxy 后，可以通过配置的监控地址查看到 `Metric` 和 `Tracing` 的数据。
-
-### 通过容器环境使用
-
-- 假设本地已完成如下的对应配置。
-  - 包含 ShardingSphere-Agent 二进制包解压后的所有文件的文件夹 `./custom/agent/`
-  - 包含 `global.yaml` 等 ShardingSphere-Proxy 的配置文件的文件夹为 `./custom/conf/`
-
-- 此时可通过环境变量 `JVM_OPT` 来配置 ShardingSphere-Agent 的使用。
-  以在 Docker Compose 环境下启动为例，合理的 `docker-compose.yml` 示例如下。
-
-```yaml
-version: "3.8"
-
-services:
-  apache-shardingsphere-proxy:
-    image: apache/shardingsphere-proxy:latest
-    environment:
-      JVM_OPTS: "-javaagent:/agent/shardingsphere-agent-${latest.release.version}.jar"
-      PORT: 3308
-    volumes:
-      - ./custom/agent/:/agent/
-      - ./custom/conf/:/opt/shardingsphere-proxy/conf/
-    ports:
-      - "13308:3308"
-```
 
 ## Metrics
 
