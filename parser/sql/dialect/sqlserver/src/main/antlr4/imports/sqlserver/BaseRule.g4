@@ -54,7 +54,7 @@ hexadecimalLiterals
 bitValueLiterals
     : BIT_NUM_
     ;
-    
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -82,7 +82,7 @@ unreservedWord
     | XOR | ALWAYS | ROLE | START | ALGORITHM | AUTO | BLOCKERS
     | CLUSTERED | COLUMNSTORE | CONTENT | CONCAT | DATABASE | DAYS | DENY | DETERMINISTIC
     | DISTRIBUTION | DOCUMENT | DURABILITY | ENCRYPTED | FILESTREAM | FILETABLE | FOLLOWING
-    | HASH | HEAP | INBOUND | INFINITE | LOGIN | MASKED | MAXDOP 
+    | HASH | HEAP | INBOUND | INFINITE | LOGIN | MASKED | MAXDOP
     | MINUTES | MONTHS | MOVE | NOCHECK | NONCLUSTERED | OBJECT | OFF
     | ONLINE | OUTBOUND | OVER | PAGE | PARTITIONS | PAUSED | PERIOD
     | PERSISTED | PRECEDING | RANDOMIZED | RANGE | REBUILD | REPLICATE | REPLICATION
@@ -315,8 +315,13 @@ distinct
     ;
 
 specialFunction
-    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction | trimFunction
     ;
+
+    trimFunction
+        : TRIM LP_ ((LEADING | BOTH | TRAILING) expr? FROM)? expr RP_
+        | TRIM LP_ (expr FROM)? expr RP_
+        ;
 
 graphFunction
     : graphAggFunction
@@ -471,19 +476,19 @@ nullTreatment
     ;
 
 overClause
-    : OVER LP_ partitionByClause? orderByClause? rowRangeClause? RP_ 
+    : OVER LP_ partitionByClause? orderByClause? rowRangeClause? RP_
     ;
 
 partitionByClause
     : PARTITION BY expr (COMMA_ expr)*
     ;
 
-rowRangeClause 
+rowRangeClause
     : (ROWS | RANGE) windowFrameExtent
     ;
 
 windowFrameExtent
-    : windowFramePreceding | windowFrameBetween 
+    : windowFramePreceding | windowFrameBetween
     ;
 
 windowFrameBetween
@@ -491,7 +496,7 @@ windowFrameBetween
     ;
 
 windowFrameBound
-    : windowFramePreceding | windowFrameFollowing 
+    : windowFramePreceding | windowFrameFollowing
     ;
 
 windowFramePreceding
@@ -523,7 +528,7 @@ eqTime
     ;
 
 eqOnOffOption
-    : eqKey eqOnOff 
+    : eqKey eqOnOff
     ;
 
 eqKey

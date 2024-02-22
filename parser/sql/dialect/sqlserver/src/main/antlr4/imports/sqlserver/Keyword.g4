@@ -811,3 +811,15 @@ MATCHED
 TARGET
     : T A R G E T
     ;
+
+LEADING
+    : L E A D I N G
+    ;
+
+BOTH
+    : B O T H
+    ;
+
+TRAILING
+    : T R A I L I N G
+    ;
