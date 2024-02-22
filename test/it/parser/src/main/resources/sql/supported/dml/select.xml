@@ -263,4 +263,5 @@
     AS [statement_text] FROM [sys].[dm_exec_requests] AS [req] CROSS APPLY [sys].dm_exec_sql_text([req].[sql_handle]) AS [ST] ORDER BY [req].[cpu_time] DESC" db-types="SQLServer"/>
     <sql-case id="select_mdx" value="SELECT {[Measures].[Internet Sales Count], [Measures].[Internet Sales-Sales Amount]} ON COLUMNS, {[Product].[Product Line].[Product Line].MEMBERS} ON ROWS FROM [Analysis Services Tutorial] WHERE [Sales Territory].[Sales Territory Country].[Australia]" db-types="SQLServer"/>
     <sql-case id="select_with_brackets_case_when_alias" value="SELECT name AS column_name,column_id,TYPE_NAME(user_type_id) AS type_name, max_length,CASE WHEN max_length = -1 AND TYPE_NAME(user_type_id) &lt;&gt; 'xml' THEN 1 ELSE 0 END AS [(max)] FROM sys.columns WHERE object_id=OBJECT_ID('&lt;schema_name.table_name&gt;') AND ( TYPE_NAME(user_type_id) IN ('xml','text', 'ntext','image') OR (TYPE_NAME(user_type_id) IN ('varchar','nvarchar','varbinary') AND max_length = -1))" db-types="SQLServer"/>
+    <sql-case id="select_from_tmp_table_with_alias" value="SELECT Test2Col = x FROM #t" db-types="SQLServer"/>
 </sql-cases>
