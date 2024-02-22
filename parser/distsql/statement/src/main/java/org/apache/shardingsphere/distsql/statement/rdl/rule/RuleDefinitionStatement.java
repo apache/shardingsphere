@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.statement.rdl.rule;
 import org.apache.shardingsphere.distsql.statement.rdl.RDLStatement;
 
 /**
- * Rule definition statement.
+ * Database rule definition statement.
  */
 public abstract class RuleDefinitionStatement extends RDLStatement {
 }

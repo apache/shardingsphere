@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.database;
 
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
@@ -31,11 +31,11 @@ public interface DatabaseRuleOperator {
     
     /**
      * Operate rule change.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @param database database
      * @param currentRuleConfig current rule configuration
      * @return meta data versions
      */
-    Collection<MetaDataVersion> operate(RuleDefinitionStatement sqlStatement, ShardingSphereDatabase database, RuleConfiguration currentRuleConfig);
+    Collection<MetaDataVersion> operate(DatabaseRuleDefinitionStatement sqlStatement, ShardingSphereDatabase database, RuleConfiguration currentRuleConfig);
 }

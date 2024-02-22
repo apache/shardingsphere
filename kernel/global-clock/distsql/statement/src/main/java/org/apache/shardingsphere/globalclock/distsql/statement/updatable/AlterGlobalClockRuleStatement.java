@@ -19,7 +19,7 @@ package org.apache.shardingsphere.globalclock.distsql.statement.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.type.AlterRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
 
 import java.util.Properties;
 
@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterGlobalClockRuleStatement extends AlterRuleStatement {
+public final class AlterGlobalClockRuleStatement extends GlobalRuleDefinitionStatement {
     
     private final String type;
     

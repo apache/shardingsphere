@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.required;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.type.DropRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.DropRuleStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -39,7 +39,7 @@ public final class DistSQLExecutorRequiredChecker {
     
     /**
      * Check before DistSQL execute.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @param contextManager context manager
      * @param database database

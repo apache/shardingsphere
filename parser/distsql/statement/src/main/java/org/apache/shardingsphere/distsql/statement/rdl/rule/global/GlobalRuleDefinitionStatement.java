@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rdl.rule.type;
+package org.apache.shardingsphere.distsql.statement.rdl.rule.global;
 
 import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
 
 /**
- * Alter rule statement.
+ * Global rule definition statement.
  */
-public abstract class AlterRuleStatement extends RuleDefinitionStatement {
+public abstract class GlobalRuleDefinitionStatement extends RuleDefinitionStatement {
 }

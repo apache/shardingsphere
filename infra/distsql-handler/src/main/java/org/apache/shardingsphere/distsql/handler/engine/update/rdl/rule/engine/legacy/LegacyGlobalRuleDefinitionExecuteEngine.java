@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -34,7 +34,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class LegacyGlobalRuleDefinitionExecuteEngine {
     
-    private final RuleDefinitionStatement sqlStatement;
+    private final GlobalRuleDefinitionStatement sqlStatement;
     
     private final ContextManager contextManager;
     
@@ -53,7 +53,7 @@ public final class LegacyGlobalRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<RuleConfiguration> processUpdate(final RuleDefinitionStatement sqlStatement, final GlobalRuleDefinitionExecutor executor, final RuleConfiguration currentRuleConfig) {
+    private Collection<RuleConfiguration> processUpdate(final GlobalRuleDefinitionStatement sqlStatement, final GlobalRuleDefinitionExecutor executor, final RuleConfiguration currentRuleConfig) {
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         Collection<RuleConfiguration> result = new LinkedList<>(ruleConfigs);
         result.remove(currentRuleConfig);
