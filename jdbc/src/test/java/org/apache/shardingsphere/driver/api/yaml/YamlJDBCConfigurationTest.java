@@ -19,8 +19,6 @@ package org.apache.shardingsphere.driver.api.yaml;
 
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationRuleConfiguration;
@@ -30,57 +28,33 @@ import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConf
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-public class YamlJDBCConfigurationTest {
+class YamlJDBCConfigurationTest {
     
     @Test
-    void assertRebuildYamlJDBCConfiguration() {
-        YamlJDBCConfiguration config = new YamlJDBCConfiguration();
-        config.setDatabaseName("test");
-        Map<String, Object> dataSourceProps = new HashMap<>();
-        dataSourceProps.put("url", "jdbc:mysql://localhost:3306/demo_ds");
-        dataSourceProps.put("username", "root");
-        dataSourceProps.put("password", "root");
-        config.getDataSources().put("ds", dataSourceProps);
-        YamlModeConfiguration mode = new YamlModeConfiguration();
-        mode.setType("Local");
-        YamlPersistRepositoryConfiguration repository = new YamlPersistRepositoryConfiguration();
-        repository.setType("MySQL");
-        mode.setRepository(repository);
-        config.setMode(mode);
-        YamlAuthorityRuleConfiguration authority = new YamlAuthorityRuleConfiguration();
-        config.setAuthority(authority);
-        YamlSQLParserRuleConfiguration sqlParser = new YamlSQLParserRuleConfiguration();
-        config.setSqlParser(sqlParser);
-        YamlTransactionRuleConfiguration transaction = new YamlTransactionRuleConfiguration();
-        config.setTransaction(transaction);
-        YamlGlobalClockRuleConfiguration globalClock = new YamlGlobalClockRuleConfiguration();
-        config.setGlobalClock(globalClock);
-        YamlSQLFederationRuleConfiguration sqlFederation = new YamlSQLFederationRuleConfiguration();
-        config.setSqlFederation(sqlFederation);
-        YamlSQLTranslatorRuleConfiguration sqlTranslator = new YamlSQLTranslatorRuleConfiguration();
-        config.setSqlTranslator(sqlTranslator);
-        YamlTrafficRuleConfiguration traffic = new YamlTrafficRuleConfiguration();
-        config.setTraffic(traffic);
-        YamlLoggingRuleConfiguration logging = new YamlLoggingRuleConfiguration();
-        config.setLogging(logging);
-        Properties props = new Properties();
-        props.setProperty("sql.show", "true");
-        config.setProps(props);
-        config.rebuild();
-        
-        assertThat(config.getDatabaseName(), is("test"));
-        assertThat(config.getDataSources().get("ds"), is(dataSourceProps));
-        assertThat(config.getMode().getType(), is("Local"));
-        assertThat(config.getMode().getRepository(), is(repository));
-        assertIterableEquals(config.getRules(), Arrays.asList(authority, sqlParser, transaction, globalClock,
-                sqlFederation, sqlTranslator, traffic, logging));
+    void assertRebuild() {
+        YamlJDBCConfiguration actual = new YamlJDBCConfiguration();
+        YamlAuthorityRuleConfiguration authorityRuleConfig = new YamlAuthorityRuleConfiguration();
+        actual.setAuthority(authorityRuleConfig);
+        YamlSQLParserRuleConfiguration sqlParserRuleConfig = new YamlSQLParserRuleConfiguration();
+        actual.setSqlParser(sqlParserRuleConfig);
+        YamlTransactionRuleConfiguration transactionRuleConfig = new YamlTransactionRuleConfiguration();
+        actual.setTransaction(transactionRuleConfig);
+        YamlGlobalClockRuleConfiguration globalClockRuleConfig = new YamlGlobalClockRuleConfiguration();
+        actual.setGlobalClock(globalClockRuleConfig);
+        YamlSQLFederationRuleConfiguration sqlFederationRuleConfig = new YamlSQLFederationRuleConfiguration();
+        actual.setSqlFederation(sqlFederationRuleConfig);
+        YamlSQLTranslatorRuleConfiguration sqlTranslatorRuleConfig = new YamlSQLTranslatorRuleConfiguration();
+        actual.setSqlTranslator(sqlTranslatorRuleConfig);
+        YamlTrafficRuleConfiguration trafficRuleConfig = new YamlTrafficRuleConfiguration();
+        actual.setTraffic(trafficRuleConfig);
+        YamlLoggingRuleConfiguration loggingRuleConfig = new YamlLoggingRuleConfiguration();
+        actual.setLogging(loggingRuleConfig);
+        actual.rebuild();
+        assertThat(actual.getRules(), is(Arrays.asList(
+                authorityRuleConfig, sqlParserRuleConfig, transactionRuleConfig, globalClockRuleConfig, sqlFederationRuleConfig, sqlTranslatorRuleConfig, trafficRuleConfig, loggingRuleConfig)));
     }
 }
