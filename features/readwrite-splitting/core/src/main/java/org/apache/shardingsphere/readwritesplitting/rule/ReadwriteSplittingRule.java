@@ -70,8 +70,8 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         this.databaseName = databaseName;
-        this.instanceContext = instanceContext;
         configuration = ruleConfig;
+        this.instanceContext = instanceContext;
         loadBalancers = createLoadBalancers(ruleConfig);
         dataSourceRules = createDataSourceRules(ruleConfig);
     }

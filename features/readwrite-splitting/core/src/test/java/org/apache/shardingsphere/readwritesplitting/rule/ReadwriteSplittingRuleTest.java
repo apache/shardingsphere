@@ -110,11 +110,8 @@ class ReadwriteSplittingRuleTest {
                 "<GROOVY>${['write']}_ds",
                 Arrays.asList("<GROOVY>read_ds_${['0']}", "read_ds_${['1']}", "read_ds_2", "<LITERAL>read_ds_3"),
                 "random");
-        ReadwriteSplittingRule readwriteSplittingRule = new ReadwriteSplittingRule(
-                "logic_db",
-                new ReadwriteSplittingRuleConfiguration(
-                        Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))),
-                mock(InstanceContext.class));
+        ReadwriteSplittingRule readwriteSplittingRule = new ReadwriteSplittingRule("logic_db", new ReadwriteSplittingRuleConfiguration(
+                Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), mock(InstanceContext.class));
         Optional<ReadwriteSplittingDataSourceRule> actual = readwriteSplittingRule.findDataSourceRule("readwrite_ds");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("readwrite_ds"));
