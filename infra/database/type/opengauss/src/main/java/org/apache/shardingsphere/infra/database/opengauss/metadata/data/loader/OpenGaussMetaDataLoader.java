@@ -101,7 +101,7 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
                 String indexName = resultSet.getString("index_name");
                 boolean isUnique = resultSet.getBoolean("is_unique");
                 Collection<IndexMetaData> indexMetaDatas = result.getOrDefault(schemaName, LinkedHashMultimap.create()).get(tableName);
-                if (null == indexMetaDatas || indexMetaDatas.isEmpty()) {
+                if (indexMetaDatas.isEmpty()) {
                     continue;
                 }
                 Optional<IndexMetaData> indexMetaData = indexMetaDatas.stream().filter(each -> each.getName().equals(indexName)).findFirst();
