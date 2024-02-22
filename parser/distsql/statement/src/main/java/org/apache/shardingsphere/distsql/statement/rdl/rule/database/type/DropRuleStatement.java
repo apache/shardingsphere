@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.rdl.rule.type;
+package org.apache.shardingsphere.distsql.statement.rdl.rule.database.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRuleDefinitionStatement;
 
 /**
- * Create rule statement.
+ * Drop rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class CreateRuleStatement extends RuleDefinitionStatement {
+public abstract class DropRuleStatement extends DatabaseRuleDefinitionStatement {
     
-    private final boolean ifNotExists;
+    private final boolean ifExists;
     
-    protected CreateRuleStatement() {
+    protected DropRuleStatement() {
         this(false);
     }
 }

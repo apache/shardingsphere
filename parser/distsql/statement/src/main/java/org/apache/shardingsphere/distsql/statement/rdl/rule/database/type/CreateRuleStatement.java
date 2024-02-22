@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.distsql.statement.updatable;
+package org.apache.shardingsphere.distsql.statement.rdl.rule.database.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
-import org.apache.shardingsphere.traffic.distsql.segment.TrafficRuleSegment;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRuleDefinitionStatement;
 
 /**
- * Alter traffic rule statement.
+ * Create rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterTrafficRuleStatement extends GlobalRuleDefinitionStatement {
+public abstract class CreateRuleStatement extends DatabaseRuleDefinitionStatement {
     
-    private final Collection<TrafficRuleSegment> segments;
+    private final boolean ifNotExists;
+    
+    protected CreateRuleStatement() {
+        this(false);
+    }
 }

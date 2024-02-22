@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -32,7 +32,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class GlobalRuleDefinitionExecuteEngine {
     
-    private final RuleDefinitionStatement sqlStatement;
+    private final GlobalRuleDefinitionStatement sqlStatement;
     
     private final ContextManager contextManager;
     
@@ -51,7 +51,7 @@ public final class GlobalRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings("unchecked")
-    private RuleConfiguration processUpdate(final RuleDefinitionStatement sqlStatement, final ShardingSphereRule rule) {
+    private RuleConfiguration processUpdate(final GlobalRuleDefinitionStatement sqlStatement, final ShardingSphereRule rule) {
         RuleConfiguration result = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         ruleConfigs.remove(rule.getConfiguration());
