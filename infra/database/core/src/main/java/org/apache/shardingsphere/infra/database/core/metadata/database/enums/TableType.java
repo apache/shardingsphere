@@ -21,5 +21,6 @@ package org.apache.shardingsphere.infra.database.core.metadata.database.enums;
  * Table type.
  */
 public enum TableType {
+    
     TABLE, VIEW
 }
