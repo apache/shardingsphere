@@ -24,7 +24,7 @@ showStreamingRule
     ;
 
 alterStreamingRule
-    : ALTER STREAMING RULE transmissionRule?
+    : ALTER STREAMING RULE transmissionRule
     ;
 
 transmissionRule
@@ -33,6 +33,10 @@ transmissionRule
 
 readDefinition
     : READ LP_ workerThread? (COMMA_? batchSize)? (COMMA_? shardingSize)? (COMMA_? rateLimiter)? RP_
+    ;
+
+writeDefinition
+    : WRITE LP_ workerThread? (COMMA_? batchSize)? (COMMA_? rateLimiter)? RP_
     ;
 
 workerThread
@@ -49,10 +53,6 @@ shardingSize
 
 rateLimiter
     : RATE_LIMITER LP_ algorithmDefinition RP_
-    ;
-
-writeDefinition
-    : WRITE LP_ workerThread? (COMMA_? batchSize)? (COMMA_? rateLimiter)? RP_
     ;
 
 streamChannel
