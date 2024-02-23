@@ -24,12 +24,9 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeM
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
-import org.apache.shardingsphere.driver.ShardingSphereDriver;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,16 +41,14 @@ public final class JDBCStateExporter implements MetricsExporter {
     
     @Override
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
-        Optional<ShardingSphereDriver> driver = ShardingSphereDriverUtils.getShardingSphereDriver();
-        if (!driver.isPresent()) {
+        Optional<Map<String, ShardingSphereDataSource>> dataSourceMap = ShardingSphereDriverUtils.getShardingSphereDataSources();
+        if (!dataSourceMap.isPresent()) {
             return Optional.empty();
         }
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(driver.get(), "dataSourceCache");
-        Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            ShardingSphereDataSource dataSource = (ShardingSphereDataSource) entry.getValue();
+        for (Entry<String, ShardingSphereDataSource> entry : dataSourceMap.get().entrySet()) {
+            ShardingSphereDataSource dataSource = entry.getValue();
             ContextManager contextManager = AgentReflectionUtils.getFieldValue(dataSource, "contextManager");
             result.addMetric(Collections.emptyList(), contextManager.getInstanceContext().getInstance().getState().getCurrentState().ordinal());
         }
