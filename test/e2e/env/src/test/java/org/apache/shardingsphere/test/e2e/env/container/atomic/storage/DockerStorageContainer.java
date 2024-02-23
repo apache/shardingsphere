@@ -102,7 +102,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return access data source
      */
     public DataSource createAccessDataSource(final String dataSourceName) {
-        return StorageContainerUtils.generateDataSource(getJdbcUrl(dataSourceName), getUsername(), getPassword(), 4);
+        return StorageContainerUtils.generateDataSource(getJdbcUrl(dataSourceName), getUsername(), getPassword(), 20);
     }
     
     /**
