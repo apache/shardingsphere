@@ -20,10 +20,16 @@ package org.apache.shardingsphere.agent.plugin.core.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.ShardingSphereDriver;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
 
+import javax.sql.DataSource;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -33,11 +39,27 @@ import java.util.Optional;
 public final class ShardingSphereDriverUtils {
     
     /**
-     * Get sharding sphere driver.
+     * Get ShardingSphere data sources.
      *
-     * @return ShardingSphereDriver
+     * @return got data source
      */
-    public static Optional<ShardingSphereDriver> getShardingSphereDriver() {
+    public static Optional<Map<String, ShardingSphereDataSource>> getShardingSphereDataSources() {
+        Optional<ShardingSphereDriver> driver = getShardingSphereDriver();
+        if (driver.isPresent()) {
+            DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(driver.get(), "dataSourceCache");
+            Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
+            Map<String, ShardingSphereDataSource> result = new LinkedHashMap<>();
+            for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+                if (entry.getValue() instanceof ShardingSphereDataSource) {
+                    result.put(entry.getKey(), (ShardingSphereDataSource) entry.getValue());
+                }
+            }
+            return Optional.of(result);
+        }
+        return Optional.empty();
+    }
+    
+    private static Optional<ShardingSphereDriver> getShardingSphereDriver() {
         Enumeration<Driver> driverEnumeration = DriverManager.getDrivers();
         while (driverEnumeration.hasMoreElements()) {
             Driver driver = driverEnumeration.nextElement();
