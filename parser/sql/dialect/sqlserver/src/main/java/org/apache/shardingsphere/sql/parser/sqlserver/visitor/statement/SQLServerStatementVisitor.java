@@ -136,6 +136,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GraphFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GraphAggFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -700,7 +702,29 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.approxFunction()) {
             return visit(ctx.approxFunction());
         }
+        if (null != ctx.graphFunction()) {
+            return visit(ctx.graphFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitGraphFunction(final GraphFunctionContext ctx) {
+        if (null != ctx.graphAggFunction()) {
+            return visit(ctx.graphAggFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitGraphAggFunction(final GraphAggFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.graphAggFunctionName().getText(), getOriginalText(ctx));
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return result;
     }
     
     @Override
