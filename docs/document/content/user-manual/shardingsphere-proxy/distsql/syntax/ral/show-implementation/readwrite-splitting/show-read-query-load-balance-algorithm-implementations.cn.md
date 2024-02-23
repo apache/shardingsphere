@@ -1,19 +1,19 @@
 +++
-title = "SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS"
+title = "SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS"
 weight = 1
 +++
 
 ### 描述
 
-`SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS` 语法用于查询 `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` 接口所有具体的实现类。
+`SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` 接口所有具体的实现类。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-showReadQueryLoadBalanceAlgorithmImplementations ::=
-  'SHOW' 'READ' 'QUERY' 'LOAD' 'BALANCE' 'ALGORITHM' 'IMPLEMENTATIONS'
+showReadQueryLoadBalanceAlgorithmPlugins ::=
+  'SHOW' 'READ' 'QUERY' 'LOAD' 'BALANCE' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -34,11 +34,11 @@ showReadQueryLoadBalanceAlgorithmImplementations ::=
 - 查询 `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` 接口的所有实现类
 
 ```sql
-SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
+SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS;
+SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS;
 +-------------+--------------+-------------+
 | type        | type_aliases | description |
 +-------------+--------------+-------------+
@@ -51,7 +51,7 @@ SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS;
 
 ### 保留字
 
-`SHOW`、`READ`、`QUERY`、`LOAD`、`BALANCE`、`ALGORITHM`、`IMPLEMENTATIONS`
+`SHOW`、`READ`、`QUERY`、`LOAD`、`BALANCE`、`ALGORITHM`、`PLUGINS`
 
 ### 相关链接
 

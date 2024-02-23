@@ -1,19 +1,19 @@
 +++
-title = "SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS"
+title = "SHOW ENCRYPT ALGORITHM PLUGINS"
 weight = 1
 +++
 
 ### Description
 
-The `SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm`.
+The `SHOW ENCRYPT ALGORITHM PLUGINS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm`.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-showEncryptAlgorithmImplementations ::=
-  'SHOW' 'ENCRYPT' 'ALGORITHM' 'IMPLEMENTATIONS'
+showEncryptAlgorithmPlugins ::=
+  'SHOW' 'ENCRYPT' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -34,11 +34,11 @@ showEncryptAlgorithmImplementations ::=
 - Query all the implementations for `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm` interface
 
 ```sql
-SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS
+SHOW ENCRYPT ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS;
+SHOW ENCRYPT ALGORITHM PLUGINS;
 +------+--------------+-------------+
 | type | type_aliases | description |
 +------+--------------+-------------+
@@ -50,7 +50,7 @@ SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS;
 
 ### Reserved word
 
-`SHOW`, `ENCRYPT`, `ALGORITHM`, `IMPLEMENTATIONS`
+`SHOW`, `ENCRYPT`, `ALGORITHM`, `PLUGINS`
 
 ### Related links
 

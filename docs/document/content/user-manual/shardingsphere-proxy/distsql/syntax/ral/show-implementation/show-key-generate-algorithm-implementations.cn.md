@@ -1,19 +1,19 @@
 +++
-title = "SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS"
+title = "SHOW KEY GENERATE ALGORITHM PLUGINS"
 weight = 6
 +++
 
 ### 描述
 
-`SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS` 语法用于查询 `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` 接口所有具体的实现类。
+`SHOW KEY GENERATE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` 接口所有具体的实现类。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-showKeyGenerateAlgorithmImplementations ::=
-  'SHOW' 'KEY' 'GENERATE' 'ALGORITHM' 'IMPLEMENTATIONS'
+showKeyGenerateAlgorithmPlugins ::=
+  'SHOW' 'KEY' 'GENERATE' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -23,34 +23,34 @@ showKeyGenerateAlgorithmImplementations ::=
 
 ### 返回值说明
 
-| 列    | 说明      |
-|------|---------|
-| name | 实现类名称   |
-| type | 类型      |
-| class_path | 实现类完整路径 |
+| 列            | 说明     |
+|--------------|--------|
+| type         | 类型     |
+| type_aliases | 类型别名   |
+| description  | 描述     |
 
 ### 示例
 
 - 查询 `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` 接口的所有实现类
 
 ```sql
-SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS
+SHOW KEY GENERATE ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS;
-+-------------------------------+-----------+------------------------------------------------------------------------------------+
-| name                          | type      | class_path                                                                         |
-+-------------------------------+-----------+------------------------------------------------------------------------------------+
-| UUIDKeyGenerateAlgorithm      | UUID      | org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm           |
-| SnowflakeKeyGenerateAlgorithm | SNOWFLAKE | org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm |
-+-------------------------------+-----------+------------------------------------------------------------------------------------+
+SHOW KEY GENERATE ALGORITHM PLUGINS;
++-----------+--------------+-------------+
+| type      | type_aliases | description |
++-----------+--------------+-------------+
+| UUID      |              |             |
+| SNOWFLAKE |              |             |
++-----------+--------------+-------------+
 2 rows in set (0.05 sec)
 ```
 
 ### 保留字
 
-`SHOW`、`KEY`、`GENERATE`、`ALGORITHM`、`IMPLEMENTATIONS`
+`SHOW`、`KEY`、`GENERATE`、`ALGORITHM`、`PLUGINS`
 
 ### 相关链接
 
