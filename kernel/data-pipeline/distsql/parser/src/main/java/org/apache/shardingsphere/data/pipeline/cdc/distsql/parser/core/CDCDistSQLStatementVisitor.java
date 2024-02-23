@@ -80,9 +80,7 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     
     @Override
     public ASTNode visitAlterStreamingRule(final AlterStreamingRuleContext ctx) {
-        TransmissionRuleSegment segment = null == ctx.transmissionRule() ? null
-                : (TransmissionRuleSegment) visit(ctx.transmissionRule());
-        return new AlterTransmissionRuleStatement("STREAMING", segment);
+        return new AlterTransmissionRuleStatement("STREAMING", (TransmissionRuleSegment) visit(ctx.transmissionRule()));
     }
     
     @Override

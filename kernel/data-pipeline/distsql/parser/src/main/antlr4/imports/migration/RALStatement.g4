@@ -24,7 +24,7 @@ showMigrationRule
     ;
 
 alterMigrationRule
-    : ALTER MIGRATION RULE transmissionRule?
+    : ALTER MIGRATION RULE transmissionRule
     ;
 
 transmissionRule

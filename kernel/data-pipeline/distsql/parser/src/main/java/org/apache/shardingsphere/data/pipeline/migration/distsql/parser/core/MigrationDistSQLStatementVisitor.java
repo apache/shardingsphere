@@ -103,9 +103,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitAlterMigrationRule(final AlterMigrationRuleContext ctx) {
-        TransmissionRuleSegment segment = null == ctx.transmissionRule() ? null
-                : (TransmissionRuleSegment) visit(ctx.transmissionRule());
-        return new AlterTransmissionRuleStatement("MIGRATION", segment);
+        return new AlterTransmissionRuleStatement("MIGRATION", (TransmissionRuleSegment) visit(ctx.transmissionRule()));
     }
     
     @Override
