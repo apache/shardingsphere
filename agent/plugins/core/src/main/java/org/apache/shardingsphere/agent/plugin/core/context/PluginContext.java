@@ -71,7 +71,7 @@ public final class PluginContext {
     /**
      * Get context manager.
      *
-     * @return ContextManager
+     * @return context manager
      */
     public Optional<ContextManager> getContextManager() {
         if (isEnhancedForProxy) {

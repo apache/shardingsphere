@@ -24,7 +24,5 @@ public interface AgentPluginEnable {
      *
      * @return true or false
      */
-    default boolean isPluginEnabled() {
-        return true;
-    }
+    boolean isPluginEnabled();
 }
