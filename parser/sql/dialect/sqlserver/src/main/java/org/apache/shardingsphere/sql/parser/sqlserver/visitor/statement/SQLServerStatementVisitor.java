@@ -248,14 +248,14 @@ import java.util.stream.Collectors;
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
-
+    
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
-
+    
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
     }
-
+    
     @Override
     public final ASTNode visitLiterals(final LiteralsContext ctx) {
         if (null != ctx.stringLiterals()) {
@@ -278,7 +278,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null.");
     }
-
+    
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
         if (null != ctx.STRING_()) {
@@ -287,60 +287,60 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return new StringLiteralValue(ctx.getText().substring(1));
         }
     }
-
+    
     @Override
     public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
         return new NumberLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitHexadecimalLiterals(final HexadecimalLiteralsContext ctx) {
         // TODO deal with hexadecimalLiterals
         return new OtherLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitBitValueLiterals(final BitValueLiteralsContext ctx) {
         // TODO deal with bitValueLiterals
         return new OtherLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
         return new BooleanLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitNullValueLiterals(final NullValueLiteralsContext ctx) {
         return new NullLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
         return null == ctx.regularIdentifier() ? visit(ctx.delimitedIdentifier()) : visit(ctx.regularIdentifier());
     }
-
+    
     @Override
     public final ASTNode visitRegularIdentifier(final RegularIdentifierContext ctx) {
         UnreservedWordContext unreservedWord = ctx.unreservedWord();
         return null == unreservedWord ? new IdentifierValue(ctx.getText()) : (IdentifierValue) visit(unreservedWord);
     }
-
+    
     @Override
     public final ASTNode visitDelimitedIdentifier(final DelimitedIdentifierContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitUnreservedWord(final UnreservedWordContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
-
+    
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
@@ -358,7 +358,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
         ColumnSegment result;
@@ -378,23 +378,23 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitScriptVariableName(final ScriptVariableNameContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
         IndexNameSegment indexName = new IndexNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
         return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName);
     }
-
+    
     @Override
     public final ASTNode visitConstraintName(final ConstraintNameContext ctx) {
         return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
-
+    
     @Override
     public final ASTNode visitTableNames(final TableNamesContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
@@ -403,7 +403,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
@@ -412,7 +412,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitColumnNamesWithSort(final ColumnNamesWithSortContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
@@ -421,7 +421,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitExpr(final ExprContext ctx) {
         if (null != ctx.booleanPrimary()) {
@@ -441,14 +441,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
-
+    
     private ASTNode createBinaryOperationExpression(final ExprContext ctx, final String operator) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.expr(1));
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     @Override
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
@@ -480,7 +480,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return visit(ctx.predicate());
     }
-
+    
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
         ExpressionSegment right;
@@ -493,7 +493,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     @Override
     public final ASTNode visitPredicate(final PredicateContext ctx) {
         if (null != ctx.IN()) {
@@ -507,7 +507,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return visit(ctx.bitExpr(0));
     }
-
+    
     private BinaryOperationExpression createBinaryOperationExpressionFromLike(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ListExpression right = new ListExpression(ctx.simpleExpr(0).start.getStartIndex(), ctx.simpleExpr().get(ctx.simpleExpr().size() - 1).stop.getStopIndex());
@@ -518,7 +518,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     private InExpression createInSegment(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
@@ -535,7 +535,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         boolean not = null != ctx.NOT();
         return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
     }
-
+    
     private BetweenExpression createBetweenSegment(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
@@ -543,7 +543,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         boolean not = null != ctx.NOT();
         return new BetweenExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, between, and, not);
     }
-
+    
     @Override
     public final ASTNode visitBitExpr(final BitExprContext ctx) {
         if (null != ctx.simpleExpr()) {
@@ -555,7 +555,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
-
+    
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
         if (astNode instanceof StringLiteralValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((StringLiteralValue) astNode).getValue());
@@ -581,7 +581,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return astNode;
     }
-
+    
     @Override
     public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
         int startIndex = ctx.getStart().getStartIndex();
@@ -609,7 +609,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return visitRemainSimpleExpr(ctx);
     }
-
+    
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
         if (null != ctx.caseExpression()) {
             visit(ctx.caseExpression());
@@ -625,7 +625,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
-
+    
     @Override
     public final ASTNode visitFunctionCall(final FunctionCallContext ctx) {
         if (null != ctx.aggregationFunction()) {
@@ -639,7 +639,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
     }
-
+    
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
@@ -647,7 +647,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                 ? createAggregationSegment(ctx, aggregationType)
                 : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
-
+    
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         if (null != ctx.distinct()) {
@@ -660,7 +660,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.getParameters().addAll(getExpressions(ctx));
         return result;
     }
-
+    
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
         if (null == ctx.expr()) {
             return Collections.emptyList();
@@ -671,7 +671,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
         StringBuilder result = new StringBuilder();
         for (int i = 3; i < ctx.getChildCount() - 1; i++) {
@@ -679,7 +679,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result.toString();
     }
-
+    
     @Override
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
         if (null != ctx.conversionFunction()) {
@@ -711,7 +711,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public ASTNode visitTrimFunction(final TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
@@ -732,7 +732,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitGraphFunction(final GraphFunctionContext ctx) {
         if (null != ctx.graphAggFunction()) {
@@ -740,7 +740,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public ASTNode visitGraphAggFunction(final GraphAggFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.graphAggFunctionName().getText(), getOriginalText(ctx));
@@ -751,7 +751,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitApproxFunction(final ApproxFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
@@ -762,7 +762,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitConversionFunction(final ConversionFunctionContext ctx) {
         if (null != ctx.castFunction()) {
@@ -773,14 +773,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
-
+    
     @Override
     public final ASTNode visitJsonFunction(final JsonFunctionContext ctx) {
         if (null != ctx.jsonArrayFunction()) {
@@ -791,7 +791,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public final ASTNode visitJsonArrayFunction(final JsonArrayFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_ARRAY().getText(), getOriginalText(ctx));
@@ -805,7 +805,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitJsonObjectFunction(final JsonObjectFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_OBJECT().getText(), getOriginalText(ctx));
@@ -819,12 +819,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitJsonNullClause(final JsonNullClauseContext ctx) {
         return new JsonNullClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
     }
-
+    
     @Override
     public final ASTNode visitJsonKeyValue(final JsonKeyValueContext ctx) {
         KeyValueSegment result = new KeyValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
@@ -834,7 +834,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
@@ -851,7 +851,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
         String functionName = null != ctx.CONVERT() ? ctx.CONVERT().getText() : ctx.TRY_CONVERT().getText();
@@ -863,13 +863,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public final ASTNode visitOpenJsonFunction(final OpenJsonFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENJSON().getText(), getOriginalText(ctx));
@@ -878,7 +878,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitOpenRowSetFunction(final OpenRowSetFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENROWSET().getText(), getOriginalText(ctx));
@@ -890,7 +890,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitOpenQueryFunction(final OpenQueryFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENQUERY().getText(), getOriginalText(ctx));
@@ -899,7 +899,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
@@ -907,19 +907,19 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.getParameters().addAll(expressionSegments);
         return result;
     }
-
+    
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
         return new KeywordValue(ctx.getText());
     }
-
+    
     // TODO :FIXME, sql case id: insert_with_str_to_date
     private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
         for (ExprContext each : exprContexts) {
             visit(each);
         }
     }
-
+    
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null == ctx.DESC() ? OrderDirection.ASC : OrderDirection.DESC;
@@ -934,7 +934,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, null,
                 (ExpressionSegment) visit(ctx.expr()));
     }
-
+    
     @Override
     public final ASTNode visitDataType(final DataTypeContext ctx) {
         DataTypeSegment result = new DataTypeSegment();
@@ -947,7 +947,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitDataTypeLength(final DataTypeLengthContext ctx) {
         DataTypeLengthSegment result = new DataTypeLengthSegment();
@@ -963,7 +963,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitViewName(final ViewNameContext ctx) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(),
@@ -974,20 +974,20 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
-
+    
     @Override
     public ASTNode visitAggregationClause(final AggregationClauseContext ctx) {
         // TODO :Unsupported for union | except | intersect SQL.
         return visit(ctx.selectClause(0));
     }
-
+    
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SQLServerSelectStatement result = new SQLServerSelectStatement();
@@ -1025,7 +1025,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private Collection<CommonTableExpressionSegment> getCommonTableExpressionSegmentsUsingCteClauseSet(final CteClauseSetContext ctx) {
         Collection<CommonTableExpressionSegment> result = new LinkedList<>();
         for (CteClauseContext each : ctx.cteClause()) {
@@ -1042,13 +1042,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitHavingClause(final HavingClauseContext ctx) {
         ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
         return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
     }
-
+    
     private LimitSegment getLimitSegment(final OrderByClauseContext ctx) {
         LimitSegment result = null;
         PaginationValueSegment offset = null;
@@ -1076,7 +1076,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private OrderBySegment getOrderBySegment(final OrderByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
         int orderByStartIndex = ctx.start.getStartIndex();
@@ -1087,11 +1087,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new OrderBySegment(orderByStartIndex, orderByStopIndex, items);
     }
-
+    
     private boolean isDistinct(final SelectClauseContext ctx) {
         return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
     }
-
+    
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         List<ProjectionSegment> projections = new LinkedList<>();
@@ -1105,7 +1105,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.getProjections().addAll(projections);
         return result;
     }
-
+    
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         TableSegment result = (TableSegment) visit(ctx.tableReference(0));
@@ -1116,7 +1116,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private JoinTableSegment generateJoinTableSourceFromTableReference(final TableReferenceContext ctx, final TableSegment tableSegment) {
         JoinTableSegment result = new JoinTableSegment();
         result.setStartIndex(tableSegment.getStartIndex());
@@ -1126,12 +1126,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setJoinType(JoinType.COMMA.name());
         return result;
     }
-
+    
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
     }
-
+    
     @Override
     public ASTNode visitGroupByClause(final GroupByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
@@ -1140,7 +1140,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
-
+    
     /**
      * Get original text.
      *
@@ -1150,7 +1150,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     protected String getOriginalText(final ParserRuleContext ctx) {
         return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
     }
-
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         SQLServerInsertStatement result;
@@ -1178,7 +1178,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
-
+    
     @Override
     public ASTNode visitRowSetFunction(final RowSetFunctionContext ctx) {
         if (null != ctx.openRowSetFunction()) {
@@ -1187,7 +1187,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return visit(ctx.openQueryFunction());
         }
     }
-
+    
     @Override
     public ASTNode visitWithTableHint(final WithTableHintContext ctx) {
         WithTableHintSegment result = new WithTableHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
@@ -1200,14 +1200,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitTableHintLimited(final TableHintLimitedContext ctx) {
         TableHintLimitedSegment result = new TableHintLimitedSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         result.setValue(ctx.getText());
         return result;
     }
-
+    
     @Override
     public ASTNode visitInsertDefaultValue(final InsertDefaultValueContext ctx) {
         SQLServerInsertStatement result = new SQLServerInsertStatement();
@@ -1217,7 +1217,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitInsertExecClause(final InsertExecClauseContext ctx) {
         SQLServerInsertStatement result = new SQLServerInsertStatement();
@@ -1225,7 +1225,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setExecSegment((ExecSegment) visit(ctx.exec()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitExec(final ExecContext ctx) {
         ExecSegment result = new ExecSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -1241,7 +1241,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitProcedureName(final ProcedureNameContext ctx) {
         FunctionNameSegment result = new FunctionNameSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), (IdentifierValue) visit(ctx.name()));
@@ -1250,7 +1250,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitOutputClause(final OutputClauseContext ctx) {
         OutputSegment result = new OutputSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
@@ -1280,7 +1280,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private ProjectionSegment createScalarExpressionContext(final ScalarExpressionContext context) {
         ExpressionProjectionSegment result = new ExpressionProjectionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
                 getOriginalText(context), (ExpressionSegment) visit(context.expr()));
@@ -1289,7 +1289,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private ProjectionSegment createColumnProjectionSegment(final OutputWithColumnContext context) {
         ColumnSegment column = new ColumnSegment(context.start.getStartIndex(), context.stop.getStopIndex(), new IdentifierValue(context.name().getText()));
         ColumnProjectionSegment result = new ColumnProjectionSegment(column);
@@ -1298,7 +1298,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         SQLServerInsertStatement result = new SQLServerInsertStatement();
@@ -1309,7 +1309,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
         for (AssignmentValuesContext each : assignmentValuesContexts) {
@@ -1317,7 +1317,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
         SQLServerInsertStatement result = new SQLServerInsertStatement();
@@ -1328,7 +1328,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     private InsertColumnsSegment createInsertColumns(final ColumnNamesContext columnNames, final int startIndex) {
         if (null == columnNames) {
@@ -1338,18 +1338,18 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
         }
     }
-
+    
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
         SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) visit(ctx.select());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
     }
-
+    
     @Override
     public ASTNode visitWithClause(final WithClauseContext ctx) {
         Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.cteClauseSet());
         return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressionSegments);
     }
-
+    
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         SQLServerUpdateStatement result = new SQLServerUpdateStatement();
@@ -1373,12 +1373,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
-
+    
     @Override
     public ASTNode visitOptionHint(final OptionHintContext ctx) {
         return new OptionHintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
-
+    
     @Override
     public ASTNode visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
         Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
@@ -1391,7 +1391,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAssignmentValues(final AssignmentValuesContext ctx) {
         List<ExpressionSegment> segments = new LinkedList<>();
@@ -1400,7 +1400,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new InsertValuesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segments);
     }
-
+    
     @Override
     public ASTNode visitAssignment(final AssignmentContext ctx) {
         ColumnSegment column = (ColumnSegment) visitColumnName(ctx.columnName());
@@ -1409,7 +1409,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
         return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
-
+    
     @Override
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
@@ -1418,7 +1418,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-
+    
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         SQLServerDeleteStatement result = new SQLServerDeleteStatement();
@@ -1442,7 +1442,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
-
+    
     @Override
     public ASTNode visitSingleTableClause(final SingleTableClauseContext ctx) {
         SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
@@ -1451,7 +1451,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
@@ -1460,7 +1460,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setActualDeleteTables(generateTablesFromTableMultipleTableNames(ctx.multipleTableNames()));
         return result;
     }
-
+    
     private List<SimpleTableSegment> generateTablesFromTableMultipleTableNames(final MultipleTableNamesContext ctx) {
         List<SimpleTableSegment> result = new LinkedList<>();
         for (TableNameContext each : ctx.tableName()) {
@@ -1468,12 +1468,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitDuplicateSpecification(final DuplicateSpecificationContext ctx) {
         return new BooleanLiteralValue(null != ctx.DISTINCT());
     }
-
+    
     @Override
     public ASTNode visitProjection(final ProjectionContext ctx) {
         if (null != ctx.qualifiedShorthand()) {
@@ -1495,7 +1495,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return createProjection(ctx, alias);
     }
-
+    
     @Override
     public ASTNode visitTop(final TopContext ctx) {
         int startIndex = ctx.topNum().getStart().getStartIndex();
@@ -1509,7 +1509,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         parameterMarkerSegments.add(parameterSegment);
         return new TopProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (RowNumberValueSegment) parameterSegment, null != ctx.alias() ? ctx.alias().getText() : null);
     }
-
+    
     @Override
     public ASTNode visitAlias(final AliasContext ctx) {
         if (null != ctx.identifier()) {
@@ -1520,7 +1520,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()));
     }
-
+    
     private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment alias) {
         ASTNode projection = visit(ctx.expr());
         if (projection instanceof AggregationProjectionSegment) {
@@ -1574,25 +1574,25 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setAlias(alias);
         return result;
     }
-
+    
     private int getStartIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
         return null != alias && alias.getStartIndex() < sqlSegment.getStartIndex() ? alias.getStartIndex() : sqlSegment.getStartIndex();
     }
-
+    
     private int getStopIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
         return null != alias && alias.getStopIndex() > sqlSegment.getStopIndex() ? alias.getStopIndex() : sqlSegment.getStopIndex();
     }
-
+    
     @Override
     public ASTNode visitIntoClause(final IntoClauseContext ctx) {
         return visit(ctx.tableName());
     }
-
+    
     @Override
     public ASTNode visitFromClause(final FromClauseContext ctx) {
         return visit(ctx.tableReferences());
     }
-
+    
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         TableSegment result;
@@ -1606,7 +1606,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result = left;
         return result;
     }
-
+    
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
@@ -1639,7 +1639,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return visit(ctx.tableReferences());
     }
-
+    
     private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final TableSegment tableSegment) {
         JoinTableSegment result = new JoinTableSegment();
         result.setLeft(tableSegment);
@@ -1653,7 +1653,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private String getJoinType(final JoinedTableContext ctx) {
         if (null != ctx.LEFT()) {
             return JoinType.LEFT.name();
@@ -1668,7 +1668,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return JoinType.INNER.name();
     }
-
+    
     private void visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
         if (null != ctx.expr()) {
             ExpressionSegment condition = (ExpressionSegment) visit(ctx.expr());
@@ -1678,7 +1678,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
     }
-
+    
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
         if (null != ctx.merge()) {
@@ -1686,7 +1686,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return visit(ctx.aggregationClause());
     }
-
+    
     @Override
     public ASTNode visitCreateTableAsSelectClause(final CreateTableAsSelectClauseContext ctx) {
         SQLServerCreateTableStatement result = new SQLServerCreateTableStatement();
@@ -1705,7 +1705,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitUpdateStatistics(final UpdateStatisticsContext ctx) {
         SQLServerUpdateStatisticsStatement result = new SQLServerUpdateStatisticsStatement();
@@ -1724,7 +1724,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitStatisticsWithClause(final StatisticsWithClauseContext ctx) {
         StatisticsStrategySegment result = new StatisticsStrategySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -1736,7 +1736,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitSampleOption(final SampleOptionContext ctx) {
         SampleOptionSegment result = new SampleOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -1768,7 +1768,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitStatisticsOptions(final StatisticsOptionsContext ctx) {
         StatisticsOptionSegment result = new StatisticsOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -1795,7 +1795,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
         SQLServerMergeStatement result = new SQLServerMergeStatement();
@@ -1832,7 +1832,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitMergeWhenClause(final MergeWhenClauseContext ctx) {
         MergeWhenAndThenSegment result = new MergeWhenAndThenSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
@@ -1853,7 +1853,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitMergeInsertClause(final MergeInsertClauseContext ctx) {
         SQLServerInsertStatement result;
@@ -1864,7 +1864,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
         SQLServerUpdateStatement result = new SQLServerUpdateStatement();
