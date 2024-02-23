@@ -3940,7 +3940,7 @@
             </value>
         </values>
     </insert>
-    
+
     <insert sql-case-id="insert_into_with_select_with_merge">
         <table name="ZeroInventory" start-index="12" stop-index="35">
             <owner name="Production" start-index="12" stop-index="21" />
@@ -4127,5 +4127,17 @@
                 </expr>
             </where>
         </select>
+    </insert>
+
+    <insert sql-case-id="insert_into_sample_temp_table_5">
+        <table name="#MyTempTable" start-index="12" stop-index="23"/>
+        <columns start-index="24" stop-index="24"/>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="33" stop-index="33"/>
+                </assignment-value>
+            </value>
+        </values>
     </insert>
 </sql-parser-test-cases>

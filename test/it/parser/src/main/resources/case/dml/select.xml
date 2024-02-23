@@ -8723,4 +8723,13 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_from_tmp_table_with_alias">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="x" start-index="7" stop-index="18" alias="Test2Col"/>
+        </projections>
+        <from start-index="25" stop-index="26">
+            <simple-table name="#t" start-index="25" stop-index="26"/>
+        </from>
+    </select>
 </sql-parser-test-cases>

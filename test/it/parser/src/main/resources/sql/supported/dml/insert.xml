@@ -132,6 +132,7 @@
     <sql-case id="insert_into_sample_temp_table_2" value="INSERT INTO #SampleTempTable VALUES (10, null)" db-types="SQLServer"/>
     <sql-case id="insert_into_sample_temp_table_3" value="INSERT INTO #SampleTempTable VALUES (17, 'abc')" db-types="SQLServer"/>
     <sql-case id="insert_into_sample_temp_table_4" value="INSERT INTO #SampleTempTable VALUES (17, 'yes')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_5" value="INSERT INTO #MyTempTable VALUES (1)" db-types="SQLServer"/>
     <sql-case id="insert_with_table_t" value="INSERT INTO #t VALUES (99)" db-types="SQLServer"/>
     <sql-case id="insert_with_table_test" value="INSERT INTO ##test VALUES (1, 1)" db-types="SQLServer"/>
     <sql-case id="insert_into_with_select_number" value="INSERT INTO #test SELECT 1" db-types="SQLServer"/>
