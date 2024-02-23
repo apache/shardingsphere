@@ -32,8 +32,8 @@ import java.util.Collections;
  */
 public final class ExecuteErrorsCountAdvice extends AbstractInstanceMethodAdvice {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_execute_errors_total",
-            MetricCollectorType.COUNTER, "Total execute errors of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration(
+            "proxy_execute_errors_total", MetricCollectorType.COUNTER, "Total execute errors of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
