@@ -44,7 +44,7 @@ public final class ShardingSphereDriverUtils {
      * @return got data source
      */
     public static Optional<Map<String, ShardingSphereDataSource>> getShardingSphereDataSources() {
-        Optional<ShardingSphereDriver> driver = ShardingSphereDriverUtils.getShardingSphereDriver();
+        Optional<ShardingSphereDriver> driver = getShardingSphereDriver();
         if (driver.isPresent()) {
             DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(driver.get(), "dataSourceCache");
             Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
