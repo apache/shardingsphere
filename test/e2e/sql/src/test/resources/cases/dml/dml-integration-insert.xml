@@ -128,22 +128,25 @@
         <assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" expected-generated-key-data-file="batch_insert_without_generate_key_column_generated_key_data.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="2:int, 3:int" expected-data-file="batch_insert_into_broadcast_table.xml" />
-    </test-case>
+    </test-case>-->
     
     <!--fixme! issue #9769-->
     <!--    <test-case sql="INSERT INTO t_single_table(single_id, id, status) values (?, ?, 'insert'),(?, ?, 'insert')" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
     <!--        <assertion parameters="5:int, 5000:int, 6:int, 6000:int" expected-data-file="batch_insert_into_single_table.xml" />-->
     <!--    </test-case>-->
 
-    <test-case sql="INSERT INTO t_single_table (single_id, id, status) VALUES (?, ?, 'insert'), (?, ?, 'insert')" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="INSERT INTO t_single_table (single_id, id, status) VALUES (?, ?, 'insert'), (?, ?, 'insert')" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="5:int, 5000:int, 6:int, 6000:int" expected-data-file="batch_insert_with_auto_generate_key_column.xml" />
-    </test-case>
+    </test-case>-->
 
-    <test-case sql="INSERT INTO t_single_table (id, status) VALUES (?, 'insert'), (?, 'insert')" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="INSERT INTO t_single_table (id, status) VALUES (?, 'insert'), (?, 'insert')" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="5000:int, 6000:int" expected-data-file="batch_insert_without_auto_generate_key_column.xml" expected-generated-key-data-file="batch_insert_without_auto_generate_key_column_generated_key_data.xml" />
-    </test-case>
+    </test-case>-->
 
     <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (?, ?, '123456', 'tomas@gmail.com', '12341234123', '2018-08-08'), (?, ?, '23456', 'mike@qq.com', '23452345456', '2019-08-08')" scenario-types="encrypt" db-types="MySQL,PostgreSQL,openGauss">
         <assertion parameters="40:int, tomas:String, 41:int, mike:String" expected-data-file="batch_insert_into_user_table.xml" />

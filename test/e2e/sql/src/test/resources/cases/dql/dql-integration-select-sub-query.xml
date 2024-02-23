@@ -54,7 +54,7 @@
         <assertion parameters="1200:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM (SELECT count(*) as count, id from t_single_table group by id) as temp_table" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM (SELECT count(*) as count, user_id from t_user group by user_id) as temp_table" db-types="MySQL" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
