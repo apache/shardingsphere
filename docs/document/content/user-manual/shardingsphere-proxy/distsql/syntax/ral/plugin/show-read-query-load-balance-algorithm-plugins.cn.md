@@ -1,11 +1,11 @@
 +++
 title = "SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS"
-weight = 1
+weight = 3
 +++
 
 ### 描述
 
-`SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` 接口所有具体的实现类。
+`SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` 接口的所有实现类。
 
 ### 语法
 

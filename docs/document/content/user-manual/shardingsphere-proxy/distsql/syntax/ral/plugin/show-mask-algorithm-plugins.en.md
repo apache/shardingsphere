@@ -1,6 +1,6 @@
 +++
 title = "SHOW MASK ALGORITHM PLUGINS"
-weight = 1
+weight = 5
 +++
 
 ### Description

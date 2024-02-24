@@ -1,11 +1,11 @@
 +++
 title = "SHOW KEY GENERATE ALGORITHM PLUGINS"
-weight = 6
+weight = 7
 +++
 
 ### 描述
 
-`SHOW KEY GENERATE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` 接口所有具体的实现类。
+`SHOW KEY GENERATE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` 接口的所有实现类。
 
 ### 语法
 

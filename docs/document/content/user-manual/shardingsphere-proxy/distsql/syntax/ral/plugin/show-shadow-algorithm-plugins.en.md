@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHADOW ALGORITHM PLUGINS"
-weight = 1
+weight = 6
 +++
 
 ### Description

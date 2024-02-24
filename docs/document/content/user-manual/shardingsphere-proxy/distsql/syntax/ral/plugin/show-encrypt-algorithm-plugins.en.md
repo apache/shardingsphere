@@ -1,6 +1,6 @@
 +++
 title = "SHOW ENCRYPT ALGORITHM PLUGINS"
-weight = 1
+weight = 4
 +++
 
 ### Description

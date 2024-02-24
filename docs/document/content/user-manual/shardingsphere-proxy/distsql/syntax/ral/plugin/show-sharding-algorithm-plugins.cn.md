@@ -1,37 +1,37 @@
 +++
 title = "SHOW SHARDING ALGORITHM PLUGINS"
-weight = 1
+weight = 2
 +++
 
-### Description
+### 描述
 
-The `SHOW SHARDING ALGORITHM PLUGINS` syntax is used to query all the plugins of the interface `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`.
+`SHOW SHARDING ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` 接口的所有实现类。
 
-### Syntax
+### 语法
 
 {{< tabs >}}
-{{% tab name="Grammar" %}}
+{{% tab name="语法" %}}
 ```sql
 showShardingAlgorithmPlugins ::=
   'SHOW' 'SHARDING' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
-{{% tab name="Railroad diagram" %}}
+{{% tab name="铁路图" %}}
 <iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
 {{% /tab %}}
 {{< /tabs >}}
 
-### Return Value Description
+### 返回值说明
 
-| Columns      | Description  |
-|--------------|--------------|
-| type         | type         |
-| type_aliases | type aliases |
-| description  | description  |
+| 列            | 说明     |
+|--------------|--------|
+| type         | 类型     |
+| type_aliases | 类型别名   |
+| description  | 描述     |
 
-### Example
+### 示例
 
-- Query all the plugins for `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` interface
+- 查询 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` 接口的所有实现类
 
 ```sql
 SHOW SHARDING ALGORITHM PLUGINS
@@ -56,10 +56,10 @@ SHOW SHARDING ALGORITHM PLUGINS;
 10 rows in set (0.27 sec)
 ```
 
-### Reserved word
+### 保留字
 
-`SHOW`, `SHARDING`, `ALGORITHM`, `PLUGINS`
+`SHOW`、`SHARDING`、`ALGORITHM`、`PLUGINS`
 
-### Related links
+### 相关链接
 
-- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

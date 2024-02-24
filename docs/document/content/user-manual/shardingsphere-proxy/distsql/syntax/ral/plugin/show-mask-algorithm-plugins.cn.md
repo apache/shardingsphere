@@ -1,11 +1,11 @@
 +++
 title = "SHOW MASK ALGORITHM PLUGINS"
-weight = 1
+weight = 5
 +++
 
 ### 描述
 
-`SHOW MASK ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.mask.spi.MaskAlgorithm` 接口所有具体的实现类。
+`SHOW MASK ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.mask.spi.MaskAlgorithm` 接口的所有实现类。
 
 ### 语法
 
