@@ -73,7 +73,7 @@ public final class PluginContext {
         if (isEnhancedForProxy) {
             return Optional.ofNullable(ProxyContext.getInstance().getContextManager());
         }
-        Optional<Map<String, ShardingSphereDataSource>> dataSourceMap = ShardingSphereDriverUtils.getShardingSphereDataSources();
+        Optional<Map<String, ShardingSphereDataSource>> dataSourceMap = ShardingSphereDriverUtils.findShardingSphereDataSources();
         if (dataSourceMap.isPresent() && !dataSourceMap.get().isEmpty()) {
             return Optional.ofNullable(AgentReflectionUtils.getFieldValue(dataSourceMap.get().values().iterator().next(), "contextManager"));
         }
