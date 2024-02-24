@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.agent.core.spi;
 
-import org.apache.shardingsphere.fixture.agent.AgentServiceEmptySPIFixture;
-import org.apache.shardingsphere.fixture.agent.AgentServiceSPIFixture;
-import org.apache.shardingsphere.fixture.agent.impl.AgentServiceSPIFixtureImpl;
+import org.apache.shardingsphere.agent.core.fixture.agent.AgentServiceEmptySPIFixture;
+import org.apache.shardingsphere.agent.core.fixture.agent.AgentServiceSPIFixture;
+import org.apache.shardingsphere.agent.core.fixture.agent.impl.AgentServiceSPIFixtureImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
