@@ -6436,7 +6436,7 @@
         </order-by>
     </select>
 
-    <select sql-case-id="select_with_trim_function1">
+    <select sql-case-id="select_with_trim_function_multi">
         <projections start-index="7" stop-index="203" literal-start-index="7" literal-stop-index="203">
             <expression-projection text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
                 <literalText>TRIM(' derby ')</literalText>
@@ -6518,7 +6518,7 @@
         </from>
     </select>
     
-    <select sql-case-id="select_with_trim_function2">
+    <select sql-case-id="select_with_trim_function_simple">
         <projections start-index="7" stop-index="57">
             <expression-projection text="TRIM( '.,! ' FROM '     #     test    .')" start-index="7" stop-index="57" alias="Result">
                 <expr>
@@ -6535,7 +6535,7 @@
         </projections>
     </select>
     
-    <select sql-case-id="select_with_trim_function3">
+    <select sql-case-id="select_with_trim_function_leading">
         <projections start-index="7" stop-index="66">
             <expression-projection text="TRIM(LEADING '.,! ' FROM  '     .#     test    .')" start-index="7" stop-index="66" alias="Result">
                 <expr>
@@ -6555,7 +6555,7 @@
         </projections>
     </select>
     
-    <select sql-case-id="select_with_trim_function4">
+    <select sql-case-id="select_with_trim_function_trailing">
         <projections start-index="7" stop-index="66">
             <expression-projection text="TRIM(TRAILING '.,! ' FROM '     .#     test    .')" start-index="7" stop-index="66" alias="Result">
                 <expr>
@@ -6575,7 +6575,7 @@
         </projections>
     </select>
     
-    <select sql-case-id="select_with_trim_function5">
+    <select sql-case-id="select_with_trim_function_both">
         <projections start-index="7" stop-index="49">
             <expression-projection text="TRIM(BOTH '123' FROM '123abc123')" start-index="7" stop-index="49" alias="Result">
                 <expr>
@@ -6594,7 +6594,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_ratio_to_report_function">
         <projections start-index="7" stop-index="79" literal-start-index="7" literal-stop-index="79">
             <expression-projection text="TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999')" alias="RATIO_TO_REPORT" start-index="7" stop-index="79" literal-start-index="7" literal-stop-index="79">
