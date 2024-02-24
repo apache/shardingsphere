@@ -39,7 +39,7 @@ class ShardingSphereURLLoadEngineTest {
         try (MockedStatic<TypedSPILoader> typedSPILoaderMockedStatic = mockStatic(TypedSPILoader.class)) {
             typedSPILoaderMockedStatic.when(() -> TypedSPILoader.getService(ShardingSphereURLLoader.class, "classpath:")).thenReturn(urlLoader);
             ShardingSphereURLLoadEngine loadEngine = new ShardingSphereURLLoadEngine(ShardingSphereURL.parse("classpath:xxx"));
-            assertThat(loadEngine.loadContent(), is(content.getBytes()));    
+            assertThat(loadEngine.loadContent(), is(content.getBytes()));
         }
     }
 }
