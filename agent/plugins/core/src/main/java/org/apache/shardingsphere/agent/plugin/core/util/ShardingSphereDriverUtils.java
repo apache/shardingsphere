@@ -45,10 +45,11 @@ public final class ShardingSphereDriverUtils {
      */
     public static Optional<Map<String, ShardingSphereDataSource>> findShardingSphereDataSources() {
         Optional<ShardingSphereDriver> driver = findShardingSphereDriver();
-        if (!driver.isPresent()) {
-            return Optional.empty();
-        }
-        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(driver.get(), "dataSourceCache");
+        return driver.flatMap(ShardingSphereDriverUtils::findShardingSphereDataSources);
+    }
+    
+    private static Optional<Map<String, ShardingSphereDataSource>> findShardingSphereDataSources(final Driver driver) {
+        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(driver, "dataSourceCache");
         Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
         Map<String, ShardingSphereDataSource> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
