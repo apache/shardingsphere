@@ -44,8 +44,7 @@ public final class ShardingSphereDriverUtils {
      * @return found data source
      */
     public static Optional<Map<String, ShardingSphereDataSource>> findShardingSphereDataSources() {
-        Optional<ShardingSphereDriver> driver = findShardingSphereDriver();
-        return driver.flatMap(ShardingSphereDriverUtils::findShardingSphereDataSources);
+        return findShardingSphereDriver().flatMap(ShardingSphereDriverUtils::findShardingSphereDataSources);
     }
     
     private static Optional<Map<String, ShardingSphereDataSource>> findShardingSphereDataSources(final Driver driver) {
