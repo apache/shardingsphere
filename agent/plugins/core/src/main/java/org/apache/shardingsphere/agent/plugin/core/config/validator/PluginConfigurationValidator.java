@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.core.config.validator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.plugin.core.util.PluginPreconditions;
+import org.apache.shardingsphere.agent.plugin.core.preconditions.PluginPreconditions;
 
 /**
  * Remote plugin configuration validator.
