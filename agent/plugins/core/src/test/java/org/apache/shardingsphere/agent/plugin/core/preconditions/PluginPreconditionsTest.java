@@ -19,12 +19,18 @@ package org.apache.shardingsphere.agent.plugin.core.preconditions;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class PluginPreconditionsTest {
+class PluginPreconditionsTest {
     
     @Test
-    void assertCheckArgument() {
+    void assertCheckArgumentSuccess() {
+        assertDoesNotThrow(() -> PluginPreconditions.checkArgument(true, "Port `-3306` of MySQL Service must be a positive number."));
+    }
+    
+    @Test
+    void assertCheckArgumentFailed() {
         assertThrows(IllegalArgumentException.class, () -> PluginPreconditions.checkArgument(false, "Port `-3306` of MySQL Service must be a positive number."));
     }
 }
