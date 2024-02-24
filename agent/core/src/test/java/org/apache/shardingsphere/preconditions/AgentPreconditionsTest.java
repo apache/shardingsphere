@@ -20,17 +20,28 @@ package org.apache.shardingsphere.preconditions;
 import org.apache.shardingsphere.agent.core.preconditions.AgentPreconditions;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class AgentPreconditionsTest {
+class AgentPreconditionsTest {
     
     @Test
-    void assertCheckState() {
+    void assertCheckStateSuccess() {
+        assertDoesNotThrow(() -> AgentPreconditions.checkState(true, "Can not locate agent jar file by URL /var/tmp."));
+    }
+    
+    @Test
+    void assertCheckStateFailed() {
         assertThrows(IllegalStateException.class, () -> AgentPreconditions.checkState(false, "Can not locate agent jar file by URL /var/tmp."));
     }
     
     @Test
-    void assertCheckArgument() {
+    void assertCheckArgumentSuccess() {
+        assertDoesNotThrow(() -> AgentPreconditions.checkArgument(true, "SPI class MySQL is not interface."));
+    }
+    
+    @Test
+    void assertCheckArgumentFailed() {
         assertThrows(IllegalArgumentException.class, () -> AgentPreconditions.checkArgument(false, "SPI class MySQL is not interface."));
     }
 }
