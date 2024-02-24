@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.fixture.agent;
+package org.apache.shardingsphere.fixture.agent;
 
 public interface AgentServiceEmptySPIFixture {
 }
