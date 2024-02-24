@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.fixture.agent.impl;
+package org.apache.shardingsphere.agent.core.fixture.agent;
 
-import org.apache.shardingsphere.fixture.agent.AgentServiceSPIFixture;
-
-public class AgentServiceSPIFixtureImpl implements AgentServiceSPIFixture {
+public interface AgentServiceSPIFixture {
 }
