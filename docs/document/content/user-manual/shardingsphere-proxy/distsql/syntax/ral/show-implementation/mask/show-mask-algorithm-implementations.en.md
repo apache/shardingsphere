@@ -1,19 +1,19 @@
 +++
-title = "SHOW MASK ALGORITHM IMPLEMENTATIONS"
+title = "SHOW MASK ALGORITHM PLUGINS"
 weight = 1
 +++
 
 ### Description
 
-The `SHOW MASK ALGORITHM IMPLEMENTATIONS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.mask.spi.MaskAlgorithm`.
+The `SHOW MASK ALGORITHM PLUGINS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.mask.spi.MaskAlgorithm`.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-showMaskAlgorithmImplementations ::=
-  'SHOW' 'MASK' 'ALGORITHM' 'IMPLEMENTATIONS'
+showMaskAlgorithmPlugins ::=
+  'SHOW' 'MASK' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -23,40 +23,40 @@ showMaskAlgorithmImplementations ::=
 
 ### Return Value Description
 
-| Columns     | Description                           |
-|-------------|---------------------------------------|
-| name        | class name of the implementation      |
-| type        | type of the implementation            |
-| class_path  | full class name of the implementation |
+| Columns      | Description  |
+|--------------|--------------|
+| type         | type         |
+| type_aliases | type aliases |
+| description  | description  |
 
 ### Example
 
 - Query all the implementations for `org.apache.shardingsphere.mask.spi.MaskAlgorithm` interface
 
 ```sql
-SHOW MASK ALGORITHM IMPLEMENTATIONS
+SHOW MASK ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW MASK ALGORITHM IMPLEMENTATIONS;
-+------------------------------------+------------------------------+-------------------------------------------------------------------------------------+
-| name                               | type                         | class_path                                                                          |
-+------------------------------------+------------------------------+-------------------------------------------------------------------------------------+
-| MD5MaskAlgorithm                   | MD5                          | org.apache.shardingsphere.mask.algorithm.hash.MD5MaskAlgorithm                      |
-| KeepFirstNLastMMaskAlgorithm       | KEEP_FIRST_N_LAST_M          | org.apache.shardingsphere.mask.algorithm.cover.KeepFirstNLastMMaskAlgorithm         |
-| KeepFromXToYMaskAlgorithm          | KEEP_FROM_X_TO_Y             | org.apache.shardingsphere.mask.algorithm.cover.KeepFromXToYMaskAlgorithm            |
-| MaskAfterSpecialCharsAlgorithm     | MASK_AFTER_SPECIAL_CHARS     | org.apache.shardingsphere.mask.algorithm.cover.MaskAfterSpecialCharsAlgorithm       |
-| MaskBeforeSpecialCharsAlgorithm    | MASK_BEFORE_SPECIAL_CHARS    | org.apache.shardingsphere.mask.algorithm.cover.MaskBeforeSpecialCharsAlgorithm      |
-| MaskFirstNLastMMaskAlgorithm       | MASK_FIRST_N_LAST_M          | org.apache.shardingsphere.mask.algorithm.cover.MaskFirstNLastMMaskAlgorithm         |
-| MaskFromXToYMaskAlgorithm          | MASK_FROM_X_TO_Y             | org.apache.shardingsphere.mask.algorithm.cover.MaskFromXToYMaskAlgorithm            |
-| GenericTableRandomReplaceAlgorithm | GENERIC_TABLE_RANDOM_REPLACE | org.apache.shardingsphere.mask.algorithm.replace.GenericTableRandomReplaceAlgorithm |
-+------------------------------------+------------------------------+-------------------------------------------------------------------------------------+
+SHOW MASK ALGORITHM PLUGINS;
++------------------------------+--------------+-------------+
+| type                         | type_aliases | description |
++------------------------------+--------------+-------------+
+| MD5                          |              |             |
+| KEEP_FIRST_N_LAST_M          |              |             |
+| KEEP_FROM_X_TO_Y             |              |             |
+| MASK_AFTER_SPECIAL_CHARS     |              |             |
+| MASK_BEFORE_SPECIAL_CHARS    |              |             |
+| MASK_FIRST_N_LAST_M          |              |             |
+| MASK_FROM_X_TO_Y             |              |             |
+| GENERIC_TABLE_RANDOM_REPLACE |              |             |
++------------------------------+--------------+-------------+
 8 rows in set (0.13 sec)
 ```
 
 ### Reserved word
 
-`SHOW`, `MASK`, `ALGORITHM`, `IMPLEMENTATIONS`
+`SHOW`, `MASK`, `ALGORITHM`, `PLUGINS`
 
 ### Related links
 

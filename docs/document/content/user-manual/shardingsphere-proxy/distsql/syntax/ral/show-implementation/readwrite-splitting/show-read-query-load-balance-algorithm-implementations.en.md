@@ -1,19 +1,19 @@
 +++
-title = "SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS"
+title = "SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS"
 weight = 1
 +++
 
 ### Description
 
-The `SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm`.
+The `SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm`.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-showReadQueryLoadBalanceAlgorithmImplementations ::=
-  'SHOW' 'READ' 'QUERY' 'LOAD' 'BALANCE' 'ALGORITHM' 'IMPLEMENTATIONS'
+showReadQueryLoadBalanceAlgorithmPlugins ::=
+  'SHOW' 'READ' 'QUERY' 'LOAD' 'BALANCE' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -34,11 +34,11 @@ showReadQueryLoadBalanceAlgorithmImplementations ::=
 - Query all the implementations for `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` interface
 
 ```sql
-SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
+SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS;
+SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS;
 +-------------+--------------+-------------+
 | type        | type_aliases | description |
 +-------------+--------------+-------------+
@@ -51,7 +51,7 @@ SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS;
 
 ### Reserved word
 
-`SHOW`, `READ`, `QUERY`, `LOAD`, `BALANCE`, `ALGORITHM`, `IMPLEMENTATIONS`
+`SHOW`, `READ`, `QUERY`, `LOAD`, `BALANCE`, `ALGORITHM`, `PLUGINS`
 
 ### Related links
 

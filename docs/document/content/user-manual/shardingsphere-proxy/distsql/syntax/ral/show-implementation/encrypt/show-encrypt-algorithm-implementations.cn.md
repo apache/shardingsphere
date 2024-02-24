@@ -1,19 +1,19 @@
 +++
-title = "SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS"
+title = "SHOW ENCRYPT ALGORITHM PLUGINS"
 weight = 1
 +++
 
 ### 描述
 
-`SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS` 语法用于查询 `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm` 接口所有具体的实现类。
+`SHOW ENCRYPT ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm` 接口所有具体的实现类。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-showEncryptAlgorithmImplementations ::=
-  'SHOW' 'ENCRYPT' 'ALGORITHM' 'IMPLEMENTATIONS'
+showEncryptAlgorithmPlugins ::=
+  'SHOW' 'ENCRYPT' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -34,11 +34,11 @@ showEncryptAlgorithmImplementations ::=
 - 查询 `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm` 接口的所有实现类
 
 ```sql
-SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS
+SHOW ENCRYPT ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS;
+SHOW ENCRYPT ALGORITHM PLUGINS;
 +------+--------------+-------------+
 | type | type_aliases | description |
 +------+--------------+-------------+
@@ -50,7 +50,7 @@ SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS;
 
 ### 保留字
 
-`SHOW`、`ENCRYPT`、`ALGORITHM`、`IMPLEMENTATIONS`
+`SHOW`、`ENCRYPT`、`ALGORITHM`、`PLUGINS`
 
 ### 相关链接
 

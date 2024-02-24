@@ -1,19 +1,19 @@
 +++
-title = "SHOW SHADOW ALGORITHM IMPLEMENTATIONS"
+title = "SHOW SHADOW ALGORITHM PLUGINS"
 weight = 1
 +++
 
 ### Description
 
-The `SHOW SHADOW ALGORITHM IMPLEMENTATIONS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.shadow.spi.ShadowAlgorithm`.
+The `SHOW SHADOW ALGORITHM PLUGINS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.shadow.spi.ShadowAlgorithm`.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-showShadowAlgorithmImplementations ::=
-  'SHOW' 'SHADOW' 'ALGORITHM' 'IMPLEMENTATIONS'
+showShadowAlgorithmPlugins ::=
+  'SHOW' 'SHADOW' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -23,35 +23,35 @@ showShadowAlgorithmImplementations ::=
 
 ### Return Value Description
 
-| Columns     | Description                           |
-|-------------|---------------------------------------|
-| name        | class name of the implementation      |
-| type        | type of the implementation            |
-| class_path  | full class name of the implementation |
+| Columns      | Description  |
+|--------------|--------------|
+| type         | type         |
+| type_aliases | type aliases |
+| description  | description  |
 
 ### Example
 
 - Query all the implementations for `org.apache.shardingsphere.shadow.spi.ShadowAlgorithm` interface
 
 ```sql
-SHOW SHADOW ALGORITHM IMPLEMENTATIONS
+SHOW SHADOW ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW SHADOW ALGORITHM IMPLEMENTATIONS;
-+-----------------------------------+-------------+--------------------------------------------------------------------------------------------+
-| name                              | type        | class_path                                                                                 |
-+-----------------------------------+-------------+--------------------------------------------------------------------------------------------+
-| SQLHintShadowAlgorithm            | SQL_HINT    | org.apache.shardingsphere.shadow.algorithm.shadow.hint.SQLHintShadowAlgorithm              |
-| ColumnRegexMatchedShadowAlgorithm | REGEX_MATCH | org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchedShadowAlgorithm |
-| ColumnValueMatchedShadowAlgorithm | VALUE_MATCH | org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnValueMatchedShadowAlgorithm |
-+-----------------------------------+-------------+--------------------------------------------------------------------------------------------+
+SHOW SHADOW ALGORITHM PLUGINS;
++-------------+--------------+-------------+
+| type        | type_aliases | description |
++-------------+--------------+-------------+
+| SQL_HINT    |              |             |
+| REGEX_MATCH |              |             |
+| VALUE_MATCH |              |             |
++-------------+--------------+-------------+
 3 rows in set (0.37 sec)
 ```
 
 ### Reserved word
 
-`SHOW`, `SHADOW`, `ALGORITHM`, `IMPLEMENTATIONS`
+`SHOW`, `SHADOW`, `ALGORITHM`, `PLUGINS`
 
 ### Related links
 

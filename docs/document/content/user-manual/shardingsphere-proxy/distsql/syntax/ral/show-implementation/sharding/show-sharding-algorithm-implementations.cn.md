@@ -1,19 +1,19 @@
 +++
-title = "SHOW SHARDING ALGORITHM IMPLEMENTATIONS"
+title = "SHOW SHARDING ALGORITHM PLUGINS"
 weight = 1
 +++
 
 ### 描述
 
-`SHOW SHARDING ALGORITHM IMPLEMENTATIONS` 语法用于查询 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` 接口所有具体的实现类。
+`SHOW SHARDING ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` 接口所有具体的实现类。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-showShardingAlgorithmImplementations ::=
-  'SHOW' 'SHARDING' 'ALGORITHM' 'IMPLEMENTATIONS'
+showShardingAlgorithmPlugins ::=
+  'SHOW' 'SHARDING' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -34,11 +34,11 @@ showShardingAlgorithmImplementations ::=
 - 查询 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` 接口的所有实现类
 
 ```sql
-SHOW SHARDING ALGORITHM IMPLEMENTATIONS
+SHOW SHARDING ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW SHARDING ALGORITHM IMPLEMENTATIONS;
+SHOW SHARDING ALGORITHM PLUGINS;
 +----------------+--------------+-------------+
 | type           | type_aliases | description |
 +----------------+--------------+-------------+
@@ -58,7 +58,7 @@ SHOW SHARDING ALGORITHM IMPLEMENTATIONS;
 
 ### 保留字
 
-`SHOW`、`SHARDING`、`ALGORITHM`、`IMPLEMENTATIONS`
+`SHOW`、`SHARDING`、`ALGORITHM`、`PLUGINS`
 
 ### 相关链接
 

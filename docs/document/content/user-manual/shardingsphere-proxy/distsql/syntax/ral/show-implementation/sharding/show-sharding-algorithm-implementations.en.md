@@ -1,19 +1,19 @@
 +++
-title = "SHOW SHARDING ALGORITHM IMPLEMENTATIONS"
+title = "SHOW SHARDING ALGORITHM PLUGINS"
 weight = 1
 +++
 
 ### Description
 
-The `SHOW SHARDING ALGORITHM IMPLEMENTATIONS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`.
+The `SHOW SHARDING ALGORITHM PLUGINS` syntax is used to query all the plugins of the interface `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-showShardingAlgorithmImplementations ::=
-  'SHOW' 'SHARDING' 'ALGORITHM' 'IMPLEMENTATIONS'
+showShardingAlgorithmPlugins ::=
+  'SHOW' 'SHARDING' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -31,14 +31,14 @@ showShardingAlgorithmImplementations ::=
 
 ### Example
 
-- Query all the implementations for `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` interface
+- Query all the plugins for `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` interface
 
 ```sql
-SHOW SHARDING ALGORITHM IMPLEMENTATIONS
+SHOW SHARDING ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW SHARDING ALGORITHM IMPLEMENTATIONS;
+SHOW SHARDING ALGORITHM PLUGINS;
 +----------------+--------------+-------------+
 | type           | type_aliases | description |
 +----------------+--------------+-------------+
@@ -58,7 +58,7 @@ SHOW SHARDING ALGORITHM IMPLEMENTATIONS;
 
 ### Reserved word
 
-`SHOW`, `SHARDING`, `ALGORITHM`, `IMPLEMENTATIONS`
+`SHOW`, `SHARDING`, `ALGORITHM`, `PLUGINS`
 
 ### Related links
 

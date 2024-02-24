@@ -1,19 +1,19 @@
 +++
-title = "SHOW MASK ALGORITHM IMPLEMENTATIONS"
+title = "SHOW MASK ALGORITHM PLUGINS"
 weight = 1
 +++
 
 ### 描述
 
-`SHOW MASK ALGORITHM IMPLEMENTATIONS` 语法用于查询 `org.apache.shardingsphere.mask.spi.MaskAlgorithm` 接口所有具体的实现类。
+`SHOW MASK ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.mask.spi.MaskAlgorithm` 接口所有具体的实现类。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-showMaskAlgorithmImplementations ::=
-  'SHOW' 'MASK' 'ALGORITHM' 'IMPLEMENTATIONS'
+showMaskAlgorithmPlugins ::=
+  'SHOW' 'MASK' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -23,40 +23,40 @@ showMaskAlgorithmImplementations ::=
 
 ### 返回值说明
 
-| 列    | 说明      |
-|------|---------|
-| name | 实现类名称   |
-| type | 类型      |
-| class_path | 实现类完整路径 |
+| 列            | 说明     |
+|--------------|--------|
+| type         | 类型     |
+| type_aliases | 类型别名   |
+| description  | 描述     |
 
 ### 示例
 
 - 查询 `org.apache.shardingsphere.mask.spi.MaskAlgorithm` 接口的所有实现类
 
 ```sql
-SHOW MASK ALGORITHM IMPLEMENTATIONS
+SHOW MASK ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW MASK ALGORITHM IMPLEMENTATIONS;
-+------------------------------------+------------------------------+-------------------------------------------------------------------------------------+
-| name                               | type                         | class_path                                                                          |
-+------------------------------------+------------------------------+-------------------------------------------------------------------------------------+
-| MD5MaskAlgorithm                   | MD5                          | org.apache.shardingsphere.mask.algorithm.hash.MD5MaskAlgorithm                      |
-| KeepFirstNLastMMaskAlgorithm       | KEEP_FIRST_N_LAST_M          | org.apache.shardingsphere.mask.algorithm.cover.KeepFirstNLastMMaskAlgorithm         |
-| KeepFromXToYMaskAlgorithm          | KEEP_FROM_X_TO_Y             | org.apache.shardingsphere.mask.algorithm.cover.KeepFromXToYMaskAlgorithm            |
-| MaskAfterSpecialCharsAlgorithm     | MASK_AFTER_SPECIAL_CHARS     | org.apache.shardingsphere.mask.algorithm.cover.MaskAfterSpecialCharsAlgorithm       |
-| MaskBeforeSpecialCharsAlgorithm    | MASK_BEFORE_SPECIAL_CHARS    | org.apache.shardingsphere.mask.algorithm.cover.MaskBeforeSpecialCharsAlgorithm      |
-| MaskFirstNLastMMaskAlgorithm       | MASK_FIRST_N_LAST_M          | org.apache.shardingsphere.mask.algorithm.cover.MaskFirstNLastMMaskAlgorithm         |
-| MaskFromXToYMaskAlgorithm          | MASK_FROM_X_TO_Y             | org.apache.shardingsphere.mask.algorithm.cover.MaskFromXToYMaskAlgorithm            |
-| GenericTableRandomReplaceAlgorithm | GENERIC_TABLE_RANDOM_REPLACE | org.apache.shardingsphere.mask.algorithm.replace.GenericTableRandomReplaceAlgorithm |
-+------------------------------------+------------------------------+-------------------------------------------------------------------------------------+
+SHOW MASK ALGORITHM PLUGINS;
++------------------------------+--------------+-------------+
+| type                         | type_aliases | description |
++------------------------------+--------------+-------------+
+| MD5                          |              |             |
+| KEEP_FIRST_N_LAST_M          |              |             |
+| KEEP_FROM_X_TO_Y             |              |             |
+| MASK_AFTER_SPECIAL_CHARS     |              |             |
+| MASK_BEFORE_SPECIAL_CHARS    |              |             |
+| MASK_FIRST_N_LAST_M          |              |             |
+| MASK_FROM_X_TO_Y             |              |             |
+| GENERIC_TABLE_RANDOM_REPLACE |              |             |
++------------------------------+--------------+-------------+
 8 rows in set (0.13 sec)
 ```
 
 ### 保留字
 
-`SHOW`、`MASK`、`ALGORITHM`、`IMPLEMENTATIONS`
+`SHOW`、`MASK`、`ALGORITHM`、`PLUGINS`
 
 ### 相关链接
 
