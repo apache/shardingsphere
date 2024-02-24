@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.core.spi;
 
-import org.apache.shardingsphere.agent.plugin.core.util.PluginPreconditions;
+import org.apache.shardingsphere.agent.plugin.core.preconditions.PluginPreconditions;
 
 import java.util.Collection;
 import java.util.LinkedList;
