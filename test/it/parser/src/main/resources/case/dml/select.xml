@@ -6436,7 +6436,7 @@
         </order-by>
     </select>
 
-    <select sql-case-id="select_with_trim_function">
+    <select sql-case-id="select_with_trim_function_multi">
         <projections start-index="7" stop-index="203" literal-start-index="7" literal-stop-index="203">
             <expression-projection text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
                 <literalText>TRIM(' derby ')</literalText>
@@ -6516,6 +6516,83 @@
         <from>
             <simple-table name="employees" start-index="210" stop-index="218" literal-start-index="210" literal-stop-index="218" />
         </from>
+    </select>
+    
+    <select sql-case-id="select_with_trim_function_simple">
+        <projections start-index="7" stop-index="57">
+            <expression-projection text="TRIM( '.,! ' FROM '     #     test    .')" start-index="7" stop-index="57" alias="Result">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="47" text="TRIM( '.,! ' FROM '     #     test    .')">
+                        <parameter>
+                            <literal-expression value=".,! " start-index="13" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="     #     test    ." start-index="25" stop-index="46" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_trim_function_leading">
+        <projections start-index="7" stop-index="66">
+            <expression-projection text="TRIM(LEADING '.,! ' FROM  '     .#     test    .')" start-index="7" stop-index="66" alias="Result">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="56" text="TRIM(LEADING '.,! ' FROM  '     .#     test    .')">
+                        <parameter>
+                            <literal-expression value="LEADING" start-index="12" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=".,! " start-index="20" stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="     .#     test    ." start-index="33" stop-index="55" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_trim_function_trailing">
+        <projections start-index="7" stop-index="66">
+            <expression-projection text="TRIM(TRAILING '.,! ' FROM '     .#     test    .')" start-index="7" stop-index="66" alias="Result">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="56" text="TRIM(TRAILING '.,! ' FROM '     .#     test    .')">
+                        <parameter>
+                            <literal-expression value="TRAILING" start-index="12" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=".,! " start-index="21" stop-index="26" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="     .#     test    ." start-index="33" stop-index="55" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_trim_function_both">
+        <projections start-index="7" stop-index="49">
+            <expression-projection text="TRIM(BOTH '123' FROM '123abc123')" start-index="7" stop-index="49" alias="Result">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="39" text="TRIM(BOTH '123' FROM '123abc123')">
+                        <parameter>
+                            <literal-expression value="BOTH" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="123" start-index="17" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="123abc123" start-index="28" stop-index="38" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 
     <select sql-case-id="select_with_ratio_to_report_function">

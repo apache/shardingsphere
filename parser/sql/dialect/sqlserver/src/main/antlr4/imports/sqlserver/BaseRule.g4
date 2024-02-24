@@ -54,7 +54,7 @@ hexadecimalLiterals
 bitValueLiterals
     : BIT_NUM_
     ;
-    
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -315,8 +315,13 @@ distinct
     ;
 
 specialFunction
-    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction | trimFunction
     ;
+
+    trimFunction
+        : TRIM LP_ ((LEADING | BOTH | TRAILING) expr? FROM)? expr RP_
+        | TRIM LP_ (expr FROM)? expr RP_
+        ;
 
 graphFunction
     : graphAggFunction
@@ -478,7 +483,7 @@ partitionByClause
     : PARTITION BY expr (COMMA_ expr)*
     ;
 
-rowRangeClause 
+rowRangeClause
     : (ROWS | RANGE) windowFrameExtent
     ;
 
