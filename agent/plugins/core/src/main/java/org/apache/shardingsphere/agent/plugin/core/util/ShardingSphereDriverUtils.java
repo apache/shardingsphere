@@ -39,27 +39,27 @@ import java.util.Optional;
 public final class ShardingSphereDriverUtils {
     
     /**
-     * Get ShardingSphere data sources.
+     * Find ShardingSphere data sources.
      *
-     * @return got data source
+     * @return found data source
      */
-    public static Optional<Map<String, ShardingSphereDataSource>> getShardingSphereDataSources() {
-        Optional<ShardingSphereDriver> driver = getShardingSphereDriver();
-        if (driver.isPresent()) {
-            DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(driver.get(), "dataSourceCache");
-            Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
-            Map<String, ShardingSphereDataSource> result = new LinkedHashMap<>();
-            for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-                if (entry.getValue() instanceof ShardingSphereDataSource) {
-                    result.put(entry.getKey(), (ShardingSphereDataSource) entry.getValue());
-                }
-            }
-            return Optional.of(result);
+    public static Optional<Map<String, ShardingSphereDataSource>> findShardingSphereDataSources() {
+        Optional<ShardingSphereDriver> driver = findShardingSphereDriver();
+        if (!driver.isPresent()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(driver.get(), "dataSourceCache");
+        Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
+        Map<String, ShardingSphereDataSource> result = new LinkedHashMap<>();
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            if (entry.getValue() instanceof ShardingSphereDataSource) {
+                result.put(entry.getKey(), (ShardingSphereDataSource) entry.getValue());
+            }
+        }
+        return Optional.of(result);
     }
     
-    private static Optional<ShardingSphereDriver> getShardingSphereDriver() {
+    private static Optional<ShardingSphereDriver> findShardingSphereDriver() {
         Enumeration<Driver> driverEnumeration = DriverManager.getDrivers();
         while (driverEnumeration.hasMoreElements()) {
             Driver driver = driverEnumeration.nextElement();

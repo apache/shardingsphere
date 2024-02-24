@@ -41,7 +41,7 @@ public final class JDBCStateExporter implements MetricsExporter {
     
     @Override
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
-        Optional<Map<String, ShardingSphereDataSource>> dataSourceMap = ShardingSphereDriverUtils.getShardingSphereDataSources();
+        Optional<Map<String, ShardingSphereDataSource>> dataSourceMap = ShardingSphereDriverUtils.findShardingSphereDataSources();
         if (!dataSourceMap.isPresent()) {
             return Optional.empty();
         }
