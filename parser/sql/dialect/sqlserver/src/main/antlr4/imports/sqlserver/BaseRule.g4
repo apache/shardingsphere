@@ -315,13 +315,15 @@ distinct
     ;
 
 specialFunction
-    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction | trimFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction 
+    | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction 
+    | trimFunction
     ;
 
-    trimFunction
-        : TRIM LP_ ((LEADING | BOTH | TRAILING) expr? FROM)? expr RP_
-        | TRIM LP_ (expr FROM)? expr RP_
-        ;
+trimFunction
+    : TRIM LP_ ((LEADING | BOTH | TRAILING) expr? FROM)? expr RP_
+    | TRIM LP_ (expr FROM)? expr RP_
+    ;
 
 graphFunction
     : graphAggFunction
