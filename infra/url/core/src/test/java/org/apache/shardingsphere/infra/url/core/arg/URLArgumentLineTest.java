@@ -18,71 +18,42 @@
 package org.apache.shardingsphere.infra.url.core.arg;
 
 import org.junit.jupiter.api.Test;
-import java.lang.reflect.Field;
+
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class URLArgumentLineTest {
+class URLArgumentLineTest {
     
-    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
-    
-    private static final String NAME = "fixture.config.driver.jdbc-url";
-    
-    private static final String DEFAULT_VALUE = "jdbc-url";
+    private final String line = "key=$${value::default_value}";
     
     @Test
-    void assertParse() throws NoSuchFieldException, IllegalAccessException {
-        String line = String.format("%s=$${%s::%s}", NAME, NAME, DEFAULT_VALUE);
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(line);
-        matcher.find();
-        
-        URLArgumentLine actual = URLArgumentLine.parse(line).get();
-        
-        assertThat(getURLArgumentLineField("argName").get(actual), is(NAME));
-        assertThat(getURLArgumentLineField("argDefaultValue").get(actual), is(DEFAULT_VALUE));
-        assertThat(getURLArgumentLineField("placehodlerMatcher").get(actual).toString(), is(matcher.toString()));
-    }
-    
-    @Test
-    void assertParseInvalidPattern() {
-        final String line = "invalid-value";
-        Optional<URLArgumentLine> actual = URLArgumentLine.parse(line);
-        
-        assertThat(actual, is(Optional.empty()));
-    }
-    
-    @Test
-    void assertReplaceArgumentWithEnvironment() {
-        String line = String.format("%s=$${%s::%s}", NAME, NAME, DEFAULT_VALUE);
-        String actual = URLArgumentLine.parse(line).get().replaceArgument(URLArgumentPlaceholderType.ENVIRONMENT);
-        
-        assertThat(actual, is(String.format("%s=%s", NAME, DEFAULT_VALUE)));
-    }
-    
-    @Test
-    void assertReplaceArgumentWithProperty() {
-        String line = String.format("%s=$${%s::%s}", NAME, NAME, DEFAULT_VALUE);
-        URLArgumentLine.setSystemProperty(NAME, DEFAULT_VALUE);
-        String actual = URLArgumentLine.parse(line).get().replaceArgument(URLArgumentPlaceholderType.SYSTEM_PROPS);
-        
-        assertThat(actual, is(String.format("%s=%s", NAME, DEFAULT_VALUE)));
+    void assertParseWithInvalidPattern() {
+        assertFalse(URLArgumentLine.parse("invalid").isPresent());
     }
     
     @Test
     void assertReplaceArgumentWithNone() {
-        String line = String.format("%s=$${%s::}", NAME, NAME);
-        String actual = URLArgumentLine.parse(line).get().replaceArgument(URLArgumentPlaceholderType.NONE);
-        
-        assertThat(actual, is(NAME));
+        Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line);
+        assertTrue(argLine.isPresent());
+        assertThat(argLine.get().replaceArgument(URLArgumentPlaceholderType.NONE), is("key=default_value"));
     }
     
-    private Field getURLArgumentLineField(final String name) throws NoSuchFieldException {
-        Field field = URLArgumentLine.class.getDeclaredField(name);
-        field.setAccessible(true);
-        return field;
+    @Test
+    void assertReplaceArgumentWithEnvironment() {
+        Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line);
+        assertTrue(argLine.isPresent());
+        assertThat(argLine.get().replaceArgument(URLArgumentPlaceholderType.ENVIRONMENT), is("key=default_value"));
+    }
+    
+    @Test
+    void assertReplaceArgumentWithSystemProperty() {
+        System.setProperty("value", "props_value");
+        Optional<URLArgumentLine> argLine = URLArgumentLine.parse(line);
+        assertTrue(argLine.isPresent());
+        assertThat(argLine.get().replaceArgument(URLArgumentPlaceholderType.SYSTEM_PROPS), is("key=props_value"));
     }
 }
