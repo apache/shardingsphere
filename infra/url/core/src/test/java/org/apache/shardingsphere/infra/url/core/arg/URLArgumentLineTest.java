@@ -56,6 +56,14 @@ public class URLArgumentLineTest {
     }
     
     @Test
+    void assertReplaceArgumentWithEnvironment() {
+        String line = String.format("%s=$${%s::%s}", NAME, NAME, DEFAULT_VALUE);
+        String actual = URLArgumentLine.parse(line).get().replaceArgument(URLArgumentPlaceholderType.ENVIRONMENT);
+        
+        assertThat(actual, is(String.format("%s=%s", NAME, DEFAULT_VALUE)));
+    }
+    
+    @Test
     void assertReplaceArgumentWithProperty() {
         String line = String.format("%s=$${%s::%s}", NAME, NAME, DEFAULT_VALUE);
         URLArgumentLine.setSystemProperty(NAME, DEFAULT_VALUE);
