@@ -34,14 +34,13 @@ public class URLArgumentLineTest {
     
     private static final String DEFAULT_VALUE = "jdbc-url";
     
-    private static final String LINE = String.format("%s=$${%s::%s}", NAME, NAME, DEFAULT_VALUE);
-    
     @Test
     void assertParse() throws NoSuchFieldException, IllegalAccessException {
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(LINE);
+        String line = String.format("%s=$${%s::%s}", NAME, NAME, DEFAULT_VALUE);
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(line);
         matcher.find();
         
-        URLArgumentLine actual = URLArgumentLine.parse(LINE).get();
+        URLArgumentLine actual = URLArgumentLine.parse(line).get();
         
         assertThat(getURLArgumentLineField("argName").get(actual), is(NAME));
         assertThat(getURLArgumentLineField("argDefaultValue").get(actual), is(DEFAULT_VALUE));
@@ -58,10 +57,19 @@ public class URLArgumentLineTest {
     
     @Test
     void assertReplaceArgumentWithProperty() {
+        String line = String.format("%s=$${%s::%s}", NAME, NAME, DEFAULT_VALUE);
         URLArgumentLine.setSystemProperty(NAME, DEFAULT_VALUE);
-        String actual = URLArgumentLine.parse(LINE).get().replaceArgument(URLArgumentPlaceholderType.SYSTEM_PROPS);
+        String actual = URLArgumentLine.parse(line).get().replaceArgument(URLArgumentPlaceholderType.SYSTEM_PROPS);
         
         assertThat(actual, is(String.format("%s=%s", NAME, DEFAULT_VALUE)));
+    }
+    
+    @Test
+    void assertReplaceArgumentWithNone() {
+        String line = String.format("%s=$${%s::}", NAME, NAME);
+        String actual = URLArgumentLine.parse(line).get().replaceArgument(URLArgumentPlaceholderType.NONE);
+        
+        assertThat(actual, is(NAME));
     }
     
     private Field getURLArgumentLineField(final String name) throws NoSuchFieldException {
