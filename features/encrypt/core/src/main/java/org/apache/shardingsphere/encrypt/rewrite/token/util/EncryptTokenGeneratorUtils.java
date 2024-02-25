@@ -60,24 +60,6 @@ public final class EncryptTokenGeneratorUtils {
         return true;
     }
     
-    /**
-     * Judge whether all using columns use same encryptor or not.
-     *
-     * @param usingColumns using columns
-     * @param encryptRule encrypt rule
-     * @return whether all using columns use same encryptor or not
-     */
-    public static boolean isAllUsingConditionsUseSameEncryptor(final Collection<ColumnSegment> usingColumns, final EncryptRule encryptRule) {
-        for (ColumnSegment each : usingColumns) {
-            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(each.getColumnBoundedInfo(), encryptRule);
-            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(each.getOtherUsingColumnBoundedInfo(), encryptRule);
-            if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
     private static boolean isSameEncryptor(final EncryptAlgorithm leftColumnEncryptor, final EncryptAlgorithm rightColumnEncryptor) {
         if (null != leftColumnEncryptor && null != rightColumnEncryptor) {
             if (!leftColumnEncryptor.getType().equals(rightColumnEncryptor.getType())) {
