@@ -21,6 +21,9 @@ import org.apache.shardingsphere.agent.api.plugin.AgentPluginEnable;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 
+/**
+ * Abstract static method advice.
+ */
 public abstract class AbstractStaticMethodAdvice implements StaticMethodAdvice, AgentPluginEnable {
     
     @Override
