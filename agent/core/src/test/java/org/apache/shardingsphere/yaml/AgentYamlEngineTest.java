@@ -46,7 +46,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class AgentYamlEngineTest {
+class AgentYamlEngineTest {
     
     @Test
     void assertUnmarshalYamlAgentConfiguration() throws IOException {
@@ -64,7 +64,6 @@ public class AgentYamlEngineTest {
     void assertUnmarshalYamlAdvisorsConfiguration() {
         InputStream inputStream = getClass().getResourceAsStream("/META-INF/conf/advisors.yaml");
         YamlAdvisorsConfiguration actual = AgentYamlEngine.unmarshalYamlAdvisorsConfiguration(inputStream);
-        
         assertYamlAdvisorConfiguration(actual.getAdvisors().iterator().next());
     }
     
@@ -101,7 +100,6 @@ public class AgentYamlEngineTest {
         assertThat(actual.getAdvice(), is(YamlAdviceFixture.class.getName()));
         assertThat(actual.getTarget(), is("org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTargetObjectFixture"));
         assertThat(actual.getAdvice(), is("org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlAdviceFixture"));
-        
         assertThat(actual.getPointcuts().size(), is(8));
         List<YamlPointcutConfiguration> actualYamlPointcutConfigs = new ArrayList<>(actual.getPointcuts());
         assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(0), null, "constructor", Collections.emptyList());
