@@ -1,11 +1,11 @@
 +++
-title = "SHOW PLUGINS OF SPI"
-weight = 7
+title = "SHOW PLUGINS"
+weight = 1
 +++
 
 ### 描述
 
-`SHOW PLUGINS OF pluginClass` 语法用于查询指定的 `SPI` 接口所有具体的实现类。
+`SHOW PLUGINS OF interfaceClass` 语法用于查询指定接口的全部实现。
 
 ### 语法
 
@@ -13,9 +13,9 @@ weight = 7
 {{% tab name="语法" %}}
 ```sql
 showPluginImplementations ::=
-  'SHOW' 'PLUGINS' 'OF' pluginClass
+  'SHOW' 'PLUGINS' 'OF' interfaceClass
 
-pluginClass ::=
+interfaceClass ::=
   string
 ```
 {{% /tab %}}
@@ -61,7 +61,7 @@ SHOW PLUGINS OF 'org.apache.shardingsphere.sharding.spi.ShardingAlgorithm';
 
 ### 补充说明
 
-针对一些常用的 `SPI` 接口实现，ShardingSphere 提供了语法糖功能，可以简化操作，目前已提供的语法糖功能的 `SPI` 接口如下：
+针对一些常用的接口，ShardingSphere 提供了语法糖，可以简化操作，目前已提供的插件查询语法糖如下：
 
 - 查询 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` 接口实现：[SHOW SHARDING ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/sharding/show-sharding-algorithm-implementations)
 - 查询 `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` 接口实现：[SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/readwrite-splitting/show-read-query-load-balance-algorithm-implementations)

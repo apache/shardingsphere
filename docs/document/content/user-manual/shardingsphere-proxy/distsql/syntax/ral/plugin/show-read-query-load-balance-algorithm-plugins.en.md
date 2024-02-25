@@ -1,6 +1,6 @@
 +++
 title = "SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS"
-weight = 1
+weight = 3
 +++
 
 ### Description

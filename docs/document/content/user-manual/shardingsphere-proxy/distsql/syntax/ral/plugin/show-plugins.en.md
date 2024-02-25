@@ -1,11 +1,11 @@
 +++
 title = "SHOW PLUGINS OF SPI"
-weight = 7
+weight = 1
 +++
 
 ### Description
 
-The `SHOW PLUGINS OF pluginClass` syntax is used to query all the implementations of a `SPI`.
+The `SHOW PLUGINS OF interfaceClass` syntax is used to query all the implementations of an interface.
 
 ### Syntax
 
@@ -13,9 +13,9 @@ The `SHOW PLUGINS OF pluginClass` syntax is used to query all the implementation
 {{% tab name="Grammar" %}}
 ```sql
 showPluginImplementations ::=
-  'SHOW' 'PLUGINS' 'OF' pluginClass
+  'SHOW' 'PLUGINS' 'OF' interfaceClass
 
-pluginClass ::=
+interfaceClass ::=
   string
 ```
 {{% /tab %}}
@@ -61,9 +61,9 @@ SHOW PLUGINS OF 'org.apache.shardingsphere.sharding.spi.ShardingAlgorithm';
 
 ### Supplement
 
-For some commonly used `SPI` interface implementations, ShardingSphere provides syntax sugar functions to simplify operations.
+For some commonly used interface implementations, ShardingSphere provides syntax sugar functions to simplify operations.
 
-The currently provided `SPI` interfaces with syntactic sugar functions are as follows:
+The currently provided syntax sugar are as follows:
 
 - Show implementations of `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`: [SHOW SHARDING ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/sharding/show-sharding-algorithm-implementations)
 - Show implementations of  `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm`: [SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/readwrite-splitting/show-read-query-load-balance-algorithm-implementations)

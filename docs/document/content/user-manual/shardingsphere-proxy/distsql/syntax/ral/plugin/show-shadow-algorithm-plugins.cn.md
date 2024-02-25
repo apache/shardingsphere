@@ -1,11 +1,11 @@
 +++
 title = "SHOW SHADOW ALGORITHM PLUGINS"
-weight = 1
+weight = 6
 +++
 
 ### 描述
 
-`SHOW SHADOW ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.shadow.spi.ShadowAlgorithm` 接口所有具体的实现类。
+`SHOW SHADOW ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.shadow.spi.ShadowAlgorithm` 接口的所有实现类。
 
 ### 语法
 

@@ -1,6 +1,6 @@
 +++
 title = "SHOW KEY GENERATE ALGORITHM PLUGINS"
-weight = 6
+weight = 7
 +++
 
 ### Description

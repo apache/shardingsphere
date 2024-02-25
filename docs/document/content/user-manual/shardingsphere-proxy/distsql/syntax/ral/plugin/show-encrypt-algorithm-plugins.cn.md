@@ -1,11 +1,11 @@
 +++
 title = "SHOW ENCRYPT ALGORITHM PLUGINS"
-weight = 1
+weight = 4
 +++
 
 ### 描述
 
-`SHOW ENCRYPT ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm` 接口所有具体的实现类。
+`SHOW ENCRYPT ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm` 接口的所有实现类。
 
 ### 语法
 
