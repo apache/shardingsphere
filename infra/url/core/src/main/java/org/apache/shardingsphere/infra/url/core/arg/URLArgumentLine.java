@@ -57,6 +57,16 @@ public final class URLArgumentLine {
     }
     
     /**
+     * Set system property.
+     *
+     * @param key   property key
+     * @param value property value
+     */
+    public static void setSystemProperty(final String key, final String value) {
+        System.setProperty(key, value);
+    }
+    
+    /**
      * Replace argument.
      *
      * @param type placeholder type
