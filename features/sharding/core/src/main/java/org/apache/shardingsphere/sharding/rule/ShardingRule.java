@@ -36,8 +36,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -86,7 +85,7 @@ import java.util.stream.Collectors;
  * Sharding rule.
  */
 @Getter
-public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, TableContainedRule {
+public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, TableMapperContainedRule {
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
@@ -118,9 +117,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final ShardingCache shardingCache;
     
-    private final TableNamesMapper logicalTableMapper;
-    
-    private final TableNamesMapper actualTableMapper;
+    private final ShardingTableMapperRule tableMapperRule;
     
     public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final InstanceContext instanceContext) {
         configuration = ruleConfig;
@@ -148,8 +145,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
             ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
         shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
-        logicalTableMapper = createLogicalTableMapper();
-        actualTableMapper = createActualTableMapper();
+        tableMapperRule = new ShardingTableMapperRule(shardingTables);
     }
     
     private void validateUniqueActualDataNodesInTableRules() {
@@ -170,22 +166,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     private ShardingStrategyConfiguration createDefaultTableShardingStrategyConfig(final ShardingRuleConfiguration ruleConfig) {
         Optional.ofNullable(ruleConfig.getDefaultTableShardingStrategy()).ifPresent(optional -> checkManualShardingAlgorithm(optional.getShardingAlgorithmName(), "default"));
         return null == ruleConfig.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : ruleConfig.getDefaultTableShardingStrategy();
-    }
-    
-    private TableNamesMapper createLogicalTableMapper() {
-        TableNamesMapper result = new TableNamesMapper();
-        shardingTables.values().forEach(each -> result.put(each.getLogicTable()));
-        return result;
-    }
-    
-    private TableNamesMapper createActualTableMapper() {
-        TableNamesMapper result = new TableNamesMapper();
-        for (ShardingTable each : shardingTables.values()) {
-            for (DataNode dataNode : each.getActualDataNodes()) {
-                result.put(dataNode.getTableName());
-            }
-        }
-        return result;
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, ShardingTable> shardingTables) {
@@ -342,26 +322,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
             shardingColumn = ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
         }
         return null == shardingColumn ? "" : shardingColumn;
-    }
-    
-    @Override
-    public TableNamesMapper getLogicTableMapper() {
-        return logicalTableMapper;
-    }
-    
-    @Override
-    public TableNamesMapper getActualTableMapper() {
-        return actualTableMapper;
-    }
-    
-    @Override
-    public TableNamesMapper getDistributedTableMapper() {
-        return getLogicTableMapper();
-    }
-    
-    @Override
-    public TableNamesMapper getEnhancedTableMapper() {
-        return getLogicTableMapper();
     }
     
     /**

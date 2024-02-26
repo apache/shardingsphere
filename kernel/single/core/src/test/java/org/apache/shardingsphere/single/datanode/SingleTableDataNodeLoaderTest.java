@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,8 +109,8 @@ class SingleTableDataNodeLoaderTest {
     
     private Collection<ShardingSphereRule> getBuiltRulesWithExcludedTables() {
         Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
-        when(tableContainedRule.getDistributedTableMapper().getTableNames()).thenReturn(excludedTables);
+        TableMapperContainedRule tableContainedRule = mock(TableMapperContainedRule.class, RETURNS_DEEP_STUBS);
+        when(tableContainedRule.getTableMapperRule().getDistributedTableMapper().getTableNames()).thenReturn(excludedTables);
         return Collections.singletonList(tableContainedRule);
     }
     

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
@@ -53,7 +53,7 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     private boolean isSingleTable(final String tableName, final RuleMetaData ruleMetaData) {
-        return ruleMetaData.findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
+        return ruleMetaData.findRules(TableMapperContainedRule.class).stream().noneMatch(each -> each.getTableMapperRule().getDistributedTableMapper().contains(tableName));
     }
     
     @Override

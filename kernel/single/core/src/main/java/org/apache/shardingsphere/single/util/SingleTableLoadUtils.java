@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 
 import javax.sql.DataSource;
@@ -84,11 +84,11 @@ public final class SingleTableLoadUtils {
     public static Collection<String> getExcludedTables(final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ShardingSphereRule each : builtRules) {
-            if (!(each instanceof TableContainedRule)) {
+            if (!(each instanceof TableMapperContainedRule)) {
                 continue;
             }
-            result.addAll(((TableContainedRule) each).getDistributedTableMapper().getTableNames());
-            result.addAll(((TableContainedRule) each).getActualTableMapper().getTableNames());
+            result.addAll(((TableMapperContainedRule) each).getTableMapperRule().getDistributedTableMapper().getTableNames());
+            result.addAll(((TableMapperContainedRule) each).getTableMapperRule().getActualTableMapper().getTableNames());
         }
         return result;
     }
@@ -102,14 +102,15 @@ public final class SingleTableLoadUtils {
     public static Collection<String> getFeatureRequiredSingleTables(final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ShardingSphereRule each : builtRules) {
-            if (!(each instanceof TableContainedRule)) {
+            if (!(each instanceof TableMapperContainedRule)) {
                 continue;
             }
-            TableContainedRule tableContainedRule = (TableContainedRule) each;
-            if (tableContainedRule.getEnhancedTableMapper().getTableNames().isEmpty() || !tableContainedRule.getDistributedTableMapper().getTableNames().isEmpty()) {
+            TableMapperContainedRule tableContainedRule = (TableMapperContainedRule) each;
+            if (tableContainedRule.getTableMapperRule().getEnhancedTableMapper().getTableNames().isEmpty()
+                    || !tableContainedRule.getTableMapperRule().getDistributedTableMapper().getTableNames().isEmpty()) {
                 continue;
             }
-            result.addAll(tableContainedRule.getEnhancedTableMapper().getTableNames());
+            result.addAll(tableContainedRule.getTableMapperRule().getEnhancedTableMapper().getTableNames());
         }
         return result;
     }

@@ -31,7 +31,7 @@ public final class EncryptCountResultRowBuilder implements CountResultRowBuilder
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final EncryptRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("encrypt", databaseName, rule.getLogicTableMapper().getTableNames().size()));
+        return Collections.singleton(new LocalDataQueryResultRow("encrypt", databaseName, rule.getTableMapperRule().getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

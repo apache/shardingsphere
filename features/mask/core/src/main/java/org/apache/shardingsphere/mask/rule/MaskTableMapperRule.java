@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule;
+package org.apache.shardingsphere.mask.rule;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableNamesMapper;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
-import static org.mockito.Mockito.mock;
+import java.util.Collection;
 
-public final class TableContainedFixtureRule implements TableContainedRule {
+/**
+ * Mask table mapper rule.
+ */
+public final class MaskTableMapperRule implements TableMapperRule {
+    
+    private final TableNamesMapper logicalTableMapper;
+    
+    public MaskTableMapperRule(final Collection<MaskTableRuleConfiguration> tables) {
+        logicalTableMapper = new TableNamesMapper();
+        tables.stream().map(MaskTableRuleConfiguration::getName).forEach(logicalTableMapper::put);
+    }
     
     @Override
     public TableNamesMapper getLogicTableMapper() {
-        return new TableNamesMapper();
+        return logicalTableMapper;
     }
     
     @Override
@@ -43,10 +53,5 @@ public final class TableContainedFixtureRule implements TableContainedRule {
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
         return new TableNamesMapper();
-    }
-    
-    @Override
-    public RuleConfiguration getConfiguration() {
-        return mock(RuleConfiguration.class);
     }
 }

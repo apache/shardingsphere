@@ -57,7 +57,7 @@ public final class ShowUnloadedSingleTableExecutor implements DistSQLQueryExecut
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowUnloadedSingleTableStatement sqlStatement, final ContextManager contextManager) {
         Map<String, Collection<DataNode>> actualDataNodes = getActualDataNodes(database);
-        for (String each : rule.getLogicTableMapper().getTableNames()) {
+        for (String each : rule.getTableMapperRule().getLogicTableMapper().getTableNames()) {
             actualDataNodes.remove(each.toLowerCase());
         }
         return actualDataNodes.entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().iterator().next().getDataSourceName())).collect(Collectors.toList());

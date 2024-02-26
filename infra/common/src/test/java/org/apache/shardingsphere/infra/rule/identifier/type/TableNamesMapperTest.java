@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableNamesMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
