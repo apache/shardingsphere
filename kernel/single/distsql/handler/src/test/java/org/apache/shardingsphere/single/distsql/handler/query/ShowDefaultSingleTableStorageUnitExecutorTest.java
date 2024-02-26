@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.distsql.handler.query;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowDefaultSingleTableStorageUnitStatement;
@@ -45,14 +46,16 @@ class ShowDefaultSingleTableStorageUnitExecutorTest {
     
     @BeforeEach
     void setUp() {
-        engine = new DistSQLQueryExecuteEngine(mock(ShowDefaultSingleTableStorageUnitStatement.class), null, mockContextManager(), mock(DistSQLConnectionContext.class));
+        engine = new DistSQLQueryExecuteEngine(mock(ShowDefaultSingleTableStorageUnitStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
     }
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SingleRule.class)).thenReturn(Optional.of(rule));
+        when(database.getRuleMetaData().findSingleRule(SingleRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     

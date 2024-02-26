@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
@@ -49,14 +50,16 @@ class ShowDefaultShardingStrategyExecutorTest {
     private DistSQLQueryExecuteEngine engine;
     
     DistSQLQueryExecuteEngine setUp(final ShardingRuleConfiguration configuration) {
-        return new DistSQLQueryExecuteEngine(mock(ShowDefaultShardingStrategyStatement.class), null, mockContextManager(configuration), mock(DistSQLConnectionContext.class));
+        return new DistSQLQueryExecuteEngine(mock(ShowDefaultShardingStrategyStatement.class), "foo_db", mockContextManager(configuration), mock(DistSQLConnectionContext.class));
     }
     
     private ContextManager mockContextManager(final ShardingRuleConfiguration configuration) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(configuration);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     

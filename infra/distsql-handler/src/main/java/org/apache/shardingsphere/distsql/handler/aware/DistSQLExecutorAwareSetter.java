@@ -19,6 +19,9 @@ package org.apache.shardingsphere.distsql.handler.aware;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.statement.rql.rule.global.ShowGlobalRulesStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
@@ -42,14 +45,18 @@ public final class DistSQLExecutorAwareSetter {
      * @param contextManager context manager
      * @param database database
      * @param connectionContext connection context
+     * @param sqlStatement DistSQL statement
      */
     @SuppressWarnings("rawtypes")
-    public void set(final ContextManager contextManager, final ShardingSphereDatabase database, final DistSQLConnectionContext connectionContext) {
+    public void set(final ContextManager contextManager, final ShardingSphereDatabase database, final DistSQLConnectionContext connectionContext, final DistSQLStatement sqlStatement) {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ShardingSpherePreconditions.checkNotNull(database, NoDatabaseSelectedException::new);
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(database);
         }
         if (executor instanceof DistSQLExecutorRuleAware) {
+            if (!(sqlStatement instanceof ShowGlobalRulesStatement) && !(executor instanceof GlobalRuleDefinitionExecutor)) {
+                ShardingSpherePreconditions.checkNotNull(database, NoDatabaseSelectedException::new);
+            }
             setRule((DistSQLExecutorRuleAware) executor, contextManager, database);
         }
         if (executor instanceof DistSQLExecutorConnectionContextAware) {

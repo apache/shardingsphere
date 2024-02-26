@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -50,14 +51,16 @@ class ShowShadowTableRulesExecutorTest {
     
     @BeforeEach
     void setUp() {
-        engine = new DistSQLQueryExecuteEngine(mock(ShowShadowTableRulesStatement.class), null, mockContextManager(), mock(DistSQLConnectionContext.class));
+        engine = new DistSQLQueryExecuteEngine(mock(ShowShadowTableRulesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
     }
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ShadowRule.class)).thenReturn(Optional.of(rule));
+        when(database.getRuleMetaData().findSingleRule(ShadowRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     
