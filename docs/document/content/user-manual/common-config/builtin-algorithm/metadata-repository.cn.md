@@ -54,29 +54,6 @@ Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久�
 | timeToLiveSeconds | long   | 临时数据失效的秒数 | 30    |
 | connectionTimeout | long   | 连接超时秒数    | 30    |
 
-### Consul 持久化
-
-受 `com.ecwid.consul:consul-api:1.4.5` 的 Maven 模块的限制，使用者无法通过 gRPC 端口来连接到  Consul Agent。
-
-`Consul` 实现的 `serverLists` 属性受设计使然，仅可通过 HTTP 端点连接到单个 Consul Agent。
-`serverLists` 使用了宽松的 URL 匹配原则。
-1. 当 `serverLists` 为空时，将解析到 `http://127.0.0.1:8500` 的 Consul Agent 实例。
-2. 当 `serverLists` 为 `hostName` 时，将解析到 `http://hostName:8500` 的 Consul Agent 实例。
-3. 当 `serverLists` 为 `hostName:port` 时，将解析到 `http://hostName:port` 的 Consul Agent 实例。
-4. 当 `serverLists` 为 `http://hostName:port` 时，将解析到 `http://hostName:port` 的 Consul Agent 实例。
-5. 当 `serverLists` 为 `https://hostName:port` 时，将解析到 `https://hostName:port` 的 Consul Agent 实例。
-
-类型：Consul
-
-适用模式：Cluster
-
-可配置属性：
-
-| *名称*                    | *数据类型* | *说明*      | *默认值* |
-|-------------------------|--------|-----------|-------|
-| timeToLiveSeconds       | String | 临时实例失效的秒数 | 30s   |
-| blockQueryTimeToSeconds | long   | 查询请求超时秒数  | 60    |
-
 ## 操作步骤
 
 1. 在 global.yaml 中配置 Mode 运行模式

@@ -45,7 +45,6 @@ All optional plugins are listed below in the form of `groupId:artifactId`.
 - Cluster mode configuration information persistence definition
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`, Zookeeper based persistence
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd`, Etcd based persistence
-  - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-consul`, Consul based persistence
 - XA transaction manager provider definition
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana`, XA distributed transaction manager based on Narayana
 - SQL translator
