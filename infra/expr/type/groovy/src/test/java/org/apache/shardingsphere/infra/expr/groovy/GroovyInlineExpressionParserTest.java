@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.expr.groovy;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -153,12 +152,12 @@ class GroovyInlineExpressionParserTest {
             Future<?> future = pool.submit(() -> {
                 for (int j = 0; j < 5; j++) {
                     String resultSuffix = Thread.currentThread().getName() + "--" + j;
-                    String result = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
+                    String actual = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
                             new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "ds_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
-                    assertThat(result, is(String.format("ds_%s", resultSuffix)));
-                    String result2 = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
+                    assertThat(actual, is(String.format("ds_%s", resultSuffix)));
+                    String actual2 = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
                             new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "account_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
-                    assertThat(result2, is(String.format("account_%s", resultSuffix)));
+                    assertThat(actual2, is(String.format("account_%s", resultSuffix)));
                 }
             });
             futures.add(future);
