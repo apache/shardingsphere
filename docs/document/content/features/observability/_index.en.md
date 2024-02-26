@@ -25,6 +25,8 @@ Metrics used to collect and display statistical indicator of cluster. Apache Sha
 
 ![Overview](https://shardingsphere.apache.org/document/current/img/apm/overview_v3.png)
 
+![Agent ClassLoader](https://shardingsphere.apache.org/document/current/img/apm/agent-class-loader.png)
+
 ## Challenges
 
 Tracing and metrics need to collect system information through event tracking. Lots of events tracking make kernel code mess, difficult to maintain, and difficult to customize extend.
