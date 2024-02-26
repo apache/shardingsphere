@@ -149,22 +149,24 @@ class GroovyInlineExpressionParserTest {
         ExecutorService pool = Executors.newFixedThreadPool(threadCount);
         List<Future<?>> futures = new ArrayList<>(threadCount);
         for (int i = 0; i < threadCount; i++) {
-            Future<?> future = pool.submit(() -> {
-                for (int j = 0; j < 5; j++) {
-                    String resultSuffix = Thread.currentThread().getName() + "--" + j;
-                    String actual = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                            new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "ds_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
-                    assertThat(actual, is(String.format("ds_%s", resultSuffix)));
-                    String actual2 = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
-                            new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "account_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
-                    assertThat(actual2, is(String.format("account_%s", resultSuffix)));
-                }
-            });
+            Future<?> future = pool.submit(this::createInlineExpressionParseTask);
             futures.add(future);
         }
         for (Future<?> future : futures) {
             future.get();
         }
         pool.shutdown();
+    }
+    
+    private void createInlineExpressionParseTask() {
+        for (int j = 0; j < 5; j++) {
+            String resultSuffix = Thread.currentThread().getName() + "--" + j;
+            String actual = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
+                    new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "ds_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
+            assertThat(actual, is(String.format("ds_%s", resultSuffix)));
+            String actual2 = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
+                    new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "account_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
+            assertThat(actual2, is(String.format("account_%s", resultSuffix)));
+        }
     }
 }
