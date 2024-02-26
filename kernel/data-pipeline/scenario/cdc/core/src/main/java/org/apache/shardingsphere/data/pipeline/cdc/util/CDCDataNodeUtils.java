@@ -56,8 +56,8 @@ public final class CDCDataNodeUtils {
         Map<String, List<DataNode>> result = new HashMap<>();
         // TODO support virtual data source name
         for (String each : tableNames) {
-            if (singleRule.isPresent() && singleRule.get().getAllDataNodes().containsKey(each)) {
-                result.put(each, new ArrayList<>(singleRule.get().getAllDataNodes().get(each)));
+            if (singleRule.isPresent() && singleRule.get().getDataNodeRule().getAllDataNodes().containsKey(each)) {
+                result.put(each, new ArrayList<>(singleRule.get().getDataNodeRule().getAllDataNodes().get(each)));
                 continue;
             }
             if (shardingRule.isPresent() && shardingRule.get().findShardingTable(each).isPresent()) {
@@ -65,8 +65,8 @@ public final class CDCDataNodeUtils {
                 result.put(each, shardingTable.getActualDataNodes());
                 continue;
             }
-            if (broadcastRule.isPresent() && broadcastRule.get().findFirstActualTable(each).isPresent()) {
-                result.put(each, Collections.singletonList(broadcastRule.get().getTableDataNodes().get(each).iterator().next()));
+            if (broadcastRule.isPresent() && broadcastRule.get().getDataNodeRule().findFirstActualTable(each).isPresent()) {
+                result.put(each, Collections.singletonList(broadcastRule.get().getDataNodeRule().getAllDataNodes().get(each).iterator().next()));
                 continue;
             }
             throw new PipelineInvalidParameterException(String.format("Not find actual data nodes of `%s`", each));

@@ -76,7 +76,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -761,7 +761,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public boolean isAccumulate() {
         return metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .anyMatch(each -> each.isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
+                .anyMatch(each -> each.getDataNodeRule().isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
     }
     
     @Override

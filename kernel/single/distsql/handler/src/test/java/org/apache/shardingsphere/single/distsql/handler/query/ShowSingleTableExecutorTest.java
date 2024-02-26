@@ -86,11 +86,11 @@ class ShowSingleTableExecutorTest {
     }
     
     private SingleRule mockSingleRule() {
-        SingleRule result = mock(SingleRule.class);
+        SingleRule result = mock(SingleRule.class, RETURNS_DEEP_STUBS);
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
         singleTableDataNodeMap.put("t_order", Collections.singleton(new DataNode("ds_1", "t_order")));
         singleTableDataNodeMap.put("t_order_item", Collections.singleton(new DataNode("ds_2", "t_order_item")));
-        when(result.getSingleTableDataNodes()).thenReturn(singleTableDataNodeMap);
+        when(result.getDataNodeRule().getAllDataNodes()).thenReturn(singleTableDataNodeMap);
         return result;
     }
 }

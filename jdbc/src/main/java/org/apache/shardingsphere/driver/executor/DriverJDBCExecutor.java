@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
@@ -105,7 +105,7 @@ public final class DriverJDBCExecutor {
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
         for (ShardingSphereRule each : rules) {
-            if (each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
+            if (each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).getDataNodeRule().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }
         }

@@ -29,8 +29,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
@@ -64,16 +65,18 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     @Getter
     private final Collection<String> dataSourceNames;
     
-    @Getter
     private final Map<String, Collection<DataNode>> singleTableDataNodes;
     
     private final DatabaseType protocolType;
     
     @Getter
+    private final DataNodeRule dataNodeRule;
+    
+    @Getter
     private final SingleTableMapperRule tableMapperRule;
     
-    public SingleRule(final SingleRuleConfiguration ruleConfig, final String databaseName, final DatabaseType protocolType, final Map<String, DataSource> dataSourceMap,
-                      final Collection<ShardingSphereRule> builtRules) {
+    public SingleRule(final SingleRuleConfiguration ruleConfig, final String databaseName,
+                      final DatabaseType protocolType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
         defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSourceMap);
@@ -81,6 +84,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
         dataSourceNames = aggregateDataSourceMap.keySet();
         this.protocolType = protocolType;
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, protocolType, aggregateDataSourceMap, builtRules, configuration.getTables());
+        dataNodeRule = new SingleDataNodeRule(singleTableDataNodes);
         tableMapperRule = new SingleTableMapperRule(singleTableDataNodes);
     }
     
@@ -253,36 +257,6 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     public ShardingSphereRule reloadRule(final RuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSourceMap,
                                          final Collection<ShardingSphereRule> builtRules) {
         return new SingleRule((SingleRuleConfiguration) config, databaseName, protocolType, dataSourceMap, builtRules);
-    }
-    
-    @Override
-    public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return singleTableDataNodes;
-    }
-    
-    @Override
-    public Collection<DataNode> getDataNodesByTableName(final String tableName) {
-        return singleTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
-    }
-    
-    @Override
-    public Optional<String> findFirstActualTable(final String logicTable) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public boolean isNeedAccumulate(final Collection<String> tables) {
-        return false;
-    }
-    
-    @Override
-    public Optional<String> findLogicTableByActualTable(final String actualTable) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
-        return Optional.empty();
     }
     
     @Override

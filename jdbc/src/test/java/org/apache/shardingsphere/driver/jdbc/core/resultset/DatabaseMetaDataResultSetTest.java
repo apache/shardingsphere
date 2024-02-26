@@ -44,6 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -133,8 +134,8 @@ class DatabaseMetaDataResultSetTest {
     }
     
     private ShardingRule mockShardingRule() {
-        ShardingRule result = mock(ShardingRule.class);
-        when(result.findLogicTableByActualTable(ACTUAL_TABLE_NAME)).thenReturn(Optional.of(LOGIC_TABLE_NAME));
+        ShardingRule result = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
+        when(result.getDataNodeRule().findLogicTableByActualTable(ACTUAL_TABLE_NAME)).thenReturn(Optional.of(LOGIC_TABLE_NAME));
         return result;
     }
     

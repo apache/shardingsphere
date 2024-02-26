@@ -64,7 +64,7 @@ public final class UnloadSingleTableExecutor implements DatabaseRuleAlterExecuto
         for (String each : sqlStatement.getTables()) {
             checkTableExist(allTables, each);
             checkIsSingleTable(singleTables, each);
-            checkTableRuleExist(database.getName(), database.getProtocolType(), singleRule.getDataNodesByTableName(each), each);
+            checkTableRuleExist(database.getName(), database.getProtocolType(), singleRule.getDataNodeRule().getDataNodesByTableName(each), each);
         }
     }
     

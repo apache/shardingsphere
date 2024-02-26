@@ -73,7 +73,7 @@ class SingleSQLRouterTest {
     void assertCreateRouteContextWithSingleDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
-        rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("foo_ds")));
+        rule.getDataNodeRule().getAllDataNodes().put("t_order", Collections.singletonList(createDataNode("foo_ds")));
         ShardingSphereDatabase database = mockSingleDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(createQueryContext(),
                 mock(RuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
@@ -94,7 +94,7 @@ class SingleSQLRouterTest {
     void assertCreateRouteContextWithReadwriteSplittingDataSource() throws SQLException {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), Collections.singletonMap("readwrite_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
-        rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
+        rule.getDataNodeRule().getAllDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
         ShardingSphereDatabase database = mockReadwriteSplittingDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(createQueryContext(),
                 mock(RuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());

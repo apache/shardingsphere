@@ -23,7 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -201,7 +201,8 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private String getActualTableNamePattern(final String tableNamePattern) {
         return null == tableNamePattern
                 ? null
-                : findDataNodeContainedRule().filter(optional -> optional.findFirstActualTable(tableNamePattern).isPresent()).map(optional -> "%" + tableNamePattern + "%").orElse(tableNamePattern);
+                : findDataNodeContainedRule()
+                .filter(optional -> optional.getDataNodeRule().findFirstActualTable(tableNamePattern).isPresent()).map(optional -> "%" + tableNamePattern + "%").orElse(tableNamePattern);
     }
     
     private String getActualTable(final String catalog, final String table) {
@@ -209,7 +210,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private Optional<String> findActualTable(final DataNodeContainedRule dataNodeContainedRule, final String catalog, final String table) {
-        return Strings.isNullOrEmpty(catalog) ? dataNodeContainedRule.findFirstActualTable(table) : dataNodeContainedRule.findActualTableByCatalog(catalog, table);
+        return Strings.isNullOrEmpty(catalog) ? dataNodeContainedRule.getDataNodeRule().findFirstActualTable(table) : dataNodeContainedRule.getDataNodeRule().findActualTableByCatalog(catalog, table);
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule() {

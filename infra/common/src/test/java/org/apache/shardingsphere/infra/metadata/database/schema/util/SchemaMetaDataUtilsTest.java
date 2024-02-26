@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDa
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -39,6 +39,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,8 +47,8 @@ class SchemaMetaDataUtilsTest {
     
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenConfigCheckMetaDataEnable() {
-        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
+        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class, RETURNS_DEEP_STUBS);
+        when(dataNodeContainedRule.getDataNodeRule().getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
@@ -63,8 +64,8 @@ class SchemaMetaDataUtilsTest {
     
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnable() {
-        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
+        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class, RETURNS_DEEP_STUBS);
+        when(dataNodeContainedRule.getDataNodeRule().getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
@@ -77,8 +78,8 @@ class SchemaMetaDataUtilsTest {
     
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnableForSingleTableDataNode() {
-        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        when(dataNodeContainedRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
+        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class, RETURNS_DEEP_STUBS);
+        when(dataNodeContainedRule.getDataNodeRule().getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "public");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);

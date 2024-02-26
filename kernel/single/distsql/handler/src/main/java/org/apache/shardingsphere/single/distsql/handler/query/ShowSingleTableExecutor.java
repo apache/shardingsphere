@@ -51,7 +51,7 @@ public final class ShowSingleTableExecutor implements DistSQLQueryExecutor<ShowS
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowSingleTableStatement sqlStatement, final ContextManager contextManager) {
         Collection<DataNode> resultDataNodes = getPattern(sqlStatement)
-                .map(optional -> getDataNodesWithLikePattern(rule.getSingleTableDataNodes(), optional)).orElseGet(() -> getDataNodes(rule.getSingleTableDataNodes(), sqlStatement));
+                .map(optional -> getDataNodesWithLikePattern(rule.getDataNodeRule().getAllDataNodes(), optional)).orElseGet(() -> getDataNodes(rule.getDataNodeRule().getAllDataNodes(), sqlStatement));
         Collection<DataNode> sortedDataNodes = resultDataNodes.stream().sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
         return sortedDataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
     }
