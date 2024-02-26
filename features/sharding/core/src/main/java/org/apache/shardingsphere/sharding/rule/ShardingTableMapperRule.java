@@ -61,11 +61,11 @@ public final class ShardingTableMapperRule implements TableMapperRule {
     
     @Override
     public TableNamesMapper getDistributedTableMapper() {
-        return getLogicTableMapper();
+        return logicalTableMapper;
     }
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return getLogicTableMapper();
+        return logicalTableMapper;
     }
 }

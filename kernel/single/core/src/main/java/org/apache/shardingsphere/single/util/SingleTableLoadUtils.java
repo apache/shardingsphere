@@ -84,11 +84,10 @@ public final class SingleTableLoadUtils {
     public static Collection<String> getExcludedTables(final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ShardingSphereRule each : builtRules) {
-            if (!(each instanceof TableMapperContainedRule)) {
-                continue;
+            if (each instanceof TableMapperContainedRule) {
+                result.addAll(((TableMapperContainedRule) each).getTableMapperRule().getDistributedTableMapper().getTableNames());
+                result.addAll(((TableMapperContainedRule) each).getTableMapperRule().getActualTableMapper().getTableNames());
             }
-            result.addAll(((TableMapperContainedRule) each).getTableMapperRule().getDistributedTableMapper().getTableNames());
-            result.addAll(((TableMapperContainedRule) each).getTableMapperRule().getActualTableMapper().getTableNames());
         }
         return result;
     }
