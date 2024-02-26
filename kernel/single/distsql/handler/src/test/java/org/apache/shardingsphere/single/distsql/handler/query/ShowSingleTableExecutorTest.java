@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -45,13 +46,15 @@ class ShowSingleTableExecutorTest {
     private DistSQLQueryExecuteEngine engine;
     
     DistSQLQueryExecuteEngine setUp(final ShowSingleTableStatement statement) {
-        return new DistSQLQueryExecuteEngine(statement, null, mockContextManager(), mock(DistSQLConnectionContext.class));
+        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
     }
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         SingleRule rule = mockSingleRule();
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SingleRule.class)).thenReturn(Optional.of(rule));
+        when(database.getRuleMetaData().findSingleRule(SingleRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     

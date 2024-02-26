@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecuteEngine;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -51,15 +52,17 @@ class ShowReadwriteSplittingRuleExecutorTest {
     private DistSQLQueryExecuteEngine engine;
     
     private DistSQLQueryExecuteEngine setUp(final ShowReadwriteSplittingRulesStatement statement, final ReadwriteSplittingRuleConfiguration configuration) {
-        return new DistSQLQueryExecuteEngine(statement, null, mockContextManager(configuration), mock(DistSQLConnectionContext.class));
+        return new DistSQLQueryExecuteEngine(statement, "foo_db", mockContextManager(configuration), mock(DistSQLConnectionContext.class));
     }
     
     private ContextManager mockContextManager(final ReadwriteSplittingRuleConfiguration configuration) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(configuration);
         when(rule.getExportData()).thenReturn(createExportedData());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(rule));
+        when(database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     

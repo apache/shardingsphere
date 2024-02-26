@@ -27,6 +27,7 @@ import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptRulesState
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,14 +51,16 @@ class ShowEncryptRuleExecutorTest {
     
     @BeforeEach
     void setUp() {
-        engine = new DistSQLQueryExecuteEngine(mock(ShowEncryptRulesStatement.class), null, mockContextManager(), mock(DistSQLConnectionContext.class));
+        engine = new DistSQLQueryExecuteEngine(mock(ShowEncryptRulesStatement.class), "foo_db", mockContextManager(), mock(DistSQLConnectionContext.class));
     }
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db")).thenReturn(database);
         EncryptRule rule = mock(EncryptRule.class);
         when(rule.getConfiguration()).thenReturn(getRuleConfiguration());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(EncryptRule.class)).thenReturn(Optional.of(rule));
+        when(database.getRuleMetaData().findSingleRule(EncryptRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     
