@@ -39,7 +39,7 @@ public final class URLArgumentLine {
     
     private final String argDefaultValue;
     
-    private final Matcher placehodlerMatcher;
+    private final Matcher placeholderMatcher;
     
     /**
      * Parse URL argument line.
@@ -65,12 +65,12 @@ public final class URLArgumentLine {
     public String replaceArgument(final URLArgumentPlaceholderType type) {
         String argumentValue = getArgumentValue(type);
         if (!Strings.isNullOrEmpty(argumentValue)) {
-            return placehodlerMatcher.replaceAll(argumentValue);
+            return placeholderMatcher.replaceAll(argumentValue);
         }
         if (!argDefaultValue.isEmpty()) {
-            return placehodlerMatcher.replaceAll(argDefaultValue);
+            return placeholderMatcher.replaceAll(argDefaultValue);
         }
-        String modifiedLineWithSpace = placehodlerMatcher.replaceAll("");
+        String modifiedLineWithSpace = placeholderMatcher.replaceAll("");
         return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
     }
     
