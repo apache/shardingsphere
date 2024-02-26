@@ -23,7 +23,6 @@
         <column name="Owner" />
         <column name="Storage" assertion="false" />
     </metadata>
-    <row values="public | t_broadcast_table | table | mock user |" />
     <row values="public | t_country | table | mock user |" />
     <row values="public | t_merchant | table | mock user |" />
     <row values="public | t_order | table | mock user |" />
@@ -31,6 +30,5 @@
     <row values="public | t_product | table | mock user |" />
     <row values="public | t_product_category | table | mock user |" />
     <row values="public | t_product_detail | table | mock user |" />
-    <row values="public | t_single_table | table | mock user |" />
     <row values="public | t_user | table | mock user |" />
 </dataset>
