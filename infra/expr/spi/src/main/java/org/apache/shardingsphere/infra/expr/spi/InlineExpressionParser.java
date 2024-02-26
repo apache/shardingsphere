@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.expr.spi;
 
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.List;
@@ -26,7 +25,6 @@ import java.util.Map;
 /**
  * Inline expression parser.
  */
-@SingletonSPI
 public interface InlineExpressionParser extends TypedSPI {
     
     /**
