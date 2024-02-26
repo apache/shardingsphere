@@ -46,8 +46,8 @@ import java.util.stream.IntStream;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -253,10 +253,10 @@ class MppdbDecodingPluginTest {
         }
         assertThat(expectedEvent.size(), is(4));
         AbstractWALEvent actualFirstEvent = expectedEvent.get(0);
-        assertTrue(actualFirstEvent instanceof BeginTXEvent);
+        assertInstanceOf(BeginTXEvent.class, actualFirstEvent);
         assertThat(((BeginTXEvent) actualFirstEvent).getXid(), is(1L));
         AbstractWALEvent actualLastEvent = expectedEvent.get(expectedEvent.size() - 1);
-        assertTrue(actualLastEvent instanceof CommitTXEvent);
+        assertInstanceOf(CommitTXEvent.class, actualLastEvent);
         assertThat(((CommitTXEvent) actualLastEvent).getCsn(), is(3468L));
         assertThat(((CommitTXEvent) actualLastEvent).getXid(), is(1L));
     }

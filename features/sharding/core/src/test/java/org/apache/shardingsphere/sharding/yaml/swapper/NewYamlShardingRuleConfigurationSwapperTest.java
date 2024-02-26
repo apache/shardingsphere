@@ -33,11 +33,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -184,15 +186,17 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/key_generators/auto_increment/versions/0", "type: AUTO_INCREMENT.FIXTURE\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/auditors/audit_algorithm/versions/0", "type: DML_SHARDING_CONDITIONS\n"));
         config.add(new YamlDataNode("/metadata/foo_db/rules/sharding/default_strategies/default_sharding_column/versions/0", "table_id"));
-        ShardingRuleConfiguration result = swapper.swapToObject(config).get();
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = swapper.swapToObject(config);
+        assertTrue(shardingRuleConfig.isPresent());
+        ShardingRuleConfiguration result = shardingRuleConfig.get();
         assertThat(result.getTables().size(), is(2));
         assertThat(result.getTables().iterator().next().getLogicTable(), is("LOGIC_TABLE"));
         assertThat(result.getTables().iterator().next().getActualDataNodes(), is("ds_${0..1}.table_${0..2}"));
-        assertTrue(result.getTables().iterator().next().getDatabaseShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getTables().iterator().next().getDatabaseShardingStrategy());
         assertThat(((StandardShardingStrategyConfiguration) result.getTables().iterator().next().getDatabaseShardingStrategy()).getShardingColumn(), is("user_id"));
         assertThat(result.getTables().iterator().next().getDatabaseShardingStrategy().getShardingAlgorithmName(), is("database_inline"));
         assertThat(result.getTables().iterator().next().getDatabaseShardingStrategy().getType(), is("STANDARD"));
-        assertTrue(result.getTables().iterator().next().getTableShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getTables().iterator().next().getTableShardingStrategy());
         assertThat(((StandardShardingStrategyConfiguration) result.getTables().iterator().next().getTableShardingStrategy()).getShardingColumn(), is("order_id"));
         assertThat(result.getTables().iterator().next().getTableShardingStrategy().getShardingAlgorithmName(), is("table_inline"));
         assertThat(result.getTables().iterator().next().getTableShardingStrategy().getType(), is("STANDARD"));
@@ -204,7 +208,7 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(result.getAutoTables().size(), is(1));
         assertThat(result.getAutoTables().iterator().next().getLogicTable(), is("auto_table"));
         assertThat(result.getAutoTables().iterator().next().getActualDataSources(), is("ds_1,ds_2"));
-        assertTrue(result.getAutoTables().iterator().next().getShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getAutoTables().iterator().next().getShardingStrategy());
         assertThat(((StandardShardingStrategyConfiguration) result.getAutoTables().iterator().next().getShardingStrategy()).getShardingColumn(), is("user_id"));
         assertThat(result.getAutoTables().iterator().next().getShardingStrategy().getShardingAlgorithmName(), is("hash_mod"));
         assertThat(result.getAutoTables().iterator().next().getShardingStrategy().getType(), is("STANDARD"));
@@ -216,11 +220,11 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(result.getBindingTableGroups().size(), is(1));
         assertThat(result.getBindingTableGroups().iterator().next().getName(), is("foo"));
         assertThat(result.getBindingTableGroups().iterator().next().getReference(), is("LOGIC_TABLE,SUB_LOGIC_TABLE"));
-        assertTrue(result.getDefaultDatabaseShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getDefaultDatabaseShardingStrategy());
         assertThat(((StandardShardingStrategyConfiguration) result.getDefaultDatabaseShardingStrategy()).getType(), is("STANDARD"));
         assertThat(((StandardShardingStrategyConfiguration) result.getDefaultDatabaseShardingStrategy()).getShardingColumn(), is("ds_id"));
         assertThat(result.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName(), is("standard"));
-        assertTrue(result.getDefaultTableShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertInstanceOf(StandardShardingStrategyConfiguration.class, result.getDefaultTableShardingStrategy());
         assertThat(((StandardShardingStrategyConfiguration) result.getDefaultTableShardingStrategy()).getType(), is("STANDARD"));
         assertThat(((StandardShardingStrategyConfiguration) result.getDefaultTableShardingStrategy()).getShardingColumn(), is("table_id"));
         assertThat(result.getDefaultTableShardingStrategy().getShardingAlgorithmName(), is("standard"));
