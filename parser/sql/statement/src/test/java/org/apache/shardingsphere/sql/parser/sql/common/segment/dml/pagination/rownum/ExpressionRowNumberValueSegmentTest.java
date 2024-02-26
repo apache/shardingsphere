@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class ExpressionRowNumberValueSegmentTest {
-
+    
     @Test
     void assertGetValueWithLiteralExpression() {
         ExpressionRowNumberValueSegment actual = new ExpressionRowNumberValueSegment(0, 0, new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, 1),
