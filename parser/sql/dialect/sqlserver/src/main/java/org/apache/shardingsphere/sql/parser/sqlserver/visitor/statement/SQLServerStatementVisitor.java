@@ -712,6 +712,16 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
     
+    private ASTNode getFunctionSegment(final int startIndex, final int stopIndex, final String functionName, final String text, final List<ExprContext> exprList) {
+        FunctionSegment result = new FunctionSegment(startIndex, stopIndex, functionName, text);
+        if (null != exprList) {
+            for (ExprContext each : exprList) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return result;
+    }
+    
     @Override
     public ASTNode visitTrimFunction(final TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
@@ -743,24 +753,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitGraphAggFunction(final GraphAggFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.graphAggFunctionName().getText(), getOriginalText(ctx));
-        if (null != ctx.expr()) {
-            for (ExprContext each : ctx.expr()) {
-                result.getParameters().add((ExpressionSegment) visit(each));
-            }
-        }
-        return result;
+        return getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.graphAggFunctionName().getText(), getOriginalText(ctx), ctx.expr());
     }
     
     @Override
     public final ASTNode visitApproxFunction(final ApproxFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
-        if (null != ctx.expr()) {
-            for (ExprContext each : ctx.expr()) {
-                result.getParameters().add((ExpressionSegment) visit(each));
-            }
-        }
-        return result;
+        return getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx), ctx.expr());
     }
     
     @Override
@@ -794,12 +792,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitJsonArrayFunction(final JsonArrayFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_ARRAY().getText(), getOriginalText(ctx));
-        if (null != ctx.expr()) {
-            for (ExprContext each : ctx.expr()) {
-                result.getParameters().add((ExpressionSegment) visit(each));
-            }
-        }
+        FunctionSegment result = (FunctionSegment) getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.JSON_ARRAY().getText(), getOriginalText(ctx), ctx.expr());
         if (null != ctx.jsonNullClause()) {
             result.getParameters().add(new LiteralExpressionSegment(ctx.jsonNullClause().start.getStartIndex(), ctx.jsonNullClause().stop.getStopIndex(), ctx.jsonNullClause().getText()));
         }
@@ -872,19 +865,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitOpenJsonFunction(final OpenJsonFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENJSON().getText(), getOriginalText(ctx));
-        for (ExprContext each : ctx.expr()) {
-            result.getParameters().add((ExpressionSegment) visit(each));
-        }
-        return result;
+        return getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENJSON().getText(), getOriginalText(ctx), ctx.expr());
     }
     
     @Override
     public final ASTNode visitOpenRowSetFunction(final OpenRowSetFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENROWSET().getText(), getOriginalText(ctx));
-        for (ExprContext each : ctx.expr()) {
-            result.getParameters().add((ExpressionSegment) visit(each));
-        }
+        FunctionSegment result = (FunctionSegment) getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENROWSET().getText(), getOriginalText(ctx), ctx.expr());
         if (null != ctx.tableName()) {
             result.getParameters().add(new LiteralExpressionSegment(ctx.tableName().getStart().getStartIndex(), ctx.tableName().getStop().getStopIndex(), ctx.tableName().getText()));
         }
@@ -893,19 +879,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitOpenQueryFunction(final OpenQueryFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENQUERY().getText(), getOriginalText(ctx));
-        for (ExprContext each : ctx.expr()) {
-            result.getParameters().add((ExpressionSegment) visit(each));
-        }
-        return result;
+        return getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENQUERY().getText(), getOriginalText(ctx), ctx.expr());
     }
     
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
-        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        result.getParameters().addAll(expressionSegments);
-        return result;
+        return getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx), ctx.expr());
     }
     
     @Override
