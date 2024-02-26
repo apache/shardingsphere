@@ -100,16 +100,16 @@ client {
 
 Modify the `file.conf` and `registry.conf` files of Seata as required.
 
-### Usage restrictions
+## Usage restrictions
 
 ShardingSphere's Seata integration does not support isolation levels.
 
 ShardingSphere's Seata integration places the obtained Seata global transaction into the thread's local variables.
 And `org.apache.seata.spring.annotation.GlobalTransactionScanner` uses Dynamic Proxy to enhance the method.
-This means that users should never use the `io.seata:seata-spring-boot-starter` annotation for ShardingSphere's DataSource.
-That is, when using ShardingSphere's Seata integration, users should avoid using the Maven dependency of `io.seata:seata-spring-boot-starter`.
+This means that users should never use the `io.seata:seata-all` Java annotation for ShardingSphere's DataSource.
+That is, when using ShardingSphere's Seata integration, users should avoid using the Java API of `io.seata:seata-all`.
 
-For ShardingSphere data source, discuss 5 situations,
+For ShardingSphere data source, discuss 6 situations,
 
 1. Manually obtain the `java.sql.Connection` instance created from the ShardingSphere data source,
    and manually calling the `setAutoCommit()`, `commit()` and `rollback()` methods is allowed.
@@ -120,9 +120,83 @@ For ShardingSphere data source, discuss 5 situations,
 
 4. Using Spring Framework’s `org.springframework.transaction.annotation.Transactional` annotation on functions is allowed.
 
-5. Using the `io.seata.spring.annotation.GlobalTransactional` annotation on the function is not allowed.
+5. Using the `io.seata.spring.annotation.GlobalTransactional` annotation on the function is **not allowed**.
 
 6. Manually create `io.seata.tm.api.GlobalTransaction` instance from `io.seata.tm.api.GlobalTransactionContext`,
-calling the `begin()`, `commit()` and `rollback()` methods of an `io.seata.tm.api.GlobalTransaction` instance is not allowed.
+calling the `begin()`, `commit()` and `rollback()` methods of an `io.seata.tm.api.GlobalTransaction` instance is **not allowed**.
 
-Long story short, you should not use the Seata Java API when using ShardingSphere's Seata integration.
+For Seata Server 2.0.0,
+Seata Server does not pass the return value of `io.seata.core.context.RootContext.getXID()` to all connected Seata Client instances of the same **transaction group**,
+Reference https://seata.apache.org/docs/user/api/ .
+This requires discussing two situations,
+
+1. In the scenario of using ShardingSphere JDBC,
+   transaction scenarios across multiple microservices need to consider using `io.seata.core.context.RootContext.getXID()` in the context of the starting microservice to obtain the Seata XID and then pass it to the ending microservice through RPC,
+   and call `io.seata.core.context.RootContext.bind(rpcXid)` in the business function of the endpoint microservice.
+
+2. In the scenario of using ShardingSphere Proxy,
+   Multiple microservices operate local transactions against the logical dataSource of ShardingSphere Proxy,
+   this will be converted into distributed transaction operations on the server side of ShardingSphere Proxy,
+   there are no additional Seata XIDs to consider.
+
+In the actual scenario of using Spring Boot OSS,
+`com.alibaba.cloud:spring-cloud-starter-alibaba-seata` and `io.seata:seata-spring-boot-starter` are often introduced transitively by other Maven dependencies.
+In order to avoid transaction conflicts, users need to manually turn off Seata's auto-config class.
+And set the `seata.enable-auto-data-source-proxy` property to `false` in the Spring Boot OSS configuration file. 
+A possible dependency is as follows.
+
+```xml
+<project>
+     <dependencies>
+       <dependency>
+          <groupId>org.apache.shardingsphere</groupId>
+          <artifactId>shardingsphere-jdbc</artifactId>
+          <version>${shardingsphere.version}</version>
+       </dependency>
+       <dependency>
+          <groupId>org.apache.shardingsphere</groupId>
+          <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+          <version>${shardingsphere.version}</version>
+       </dependency>
+       <dependency>
+          <groupId>io.seata</groupId>
+          <artifactId>seata-spring-boot-starter</artifactId>
+          <version>2.0.0</version>
+          <exclusions>
+             <exclusion>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+             </exclusion>
+          </exclusions>
+       </dependency>
+     </dependencies>
+</project>
+```
+
+The corresponding Spring Boot OSS bootstrap class may be as follows.
+
+```java
+import io.seata.spring.boot.autoconfigure.SeataAutoConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication(exclude = SeataAutoConfiguration.class)
+public class ExampleApplication {
+
+     public static void main(String[] args) {
+         SpringApplication.run(ShardingsphereSeataSpringBootTestApplication.class, args);
+     }
+
+}
+```
+
+The corresponding `application.yml` under the classpath needs to contain the following configuration.
+In this case, the equivalent configuration of Seata's `registry.conf` defined in `application.yaml` of Spring Boot OSS may not be valid.
+This depends on the Seata Client.
+When a downstream project uses the Maven module `org.apache.shardingsphere:shardingsphere-transaction-base-seata-at`,
+users are always encouraged to configure Seata Client using `registry.conf`.
+
+```yaml
+seata:
+   enable-auto-data-source-proxy: false
+```

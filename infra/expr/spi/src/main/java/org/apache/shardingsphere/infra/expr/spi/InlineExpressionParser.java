@@ -49,6 +49,13 @@ public interface InlineExpressionParser extends TypedSPI {
     
     /**
      * Evaluate with arguments.
+     * Normally there is no need to use this method downstream, because this method only encapsulates the use of Groovy syntax
+     * by ShardingSphere's existing algorithm classes.
+     * An {@link org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser} implementation that implements this method
+     * will provide the following algorithm classes with the ability to use expressions outside the Groovy language.
+     * 1. `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
+     * 2. `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
+     * 3. `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
      *
      * @param map map
      * @return closure
