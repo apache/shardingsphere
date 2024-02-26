@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.util.Collections;
@@ -170,6 +170,6 @@ public final class ResourceMetaDataContextManager {
     }
     
     private boolean isSingleTable(final ShardingSphereDatabase database, final String tableName) {
-        return database.getRuleMetaData().findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
+        return database.getRuleMetaData().findRules(TableMapperContainedRule.class).stream().noneMatch(each -> each.getTableMapperRule().getDistributedTableMapper().contains(tableName));
     }
 }

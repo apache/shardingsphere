@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
@@ -141,7 +141,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     }
     
     private boolean isSingleTable(final String tableName, final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
+        return database.getRuleMetaData().findRules(TableMapperContainedRule.class).stream().noneMatch(each -> each.getTableMapperRule().getDistributedTableMapper().contains(tableName));
     }
     
     private void removeSchemaMetaData(final ShardingSphereDatabase database, final String schemaName) {

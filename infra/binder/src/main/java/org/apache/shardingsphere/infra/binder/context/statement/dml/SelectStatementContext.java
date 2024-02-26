@@ -45,7 +45,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.databa
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -129,9 +129,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     }
     
     private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final String databaseName, final Collection<String> tableNames) {
-        for (TableContainedRule each : getTableContainedRules(metaData, databaseName)) {
+        for (TableMapperContainedRule each : getTableContainedRules(metaData, databaseName)) {
             for (String tableName : tableNames) {
-                if (each.getEnhancedTableMapper().contains(tableName)) {
+                if (each.getTableMapperRule().getEnhancedTableMapper().contains(tableName)) {
                     return true;
                 }
             }
@@ -139,14 +139,14 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return false;
     }
     
-    private Collection<TableContainedRule> getTableContainedRules(final ShardingSphereMetaData metaData, final String databaseName) {
+    private Collection<TableMapperContainedRule> getTableContainedRules(final ShardingSphereMetaData metaData, final String databaseName) {
         if (null == databaseName) {
             ShardingSpherePreconditions.checkState(tablesContext.getSimpleTableSegments().isEmpty(), NoDatabaseSelectedException::new);
             return Collections.emptyList();
         }
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
-        return database.getRuleMetaData().findRules(TableContainedRule.class);
+        return database.getRuleMetaData().findRules(TableMapperContainedRule.class);
     }
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String defaultDatabaseName) {

@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
-
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+package org.apache.shardingsphere.infra.rule.identifier.type.table;
 
 /**
- * ShardingSphere rule which contains table.
+ * Table mapper rule.
  */
-public interface TableContainedRule extends ShardingSphereRule {
+public interface TableMapperRule {
     
     /**
      * Get logic table mapper.

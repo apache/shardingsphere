@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
@@ -120,9 +120,9 @@ class SelectStatementContextTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        TableContainedRule tableContainedRule = mock(TableContainedRule.class, RETURNS_DEEP_STUBS);
-        when(tableContainedRule.getEnhancedTableMapper().contains("t_order")).thenReturn(true);
-        when(result.getRuleMetaData().findRules(TableContainedRule.class)).thenReturn(Collections.singletonList(tableContainedRule));
+        TableMapperContainedRule tableContainedRule = mock(TableMapperContainedRule.class, RETURNS_DEEP_STUBS);
+        when(tableContainedRule.getTableMapperRule().getEnhancedTableMapper().contains("t_order")).thenReturn(true);
+        when(result.getRuleMetaData().findRules(TableMapperContainedRule.class)).thenReturn(Collections.singletonList(tableContainedRule));
         return result;
     }
     
