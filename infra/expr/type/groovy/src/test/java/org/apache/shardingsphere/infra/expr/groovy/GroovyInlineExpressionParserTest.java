@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.infra.expr.groovy;
 
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -134,5 +141,31 @@ class GroovyInlineExpressionParserTest {
     void assertEvaluateWithArgs() {
         assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
                 new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateWithArgs(new LinkedHashMap<>()), is("3"));
+    }
+    
+    @Test
+    @SneakyThrows({ExecutionException.class, InterruptedException.class})
+    void assertThreadSafety() {
+        int threadCount = 10;
+        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+        List<Future<?>> futures = new ArrayList<>(threadCount);
+        for (int i = 0; i < threadCount; i++) {
+            Future<?> future = pool.submit(() -> {
+                for (int j = 0; j < 5; j++) {
+                    String resultSuffix = Thread.currentThread().getName() + "--" + j;
+                    String result = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
+                            new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "ds_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
+                    assertThat(result, is(String.format("ds_%s", resultSuffix)));
+                    String result2 = TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(
+                            new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "account_${id}"))).evaluateWithArgs(Collections.singletonMap("id", resultSuffix));
+                    assertThat(result2, is(String.format("account_%s", resultSuffix)));
+                }
+            });
+            futures.add(future);
+        }
+        for (Future<?> future : futures) {
+            future.get();
+        }
+        pool.shutdown();
     }
 }
