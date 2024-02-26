@@ -19,8 +19,9 @@ package org.apache.shardingsphere.infra.datanode;
 
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -148,17 +149,21 @@ class DataNodesTest {
     }
     
     private ShardingSphereRule mockSingleRule() {
+        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
+        when(dataNodeRule.getDataNodesByTableName("t_single")).thenReturn(Collections.singleton(new DataNode("readwrite_ds", "t_single")));
         DataNodeContainedRule result = mock(DataNodeContainedRule.class, RETURNS_DEEP_STUBS);
-        when(result.getDataNodeRule().getDataNodesByTableName("t_single")).thenReturn(Collections.singletonList(new DataNode("readwrite_ds", "t_single")));
+        when(result.getDataNodeRule()).thenReturn(dataNodeRule);
         return result;
     }
     
     private ShardingSphereRule mockShardingRule() {
-        DataNodeContainedRule result = mock(DataNodeContainedRule.class, RETURNS_DEEP_STUBS);
         Collection<DataNode> dataNodes = new LinkedList<>();
         dataNodes.add(new DataNode("readwrite_ds", "t_order_0"));
         dataNodes.add(new DataNode("readwrite_ds", "t_order_1"));
-        when(result.getDataNodeRule().getDataNodesByTableName("t_order")).thenReturn(dataNodes);
+        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
+        when(dataNodeRule.getDataNodesByTableName("t_order")).thenReturn(dataNodes);
+        DataNodeContainedRule result = mock(DataNodeContainedRule.class);
+        when(result.getDataNodeRule()).thenReturn(dataNodeRule);
         return result;
     }
 }
