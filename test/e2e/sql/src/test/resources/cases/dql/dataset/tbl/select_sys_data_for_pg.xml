@@ -22,9 +22,7 @@
         <column name="Type" />
         <column name="Owner" />
     </metadata>
-    <row values="public | t_broadcast_table | table | mock user" />
     <row values="public | t_order | table | mock user" />
     <row values="public | t_order_item | table | mock user" />
     <row values="public | t_product | table | mock user" />
-    <row values="public | t_single_table | table | mock user" />
 </dataset>

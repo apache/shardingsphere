@@ -32,15 +32,6 @@
         <column name="quantity" type="numeric" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="expected_dataset.t_single_table">
-        <column name="single_id" type="numeric" />
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="expected_dataset.t_broadcast_table">
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <metadata data-nodes="expected_dataset.t_product">
         <column name="product_id" type="numeric" />
         <column name="product_name" type="varchar" />
@@ -109,11 +100,6 @@
     <row data-node="expected_dataset.t_order_item" values="110801, 1108, 11, 8, 1, 2017-08-08" />
     <row data-node="expected_dataset.t_order_item" values="110900, 1109, 11, 9, 1, 2017-08-08" />
     <row data-node="expected_dataset.t_order_item" values="110901, 1109, 11, 10, 1, 2017-08-08" />
-    <row data-node="expected_dataset.t_single_table" values="1, 1000, init" />
-    <row data-node="expected_dataset.t_single_table" values="2, 1001, init" />
-    <row data-node="expected_dataset.t_single_table" values="3, 1002, init" />
-    <row data-node="expected_dataset.t_single_table" values="4, 1003, init" />
-    <row data-node="expected_dataset.t_broadcast_table" values="1, init" />
     <row data-node="expected_dataset.t_product" values="1, qq coins, 2, 200, off sale, 2017-08-08" />
     <row data-node="expected_dataset.t_product" values="2, haier washing machine, 4, 3121, on sale, 2017-08-08" />
     <row data-node="expected_dataset.t_product" values="3, huawei mobile phones, 6, 6666, on sale, 2017-08-08" />
