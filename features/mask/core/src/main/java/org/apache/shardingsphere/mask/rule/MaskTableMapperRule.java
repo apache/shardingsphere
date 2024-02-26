@@ -41,11 +41,6 @@ public final class MaskTableMapperRule implements TableMapperRule {
     }
     
     @Override
-    public TableNamesMapper getActualTableMapper() {
-        return new TableNamesMapper();
-    }
-    
-    @Override
     public TableNamesMapper getDistributedTableMapper() {
         return new TableNamesMapper();
     }

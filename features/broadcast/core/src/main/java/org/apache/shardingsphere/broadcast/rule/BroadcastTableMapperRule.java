@@ -40,13 +40,8 @@ public final class BroadcastTableMapperRule implements TableMapperRule {
     }
     
     @Override
-    public TableNamesMapper getActualTableMapper() {
-        return new TableNamesMapper();
-    }
-    
-    @Override
     public TableNamesMapper getDistributedTableMapper() {
-        return getLogicTableMapper();
+        return logicalTableMapper;
     }
     
     @Override

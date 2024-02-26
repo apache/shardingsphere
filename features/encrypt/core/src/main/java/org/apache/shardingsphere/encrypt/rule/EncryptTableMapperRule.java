@@ -41,17 +41,12 @@ public final class EncryptTableMapperRule implements TableMapperRule {
     }
     
     @Override
-    public TableNamesMapper getActualTableMapper() {
-        return new TableNamesMapper();
-    }
-    
-    @Override
     public TableNamesMapper getDistributedTableMapper() {
         return new TableNamesMapper();
     }
     
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
-        return getLogicTableMapper();
+        return logicalTableMapper;
     }
 }

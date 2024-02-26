@@ -34,7 +34,9 @@ public interface TableMapperRule {
      *
      * @return actual table mapper
      */
-    TableNamesMapper getActualTableMapper();
+    default TableNamesMapper getActualTableMapper() {
+        return new TableNamesMapper();
+    }
     
     /**
      * Get distributed table mapper.
