@@ -26,7 +26,7 @@ weight = 9
 ## 配置示例
 
 ```java
-SQLTranslatorRuleConfiguration ruleConfig = new SQLTranslatorRuleConfiguration("Jooq", new Properties(), false);
+SQLTranslatorRuleConfiguration ruleConfig = new SQLTranslatorRuleConfiguration("Native", new Properties(), false);
 String translatedSQL = new SQLTranslatorRule(ruleConfig).translate();
 ```
 

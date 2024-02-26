@@ -28,7 +28,7 @@ algorithmTypeName
     ;
 
 buildInProviderTypeName
-    : JOOQ | NATIVE
+    : NATIVE
     ;
 
 propertiesDefinition

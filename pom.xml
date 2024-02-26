@@ -127,8 +127,6 @@
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         
-        <jooq.version>3.14.15</jooq.version>
-        
         <prometheus-simpleclient.version>0.11.0</prometheus-simpleclient.version>
         <prometheus-jmx.version>0.16.1</prometheus-jmx.version>
         <opentelemetry.version>1.31.0</opentelemetry.version>
