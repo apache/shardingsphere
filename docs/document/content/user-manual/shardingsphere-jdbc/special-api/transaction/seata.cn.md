@@ -99,16 +99,16 @@ client {
 
 根据实际场景修改 Seata 的 `file.conf` 和 `registry.conf` 文件。
 
-### 使用限制
+## 使用限制
 
 ShardingSphere 的 Seata 集成不支持隔离级别。
 
 ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的局部变量。
 而 `org.apache.seata.spring.annotation.GlobalTransactionScanner` 则是采用 Dynamic Proxy 的方式对方法进行增强。
-这意味着用户始终不应该针对 ShardingSphere 的 DataSource 使用 `io.seata:seata-spring-boot-starter` 的注解。
-即在使用 ShardingSphere 的 Seata 集成时，用户应避免使用 `io.seata:seata-spring-boot-starter` 的 Maven 依赖。
+这意味着用户始终不应该针对 ShardingSphere 的 DataSource 使用 `io.seata:seata-all` 的 Java 注解。
+即在使用 ShardingSphere 的 Seata 集成时，用户应避免使用 `io.seata:seata-all` 的 Java API。
 
-针对 ShardingSphere 数据源，讨论 5 种情况，
+针对 ShardingSphere 数据源，讨论 6 种情况，
 
 1. 手动获取从 ShardingSphere 数据源创建的 `java.sql.Connection` 实例，
 并手动调用 `setAutoCommit()`, `commit()` 和 `rollback()` 方法，这是被允许的。
@@ -119,9 +119,80 @@ ShardingSphere 的 Seata 集成将获取到的 Seata 全局事务置入线程的
 
 4. 在函数上使用 Spring Framework 的 `org.springframework.transaction.annotation.Transactional` 注解，这是被允许的。
 
-5. 在函数上使用 `io.seata.spring.annotation.GlobalTransactional` 注解，这是不被允许的。
+5. 在函数上使用 `io.seata.spring.annotation.GlobalTransactional` 注解，这是**不被允许的**。
 
 6. 手动从 `io.seata.tm.api.GlobalTransactionContext ` 创建 `io.seata.tm.api.GlobalTransaction` 实例，
-调用 `io.seata.tm.api.GlobalTransaction` 实例的 `begin()`, `commit()` 和 `rollback()` 方法，这是不被允许的。
+调用 `io.seata.tm.api.GlobalTransaction` 实例的 `begin()`, `commit()` 和 `rollback()` 方法，这是**不被允许的**。
 
-长话短说，在使用 ShardingSphere 的 Seata 集成时，你不应该使用 Seata Java API。
+对于Seata Server 2.0.0，
+Seata Server 不会为同一 **transaction group** 的所有已连接的 Seata Client 实例传递 `io.seata.core.context.RootContext.getXID()` 的返回值，
+参考 https://seata.apache.org/docs/user/api/ 。
+这需要讨论两种情况，
+
+1. 在使用 ShardingSphere JDBC 的场景下，
+   跨多个微服务的事务场景需要考虑在起点微服务的上下文使用 `io.seata.core.context.RootContext.getXID()` 获取 Seata XID 后通过 RPC 传递给终点微服务，
+   并在终点微服务的业务函数中调用 `io.seata.core.context.RootContext.bind(rpcXid)`。
+
+2. 在使用 ShardingSphere Proxy 的场景下，多个微服务均对着 ShardingSphere Proxy 的逻辑数据源操作本地事务，
+   这将在 ShardingSphere Proxy 的服务端来转化为对分布式事务的操作，不需要考虑额外的 Seata XID。
+
+在使用 Spring Boot OSS 的实际情景中，
+`com.alibaba.cloud:spring-cloud-starter-alibaba-seata` 和 `io.seata:seata-spring-boot-starter` 常常被其他 Maven 依赖传递引入。
+为了避开事务冲突，你需要手动关闭 Seata 的自动配置类，
+并在 Spring Boot OSS 的配置文件中将 `seata.enable-auto-data-source-proxy` 的属性置为 `false`。一个可能的依赖关系如下。
+
+```xml
+<project>
+    <dependencies>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-jdbc</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.shardingsphere</groupId>
+         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+         <version>${shardingsphere.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>io.seata</groupId>
+         <artifactId>seata-spring-boot-starter</artifactId>
+         <version>2.0.0</version>
+         <exclusions>
+            <exclusion>
+               <groupId>org.antlr</groupId>
+               <artifactId>antlr4-runtime</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+    </dependencies>
+</project>
+```
+
+对应的 Spring Boot OSS 启动类可能如下。
+
+```java
+import io.seata.spring.boot.autoconfigure.SeataAutoConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication(exclude = SeataAutoConfiguration.class)
+public class ExampleApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ShardingsphereSeataSpringBootTestApplication.class, args);
+    }
+
+}
+```
+
+classpath 下对应的 `application.yml` 需要包含以下配置。
+在此情况下，在 Spring Boot OSS 的 `application.yaml` 内定义  Seata 的 `registry.conf` 的等价配置不一定有效。
+这取决于 Seata Client。
+当下游项目使用 `org.apache.shardingsphere:shardingsphere-transaction-base-seata-at` 的 Maven 模块时，
+总是被鼓励使用 `registry.conf` 配置 Seata Client。
+
+```yaml
+seata:
+  enable-auto-data-source-proxy: false
+```
