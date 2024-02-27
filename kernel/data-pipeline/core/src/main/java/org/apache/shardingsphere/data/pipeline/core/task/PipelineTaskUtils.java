@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.channel.MultiplexPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
@@ -87,8 +86,6 @@ public final class PipelineTaskUtils {
      */
     public static PipelineChannel createIncrementalChannel(final int concurrency, final AlgorithmConfiguration channelConfig, final IncrementalTaskProgress progress) {
         PipelineChannelCreator channelCreator = TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps());
-        return 1 == concurrency
-                ? channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress))
-                : new MultiplexPipelineChannel(concurrency, channelCreator, 5, new IncrementalTaskAckCallback(progress));
+        return channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress));
     }
 }
