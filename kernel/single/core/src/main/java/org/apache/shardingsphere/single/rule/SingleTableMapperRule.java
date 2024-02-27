@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRul
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableNamesMapper;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Single table mapper rule.
@@ -31,9 +30,9 @@ public final class SingleTableMapperRule implements TableMapperRule {
     
     private final TableNamesMapper logicTableMapper;
     
-    public SingleTableMapperRule(final Map<String, Collection<DataNode>> singleTableDataNodes) {
+    public SingleTableMapperRule(final Collection<Collection<DataNode>> singleTableDataNodes) {
         logicTableMapper = new TableNamesMapper();
-        singleTableDataNodes.forEach((key, value) -> logicTableMapper.put(value.iterator().next().getTableName()));
+        singleTableDataNodes.forEach(each -> logicTableMapper.put(each.iterator().next().getTableName()));
     }
     
     @Override

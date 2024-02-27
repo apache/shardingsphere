@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableNamesMapper;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Sharding table mapper rule.
@@ -32,20 +32,20 @@ public final class ShardingTableMapperRule implements TableMapperRule {
     
     private final TableNamesMapper actualTableMapper;
     
-    public ShardingTableMapperRule(final Map<String, ShardingTable> shardingTables) {
+    public ShardingTableMapperRule(final Collection<ShardingTable> shardingTables) {
         logicalTableMapper = createLogicalTableMapper(shardingTables);
         actualTableMapper = createActualTableMapper(shardingTables);
     }
     
-    private TableNamesMapper createLogicalTableMapper(final Map<String, ShardingTable> shardingTables) {
+    private TableNamesMapper createLogicalTableMapper(final Collection<ShardingTable> shardingTables) {
         TableNamesMapper result = new TableNamesMapper();
-        shardingTables.values().forEach(each -> result.put(each.getLogicTable()));
+        shardingTables.forEach(each -> result.put(each.getLogicTable()));
         return result;
     }
     
-    private TableNamesMapper createActualTableMapper(final Map<String, ShardingTable> shardingTables) {
+    private TableNamesMapper createActualTableMapper(final Collection<ShardingTable> shardingTables) {
         TableNamesMapper result = new TableNamesMapper();
-        shardingTables.values().stream().flatMap(each -> each.getActualDataNodes().stream()).map(DataNode::getTableName).forEach(result::put);
+        shardingTables.stream().flatMap(each -> each.getActualDataNodes().stream()).map(DataNode::getTableName).forEach(result::put);
         return result;
     }
     
