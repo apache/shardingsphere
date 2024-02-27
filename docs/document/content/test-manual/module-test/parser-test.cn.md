@@ -9,7 +9,7 @@ SQL 解析无需真实的测试环境，开发者只需定义好待测试的 SQL
 
 ### SQL数据
 
-在集成测试的部分提到过 `sql-case-id`，其对应的 SQL，可以在不同模块共享。开发者只需要在`shardingsphere-sql-parser-test`模块中添加待测试的 SQL 即可，位置位于`test/it/parser/src/main/resources/sql/supported/${SQL-TYPE}/*.xml` 。
+在集成测试的部分提到过 `sql-case-id`，其对应的 SQL，可以在不同模块共享。开发者只需要在`shardingsphere-test-it-parser`模块中添加待测试的 SQL 即可，位置位于`test/it/parser/src/main/resources/sql/supported/${SQL-TYPE}/*.xml` 。
 
 ### 断言数据
 

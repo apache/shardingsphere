@@ -9,7 +9,7 @@ Not like Integration test, SQL parse test does not need a specific database envi
 
 ### SQL Data
 
-As mentioned `sql-case-id` in Integration test, test-case-id could be shared in different module to test, and the file is in `shardingsphere-sql-parser-test` module, at `test/it/parser/src/main/resources/sql/supported/${SQL-TYPE}/*.xml`
+As mentioned `sql-case-id` in Integration test, test-case-id could be shared in different module to test, and the file is in `shardingsphere-test-it-parser` module, at `test/it/parser/src/main/resources/sql/supported/${SQL-TYPE}/*.xml`
 
 ### Assert Data
 
