@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 
 /**
  * Read query load balance algorithm type and class mapper.
@@ -26,8 +26,8 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgo
 public final class ReadQueryLoadBalanceAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
     @Override
-    public Class<ReadQueryLoadBalanceAlgorithm> getPluginClass() {
-        return ReadQueryLoadBalanceAlgorithm.class;
+    public Class<LoadBalanceAlgorithm> getPluginClass() {
+        return LoadBalanceAlgorithm.class;
     }
     
     @Override

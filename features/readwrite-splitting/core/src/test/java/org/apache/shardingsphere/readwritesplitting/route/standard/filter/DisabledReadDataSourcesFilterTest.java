@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.standard.filter;
 
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.random.RandomLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
@@ -38,7 +38,7 @@ class DisabledReadDataSourcesFilterTest {
     void setUp() {
         rule = new ReadwriteSplittingDataSourceRule(
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null),
-                TransactionalReadQueryStrategy.DYNAMIC, new RandomReadQueryLoadBalanceAlgorithm());
+                TransactionalReadQueryStrategy.DYNAMIC, new RandomLoadBalanceAlgorithm());
     }
     
     @Test

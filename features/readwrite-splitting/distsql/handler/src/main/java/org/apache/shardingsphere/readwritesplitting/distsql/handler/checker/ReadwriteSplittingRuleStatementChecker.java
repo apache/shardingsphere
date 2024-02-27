@@ -24,16 +24,16 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleExc
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -209,6 +209,6 @@ public final class ReadwriteSplittingRuleStatementChecker {
     
     private static void checkLoadBalancers(final Collection<ReadwriteSplittingRuleSegment> segments) {
         segments.stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).filter(Objects::nonNull)
-                .forEach(each -> TypedSPILoader.checkService(ReadQueryLoadBalanceAlgorithm.class, each.getName(), each.getProps()));
+                .forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getName(), each.getProps()));
     }
 }
