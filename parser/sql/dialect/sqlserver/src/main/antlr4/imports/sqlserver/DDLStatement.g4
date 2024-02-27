@@ -322,7 +322,7 @@ tableConstraint
     ;
 
 edgeConstraint
-    : connectionClause (ON DELETE NO ACTION | CASCADE)?
+    : connectionClause (ON DELETE (NO ACTION | CASCADE))?
     ;
 
 connectionClause
