@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.distsql.handler.fixture;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture;
 
 import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 
 import java.util.List;
 
-public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements LoadBalanceAlgorithm {
+public final class DistSQLLoadBalanceAlgorithmFixture implements LoadBalanceAlgorithm {
     
     @Override
     public String getAvailableTargetName(final String groupName, final List<String> availableTargetNames) {
-        return null;
+        return availableTargetNames.get(0);
     }
     
     @Override

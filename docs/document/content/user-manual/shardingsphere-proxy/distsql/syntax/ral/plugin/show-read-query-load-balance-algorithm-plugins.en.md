@@ -5,7 +5,7 @@ weight = 3
 
 ### Description
 
-The `SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm`.
+The `SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm`.
 
 ### Syntax
 
@@ -31,7 +31,7 @@ showReadQueryLoadBalanceAlgorithmPlugins ::=
 
 ### Example
 
-- Query all the implementations for `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` interface
+- Query all the implementations for `org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm` interface
 
 ```sql
 SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS
