@@ -5,7 +5,7 @@ weight = 3
 
 ### 描述
 
-`SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` 接口的所有实现类。
+`SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm` 接口的所有实现类。
 
 ### 语法
 
@@ -31,7 +31,7 @@ showReadQueryLoadBalanceAlgorithmPlugins ::=
 
 ### 示例
 
-- 查询 `org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm` 接口的所有实现类
+- 查询 `org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm` 接口的所有实现类
 
 ```sql
 SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS
