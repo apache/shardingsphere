@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception.algorithm;
+package org.apache.shardingsphere.readwritesplitting.exception.checker;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
-public class ReadQueryLoadBalanceAlgorithmInitializationExcpetion extends ReadwriteSplittingSQLException {
+/**
+ * Missing required read database weight exception.
+ */
+public final class MissingRequiredReadDatabaseWeightException extends ReadwriteSplittingSQLException {
     
-    private static final long serialVersionUID = -8673960967175624027L;
+    private static final long serialVersionUID = 8006957930250488016L;
     
-    public ReadQueryLoadBalanceAlgorithmInitializationExcpetion(final String loadBalanceAlgorithmType, final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 83, "'%s' read query load balance algorithm initialization failed, reason is: %s.", loadBalanceAlgorithmType, reason);
+    public MissingRequiredReadDatabaseWeightException(final String loadBalancerType, final String reason) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 81, "Load balancer algorithm `%s` initialization failed, reason is: %s.", loadBalancerType, reason);
     }
 }

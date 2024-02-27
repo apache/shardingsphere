@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture;
 
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 
 import java.util.List;
 
-public final class DistSQLReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
+public final class DistSQLReadQueryLoadBalanceAlgorithmFixture implements LoadBalanceAlgorithm {
     
     @Override
-    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        return readDataSourceNames.get(0);
+    public String getAvailableTargetName(final String groupName, final List<String> availableTargetNames) {
+        return availableTargetNames.get(0);
     }
     
     @Override

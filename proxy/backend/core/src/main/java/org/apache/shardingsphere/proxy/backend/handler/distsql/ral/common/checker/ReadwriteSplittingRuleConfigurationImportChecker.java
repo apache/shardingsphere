@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -63,6 +63,6 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     }
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(ReadQueryLoadBalanceAlgorithm.class, each.getType(), each.getProps()));
+        currentRuleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getType(), each.getProps()));
     }
 }
