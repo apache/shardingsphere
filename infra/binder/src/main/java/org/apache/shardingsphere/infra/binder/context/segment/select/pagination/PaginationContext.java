@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.Nu
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.ExpressionRowNumberValueSegment;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,9 @@ public final class PaginationContext {
         if (paginationValueSegment instanceof ParameterMarkerPaginationValueSegment) {
             Object obj = null == params || params.isEmpty() ? 0L : params.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
             return obj instanceof Long ? (long) obj : (int) obj;
+        }
+        if (paginationValueSegment instanceof ExpressionRowNumberValueSegment) {
+            return ((ExpressionRowNumberValueSegment) paginationValueSegment).getValue(params);
         }
         return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
     }
@@ -107,6 +111,7 @@ public final class PaginationContext {
      * @return offset parameter index
      */
     public Optional<Integer> getOffsetParameterIndex() {
+        // TODO handle offsetSegment instance of ExpressionRowNumberValueSegment
         return offsetSegment instanceof ParameterMarkerPaginationValueSegment ? Optional.of(((ParameterMarkerPaginationValueSegment) offsetSegment).getParameterIndex()) : Optional.empty();
     }
     
@@ -116,6 +121,7 @@ public final class PaginationContext {
      * @return row count parameter index
      */
     public Optional<Integer> getRowCountParameterIndex() {
+        // TODO handle offsetSegment instance of ExpressionRowNumberValueSegment
         return rowCountSegment instanceof ParameterMarkerPaginationValueSegment
                 ? Optional.of(((ParameterMarkerPaginationValueSegment) rowCountSegment).getParameterIndex())
                 : Optional.empty();
