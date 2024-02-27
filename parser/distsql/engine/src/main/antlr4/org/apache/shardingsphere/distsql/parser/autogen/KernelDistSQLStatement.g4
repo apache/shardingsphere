@@ -50,5 +50,6 @@ execute
     | unlockCluster
     | showPluginImplementations
     | showKeyGenerateAlgorithmPlugins
+    | showLoadBalanceAlgorithmPlugins
     ) SEMI_? EOF
     ;

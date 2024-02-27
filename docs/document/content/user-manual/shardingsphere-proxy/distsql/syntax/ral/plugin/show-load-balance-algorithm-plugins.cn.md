@@ -1,19 +1,19 @@
 +++
-title = "SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS"
+title = "SHOW LOAD BALANCE ALGORITHM PLUGINS"
 weight = 3
 +++
 
 ### 描述
 
-`SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm` 接口的所有实现类。
+`SHOW LOAD BALANCE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm` 接口的所有实现类。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-showReadQueryLoadBalanceAlgorithmPlugins ::=
-  'SHOW' 'READ' 'QUERY' 'LOAD' 'BALANCE' 'ALGORITHM' 'PLUGINS'
+showLoadBalanceAlgorithmPlugins ::=
+  'SHOW' 'LOAD' 'BALANCE' 'ALGORITHM' 'PLUGINS'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -34,11 +34,11 @@ showReadQueryLoadBalanceAlgorithmPlugins ::=
 - 查询 `org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm` 接口的所有实现类
 
 ```sql
-SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS
+SHOW LOAD BALANCE ALGORITHM PLUGINS
 ```
 
 ```sql
-SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS;
+SHOW LOAD BALANCE ALGORITHM PLUGINS;
 +-------------+--------------+-------------+
 | type        | type_aliases | description |
 +-------------+--------------+-------------+
@@ -51,7 +51,7 @@ SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS;
 
 ### 保留字
 
-`SHOW`、`READ`、`QUERY`、`LOAD`、`BALANCE`、`ALGORITHM`、`PLUGINS`
+`SHOW`、`LOAD`、`BALANCE`、`ALGORITHM`、`PLUGINS`
 
 ### 相关链接
 

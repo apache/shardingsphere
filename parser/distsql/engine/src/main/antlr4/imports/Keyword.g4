@@ -331,6 +331,14 @@ GENERATE
     : G E N E R A T E
     ;
 
+LOAD
+    : L O A D
+    ;
+
+BALANCE
+    : B A L A N C E
+    ;
+
 ALGORITHM
     : A L G O R I T H M
     ;
