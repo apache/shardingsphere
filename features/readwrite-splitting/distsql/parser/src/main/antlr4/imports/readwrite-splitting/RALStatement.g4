@@ -26,7 +26,3 @@ alterReadwriteSplittingStorageUnitStatus
 showStatusFromReadwriteSplittingRules
     : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE ruleName) (FROM databaseName)?
     ;
-
-showReadQueryLoadBalanceAlgorithmPlugins
-    : SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS
-    ;

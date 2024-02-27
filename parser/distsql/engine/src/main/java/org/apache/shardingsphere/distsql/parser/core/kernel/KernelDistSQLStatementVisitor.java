@@ -51,6 +51,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowKeyGenerateAlgorithmPluginsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowLoadBalanceAlgorithmPluginsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowLogicalTablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowPluginImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedStorageUnitContext;
@@ -336,5 +337,10 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitShowKeyGenerateAlgorithmPlugins(final ShowKeyGenerateAlgorithmPluginsContext ctx) {
         return new ShowPluginsStatement("KEY_GENERATE_ALGORITHM");
+    }
+    
+    @Override
+    public ASTNode visitShowLoadBalanceAlgorithmPlugins(final ShowLoadBalanceAlgorithmPluginsContext ctx) {
+        return new ShowPluginsStatement("LOAD_BALANCE_ALGORITHM");
     }
 }

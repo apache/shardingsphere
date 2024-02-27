@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
+package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
 import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 
 /**
- * Read query load balance algorithm type and class mapper.
+ * Load balance algorithm type and class mapper.
  */
-public final class ReadQueryLoadBalanceAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
+public final class LoadBalanceAlgorithmTypeAndClassMapper implements PluginTypeAndClassMapper {
     
     @Override
     public Class<LoadBalanceAlgorithm> getPluginClass() {
@@ -32,6 +32,6 @@ public final class ReadQueryLoadBalanceAlgorithmTypeAndClassMapper implements Pl
     
     @Override
     public String getType() {
-        return "READ_QUERY_LOAD_BALANCE_ALGORITHM";
+        return "LOAD_BALANCE_ALGORITHM";
     }
 }

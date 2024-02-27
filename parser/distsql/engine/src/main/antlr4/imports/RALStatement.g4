@@ -115,6 +115,10 @@ showKeyGenerateAlgorithmPlugins
     : SHOW KEY GENERATE ALGORITHM PLUGINS
     ;
 
+showLoadBalanceAlgorithmPlugins
+    : SHOW LOAD BALANCE ALGORITHM PLUGINS
+    ;
+
 confPath
     : STRING_
     ;
