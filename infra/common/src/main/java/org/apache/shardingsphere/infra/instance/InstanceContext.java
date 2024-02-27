@@ -21,17 +21,17 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -152,11 +152,11 @@ public final class InstanceContext {
      * @param labels collection of contained label
      * @return compute node instances
      */
-    public List<InstanceMetaData> getAllClusterInstances(final InstanceType instanceType, final Collection<String> labels) {
-        List<InstanceMetaData> result = new ArrayList<>(allClusterInstances.size());
+    public Map<String, InstanceMetaData> getAllClusterInstances(final InstanceType instanceType, final Collection<String> labels) {
+        Map<String, InstanceMetaData> result = new LinkedHashMap<>(allClusterInstances.size(), 1F);
         for (ComputeNodeInstance each : allClusterInstances) {
             if (each.getMetaData().getType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
-                result.add(each.getMetaData());
+                result.put(each.getMetaData().getId(), each.getMetaData());
             }
         }
         return result;

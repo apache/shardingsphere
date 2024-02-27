@@ -118,7 +118,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();
-        Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels());
+        Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels()).values();
         return DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
     }
     

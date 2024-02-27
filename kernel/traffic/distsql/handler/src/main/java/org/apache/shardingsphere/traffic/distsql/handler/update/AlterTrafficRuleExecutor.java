@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.traffic.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.traffic.distsql.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.traffic.distsql.statement.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -66,7 +66,7 @@ public final class AlterTrafficRuleExecutor implements GlobalRuleDefinitionExecu
         sqlStatement.getSegments().forEach(each -> {
             TypedSPILoader.checkService(TrafficAlgorithm.class, each.getAlgorithm().getName(), each.getAlgorithm().getProps());
             if (null != each.getLoadBalancer()) {
-                TypedSPILoader.checkService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), each.getLoadBalancer().getProps());
+                TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), each.getLoadBalancer().getProps());
             }
         });
     }
