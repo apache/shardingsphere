@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper;
 
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 
 import java.util.Collection;
 import java.util.Collections;
