@@ -28,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class SingleTableMapperRuleTest {
     
-    private final SingleTableMapperRule tableMapperRule = new SingleTableMapperRule(Collections.singletonMap("foo_tbl", Collections.singleton(new DataNode("foo_ds.foo_tbl"))));
+    private final SingleTableMapperRule tableMapperRule = new SingleTableMapperRule(Collections.singleton(Collections.singleton(new DataNode("foo_ds.foo_tbl"))));
     
     @Test
     void assertGetLogicTableMapper() {

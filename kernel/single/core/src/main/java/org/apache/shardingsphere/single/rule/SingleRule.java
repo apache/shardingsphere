@@ -85,7 +85,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
         this.protocolType = protocolType;
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, protocolType, aggregateDataSourceMap, builtRules, configuration.getTables());
         dataNodeRule = new SingleDataNodeRule(singleTableDataNodes);
-        tableMapperRule = new SingleTableMapperRule(singleTableDataNodes);
+        tableMapperRule = new SingleTableMapperRule(singleTableDataNodes.values());
     }
     
     /**
