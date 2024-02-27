@@ -38,7 +38,7 @@ class ShardingTableMapperRuleTest {
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(shardingTable.getLogicTable()).thenReturn("foo_tbl");
         when(shardingTable.getActualDataNodes()).thenReturn(Collections.singletonList(new DataNode("foo_ds.foo_tbl_0")));
-        tableMapperRule = new ShardingTableMapperRule(Collections.singletonMap("foo_tbl", shardingTable));
+        tableMapperRule = new ShardingTableMapperRule(Collections.singleton(shardingTable));
     }
     
     @Test

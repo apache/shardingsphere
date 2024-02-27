@@ -146,7 +146,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         }
         shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
         dataNodeRule = new ShardingDataNodeRule(shardingTables);
-        tableMapperRule = new ShardingTableMapperRule(shardingTables);
+        tableMapperRule = new ShardingTableMapperRule(shardingTables.values());
     }
     
     private void validateUniqueActualDataNodesInTableRules() {
