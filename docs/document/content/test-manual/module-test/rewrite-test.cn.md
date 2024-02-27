@@ -9,7 +9,7 @@ weight = 2
 
 ### 测试
 
-SQL 改写测试用例位于 `sharding-core/sharding-core-rewrite` 下的 test 中。SQL 改写的测试主要依赖如下几个部分：
+SQL 改写测试用例位于 `test/it/rewriter` 下的 test 中。SQL 改写的测试主要依赖如下几个部分：
 
   - 测试引擎
   - 环境配置

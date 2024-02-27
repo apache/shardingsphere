@@ -9,11 +9,11 @@ SQL 解析无需真实的测试环境，开发者只需定义好待测试的 SQL
 
 ### SQL数据
 
-在集成测试的部分提到过 `sql-case-id`，其对应的 SQL，可以在不同模块共享。开发者只需要在 `shardingsphere-sql-parser/shardingsphere-sql-parser-test/src/main/resources/sql/supported/${SQL-TYPE}/*.xml` 添加待测试的 SQL 即可。
+在集成测试的部分提到过 `sql-case-id`，其对应的 SQL，可以在不同模块共享。开发者只需要在`shardingsphere-sql-parser-test`模块中添加待测试的 SQL 即可，位置位于`test/it/parser/src/main/resources/sql/supported/${SQL-TYPE}/*.xml` 。
 
 ### 断言数据
 
-断言的解析数据保存在 `shardingsphere-sql-parser/shardingsphere-sql-parser-test/src/main/resources/case/${SQL-TYPE}/*.xml`
+断言的解析数据保存在 `test/it/parser/src/main/resources/case/${SQL-TYPE}/*.xml`
 在 `xml` 文件中，可以针对表名，token，SQL 条件等进行断言，例如如下的配置：
 
 ```xml
@@ -47,4 +47,4 @@ SQL 解析无需真实的测试环境，开发者只需定义好待测试的 SQL
 </parser-result-sets>
 ```
 
-设置好上面两类数据，开发者就可以通过 `shardingsphere-sql-parser/shardingsphere-sql-parser-test` 下对应的测试引擎启动 SQL 解析的测试了。
+设置好上面两类数据，开发者就可以通过 `test/it/parser` 下对应的测试引擎启动 SQL 解析的测试了。
