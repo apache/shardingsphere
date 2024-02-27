@@ -28,11 +28,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class EncryptTableMapperRuleTest {
     
-    private final EncryptTableMapperRule tableMapperRule = new EncryptTableMapperRule(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList())));
+    private final EncryptTableMapperRule tableMapperRule = new EncryptTableMapperRule(Collections.singleton(new EncryptTableRuleConfiguration("foo_tbl", Collections.emptyList())));
     
     @Test
     void assertGetLogicTableMapper() {
-        assertThat(new LinkedList<>(tableMapperRule.getLogicTableMapper().getTableNames()), is(Collections.singletonList("t_encrypt")));
+        assertThat(new LinkedList<>(tableMapperRule.getLogicTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
     }
     
     @Test
@@ -42,6 +42,6 @@ class EncryptTableMapperRuleTest {
     
     @Test
     void assertGetEnhancedTableMapper() {
-        assertThat(new LinkedList<>(tableMapperRule.getEnhancedTableMapper().getTableNames()), is(Collections.singletonList("t_encrypt")));
+        assertThat(new LinkedList<>(tableMapperRule.getEnhancedTableMapper().getTableNames()), is(Collections.singletonList("foo_tbl")));
     }
 }
