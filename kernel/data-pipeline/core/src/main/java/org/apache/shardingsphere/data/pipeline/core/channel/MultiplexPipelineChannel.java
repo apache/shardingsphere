@@ -32,7 +32,10 @@ import java.util.stream.IntStream;
 
 /**
  * Multiplex pipeline channel.
+ *
+ * @deprecated It's not used for now since possible ack issue.
  */
+@Deprecated
 public final class MultiplexPipelineChannel implements PipelineChannel {
     
     private final int channelCount;

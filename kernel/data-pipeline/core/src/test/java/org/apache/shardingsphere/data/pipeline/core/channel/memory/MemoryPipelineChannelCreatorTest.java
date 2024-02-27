@@ -17,12 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.core.channel.memory;
 
+import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryTaskAckCallback;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
+
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,9 +37,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class MemoryPipelineChannelCreatorTest {
     
     @Test
-    void assertInitWithBlockQueueSize() throws Exception {
-        PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "200")));
-        assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("queueSize"), creator), is(200));
+    void assertInitWithNonZeroBlockQueueSize() throws Exception {
+        PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "2000")));
+        assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("queueSize"), creator), is(2000));
+        PipelineChannel channel = creator.newInstance(1000, new InventoryTaskAckCallback(new AtomicReference<>()));
+        Assertions.assertInstanceOf(ArrayBlockingQueue.class, Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel));
+    }
+    
+    @Test
+    void assertInitWithZeroBlockQueueSize() throws Exception {
+        PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "0")));
+        assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("queueSize"), creator), is(0));
+        PipelineChannel channel = creator.newInstance(1000, new InventoryTaskAckCallback(new AtomicReference<>()));
+        Assertions.assertInstanceOf(SynchronousQueue.class, Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel));
     }
     
     @Test
