@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.traffic.rule;
 
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.random.RandomLoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.apache.shardingsphere.traffic.algorithm.loadbalance.RandomTrafficLoadBalanceAlgorithm;
 import org.apache.shardingsphere.traffic.algorithm.traffic.hint.SQLHintTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.algorithm.traffic.transaction.ProxyTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -64,7 +64,7 @@ class TrafficRuleTest {
         assertThat(actual.get().getName(), is("sql_hint_traffic"));
         assertThat(actual.get().getLabels(), is(new HashSet<>(Arrays.asList("OLTP", "OLAP"))));
         assertThat(actual.get().getTrafficAlgorithm(), instanceOf(SQLHintTrafficAlgorithm.class));
-        assertThat(actual.get().getLoadBalancer(), instanceOf(RandomTrafficLoadBalanceAlgorithm.class));
+        assertThat(actual.get().getLoadBalancer(), instanceOf(RandomLoadBalanceAlgorithm.class));
     }
     
     @Test
@@ -80,7 +80,7 @@ class TrafficRuleTest {
         assertThat(actual.get().getName(), is("transaction_traffic"));
         assertThat(actual.get().getLabels(), is(Collections.singleton("OLAP")));
         assertThat(actual.get().getTrafficAlgorithm(), instanceOf(ProxyTrafficAlgorithm.class));
-        assertThat(actual.get().getLoadBalancer(), instanceOf(RandomTrafficLoadBalanceAlgorithm.class));
+        assertThat(actual.get().getLoadBalancer(), instanceOf(RandomLoadBalanceAlgorithm.class));
     }
     
     @Test

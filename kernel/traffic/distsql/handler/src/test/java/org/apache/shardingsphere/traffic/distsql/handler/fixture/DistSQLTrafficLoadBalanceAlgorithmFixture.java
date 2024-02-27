@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.fixture;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 
 import java.util.List;
 
-public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
+public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements LoadBalanceAlgorithm {
     
     @Override
-    public InstanceMetaData getInstanceMetaData(final String name, final List<InstanceMetaData> instances) {
+    public String getAvailableTargetName(final String groupName, final List<String> availableTargetNames) {
         return null;
     }
     

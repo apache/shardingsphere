@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -51,11 +52,11 @@ public final class TrafficEngine {
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return Optional.empty();
         }
-        List<InstanceMetaData> instances = instanceContext.getAllClusterInstances(InstanceType.PROXY, strategyRule.get().getLabels());
+        Map<String, InstanceMetaData> instances = instanceContext.getAllClusterInstances(InstanceType.PROXY, strategyRule.get().getLabels());
         if (!instances.isEmpty()) {
-            TrafficLoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
-            InstanceMetaData instanceMetaData = 1 == instances.size() ? instances.iterator().next() : loadBalancer.getInstanceMetaData(strategyRule.get().getName(), instances);
-            return Optional.of(instanceMetaData.getId());
+            LoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
+            String instanceId = 1 == instances.size() ? instances.keySet().iterator().next() : loadBalancer.getAvailableTargetName(strategyRule.get().getName(), new ArrayList<>(instances.keySet()));
+            return Optional.of(instanceId);
         }
         return Optional.empty();
     }
