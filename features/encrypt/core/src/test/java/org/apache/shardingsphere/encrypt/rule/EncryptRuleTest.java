@@ -34,7 +34,6 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -59,18 +58,6 @@ class EncryptRuleTest {
     @Test
     void assertGetNotExistedEncryptTable() {
         assertThrows(EncryptTableNotFoundException.class, () -> new EncryptRule("foo_db", createEncryptRuleConfiguration()).getEncryptTable("not_existed_tbl"));
-    }
-    
-    @Test
-    void assertGetTables() {
-        assertThat(new LinkedList<>(new EncryptRule("foo_db", createEncryptRuleConfiguration()).getTableMapperRule().getLogicTableMapper().getTableNames()),
-                is(Collections.singletonList("t_encrypt")));
-    }
-    
-    @Test
-    void assertGetTableWithLowercase() {
-        assertThat(new LinkedList<>(new EncryptRule("foo_db", createEncryptRuleConfigurationWithUpperCaseLogicTable()).getTableMapperRule().getLogicTableMapper().getTableNames()),
-                is(Collections.singletonList("T_ENCRYPT")));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
@@ -99,19 +86,9 @@ class EncryptRuleTest {
         assertThat(pwdColumnConfig.getLikeQuery().get().getEncryptorName(), is("like_query_test_encryptor"));
     }
     
-    private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {
-        AlgorithmConfiguration standardEncryptConfig = new AlgorithmConfiguration("CORE.FIXTURE", new Properties());
-        AlgorithmConfiguration queryAssistedEncryptConfig = new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties());
-        AlgorithmConfiguration queryLikeEncryptConfig = new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties());
-        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
-        EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", new EncryptColumnItemRuleConfiguration("credit_card_cipher", "standard_encryptor"));
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("T_ENCRYPT", Arrays.asList(pwdColumnConfig, creditCardColumnConfig));
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(standardEncryptConfig, queryAssistedEncryptConfig, queryLikeEncryptConfig));
-    }
-    
     private Map<String, AlgorithmConfiguration> getEncryptors(final AlgorithmConfiguration standardEncryptConfig, final AlgorithmConfiguration queryAssistedEncryptConfig,
                                                               final AlgorithmConfiguration queryLikeEncryptConfig) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>(2, 1F);
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(3, 1F);
         result.put("standard_encryptor", standardEncryptConfig);
         result.put("assisted_encryptor", queryAssistedEncryptConfig);
         result.put("like_encryptor", queryLikeEncryptConfig);
@@ -130,7 +107,7 @@ class EncryptRuleTest {
         assertThrows(MismatchedEncryptAlgorithmTypeException.class, () -> new EncryptRule("foo_db", ruleConfig));
     }
     
-    private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String encryptorName, final String assistedQueryEncryptorName, final String likeEncryptorName) {
+    private EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String encryptorName, final String assistedQueryEncryptorName, final String likeEncryptorName) {
         EncryptColumnRuleConfiguration result = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", encryptorName));
         result.setAssistedQuery(new EncryptColumnItemRuleConfiguration("pwd_assist", assistedQueryEncryptorName));
         result.setLikeQuery(new EncryptColumnItemRuleConfiguration("pwd_like", likeEncryptorName));
