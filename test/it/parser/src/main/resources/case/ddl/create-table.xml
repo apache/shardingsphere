@@ -2383,4 +2383,12 @@
             <owner name="hr" start-index="13" stop-index="14"/>
         </table>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_edge_constraint">
+        <table name="bought" start-index="13" stop-index="18" />
+        <column-definition type="INT" start-index="22" stop-index="38">
+            <column name="PurchaseCount" />
+        </column-definition>
+        <constraint-definition constraint-name="EC_BOUGHT" start-index="41" stop-index="113"/>
+    </create-table>
 </sql-parser-test-cases>
