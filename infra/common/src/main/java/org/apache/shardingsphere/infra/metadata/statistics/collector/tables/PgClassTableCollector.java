@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSph
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -77,8 +77,8 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     
     private String decorateTableName(final Collection<DataNodeContainedRule> dataNodeContainedRules, final String actualTableName) {
         for (DataNodeContainedRule each : dataNodeContainedRules) {
-            if (each.findLogicTableByActualTable(actualTableName).isPresent()) {
-                return each.findLogicTableByActualTable(actualTableName).get();
+            if (each.getDataNodeRule().findLogicTableByActualTable(actualTableName).isPresent()) {
+                return each.getDataNodeRule().findLogicTableByActualTable(actualTableName).get();
             }
         }
         return actualTableName;

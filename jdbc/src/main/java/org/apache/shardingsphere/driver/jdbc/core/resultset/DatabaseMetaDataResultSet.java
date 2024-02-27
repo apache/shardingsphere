@@ -25,7 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnLabelNotFoun
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -111,7 +111,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Optional<String> logicTableName = dataNodeContainedRule.isPresent() ? dataNodeContainedRule.get().findLogicTableByActualTable(tableName) : Optional.empty();
+                Optional<String> logicTableName = dataNodeContainedRule.isPresent() ? dataNodeContainedRule.get().getDataNodeRule().findLogicTableByActualTable(tableName) : Optional.empty();
                 result.addObject(logicTableName.orElse(tableName));
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);

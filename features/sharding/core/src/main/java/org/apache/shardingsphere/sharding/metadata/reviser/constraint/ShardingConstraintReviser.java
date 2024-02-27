@@ -40,7 +40,7 @@ public final class ShardingConstraintReviser implements ConstraintReviser<Shardi
             String referencedTableName = originalMetaData.getReferencedTableName();
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
-                return Optional.of(new ConstraintMetaData(logicIndexName.get(), rule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName)));
+                return Optional.of(new ConstraintMetaData(logicIndexName.get(), rule.getDataNodeRule().findLogicTableByActualTable(referencedTableName).orElse(referencedTableName)));
             }
         }
         return Optional.empty();

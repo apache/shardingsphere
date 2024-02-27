@@ -202,12 +202,12 @@ class ShardingRuleTest {
     
     @Test
     void assertFindLogicTableByActualTable() {
-        assertTrue(createMaximumShardingRule().findLogicTableByActualTable("table_0").isPresent());
+        assertTrue(createMaximumShardingRule().getDataNodeRule().findLogicTableByActualTable("table_0").isPresent());
     }
     
     @Test
     void assertNotFindLogicTableByActualTable() {
-        assertFalse(createMaximumShardingRule().findLogicTableByActualTable("table_3").isPresent());
+        assertFalse(createMaximumShardingRule().getDataNodeRule().findLogicTableByActualTable("table_3").isPresent());
     }
     
     @Test
@@ -711,7 +711,7 @@ class ShardingRuleTest {
     @Test
     void assertGetDataNodesByTableName() {
         ShardingRule shardingRule = createMinimumShardingRule();
-        Collection<DataNode> actual = shardingRule.getDataNodesByTableName("logic_table");
+        Collection<DataNode> actual = shardingRule.getDataNodeRule().getDataNodesByTableName("logic_table");
         assertThat(actual.size(), is(6));
         Iterator<DataNode> iterator = actual.iterator();
         DataNode firstDataNode = iterator.next();
@@ -773,7 +773,7 @@ class ShardingRuleTest {
     @Test
     void assertGetAllDataNodes() {
         ShardingRule actual = createMaximumShardingRule();
-        Map<String, Collection<DataNode>> allDataNodes = actual.getAllDataNodes();
+        Map<String, Collection<DataNode>> allDataNodes = actual.getDataNodeRule().getAllDataNodes();
         assertTrue(allDataNodes.containsKey("logic_table"));
         assertTrue(allDataNodes.containsKey("sub_logic_table"));
         Collection<DataNode> logicTableDataNodes = allDataNodes.get("logic_table");
@@ -798,14 +798,14 @@ class ShardingRuleTest {
     @Test
     void assertFindFirstActualTable() {
         ShardingRule actual = createMaximumShardingRule();
-        Optional<String> logicTable = actual.findFirstActualTable("logic_table");
+        Optional<String> logicTable = actual.getDataNodeRule().findFirstActualTable("logic_table");
         assertThat(logicTable.orElse(""), is("table_0"));
     }
     
     @Test
     void assertFindActualTableByCatalog() {
         ShardingRule actual = createMaximumShardingRule();
-        Optional<String> actualTableByCatalog = actual.findActualTableByCatalog("ds_0", "logic_table");
+        Optional<String> actualTableByCatalog = actual.getDataNodeRule().findActualTableByCatalog("ds_0", "logic_table");
         assertThat(actualTableByCatalog.orElse(""), is("table_0"));
     }
     

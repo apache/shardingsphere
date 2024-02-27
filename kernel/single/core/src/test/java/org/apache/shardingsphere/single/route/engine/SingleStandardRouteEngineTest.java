@@ -62,8 +62,8 @@ class SingleStandardRouteEngineTest {
     void assertRouteInSameDataSource() throws SQLException {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), null);
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), createDataSourceMap(), Collections.emptyList());
-        singleRule.getSingleTableDataNodes().put("t_order", Collections.singleton(mockDataNode("t_order")));
-        singleRule.getSingleTableDataNodes().put("t_order_item", Collections.singleton(mockDataNode("t_order_item")));
+        singleRule.getDataNodeRule().getAllDataNodes().put("t_order", Collections.singleton(mockDataNode("t_order")));
+        singleRule.getDataNodeRule().getAllDataNodes().put("t_order_item", Collections.singleton(mockDataNode("t_order_item")));
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());

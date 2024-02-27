@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
@@ -57,7 +57,7 @@ public final class DataNodes {
         if (!dataNodeContainedRule.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<DataNode> result = new LinkedList<>(dataNodeContainedRule.get().getDataNodesByTableName(tableName));
+        Collection<DataNode> result = new LinkedList<>(dataNodeContainedRule.get().getDataNodeRule().getDataNodesByTableName(tableName));
         for (Entry<ShardingSphereRule, DataNodeBuilder> entry : dataNodeBuilders.entrySet()) {
             result = entry.getValue().build(result, entry.getKey());
         }
@@ -69,6 +69,6 @@ public final class DataNodes {
     }
     
     private boolean isDataNodeContainedRuleContainsTable(final ShardingSphereRule each, final String tableName) {
-        return each instanceof DataNodeContainedRule && !((DataNodeContainedRule) each).getDataNodesByTableName(tableName).isEmpty();
+        return each instanceof DataNodeContainedRule && !((DataNodeContainedRule) each).getDataNodeRule().getDataNodesByTableName(tableName).isEmpty();
     }
 }

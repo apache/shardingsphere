@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.datanode;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * ShardingSphere rule which contains data node.
+ * Data node rule.
  */
-public interface DataNodeContainedRule extends ShardingSphereRule {
+public interface DataNodeRule {
     
     /**
      * Get all data nodes.

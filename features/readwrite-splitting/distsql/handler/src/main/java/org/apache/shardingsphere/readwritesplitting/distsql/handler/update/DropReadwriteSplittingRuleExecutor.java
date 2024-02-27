@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -90,7 +90,7 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
                 continue;
             }
             Collection<DataNode> actualDataNodes = new HashSet<>();
-            each.getAllDataNodes().values().forEach(actualDataNodes::addAll);
+            each.getDataNodeRule().getAllDataNodes().values().forEach(actualDataNodes::addAll);
             result.addAll(actualDataNodes.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()));
         }
         return result;
