@@ -212,8 +212,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20086       | Some routed data sources do not belong to configured data sources. routed data sources: \`%s\`, configured data sources: \`%s\`. |
 | 44000     | 20087       | Please check your sharding conditions \`%s\` to avoid same record in table \`%s\` routing to multiple data nodes.                |
 | 44000     | 20088       | Cannot found routing table factor, data source: %s, actual table: %s.                                                            |
-| 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`.                                                                       |
-| HY000     | 20091       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                              |
 | HY000     | 20092       | Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.                                        |
 | HY000     | 20099       | Sharding plugin error, reason is: %s                                                                                             |
 
@@ -298,6 +296,20 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-----------|-------------|-------------------------------------------------------------|
 | HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s. |
 | 42S02     | 20990       | Invalid mask algorithm \`%s\` in database \`%s\`.           |
+
+### Infra algorithm - key generate
+
+| SQL State | Vendor Code | Reason                                                      |
+|-----------|-------------|-------------------------------------------------------------|
+| 44000     | 21180       | Can not find strategy for generate keys with table \`%s\`.                                                                       |
+| HY000     | 21181       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                              |
+
+### Infra algorithm - load balance
+
+| SQL State | Vendor Code | Reason                                                              |
+|-----------|-------------|---------------------------------------------------------------------|
+| 44000     | 21280       | Invalid available target weight \`%s\`.                             |
+| HY000     | 21281       | \'%s\' load balance algorithm initialization failed, reason is: %s. |
 
 ## Other Exception
 

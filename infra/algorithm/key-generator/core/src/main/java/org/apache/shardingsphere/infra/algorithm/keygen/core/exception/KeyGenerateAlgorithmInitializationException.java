@@ -27,6 +27,6 @@ public final class KeyGenerateAlgorithmInitializationException extends KeyGenera
     private static final long serialVersionUID = 4137100879778822323L;
     
     public KeyGenerateAlgorithmInitializationException(final String keyGenerateType, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 91, "Key generate algorithm `%s` initialization failed, reason is: %s.", keyGenerateType, reason);
+        super(XOpenSQLState.GENERAL_ERROR, 81, "Key generate algorithm `%s` initialization failed, reason is: %s.", keyGenerateType, reason);
     }
 }
