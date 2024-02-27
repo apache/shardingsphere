@@ -42,7 +42,7 @@ public final class MemoryPipelineChannelCreator implements PipelineChannelCreato
     @Override
     public PipelineChannel newInstance(final int importerBatchSize, final PipelineChannelAckCallback ackCallback) {
         int queueSize = this.queueSize / importerBatchSize;
-        return new MemoryPipelineChannel(0 == queueSize ? 1 : queueSize, ackCallback);
+        return new MemoryPipelineChannel(queueSize, ackCallback);
     }
     
     @Override
