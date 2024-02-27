@@ -823,3 +823,7 @@ BOTH
 TRAILING
     : T R A I L I N G
     ;
+
+CONNECTION
+    : C O N N E C T I O N
+    ;
