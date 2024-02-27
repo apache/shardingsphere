@@ -51,7 +51,7 @@ class CDCDataNodeUtilsTest {
         when(mockShardingRule.findShardingTable("t_order")).thenReturn(Optional.of(mockShardingTable));
         when(mockShardingRule.getShardingTable("t_order")).thenReturn(mockShardingTable);
         when(mockRuleMetaData.findSingleRule(ShardingRule.class)).thenReturn(Optional.of(mockShardingRule));
-        SingleRule mockSingleRule = mock(SingleRule.class);
+        SingleRule mockSingleRule = mock(SingleRule.class, RETURNS_DEEP_STUBS);
         when(mockRuleMetaData.findSingleRule(SingleRule.class)).thenReturn(Optional.of(mockSingleRule));
         when(mockSingleRule.getDataNodeRule().getAllDataNodes()).thenReturn(Collections.singletonMap("t_order_item", Collections.singletonList(new DataNode("single.t_order_item"))));
         when(mockDatabase.getRuleMetaData()).thenReturn(mockRuleMetaData);
