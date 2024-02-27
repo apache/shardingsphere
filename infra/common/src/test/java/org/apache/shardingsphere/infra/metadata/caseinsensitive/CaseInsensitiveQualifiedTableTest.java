@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata;
+package org.apache.shardingsphere.infra.metadata.caseinsensitive;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class CaseInsensitiveIdentifierTest {
-    
-    @Test
-    void assertEquals() {
-        assertThat(new CaseInsensitiveIdentifier("t_order"), is(new CaseInsensitiveIdentifier("T_ORDER")));
-    }
+class CaseInsensitiveQualifiedTableTest {
     
     @Test
     void assertToString() {
-        CaseInsensitiveIdentifier actual = new CaseInsensitiveIdentifier("T_ORDER");
-        assertThat(actual.toString(), is("T_ORDER"));
+        CaseInsensitiveQualifiedTable actual = new CaseInsensitiveQualifiedTable(new CaseInsensitiveIdentifier(null), new CaseInsensitiveIdentifier("t_order"));
+        assertThat(actual.toString(), is("t_order"));
+    }
+    
+    @Test
+    void assertToStringThrowsNPE() {
+        CaseInsensitiveQualifiedTable actual = new CaseInsensitiveQualifiedTable(null, new CaseInsensitiveIdentifier("t_order"));
+        assertThrows(NullPointerException.class, actual::toString);
     }
 }

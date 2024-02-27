@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata;
+package org.apache.shardingsphere.infra.metadata.caseinsensitive;
 
-import lombok.EqualsAndHashCode;
+import org.junit.jupiter.api.Test;
 
-/**
- * Case insensitive identifier.
- */
-// TODO table name case-sensitive for some database
-@EqualsAndHashCode(of = "lowercase")
-public final class CaseInsensitiveIdentifier {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class CaseInsensitiveIdentifierTest {
     
-    private final String original;
-    
-    private final String lowercase;
-    
-    public CaseInsensitiveIdentifier(final String identifier) {
-        original = identifier;
-        lowercase = null == identifier ? null : identifier.toLowerCase();
+    @Test
+    void assertEquals() {
+        assertThat(new CaseInsensitiveIdentifier("t_order"), is(new CaseInsensitiveIdentifier("T_ORDER")));
     }
     
-    @Override
-    public String toString() {
-        return original;
+    @Test
+    void assertToString() {
+        CaseInsensitiveIdentifier actual = new CaseInsensitiveIdentifier("T_ORDER");
+        assertThat(actual.toString(), is("T_ORDER"));
     }
 }
