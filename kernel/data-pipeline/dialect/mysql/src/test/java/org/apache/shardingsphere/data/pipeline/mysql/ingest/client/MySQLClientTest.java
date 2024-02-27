@@ -23,7 +23,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.Attribute;
 import io.netty.util.concurrent.Promise;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.BinlogSyncChannelAlreadyClosedException;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
@@ -40,11 +39,11 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -156,6 +155,6 @@ class MySQLClientTest {
     void assertPollFailed() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("running"), mysqlClient, false);
-        assertThrows(BinlogSyncChannelAlreadyClosedException.class, () -> mysqlClient.poll());
+        assertThat(mysqlClient.poll(), is(Collections.emptyList()));
     }
 }

@@ -137,7 +137,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 08000     | 18090       | Data sources can not connect, reason is: %s                                        |
 | HY000     | 18091       | Importer job write data failed.                                                    |
 | 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s                            |
-| HY000     | 18093       | Can not poll event because of binlog sync channel already closed.                  |
 | HY000     | 18095       | Can not find consistency check job of \`%s\`.                                      |
 | HY000     | 18096       | Uncompleted consistency check job \`%s\` exists.                                   |
 | HY000     | 18200       | Not find stream data source table.                                                 |
