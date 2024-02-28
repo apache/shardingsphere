@@ -143,7 +143,7 @@ class ExportDatabaseConfigurationExecutorTest {
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#") && !"".equals(line.trim())) {
+                if (!line.startsWith("#") && !line.trim().isEmpty()) {
                     result.append(line).append(System.lineSeparator());
                 }
             }

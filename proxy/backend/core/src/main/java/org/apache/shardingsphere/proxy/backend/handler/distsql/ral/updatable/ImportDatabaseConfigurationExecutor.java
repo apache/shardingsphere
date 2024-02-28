@@ -42,8 +42,8 @@ public final class ImportDatabaseConfigurationExecutor implements DistSQLUpdateE
         YamlProxyDatabaseConfiguration yamlConfig;
         try {
             yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
-        } catch (final IOException ex) {
-            throw new FileIOException(ex);
+        } catch (final IOException ignore) {
+            throw new FileIOException(file);
         }
         databaseConfigImportExecutor.importDatabaseConfiguration(yamlConfig);
     }
