@@ -66,13 +66,12 @@ chapter = true
  - 工具类名称命名为 `xxUtils`。
  - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法性能的优化。
    - 使用 `@HighFrequencyInvocation` 注解的时机：
-     - 请求频繁调用的链路，标注其中高频调用的类、方法或构造器；
-     - `canBeCached` 属性为 `true` 时，标识该目标为可复用的缓存资源，例如：数据库连接。
-   - 包含 `@HighFrequencyInvocation` 的代码须保证代码性能。
-     - 禁止在 `@HighFrequencyInvocation` 的范围内调用 Java Stream API；
-     - 禁止在 `@HighFrequencyInvocation` 的范围内通过 `+` 连接字符串；
-     - 禁止在 `@HighFrequencyInvocation` 的范围内调用 LinkedList 的 `get(int index)` 方法。
-   - 包含 `@HighFrequencyInvocation` 的代码须理解其影响范围再进行修改。
+     - 请求频繁调用的链路，标注其中高频调用的类、方法或构造器，标注范围精确匹配；
+     - `canBeCached` 属性为 `true` 时，表示该目标为可复用的缓存资源，例如：数据库连接。
+   - 标注 `@HighFrequencyInvocation` 的代码段须严格保证代码性能，以下为标注代码段内的禁止项：
+     - 禁止调用 Java Stream API；
+     - 禁止通过 `+` 连接字符串；
+     - 禁止调用 LinkedList 的 `get(int index)` 方法。
 
 ## 单元测试规范
 
