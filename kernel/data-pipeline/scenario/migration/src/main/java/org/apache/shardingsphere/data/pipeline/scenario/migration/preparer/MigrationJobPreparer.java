@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngin
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCanceledException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.In
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
@@ -91,20 +90,20 @@ public final class MigrationJobPreparer {
      *
      * @param jobItemContext job item context
      * @throws SQLException SQL exception
-     * @throws PipelineJobCanceledException pipeline job canceled exception
+     * @throws PipelineJobCancelingException pipeline job canceled exception
      */
-    public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException, PipelineJobCanceledException {
+    public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException, PipelineJobCancelingException {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(
                 jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration"));
         DatabaseType sourceDatabaseType = jobItemContext.getJobConfig().getSourceDatabaseType();
         new DataSourceCheckEngine(sourceDatabaseType).checkSourceDataSources(Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
-            throw new PipelineJobCanceledException();
+            throw new PipelineJobCancelingException();
         }
         prepareAndCheckTargetWithLock(jobItemContext);
         if (jobItemContext.isStopping()) {
-            throw new PipelineJobCanceledException();
+            throw new PipelineJobCancelingException();
         }
         boolean isIncrementalSupported = DatabaseTypedSPILoader.findService(DialectIncrementalDumperCreator.class, sourceDatabaseType).isPresent();
         if (isIncrementalSupported) {
@@ -114,7 +113,7 @@ public final class MigrationJobPreparer {
         if (isIncrementalSupported) {
             initIncrementalTasks(jobItemContext);
             if (jobItemContext.isStopping()) {
-                throw new PipelineJobCanceledException();
+                throw new PipelineJobCancelingException();
             }
         }
         log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",

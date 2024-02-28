@@ -20,14 +20,14 @@ package org.apache.shardingsphere.data.pipeline.core.exception;
 import lombok.NoArgsConstructor;
 
 /**
- * Pipeline job canceled exception.
+ * Pipeline job canceling exception.
  */
 @NoArgsConstructor
-public final class PipelineJobCanceledException extends RuntimeException {
+public final class PipelineJobCancelingException extends RuntimeException {
     
     private static final long serialVersionUID = 1L;
     
-    public PipelineJobCanceledException(final String errorMessage, final Object... args) {
+    public PipelineJobCancelingException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
 }
