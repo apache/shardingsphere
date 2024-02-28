@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCanceledException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.column.ColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder;
@@ -60,7 +61,8 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             ResultSet resultSet = calculationContext.getResultSet();
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             while (resultSet.next()) {
-                ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName()));
+                ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCanceledException(
+                        "Calculate chunk canceled, schema name: %s, table name: %s", param.getSchemaName(), param.getLogicTableName()));
                 Map<String, Object> columnRecord = new LinkedHashMap<>();
                 for (int columnIndex = 1, columnCount = resultSetMetaData.getColumnCount(); columnIndex <= columnCount; columnIndex++) {
                     columnRecord.put(resultSetMetaData.getColumnLabel(columnIndex), columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
@@ -75,7 +77,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
                 calculationContext.close();
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new RecordSingleTableInventoryCalculatedResult(maxUniqueKeyValue, records));
-        } catch (final PipelineSQLException ex) {
+        } catch (final PipelineSQLException | PipelineJobCanceledException ex) {
             calculationContext.close();
             throw ex;
             // CHECKSTYLE:OFF
