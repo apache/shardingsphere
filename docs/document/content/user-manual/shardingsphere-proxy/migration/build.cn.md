@@ -135,36 +135,3 @@ PROPERTIES( -- 算法属性
 )))
 );
 ```
-
-DistSQL 示例：配置 `READ` 限流。
-
-```sql
-ALTER MIGRATION RULE (
-READ(
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
-)
-);
-```
-
-配置读取数据限流，其它配置使用默认值。
-
-6.3. 恢复配置。
-
-如需恢复默认配置，也通过 ALTER 语句进行操作。
-
-```sql
-ALTER MIGRATION RULE (
-READ(
-  WORKER_THREAD=20,
-  BATCH_SIZE=1000,
-  SHARDING_SIZE=10000000,
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
-),
-WRITE(
-  WORKER_THREAD=20,
-  BATCH_SIZE=1000,
-  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
-),
-STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
-);
-```
