@@ -37,7 +37,7 @@ public final class ShardingSphereDriver implements Driver {
     
     private static final int MAJOR_DRIVER_VERSION = 5;
     
-    private static final int MINOR_DRIVER_VERSION = 1;
+    private static final int MINOR_DRIVER_VERSION = 4;
     
     private final DriverDataSourceCache dataSourceCache = new DriverDataSourceCache();
     
