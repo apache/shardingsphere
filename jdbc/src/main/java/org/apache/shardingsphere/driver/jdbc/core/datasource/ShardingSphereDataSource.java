@@ -90,13 +90,13 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         }
     }
     
-    @HighFrequencyInvocation(canCacheable = true)
+    @HighFrequencyInvocation(canBeCached = true)
     @Override
     public Connection getConnection() {
         return DriverStateContext.getConnection(databaseName, contextManager);
     }
     
-    @HighFrequencyInvocation(canCacheable = true)
+    @HighFrequencyInvocation(canBeCached = true)
     @Override
     public Connection getConnection(final String username, final String password) {
         return getConnection();
