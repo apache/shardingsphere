@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJ
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -42,8 +43,9 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
     
     @Override
     public void executeUpdate(final MigrateTableStatement sqlStatement, final ContextManager contextManager) {
-        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
-        ShardingSpherePreconditions.checkState("Cluster".equals(modeType), () -> new PipelineInvalidParameterException("Only `Cluster` of mode type is supported for now"));
+        InstanceContext instanceContext = contextManager.getInstanceContext();
+        ShardingSpherePreconditions.checkState(instanceContext.isCluster(),
+                () -> new PipelineInvalidParameterException(String.format("Only `Cluster` is supported now, but current mode type is `%s`", instanceContext.getModeConfiguration().getType())));
         checkTargetDatabase(sqlStatement);
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
