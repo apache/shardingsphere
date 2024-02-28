@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.updatable.MigrateTableStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
@@ -41,6 +42,8 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
     
     @Override
     public void executeUpdate(final MigrateTableStatement sqlStatement, final ContextManager contextManager) {
+        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
+        ShardingSpherePreconditions.checkState(!"Standalone".equals(modeType), () -> new PipelineInvalidParameterException("Unsupported mode type of `Standalone`"));
         checkTargetDatabase(sqlStatement);
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");

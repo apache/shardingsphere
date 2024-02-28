@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.updatable.RegisterMigrationSourceStorageUnitStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
@@ -51,13 +52,15 @@ public final class RegisterMigrationSourceStorageUnitExecutor implements DistSQL
     
     @Override
     public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
+        ShardingSpherePreconditions.checkState(!"Standalone".equals(modeType), () -> new PipelineInvalidParameterException("Unsupported mode type of `Standalone`"));
         checkDataSource(sqlStatement);
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeFactory.get(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
         validateHandler.validate(propsMap);
-        jobAPI.addMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), propsMap);
+        jobAPI.registerMigrationSourceStorageUnits(new PipelineContextKey(InstanceType.PROXY), propsMap);
     }
     
     private void checkDataSource(final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
