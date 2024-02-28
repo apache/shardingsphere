@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver;
 
 import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -48,6 +49,7 @@ public final class ShardingSphereDriver implements Driver {
         }
     }
     
+    @HighFrequencyInvocation(canCacheable = true)
     @Override
     public Connection connect(final String url, final Properties info) throws SQLException {
         return acceptsURL(url) ? dataSourceCache.get(url, DRIVER_URL_PREFIX).getConnection() : null;

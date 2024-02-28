@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -50,6 +51,7 @@ import java.util.Map;
 /**
  * ShardingSphere result set.
  */
+@HighFrequencyInvocation
 public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private static final String ASCII = "Ascii";

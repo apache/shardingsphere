@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSp
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.exception.connection.ConnectionClosedException;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -42,6 +43,7 @@ import java.sql.Statement;
 /**
  * ShardingSphere connection.
  */
+@HighFrequencyInvocation
 public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private final ProcessEngine processEngine = new ProcessEngine();
