@@ -66,7 +66,7 @@ chapter = true
  - 工具类名称命名为 `xxUtils`。
  - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法性能的优化。
    - 使用 `@HighFrequencyInvocation` 注解的时机：
-     - 请求频繁调用的链路，需要为其中高频调用的类、方法、构造器标注 `@HighFrequencyInvocation` 注解；
+     - 请求频繁调用的链路，标注其中高频调用的类、方法或构造器；
      - `canBeCached` 属性为 `true` 时，标识该目标为可复用的缓存资源，例如：数据库连接。
    - 包含 `@HighFrequencyInvocation` 的代码须保证代码性能。
      - 禁止在 `@HighFrequencyInvocation` 的范围内调用 Java Stream API；
