@@ -66,9 +66,9 @@ chapter = true
  - 工具类名称命名为 `xxUtils`。
  - 访问 JDBC/Proxy 接入端的请求频繁调用的链路，包括内核路由、改写、执行和归并等环节，需要为其中高频调用的接口、类、枚举、字段、方法、构造器添加 `@HighFrequencyInvocation` 注解。
    - 包含 `@HighFrequencyInvocation` 的代码须保证代码性能；
-     - 禁止在 `@HighFrequencyInvocation` 的范围内调用 Java Stream 的 API；
+     - 禁止在 `@HighFrequencyInvocation` 的范围内调用 Java Stream API；
      - 禁止在 `@HighFrequencyInvocation` 的范围内通过 `+` 连接字符串；
-     - 禁止在 `@HighFrequencyInvocation` 的范围内调用 LinkedList 的 get(int index) 方法。
+     - 禁止在 `@HighFrequencyInvocation` 的范围内调用 LinkedList 的 `get(int index)` 方法。
    - 包含 `@HighFrequencyInvocation` 的代码须理解其影响范围再进行修改；
    - `canBeCached` 属性为 `true` 时标识该目标为单例对象、可复用数据库连接等可重复使用的资源。
 
