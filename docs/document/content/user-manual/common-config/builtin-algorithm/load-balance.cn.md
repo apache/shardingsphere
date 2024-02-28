@@ -53,4 +53,4 @@ rules:
 ## 相关参考
 
 - [核心特性：读写分离](/cn/features/readwrite-splitting/)
-- [开发者指南：读写分离](/cn/dev-manual/readwrite-splitting/)
+- [开发者指南：读写分离](/cn/dev-manual/infra-algorithm/)
