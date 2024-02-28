@@ -87,6 +87,13 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("ORDER_ID", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("USER_ID", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("CONTENT", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_user", new ShardingSphereTable("t_user", Arrays.asList(
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("user_name", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         ShardingSphereSchema result = new ShardingSphereSchema(tables, Collections.emptyMap());
         return Collections.singletonMap(schemaName, result);
     }
@@ -99,6 +106,7 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
             singleRule.get().put("encrypt_ds", schemaName, "t_account_bak");
             singleRule.get().put("encrypt_ds", schemaName, "t_account_detail");
             singleRule.get().put("encrypt_ds", schemaName, "t_order");
+            singleRule.get().put("encrypt_ds", schemaName, "t_user");
         }
     }
     

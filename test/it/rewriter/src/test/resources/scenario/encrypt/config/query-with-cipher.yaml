@@ -48,10 +48,6 @@ rules:
           cipher: 
             name: cipher_amount
             encryptorName: rewrite_normal_fixture
-        amount_new:
-          cipher: 
-            name: amount_new_cipher
-            encryptorName: rewrite_normal_fixture
     t_account_bak:
       columns:
         certificate_number:
@@ -73,16 +69,6 @@ rules:
             encryptorName: rewrite_assisted_query_fixture
           likeQuery: 
             name: like_query_password
-            encryptorName: rewrite_like_query_fixture
-        password_new:
-          cipher: 
-            name: password_new_cipher
-            encryptorName: rewrite_normal_fixture
-          assistedQuery: 
-            name: password_new_assisted
-            encryptorName: rewrite_assisted_query_fixture
-          likeQuery: 
-            name: password_new_like
             encryptorName: rewrite_like_query_fixture
         amount:
           cipher: 
@@ -114,6 +100,30 @@ rules:
           cipher: 
             name: cipher_amount
             encryptorName: rewrite_normal_fixture
+    t_user:
+      columns:
+        user_name:
+          cipher:
+            name: user_name_cipher
+            encryptorName: rewrite_aes_encryptor_fixture
+          likeQuery:
+            name: user_name_like
+            encryptorName: rewrite_it_like_encryptor_fixture
+        password:
+          cipher:
+            name: password_cipher
+            encryptorName: rewrite_aes_encryptor_fixture
+        email:
+          cipher:
+            name: email_cipher
+            encryptorName: rewrite_aes_encryptor_fixture
+        telephone:
+          cipher:
+            name: user_telephone_cipher
+            encryptorName: rewrite_aes_encryptor_fixture
+          likeQuery:
+            name: user_telephone_like
+            encryptorName: rewrite_it_like_encryptor_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE
@@ -121,3 +131,11 @@ rules:
       type: REWRITE.ASSISTED_QUERY.FIXTURE
     rewrite_like_query_fixture:
       type: REWRITE.LIKE_QUERY.FIXTURE
+    rewrite_aes_encryptor_fixture:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    rewrite_it_like_encryptor_fixture:
+      type: IT.ENCRYPT.LIKE.FIXTURE
+      props:
+        mask: 4093

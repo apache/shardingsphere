@@ -81,4 +81,14 @@
         <input sql="SELECT logic_db.t_account.account_id FROM t_account WHERE account_id = 100" />
         <output sql="SELECT t_account.account_id FROM t_account WHERE account_id = 100" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_from_user_with_shorthand" db-types="SQLServer">
+        <input sql="SELECT * FROM t_user ORDER BY creation_date;" />
+        <output sql="SELECT t_user.[user_id], t_user.[user_name_cipher] AS [user_name], t_user.[password_cipher] AS [password], t_user.[email_cipher] AS [email], t_user.[user_telephone_cipher] AS [telephone], t_user.[creation_date] FROM t_user ORDER BY creation_date;" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_from_user_with_shorthand_and_table_alias" db-types="SQLServer">
+        <input sql="SELECT e.* FROM t_user AS e ORDER BY creation_date;"/>
+        <output sql="SELECT e.[user_id], e.[user_name_cipher] AS [user_name], e.[password_cipher] AS [password], e.[email_cipher] AS [email], e.[user_telephone_cipher] AS [telephone], e.[creation_date] FROM t_user AS e ORDER BY creation_date;"/>
+    </rewrite-assertion>
 </rewrite-assertions>
