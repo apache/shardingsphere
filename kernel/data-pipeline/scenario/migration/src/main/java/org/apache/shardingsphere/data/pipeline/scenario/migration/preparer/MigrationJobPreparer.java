@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngin
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCanceledException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
@@ -90,21 +91,20 @@ public final class MigrationJobPreparer {
      *
      * @param jobItemContext job item context
      * @throws SQLException SQL exception
+     * @throws PipelineJobCanceledException pipeline job canceled exception
      */
-    public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException {
+    public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException, PipelineJobCanceledException {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(
                 jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration"));
         DatabaseType sourceDatabaseType = jobItemContext.getJobConfig().getSourceDatabaseType();
         new DataSourceCheckEngine(sourceDatabaseType).checkSourceDataSources(Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
-            PipelineJobRegistry.stop(jobItemContext.getJobId());
-            return;
+            throw new PipelineJobCanceledException();
         }
         prepareAndCheckTargetWithLock(jobItemContext);
         if (jobItemContext.isStopping()) {
-            PipelineJobRegistry.stop(jobItemContext.getJobId());
-            return;
+            throw new PipelineJobCanceledException();
         }
         boolean isIncrementalSupported = DatabaseTypedSPILoader.findService(DialectIncrementalDumperCreator.class, sourceDatabaseType).isPresent();
         if (isIncrementalSupported) {
@@ -114,8 +114,7 @@ public final class MigrationJobPreparer {
         if (isIncrementalSupported) {
             initIncrementalTasks(jobItemContext);
             if (jobItemContext.isStopping()) {
-                PipelineJobRegistry.stop(jobItemContext.getJobId());
-                return;
+                throw new PipelineJobCanceledException();
             }
         }
         log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",

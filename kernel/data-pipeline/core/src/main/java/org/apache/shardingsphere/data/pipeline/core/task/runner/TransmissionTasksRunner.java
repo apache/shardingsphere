@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCanceledException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
@@ -87,7 +88,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
     @Override
     public void start() {
         if (jobItemContext.isStopping()) {
-            return;
+            throw new PipelineJobCanceledException();
         }
         new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())
                 .getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
@@ -118,8 +119,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
     
     private synchronized void executeIncrementalTask() {
         if (jobItemContext.isStopping()) {
-            log.info("Stopping is true, ignore incremental task");
-            return;
+            throw new PipelineJobCanceledException();
         }
         if (incrementalTasks.isEmpty()) {
             log.info("incrementalTasks empty, ignore");
@@ -165,8 +165,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         @Override
         public void onSuccess() {
             if (jobItemContext.isStopping()) {
-                log.info("Inventory task onSuccess, stopping true, ignore");
-                return;
+                throw new PipelineJobCanceledException();
             }
             inventorySuccessCallback();
         }
