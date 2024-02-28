@@ -148,9 +148,6 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         }
     }
     
-    protected void inventoryFailureCallback(final Throwable ignored) {
-    }
-    
     private final class InventoryTaskExecuteCallback implements ExecuteCallback {
         
         @Override
@@ -162,8 +159,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         }
         
         @Override
-        public void onFailure(final Throwable throwable) {
-            inventoryFailureCallback(throwable);
+        public void onFailure(final Throwable ignored) {
         }
     }
     
