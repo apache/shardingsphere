@@ -24,7 +24,7 @@ chapter = true
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
- 
+
 ## 编码规范
 
  - 使用 linux 换行符。
@@ -64,6 +64,9 @@ chapter = true
  - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
  - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
  - 工具类名称命名为 `xxUtils`。
+ - 为高频调用的接口、类、枚举、字段、方法、构造器添加 `@HighFrequencyInvocation` 注解。
+   - 包含 `@HighFrequencyInvocation` 的代码须保证代码性能。
+   - 包含 `@HighFrequencyInvocation` 的代码须理解其影响范围再进行修改。
 
 ## 单元测试规范
 
