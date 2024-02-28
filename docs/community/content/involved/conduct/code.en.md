@@ -63,7 +63,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Utility class should be named in the form of `xxUtils`.
  - Reasonably use the @HighFrequencyInvocation annotation to focus on optimizing the performance of critical methods.
    - Occasions for using the @HighFrequencyInvocation annotation:
-     - In frequently invoked requests, add annotation to classes, methods, or constructors with high frequency calls; precise matching within the scope of annotation.
+     - In frequently invoked requests, add annotation to classes, methods, or constructors with high frequency calls; precise matching within the scope of annotation;
      - The `canBeCached` attribute being set as true indicates that the target is a reusable cached resource. For example: a database connection.
    - Code segments with annotation @HighFrequencyInvocation must strictly guarantee code performance. The following are prohibited code segments within:
      - It is prohibited to call Java Stream API;
