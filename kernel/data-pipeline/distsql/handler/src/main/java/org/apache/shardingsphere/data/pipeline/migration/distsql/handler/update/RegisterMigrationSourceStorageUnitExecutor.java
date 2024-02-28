@@ -53,7 +53,7 @@ public final class RegisterMigrationSourceStorageUnitExecutor implements DistSQL
     @Override
     public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
         String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
-        ShardingSpherePreconditions.checkState(!"Standalone".equals(modeType), () -> new PipelineInvalidParameterException("Unsupported mode type of `Standalone`"));
+        ShardingSpherePreconditions.checkState("Cluster".equals(modeType), () -> new PipelineInvalidParameterException("Only `Cluster` of mode type is supported for now"));
         checkDataSource(sqlStatement);
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);

@@ -43,7 +43,7 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
     @Override
     public void executeUpdate(final MigrateTableStatement sqlStatement, final ContextManager contextManager) {
         String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
-        ShardingSpherePreconditions.checkState(!"Standalone".equals(modeType), () -> new PipelineInvalidParameterException("Unsupported mode type of `Standalone`"));
+        ShardingSpherePreconditions.checkState("Cluster".equals(modeType), () -> new PipelineInvalidParameterException("Only `Cluster` of mode type is supported for now"));
         checkTargetDatabase(sqlStatement);
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
