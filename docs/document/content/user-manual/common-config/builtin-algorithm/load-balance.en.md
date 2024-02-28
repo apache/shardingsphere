@@ -23,7 +23,7 @@ Type: RANDOM
 
 Type: WEIGHT
 
-Attributes: 
+Attributes:
 
 | *Name*          | *DataType* | *Description*                                                                                                                                                                     |
 |-----------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -54,4 +54,4 @@ rules:
 ## Related References
 
 - [Core Feature: Read/Write Splitting](/en/features/readwrite-splitting/)
-- [Developer Guide: Read/Write Splitting](/en/dev-manual/readwrite-splitting/)
+- [Developer Guide: Read/Write Splitting](/en/dev-manual/infra-algorithm/)
