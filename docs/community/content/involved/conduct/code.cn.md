@@ -64,7 +64,7 @@ chapter = true
  - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
  - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
  - 工具类名称命名为 `xxUtils`。
- - 访问 JDBC/Proxy 接入端的请求频繁调用的链路，包括内核路由、改写、执行和归并等环节，需要为其中高频调用的接口、类、枚举、字段、方法、构造器添加 `@HighFrequencyInvocation` 注解。
+ - 访问 JDBC/Proxy 接入端的请求频繁调用的链路，包括内核路由、改写、执行和归并等环节，需要为其中高频调用的接口、类、方法、构造器添加 `@HighFrequencyInvocation` 注解。
    - 包含 `@HighFrequencyInvocation` 的代码须保证代码性能；
      - 禁止在 `@HighFrequencyInvocation` 的范围内调用 Java Stream API；
      - 禁止在 `@HighFrequencyInvocation` 的范围内通过 `+` 连接字符串；
