@@ -65,12 +65,12 @@ For some commonly used interface implementations, ShardingSphere provides syntax
 
 The currently provided syntax sugar are as follows:
 
-- Show implementations of `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`: [SHOW SHARDING ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/sharding/show-sharding-algorithm-implementations)
-- Show implementations of  `org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm`: [SHOW READ QUERY LOAD BALANCE ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/readwrite-splitting/show-read-query-load-balance-algorithm-implementations)
-- Show implementations of  `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm`: [SHOW ENCRYPT ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/encrypt/show-encrypt-algorithm-implementations)
-- Show implementations of  `org.apache.shardingsphere.mask.spi.MaskAlgorithm`: [SHOW MASK ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/mask/show-mask-algorithm-implementations)
-- Show implementations of  `org.apache.shardingsphere.shadow.spi.ShadowAlgorithm`: [SHOW SHADOW ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/shadow/show-shadow-algorithm-implementations)
-- Show implementations of  `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm`: [SHOW KEY GENERATE ALGORITHM PLUGINS](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-implementation/show-key-generate-algorithm-implementations)
+- Show implementations of `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`: [SHOW SHARDING ALGORITHM PLUGINS](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/plugin/show-sharding-algorithm-plugins/)
+- Show implementations of  `org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm`: [SHOW LOAD BALANCE ALGORITHM PLUGINS](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/plugin/show-load-balance-algorithm-plugins/)
+- Show implementations of  `org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm`: [SHOW ENCRYPT ALGORITHM PLUGINS](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/plugin/show-encrypt-algorithm-plugins/)
+- Show implementations of  `org.apache.shardingsphere.mask.spi.MaskAlgorithm`: [SHOW MASK ALGORITHM PLUGINS](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/plugin/show-mask-algorithm-plugins/)
+- Show implementations of  `org.apache.shardingsphere.shadow.spi.ShadowAlgorithm`: [SHOW SHADOW ALGORITHM PLUGINS](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/plugin/show-shadow-algorithm-plugins/)
+- Show implementations of  `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm`: [SHOW KEY GENERATE ALGORITHM PLUGINS](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/plugin/show-key-generate-algorithm-plugins/)
 
 ### Reserved word
 
