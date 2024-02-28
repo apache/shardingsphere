@@ -64,8 +64,8 @@ chapter = true
  - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
  - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
  - 工具类名称命名为 `xxUtils`。
- - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法的性能。
-   - 何时使用 `@HighFrequencyInvocation` 注解。
+ - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法性能的优化。
+   - 使用 `@HighFrequencyInvocation` 注解的时机：
      - 请求频繁调用的链路，需要为其中高频调用的接口、类、方法、构造器标注 `@HighFrequencyInvocation` 注解；
      - `canBeCached` 属性为 `true` 时，标识该目标为可复用的缓存资源，例如：数据库连接。
    - 包含 `@HighFrequencyInvocation` 的代码须保证代码性能。
