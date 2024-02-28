@@ -26,15 +26,13 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.finished.IngestFinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
-import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
@@ -150,14 +148,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         }
     }
     
-    protected void inventoryFailureCallback(final Throwable throwable) {
-        log.error("onFailure, inventory task execute failed.", throwable);
-        String jobId = jobItemContext.getJobId();
-        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, jobItemContext.getShardingItem(), throwable);
-        try {
-            jobManager.stop(jobId);
-        } catch (final PipelineJobNotFoundException ignored) {
-        }
+    protected void inventoryFailureCallback(final Throwable ignored) {
     }
     
     private final class InventoryTaskExecuteCallback implements ExecuteCallback {
@@ -184,14 +175,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         }
         
         @Override
-        public void onFailure(final Throwable throwable) {
-            log.error("onFailure, incremental task execute failed.", throwable);
-            String jobId = jobItemContext.getJobId();
-            PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, jobItemContext.getShardingItem(), throwable);
-            try {
-                jobManager.stop(jobId);
-            } catch (final PipelineJobNotFoundException ignored) {
-            }
+        public void onFailure(final Throwable ignored) {
         }
     }
 }
