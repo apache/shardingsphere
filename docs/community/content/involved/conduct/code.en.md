@@ -61,15 +61,14 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Use concentrate `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
  - Avoid using Java Stream in hot methods, unless the performance of using Stream is better than using loop in that situation.
  - Utility class should be named in the form of `xxUtils`.
- - Proper use of the @HighFrequencyInvocation annotation.
-   - When to use the @HighFrequencyInvocation annotation.
-     - For frequently called chain in JDBC/Proxy endpoint, including kernel parsing,rewriting,executing,merging processes, it is necessary to add the @HighFrequencyInvocation annotation to interfaces, classes, methods, and constructors that are frequently invoked within them;
+ - Reasonably use the @HighFrequencyInvocation annotation to focus on optimizing the performance of critical methods.
+   - Occasions for using the @HighFrequencyInvocation annotation:
+     - In frequently invoked requests, add annotation to classes, methods, or constructors with high frequency calls; precise matching within the scope of annotation.
      - The `canBeCached` attribute being set as true indicates that the target is a reusable cached resource. For example: a database connection.
-   - Code containing the @HighFrequencyInvocation must ensure code performance.
-     - It is prohibited to call Java Stream API within the scope of @HighFrequencyInvocation;
-     - It is prohibited to concat String using "+" within the scope of @HighFrequencyInvocation;
-     - It is prohibited to call LinkedList's get(int index) method within the scope of @HighFrequencyInvocation.
-   - Code containing the @HighFrequencyInvocation must understand its impact range before making modifications.
+   - Code segments with annotation @HighFrequencyInvocation must strictly guarantee code performance. The following are prohibited code segments within:
+     - It is prohibited to call Java Stream API;
+     - It is prohibited to concat String using "+";
+     - It is prohibited to call LinkedList's get(int index) method.
 
 ## Contributor Covenant Unit Test of Conduct
 
