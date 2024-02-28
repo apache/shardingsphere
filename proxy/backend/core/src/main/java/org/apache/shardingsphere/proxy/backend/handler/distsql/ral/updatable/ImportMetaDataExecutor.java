@@ -55,8 +55,8 @@ public final class ImportMetaDataExecutor implements DistSQLUpdateExecutor<Impor
             File file = new File(sqlStatement.getFilePath().get());
             try {
                 jsonMetaDataConfig = FileUtils.readFileToString(file, Charset.defaultCharset());
-            } catch (final IOException ex) {
-                throw new FileIOException(ex);
+            } catch (final IOException ignore) {
+                throw new FileIOException(file);
             }
         } else {
             jsonMetaDataConfig = new String(Base64.decodeBase64(sqlStatement.getMetaDataValue()));

@@ -69,8 +69,8 @@ public final class ConvertYamlConfigurationExecutor implements DistSQLQueryExecu
         YamlProxyDatabaseConfiguration yamlConfig;
         try {
             yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
-        } catch (final IOException ex) {
-            throw new FileIOException(ex);
+        } catch (final IOException ignore) {
+            throw new FileIOException(file);
         }
         Preconditions.checkNotNull(yamlConfig, "Invalid yaml file `%s`", file.getName());
         Preconditions.checkNotNull(yamlConfig.getDatabaseName(), "`databaseName` in file `%s` is required.", file.getName());
