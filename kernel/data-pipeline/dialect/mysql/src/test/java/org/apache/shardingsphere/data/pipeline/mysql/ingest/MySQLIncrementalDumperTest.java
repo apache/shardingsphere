@@ -115,8 +115,8 @@ class MySQLIncrementalDumperTest {
         }
     }
     
-    private Map<String, PipelineColumnMetaData> mockOrderColumnsMetaDataMap() {
-        return mockOrderColumnsMetaDataList().stream().collect(Collectors.toMap(PipelineColumnMetaData::getName, Function.identity()));
+    private Map<CaseInsensitiveIdentifier, PipelineColumnMetaData> mockOrderColumnsMetaDataMap() {
+        return mockOrderColumnsMetaDataList().stream().collect(Collectors.toMap(metaData -> new CaseInsensitiveIdentifier(metaData.getName()), Function.identity()));
     }
     
     private List<PipelineColumnMetaData> mockOrderColumnsMetaDataList() {
