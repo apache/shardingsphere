@@ -95,7 +95,9 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                 PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
                 TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps)) {
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
-                checkTableInventoryData(each, tableChecker, result, dataSourceManager);
+                if (checkTableInventoryDataUnmatchedAndBreak(each, tableChecker, result, dataSourceManager)) {
+                    return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue));
+                }
             }
         }
         return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue));
@@ -106,18 +108,20 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(TransmissionJobItemProgress::getProcessedRecordsCount).sum();
     }
     
-    private void checkTableInventoryData(final JobDataNodeLine jobDataNodeLine, final TableDataConsistencyChecker tableChecker,
-                                         final Map<CaseInsensitiveQualifiedTable, TableDataConsistencyCheckResult> checkResultMap, final PipelineDataSourceManager dataSourceManager) {
+    private boolean checkTableInventoryDataUnmatchedAndBreak(final JobDataNodeLine jobDataNodeLine, final TableDataConsistencyChecker tableChecker,
+                                                             final Map<CaseInsensitiveQualifiedTable, TableDataConsistencyCheckResult> checkResultMap,
+                                                             final PipelineDataSourceManager dataSourceManager) {
         for (JobDataNodeEntry entry : jobDataNodeLine.getEntries()) {
             for (DataNode each : entry.getDataNodes()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
                 checkResultMap.put(new CaseInsensitiveQualifiedTable(each.getSchemaName(), each.getTableName()), checkResult);
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", DataNodeUtils.formatWithSchema(each));
-                    return;
+                    return true;
                 }
             }
         }
+        return false;
     }
     
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final String targetTableName, final DataNode dataNode,
