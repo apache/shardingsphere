@@ -47,8 +47,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Matching table inventory checker.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public abstract class MatchingTableInventoryChecker implements TableInventoryChecker {
     
     private final TableInventoryCheckParameter param;

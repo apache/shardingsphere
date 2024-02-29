@@ -128,7 +128,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     
     private String getQuerySQL(final SingleTableInventoryCalculateParameter param) {
         if (null == param.getFirstUniqueKey()) {
-            throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
+            throw new UnsupportedOperationException("Record inventory calculator does not support table without unique key and primary key now");
         }
         PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
