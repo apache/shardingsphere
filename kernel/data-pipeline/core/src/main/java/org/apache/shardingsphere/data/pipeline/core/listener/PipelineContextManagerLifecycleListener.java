@@ -21,11 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNodeWatcher;
-import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
@@ -74,17 +75,30 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         JobConfigurationAPI jobConfigAPI = PipelineAPIFactory.getJobConfigurationAPI(contextKey);
         List<JobBriefInfo> allJobsBriefInfo = PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo()
                 .stream().filter(each -> !each.getJobName().startsWith("_")).collect(Collectors.toList());
+        log.info("All job names: {}", allJobsBriefInfo.stream().map(JobBriefInfo::getJobName).collect(Collectors.joining(",")));
         for (JobBriefInfo each : allJobsBriefInfo) {
-            PipelineJobType jobType = PipelineJobIdUtils.parseJobType(each.getJobName());
-            PipelineJobInfo jobInfo = jobType.getJobInfo(each.getJobName());
-            if (null == jobInfo || null == jobInfo.getJobMetaData()) {
+            PipelineJobType jobType;
+            try {
+                jobType = PipelineJobIdUtils.parseJobType(each.getJobName());
+            } catch (final IllegalArgumentException ex) {
+                log.warn("Parse job type failed, job name: {}, error: {}", each.getJobName(), ex.getMessage());
                 continue;
             }
-            if (!jobInfo.getJobMetaData().isActive()) {
-                return;
+            if ("CONSISTENCY_CHECK".equals(jobType.getCode())) {
+                continue;
             }
-            JobConfigurationPOJO jobConfig = jobConfigAPI.getJobConfiguration(each.getJobName());
-            jobConfigAPI.updateJobConfiguration(jobConfig);
+            JobConfigurationPOJO jobConfig;
+            try {
+                jobConfig = jobConfigAPI.getJobConfiguration(each.getJobName());
+            } catch (final PipelineJobNotFoundException ex) {
+                log.error("Get job configuration failed, job name: {}, error: {}", each.getJobName(), ex.getMessage());
+                continue;
+            }
+            if (jobConfig.isDisabled()) {
+                continue;
+            }
+            new PipelineJobManager(jobType).resume(each.getJobName());
+            log.info("Dispatch enable pipeline job start event, job name: {}", each.getJobName());
         }
     }
     
