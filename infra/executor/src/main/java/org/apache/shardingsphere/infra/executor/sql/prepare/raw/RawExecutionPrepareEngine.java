@@ -41,10 +41,10 @@ public final class RawExecutionPrepareEngine extends AbstractExecutionPrepareEng
     @Override
     protected List<ExecutionGroup<RawSQLExecutionUnit>> group(final String dataSourceName, final int connectionOffset, final List<List<ExecutionUnit>> executionUnitGroups,
                                                               final ConnectionMode connectionMode) throws SQLException {
-        return executionUnitGroups.stream().map(each -> createExecutionGroup(dataSourceName, each, connectionMode)).collect(Collectors.toList());
+        return executionUnitGroups.stream().map(each -> createExecutionGroup(each, connectionMode)).collect(Collectors.toList());
     }
     
-    private ExecutionGroup<RawSQLExecutionUnit> createExecutionGroup(final String dataSourceName, final List<ExecutionUnit> executionUnitGroup, final ConnectionMode connectionMode) {
+    private ExecutionGroup<RawSQLExecutionUnit> createExecutionGroup(final List<ExecutionUnit> executionUnitGroup, final ConnectionMode connectionMode) {
         return new ExecutionGroup<>(executionUnitGroup.stream().map(each -> new RawSQLExecutionUnit(each, connectionMode)).collect(Collectors.toList()));
     }
 }
