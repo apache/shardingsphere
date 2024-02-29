@@ -22,11 +22,11 @@ import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -66,7 +66,7 @@ public class ClasspathResourceDirectoryReader {
      * @param name resource name
      * @return true if the resource is a directory; false if the resource does not exist, is not a directory, or it cannot be determined if the resource is a directory or not.
      */
-    @SneakyThrows({IOException.class, URISyntaxException.class})
+    @SneakyThrows(URISyntaxException.class)
     public static boolean isDirectory(final ClassLoader classLoader, final String name) {
         URL resourceUrl = classLoader.getResource(name);
         if (null == resourceUrl) {
@@ -79,11 +79,6 @@ public class ClasspathResourceDirectoryReader {
             }
             return jarFile.getJarEntry(name).isDirectory();
         } else {
-            if ("resourceUrl".equals(resourceUrl.getProtocol())) {
-                try (FileSystem ignored = FileSystems.newFileSystem(URI.create("resource:/"), Collections.emptyMap())) {
-                    return Files.isDirectory(Paths.get(resourceUrl.toURI()));
-                }
-            }
             return Files.isDirectory(Paths.get(resourceUrl.toURI()));
         }
     }
@@ -162,6 +157,9 @@ public class ClasspathResourceDirectoryReader {
      * This is mainly to align the behavior of `jdk.nio.zipfs.ZipFileSystem`,
      * so ShardingSphere need to manually open and close the FileSystem corresponding to the `resource:/` scheme.
      * For more background reference <a href="https://github.com/oracle/graal/issues/7682">oracle/graal#7682</a>.
+     * Under the context of third-party dependencies such as Spring Framework OSS,
+     * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystem` will be automatically created during the life cycle of the context,
+     * so additional determination is required.
      *
      * @param directoryUrl directory url
      * @return stream of resource name
@@ -169,8 +167,17 @@ public class ClasspathResourceDirectoryReader {
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private static Stream<String> readDirectoryInFileSystem(final URL directoryUrl) {
         if ("resource".equals(directoryUrl.getProtocol())) {
-            try (FileSystem ignored = FileSystems.newFileSystem(URI.create("resource:/"), Collections.emptyMap())) {
+            try {
                 return loadFromDirectory(directoryUrl);
+            } catch (FileSystemNotFoundException exception) {
+                FileSystem nativeImageResourceFileSystem = FileSystems.newFileSystem(directoryUrl.toURI(), Collections.emptyMap());
+                return loadFromDirectory(directoryUrl).onClose(() -> {
+                    try {
+                        nativeImageResourceFileSystem.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         }
         return loadFromDirectory(directoryUrl);

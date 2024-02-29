@@ -13,7 +13,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager"},
     "pattern":"\\QMETA-INF/services/java.sql.Driver\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader"},
     "pattern":"\\Qsql\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
