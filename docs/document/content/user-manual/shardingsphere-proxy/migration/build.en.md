@@ -135,36 +135,3 @@ PROPERTIES( -- Algorithm property
 )))
 );
 ```
-
-DistSQL sample: configure `READ` for traffic limit.
-
-```sql
-ALTER MIGRATION RULE (
-READ(
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
-)
-);
-```
-
-Configure data reading for traffic limit. Other configurations use default values.
-
-6.3. Restore configuration.
-
-To restore the default configuration, also through the `ALTER` statement.
-
-```sql
-ALTER MIGRATION RULE (
-READ(
-  WORKER_THREAD=20,
-  BATCH_SIZE=1000,
-  SHARDING_SIZE=10000000,
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
-),
-WRITE(
-  WORKER_THREAD=20,
-  BATCH_SIZE=1000,
-  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
-),
-STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
-);
-```

@@ -999,6 +999,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.indexTypeName()) {
             result.setIndexType((IndexTypeSegment) visit(ctx.indexTypeName()));
         }
+        result.setComment(new IdentifierValue(ctx.STRING_().getText()));
         return result;
     }
     

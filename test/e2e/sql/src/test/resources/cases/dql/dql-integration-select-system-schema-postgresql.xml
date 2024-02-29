@@ -305,7 +305,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_all_tables where relname != 'pg_range' limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_all_tables where relname != 'pg_range' order by relname limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -420,5 +420,9 @@
 
     <test-case sql="SELECT * FROM pg_catalog.pg_views limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT n.nspname as &quot;Schema&quot;, c.relname as &quot;Name&quot;, CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as &quot;Type&quot;, pg_catalog.pg_get_userbyid(c.relowner) as &quot;Owner&quot; FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN ('r','p','v','m','S','f','') AND n.nspname &lt;&gt; 'pg_catalog' AND n.nspname &lt;&gt; 'information_schema' AND n.nspname !~ '^pg_toast' AND pg_catalog.pg_table_is_visible(c.oid) ORDER BY 1,2;" db-types="PostgreSQL" scenario-types="db,tbl">
+        <assertion expected-data-file="select_sys_data_for_pg.xml" />
     </test-case>
 </integration-test-cases>

@@ -24,7 +24,7 @@ sqlTranslator:
 
 ```yaml
 sqlTranslator:
-  type: Jooq
+  type: Native
   useOriginalSQLWhenTranslatingFailed: true
 ```
 

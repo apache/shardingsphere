@@ -36,7 +36,7 @@ public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultGl
     
     @Override
     public AuthorityRuleConfiguration build() {
-        Collection<ShardingSphereUser> defaultUsers = new LinkedHashSet<>(Collections.singleton(new ShardingSphereUser(DefaultUser.USERNAME, DefaultUser.PASSWORD, DefaultUser.HOSTNAME)));
+        Collection<ShardingSphereUser> defaultUsers = new LinkedHashSet<>(Collections.singleton(new ShardingSphereUser(DefaultUser.USERNAME, DefaultUser.PASSWORD, DefaultUser.HOSTNAME, "", true)));
         AlgorithmConfiguration authorityProviderConfig = new AlgorithmConfiguration("ALL_PERMITTED", new Properties());
         return new AuthorityRuleConfiguration(defaultUsers, authorityProviderConfig, new LinkedHashMap<>(), null);
     }

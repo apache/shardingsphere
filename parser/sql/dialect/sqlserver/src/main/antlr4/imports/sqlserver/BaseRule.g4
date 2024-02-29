@@ -54,7 +54,7 @@ hexadecimalLiterals
 bitValueLiterals
     : BIT_NUM_
     ;
-    
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -295,6 +295,7 @@ simpleExpr
     | LBE_ expr (DOT_ expr)* (COMMA_ expr)* RBE_ (ON (COLUMNS | ROWS))?
     | caseExpression
     | privateExprOfDb
+    | matchExpression
     ;
 
 functionCall
@@ -314,7 +315,28 @@ distinct
     ;
 
 specialFunction
-    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction
+    : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction 
+    | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction 
+    | trimFunction
+    ;
+
+trimFunction
+    : TRIM LP_ ((LEADING | BOTH | TRAILING) expr? FROM)? expr RP_
+    | TRIM LP_ (expr FROM)? expr RP_
+    ;
+
+graphFunction
+    : graphAggFunction
+    ;
+
+graphAggFunction
+    : graphAggFunctionName LP_ expr (COMMA_ expr)? RP_ WITHIN GROUP LP_ GRAPH PATH RP_
+    ;
+
+graphAggFunctionName
+    : STRING_AGG
+    | LAST_VALUE
+    | aggregationFunctionName
     ;
 
 rowNumberFunction
@@ -463,7 +485,7 @@ partitionByClause
     : PARTITION BY expr (COMMA_ expr)*
     ;
 
-rowRangeClause 
+rowRangeClause
     : (ROWS | RANGE) windowFrameExtent
     ;
 
@@ -619,4 +641,66 @@ tableHintLimited
     | TABLOCKX
     | UPDLOCK
     | XLOCK
+    ;
+
+matchExpression
+    : MATCH LP_ (arbitratyLengthMatch | simpleMatch) RP_
+    ;
+
+simpleMatch
+    : simpleMatchClause* (AND simpleMatch)*
+    ;
+
+simpleMatchClause
+    : lastNode
+    | nodeAlias
+    | inEdgePath
+    | outEdgePath
+    ;
+
+lastNode
+    : LAST_NODE LP_ nodeAlias RP_
+    ;
+
+arbitratyLengthMatch
+    : SHORTEST_PATH LP_ arbitraryLength RP_ (AND arbitraryLength)*
+    ;
+
+arbitraryLength
+    : arbitraryLengthClause (AND? arbitraryLengthClause)*
+    ;
+
+arbitraryLengthClause
+    : (lastNode | tableName)  LP_? edgeNodeAl+ RP_? alPatternQuantifier?
+    | LP_ edgeNodeAl+ RP_ alPatternQuantifier (lastNode | tableName)
+    ;
+
+edgeNodeAl
+    : nodeAlias edgeAliasPath
+    | edgeAliasPath nodeAlias
+    ;
+
+edgeAliasPath
+    : (LT_ MINUS_ LP_ edgeAlias RP_ MINUS_) | (MINUS_ LP_ edgeAlias RP_ MINUS_ GT_)
+    ;
+
+outEdgePath
+    : MINUS_ LP_ edgeAlias RP_ MINUS_ GT_
+    ;
+
+inEdgePath
+    : LT_ MINUS_ LP_ edgeAlias RP_ MINUS_
+    ;
+
+alPatternQuantifier
+    : PLUS_
+    | LBE_ NUMBER_ COMMA_ NUMBER_ RBE_
+    ;
+
+nodeAlias
+    : tableName
+    ;
+
+edgeAlias
+    : tableName
     ;

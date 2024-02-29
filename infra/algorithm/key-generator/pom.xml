@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-infra-algorithm</artifactId>
         <version>5.4.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-key-generator</artifactId>
+    <artifactId>shardingsphere-infra-algorithm-key-generator</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     

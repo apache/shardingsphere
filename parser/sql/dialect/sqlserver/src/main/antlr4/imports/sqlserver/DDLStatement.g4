@@ -318,7 +318,15 @@ columnSetDefinition
     ;
 
 tableConstraint 
-    : (CONSTRAINT constraintName)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT constraintName)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint | edgeConstraint)
+    ;
+
+edgeConstraint
+    : connectionClause (ON DELETE (NO ACTION | CASCADE))?
+    ;
+
+connectionClause
+    : CONNECTION LP_ (nodeAlias TO nodeAlias) (COMMA_ nodeAlias TO nodeAlias)*? RP_
     ;
 
 tablePrimaryConstraint

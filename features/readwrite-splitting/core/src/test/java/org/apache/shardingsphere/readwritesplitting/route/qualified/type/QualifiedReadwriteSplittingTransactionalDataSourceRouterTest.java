@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
+import org.apache.shardingsphere.infra.algorithm.load.balancer.round.robin.RoundRobinLoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
@@ -62,9 +62,9 @@ class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest {
         ReadwriteSplittingDataSourceRule rule;
         rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.PRIMARY, null);
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("write_ds"));
-        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.FIXED, new RoundRobinReadQueryLoadBalanceAlgorithm());
+        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.FIXED, new RoundRobinLoadBalanceAlgorithm());
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("read_ds_0"));
-        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinReadQueryLoadBalanceAlgorithm());
+        rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfig, TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinLoadBalanceAlgorithm());
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("read_ds_0"));
     }
 }

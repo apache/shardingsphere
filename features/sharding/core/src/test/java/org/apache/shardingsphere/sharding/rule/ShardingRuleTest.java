@@ -18,11 +18,15 @@
 package org.apache.shardingsphere.sharding.rule;
 
 import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.GenerateKeyStrategyNotFoundException;
+import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -30,10 +34,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.exception.GenerateKeyStrategyNotFoundException;
-import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.audit.DMLShardingConditionsShardingAuditAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -72,7 +72,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -202,12 +201,12 @@ class ShardingRuleTest {
     
     @Test
     void assertFindLogicTableByActualTable() {
-        assertTrue(createMaximumShardingRule().findLogicTableByActualTable("table_0").isPresent());
+        assertTrue(createMaximumShardingRule().getDataNodeRule().findLogicTableByActualTable("table_0").isPresent());
     }
     
     @Test
     void assertNotFindLogicTableByActualTable() {
-        assertFalse(createMaximumShardingRule().findLogicTableByActualTable("table_3").isPresent());
+        assertFalse(createMaximumShardingRule().getDataNodeRule().findLogicTableByActualTable("table_3").isPresent());
     }
     
     @Test
@@ -454,11 +453,6 @@ class ShardingRuleTest {
     @Test
     void assertNotContainsShardingTable() {
         assertFalse(createMinimumShardingRule().containsShardingTable(Collections.singleton("table_0")));
-    }
-    
-    @Test
-    void assertGetTables() {
-        assertThat(new LinkedList<>(createMaximumShardingRule().getLogicTableMapper().getTableNames()), is(Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE")));
     }
     
     @Test
@@ -711,7 +705,7 @@ class ShardingRuleTest {
     @Test
     void assertGetDataNodesByTableName() {
         ShardingRule shardingRule = createMinimumShardingRule();
-        Collection<DataNode> actual = shardingRule.getDataNodesByTableName("logic_table");
+        Collection<DataNode> actual = shardingRule.getDataNodeRule().getDataNodesByTableName("logic_table");
         assertThat(actual.size(), is(6));
         Iterator<DataNode> iterator = actual.iterator();
         DataNode firstDataNode = iterator.next();
@@ -773,7 +767,7 @@ class ShardingRuleTest {
     @Test
     void assertGetAllDataNodes() {
         ShardingRule actual = createMaximumShardingRule();
-        Map<String, Collection<DataNode>> allDataNodes = actual.getAllDataNodes();
+        Map<String, Collection<DataNode>> allDataNodes = actual.getDataNodeRule().getAllDataNodes();
         assertTrue(allDataNodes.containsKey("logic_table"));
         assertTrue(allDataNodes.containsKey("sub_logic_table"));
         Collection<DataNode> logicTableDataNodes = allDataNodes.get("logic_table");
@@ -798,14 +792,14 @@ class ShardingRuleTest {
     @Test
     void assertFindFirstActualTable() {
         ShardingRule actual = createMaximumShardingRule();
-        Optional<String> logicTable = actual.findFirstActualTable("logic_table");
+        Optional<String> logicTable = actual.getDataNodeRule().findFirstActualTable("logic_table");
         assertThat(logicTable.orElse(""), is("table_0"));
     }
     
     @Test
     void assertFindActualTableByCatalog() {
         ShardingRule actual = createMaximumShardingRule();
-        Optional<String> actualTableByCatalog = actual.findActualTableByCatalog("ds_0", "logic_table");
+        Optional<String> actualTableByCatalog = actual.getDataNodeRule().findActualTableByCatalog("ds_0", "logic_table");
         assertThat(actualTableByCatalog.orElse(""), is("table_0"));
     }
     

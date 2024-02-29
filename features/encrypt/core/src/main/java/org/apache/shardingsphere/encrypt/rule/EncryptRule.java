@@ -27,8 +27,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.LinkedHashMap;
@@ -39,26 +38,28 @@ import java.util.Optional;
 /**
  * Encrypt rule.
  */
-public final class EncryptRule implements DatabaseRule, TableContainedRule {
+public final class EncryptRule implements DatabaseRule, TableMapperContainedRule {
     
     private final String databaseName;
     
     @Getter
     private final EncryptRuleConfiguration configuration;
     
-    private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
+    private final Map<String, EncryptTable> tables;
     
-    private final TableNamesMapper tableNamesMapper = new TableNamesMapper();
+    @Getter
+    private final EncryptTableMapperRule tableMapperRule;
     
     public EncryptRule(final String databaseName, final EncryptRuleConfiguration ruleConfig) {
         this.databaseName = databaseName;
         configuration = ruleConfig;
+        tables = new LinkedHashMap<>();
         Map<String, EncryptAlgorithm> encryptors = createEncryptors(ruleConfig);
         for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
             each.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, encryptors));
             tables.put(each.getName().toLowerCase(), new EncryptTable(each, encryptors));
-            tableNamesMapper.put(each.getName());
         }
+        tableMapperRule = new EncryptTableMapperRule(ruleConfig.getTables());
     }
     
     private Map<String, EncryptAlgorithm> createEncryptors(final EncryptRuleConfiguration ruleConfig) {
@@ -101,25 +102,5 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
         Optional<EncryptTable> encryptTable = findEncryptTable(tableName);
         ShardingSpherePreconditions.checkState(encryptTable.isPresent(), () -> new EncryptTableNotFoundException(tableName));
         return encryptTable.get();
-    }
-    
-    @Override
-    public TableNamesMapper getLogicTableMapper() {
-        return tableNamesMapper;
-    }
-    
-    @Override
-    public TableNamesMapper getActualTableMapper() {
-        return new TableNamesMapper();
-    }
-    
-    @Override
-    public TableNamesMapper getDistributedTableMapper() {
-        return new TableNamesMapper();
-    }
-    
-    @Override
-    public TableNamesMapper getEnhancedTableMapper() {
-        return getLogicTableMapper();
     }
 }

@@ -115,8 +115,8 @@ class BatchPreparedStatementExecutorTest {
     }
     
     private ShardingRule mockShardingRule() {
-        ShardingRule result = mock(ShardingRule.class);
-        when(result.isNeedAccumulate(any())).thenReturn(true);
+        ShardingRule result = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
+        when(result.getDataNodeRule().isNeedAccumulate(any())).thenReturn(true);
         return result;
     }
     

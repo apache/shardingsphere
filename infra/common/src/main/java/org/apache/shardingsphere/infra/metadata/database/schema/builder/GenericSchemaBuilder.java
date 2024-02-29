@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SchemaMetaDataUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -84,7 +84,8 @@ public final class GenericSchemaBuilder {
     }
     
     private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
-        return rules.stream().filter(TableContainedRule.class::isInstance).flatMap(each -> ((TableContainedRule) each).getLogicTableMapper().getTableNames().stream()).collect(Collectors.toSet());
+        return rules.stream().filter(TableMapperContainedRule.class::isInstance)
+                .flatMap(each -> ((TableMapperContainedRule) each).getTableMapperRule().getLogicTableMapper().getTableNames().stream()).collect(Collectors.toSet());
     }
     
     private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
@@ -110,7 +111,7 @@ public final class GenericSchemaBuilder {
     
     private static Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
-        result.putAll(new MetaDataReviseEngine(material.getRules().stream().filter(TableContainedRule.class::isInstance).collect(Collectors.toList())).revise(result, material));
+        result.putAll(new MetaDataReviseEngine(material.getRules().stream().filter(TableMapperContainedRule.class::isInstance).collect(Collectors.toList())).revise(result, material));
         return convertToSchemaMap(result, material);
     }
     

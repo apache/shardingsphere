@@ -1,5 +1,5 @@
 +++
-title = "Code of Conduct" 
+title = "Code of Conduct"
 weight = 2
 chapter = true
 +++
@@ -38,7 +38,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - A variable composed of abbreviation should use lower camel case: mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
  - Except return an input parameter as result, returning variable should be named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
- - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words). 
+ - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words).
  - Split codes that need to add notes with it into small methods, which are explained with method names.
  - Have constants on the left and variable on the right in `=` and `equals` conditional expressions; Have variable on the left and constants on the right in `greater than` and `less than` conditional expressions.
  - Beside using same names as input parameters and global fields in assign statement, avoid using `this` modifier.
@@ -61,6 +61,14 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Use concentrate `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
  - Avoid using Java Stream in hot methods, unless the performance of using Stream is better than using loop in that situation.
  - Utility class should be named in the form of `xxUtils`.
+ - Reasonably use the @HighFrequencyInvocation annotation to focus on optimizing the performance of critical methods.
+   - Occasions for using the @HighFrequencyInvocation annotation:
+     - In frequently invoked requests, add annotation to classes, methods, or constructors with high frequency calls; precise matching within the scope of annotation;
+     - The `canBeCached` attribute being set as true indicates that the target is a reusable cached resource. For example: a database connection.
+   - Code segments with annotation @HighFrequencyInvocation must strictly guarantee code performance. The following are prohibited code segments within:
+     - It is prohibited to call Java Stream API;
+     - It is prohibited to concat String using "+";
+     - It is prohibited to call LinkedList's get(int index) method.
 
 ## Contributor Covenant Unit Test of Conduct
 

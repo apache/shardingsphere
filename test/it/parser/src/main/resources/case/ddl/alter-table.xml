@@ -1788,4 +1788,12 @@
             </index-column>
         </add-constraint>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_edge_constraints">
+        <table name="bought" start-index="12" stop-index="17"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_edge_constraints">
+        <table name="bought" start-index="12" stop-index="17"/>"
+    </alter-table>
 </sql-parser-test-cases>

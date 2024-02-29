@@ -1962,3 +1962,27 @@ TRY_CONVERT
 OPENQUERY
     : O P E N Q U E R Y
     ;
+
+MATCH
+    : M A T C H
+    ;
+
+LAST_NODE
+    : L A S T UL_ N O D E
+    ;
+
+SHORTEST_PATH
+    : S H O R T E S T UL_ P A T H
+    ;
+
+STRING_AGG
+    : S T R I N G UL_ A G G
+    ;
+
+LAST_VALUE
+    : L A S T UL_ V A L U E
+    ;
+
+GRAPH
+    : G R A P H
+    ;

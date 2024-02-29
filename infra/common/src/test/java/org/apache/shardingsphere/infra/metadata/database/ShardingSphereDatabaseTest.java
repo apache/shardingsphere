@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -152,7 +152,7 @@ class ShardingSphereDatabaseTest {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         rules.add(mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS));
         rules.add(mock(DataSourceContainedRule.class, RETURNS_DEEP_STUBS));
-        rules.add(mock(TableContainedRule.class, RETURNS_DEEP_STUBS));
+        rules.add(mock(TableMapperContainedRule.class, RETURNS_DEEP_STUBS));
         RuleMetaData ruleMetaData = new RuleMetaData(rules);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, Collections.emptyMap());
         database.reloadRules(MutableDataNodeRule.class);

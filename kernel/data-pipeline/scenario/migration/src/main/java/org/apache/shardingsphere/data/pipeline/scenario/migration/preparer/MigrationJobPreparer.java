@@ -25,25 +25,22 @@ import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngin
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
-import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PipelineJobDataSourcePreparer;
@@ -76,7 +73,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map.Entry;
 
 /**
@@ -94,21 +90,20 @@ public final class MigrationJobPreparer {
      *
      * @param jobItemContext job item context
      * @throws SQLException SQL exception
+     * @throws PipelineJobCancelingException pipeline job canceled exception
      */
-    public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException {
+    public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException, PipelineJobCancelingException {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(
                 jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration"));
         DatabaseType sourceDatabaseType = jobItemContext.getJobConfig().getSourceDatabaseType();
         new DataSourceCheckEngine(sourceDatabaseType).checkSourceDataSources(Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
-            PipelineJobRegistry.stop(jobItemContext.getJobId());
-            return;
+            throw new PipelineJobCancelingException();
         }
         prepareAndCheckTargetWithLock(jobItemContext);
         if (jobItemContext.isStopping()) {
-            PipelineJobRegistry.stop(jobItemContext.getJobId());
-            return;
+            throw new PipelineJobCancelingException();
         }
         boolean isIncrementalSupported = DatabaseTypedSPILoader.findService(DialectIncrementalDumperCreator.class, sourceDatabaseType).isPresent();
         if (isIncrementalSupported) {
@@ -118,8 +113,7 @@ public final class MigrationJobPreparer {
         if (isIncrementalSupported) {
             initIncrementalTasks(jobItemContext);
             if (jobItemContext.isStopping()) {
-                PipelineJobRegistry.stop(jobItemContext.getJobId());
-                return;
+                throw new PipelineJobCancelingException();
             }
         }
         log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
@@ -200,25 +194,14 @@ public final class MigrationJobPreparer {
         MigrationTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         PipelineTableMetaDataLoader sourceMetaDataLoader = jobItemContext.getSourceMetaDataLoader();
         IncrementalDumperContext dumperContext = taskConfig.getDumperContext();
-        ImporterConfiguration importerConfig = taskConfig.getImporterConfig();
         ExecuteEngine incrementalExecuteEngine = jobItemContext.getJobProcessContext().getIncrementalExecuteEngine();
         IncrementalTaskProgress taskProgress = PipelineTaskUtils.createIncrementalTaskProgress(dumperContext.getCommonContext().getPosition(), jobItemContext.getInitProgress());
-        PipelineChannel channel = PipelineTaskUtils.createIncrementalChannel(
-                importerConfig.getConcurrency(), jobItemContext.getJobProcessContext().getProcessConfig().getStreamChannel(), taskProgress);
+        PipelineChannel channel = PipelineTaskUtils.createIncrementalChannel(jobItemContext.getJobProcessContext().getProcessConfig().getStreamChannel(), taskProgress);
         Dumper dumper = DatabaseTypedSPILoader.getService(DialectIncrementalDumperCreator.class, dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType())
                 .createIncrementalDumper(dumperContext, dumperContext.getCommonContext().getPosition(), channel, sourceMetaDataLoader);
-        Collection<Importer> importers = createIncrementalImporters(importerConfig, jobItemContext.getSink(), channel, jobItemContext);
+        Collection<Importer> importers = Collections.singletonList(new SingleChannelConsumerImporter(channel, 1, 5L, jobItemContext.getSink(), jobItemContext));
         PipelineTask incrementalTask = new IncrementalTask(dumperContext.getCommonContext().getDataSourceName(), incrementalExecuteEngine, dumper, importers, taskProgress);
         jobItemContext.getIncrementalTasks().add(incrementalTask);
-    }
-    
-    private Collection<Importer> createIncrementalImporters(final ImporterConfiguration importerConfig, final PipelineSink sink, final PipelineChannel channel,
-                                                            final PipelineJobProgressListener jobProgressListener) {
-        Collection<Importer> result = new LinkedList<>();
-        for (int i = 0; i < importerConfig.getConcurrency(); i++) {
-            result.add(new SingleChannelConsumerImporter(channel, 1, 5L, sink, jobProgressListener));
-        }
-        return result;
     }
     
     /**

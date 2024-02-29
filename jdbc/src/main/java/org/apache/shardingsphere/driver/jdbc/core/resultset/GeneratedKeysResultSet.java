@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedGeneratedKeysResultSet;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -32,6 +33,7 @@ import java.util.Iterator;
 /**
  * ResultSet for generated keys.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResultSet {
     

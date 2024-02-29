@@ -30,5 +30,6 @@
     <modules>
         <module>core</module>
         <module>key-generator</module>
+        <module>load-balancer</module>
     </modules>
 </project>

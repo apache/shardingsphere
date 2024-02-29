@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.driver.state.DriverStateContext;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -89,11 +90,13 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         }
     }
     
+    @HighFrequencyInvocation(canBeCached = true)
     @Override
     public Connection getConnection() {
         return DriverStateContext.getConnection(databaseName, contextManager);
     }
     
+    @HighFrequencyInvocation(canBeCached = true)
     @Override
     public Connection getConnection(final String username, final String password) {
         return getConnection();

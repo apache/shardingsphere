@@ -47,10 +47,6 @@ TYPE
     : T Y P E
     ;
 
-JOOQ
-    : J O O Q
-    ;
-
 NATIVE
     : N A T I V E
     ;

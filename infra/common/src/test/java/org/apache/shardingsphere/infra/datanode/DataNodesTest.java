@@ -19,8 +19,9 @@ package org.apache.shardingsphere.infra.datanode;
 
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -147,17 +149,21 @@ class DataNodesTest {
     }
     
     private ShardingSphereRule mockSingleRule() {
-        DataNodeContainedRule result = mock(DataNodeContainedRule.class);
-        when(result.getDataNodesByTableName("t_single")).thenReturn(Collections.singletonList(new DataNode("readwrite_ds", "t_single")));
+        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
+        when(dataNodeRule.getDataNodesByTableName("t_single")).thenReturn(Collections.singleton(new DataNode("readwrite_ds", "t_single")));
+        DataNodeContainedRule result = mock(DataNodeContainedRule.class, RETURNS_DEEP_STUBS);
+        when(result.getDataNodeRule()).thenReturn(dataNodeRule);
         return result;
     }
     
     private ShardingSphereRule mockShardingRule() {
-        DataNodeContainedRule result = mock(DataNodeContainedRule.class);
         Collection<DataNode> dataNodes = new LinkedList<>();
         dataNodes.add(new DataNode("readwrite_ds", "t_order_0"));
         dataNodes.add(new DataNode("readwrite_ds", "t_order_1"));
-        when(result.getDataNodesByTableName("t_order")).thenReturn(dataNodes);
+        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
+        when(dataNodeRule.getDataNodesByTableName("t_order")).thenReturn(dataNodes);
+        DataNodeContainedRule result = mock(DataNodeContainedRule.class);
+        when(result.getDataNodeRule()).thenReturn(dataNodeRule);
         return result;
     }
 }

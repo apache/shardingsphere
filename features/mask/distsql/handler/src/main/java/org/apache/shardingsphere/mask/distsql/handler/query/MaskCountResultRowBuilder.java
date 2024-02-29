@@ -31,7 +31,7 @@ public final class MaskCountResultRowBuilder implements CountResultRowBuilder<Ma
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final MaskRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("mask", databaseName, rule.getLogicTableMapper().getTableNames().size()));
+        return Collections.singleton(new LocalDataQueryResultRow("mask", databaseName, rule.getTableMapperRule().getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

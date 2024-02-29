@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type.KeyGenerateAlgorithmTypeAndClassMapper
+org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type.LoadBalanceAlgorithmTypeAndClassMapper

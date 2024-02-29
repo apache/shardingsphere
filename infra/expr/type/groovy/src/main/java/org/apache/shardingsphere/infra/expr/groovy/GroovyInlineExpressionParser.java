@@ -88,9 +88,8 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
      */
     @Override
     public String evaluateWithArgs(final Map<String, Comparable<?>> map) {
-        Closure<?> result = (Closure<?>) evaluate("{it -> \"" + handlePlaceHolder(inlineExpression) + "\"}");
-        result.rehydrate(new Expando(), null, null)
-                .setResolveStrategy(Closure.DELEGATE_ONLY);
+        Closure<?> result = ((Closure<?>) evaluate("{it -> \"" + handlePlaceHolder(inlineExpression) + "\"}")).rehydrate(new Expando(), null, null);
+        result.setResolveStrategy(Closure.DELEGATE_ONLY);
         map.forEach(result::setProperty);
         return result.call().toString();
     }

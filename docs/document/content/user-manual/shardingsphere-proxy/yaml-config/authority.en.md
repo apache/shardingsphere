@@ -19,7 +19,7 @@ The administrator can choose which privilege provider to use as needed when conf
 ```yaml
 authority:
   users:
-    - user: # Specify the username, and authorized host for logging in to the compute node. Format: <username>@<hostname>. When the hostname is % or an empty string, it indicates that the authorized host is not limited.
+    - user: # Specify the username, and authorized host for logging in to the compute node. Format: <username>@<hostname>. When the hostname is % or an empty string, it indicates that the authorized host is not limited, username and hostname are case-insensitive
       password: # Password
       authenticationMethodName: # Optional, used to specify the password authentication method for the user
   authenticators: # Optional, not required by default, Proxy will automatically choose the authentication method according to the frontend protocol type
@@ -27,7 +27,7 @@ authority:
       type: # Authentication method type
   defaultAuthenticator: # Optional, specify an authenticator as the default password authentication method
   privilege:
-    type: # Privilege provider type. The default value is ALL_PERMITTED.
+    type: # Privilege provider type. The default value is ALL_PERMITTED
 ```
 
 ## Sample

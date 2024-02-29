@@ -76,11 +76,6 @@ sdk install java 21.0.2-graalce
         <artifactId>mysql-connector-j</artifactId>
         <version>8.1.0</version>
     </dependency>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-translator-jooq-provider</artifactId>
-        <version>5.4.0</version>
-    </dependency>
 </dependencies>
 ```
 

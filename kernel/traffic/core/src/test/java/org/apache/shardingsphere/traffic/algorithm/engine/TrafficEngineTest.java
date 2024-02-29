@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.traffic.algorithm.engine;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -34,7 +34,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -90,9 +91,9 @@ class TrafficEngineTest {
         TrafficEngine trafficEngine = new TrafficEngine(trafficRule, instanceContext);
         when(trafficRule.findMatchedStrategyRule(queryContext, false)).thenReturn(Optional.of(strategyRule));
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
-        TrafficLoadBalanceAlgorithm loadBalancer = mock(TrafficLoadBalanceAlgorithm.class);
-        List<InstanceMetaData> instanceIds = mockComputeNodeInstances();
-        when(loadBalancer.getInstanceMetaData("traffic", instanceIds)).thenReturn(new ProxyInstanceMetaData("foo_id", 3307));
+        LoadBalanceAlgorithm loadBalancer = mock(LoadBalanceAlgorithm.class);
+        Map<String, InstanceMetaData> instanceIds = mockComputeNodeInstances();
+        when(loadBalancer.getAvailableTargetName("traffic", new ArrayList<>(instanceIds.keySet()))).thenReturn("foo_id");
         when(strategyRule.getLoadBalancer()).thenReturn(loadBalancer);
         when(strategyRule.getName()).thenReturn("traffic");
         when(instanceContext.getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
@@ -100,10 +101,10 @@ class TrafficEngineTest {
         assertThat(actual, is(Optional.of("foo_id")));
     }
     
-    private List<InstanceMetaData> mockComputeNodeInstances() {
-        List<InstanceMetaData> result = new ArrayList<>();
-        result.add(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version"));
-        result.add(new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308", "foo_version"));
+    private Map<String, InstanceMetaData> mockComputeNodeInstances() {
+        Map<String, InstanceMetaData> result = new HashMap<>();
+        result.put("foo_id", new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version"));
+        result.put("bar_id", new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308", "foo_version"));
         return result;
     }
 }

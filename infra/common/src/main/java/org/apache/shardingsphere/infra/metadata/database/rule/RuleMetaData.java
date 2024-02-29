@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
 import java.util.Collection;
@@ -131,7 +131,8 @@ public final class RuleMetaData {
     }
     
     private Collection<String> getInUsedStorageUnitNames(final DataNodeContainedRule rule) {
-        return rule.getAllDataNodes().values().stream().flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
+        return rule.getDataNodeRule().getAllDataNodes().values().stream()
+                .flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
     }
     
     private void mergeInUsedStorageUnitNameAndRules(final Map<String, Collection<Class<? extends ShardingSphereRule>>> storageUnitNameAndRules,

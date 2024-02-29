@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.yaml;
 
-import org.apache.shardingsphere.agent.core.util.AgentPreconditions;
+import org.apache.shardingsphere.agent.core.preconditions.AgentPreconditions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.Constructor;
 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.exception;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.ClusterSQLException;
 
-import java.io.IOException;
+import java.io.File;
 
 /**
  * File IO exception.
@@ -29,7 +29,7 @@ public final class FileIOException extends ClusterSQLException {
     
     private static final long serialVersionUID = 1104839422339487793L;
     
-    public FileIOException(final IOException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 2, "File access failed, reason is: %s", cause.getMessage());
+    public FileIOException(final File file) {
+        super(XOpenSQLState.GENERAL_ERROR, 2, "File access failed, file is: %s", file.getAbsolutePath());
     }
 }

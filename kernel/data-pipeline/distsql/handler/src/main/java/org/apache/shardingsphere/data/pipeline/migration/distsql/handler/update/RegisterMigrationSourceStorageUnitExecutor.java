@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.updatable.RegisterMigrationSourceStorageUnitStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -51,13 +53,16 @@ public final class RegisterMigrationSourceStorageUnitExecutor implements DistSQL
     
     @Override
     public void executeUpdate(final RegisterMigrationSourceStorageUnitStatement sqlStatement, final ContextManager contextManager) {
+        InstanceContext instanceContext = contextManager.getInstanceContext();
+        ShardingSpherePreconditions.checkState(instanceContext.isCluster(),
+                () -> new PipelineInvalidParameterException(String.format("Only `Cluster` is supported now, but current mode type is `%s`", instanceContext.getModeConfiguration().getType())));
         checkDataSource(sqlStatement);
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeFactory.get(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
         validateHandler.validate(propsMap);
-        jobAPI.addMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), propsMap);
+        jobAPI.registerMigrationSourceStorageUnits(new PipelineContextKey(InstanceType.PROXY), propsMap);
     }
     
     private void checkDataSource(final RegisterMigrationSourceStorageUnitStatement sqlStatement) {

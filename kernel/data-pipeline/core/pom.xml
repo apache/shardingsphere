@@ -76,6 +76,11 @@
             <groupId>org.apache.shardingsphere.elasticjob</groupId>
             <artifactId>elasticjob-lite-lifecycle</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>com.zaxxer</groupId>

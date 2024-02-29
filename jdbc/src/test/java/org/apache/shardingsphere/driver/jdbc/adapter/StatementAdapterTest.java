@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -252,8 +252,8 @@ class StatementAdapterTest {
     
     private ShardingSphereStatement mockShardingSphereStatementWithNeedAccumulate(final Statement... statements) {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
-        DataNodeContainedRule rule = mock(DataNodeContainedRule.class);
-        when(rule.isNeedAccumulate(any())).thenReturn(true);
+        DataNodeContainedRule rule = mock(DataNodeContainedRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getDataNodeRule().isNeedAccumulate(any())).thenReturn(true);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
         when(connection.getDatabaseName()).thenReturn("db");
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");

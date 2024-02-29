@@ -126,7 +126,7 @@ class MigrationJobAPITest {
         props.put("jdbcUrl", jdbcUrl);
         props.put("username", "root");
         props.put("password", "root");
-        jobAPI.addMigrationSourceResources(PipelineContextUtils.getContextKey(), Collections.singletonMap("ds_0", new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props)));
+        jobAPI.registerMigrationSourceStorageUnits(PipelineContextUtils.getContextKey(), Collections.singletonMap("ds_0", new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props)));
     }
     
     @AfterAll

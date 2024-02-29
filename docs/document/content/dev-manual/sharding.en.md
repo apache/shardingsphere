@@ -30,23 +30,6 @@ Sharding Algorithm definition
 | COMPLEX_INLINE           | N                    | Complex inline sharding algorithm                                       | [`org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/inline/ComplexInlineShardingAlgorithm.java)                                          |
 | HINT_INLINE              | N                    | Hint inline sharding algorithm                                          | [`org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/sharding/hint/HintInlineShardingAlgorithm.java)                                                     |
 
-## KeyGenerateAlgorithm
-
-### Fully-qualified class name
-
-[`org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/core/src/main/java/org/apache/shardingsphere/infra/algorithm/keygen/core/KeyGenerateAlgorithm.java)
-
-### Definition
-
-Distributed Key Generating Algorithm definition
-
-### Implementation classes
-
-| *Configuration Type* | *Description*                    | *Fully-qualified class name*                                                                                                                                                                                                                                                                          |
-|----------------------|----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SNOWFLAKE            | Snowflake key generate algorithm | [`org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/snowflake/src/main/java/org/apache/shardingsphere/infra/algorithm/keygen/snowflake/SnowflakeKeyGenerateAlgorithm.java) |
-| UUID                 | UUID key generate algorithm      | [`org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/uuid/src/main/java/org/apache/shardingsphere/infra/algorithm/keygen/uuid/UUIDKeyGenerateAlgorithm.java)                          |
-
 ## ShardingAuditAlgorithm
 
 ### Fully-qualified class name

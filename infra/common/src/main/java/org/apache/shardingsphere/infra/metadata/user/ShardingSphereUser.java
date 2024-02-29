@@ -33,17 +33,20 @@ public final class ShardingSphereUser {
     
     private final String authenticationMethodName;
     
+    private final boolean admin;
+    
     public ShardingSphereUser(final String grantee) {
         this(grantee.substring(0, grantee.indexOf('@')), "", grantee.substring(grantee.indexOf('@') + 1));
     }
     
     public ShardingSphereUser(final String username, final String password, final String hostname) {
-        this(username, password, hostname, "");
+        this(username, password, hostname, "", false);
     }
     
-    public ShardingSphereUser(final String username, final String password, final String hostname, final String authenticationMethodName) {
+    public ShardingSphereUser(final String username, final String password, final String hostname, final String authenticationMethodName, final boolean isAdmin) {
         grantee = new Grantee(username, hostname);
         this.password = password;
         this.authenticationMethodName = authenticationMethodName;
+        this.admin = isAdmin;
     }
 }

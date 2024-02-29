@@ -27,6 +27,8 @@ Metrics 则用于收集和展示整个集群的统计指标。Apache ShardingSph
 
 ![概述](https://shardingsphere.apache.org/document/current/img/apm/overview_v3.png)
 
+![Agent ClassLoader](https://shardingsphere.apache.org/document/current/img/apm/agent-class-loader.png)
+
 ## 挑战
 
 Tracing 和 Metrics 需要通过埋点来收集系统信息。 大量的埋点使项目核心代码支离破碎，难于维护，且不易定制化统计指标。

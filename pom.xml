@@ -104,11 +104,9 @@
         <audience-annotations.version>0.12.0</audience-annotations.version>
         <jetcd.version>0.7.7</jetcd.version>
         <vertx.version>4.5.1</vertx.version>
-        <consul.api.version>1.4.5</consul.api.version>
         
         <grpc.version>1.58.0</grpc.version>
         <protobuf.version>3.21.12</protobuf.version>
-        <httpclient.version>4.5.14</httpclient.version>
         <okhttp.version>4.12.0</okhttp.version>
         
         <elasticjob.version>3.0.4</elasticjob.version>
@@ -128,8 +126,6 @@
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
-        
-        <jooq.version>3.14.15</jooq.version>
         
         <prometheus-simpleclient.version>0.11.0</prometheus-simpleclient.version>
         <prometheus-jmx.version>0.16.1</prometheus-jmx.version>

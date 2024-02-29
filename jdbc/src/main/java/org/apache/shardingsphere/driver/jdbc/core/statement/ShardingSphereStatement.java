@@ -30,6 +30,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.EmptySQLException;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
@@ -70,7 +71,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -100,6 +101,7 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere statement.
  */
+@HighFrequencyInvocation
 public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Getter
@@ -665,7 +667,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Override
     public boolean isAccumulate() {
         return metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .anyMatch(each -> each.isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
+                .anyMatch(each -> each.getDataNodeRule().isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
     }
     
     @Override

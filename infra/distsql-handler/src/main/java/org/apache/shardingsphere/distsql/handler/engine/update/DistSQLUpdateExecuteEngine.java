@@ -107,7 +107,7 @@ public final class DistSQLUpdateExecuteEngine {
     private void executeNormalUpdate() throws SQLException {
         DistSQLUpdateExecutor executor = TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
         ShardingSphereDatabase database = null == databaseName ? null : contextManager.getDatabase(databaseName);
-        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null);
+        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null, sqlStatement);
         new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.executeUpdate(sqlStatement, contextManager);
     }

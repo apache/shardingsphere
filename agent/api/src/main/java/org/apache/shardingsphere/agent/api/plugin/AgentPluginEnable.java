@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.agent.api.plugin;
 
+/**
+ * Agent plugin enable.
+ */
 public interface AgentPluginEnable {
     
     /**
@@ -24,7 +27,5 @@ public interface AgentPluginEnable {
      *
      * @return true or false
      */
-    default boolean isPluginEnabled() {
-        return true;
-    }
+    boolean isPluginEnabled();
 }

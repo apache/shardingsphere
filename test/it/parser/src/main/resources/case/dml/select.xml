@@ -6436,7 +6436,7 @@
         </order-by>
     </select>
 
-    <select sql-case-id="select_with_trim_function">
+    <select sql-case-id="select_with_trim_function_multi">
         <projections start-index="7" stop-index="203" literal-start-index="7" literal-stop-index="203">
             <expression-projection text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
                 <literalText>TRIM(' derby ')</literalText>
@@ -6516,6 +6516,83 @@
         <from>
             <simple-table name="employees" start-index="210" stop-index="218" literal-start-index="210" literal-stop-index="218" />
         </from>
+    </select>
+
+    <select sql-case-id="select_with_trim_function_simple">
+        <projections start-index="7" stop-index="57">
+            <expression-projection text="TRIM( '.,! ' FROM '     #     test    .')" start-index="7" stop-index="57" alias="Result">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="47" text="TRIM( '.,! ' FROM '     #     test    .')">
+                        <parameter>
+                            <literal-expression value=".,! " start-index="13" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="     #     test    ." start-index="25" stop-index="46" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_trim_function_leading">
+        <projections start-index="7" stop-index="66">
+            <expression-projection text="TRIM(LEADING '.,! ' FROM  '     .#     test    .')" start-index="7" stop-index="66" alias="Result">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="56" text="TRIM(LEADING '.,! ' FROM  '     .#     test    .')">
+                        <parameter>
+                            <literal-expression value="LEADING" start-index="12" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=".,! " start-index="20" stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="     .#     test    ." start-index="33" stop-index="55" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_trim_function_trailing">
+        <projections start-index="7" stop-index="66">
+            <expression-projection text="TRIM(TRAILING '.,! ' FROM '     .#     test    .')" start-index="7" stop-index="66" alias="Result">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="56" text="TRIM(TRAILING '.,! ' FROM '     .#     test    .')">
+                        <parameter>
+                            <literal-expression value="TRAILING" start-index="12" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=".,! " start-index="21" stop-index="26" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="     .#     test    ." start-index="33" stop-index="55" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_trim_function_both">
+        <projections start-index="7" stop-index="49">
+            <expression-projection text="TRIM(BOTH '123' FROM '123abc123')" start-index="7" stop-index="49" alias="Result">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="39" text="TRIM(BOTH '123' FROM '123abc123')">
+                        <parameter>
+                            <literal-expression value="BOTH" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="123" start-index="17" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="123abc123" start-index="28" stop-index="38" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 
     <select sql-case-id="select_with_ratio_to_report_function">
@@ -8733,6 +8810,414 @@
         </from>
     </select>
 
+    <select sql-case-id="select_with_person_simple_match_where">
+        <projections start-index="7" stop-index="32">
+            <column-projection name="name" start-index="7" stop-index="32" alias="FriendName">
+                <owner name="Person2" start-index="7" stop-index="13"/>
+            </column-projection>
+        </projections>
+        <from start-index="39" stop-index="76">
+            <join-table join-type="COMMA">
+                <left>
+                    <join-table join-type="COMMA">
+                        <left>
+                            <simple-table name="Person" start-index="39" stop-index="52" alias="Person1"/>
+                        </left>
+                        <right>
+                            <simple-table name="friend" start-index="55" stop-index="60"/>
+                        </right>
+                    </join-table>
+                </left>
+                <right>
+                    <simple-table name="Person" start-index="63" stop-index="76" alias="Person2"/>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="78" stop-index="142">
+            <expr>
+                <binary-operation-expression start-index="84" stop-index="142">
+                    <left>
+                        <common-expression text="MATCH(Person1-(friend)->Person2)" start-index="84" stop-index="115"/>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="121" stop-index="142">
+                            <left>
+                                <column name="name" start-index="121" stop-index="132">
+                                    <owner name="Person1" start-index="121" stop-index="127"/>
+                                </column>
+                            </left>
+                            <right>
+                                <literal-expression value="Alice" start-index="136" stop-index="142"/>
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_person_simple_cascade_match_where">
+        <projections start-index="7" stop-index="32">
+            <column-projection name="name" start-index="7" stop-index="32" alias="FriendName">
+                <owner name="Person3" start-index="7" stop-index="13"/>
+            </column-projection>
+        </projections>
+        <from start-index="39" stop-index="108">
+            <join-table join-type="COMMA">
+                <left>
+                    <join-table join-type="COMMA">
+                        <left>
+                            <join-table join-type="COMMA">
+                                <left>
+                                    <join-table join-type="COMMA">
+                                        <left>
+                                            <simple-table name="Person" start-index="39" stop-index="52" alias="Person1"/>
+                                        </left>
+                                        <right>
+                                            <simple-table name="friend" start-index="55" stop-index="60"/>
+                                        </right>
+                                    </join-table>
+                                </left>
+                                <right>
+                                    <simple-table name="Person" start-index="63" stop-index="76" alias="Person2"/>
+                                </right>
+                            </join-table>
+                        </left>
+                        <right>
+                            <simple-table name="friend" start-index="79" stop-index="92" alias="friend2"/>
+                        </right>
+                    </join-table>
+                </left>
+                <right>
+                    <simple-table name="Person" start-index="95" stop-index="108" alias="Person3"/>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="110" stop-index="193">
+            <expr>
+                <binary-operation-expression start-index="116" stop-index="193">
+                    <left>
+                        <common-expression text="MATCH(Person1-(friend)->Person2-(friend2)->Person3)" start-index="116" stop-index="166"/>
+                    </left>
+                    <right>
+                        <binary-operation-expression start-index="172" stop-index="193">
+                            <left>
+                                <column name="name" start-index="172" stop-index="183">
+                                    <owner name="Person1" start-index="172" stop-index="178"/>
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="Alice" start-index="187" stop-index="193"/>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_multi_simple_match_where">
+        <projections start-index="7" stop-index="54">
+            <column-projection name="name" start-index="7" stop-index="29" alias="Friend1">
+                <owner name="Person1" start-index="7" stop-index="13"/>
+            </column-projection>
+            <column-projection name="name" start-index="32" stop-index="54" alias="Friend2">
+                <owner name="Person2" start-index="32" stop-index="38"/>
+            </column-projection>
+        </projections>
+        <from start-index="61" stop-index="138">
+            <join-table join-type="COMMA">
+                <left>
+                    <join-table join-type="COMMA">
+                        <left>
+                            <join-table join-type="COMMA">
+                                <left>
+                                    <join-table join-type="COMMA">
+                                        <left>
+                                            <simple-table name="Person" start-index="61" stop-index="74" alias="Person1"/>
+                                        </left>
+                                        <right>
+                                            <simple-table name="friend" start-index="77" stop-index="90" alias="friend1"/>
+                                        </right>
+                                    </join-table>
+                                </left>
+                                <right>
+                                    <simple-table name="Person" start-index="93" stop-index="106" alias="Person2"/>
+                                </right>
+                            </join-table>
+                        </left>
+                        <right>
+                            <simple-table name="friend" start-index="109" stop-index="122" alias="friend2"/>
+                        </right>
+                    </join-table>
+                </left>
+                <right>
+                    <simple-table name="Person" start-index="125" stop-index="138" alias="Person0"/>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="140" stop-index="209">
+            <expr>
+                <common-expression text="MATCH(Person1-(friend1)->Person0 AND Person2-(friend2)->Person0)" start-index="146" stop-index="209"/>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_from_subquery_with_graph_agg_function_and_arbitrary_match">
+        <projections start-index="7" stop-index="25">
+            <column-projection name="PersonName" start-index="7" stop-index="16"/>
+            <column-projection name="Friends" start-index="19" stop-index="25"/>
+        </projections>
+        <from start-index="32" stop-index="356">
+            <subquery-table alias="Q">
+                <subquery start-index="32" stop-index="356">
+                    <select>
+                        <projections start-index="40" stop-index="198">
+                            <column-projection name="name" start-index="40" stop-index="65" alias="PersonName">
+                                <owner name="Person1" start-index="40" stop-index="46"/>
+                            </column-projection>
+                            <expression-projection text="STRING_AGG(Person2.name, '->') WITHIN GROUP (GRAPH PATH)" start-index="68" stop-index="134" alias="Friends">
+                                <function text="STRING_AGG(Person2.name, '->') WITHIN GROUP (GRAPH PATH)" function-name="STRING_AGG" start-index="68" stop-index="123">
+                                    <parameter>
+                                        <column name="name" start-index="79" stop-index="90">
+                                            <owner name="Person2" start-index="79" stop-index="85"/>
+                                        </column>
+                                    </parameter>
+                                    <parameter>
+                                        <literal-expression value="->" start-index="93" stop-index="96"/>
+                                    </parameter>
+                                </function>
+                            </expression-projection>
+                            <expression-projection text="LAST_VALUE(Person2.name) WITHIN GROUP (GRAPH PATH)" start-index="137" stop-index="198" alias="LastNode">
+                                <function text="LAST_VALUE(Person2.name) WITHIN GROUP (GRAPH PATH)" function-name="LAST_VALUE" start-index="137" stop-index="186">
+                                    <parameter>
+                                        <column name="name" start-index="148" stop-index="159">
+                                            <owner name="Person2" start-index="148" stop-index="154"/>
+                                        </column>
+                                    </parameter>
+                                </function>
+                            </expression-projection>
+                        </projections>
+                        <from start-index="205" stop-index="275">
+                            <join-table join-type="COMMA">
+                                <left>
+                                    <join-table join-type="COMMA">
+                                        <left>
+                                            <simple-table name="Person" start-index="205" stop-index="221" alias="Person1"/>
+                                        </left>
+                                        <right>
+                                            <simple-table name="friendOf" start-index="224" stop-index="246" alias="fo"/>
+                                        </right>
+                                    </join-table>
+                                </left>
+                                <right>
+                                    <simple-table name="Person" start-index="249" stop-index="275" alias="Person2"/>
+                                </right>
+                            </join-table>
+                        </from>
+                        <where start-index="277" stop-index="355">
+                            <expr>
+                                <binary-operation-expression start-index="283" stop-index="355">
+                                    <operator>AND</operator>
+                                    <left>
+                                        <common-expression text="MATCH(SHORTEST_PATH(Person1(-(fo)->Person2)+))" start-index="283" stop-index="328"/>
+                                    </left>
+                                    <right>
+                                        <binary-operation-expression start-index="334" stop-index="355">
+                                            <operator>=</operator>
+                                            <left>
+                                               <column name="name" start-index="334" stop-index="345">
+                                                   <owner name="Person1" start-index="334" stop-index="340"/>
+                                               </column>
+                                            </left>
+                                            <right>
+                                                <literal-expression value="Jacob" start-index="349" stop-index="355"/>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <where start-index="363" stop-index="388">
+            <expr>
+                <binary-operation-expression start-index="369" stop-index="388">
+                    <left>
+                        <column name="LastNode" start-index="369" stop-index="378">
+                            <owner name="Q" start-index="369" stop-index="369"/>
+                        </column>
+                    </left>
+                    <right>
+                        <literal-expression value="Alice" start-index="382" stop-index="388"/>
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_from_arbitrary_match_al_pattern_where">
+        <projections start-index="7" stop-index="101">
+            <column-projection name="name" start-index="7" stop-index="32" alias="PersonName">
+                <owner name="Person1" start-index="7" stop-index="13"/>
+            </column-projection>
+            <expression-projection text="STRING_AGG(Person2.name, '->') WITHIN GROUP (GRAPH PATH)" start-index="35" stop-index="101" alias="Friends">
+                <function text="STRING_AGG(Person2.name, '->') WITHIN GROUP (GRAPH PATH)" function-name="STRING_AGG" start-index="35" stop-index="90">
+                    <parameter>
+                        <column name="name" start-index="46" stop-index="57">
+                            <owner name="Person2" start-index="46" stop-index="52"/>
+                        </column>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="->" start-index="60" stop-index="63"/>
+                    </parameter>
+                </function>
+            </expression-projection>
+        </projections>
+        <from start-index="107" stop-index="178">
+            <join-table join-type="COMMA">
+                <left>
+                    <join-table join-type="COMMA">
+                        <left>
+                            <simple-table name="Person" start-index="108" stop-index="124" alias="Person1"/>
+                        </left>
+                        <right>
+                            <simple-table name="friendOf" start-index="127" stop-index="149" alias="fo"/>
+                        </right>
+                    </join-table>
+                </left>
+                <right>
+                    <simple-table name="Person" start-index="152" stop-index="178" alias="Person2"/>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="180" stop-index="262">
+            <expr>
+                <binary-operation-expression start-index="186" stop-index="262">
+                    <left>
+                        <common-expression text="MATCH(SHORTEST_PATH(Person1(-(fo)->Person2){1,3}))" start-index="186" stop-index="235"/>
+                    </left>
+                    <right>
+                        <binary-operation-expression start-index="241" stop-index="262">
+                            <left>
+                                <column name="name" start-index="241" stop-index="252">
+                                    <owner name="Person1" start-index="241" stop-index="247"/>
+                                </column>
+                            </left>
+                            <right>
+                                <literal-expression value="Jacob" start-index="256" stop-index="262"/>
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_multi_arbitrary_match">
+        <projections start-index="7" stop-index="118">
+            <column-projection name="name" start-index="7" stop-index="32" alias="PersonName">
+                <owner name="Person1" start-index="7" stop-index="13"/>
+            </column-projection>
+            <expression-projection text="STRING_AGG(Person2.name, '->') WITHIN GROUP (GRAPH PATH)" start-index="35" stop-index="101" alias="Friends">
+                <function text="STRING_AGG(Person2.name, '->') WITHIN GROUP (GRAPH PATH)" function-name="STRING_AGG" start-index="35" stop-index="90">
+                    <parameter>
+                        <column name="name" start-index="46" stop-index="57">
+                            <owner name="Person2" start-index="46" stop-index="52"/>
+                        </column>
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="->" start-index="60" stop-index="63"/>
+                    </parameter>
+                </function>
+            </expression-projection>
+            <column-projection name="name" start-index="104" stop-index="118">
+                <owner name="Restaurant" start-index="104" stop-index="113"/>
+            </column-projection>
+        </projections>
+        <from start-index="125" stop-index="214">
+            <join-table join-type="COMMA">
+                <left>
+                    <join-table join-type="COMMA">
+                        <left>
+                            <join-table join-type="COMMA">
+                                <left>
+                                    <join-table join-type="COMMA">
+                                        <left>
+                                            <simple-table name="Person" start-index="125" stop-index="141" alias="Person1"/>
+                                        </left>
+                                        <right>
+                                            <simple-table name="friendOf" start-index="144" stop-index="166" alias="fo"/>
+                                        </right>
+                                    </join-table>
+                                </left>
+                                <right>
+                                    <simple-table name="Person" start-index="169" stop-index="195" alias="Person2"/>
+                                </right>
+                            </join-table>
+                        </left>
+                        <right>
+                            <simple-table name="likes" start-index="198" stop-index="202"/>
+                        </right>
+                    </join-table>
+                </left>
+                <right>
+                    <simple-table name="Restaurant" start-index="205" stop-index="214"/>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="216" stop-index="383">
+            <expr>
+                <binary-operation-expression start-index="222" stop-index="383">
+                    <operator>AND</operator>
+                    <left>
+                        <binary-operation-expression start-index="222" stop-index="342">
+                            <operator>AND</operator>
+                            <left>
+                                <common-expression text="MATCH(SHORTEST_PATH(Person1(-(fo)->Person2){1,3}) AND LAST_NODE(Person2)-(likes)->Restaurant )" start-index="222" stop-index="315"/>
+                            </left>
+                            <right>
+                                <binary-operation-expression start-index="321" stop-index="342">
+                                    <operator>=</operator>
+                                    <left>
+                                        <column name="name" start-index="321" stop-index="332">
+                                            <owner name="Person1" start-index="321" stop-index="327"/>
+                                        </column>
+                                    </left>
+                                    <right>
+                                        <literal-expression value="Jacob" start-index="336" stop-index="342"/>
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <binary-operation-expression start-index="348" stop-index="383">
+                            <operator>=</operator>
+                            <left>
+                                <column name="name" start-index="348" stop-index="362">
+                                    <owner name="Restaurant" start-index="348" stop-index="357"/>
+                                </column>
+                            </left>
+                            <right>
+                                <literal-expression value="Ginger and Spice" start-index="366" stop-index="383"/>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_views">
         <projections start-index="7" stop-index="54">
             <expression-projection start-index="7" stop-index="54" text="'ALTER DATABASE DATAFILE '''||name||''' ONLINE;'">
@@ -8761,4 +9246,5 @@
             <simple-table name="V$DATAFILE" start-index="61" stop-index="70"/>
         </from>
     </select>
+
 </sql-parser-test-cases>

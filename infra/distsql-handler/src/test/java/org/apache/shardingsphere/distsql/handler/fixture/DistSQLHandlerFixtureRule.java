@@ -20,13 +20,13 @@ package org.apache.shardingsphere.distsql.handler.fixture;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,34 +38,14 @@ public final class DistSQLHandlerFixtureRule implements ShardingSphereRule, Data
     }
     
     @Override
-    public Map<String, Collection<DataNode>> getAllDataNodes() {
+    public DataNodeRule getDataNodeRule() {
+        DataNodeRule result = mock(DataNodeRule.class);
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
-        return Collections.singletonMap("", Collections.singleton(dataNode));
-    }
-    
-    @Override
-    public Collection<DataNode> getDataNodesByTableName(final String tableName) {
-        return null;
-    }
-    
-    @Override
-    public Optional<String> findFirstActualTable(final String logicTable) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public boolean isNeedAccumulate(final Collection<String> tables) {
-        return false;
-    }
-    
-    @Override
-    public Optional<String> findLogicTableByActualTable(final String actualTable) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
-        return Optional.empty();
+        when(result.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
+        when(result.findFirstActualTable(any())).thenReturn(Optional.empty());
+        when(result.findLogicTableByActualTable(any())).thenReturn(Optional.empty());
+        when(result.findActualTableByCatalog(any(), any())).thenReturn(Optional.empty());
+        return result;
     }
 }

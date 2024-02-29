@@ -28,17 +28,14 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
  * // CHECKSTYLE:OFF
  * <pre class="code">
  * public final class VerticaDatabaseType implements DatabaseType {
- * <p/>
  *     &#064;Override
  *     public Collection<String> getJdbcUrlPrefixes() {
  *         return Collections.singleton("jdbc:vertica:");
  *     }
- * <p/>
  *     &#064;Override
  *     public Optional<DatabaseType> getTrunkDatabaseType() {
  *         return Optional.of(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
  *     }
- * <p/>
  *     &#064;Override
  *     public String getType() {
  *         return "Vertica";

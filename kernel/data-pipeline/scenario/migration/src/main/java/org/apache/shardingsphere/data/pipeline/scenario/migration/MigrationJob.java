@@ -27,8 +27,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.TableAn
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
-import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;

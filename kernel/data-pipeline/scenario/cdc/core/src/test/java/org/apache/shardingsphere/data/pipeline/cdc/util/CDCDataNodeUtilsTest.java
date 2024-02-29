@@ -35,6 +35,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -50,14 +51,14 @@ class CDCDataNodeUtilsTest {
         when(mockShardingRule.findShardingTable("t_order")).thenReturn(Optional.of(mockShardingTable));
         when(mockShardingRule.getShardingTable("t_order")).thenReturn(mockShardingTable);
         when(mockRuleMetaData.findSingleRule(ShardingRule.class)).thenReturn(Optional.of(mockShardingRule));
-        SingleRule mockSingleRule = mock(SingleRule.class);
+        SingleRule mockSingleRule = mock(SingleRule.class, RETURNS_DEEP_STUBS);
         when(mockRuleMetaData.findSingleRule(SingleRule.class)).thenReturn(Optional.of(mockSingleRule));
-        when(mockSingleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("t_order_item", Collections.singletonList(new DataNode("single.t_order_item"))));
+        when(mockSingleRule.getDataNodeRule().getAllDataNodes()).thenReturn(Collections.singletonMap("t_order_item", Collections.singletonList(new DataNode("single.t_order_item"))));
         when(mockDatabase.getRuleMetaData()).thenReturn(mockRuleMetaData);
-        BroadcastRule mockBroadcastRule = mock(BroadcastRule.class);
-        when(mockRuleMetaData.findSingleRule(BroadcastRule.class)).thenReturn(Optional.of(mockBroadcastRule));
-        when(mockBroadcastRule.findFirstActualTable("t_address")).thenReturn(Optional.of("broadcast.t_address"));
-        when(mockBroadcastRule.getTableDataNodes()).thenReturn(Collections.singletonMap("t_address", Collections.singletonList(new DataNode("broadcast.t_address"))));
+        BroadcastRule broadcastRule = mock(BroadcastRule.class, RETURNS_DEEP_STUBS);
+        when(mockRuleMetaData.findSingleRule(BroadcastRule.class)).thenReturn(Optional.of(broadcastRule));
+        when(broadcastRule.getDataNodeRule().findFirstActualTable("t_address")).thenReturn(Optional.of("broadcast.t_address"));
+        when(broadcastRule.getDataNodeRule().getAllDataNodes()).thenReturn(Collections.singletonMap("t_address", Collections.singletonList(new DataNode("broadcast.t_address"))));
         Map<String, List<DataNode>> actual = CDCDataNodeUtils.buildDataNodesMap(mockDatabase, Arrays.asList("t_order", "t_order_item", "t_address"));
         assertTrue(actual.containsKey("t_order"));
         assertTrue(actual.containsKey("t_order_item"));

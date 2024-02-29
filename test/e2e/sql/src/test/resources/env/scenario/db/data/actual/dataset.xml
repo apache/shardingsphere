@@ -75,15 +75,6 @@
         <column name="continent_name" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="db_0.t_single_table">
-        <column name="single_id" type="numeric" />
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="db_${0..9}.t_broadcast_table">
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <row data-node="db_0.t_order" values="1000, 10, init, null, test, 2017-08-08" />
     <row data-node="db_0.t_order" values="1001, 10, init, 2, test, 2017-08-08" />
     <row data-node="db_0.t_order" values="2000, 20, init, null, test, 2017-08-08" />
@@ -454,18 +445,4 @@
     <row data-node="db_8.t_country" values="86, china, asia, 2017-08-08" />
     <row data-node="db_9.t_country" values="1, usa, north america, 2017-08-08" />
     <row data-node="db_9.t_country" values="86, china, asia, 2017-08-08" />
-    <row data-node="db_0.t_single_table" values="1, 1000, init" />
-    <row data-node="db_0.t_single_table" values="2, 1101, init" />
-    <row data-node="db_0.t_single_table" values="3, 2300, init" />
-    <row data-node="db_0.t_single_table" values="4, 2401, init" />
-    <row data-node="db_0.t_broadcast_table" values="1, init" />
-    <row data-node="db_1.t_broadcast_table" values="1, init" />
-    <row data-node="db_2.t_broadcast_table" values="1, init" />
-    <row data-node="db_3.t_broadcast_table" values="1, init" />
-    <row data-node="db_4.t_broadcast_table" values="1, init" />
-    <row data-node="db_5.t_broadcast_table" values="1, init" />
-    <row data-node="db_6.t_broadcast_table" values="1, init" />
-    <row data-node="db_7.t_broadcast_table" values="1, init" />
-    <row data-node="db_8.t_broadcast_table" values="1, init" />
-    <row data-node="db_9.t_broadcast_table" values="1, init" />
 </dataset>

@@ -35,7 +35,7 @@ public final class StandardReadwriteSplittingDataSourceRouter {
      * @return routed data source name
      */
     public String route(final ReadwriteSplittingDataSourceRule rule) {
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), getFilteredReadDataSources(rule));
+        return rule.getLoadBalancer().getAvailableTargetName(rule.getName(), getFilteredReadDataSources(rule));
     }
     
     private List<String> getFilteredReadDataSources(final ReadwriteSplittingDataSourceRule rule) {
