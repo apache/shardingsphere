@@ -20,17 +20,15 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.rule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.swapper.NewYamlConfigurationSwapper;
 
 /**
  * YAML rule configuration swapper.
- * 
- * @param <Y> type of YAML rule configuration
+ *
  * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface YamlRuleConfigurationSwapper<Y extends YamlRuleConfiguration, T extends RuleConfiguration> extends YamlConfigurationSwapper<Y, T>, OrderedSPI<T> {
+public interface YamlRuleConfigurationSwapper<T extends RuleConfiguration> extends NewYamlConfigurationSwapper<T>, OrderedSPI<T> {
     
     /**
      * Get YAML rule tag name.

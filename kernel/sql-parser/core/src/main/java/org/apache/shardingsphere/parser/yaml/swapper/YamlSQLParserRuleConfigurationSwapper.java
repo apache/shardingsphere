@@ -17,22 +17,33 @@
 
 package org.apache.shardingsphere.parser.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+
 /**
  * YAML SQL parser rule configuration swapper.
  */
-public final class YamlSQLParserRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlSQLParserRuleConfiguration, SQLParserRuleConfiguration> {
+public final class YamlSQLParserRuleConfigurationSwapper implements YamlGlobalRuleConfigurationSwapper<SQLParserRuleConfiguration> {
     
     private final YamlSQLParserCacheOptionConfigurationSwapper cacheOptionSwapper = new YamlSQLParserCacheOptionConfigurationSwapper();
     
     @Override
-    public YamlSQLParserRuleConfiguration swapToYamlConfiguration(final SQLParserRuleConfiguration data) {
+    public Collection<YamlDataNode> swapToDataNodes(final SQLParserRuleConfiguration data) {
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
+    }
+    
+    private YamlSQLParserRuleConfiguration swapToYamlConfiguration(final SQLParserRuleConfiguration data) {
         YamlSQLParserRuleConfiguration result = new YamlSQLParserRuleConfiguration();
         result.setParseTreeCache(cacheOptionSwapper.swapToYamlConfiguration(data.getParseTreeCache()));
         result.setSqlStatementCache(cacheOptionSwapper.swapToYamlConfiguration(data.getSqlStatementCache()));
@@ -40,7 +51,18 @@ public final class YamlSQLParserRuleConfigurationSwapper implements YamlRuleConf
     }
     
     @Override
-    public SQLParserRuleConfiguration swapToObject(final YamlSQLParserRuleConfiguration yamlConfig) {
+    public Optional<SQLParserRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        for (YamlDataNode each : dataNodes) {
+            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
+            if (!version.isPresent()) {
+                continue;
+            }
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLParserRuleConfiguration.class)));
+        }
+        return Optional.empty();
+    }
+    
+    private SQLParserRuleConfiguration swapToObject(final YamlSQLParserRuleConfiguration yamlConfig) {
         CacheOption parseTreeCacheOption = null == yamlConfig.getParseTreeCache()
                 ? DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION
                 : cacheOptionSwapper.swapToObject(yamlConfig.getParseTreeCache());

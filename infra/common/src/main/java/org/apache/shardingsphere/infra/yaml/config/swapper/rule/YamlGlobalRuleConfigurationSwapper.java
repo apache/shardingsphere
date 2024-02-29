@@ -23,13 +23,12 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.util.yaml.swapper.NewYamlConfigurationSwapper;
 
 /**
- * TODO Rename YamGlobalRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * YAML rule global configuration swapper.
  *
  * @param <T> type of rule configuration
  */
 @SingletonSPI
-public interface NewYamlGlobalRuleConfigurationSwapper<T extends RuleConfiguration> extends NewYamlConfigurationSwapper<T>, OrderedSPI<T> {
+public interface YamlGlobalRuleConfigurationSwapper<T extends RuleConfiguration> extends NewYamlConfigurationSwapper<T>, OrderedSPI<T> {
     
     /**
      * Get YAML rule tag name.

@@ -25,12 +25,32 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class GlobalNodeTest {
     
     @Test
-    void assertGetGlobalRuleNodePath() {
-        assertThat(GlobalNode.getGlobalRuleNode(), is("/rules"));
+    void assertGetGlobalRuleRootNode() {
+        assertThat(GlobalNode.getGlobalRuleRootNode(), is("/rules"));
     }
     
     @Test
-    void assertGetPropsPath() {
-        assertThat(GlobalNode.getPropsPath(), is("/props"));
+    void assertGetPropsActiveVersionNode() {
+        assertThat(GlobalNode.getPropsActiveVersionNode(), is("/props/active_version"));
+    }
+    
+    @Test
+    void assertGetPropsVersionNode() {
+        assertThat(GlobalNode.getPropsVersionNode("0"), is("/props/versions/0"));
+    }
+    
+    @Test
+    void assertGetGlobalRuleActiveVersionNode() {
+        assertThat(GlobalNode.getGlobalRuleActiveVersionNode("transaction"), is("/rules/transaction/active_version"));
+    }
+    
+    @Test
+    void assertGetGlobalRuleVersionsNode() {
+        assertThat(GlobalNode.getGlobalRuleVersionsNode("transaction"), is("/rules/transaction/versions"));
+    }
+    
+    @Test
+    void assertGetGlobalRuleVersionNode() {
+        assertThat(GlobalNode.getGlobalRuleVersionNode("transaction", "0"), is("/rules/transaction/versions/0"));
     }
 }

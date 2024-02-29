@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -35,7 +32,7 @@ import java.util.Optional;
 /**
  * Global rule changed watcher.
  */
-public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GlobalRuleConfigurationsChangedEvent> {
+public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {
@@ -44,18 +41,14 @@ public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GlobalR
     
     @Override
     public Collection<Type> getWatchingTypes() {
-        return Collections.singleton(Type.UPDATED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
-    public Optional<GlobalRuleConfigurationsChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return GlobalNode.getGlobalRuleNode().equals(event.getKey()) ? Optional.of(new GlobalRuleConfigurationsChangedEvent(getGlobalRuleConfigurations(event))) : Optional.empty();
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Collection<RuleConfiguration> getGlobalRuleConfigurations(final DataChangedEvent event) {
-        Collection<YamlRuleConfiguration> globalRuleConfigs = YamlEngine.unmarshal(event.getValue(), Collection.class);
-        Preconditions.checkState(!globalRuleConfigs.isEmpty(), "No available global rule to load for governance.");
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(globalRuleConfigs);
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+        if (GlobalNodePath.isRuleActiveVersionPath(event.getKey())) {
+            return GlobalNodePath.getRuleName(event.getKey()).map(optional -> new AlterGlobalRuleConfigurationEvent(optional, event.getKey(), event.getValue()));
+        }
+        return Optional.empty();
     }
 }

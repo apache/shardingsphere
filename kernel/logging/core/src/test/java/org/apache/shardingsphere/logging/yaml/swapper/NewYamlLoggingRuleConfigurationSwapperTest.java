@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 // TODO Rename YamlLoggingRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
 class NewYamlLoggingRuleConfigurationSwapperTest {
     
-    private final NewYamlLoggingRuleConfigurationSwapper swapper = new NewYamlLoggingRuleConfigurationSwapper();
+    private final YamlLoggingRuleConfigurationSwapper swapper = new YamlLoggingRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodes() {

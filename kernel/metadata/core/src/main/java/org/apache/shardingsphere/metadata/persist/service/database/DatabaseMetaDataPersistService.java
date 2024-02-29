@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.schema.TableMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.schema.ViewMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -42,10 +43,13 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
     
     private final ViewMetaDataPersistService viewMetaDataPersistService;
     
-    public DatabaseMetaDataPersistService(final PersistRepository repository) {
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
+    
+    public DatabaseMetaDataPersistService(final PersistRepository repository, final MetaDataVersionPersistService metaDataVersionPersistService) {
         this.repository = repository;
         this.tableMetaDataPersistService = new TableMetaDataPersistService(repository);
         this.viewMetaDataPersistService = new ViewMetaDataPersistService(repository);
+        this.metaDataVersionPersistService = metaDataVersionPersistService;
     }
     
     /**
@@ -113,7 +117,8 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
             addSchema(databaseName, schemaName);
         }
         Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
-        tableMetaDataPersistService.persist(databaseName, schemaName, SchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
+        metaDataVersionPersistService.switchActiveVersion(tableMetaDataPersistService
+                .persistSchemaMetaData(databaseName, schemaName, SchemaManager.getToBeAddedTables(schema.getTables(), currentTables)));
         SchemaManager.getToBeDeletedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
@@ -129,7 +134,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
             addSchema(databaseName, schemaName);
         }
-        tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
+        metaDataVersionPersistService.switchActiveVersion(tableMetaDataPersistService.persistSchemaMetaData(databaseName, schemaName, schema.getTables()));
     }
     
     /**

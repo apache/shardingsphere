@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 // TODO Rename YamlAuthorityRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
 class NewYamlAuthorityRuleConfigurationSwapperTest {
     
-    private final NewYamlAuthorityRuleConfigurationSwapper swapper = new NewYamlAuthorityRuleConfigurationSwapper();
+    private final YamlAuthorityRuleConfigurationSwapper swapper = new YamlAuthorityRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodes() {

@@ -32,15 +32,15 @@ public final class DatabaseMetaDataNode {
     
     private static final String ROOT_NODE = "metadata";
     
-    private static final String SCHEMAS_NODE = "schemas";
-    
-    private static final String DATA_SOURCE_NODE = "data_sources";
+    private static final String DATA_SOURCES_NODE = "data_sources";
     
     private static final String DATA_SOURCE_NODES_NODE = "nodes";
     
     private static final String DATA_SOURCE_UNITS_NODE = "units";
     
     private static final String RULE_NODE = "rules";
+    
+    private static final String SCHEMAS_NODE = "schemas";
     
     private static final String TABLES_NODE = "tables";
     
@@ -50,56 +50,445 @@ public final class DatabaseMetaDataNode {
     
     private static final String VERSIONS = "versions";
     
+    private static final String TABLES_PATTERN = "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables";
+    
+    private static final String VIEWS_PATTERN = "/([\\w\\-]+)/schemas/([\\w\\-]+)/views";
+    
+    private static final String ACTIVE_VERSION_SUFFIX = "/([\\w\\-]+)/active_version";
+    
     /**
-     * Get meta data data source nodes path.
+     * Get data source units node.
      *
      * @param databaseName database name
-     * @param version data source version
-     * @return data source path
+     * @return data sources node
      */
-    public static String getMetaDataDataSourceUnitsPath(final String databaseName, final String version) {
-        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE, DATA_SOURCE_UNITS_NODE);
+    public static String getDataSourceUnitsNode(final String databaseName) {
+        return String.join("/", getMetaDataNodeNode(), databaseName, DATA_SOURCES_NODE, DATA_SOURCE_UNITS_NODE);
     }
     
     /**
-     * Get meta data data source units path.
+     * Get data source nodes node.
      *
      * @param databaseName database name
-     * @param version data source version
-     * @return data source path
+     * @return data sources node
      */
-    public static String getMetaDataDataSourceNodesPath(final String databaseName, final String version) {
-        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE, DATA_SOURCE_NODES_NODE);
+    public static String getDataSourceNodesNode(final String databaseName) {
+        return String.join("/", getMetaDataNodeNode(), databaseName, DATA_SOURCES_NODE, DATA_SOURCE_NODES_NODE);
     }
     
     /**
-     * Get meta data node path.
+     * Get data source unit node.
      *
-     * @return meta data node path
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source node
      */
-    public static String getMetaDataNodePath() {
-        return String.join("/", "", ROOT_NODE);
+    public static String getDataSourceUnitNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName);
     }
     
     /**
-     * Get database name path.
+     * Get data source unit node.
      *
      * @param databaseName database name
-     * @return database name path
+     * @param dataSourceName data source name
+     * @return data source node
      */
-    public static String getDatabaseNamePath(final String databaseName) {
-        return String.join("/", getMetaDataNodePath(), databaseName);
+    public static String getDataSourceNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName);
     }
     
     /**
-     * Get rule path.
+     * Get data source unit node with version.
      *
      * @param databaseName database name
-     * @param version rule version
-     * @return rule path
+     * @param dataSourceName data source name
+     * @param version version
+     * @return data source node with version
      */
-    public static String getRulePath(final String databaseName, final String version) {
-        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, RULE_NODE);
+    public static String getDataSourceUnitNodeWithVersion(final String databaseName, final String dataSourceName, final String version) {
+        return String.join("/", getDataSourceUnitVersionsNode(databaseName, dataSourceName), version);
+    }
+    
+    /**
+     * Get data source node with version.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @param version version
+     * @return data source node with version
+     */
+    public static String getDataSourceNodeWithVersion(final String databaseName, final String dataSourceName, final String version) {
+        return String.join("/", getDataSourceNodeVersionsNode(databaseName, dataSourceName), version);
+    }
+    
+    /**
+     * Get data source unit active version node.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source active version node
+     */
+    public static String getDataSourceUnitActiveVersionNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName, ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get data source node active version node.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source active version node
+     */
+    public static String getDataSourceNodeActiveVersionNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceNodesNode(databaseName), dataSourceName, ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get data source unit versions node.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source versions node
+     */
+    public static String getDataSourceUnitVersionsNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceUnitsNode(databaseName), dataSourceName, VERSIONS);
+    }
+    
+    /**
+     * Get data source node versions node.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source versions node
+     */
+    public static String getDataSourceNodeVersionsNode(final String databaseName, final String dataSourceName) {
+        return String.join("/", getDataSourceNodesNode(databaseName), dataSourceName, VERSIONS);
+    }
+    
+    /**
+     * Get database rule active version node.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @param key key
+     * @return database rule active version node
+     */
+    public static String getDatabaseRuleActiveVersionNode(final String databaseName, final String ruleName, final String key) {
+        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key, ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get database rule versions node.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @param key key
+     * @return database rule versions node
+     */
+    public static String getDatabaseRuleVersionsNode(final String databaseName, final String ruleName, final String key) {
+        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key, VERSIONS);
+    }
+    
+    /**
+     * Get database rule version node.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @param key key
+     * @param version version
+     * @return database rule next version
+     */
+    public static String getDatabaseRuleVersionNode(final String databaseName, final String ruleName, final String key, final String version) {
+        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key, VERSIONS, version);
+    }
+    
+    /**
+     * Get database rule node.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @param key key
+     * @return database rule node without version
+     */
+    public static String getDatabaseRuleNode(final String databaseName, final String ruleName, final String key) {
+        return String.join("/", getDatabaseRuleNode(databaseName, ruleName), key);
+    }
+    
+    /**
+     * Get database rule root node.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @return database rule root node
+     */
+    public static String getDatabaseRuleNode(final String databaseName, final String ruleName) {
+        return String.join("/", getRulesNode(databaseName), ruleName);
+    }
+    
+    /**
+     * Get database rules node.
+     *
+     * @param databaseName database name
+     * @return database rules node
+     */
+    public static String getRulesNode(final String databaseName) {
+        return String.join("/", getMetaDataNodeNode(), databaseName, RULE_NODE);
+    }
+    
+    /**
+     * Get table active version node.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return tables active version node
+     */
+    public static String getTableActiveVersionNode(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", getTableNode(databaseName, schemaName, tableName), ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get table versions node.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return tables versions node
+     */
+    public static String getTableVersionsNode(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", getTableNode(databaseName, schemaName, tableName), VERSIONS);
+    }
+    
+    /**
+     * Get table version node.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param version version
+     * @return table version node
+     */
+    public static String getTableVersionNode(final String databaseName, final String schemaName, final String tableName, final String version) {
+        return String.join("/", getTableVersionsNode(databaseName, schemaName, tableName), version);
+    }
+    
+    /**
+     * Get table node.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return table node
+     */
+    public static String getTableNode(final String databaseName, final String schemaName, final String tableName) {
+        return String.join("/", getMetaDataNodeNode(), databaseName, SCHEMAS_NODE, schemaName, TABLES_NODE, tableName);
+    }
+    
+    /**
+     * Get view name active version node.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param viewName view name
+     * @return view active version node
+     */
+    public static String getViewActiveVersionNode(final String databaseName, final String schemaName, final String viewName) {
+        return String.join("/", getViewNode(databaseName, schemaName, viewName), ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get view versions node.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param viewName view name
+     * @return view versions node
+     */
+    public static String getViewVersionsNode(final String databaseName, final String schemaName, final String viewName) {
+        return String.join("/", getViewNode(databaseName, schemaName, viewName), VERSIONS);
+    }
+    
+    /**
+     * Get view version node.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param viewName view name
+     * @param version version
+     * @return view version node
+     */
+    public static String getViewVersionNode(final String databaseName, final String schemaName, final String viewName, final String version) {
+        return String.join("/", getViewVersionsNode(databaseName, schemaName, viewName), version);
+    }
+    
+    /**
+     * Get view node.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param viewName view name
+     * @return tables path
+     */
+    public static String getViewNode(final String databaseName, final String schemaName, final String viewName) {
+        return String.join("/", getMetaDataNodeNode(), databaseName, SCHEMAS_NODE, schemaName, VIEWS_NODE, viewName);
+    }
+    
+    /**
+     * Is data sources node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isDataSourcesNode(final String path) {
+        return Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/?", Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
+     * Get data source name by data source unit node.
+     *
+     * @param path path
+     * @return data source name
+     */
+    public static Optional<String> getDataSourceNameByDataSourceUnitNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/" + DATA_SOURCE_UNITS_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get data source name by data source nodes node.
+     *
+     * @param path path
+     * @return data source name
+     */
+    public static Optional<String> getDataSourceNameByDataSourceNode(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/" + DATA_SOURCE_NODES_NODE + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Is data source unit active version node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isDataSourceUnitActiveVersionNode(final String path) {
+        return Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/" + DATA_SOURCE_UNITS_NODE + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
+     * Is data source unit active version node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isDataSourceNodeActiveVersionNode(final String path) {
+        return Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/" + DATA_SOURCES_NODE + "/" + DATA_SOURCE_NODES_NODE + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
+     * Get database name.
+     *
+     * @param path path
+     * @return database name
+     */
+    public static Optional<String> getDatabaseName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get database name by schema path.
+     *
+     * @param schemaPath database path
+     * @return database name
+     */
+    public static Optional<String> getDatabaseNameBySchemaNode(final String schemaPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(schemaPath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @param path path
+     * @return schema name
+     */
+    public static Optional<String> getSchemaName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get schema name by table path.
+     *
+     * @param tablePath table path
+     * @return schema name
+     */
+    public static Optional<String> getSchemaNameByTableNode(final String tablePath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + "/([\\w\\-]+)/schemas/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(tablePath);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @param path path
+     * @return table name
+     */
+    public static Optional<String> getTableName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + TABLES_PATTERN + "/([\\w\\-]+)/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Is table active version node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isTableActiveVersionNode(final String path) {
+        return Pattern.compile(getMetaDataNodeNode() + TABLES_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
+     * Get view name.
+     *
+     * @param path path
+     * @return view name
+     */
+    public static Optional<String> getViewName(final String path) {
+        Pattern pattern = Pattern.compile(getMetaDataNodeNode() + VIEWS_PATTERN + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Is view active version node.
+     *
+     * @param path path
+     * @return true or false
+     */
+    public static boolean isViewActiveVersionNode(final String path) {
+        return Pattern.compile(getMetaDataNodeNode() + VIEWS_PATTERN + ACTIVE_VERSION_SUFFIX, Pattern.CASE_INSENSITIVE).matcher(path).find();
+    }
+    
+    /**
+     * Get version node by active version path.
+     *
+     * @param rulePath rule path
+     * @param activeVersion active version
+     * @return active version node
+     */
+    public static String getVersionNodeByActiveVersionPath(final String rulePath, final String activeVersion) {
+        return rulePath.replace(ACTIVE_VERSION, VERSIONS) + "/" + activeVersion;
     }
     
     /**
@@ -111,17 +500,6 @@ public final class DatabaseMetaDataNode {
      */
     public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
         return String.join("/", getMetaDataSchemaPath(databaseName, schemaName), TABLES_NODE);
-    }
-    
-    /**
-     * Get meta data views path.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return views path
-     */
-    public static String getMetaDataViewsPath(final String databaseName, final String schemaName) {
-        return String.join("/", getMetaDataSchemaPath(databaseName, schemaName), VIEWS_NODE);
     }
     
     /**
@@ -146,159 +524,36 @@ public final class DatabaseMetaDataNode {
     }
     
     /**
-     * Get table meta data path.
+     * Get database name path.
+     *
+     * @param databaseName database name
+     * @return database name path
+     */
+    public static String getDatabaseNamePath(final String databaseName) {
+        return String.join("/", getMetaDataNodePath(), databaseName);
+    }
+    
+    /**
+     * Get meta data views path.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param table table name
-     * @return table meta data path
+     * @return views path
      */
-    public static String getTableMetaDataPath(final String databaseName, final String schemaName, final String table) {
-        return String.join("/", getMetaDataTablesPath(databaseName, schemaName), table);
+    public static String getMetaDataViewsPath(final String databaseName, final String schemaName) {
+        return String.join("/", getMetaDataSchemaPath(databaseName, schemaName), VIEWS_NODE);
     }
     
     /**
-     * Get view meta data path.
+     * Get meta data node path.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param view view name
-     * @return view meta data path
+     * @return meta data node path
      */
-    public static String getViewMetaDataPath(final String databaseName, final String schemaName, final String view) {
-        return String.join("/", getMetaDataViewsPath(databaseName, schemaName), view);
+    public static String getMetaDataNodePath() {
+        return String.join("/", "", ROOT_NODE);
     }
     
-    private static String getFullMetaDataPath(final String databaseName, final String node) {
-        return String.join("/", "", ROOT_NODE, databaseName, node);
-    }
-    
-    /**
-     * Get database name.
-     *
-     * @param configNodeFullPath config node full path
-     * @return database name
-     */
-    public static Optional<String> getDatabaseName(final String configNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(configNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @param configNodeFullPath config node full path
-     * @return schema name
-     */
-    public static Optional<String> getSchemaName(final String configNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(configNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     * Get database name by database path.
-     *
-     * @param databasePath database path
-     * @return database name
-     */
-    public static Optional<String> getDatabaseNameByDatabasePath(final String databasePath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(databasePath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @param schemaPath schema path
-     * @return schema name
-     */
-    public static Optional<String> getSchemaNameBySchemaPath(final String schemaPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(schemaPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     * Get table meta data path.
-     *
-     * @param tableMetaDataPath table meta data path
-     * @return table name
-     */
-    public static Optional<String> getTableName(final String tableMetaDataPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(tableMetaDataPath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
-    }
-    
-    /**
-     * Get view meta data path.
-     *
-     * @param viewMetaDataPath view meta data path
-     * @return view name
-     */
-    public static Optional<String> getViewName(final String viewMetaDataPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/views" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(viewMetaDataPath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
-    }
-    
-    /**
-     * Get active version path.
-     * 
-     * @param databaseName database name
-     * @return active version path
-     */
-    public static String getActiveVersionPath(final String databaseName) {
-        return getFullMetaDataPath(databaseName, ACTIVE_VERSION);
-    }
-    
-    /**
-     * Get database version path.
-     * 
-     * @param databaseName database name
-     * @param version version
-     * @return database version path
-     */
-    public static String getDatabaseVersionPath(final String databaseName, final String version) {
-        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version);
-    }
-    
-    /**
-     * Get version by data source units path.
-     * 
-     * @param dataSourceNodeFullPath data sources unit node full path
-     * @return version
-     */
-    public static Optional<String> getVersionByDataSourceUnitsPath(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/versions/([\\w\\-]+)/data_sources/units", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     * Get version by data source nodes path.
-     *
-     * @param dataSourceNodeFullPath data sources node full path
-     * @return version
-     */
-    public static Optional<String> getVersionByDataSourceNodesPath(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/versions/([\\w\\-]+)/data_sources/nodes", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
-    }
-    
-    /**
-     * Get version by rules path.
-     *
-     * @param rulesNodeFullPath rules node full path
-     * @return version
-     */
-    public static Optional<String> getVersionByRulesPath(final String rulesNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/versions/([\\w\\-]+)/rules", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(rulesNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    private static String getMetaDataNodeNode() {
+        return String.join("/", "", ROOT_NODE);
     }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.metadata.persist.fixture;
 
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-
 public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, RuleConfigurationFixture> {
     
     @Override

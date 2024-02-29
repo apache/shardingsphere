@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.fixture;
 
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
 public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, FixtureRuleConfiguration> {
     

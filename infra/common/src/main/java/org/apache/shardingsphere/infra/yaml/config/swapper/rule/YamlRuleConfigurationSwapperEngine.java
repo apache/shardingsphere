@@ -19,12 +19,11 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * YAML rule configuration swapper engine.
@@ -37,32 +36,23 @@ public final class YamlRuleConfigurationSwapperEngine {
      * @param ruleConfigs rule configurations
      * @return YAML rule configurations
      */
-    @SuppressWarnings("unchecked")
-    public Collection<YamlRuleConfiguration> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet().stream()
-                .map(entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
+    @SuppressWarnings("rawtypes")
+    public Map<RuleConfiguration, YamlRuleConfigurationSwapper> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+        return OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, ruleConfigs);
     }
     
     /**
      * Swap from YAML rule configurations to rule configurations.
      *
-     * @param yamlRuleConfigs YAML rule configurations
+     * @param dataNodes YAML data nodes
      * @return rule configurations
      */
-    @SuppressWarnings("rawtypes")
-    public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlDataNode> dataNodes) {
         Collection<RuleConfiguration> result = new LinkedList<>();
-        Collection<Class<?>> ruleConfigTypes = yamlRuleConfigs.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
-        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPILoader.getServicesByClass(YamlRuleConfigurationSwapper.class, ruleConfigTypes).entrySet()) {
-            result.addAll(swapToRuleConfigurations(yamlRuleConfigs, entry.getKey(), entry.getValue()));
+        for (YamlRuleConfigurationSwapper each : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class)) {
+            each.swapToObject(dataNodes).ifPresent(optional -> result.add((RuleConfiguration) optional));
         }
         return result;
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
-                                                                   final Class<?> ruleConfigType, final YamlRuleConfigurationSwapper swapper) {
-        return yamlRuleConfigs.stream()
-                .filter(each -> each.getRuleConfigurationType().equals(ruleConfigType)).map(each -> (RuleConfiguration) swapper.swapToObject(each)).collect(Collectors.toList());
     }
 }

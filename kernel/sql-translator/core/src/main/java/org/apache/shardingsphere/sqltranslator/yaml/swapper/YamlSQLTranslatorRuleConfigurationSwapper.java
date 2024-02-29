@@ -17,18 +17,29 @@
 
 package org.apache.shardingsphere.sqltranslator.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlGlobalRuleConfigurationSwapper;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.constant.SQLTranslatorOrder;
 import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+
 /**
  * YAML SQL translator rule configuration swapper.
  */
-public final class YamlSQLTranslatorRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlSQLTranslatorRuleConfiguration, SQLTranslatorRuleConfiguration> {
+public final class YamlSQLTranslatorRuleConfigurationSwapper implements YamlGlobalRuleConfigurationSwapper<SQLTranslatorRuleConfiguration> {
     
     @Override
-    public YamlSQLTranslatorRuleConfiguration swapToYamlConfiguration(final SQLTranslatorRuleConfiguration data) {
+    public Collection<YamlDataNode> swapToDataNodes(final SQLTranslatorRuleConfiguration data) {
+        return Collections.singletonList(new YamlDataNode(getRuleTagName().toLowerCase(), YamlEngine.marshal(swapToYamlConfiguration(data))));
+    }
+    
+    private YamlSQLTranslatorRuleConfiguration swapToYamlConfiguration(final SQLTranslatorRuleConfiguration data) {
         YamlSQLTranslatorRuleConfiguration result = new YamlSQLTranslatorRuleConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProps());
@@ -37,7 +48,18 @@ public final class YamlSQLTranslatorRuleConfigurationSwapper implements YamlRule
     }
     
     @Override
-    public SQLTranslatorRuleConfiguration swapToObject(final YamlSQLTranslatorRuleConfiguration yamlConfig) {
+    public Optional<SQLTranslatorRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        for (YamlDataNode each : dataNodes) {
+            Optional<String> version = GlobalNodePath.getVersion(getRuleTagName().toLowerCase(), each.getKey());
+            if (!version.isPresent()) {
+                continue;
+            }
+            return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSQLTranslatorRuleConfiguration.class)));
+        }
+        return Optional.empty();
+    }
+    
+    private SQLTranslatorRuleConfiguration swapToObject(final YamlSQLTranslatorRuleConfiguration yamlConfig) {
         return new SQLTranslatorRuleConfiguration(yamlConfig.getType(), yamlConfig.getProps(), yamlConfig.isUseOriginalSQLWhenTranslatingFailed());
     }
     

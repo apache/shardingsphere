@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.transaction.yaml.swapper.NewYamlTransactionRuleConfigurationSwapper
+org.apache.shardingsphere.parser.yaml.swapper.YamlSQLParserRuleConfigurationSwapper

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.globalclock.core.yaml.swapper.NewYamlGlobalClockRuleConfigurationSwapper
+org.apache.shardingsphere.sqltranslator.yaml.swapper.YamlSQLTranslatorRuleConfigurationSwapper

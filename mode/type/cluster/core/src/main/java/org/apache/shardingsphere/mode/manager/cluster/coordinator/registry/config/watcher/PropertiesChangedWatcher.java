@@ -17,23 +17,21 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher;
 
-import org.apache.shardingsphere.metadata.persist.node.GlobalNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.infra.config.nodepath.GlobalNodePath;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Properties changed watcher.
  */
-public final class PropertiesChangedWatcher implements GovernanceWatcher<PropertiesChangedEvent> {
+public final class PropertiesChangedWatcher implements GovernanceWatcher<AlterPropertiesEvent> {
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {
@@ -46,7 +44,10 @@ public final class PropertiesChangedWatcher implements GovernanceWatcher<Propert
     }
     
     @Override
-    public Optional<PropertiesChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return GlobalNode.getPropsPath().equals(event.getKey()) ? Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class))) : Optional.empty();
+    public Optional<AlterPropertiesEvent> createGovernanceEvent(final DataChangedEvent event) {
+        if (GlobalNodePath.isPropsActiveVersionPath(event.getKey())) {
+            return Optional.of(new AlterPropertiesEvent(event.getKey(), event.getValue()));
+        }
+        return Optional.empty();
     }
 }

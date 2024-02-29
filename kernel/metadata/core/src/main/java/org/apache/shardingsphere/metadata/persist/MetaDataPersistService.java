@@ -47,12 +47,15 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Meta data persist service.
+ * TODO replace the old implementation after meta data refactor completed
+ * New meta data persist service.
  */
 @Getter
 public final class MetaDataPersistService implements MetaDataBasedPersistService {
     
     private final PersistRepository repository;
+    
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     private final DataSourceUnitPersistService dataSourceUnitService;
     
@@ -66,22 +69,26 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     private final PropertiesPersistService propsService;
     
-    private final MetaDataVersionPersistService metaDataVersionPersistService;
-    
     private final ShardingSphereDataPersistService shardingSphereDataPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
+        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         dataSourceUnitService = new DataSourceUnitPersistService(repository);
         dataSourceNodeService = new DataSourceNodePersistService(repository);
-        databaseMetaDataService = new DatabaseMetaDataPersistService(repository);
+        databaseMetaDataService = new DatabaseMetaDataPersistService(repository, metaDataVersionPersistService);
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
-        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         shardingSphereDataPersistService = new ShardingSphereDataPersistService(repository);
     }
     
+    /**
+     * Persist global rule configurations.
+     *
+     * @param globalRuleConfigs global rule configurations
+     * @param props properties
+     */
     @Override
     public void persistGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
         globalRuleService.persist(globalRuleConfigs);
@@ -89,8 +96,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     }
     
     @Override
-    public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
-                                      final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
+    public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
         Map<String, DataSourcePoolProperties> propsMap = getDataSourcePoolPropertiesMap(databaseConfigs);
         if (propsMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
             databaseMetaDataService.addDatabase(databaseName);
@@ -98,11 +104,6 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
             dataSourceUnitService.persist(databaseName, propsMap);
             databaseRulePersistService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
         }
-    }
-    
-    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final DatabaseConfiguration databaseConfigs) {
-        return databaseConfigs.getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -114,6 +115,11 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
             result.add(decorator.map(optional -> optional.decorate(databaseName, dataSources, rules, ruleConfig)).orElse(ruleConfig));
         }
         return result;
+    }
+    
+    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final DatabaseConfiguration databaseConfigs) {
+        return databaseConfigs.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

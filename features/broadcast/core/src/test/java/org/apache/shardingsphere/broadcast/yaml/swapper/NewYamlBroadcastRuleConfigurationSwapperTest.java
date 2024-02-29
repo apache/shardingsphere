@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlBroadcastRuleConfigurationSwapperTest {
     
-    private final NewYamlBroadcastRuleConfigurationSwapper swapper = new NewYamlBroadcastRuleConfigurationSwapper();
+    private final YamlBroadcastRuleConfigurationSwapper swapper = new YamlBroadcastRuleConfigurationSwapper();
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {
