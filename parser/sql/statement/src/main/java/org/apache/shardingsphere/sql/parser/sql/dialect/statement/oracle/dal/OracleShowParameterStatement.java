@@ -7,7 +7,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Oracle other show statement.
+ * Oracle show parameter statement.
  */
 @Getter
 @Setter
