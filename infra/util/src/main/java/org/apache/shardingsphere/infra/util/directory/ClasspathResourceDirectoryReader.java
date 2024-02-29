@@ -167,7 +167,7 @@ public class ClasspathResourceDirectoryReader {
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private static Stream<String> readDirectoryInFileSystem(final URL directoryUrl) {
         if ("resource".equals(directoryUrl.getProtocol())) {
-            try (FileSystem ignored = FileSystems.getFileSystem(directoryUrl.toURI())) {
+            try {
                 return loadFromDirectory(directoryUrl);
             } catch (FileSystemNotFoundException exception) {
                 FileSystem nativeImageResourceFileSystem = FileSystems.newFileSystem(directoryUrl.toURI(), Collections.emptyMap());
