@@ -37,10 +37,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -122,7 +120,7 @@ public class ClasspathResourceDirectoryReader {
             if (JAR_URL_PROTOCOLS.contains(directoryUrl.getProtocol())) {
                 return readDirectoryInJar(directory, directoryUrl);
             } else {
-                return readDirectoryInFileSystem(directoryUrl).stream();
+                return readDirectoryInFileSystem(directoryUrl);
             }
         });
     }
@@ -160,31 +158,35 @@ public class ClasspathResourceDirectoryReader {
      * so ShardingSphere need to manually open and close the FileSystem corresponding to the `resource:/` scheme.
      * For more background reference <a href="https://github.com/oracle/graal/issues/7682">oracle/graal#7682</a>.
      * Under the context of third-party dependencies such as Spring Framework OSS,
-     * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystem` will be automatically created during the life cycle of the Context,
+     * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystem` will be automatically created during the life cycle of the context,
      * so additional determination is required.
      *
      * @param directoryUrl directory url
-     * @return list of resource name
+     * @return stream of resource name
      */
     @SneakyThrows({IOException.class, URISyntaxException.class})
-    private static List<String> readDirectoryInFileSystem(final URL directoryUrl) {
+    private static Stream<String> readDirectoryInFileSystem(final URL directoryUrl) {
         if ("resource".equals(directoryUrl.getProtocol())) {
             try (FileSystem ignored = FileSystems.getFileSystem(directoryUrl.toURI())) {
                 return loadFromDirectory(directoryUrl);
             } catch (FileSystemNotFoundException exception) {
-                try (FileSystem ignored = FileSystems.newFileSystem(directoryUrl.toURI(), Collections.emptyMap())) {
-                    return loadFromDirectory(directoryUrl);
-                }
+                FileSystem nativeImageResourceFileSystem = FileSystems.newFileSystem(directoryUrl.toURI(), Collections.emptyMap());
+                return loadFromDirectory(directoryUrl).onClose(() -> {
+                    try {
+                        nativeImageResourceFileSystem.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         }
         return loadFromDirectory(directoryUrl);
     }
     
-    private static List<String> loadFromDirectory(final URL directoryUrl) throws URISyntaxException, IOException {
+    private static Stream<String> loadFromDirectory(final URL directoryUrl) throws URISyntaxException, IOException {
         Path directoryPath = Paths.get(directoryUrl.toURI());
         // noinspection resource
         Stream<Path> walkStream = Files.find(directoryPath, Integer.MAX_VALUE, (path, basicFileAttributes) -> !basicFileAttributes.isDirectory(), FileVisitOption.FOLLOW_LINKS);
-        return walkStream.map(path -> path.subpath(directoryPath.getNameCount() - 1, path.getNameCount()).toString())
-                .collect(Collectors.toList());
+        return walkStream.map(path -> path.subpath(directoryPath.getNameCount() - 1, path.getNameCount()).toString());
     }
 }
