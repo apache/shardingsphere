@@ -32,18 +32,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ClasspathResourceDirectoryReaderTest {
     
     @Test
-    void assertIsDirectory() {
+    void assertIsDirectoryTest() {
         assertTrue(ClasspathResourceDirectoryReader.isDirectory("yaml"));
+        assertTrue(ClasspathResourceDirectoryReader.isDirectory("yaml/fixture"));
         assertFalse(ClasspathResourceDirectoryReader.isDirectory("yaml/accepted-class.yaml"));
         assertFalse(ClasspathResourceDirectoryReader.isDirectory("nonexistent"));
     }
     
     @Test
-    void read() {
+    void assertReadTest() {
         List<String> resourceNameList = ClasspathResourceDirectoryReader.read("yaml").collect(Collectors.toList());
-        assertThat(resourceNameList.size(), is(4));
+        assertThat(resourceNameList.size(), is(5));
         final String separator = File.separator;
         assertThat(resourceNameList, hasItems("yaml" + separator + "accepted-class.yaml", "yaml" + separator + "customized-obj.yaml", "yaml" + separator + "empty-config.yaml",
-                "yaml" + separator + "shortcuts-fixture.yaml"));
+                "yaml" + separator + "shortcuts-fixture.yaml", "yaml/fixture/fixture.yaml"));
+    }
+    
+    @Test
+    void assertReadNestedTest() {
+        List<String> resourceNameList = ClasspathResourceDirectoryReader.read("yaml/fixture").collect(Collectors.toList());
+        assertThat(resourceNameList.size(), is(1));
+        assertThat(resourceNameList, hasItems("yaml/fixture/fixture.yaml"));
     }
 }

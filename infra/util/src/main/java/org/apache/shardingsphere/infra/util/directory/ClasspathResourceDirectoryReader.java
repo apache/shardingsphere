@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.util.directory;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
@@ -85,7 +86,6 @@ public class ClasspathResourceDirectoryReader {
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
-     *
      * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param directory directory
@@ -100,7 +100,6 @@ public class ClasspathResourceDirectoryReader {
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
-     *
      * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param classLoader class loader
@@ -120,7 +119,7 @@ public class ClasspathResourceDirectoryReader {
             if (JAR_URL_PROTOCOLS.contains(directoryUrl.getProtocol())) {
                 return readDirectoryInJar(directory, directoryUrl);
             } else {
-                return readDirectoryInFileSystem(directoryUrl);
+                return readDirectoryInFileSystem(directory, directoryUrl);
             }
         });
     }
@@ -130,13 +129,7 @@ public class ClasspathResourceDirectoryReader {
         if (null == jar) {
             return Stream.empty();
         }
-        return jar.stream().filter(jarEntry -> jarEntry.getName().startsWith(directory) && !jarEntry.isDirectory()).map(JarEntry::getName).onClose(() -> {
-            try {
-                jar.close();
-            } catch (final IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        return jar.stream().filter(each -> each.getName().startsWith(directory) && !each.isDirectory()).map(JarEntry::getName);
     }
     
     @SneakyThrows(IOException.class)
@@ -161,32 +154,30 @@ public class ClasspathResourceDirectoryReader {
      * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystem` will be automatically created during the life cycle of the context,
      * so additional determination is required.
      *
+     * @param directory directory
      * @param directoryUrl directory url
      * @return stream of resource name
      */
     @SneakyThrows({IOException.class, URISyntaxException.class})
-    private static Stream<String> readDirectoryInFileSystem(final URL directoryUrl) {
-        if ("resource".equals(directoryUrl.getProtocol())) {
-            try {
-                return loadFromDirectory(directoryUrl);
-            } catch (FileSystemNotFoundException exception) {
-                FileSystem nativeImageResourceFileSystem = FileSystems.newFileSystem(directoryUrl.toURI(), Collections.emptyMap());
-                return loadFromDirectory(directoryUrl).onClose(() -> {
-                    try {
-                        nativeImageResourceFileSystem.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
+    private static Stream<String> readDirectoryInFileSystem(final String directory, final URL directoryUrl) {
+        try {
+            return loadFromDirectory(directory, directoryUrl);
+        } catch (final FileSystemNotFoundException ignore) {
+            FileSystem fileSystem = FileSystems.newFileSystem(directoryUrl.toURI(), Collections.emptyMap());
+            return loadFromDirectory(directory, directoryUrl).onClose(() -> {
+                try {
+                    fileSystem.close();
+                } catch (final IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
         }
-        return loadFromDirectory(directoryUrl);
     }
     
-    private static Stream<String> loadFromDirectory(final URL directoryUrl) throws URISyntaxException, IOException {
+    private static Stream<String> loadFromDirectory(final String directory, final URL directoryUrl) throws URISyntaxException, IOException {
         Path directoryPath = Paths.get(directoryUrl.toURI());
         // noinspection resource
         Stream<Path> walkStream = Files.find(directoryPath, Integer.MAX_VALUE, (path, basicFileAttributes) -> !basicFileAttributes.isDirectory(), FileVisitOption.FOLLOW_LINKS);
-        return walkStream.map(path -> path.subpath(directoryPath.getNameCount() - 1, path.getNameCount()).toString());
+        return walkStream.map(path -> directory + File.separator + path.subpath(directoryPath.getNameCount(), path.getNameCount()));
     }
 }
