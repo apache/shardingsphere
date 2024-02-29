@@ -75,6 +75,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.UninstallComponentStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.UninstallPluginStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.UseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SpoolStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterLoginStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterRoleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterUserStatementTestCase;
@@ -1740,6 +1741,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "update-statistics")
     private final List<UpdateStatisticsStatementTestCase> updateStatisticsStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "spool")
+    private final List<SpoolStatementTestCase> oracleSpoolStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

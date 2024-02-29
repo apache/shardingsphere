@@ -15,47 +15,12 @@
  * limitations under the License.
  */
 
-grammar DALStatement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal;
 
-import BaseRule, DMLStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-alterResourceCost
-    : ALTER RESOURCE COST ((CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA) INTEGER_)+
-    ;
-
-dbLinkInfo
-    : databaseName (DOT_ domain)* (AT_ connectionQualifier)?
-    ;
-
-explain
-    : EXPLAIN PLAN (SET STATEMENT_ID EQ_ stringLiterals)? (INTO (schemaName DOT_)? tableName (AT_ dbLinkInfo)? )? FOR (insert | delete | update | select)
-    ;
-
-parameterName
-    : identifier
-    ;
-
-showErrors
-    : SHOW ERRORS
-    ;
-
-showParameter
-    : SHOW (PARAMETER | PARAMETERS) parameterName
-    ;
-
-show
-    : showErrors
-    | showParameter
-    ;
-
-fileExt
-    : DOT_ identifier
-    ;
-
-spoolFileName
-    : identifier fileExt?
-    ;
-
-spool
-    : SPOOL spoolFileName
-    ;
+/**
+ * Spool statement test case.
+ */
+public final class SpoolStatementTestCase extends SQLParserTestCase {
+}

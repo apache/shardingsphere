@@ -7799,3 +7799,15 @@ NONBLOCKING
 MODIFY_COLUMN_TYPE
     : M O D I F Y UL_ C O L U M N UL_ T Y P E
     ;
+
+DEVICE
+    : D E V I C E
+    ;
+
+PARAMETER
+    :P A R A M E T E R
+    ;
+
+SPOOL
+    :S P O O L
+    ;

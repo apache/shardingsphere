@@ -867,4 +867,6 @@
     <show sql-case-id="show_warnings_limit" />
     <show sql-case-id="show_warnings_count" />
     <show sql-case-id="show_search_path" name="search_path" />
+    <show sql-case-id="show_errors" />
+    <show sql-case-id="show_parameter_smtp_out_server" />
 </sql-parser-test-cases>
