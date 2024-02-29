@@ -51,7 +51,7 @@ public final class JDBCRepositorySQLLoader {
         JDBCRepositorySQL result = null;
         try (Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read(JDBCRepositorySQLLoader.class.getClassLoader(), ROOT_DIRECTORY)) {
             Iterable<String> resourceNameIterable = resourceNameStream::iterator;
-            for (final String each : resourceNameIterable) {
+            for (String each : resourceNameIterable) {
                 if (!each.endsWith(FILE_EXTENSION)) {
                     continue;
                 }

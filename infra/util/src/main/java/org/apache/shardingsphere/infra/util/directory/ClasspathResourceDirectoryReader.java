@@ -50,7 +50,7 @@ public class ClasspathResourceDirectoryReader {
     private static final Collection<String> JAR_URL_PROTOCOLS = new HashSet<>(Arrays.asList("jar", "war", "zip", "wsjar", "vfszip"));
     
     /**
-     * Tests whether a resource is a directory.
+     * Judge whether a resource is a directory or not.
      *
      * @param name resource name
      * @return true if the resource is a directory; false if the resource does not exist, is not a directory, or it cannot be determined if the resource is a directory or not.
@@ -60,7 +60,7 @@ public class ClasspathResourceDirectoryReader {
     }
     
     /**
-     * Tests whether a resource is a directory.
+     * Judge whether a resource is a directory or not.
      *
      * @param classLoader class loader
      * @param name resource name
@@ -138,8 +138,8 @@ public class ClasspathResourceDirectoryReader {
         return jar.stream().filter(jarEntry -> jarEntry.getName().startsWith(directory) && !jarEntry.isDirectory()).map(JarEntry::getName).onClose(() -> {
             try {
                 jar.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (final IOException ex) {
+                throw new RuntimeException(ex);
             }
         });
     }
