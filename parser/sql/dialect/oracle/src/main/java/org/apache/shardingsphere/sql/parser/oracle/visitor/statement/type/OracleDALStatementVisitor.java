@@ -22,10 +22,16 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterResourceCostContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExecuteContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExplainContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ShowErrorsContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ShowParameterContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SpoolContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleAlterResourceCostStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleShowErrorsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleShowParameterStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleSpoolStatement;
 
 /**
  * DAL statement visitor for Oracle.
@@ -54,6 +60,29 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
         }
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
+        return result;
+    }
+
+    @Override
+    public ASTNode visitShowErrors(final ShowErrorsContext ctx) {
+        return new OracleShowErrorsStatement();
+    }
+
+    @Override
+    public ASTNode visitShowParameter(final ShowParameterContext ctx) {
+        OracleShowParameterStatement result = new OracleShowParameterStatement();
+        if (null != ctx.parameterName()) {
+            result.setParameterName(ctx.parameterName().getText());
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitSpool(final SpoolContext ctx) {
+        OracleSpoolStatement result = new OracleSpoolStatement();
+        if (null != ctx.spoolFileName()) {
+            result.setFileName(ctx.spoolFileName().getText());
+        }
         return result;
     }
 }
