@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.executor.sql.prepare.raw;
 
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
@@ -40,12 +39,12 @@ public final class RawExecutionPrepareEngine extends AbstractExecutionPrepareEng
     }
     
     @Override
-    protected List<ExecutionGroup<RawSQLExecutionUnit>> group(final String dataSourceName, final int connectionOffset, final List<List<SQLUnit>> sqlUnitGroups,
+    protected List<ExecutionGroup<RawSQLExecutionUnit>> group(final String dataSourceName, final int connectionOffset, final List<List<ExecutionUnit>> executionUnitGroups,
                                                               final ConnectionMode connectionMode) throws SQLException {
-        return sqlUnitGroups.stream().map(each -> createExecutionGroup(dataSourceName, each, connectionMode)).collect(Collectors.toList());
+        return executionUnitGroups.stream().map(each -> createExecutionGroup(dataSourceName, each, connectionMode)).collect(Collectors.toList());
     }
     
-    private ExecutionGroup<RawSQLExecutionUnit> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
-        return new ExecutionGroup<>(sqlUnitGroup.stream().map(each -> new RawSQLExecutionUnit(new ExecutionUnit(dataSourceName, each), connectionMode)).collect(Collectors.toList()));
+    private ExecutionGroup<RawSQLExecutionUnit> createExecutionGroup(final String dataSourceName, final List<ExecutionUnit> executionUnitGroup, final ConnectionMode connectionMode) {
+        return new ExecutionGroup<>(executionUnitGroup.stream().map(each -> new RawSQLExecutionUnit(each, connectionMode)).collect(Collectors.toList()));
     }
 }
