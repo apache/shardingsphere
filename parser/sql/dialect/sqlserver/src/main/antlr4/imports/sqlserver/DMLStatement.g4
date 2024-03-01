@@ -147,7 +147,10 @@ projection
     | (alias EQ_)? (columnName | expr)
     | (columnName | expr) (AS? alias)?
     ;
-
+columnName
+    : '<published_columns>'
+    | identifier
+    ;
 top
     : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_ (AS? alias)?)?
     ;
