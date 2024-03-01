@@ -54,7 +54,7 @@ class BatchDMLE2EIT extends BaseDMLE2EIT {
             try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
                 actualUpdateCounts = executeBatchForPreparedStatement(testParam, connection);
             }
-            assertDataSet(containerComposer, actualUpdateCounts, testParam.getDatabaseType());
+            assertDataSet(containerComposer, actualUpdateCounts, testParam);
         }
     }
     
