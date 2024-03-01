@@ -34,6 +34,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.junit.jupiter.api.AfterEach;
 
 import javax.sql.DataSource;
@@ -112,16 +113,18 @@ public abstract class BaseDMLE2EIT {
         }
     }
     
-    protected final void assertDataSet(final BatchE2EContainerComposer containerComposer, final int[] actualUpdateCounts, final DatabaseType databaseType) throws SQLException {
+    protected final void assertDataSet(final BatchE2EContainerComposer containerComposer, final int[] actualUpdateCounts, final CaseTestParameter testParam) throws SQLException {
         for (DataSetMetaData each : containerComposer.getDataSet(actualUpdateCounts).getMetaDataList()) {
-            assertDataSet(containerComposer, actualUpdateCounts, each, databaseType);
+            assertDataSet(containerComposer, actualUpdateCounts, each, testParam);
         }
     }
     
     private void assertDataSet(final BatchE2EContainerComposer containerComposer, final int[] actualUpdateCounts, final DataSetMetaData expectedDataSetMetaData,
-                               final DatabaseType databaseType) throws SQLException {
+                               final CaseTestParameter testParam) throws SQLException {
+        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType());
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
+            DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
