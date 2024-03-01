@@ -939,14 +939,6 @@ storageClause
     )+ RP_
     ;
 
-sizeClause
-    : INTEGER_ capacityUnit?
-    ;
-
-maxsizeClause
-    : MAXSIZE (UNLIMITED | sizeClause)
-    ;
-
 tableCompression
     : COMPRESS
     | ROW STORE COMPRESS (BASIC | ADVANCED)?
@@ -3334,7 +3326,7 @@ timeoutClause
     ;
 
 checkDiskgroupClause
-    : CHECK (REPAIR | NOREPAIR)?
+    : CHECK ALL? (REPAIR | NOREPAIR)?
     ;
 
 diskgroupTemplateClauses
