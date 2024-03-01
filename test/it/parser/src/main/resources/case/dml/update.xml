@@ -20,6 +20,7 @@
     <update sql-case-id="update_without_alias" parameters="'update', 1, 1">
         <table start-index="7" stop-index="13">
             <simple-table name="t_order" start-index="7" stop-index="13" />
+
         </table>
         <set start-index="15" stop-index="28" literal-stop-index="35">
             <assignment start-index="19" stop-index="28" literal-stop-index="35">
@@ -2027,7 +2028,7 @@
             </expr>
         </where>
     </update>
-    
+
     <update sql-case-id="update_sr_with_join_subquery">
         <table start-index="7" stop-index="8">
             <simple-table name="sr" start-index="7" stop-index="8" />
@@ -2097,6 +2098,7 @@
                 <owner name="HumanResources" start-index="7" stop-index="20" />
             </simple-table>
         </table>
+
         <set start-index="31" stop-index="57">
             <assignment start-index="35" stop-index="57">
                 <column name="JobTitle" start-index="35" stop-index="42" />
@@ -2256,4 +2258,33 @@
             </expr>
         </where>
     </update>
+git
+
+    <update sql-case-id="update_with_alter_table">
+        <table start-index="7" stop-index="1">
+            <simple-table name="MyTable" start-index="7" stop-index="13"/>
+        </table>
+            <set start-index="15" stop-index="41">
+                <assignment start-index="19" stop-index="41">
+                    <column name="NullCol" start-index="19" stop-index="25" />
+                    <assignment-value>
+                        <literal-expression value="some_value" start-index="29" stop-index="41" />
+                    </assignment-value>
+                </assignment>
+            </set>
+            <where start-index="43" stop-index="63">
+                <expr>
+                    <binary-operation-expression start-index="49" stop-index="63">
+                        <left>
+                            <column name="NullCol" start-index="49" stop-index="55" />
+                        </left>
+                        <right>
+                            <literal-expression value="NULL" start-index="60" stop-index="63" />
+                        </right>
+                        <operator>IS</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+    </update>
+
 </sql-parser-test-cases>
