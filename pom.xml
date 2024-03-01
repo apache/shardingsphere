@@ -91,8 +91,8 @@
         <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         
         <atomikos.version>6.0.0</atomikos.version>
-        <narayana.version>5.12.4.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+        <narayana.version>5.12.7.Final</narayana.version>
+        <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
         <seata.version>2.0.0</seata.version>
         
@@ -117,7 +117,7 @@
         
         <lombok.version>1.18.30</lombok.version>
         
-        <postgresql.version>42.4.3</postgresql.version>
+        <postgresql.version>42.7.2</postgresql.version>
         <mysql-connector-java.version>8.0.31</mysql-connector-java.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <hbase.client.version>1.7.1</hbase.client.version>
