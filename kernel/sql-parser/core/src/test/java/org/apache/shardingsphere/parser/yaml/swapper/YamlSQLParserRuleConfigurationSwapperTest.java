@@ -18,49 +18,19 @@
 package org.apache.shardingsphere.parser.yaml.swapper;
 
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
-import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 class YamlSQLParserRuleConfigurationSwapperTest {
     
-    @Test
-    void assertSwapToYamlConfiguration() {
-        YamlSQLParserRuleConfiguration actual =
-                new YamlSQLParserRuleConfigurationSwapper().swapToYamlConfiguration(new SQLParserRuleConfiguration(new CacheOption(2, 5), new CacheOption(4, 7)));
-        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(2));
-        assertThat(actual.getParseTreeCache().getMaximumSize(), is(5L));
-        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(4));
-        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(7L));
-    }
+    private final YamlSQLParserRuleConfigurationSwapper swapper = new YamlSQLParserRuleConfigurationSwapper();
     
     @Test
-    void assertSwapToObjectWithDefaultConfig() {
-        YamlSQLParserRuleConfiguration yamlConfig = new YamlSQLParserRuleConfiguration();
-        SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(yamlConfig);
-        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(128));
-        assertThat(actual.getParseTreeCache().getMaximumSize(), is(1024L));
-        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(2000));
-        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(65535L));
-    }
-    
-    @Test
-    void assertSwapToObject() {
-        YamlSQLParserRuleConfiguration yamlConfig = new YamlSQLParserRuleConfiguration();
-        yamlConfig.setParseTreeCache(new YamlSQLParserCacheOptionRuleConfiguration());
-        yamlConfig.getParseTreeCache().setInitialCapacity(2);
-        yamlConfig.getParseTreeCache().setMaximumSize(5L);
-        yamlConfig.setSqlStatementCache(new YamlSQLParserCacheOptionRuleConfiguration());
-        yamlConfig.getSqlStatementCache().setInitialCapacity(4);
-        yamlConfig.getSqlStatementCache().setMaximumSize(7L);
-        SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(yamlConfig);
-        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(2));
-        assertThat(actual.getParseTreeCache().getMaximumSize(), is(5L));
-        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(4));
-        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(7L));
+    void assertSwapToDataNodes() {
+        assertThat(swapper.swapToDataNodes(new SQLParserRuleConfiguration(DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION,
+                DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION)).iterator().next().getKey(), is("sql_parser"));
     }
 }

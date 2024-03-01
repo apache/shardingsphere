@@ -18,40 +18,17 @@
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlSingleRuleConfigurationSwapperTest {
     
-    @Test
-    void assertSwapToObject() {
-        YamlSingleRuleConfiguration yamlConfig = new YamlSingleRuleConfiguration();
-        yamlConfig.setDefaultDataSource("ds_0");
-        SingleRuleConfiguration ruleConfig = new YamlSingleRuleConfigurationSwapper().swapToObject(yamlConfig);
-        assertTrue(ruleConfig.getDefaultDataSource().isPresent());
-        assertThat(ruleConfig.getDefaultDataSource().get(), is("ds_0"));
-    }
+    private final YamlSingleRuleConfigurationSwapper swapper = new YamlSingleRuleConfigurationSwapper();
     
     @Test
-    void assertSwapToObjectWithoutDataSource() {
-        assertFalse(new YamlSingleRuleConfigurationSwapper().swapToObject(new YamlSingleRuleConfiguration()).getDefaultDataSource().isPresent());
-    }
-    
-    @Test
-    void assertSwapToYaml() {
-        assertThat(new YamlSingleRuleConfigurationSwapper().swapToYamlConfiguration(new SingleRuleConfiguration(Collections.emptyList(), "ds_0")).getDefaultDataSource(), is("ds_0"));
-    }
-    
-    @Test
-    void assertSwapToYamlWithoutDataSource() {
-        assertNull(new YamlSingleRuleConfigurationSwapper().swapToYamlConfiguration(new SingleRuleConfiguration()).getDefaultDataSource());
+    void assertSwapToDataNodes() {
+        assertThat(swapper.swapToDataNodes(new SingleRuleConfiguration()).iterator().next().getKey(), is("tables"));
     }
 }

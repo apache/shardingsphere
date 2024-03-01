@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.config.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 
 /**
  * YAML pipeline job configuration swapper.
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
  * @param <Y> type of YAML configuration
  * @param <T> type of swapped pipeline job configuration
  */
-public interface YamlPipelineJobConfigurationSwapper<Y extends YamlConfiguration, T extends PipelineJobConfiguration> extends YamlConfigurationSwapper<Y, T> {
+public interface YamlPipelineJobConfigurationSwapper<Y extends YamlConfiguration, T extends PipelineJobConfiguration> extends YamlItemConfigurationSwapper<Y, T> {
     
     /**
      * Swap to job configuration from text.

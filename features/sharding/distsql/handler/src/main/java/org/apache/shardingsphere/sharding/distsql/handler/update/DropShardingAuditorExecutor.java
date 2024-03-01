@@ -85,12 +85,6 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getAuditors().keySet().removeIf(sqlStatement.getNames()::contains);
-        return false;
-    }
-    
-    @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAuditorStatement sqlStatement) {
         return !Collections.disjoint(rule.getConfiguration().getAuditors().keySet(), sqlStatement.getNames());
     }

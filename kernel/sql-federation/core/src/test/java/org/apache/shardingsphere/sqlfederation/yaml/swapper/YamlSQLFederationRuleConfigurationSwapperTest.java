@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.yaml.swapper;
+package org.apache.shardingsphere.sqlfederation.yaml.swapper;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-// TODO Rename YamlTrafficRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
-class NewYamlTrafficRuleConfigurationSwapperTest {
+class YamlSQLFederationRuleConfigurationSwapperTest {
     
-    private final YamlTrafficRuleConfigurationSwapper swapper = new YamlTrafficRuleConfigurationSwapper();
+    private final YamlSQLFederationRuleConfigurationSwapper swapper = new YamlSQLFederationRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new TrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
+        assertThat(swapper.swapToDataNodes(new SQLFederationRuleConfiguration(false, false, new CacheOption(0, 0))).iterator().next().getKey(), is("sql_federation"));
     }
 }

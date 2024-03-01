@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.yaml.swapper.rule;
 
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfiguration;
@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 /**
  * YAML mask table rule configuration swapper.
  */
-public final class YamlMaskTableRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlMaskTableRuleConfiguration, MaskTableRuleConfiguration> {
+public final class YamlMaskTableRuleConfigurationSwapper implements YamlItemConfigurationSwapper<YamlMaskTableRuleConfiguration, MaskTableRuleConfiguration> {
     
     private final YamlMaskColumnRuleConfigurationSwapper columnSwapper = new YamlMaskColumnRuleConfigurationSwapper();
     

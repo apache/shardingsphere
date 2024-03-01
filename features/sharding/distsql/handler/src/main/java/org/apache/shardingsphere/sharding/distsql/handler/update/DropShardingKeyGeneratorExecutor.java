@@ -86,12 +86,6 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getKeyGenerators().keySet().removeIf(sqlStatement.getNames()::contains);
-        return false;
-    }
-    
-    @Override
     public boolean hasAnyOneToBeDropped(final DropShardingKeyGeneratorStatement sqlStatement) {
         return !Collections.disjoint(rule.getConfiguration().getKeyGenerators().keySet(), sqlStatement.getNames());
     }

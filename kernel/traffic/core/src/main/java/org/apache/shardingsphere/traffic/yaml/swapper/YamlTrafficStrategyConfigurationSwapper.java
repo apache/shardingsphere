@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficStrategyConfiguration;
 
 /**
  * YAML traffic rule configuration swapper.
  */
-public final class YamlTrafficStrategyConfigurationSwapper implements YamlConfigurationSwapper<YamlTrafficStrategyConfiguration, TrafficStrategyConfiguration> {
+public final class YamlTrafficStrategyConfigurationSwapper implements YamlItemConfigurationSwapper<YamlTrafficStrategyConfiguration, TrafficStrategyConfiguration> {
     
     @Override
     public YamlTrafficStrategyConfiguration swapToYamlConfiguration(final TrafficStrategyConfiguration data) {

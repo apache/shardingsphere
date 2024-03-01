@@ -19,12 +19,12 @@ package org.apache.shardingsphere.encrypt.yaml.swapper.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 
 /**
  * YAML encrypt column item rule configuration swapper.
  */
-public final class YamlEncryptColumnItemRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlEncryptColumnItemRuleConfiguration, EncryptColumnItemRuleConfiguration> {
+public final class YamlEncryptColumnItemRuleConfigurationSwapper implements YamlItemConfigurationSwapper<YamlEncryptColumnItemRuleConfiguration, EncryptColumnItemRuleConfiguration> {
     
     @Override
     public YamlEncryptColumnItemRuleConfiguration swapToYamlConfiguration(final EncryptColumnItemRuleConfiguration data) {

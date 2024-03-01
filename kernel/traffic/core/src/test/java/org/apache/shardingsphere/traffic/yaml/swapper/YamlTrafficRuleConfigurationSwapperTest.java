@@ -17,91 +17,18 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
-import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
-import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficStrategyConfiguration;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class YamlTrafficRuleConfigurationSwapperTest {
     
-    @Test
-    void assertSwapToYamlConfiguration() {
-        YamlTrafficRuleConfiguration actual = new YamlTrafficRuleConfigurationSwapper().swapToYamlConfiguration(createTrafficRuleConfiguration());
-        assertThat(actual.getTrafficStrategies().size(), is(1));
-        assertTrue(actual.getTrafficStrategies().containsKey("group_by_traffic"));
-        assertThat(actual.getTrafficAlgorithms().size(), is(1));
-        assertTrue(actual.getTrafficAlgorithms().containsKey("group_by_algorithm"));
-        assertThat(actual.getLoadBalancers().size(), is(1));
-        assertTrue(actual.getLoadBalancers().containsKey("random"));
-    }
-    
-    private TrafficRuleConfiguration createTrafficRuleConfiguration() {
-        TrafficRuleConfiguration result = new TrafficRuleConfiguration();
-        result.getTrafficStrategies().add(new TrafficStrategyConfiguration("group_by_traffic", Arrays.asList("OLTP", "OLAP"), "group_by_algorithm", "random"));
-        result.getTrafficAlgorithms().put("group_by_algorithm", createTrafficAlgorithm());
-        result.getLoadBalancers().put("random", createLoadBalancer());
-        return result;
-    }
-    
-    private AlgorithmConfiguration createTrafficAlgorithm() {
-        AlgorithmConfiguration result = mock(AlgorithmConfiguration.class);
-        when(result.getType()).thenReturn("SIMPLE");
-        return result;
-    }
-    
-    private AlgorithmConfiguration createLoadBalancer() {
-        AlgorithmConfiguration result = mock(AlgorithmConfiguration.class);
-        when(result.getType()).thenReturn("RANDOM");
-        return result;
-    }
+    private final YamlTrafficRuleConfigurationSwapper swapper = new YamlTrafficRuleConfigurationSwapper();
     
     @Test
-    void assertSwapToObject() {
-        TrafficRuleConfiguration actual = new YamlTrafficRuleConfigurationSwapper().swapToObject(createYamlTrafficRuleConfiguration());
-        assertThat(actual.getTrafficStrategies().size(), is(1));
-        TrafficStrategyConfiguration strategyConfig = actual.getTrafficStrategies().iterator().next();
-        assertThat(strategyConfig.getName(), is("group_by_traffic"));
-        assertThat(strategyConfig.getLabels(), is(Arrays.asList("OLTP", "OLAP")));
-        assertThat(strategyConfig.getAlgorithmName(), is("group_by_algorithm"));
-        assertThat(strategyConfig.getLoadBalancerName(), is("random"));
-        assertThat(actual.getTrafficAlgorithms().size(), is(1));
-        assertTrue(actual.getTrafficAlgorithms().containsKey("group_by_algorithm"));
-        assertThat(actual.getLoadBalancers().size(), is(1));
-        assertTrue(actual.getLoadBalancers().containsKey("random"));
-    }
-    
-    private YamlTrafficRuleConfiguration createYamlTrafficRuleConfiguration() {
-        YamlTrafficStrategyConfiguration trafficStrategyConfig = new YamlTrafficStrategyConfiguration();
-        trafficStrategyConfig.setLabels(Arrays.asList("OLTP", "OLAP"));
-        trafficStrategyConfig.setAlgorithmName("group_by_algorithm");
-        trafficStrategyConfig.setLoadBalancerName("random");
-        YamlTrafficRuleConfiguration result = new YamlTrafficRuleConfiguration();
-        result.getTrafficStrategies().put("group_by_traffic", trafficStrategyConfig);
-        result.getTrafficAlgorithms().put("group_by_algorithm", createYamlTrafficAlgorithm());
-        result.getLoadBalancers().put("random", createYamlLoadBalancer());
-        return result;
-    }
-    
-    private YamlAlgorithmConfiguration createYamlTrafficAlgorithm() {
-        YamlAlgorithmConfiguration result = mock(YamlAlgorithmConfiguration.class);
-        when(result.getType()).thenReturn("SIMPLE");
-        return result;
-    }
-    
-    private YamlAlgorithmConfiguration createYamlLoadBalancer() {
-        YamlAlgorithmConfiguration result = mock(YamlAlgorithmConfiguration.class);
-        when(result.getType()).thenReturn("RANDOM");
-        return result;
+    void assertSwapToDataNodes() {
+        assertThat(swapper.swapToDataNodes(new TrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
     }
 }

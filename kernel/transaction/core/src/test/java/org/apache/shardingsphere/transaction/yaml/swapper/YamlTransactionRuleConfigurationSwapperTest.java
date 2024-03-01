@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.transaction.yaml.swapper;
 
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,23 +29,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class YamlTransactionRuleConfigurationSwapperTest {
     
-    @Test
-    void assertSwapToYamlConfiguration() {
-        YamlTransactionRuleConfiguration actual = new YamlTransactionRuleConfigurationSwapper().swapToYamlConfiguration(new TransactionRuleConfiguration("default", "provider", new Properties()));
-        assertThat(actual.getDefaultType(), is("default"));
-        assertThat(actual.getProviderType(), is("provider"));
-        assertThat(actual.getProps(), is(new Properties()));
-    }
+    private final YamlTransactionRuleConfigurationSwapper swapper = new YamlTransactionRuleConfigurationSwapper();
     
     @Test
-    void assertSwapToObject() {
-        YamlTransactionRuleConfiguration yamlConfig = new YamlTransactionRuleConfiguration();
-        yamlConfig.setDefaultType("default");
-        yamlConfig.setProviderType("provider");
-        yamlConfig.setProps(new Properties());
-        TransactionRuleConfiguration actual = new YamlTransactionRuleConfigurationSwapper().swapToObject(yamlConfig);
-        assertThat(actual.getDefaultType(), is("default"));
-        assertThat(actual.getProviderType(), is("provider"));
-        assertThat(actual.getProps(), is(new Properties()));
+    void assertSwapToDataNodes() {
+        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new TransactionRuleConfiguration("", "", new Properties()));
+        assertThat(actual.iterator().next().getKey(), is("transaction"));
     }
 }

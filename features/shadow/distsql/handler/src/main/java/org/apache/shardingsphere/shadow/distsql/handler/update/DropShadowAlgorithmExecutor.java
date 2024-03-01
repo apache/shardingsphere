@@ -34,8 +34,6 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -91,20 +89,6 @@ public final class DropShadowAlgorithmExecutor implements DatabaseRuleDropExecut
             result.getShadowAlgorithms().put(each, rule.getConfiguration().getShadowAlgorithms().get(each));
         }
         return result;
-    }
-    
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> algorithmNames = sqlStatement.getNames();
-        algorithmNames.forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
-        currentRuleConfig.getTables().forEach((key, value) -> value.getShadowAlgorithmNames().removeIf(algorithmNames::contains));
-        getEmptyTableRules(currentRuleConfig.getTables()).forEach(each -> currentRuleConfig.getTables().remove(each));
-        return false;
-    }
-    
-    private Collection<String> getEmptyTableRules(final Map<String, ShadowTableConfiguration> tables) {
-        return tables.entrySet().stream().filter(entry -> entry.getValue().getShadowAlgorithmNames().isEmpty() && entry.getValue().getDataSourceNames().isEmpty())
-                .map(Entry::getKey).collect(Collectors.toSet());
     }
     
     @Override

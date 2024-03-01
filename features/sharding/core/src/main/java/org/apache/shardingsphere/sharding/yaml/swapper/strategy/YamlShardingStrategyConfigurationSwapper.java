@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStan
 /**
  * YAML Sharding strategy configuration swapper.
  */
-public final class YamlShardingStrategyConfigurationSwapper implements YamlConfigurationSwapper<YamlShardingStrategyConfiguration, ShardingStrategyConfiguration> {
+public final class YamlShardingStrategyConfigurationSwapper implements YamlItemConfigurationSwapper<YamlShardingStrategyConfiguration, ShardingStrategyConfiguration> {
     
     @Override
     public YamlShardingStrategyConfiguration swapToYamlConfiguration(final ShardingStrategyConfiguration data) {

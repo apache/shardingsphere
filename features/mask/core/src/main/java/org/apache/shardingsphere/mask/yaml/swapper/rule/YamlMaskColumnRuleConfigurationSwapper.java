@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mask.yaml.swapper.rule;
 
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfiguration;
 
 /**
  * YAML mask column rule configuration swapper.
  */
-public final class YamlMaskColumnRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlMaskColumnRuleConfiguration, MaskColumnRuleConfiguration> {
+public final class YamlMaskColumnRuleConfigurationSwapper implements YamlItemConfigurationSwapper<YamlMaskColumnRuleConfiguration, MaskColumnRuleConfiguration> {
     
     @Override
     public YamlMaskColumnRuleConfiguration swapToYamlConfiguration(final MaskColumnRuleConfiguration data) {

@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration;
 
 /**
  * YAML SQL federation execution plan cache configuration swapper.
  */
-public final class YamlSQLFederationExecutionPlanCacheConfigurationSwapper implements YamlConfigurationSwapper<YamlSQLFederationExecutionPlanCacheRuleConfiguration, CacheOption> {
+public final class YamlSQLFederationExecutionPlanCacheConfigurationSwapper implements YamlItemConfigurationSwapper<YamlSQLFederationExecutionPlanCacheRuleConfiguration, CacheOption> {
     
     @Override
     public YamlSQLFederationExecutionPlanCacheRuleConfiguration swapToYamlConfiguration(final CacheOption data) {

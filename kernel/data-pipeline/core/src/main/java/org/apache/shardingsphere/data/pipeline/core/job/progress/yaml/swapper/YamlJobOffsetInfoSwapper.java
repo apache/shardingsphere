@@ -19,12 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlJobOffsetInfo;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 
 /**
  * Yaml job offset info swapper.
  */
-public final class YamlJobOffsetInfoSwapper implements YamlConfigurationSwapper<YamlJobOffsetInfo, JobOffsetInfo> {
+public final class YamlJobOffsetInfoSwapper implements YamlItemConfigurationSwapper<YamlJobOffsetInfo, JobOffsetInfo> {
     
     @Override
     public YamlJobOffsetInfo swapToYamlConfiguration(final JobOffsetInfo data) {

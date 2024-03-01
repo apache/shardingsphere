@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 
 /**
  * YAML key generate strategy configuration swapper.
  */
-public final class YamlKeyGenerateStrategyConfigurationSwapper implements YamlConfigurationSwapper<YamlKeyGenerateStrategyConfiguration, KeyGenerateStrategyConfiguration> {
+public final class YamlKeyGenerateStrategyConfigurationSwapper implements YamlItemConfigurationSwapper<YamlKeyGenerateStrategyConfiguration, KeyGenerateStrategyConfiguration> {
     
     @Override
     public YamlKeyGenerateStrategyConfiguration swapToYamlConfiguration(final KeyGenerateStrategyConfiguration data) {

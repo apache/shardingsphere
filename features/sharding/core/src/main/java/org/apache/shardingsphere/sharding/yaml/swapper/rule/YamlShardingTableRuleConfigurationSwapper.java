@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStra
 /**
  * YAML sharding table rule configuration swapper.
  */
-public final class YamlShardingTableRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlTableRuleConfiguration, ShardingTableRuleConfiguration> {
+public final class YamlShardingTableRuleConfigurationSwapper implements YamlItemConfigurationSwapper<YamlTableRuleConfiguration, ShardingTableRuleConfiguration> {
     
     private final YamlShardingStrategyConfigurationSwapper shardingStrategySwapper = new YamlShardingStrategyConfigurationSwapper();
     

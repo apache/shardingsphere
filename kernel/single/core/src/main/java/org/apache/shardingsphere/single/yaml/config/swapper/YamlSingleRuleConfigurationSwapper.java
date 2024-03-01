@@ -17,17 +17,34 @@
 
 package org.apache.shardingsphere.single.yaml.config.swapper;
 
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.mode.path.RuleNodePath;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
+import org.apache.shardingsphere.single.metadata.nodepath.SingleRuleNodePathProvider;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * YAML single rule configuration swapper.
  */
-public final class YamlSingleRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlSingleRuleConfiguration, SingleRuleConfiguration> {
+public final class YamlSingleRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<SingleRuleConfiguration> {
+    
+    private final RuleNodePath singleRuleNodePath = new SingleRuleNodePathProvider().getRuleNodePath();
     
     @Override
-    public YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {
+    public Collection<YamlDataNode> swapToDataNodes(final SingleRuleConfiguration data) {
+        return Collections.singletonList(new YamlDataNode(SingleRuleNodePathProvider.TABLES, YamlEngine.marshal(swapToYamlConfiguration(data))));
+    }
+    
+    private YamlSingleRuleConfiguration swapToYamlConfiguration(final SingleRuleConfiguration data) {
         YamlSingleRuleConfiguration result = new YamlSingleRuleConfiguration();
         result.getTables().addAll(data.getTables());
         data.getDefaultDataSource().ifPresent(result::setDefaultDataSource);
@@ -35,11 +52,19 @@ public final class YamlSingleRuleConfigurationSwapper implements YamlRuleConfigu
     }
     
     @Override
-    public SingleRuleConfiguration swapToObject(final YamlSingleRuleConfiguration yamlConfig) {
-        SingleRuleConfiguration result = new SingleRuleConfiguration();
-        if (null != yamlConfig.getTables()) {
-            result.getTables().addAll(yamlConfig.getTables());
+    public Optional<SingleRuleConfiguration> swapToObject(final Collection<YamlDataNode> dataNodes) {
+        List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> singleRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
+        for (YamlDataNode each : validDataNodes) {
+            if (singleRuleNodePath.getUniqueItem(SingleRuleNodePathProvider.TABLES).isValidatedPath(each.getKey())) {
+                return Optional.of(swapToObject(YamlEngine.unmarshal(each.getValue(), YamlSingleRuleConfiguration.class)));
+            }
         }
+        return Optional.empty();
+    }
+    
+    private SingleRuleConfiguration swapToObject(final YamlSingleRuleConfiguration yamlConfig) {
+        SingleRuleConfiguration result = new SingleRuleConfiguration();
+        result.getTables().addAll(yamlConfig.getTables());
         result.setDefaultDataSource(yamlConfig.getDefaultDataSource());
         return result;
     }

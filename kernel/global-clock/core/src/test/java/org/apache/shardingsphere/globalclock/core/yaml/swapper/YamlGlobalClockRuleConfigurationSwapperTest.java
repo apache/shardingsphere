@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.yaml.swapper;
+package org.apache.shardingsphere.globalclock.core.yaml.swapper;
 
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
+import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-// TODO Rename YamlSQLFederationRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
-class NewYamlSQLFederationRuleConfigurationSwapperTest {
+class YamlGlobalClockRuleConfigurationSwapperTest {
     
-    private final YamlSQLFederationRuleConfigurationSwapper swapper = new YamlSQLFederationRuleConfigurationSwapper();
+    private final YamlGlobalClockRuleConfigurationSwapper swapper = new YamlGlobalClockRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new SQLFederationRuleConfiguration(false, false, new CacheOption(0, 0))).iterator().next().getKey(), is("sql_federation"));
+        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new GlobalClockRuleConfiguration("", "", false, new Properties()));
+        assertThat(actual.iterator().next().getKey(), is("global_clock"));
     }
 }

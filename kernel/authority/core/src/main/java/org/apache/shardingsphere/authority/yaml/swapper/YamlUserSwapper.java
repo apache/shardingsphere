@@ -22,12 +22,12 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 
 /**
  * YAML user swapper.
  */
-public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserConfiguration, ShardingSphereUser> {
+public final class YamlUserSwapper implements YamlItemConfigurationSwapper<YamlUserConfiguration, ShardingSphereUser> {
     
     @Override
     public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {

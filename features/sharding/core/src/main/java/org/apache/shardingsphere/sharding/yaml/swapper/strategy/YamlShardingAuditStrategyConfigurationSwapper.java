@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 
@@ -26,7 +26,7 @@ import java.util.LinkedList;
 /**
  * YAML sharding audit strategy configuration swapper.
  */
-public final class YamlShardingAuditStrategyConfigurationSwapper implements YamlConfigurationSwapper<YamlShardingAuditStrategyConfiguration, ShardingAuditStrategyConfiguration> {
+public final class YamlShardingAuditStrategyConfigurationSwapper implements YamlItemConfigurationSwapper<YamlShardingAuditStrategyConfiguration, ShardingAuditStrategyConfiguration> {
     
     @Override
     public YamlShardingAuditStrategyConfiguration swapToYamlConfiguration(final ShardingAuditStrategyConfiguration data) {

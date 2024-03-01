@@ -17,13 +17,8 @@
 
 package org.apache.shardingsphere.logging.yaml.swapper;
 
-import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
-import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
-import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
+import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,34 +27,8 @@ class YamlLoggingRuleConfigurationSwapperTest {
     
     private final YamlLoggingRuleConfigurationSwapper swapper = new YamlLoggingRuleConfigurationSwapper();
     
-    private final YamlLoggerSwapper loggerSwapper = new YamlLoggerSwapper();
-    
-    private final YamlAppenderSwapper appenderSwapper = new YamlAppenderSwapper();
-    
     @Test
-    void assertSwapToYamlConfiguration() {
-        YamlLoggingRuleConfiguration yamlLoggingRuleConfig = swapper.swapToYamlConfiguration(createLoggingRuleConfiguration());
-        assertThat(yamlLoggingRuleConfig.getLoggers().size(), is(1));
-        assertThat(yamlLoggingRuleConfig.getAppenders().size(), is(1));
-    }
-    
-    private LoggingRuleConfiguration createLoggingRuleConfiguration() {
-        return new LoggingRuleConfiguration(Collections.singleton(new ShardingSphereLogger("ROOT", "INFO", true, "console")),
-                Collections.singleton(new ShardingSphereAppender("console", "ch.qos.logback.core.ConsoleAppender", "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n")));
-    }
-    
-    @Test
-    void assertSwapToObject() {
-        LoggingRuleConfiguration loggingRuleConfig = swapper.swapToObject(createYamlLoggingRuleConfiguration());
-        assertThat(loggingRuleConfig.getLoggers().size(), is(1));
-        assertThat(loggingRuleConfig.getAppenders().size(), is(1));
-    }
-    
-    private YamlLoggingRuleConfiguration createYamlLoggingRuleConfiguration() {
-        YamlLoggingRuleConfiguration result = new YamlLoggingRuleConfiguration();
-        result.setLoggers(Collections.singleton(loggerSwapper.swapToYamlConfiguration(new ShardingSphereLogger("ROOT", "INFO", true, "console"))));
-        result.setAppenders(Collections.singleton(appenderSwapper.swapToYamlConfiguration(
-                new ShardingSphereAppender("console", "ch.qos.logback.core.ConsoleAppender", "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n"))));
-        return result;
+    void assertSwapToDataNodes() {
+        assertThat(swapper.swapToDataNodes(new DefaultLoggingRuleConfigurationBuilder().build()).iterator().next().getKey(), is("logging"));
     }
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 /**
  * YAML encrypt table configuration swapper.
  */
-public final class YamlEncryptTableRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlEncryptTableRuleConfiguration, EncryptTableRuleConfiguration> {
+public final class YamlEncryptTableRuleConfigurationSwapper implements YamlItemConfigurationSwapper<YamlEncryptTableRuleConfiguration, EncryptTableRuleConfiguration> {
     
     private final YamlEncryptColumnRuleConfigurationSwapper columnSwapper = new YamlEncryptColumnRuleConfigurationSwapper();
     

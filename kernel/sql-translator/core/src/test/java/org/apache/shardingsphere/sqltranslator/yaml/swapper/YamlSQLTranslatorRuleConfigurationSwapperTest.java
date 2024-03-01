@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.yaml.swapper;
+package org.apache.shardingsphere.sqltranslator.yaml.swapper;
 
-import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collection;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-// TODO Rename YamlGlobalClockRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
-class NewYamlGlobalClockRuleConfigurationSwapperTest {
+class YamlSQLTranslatorRuleConfigurationSwapperTest {
     
-    private final YamlGlobalClockRuleConfigurationSwapper swapper = new YamlGlobalClockRuleConfigurationSwapper();
+    private final YamlSQLTranslatorRuleConfigurationSwapper swapper = new YamlSQLTranslatorRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodes() {
-        Collection<YamlDataNode> actual = swapper.swapToDataNodes(new GlobalClockRuleConfiguration("", "", false, new Properties()));
-        assertThat(actual.iterator().next().getKey(), is("global_clock"));
+        assertThat(swapper.swapToDataNodes(new DefaultSQLTranslatorRuleConfigurationBuilder().build()).iterator().next().getKey(), is("sql_translator"));
     }
 }

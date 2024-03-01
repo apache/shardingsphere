@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.logging.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration;
 
 /**
  * YAML logger swapper.
  */
-public final class YamlLoggerSwapper implements YamlConfigurationSwapper<YamlLoggerConfiguration, ShardingSphereLogger> {
+public final class YamlLoggerSwapper implements YamlItemConfigurationSwapper<YamlLoggerConfiguration, ShardingSphereLogger> {
     
     @Override
     public YamlLoggerConfiguration swapToYamlConfiguration(final ShardingSphereLogger data) {

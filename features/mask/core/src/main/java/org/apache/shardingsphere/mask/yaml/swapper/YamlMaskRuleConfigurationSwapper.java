@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mask.yaml.swapper;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.constant.MaskOrder;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * YAML mask rule configuration swapper.
  */
-public final class YamlMaskRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<MaskRuleConfiguration> {
+public final class YamlMaskRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<MaskRuleConfiguration> {
     
     private final YamlMaskTableRuleConfigurationSwapper tableSwapper = new YamlMaskTableRuleConfigurationSwapper();
     

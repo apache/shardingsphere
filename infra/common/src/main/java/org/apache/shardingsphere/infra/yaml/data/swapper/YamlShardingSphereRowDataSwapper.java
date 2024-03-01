@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.yaml.data.swapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 
 import java.math.BigDecimal;
@@ -34,7 +34,7 @@ import java.util.List;
  * YAML ShardingSphere row data swapper.
  */
 @RequiredArgsConstructor
-public final class YamlShardingSphereRowDataSwapper implements YamlConfigurationSwapper<YamlShardingSphereRowData, ShardingSphereRowData> {
+public final class YamlShardingSphereRowDataSwapper implements YamlItemConfigurationSwapper<YamlShardingSphereRowData, ShardingSphereRowData> {
     
     private final List<ShardingSphereColumn> columns;
     

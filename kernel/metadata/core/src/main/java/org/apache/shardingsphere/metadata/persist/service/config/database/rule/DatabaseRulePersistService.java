@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
@@ -52,8 +52,8 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, YamlRuleConfigurationSwapper> yamlConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -66,8 +66,8 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     @Override
     public Collection<MetaDataVersion> persistConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, YamlRuleConfigurationSwapper> yamlConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -99,8 +99,8 @@ public final class DatabaseRulePersistService extends AbstractPersistService imp
     @Override
     public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, YamlRuleConfigurationSwapper> yamlConfigs = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;

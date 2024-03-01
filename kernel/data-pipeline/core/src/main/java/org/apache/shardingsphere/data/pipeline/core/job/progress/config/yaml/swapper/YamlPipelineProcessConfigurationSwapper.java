@@ -19,13 +19,13 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.sw
 
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 
 /**
  * YAML pipeline process configuration swapper.
  */
-public final class YamlPipelineProcessConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineProcessConfiguration, PipelineProcessConfiguration> {
+public final class YamlPipelineProcessConfigurationSwapper implements YamlItemConfigurationSwapper<YamlPipelineProcessConfiguration, PipelineProcessConfiguration> {
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     

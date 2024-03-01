@@ -21,12 +21,12 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 
 /**
  * Yaml table data consistency check result swapper.
  */
-public final class YamlTableDataConsistencyCheckResultSwapper implements YamlConfigurationSwapper<YamlTableDataConsistencyCheckResult, TableDataConsistencyCheckResult> {
+public final class YamlTableDataConsistencyCheckResultSwapper implements YamlItemConfigurationSwapper<YamlTableDataConsistencyCheckResult, TableDataConsistencyCheckResult> {
     
     @Override
     public YamlTableDataConsistencyCheckResult swapToYamlConfiguration(final TableDataConsistencyCheckResult data) {

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 
 /**
  * YAML view swapper.
  */
-public final class YamlViewSwapper implements YamlConfigurationSwapper<YamlShardingSphereView, ShardingSphereView> {
+public final class YamlViewSwapper implements YamlItemConfigurationSwapper<YamlShardingSphereView, ShardingSphereView> {
     
     @Override
     public YamlShardingSphereView swapToYamlConfiguration(final ShardingSphereView view) {

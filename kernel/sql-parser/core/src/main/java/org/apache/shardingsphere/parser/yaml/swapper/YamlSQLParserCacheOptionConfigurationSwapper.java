@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.parser.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**
  * YAML SQL parser cache option configuration swapper.
  */
-public final class YamlSQLParserCacheOptionConfigurationSwapper implements YamlConfigurationSwapper<YamlSQLParserCacheOptionRuleConfiguration, CacheOption> {
+public final class YamlSQLParserCacheOptionConfigurationSwapper implements YamlItemConfigurationSwapper<YamlSQLParserCacheOptionRuleConfiguration, CacheOption> {
     
     @Override
     public YamlSQLParserCacheOptionRuleConfiguration swapToYamlConfiguration(final CacheOption data) {

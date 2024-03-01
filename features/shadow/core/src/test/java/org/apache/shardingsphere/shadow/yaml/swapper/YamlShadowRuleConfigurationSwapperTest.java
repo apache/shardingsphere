@@ -36,9 +36,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class NewYamlShadowRuleConfigurationSwapperTest {
+class YamlShadowRuleConfigurationSwapperTest {
     
-    private final NewYamlShadowRuleConfigurationSwapper swapper = new NewYamlShadowRuleConfigurationSwapper();
+    private final YamlShadowRuleConfigurationSwapper swapper = new YamlShadowRuleConfigurationSwapper();
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {

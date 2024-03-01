@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.yaml.schema.swapper;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * YAML schema swapper.
  */
-public final class YamlSchemaSwapper implements YamlConfigurationSwapper<YamlShardingSphereSchema, ShardingSphereSchema> {
+public final class YamlSchemaSwapper implements YamlItemConfigurationSwapper<YamlShardingSphereSchema, ShardingSphereSchema> {
     
     @Override
     public YamlShardingSphereSchema swapToYamlConfiguration(final ShardingSphereSchema schema) {

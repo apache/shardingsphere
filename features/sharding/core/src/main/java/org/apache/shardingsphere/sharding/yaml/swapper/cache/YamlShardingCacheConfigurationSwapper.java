@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper.cache;
 
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 
 /**
  * YAML sharding cache configuration swapper.
  */
-public final class YamlShardingCacheConfigurationSwapper implements YamlConfigurationSwapper<YamlShardingCacheConfiguration, ShardingCacheConfiguration> {
+public final class YamlShardingCacheConfigurationSwapper implements YamlItemConfigurationSwapper<YamlShardingCacheConfiguration, ShardingCacheConfiguration> {
     
     private final YamlShardingCacheOptionsConfigurationSwapper cacheOptionsConfigurationSwapper = new YamlShardingCacheOptionsConfigurationSwapper();
     

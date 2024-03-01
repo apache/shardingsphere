@@ -20,14 +20,14 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 
 /**
  * YAML mode configuration swapper.
  */
 @SuppressWarnings("unchecked")
-public final class YamlModeConfigurationSwapper implements YamlConfigurationSwapper<YamlModeConfiguration, ModeConfiguration> {
+public final class YamlModeConfigurationSwapper implements YamlItemConfigurationSwapper<YamlModeConfiguration, ModeConfiguration> {
     
     @Override
     public YamlModeConfiguration swapToYamlConfiguration(final ModeConfiguration data) {

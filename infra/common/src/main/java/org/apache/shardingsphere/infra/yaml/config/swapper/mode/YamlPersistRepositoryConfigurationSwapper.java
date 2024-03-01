@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -29,5 +29,5 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
  * @param <T> type of persist repository configuration
  */
 @SingletonSPI
-public interface YamlPersistRepositoryConfigurationSwapper<T extends PersistRepositoryConfiguration> extends YamlConfigurationSwapper<YamlPersistRepositoryConfiguration, T>, TypedSPI {
+public interface YamlPersistRepositoryConfigurationSwapper<T extends PersistRepositoryConfiguration> extends YamlItemConfigurationSwapper<YamlPersistRepositoryConfiguration, T>, TypedSPI {
 }

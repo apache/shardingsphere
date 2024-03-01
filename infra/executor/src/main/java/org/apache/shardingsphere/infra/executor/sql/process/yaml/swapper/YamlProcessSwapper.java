@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlItemConfigurationSwapper;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * YAML process swapper.
  */
-public final class YamlProcessSwapper implements YamlConfigurationSwapper<YamlProcess, Process> {
+public final class YamlProcessSwapper implements YamlItemConfigurationSwapper<YamlProcess, Process> {
     
     @Override
     public YamlProcess swapToYamlConfiguration(final Process data) {

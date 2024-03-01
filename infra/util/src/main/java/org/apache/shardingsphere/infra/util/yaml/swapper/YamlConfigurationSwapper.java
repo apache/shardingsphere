@@ -17,29 +17,31 @@
 
 package org.apache.shardingsphere.infra.util.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
+
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * YAML configuration swapper.
  *
- * @param <Y> type of YAML configuration
  * @param <T> type of swapped object
  */
-public interface YamlConfigurationSwapper<Y extends YamlConfiguration, T> {
+public interface YamlConfigurationSwapper<T> {
     
     /**
-     * Swap to YAML configuration.
-     *
-     * @param data data to be swapped
-     * @return YAML configuration
-     */
-    Y swapToYamlConfiguration(T data);
+    * Swap to YAML data node.
+    *
+    * @param data data to be swapped
+    * @return YAML data nodes
+    */
+    Collection<YamlDataNode> swapToDataNodes(T data);
     
     /**
-     * Swap from YAML configuration to object.
+     * Swap from data node to object.
      *
-     * @param yamlConfig YAML configuration
+     * @param dataNodes data nodes
      * @return swapped object
      */
-    T swapToObject(Y yamlConfig);
+    Optional<T> swapToObject(Collection<YamlDataNode> dataNodes);
 }
