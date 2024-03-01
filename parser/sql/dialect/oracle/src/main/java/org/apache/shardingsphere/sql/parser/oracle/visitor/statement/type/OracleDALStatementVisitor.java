@@ -62,12 +62,12 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
         result.getVariableNames().addAll(getVariableNames());
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowErrors(final ShowErrorsContext ctx) {
         return new OracleShowErrorsStatement();
     }
-
+    
     @Override
     public ASTNode visitShowParameter(final ShowParameterContext ctx) {
         OracleShowParameterStatement result = new OracleShowParameterStatement();
@@ -76,7 +76,7 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitSpool(final SpoolContext ctx) {
         OracleSpoolStatement result = new OracleSpoolStatement();

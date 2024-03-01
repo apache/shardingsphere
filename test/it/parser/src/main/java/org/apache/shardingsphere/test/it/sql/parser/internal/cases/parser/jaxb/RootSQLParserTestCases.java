@@ -1741,7 +1741,7 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "update-statistics")
     private final List<UpdateStatisticsStatementTestCase> updateStatisticsStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "spool")
     private final List<SpoolStatementTestCase> oracleSpoolStatementTestCases = new LinkedList<>();
     

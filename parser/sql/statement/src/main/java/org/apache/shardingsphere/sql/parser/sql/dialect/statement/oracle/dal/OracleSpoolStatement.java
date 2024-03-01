@@ -29,5 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 @Getter
 @Setter
 public final class OracleSpoolStatement extends AbstractSQLStatement implements DALStatement, OracleStatement {
+    
     private String fileName;
 }
