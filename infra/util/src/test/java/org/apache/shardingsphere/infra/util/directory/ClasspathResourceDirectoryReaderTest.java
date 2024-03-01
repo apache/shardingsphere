@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.util.directory;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,8 @@ class ClasspathResourceDirectoryReaderTest {
     void read() {
         List<String> resourceNameList = ClasspathResourceDirectoryReader.read("yaml").collect(Collectors.toList());
         assertThat(resourceNameList.size(), is(4));
-        assertThat(resourceNameList, hasItems("yaml/accepted-class.yaml", "yaml/customized-obj.yaml", "yaml/empty-config.yaml", "yaml/shortcuts-fixture.yaml"));
+        final String separator = File.separator;
+        assertThat(resourceNameList, hasItems("yaml" + separator + "accepted-class.yaml", "yaml" + separator + "customized-obj.yaml", "yaml" + separator + "empty-config.yaml",
+                "yaml" + separator + "shortcuts-fixture.yaml"));
     }
 }
