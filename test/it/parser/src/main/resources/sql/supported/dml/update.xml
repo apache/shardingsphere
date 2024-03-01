@@ -67,4 +67,5 @@
     <sql-case id="update_with_inner_join" value="UPDATE dbo.Table2 SET dbo.Table2.ColB = dbo.Table2.ColB + dbo.Table1.ColB FROM dbo.Table2 INNER JOIN dbo.Table1 ON (dbo.Table2.ColA = dbo.Table1.ColA)" db-types="SQLServer"/>
     <sql-case id="update_with_current_of_abc" value="UPDATE dbo.Table1 SET c2 = c2 + d2 FROM dbo.Table2 WHERE CURRENT OF abc" db-types="SQLServer"/>
     <sql-case id="update_with_location_setXY" value="UPDATE Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
+    <sql-case id="update_with_alter_table" value="UPDATE MyTable SET NullCol = N'some_value' WHERE NullCol IS NULL" db-types="SQLServer"/>
 </sql-cases>
