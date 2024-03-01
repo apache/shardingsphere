@@ -27,18 +27,20 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * System schema builder.
@@ -48,7 +50,7 @@ public final class SystemSchemaBuilder {
     
     /**
      * Build system schema.
-     * 
+     *
      * @param databaseName database name
      * @param databaseType database type
      * @param props configuration properties
@@ -77,16 +79,11 @@ public final class SystemSchemaBuilder {
     }
     
     private static Collection<InputStream> getSchemaStreams(final String schemaName, final DatabaseType databaseType) {
-        Optional<SystemSchemaBuilderRule> builderRuleOptional = SystemSchemaBuilderRule.findBuilderRule(databaseType.getType(), schemaName);
-        if (!builderRuleOptional.isPresent()) {
-            return Collections.emptyList();
+        try (
+                Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read(SystemSchemaBuilder.class.getClassLoader(),
+                        "schema" + File.separator + databaseType.getType().toLowerCase() + File.separator + schemaName)) {
+            return resourceNameStream.map(SystemSchemaBuilder.class.getClassLoader()::getResourceAsStream).collect(Collectors.toList());
         }
-        SystemSchemaBuilderRule builderRule = builderRuleOptional.get();
-        Collection<InputStream> result = new LinkedList<>();
-        for (String each : builderRule.getTables()) {
-            result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
-        }
-        return result;
     }
     
     private static ShardingSphereSchema createSchema(final String schemaName, final Collection<InputStream> schemaStreams, final YamlTableSwapper swapper,
