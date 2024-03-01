@@ -5063,6 +5063,9 @@
             <column-projection name="order_id_value" start-index="7" stop-index="20" />
             <column-projection name="order_item_id_value" start-index="22" stop-index="40" />
         </projections>
+        <model start-index="120" stop-index="236">
+            <cell-assignment-column name="order_id_value" start-index="211" stop-index="224"/>
+        </model>
     </select>
     
     <select sql-case-id="select_with_dollar_parameter_for_postgresql" parameters="1, 12" >
@@ -7342,8 +7345,147 @@
             </expression-projection>
         </projections>
         <from>
-            <simple-table alias="aWHERE" name="employee" start-index="88" stop-index="102" literal-start-index="88" literal-stop-index="102" />
+            <simple-table alias="a" name="employee" start-index="88" stop-index="97"/>
         </from>
+        <where start-index="99" stop-index="306">
+            <expr>
+                <binary-operation-expression start-index="105" stop-index="306">
+                    <operator>AND</operator>
+                    <left>
+                        <binary-operation-expression start-index="105" stop-index="169">
+                            <operator>AND</operator>
+                            <left>
+                                <binary-operation-expression start-index="105" stop-index="124">
+                                    <operator>=</operator>
+                                    <left>
+                                        <function text="nvl(disabled, 0)" function-name="nvl" start-index="105" stop-index="120">
+                                            <parameter>
+                                                <column name="disabled" start-index="109" stop-index="116"/>
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value="0" start-index="119" stop-index="119"/>
+                                            </parameter>
+                                        </function>
+                                    </left>
+                                    <right>
+                                        <literal-expression value="1" start-index="124" stop-index="124"/>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <right>
+                                <between-expression start-index="131" stop-index="169">
+                                    <left>
+                                        <column name="enddate" start-index="131" stop-index="137"/>
+                                    </left>
+                                    <between-expr>
+                                        <column name="term" start-index="147" stop-index="150"/>
+                                    </between-expr>
+                                    <and-expr>
+                                        <function text="last_day(term)" function-name="last_day" start-index="156" stop-index="169">
+                                            <parameter>
+                                                <column name="term" start-index="165" stop-index="168"/>
+                                            </parameter>
+                                        </function>
+                                    </and-expr>
+                                </between-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <subquery start-index="176" stop-index="306">
+                            <select>
+                                <projections start-index="191" stop-index="191">
+                                    <expression-projection text="1" start-index="191" stop-index="191"/>
+                                </projections>
+                                <from start-index="198" stop-index="203">
+                                    <simple-table name="post" start-index="198" stop-index="203" alias="d"/>
+                                </from>
+                                <where start-index="205" stop-index="305">
+                                    <expr>
+                                        <binary-operation-expression start-index="211" stop-index="305">
+                                            <operator>AND</operator>
+                                            <left>
+                                                <binary-operation-expression start-index="211" stop-index="277">
+                                                    <operator>AND</operator>
+                                                    <left>
+                                                        <binary-operation-expression start-index="211" stop-index="253">
+                                                            <operator>AND</operator>
+                                                            <left>
+                                                                <binary-operation-expression start-index="211" stop-index="227">
+                                                                    <operator>=</operator>
+                                                                    <left>
+                                                                        <column name="orgid" start-index="211" stop-index="217">
+                                                                            <owner name="a" start-index="211" stop-index="211"/>
+                                                                        </column>
+                                                                    </left>
+                                                                    <right>
+                                                                        <column name="orgid" start-index="221" stop-index="227">
+                                                                            <owner name="d" start-index="221" stop-index="221"/>
+                                                                        </column>
+                                                                    </right>
+                                                                </binary-operation-expression>
+                                                            </left>
+                                                            <right>
+                                                                <binary-operation-expression start-index="235" stop-index="253">
+                                                                    <operator>=</operator>
+                                                                    <left>
+                                                                        <column name="postid" start-index="235" stop-index="242">
+                                                                            <owner name="a" start-index="235" stop-index="235"/>
+                                                                        </column>
+                                                                    </left>
+                                                                    <right>
+                                                                        <column name="postid" start-index="246" stop-index="253">
+                                                                            <owner name="d" start-index="246" stop-index="246"/>
+                                                                        </column>
+                                                                    </right>
+                                                                </binary-operation-expression>
+                                                            </right>
+                                                        </binary-operation-expression>
+                                                    </left>
+                                                    <right>
+                                                        <binary-operation-expression start-index="261" stop-index="277">
+                                                            <operator>!=</operator>
+                                                            <left>
+                                                                <column name="title" start-index="261" stop-index="267">
+                                                                    <owner name="d" start-index="261" stop-index="261"/>
+                                                                </column>
+                                                            </left>
+                                                            <right>
+                                                                <literal-expression value="TEST" start-index="272" stop-index="277"/>
+                                                            </right>
+                                                        </binary-operation-expression>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </left>
+                                            <right>
+                                                <binary-operation-expression start-index="285" stop-index="305">
+                                                    <operator>!=</operator>
+                                                    <left>
+                                                        <function text="nvl(d.postid, 0)" start-index="285" stop-index="300" function-name="nvl">
+                                                            <parameter>
+                                                                <column name="postid" start-index="289" stop-index="296">
+                                                                    <owner name="d" start-index="289" stop-index="289"/>
+                                                                </column>
+                                                            </parameter>
+                                                            <parameter>
+                                                                <literal-expression value="0" start-index="299" stop-index="299"/>
+                                                            </parameter>
+                                                        </function>
+                                                    </left>
+                                                    <right>
+                                                        <literal-expression value="0" start-index="305" stop-index="305"/>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
     <select sql-case-id="select_with_custom_table_function">
         <projections start-index="7" stop-index="18" literal-start-index="7" literal-stop-index="18">

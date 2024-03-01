@@ -33,7 +33,8 @@ class ShardingSphereURLLoadEngineTest {
     
     @Test
     void assertLoadContent() {
-        String content = "foo_driver_fixture_db=2\nstorage_unit_count=2\n";
+        final String lineSeparator = System.lineSeparator();
+        String content = "foo_driver_fixture_db=2" + lineSeparator + "storage_unit_count=2" + lineSeparator;
         ShardingSphereURLLoader urlLoader = mock(ShardingSphereURLLoader.class);
         when(urlLoader.load(any(), any())).thenReturn(content);
         try (MockedStatic<TypedSPILoader> typedSPILoaderMockedStatic = mockStatic(TypedSPILoader.class)) {

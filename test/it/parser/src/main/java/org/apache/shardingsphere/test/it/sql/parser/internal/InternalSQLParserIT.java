@@ -69,8 +69,7 @@ public abstract class InternalSQLParserIT {
             "grant_program", "grant_role", "grant_roles_to_programs", "grant_roles_to_users", "grant_system_privilege", "grant_system_privilege_to_users", "grant_system_privileges",
             "grant_user_with_admin", "grant_user_with_grant", "grant_user_without_hostname", "revoke_all_system_privileges", "revoke_all_object_privileges", "revoke_object_privilege",
             "revoke_object_privilege_column", "revoke_object_privilege_from_users", "revoke_object_privileges", "revoke_program", "revoke_role", "revoke_role_from_user", "revoke_roles_from_programs",
-            "revoke_system_privilege_from_users", "revoke_system_privilege", "revoke_system_privileges", "revoke_user_from", "revoke_user_without_hostname", "select_with_expressions_in_projection",
-            "select_with_model_in", "set_all_expect_roles", "set_all_expect_role"));
+            "revoke_system_privilege_from_users", "revoke_system_privilege", "revoke_system_privileges", "revoke_user_from", "revoke_user_without_hostname"));
     // CHECKSTYLE:ON
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")

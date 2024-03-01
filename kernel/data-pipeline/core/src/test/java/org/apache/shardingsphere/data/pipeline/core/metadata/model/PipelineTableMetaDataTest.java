@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +37,7 @@ class PipelineTableMetaDataTest {
     @BeforeEach
     void setUp() {
         PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true, true);
-        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", column), Collections.emptySet());
+        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap(new CaseInsensitiveIdentifier("test"), column), Collections.emptySet());
     }
     
     @Test

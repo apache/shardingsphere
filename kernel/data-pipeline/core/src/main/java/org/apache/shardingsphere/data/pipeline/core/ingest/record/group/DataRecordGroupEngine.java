@@ -120,6 +120,7 @@ public final class DataRecordGroupEngine {
                 () -> new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord));
         if (null != beforeDataRecord && PipelineSQLOperationType.UPDATE == beforeDataRecord.getType() && isUniqueKeyUpdated(beforeDataRecord)) {
             DataRecord mergedDataRecord = new DataRecord(PipelineSQLOperationType.DELETE, dataRecord.getTableName(), dataRecord.getPosition(), dataRecord.getColumnCount());
+            mergeBaseFields(dataRecord, mergedDataRecord);
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
                 mergedDataRecord.addColumn(new Column(dataRecord.getColumn(i).getName(),
                         dataRecord.getColumn(i).isUniqueKey() ? beforeDataRecord.getColumn(i).getOldValue() : beforeDataRecord.getColumn(i).getValue(),
@@ -130,6 +131,12 @@ public final class DataRecordGroupEngine {
         } else {
             dataRecords.put(dataRecord.getOldKey(), dataRecord);
         }
+    }
+    
+    private void mergeBaseFields(final DataRecord sourceRecord, final DataRecord targetRecord) {
+        targetRecord.setActualTableName(sourceRecord.getActualTableName());
+        targetRecord.setCsn(sourceRecord.getCsn());
+        targetRecord.setCommitTime(sourceRecord.getCommitTime());
     }
     
     private boolean isUniqueKeyUpdated(final DataRecord dataRecord) {
@@ -144,6 +151,7 @@ public final class DataRecordGroupEngine {
     
     private DataRecord mergeUpdateColumn(final PipelineSQLOperationType type, final String tableName, final DataRecord preDataRecord, final DataRecord curDataRecord) {
         DataRecord result = new DataRecord(type, tableName, curDataRecord.getPosition(), curDataRecord.getColumnCount());
+        mergeBaseFields(curDataRecord, result);
         for (int i = 0; i < curDataRecord.getColumnCount(); i++) {
             result.addColumn(new Column(
                     curDataRecord.getColumn(i).getName(),
