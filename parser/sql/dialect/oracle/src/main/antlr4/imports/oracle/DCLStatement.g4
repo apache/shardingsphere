@@ -24,19 +24,32 @@ grant
     ;
 
 revoke
-    : REVOKE (objectPrivilegeClause | systemPrivilegeClause | roleClause)
+    : REVOKE (((objectPrivilegeClause | systemPrivilegeClause) FROM objectPrivilegeFrom) | roleClause)
     ;
 
 objectPrivilegeClause
     : objectPrivileges ON onObjectClause
     ;
 
+
+objectPrivilegeFrom
+    : revokeeClause ((CASCADE CONSTRAINTS) | FORCE)?
+    ;
+
+revokeeClause
+    : (name | PUBLIC) (COMMA_ (name | PUBLIC))*
+    ;
+
 systemPrivilegeClause
-    : systemPrivilege
+    : systemPrivilege (COMMA_ systemPrivilege)*
     ;
     
 roleClause
     : ignoredIdentifiers
+    ;
+
+programUnit
+    : (FUNCTION | PROCEDURE | PACKAGE) schemaName DOT_ name
     ;
 
 objectPrivileges
@@ -119,6 +132,7 @@ systemPrivilege
     | viewsSystemPrivilege
     | miscellaneousSystemPrivilege
     | ruleSystemPrivilege
+    | name
     ;
 
 systemPrivilegeOperation
