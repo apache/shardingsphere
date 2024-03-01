@@ -55,7 +55,7 @@ public abstract class InternalSQLParserIT {
     private static final Collection<String> IGNORE_TEST_CASES = new HashSet<>(Arrays.asList("alter_materialized_view_refresh_complete_refresh",
             "alter_audit_policy_modify", "alter_database_open_readonly", "alter_table_add_primary_foreign_key", "alter_table_move_compress_for_oltp",
             "alter_type_add_static_procedure", "alter_type_add_static_procedure_is", "alter_type_drop_static_procedure", "alter_type_drop_static_procedure_is",
-            "create_function_call_spec_java", "create_cluster_number_size_hashkeys","create_cluster_set_size", "create_cluster_size_initial_next", "create_external_role",
+            "create_function_call_spec_java", "create_cluster_number_size_hashkeys", "create_cluster_set_size", "create_cluster_size_initial_next", "create_external_role",
             "create_external_user", "create_control_file", "create_global_role", "create_global_user", "create_java", "create_materialized_view_log_with_including_new",
             "create_materialized_view_log_with_pctfree_storage_purge_repeat", "create_materialized_view_log_with_row_id_sequence_including_new", "create_materialized_view_log_with_tablespace",
             "create_no_identified_role", "create_role", "create_role_identified_by", "create_role_with_container", "create_role_with_identified_by_password",
