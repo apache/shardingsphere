@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceUnitsChangedEvent;
@@ -113,11 +113,11 @@ public final class ConfigurationChangedSubscriber {
     }
     
     private void disableDataSources(final StorageNodeDataSource storageNodeDataSource, final StaticDataSourceContainedRule rule, final QualifiedDatabase database) {
-        for (Entry<String, Collection<String>> entry : rule.getDataSourceMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : rule.getStaticDataSourceRule().getDataSourceMapper().entrySet()) {
             if (!database.getGroupName().equals(entry.getKey())) {
                 continue;
             }
-            entry.getValue().forEach(each -> rule.updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
+            entry.getValue().forEach(each -> rule.getStaticDataSourceRule().updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
         }
     }
     
