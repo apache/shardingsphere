@@ -17,9 +17,9 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 
  - Conform to `Contributor Covenant Code of Conduct` below.
  - Make sure Maven build process success. Run `./mvnw clean install -B -T1C -Pcheck` command in shell to start Maven build process.
+ - Through the uniform code style of spotless, execute the `./mvnw spotless:apply -Pcheck` formatted code.
  - Make sure the test coverage rate is not lower than the master branch.
  - Careful consideration for each `pull request`; Small and frequent `pull request` with complete unit function is welcomed.
- - Through the uniform code style of spotless, execute the `./mvnw spotless:apply -Pcheck` formatted code.
  - If using IDEA, you can import the recommended `src/resources/code-style-idea.xml`.
 
 ## Contributor Covenant Code of Conduct
@@ -36,8 +36,11 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - Example for abbreviation composed less than 3 characters: SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator;
    - Example for abbreviation composed more than 3 characters: JdbcUrlAppender, YamlAgentConfigurationSwapper;
    - A variable composed of abbreviation should use lower camel case: mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
- - Except return an input parameter as result, returning variable should be named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
- - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
+ - Local variables that meet the following conditions shall be named according to the following rules:
+   - Except return an input parameter as result, returning variable should be named with `result`;
+   - Variables in the loop structure are named with `each`;
+   - Replace `each` with `entry` in map;
+   - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
  - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words).
  - Split codes that need to add notes with it into small methods, which are explained with method names.
  - Have constants on the left and variable on the right in `=` and `equals` conditional expressions; Have variable on the left and constants on the right in `greater than` and `less than` conditional expressions.

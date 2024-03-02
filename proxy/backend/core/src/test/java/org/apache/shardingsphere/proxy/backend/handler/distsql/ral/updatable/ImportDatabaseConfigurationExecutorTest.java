@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -143,6 +144,8 @@ class ImportDatabaseConfigurationExecutorTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         DataSourceMapperContainedRule dataSourceMapperContainedRule = mock(DataSourceMapperContainedRule.class);
+        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
+        when(dataSourceMapperContainedRule.getDataSourceMapperRule()).thenReturn(dataSourceMapperRule);
         when(database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class)).thenReturn(Collections.singleton(dataSourceMapperContainedRule));
         when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(databaseName, database));
         when(result.getMetaDataContexts().getMetaData().getDatabase(databaseName)).thenReturn(database);

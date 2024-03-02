@@ -20,9 +20,9 @@ chapter = true
 
  - 确保遵守编码规范。
  - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Pcheck`。
+ - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 确保覆盖率不低于 master 分支。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
- - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
 
 ## 编码规范
@@ -39,8 +39,11 @@ chapter = true
    - 三位以内字符的类和方法名称缩写的示例：SQL92Lexer、XMLTransfer、MySQLAdminExecutorCreator；
    - 三位以上字符的类和方法名称缩写的示例：JdbcUrlAppender、YamlAgentConfigurationSwapper；
    - 变量应使用小驼峰形式：mysqlAuthenticationMethod、sqlStatement、mysqlConfig。
- - 除了直接返回方法入参，返回变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
- - 捕获的异常名称命名为 `ex` ；捕获异常且不做任何事情，异常名称命名为 `ignored`。
+ - 符合下列条件的局部变量应参照以下规则命名：
+   - 除了直接返回方法入参，返回变量使用 `result` 命名；
+   - 循环中使用 `each` 命名循环变量；
+   - map 中使用 `entry` 代替 `each`；
+   - 捕获的异常名称命名为 `ex` ；捕获异常且不做任何事情，异常名称命名为 `ignored`。
  - 配置文件使用 `Spinal Case` 命名（一种使用 `-` 分割单词的特殊 `Snake Case`）。
  - 需要注释解释的代码尽量提成小方法，用方法名称解释。
  - `equals` 和 `==` 条件表达式中，常量在左，变量在右；大于小于等条件表达式中，变量在左，常量在右。
