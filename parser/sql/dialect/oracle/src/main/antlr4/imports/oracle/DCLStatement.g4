@@ -24,16 +24,15 @@ grant
     ;
 
 revoke
-    : REVOKE (((objectPrivilegeClause | systemPrivilegeClause) FROM objectPrivilegeFrom) | roleClause)
+    : REVOKE (((objectPrivilegeClause | systemPrivilegeClause) objectPrivilegeFrom) | roleClause roleClauseFrom)
     ;
 
 objectPrivilegeClause
     : objectPrivileges ON onObjectClause
     ;
 
-
 objectPrivilegeFrom
-    : revokeeClause ((CASCADE CONSTRAINTS) | FORCE)?
+    : FROM revokeeClause ((CASCADE CONSTRAINTS) | FORCE)?
     ;
 
 revokeeClause
@@ -46,6 +45,10 @@ systemPrivilegeClause
     
 roleClause
     : ignoredIdentifiers
+    ;
+
+roleClauseFrom
+    : FROM programUnit (COMMA_ programUnit)*
     ;
 
 programUnit
