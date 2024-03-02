@@ -65,19 +65,19 @@ chapter = true
  - 禁止嵌套使用三目运算符。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
  - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
- - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
  - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法性能的优化。
    - 使用 `@HighFrequencyInvocation` 注解的时机：
      - 请求频繁调用的链路，标注其中高频调用的类、方法或构造器，标注范围精确匹配；
      - `canBeCached` 属性为 `true` 时，表示该目标为可复用的缓存资源，例如：数据库连接。
    - 标注 `@HighFrequencyInvocation` 的代码段须严格保证代码性能，以下为标注代码段内的禁止项：
      - 禁止调用 Java Stream API；
-     - 禁止通过 `+` 连接字符串；
+     - 禁止通过 `+` 拼接字符串；
      - 禁止调用 LinkedList 的 `get(int index)` 方法。
  - 注释 & 日志规范：
    - 日志与注释一律使用英文。
    - 注释只能包含 javadoc，todo 和 fixme。
    - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
+
 ## 单元测试规范
 
  - 测试代码和生产代码需遵守相同代码规范。

@@ -62,7 +62,6 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Nested using ternary operator is forbidden.
  - Use forward semantics in priority for better understanding code logic in conditional expressions. For example: `if (null == param) {} else {}`.
  - Use concentrate `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
- - Avoid using Java Stream in hot methods, unless the performance of using Stream is better than using loop in that situation.
  - Reasonably use the @HighFrequencyInvocation annotation to focus on optimizing the performance of critical methods.
    - Occasions for using the @HighFrequencyInvocation annotation:
      - In frequently invoked requests, add annotation to classes, methods, or constructors with high frequency calls; precise matching within the scope of annotation;
