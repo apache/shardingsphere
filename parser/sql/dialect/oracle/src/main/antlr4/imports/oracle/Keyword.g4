@@ -907,3 +907,15 @@ PIPE
 FORALL
     : F O R A L L
     ;
+
+HTTP
+    : H T T P
+    ;
+
+DIGEST
+    : D I G E S T
+    ;
+
+CONTAINER_DATA
+    : C O N T A I N E R  UL_ D A T A
+    ;

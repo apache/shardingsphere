@@ -28,11 +28,13 @@ import org.apache.shardingsphere.test.e2e.engine.composer.BatchE2EContainerCompo
 import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.junit.jupiter.api.AfterEach;
 
 import javax.sql.DataSource;
@@ -82,17 +84,19 @@ public abstract class BaseDMLE2EIT {
         }
     }
     
-    protected final void assertDataSet(final SingleE2EContainerComposer containerComposer, final int actualUpdateCount, final DatabaseType databaseType) throws SQLException {
+    protected final void assertDataSet(final SingleE2EContainerComposer containerComposer, final int actualUpdateCount, final AssertionTestParameter testParam) throws SQLException {
         assertThat(actualUpdateCount, is(containerComposer.getDataSet().getUpdateCount()));
         for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
-            assertDataSet(containerComposer, each, databaseType);
+            assertDataSet(containerComposer, each, testParam);
         }
     }
     
-    private void assertDataSet(final SingleE2EContainerComposer containerComposer, final DataSetMetaData expectedDataSetMetaData, final DatabaseType databaseType) throws SQLException {
+    private void assertDataSet(final SingleE2EContainerComposer containerComposer, final DataSetMetaData expectedDataSetMetaData, final AssertionTestParameter testParam) throws SQLException {
+        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType());
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(containerComposer.getActualDataSourceMap(), dataNode, databaseType))) {
@@ -104,21 +108,23 @@ public abstract class BaseDMLE2EIT {
     private void assertDataSet(final PreparedStatement actualPreparedStatement, final DataSetMetaData expectedDataSetMetaData, final List<DataSetRow> expectedDataSetRows,
                                final DatabaseType databaseType) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
-            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetaData.getColumns(), databaseType);
+            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetaData.getColumns());
             assertRows(actualResultSet, expectedDataSetRows, databaseType);
         }
     }
     
-    protected final void assertDataSet(final BatchE2EContainerComposer containerComposer, final int[] actualUpdateCounts, final DatabaseType databaseType) throws SQLException {
+    protected final void assertDataSet(final BatchE2EContainerComposer containerComposer, final int[] actualUpdateCounts, final CaseTestParameter testParam) throws SQLException {
         for (DataSetMetaData each : containerComposer.getDataSet(actualUpdateCounts).getMetaDataList()) {
-            assertDataSet(containerComposer, actualUpdateCounts, each, databaseType);
+            assertDataSet(containerComposer, actualUpdateCounts, each, testParam);
         }
     }
     
     private void assertDataSet(final BatchE2EContainerComposer containerComposer, final int[] actualUpdateCounts, final DataSetMetaData expectedDataSetMetaData,
-                               final DatabaseType databaseType) throws SQLException {
+                               final CaseTestParameter testParam) throws SQLException {
+        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType());
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
+            DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
@@ -137,7 +143,7 @@ public abstract class BaseDMLE2EIT {
         return String.format("SELECT * FROM %s", dataNode.getTableName());
     }
     
-    private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected, final DatabaseType databaseType) throws SQLException {
+    private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
         assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
         for (DataSetColumn each : expected) {
@@ -194,7 +200,7 @@ public abstract class BaseDMLE2EIT {
             return;
         }
         assertThat("Only support single table for DML.", containerComposer.getGeneratedKeyDataSet().getMetaDataList().size(), is(1));
-        assertMetaData(generatedKeys.getMetaData(), containerComposer.getGeneratedKeyDataSet().getMetaDataList().get(0).getColumns(), databaseType);
+        assertMetaData(generatedKeys.getMetaData(), containerComposer.getGeneratedKeyDataSet().getMetaDataList().get(0).getColumns());
         assertRows(generatedKeys, containerComposer.getGeneratedKeyDataSet().getRows(), databaseType);
     }
 }
