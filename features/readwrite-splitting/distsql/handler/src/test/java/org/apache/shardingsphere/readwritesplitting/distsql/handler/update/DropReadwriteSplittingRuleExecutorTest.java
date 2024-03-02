@@ -80,7 +80,7 @@ class DropReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithInUsed() throws RuleDefinitionViolationException {
-        DataSourceMapperContainedRule dataSourceMapperContainedRule = mock(DataSourceMapperContainedRule.class);
+        DataSourceMapperContainedRule dataSourceMapperContainedRule = mock(DataSourceMapperContainedRule.class, RETURNS_DEEP_STUBS);
         when(dataSourceMapperContainedRule.getDataSourceMapperRule().getDataSourceMapper()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton("readwrite_ds")));
         when(database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class)).thenReturn(Collections.singleton(dataSourceMapperContainedRule));
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class, RETURNS_DEEP_STUBS);
