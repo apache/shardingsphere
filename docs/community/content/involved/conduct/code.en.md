@@ -42,7 +42,8 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
      - Except return an input parameter as result, returning variable should be named with `result`;
      - Variables in the loop structure are named with `each`;
      - Replace `each` with `entry` in map;
-     - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
+     - Exceptions when catch are named with `ex`;
+     - Exceptions when catch but do nothing are named with `ignored`.
    - Utility class should be named in the form of `xxUtils`.
    - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words).
  - Split codes that need to add notes with it into small methods, which are explained with method names.
