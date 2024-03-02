@@ -15,13 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.datasource;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Static data source contained rule.
@@ -29,28 +25,9 @@ import java.util.Map;
 public interface StaticDataSourceContainedRule extends ShardingSphereRule {
     
     /**
-     * Get data source mapper.
-     *
-     * @return data source mapper
+     * Get static data source rule.
+     * 
+     * @return static data source rule
      */
-    Map<String, Collection<String>> getDataSourceMapper();
-    
-    /**
-     * Update data source status.
-     *
-     * @param event data source status changed event
-     */
-    void updateStatus(DataSourceStatusChangedEvent event);
-    
-    /**
-     * Clean single storage node data source.
-     *
-     * @param groupName group name
-     */
-    void cleanStorageNodeDataSource(String groupName);
-    
-    /**
-     * Clean storage nodes data sources.
-     */
-    void cleanStorageNodeDataSources();
+    StaticDataSourceRule getStaticDataSourceRule();
 }
