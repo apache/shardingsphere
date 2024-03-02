@@ -26,22 +26,25 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 
  - Use linux line separators.
  - No meaningless blank lines. Please extract private methods to instead of blank lines if too long method body or different logic code fragments.
- - Use meaningful class, method and variable names, class and method name avoid to use abbreviation. Some variables could use abbreviation.
-   - Variable `arguments` could abbreviate to `args`;
-   - Variable `parameters` could abbreviate to `params`;
-   - Variable `environment` could abbreviate to `env`;
-   - Variable `properties` could abbreviate to `props`;
-   - Variable `configuration` could abbreviate to `config`.
- - Abbreviation composed less than 3 characters should be uppercase, more than 3 characters must use camel case naming rule.
-   - Example for abbreviation composed less than 3 characters: SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator;
-   - Example for abbreviation composed more than 3 characters: JdbcUrlAppender, YamlAgentConfigurationSwapper;
-   - A variable composed of abbreviation should use lower camel case: mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
- - Local variables that meet the following conditions shall be named according to the following rules:
-   - Except return an input parameter as result, returning variable should be named with `result`;
-   - Variables in the loop structure are named with `each`;
-   - Replace `each` with `entry` in map;
-   - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
- - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words).
+ - Naming covenant:
+   - Use meaningful names.
+   - Avoid to use abbreviation. Some variables could use abbreviation.
+     - Variable `arguments` could abbreviate to `args`;
+     - Variable `parameters` could abbreviate to `params`;
+     - Variable `environment` could abbreviate to `env`;
+     - Variable `properties` could abbreviate to `props`;
+     - Variable `configuration` could abbreviate to `config`.
+   - Abbreviation composed less than 3 characters should be uppercase, more than 3 characters must use camel case naming rule.
+     - Example for abbreviation composed less than 3 characters: SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator;
+     - Example for abbreviation composed more than 3 characters: JdbcUrlAppender, YamlAgentConfigurationSwapper;
+     - A variable composed of abbreviation should use lower camel case: mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
+   - Local variables that meet the following conditions shall be named according to the following rules:
+     - Except return an input parameter as result, returning variable should be named with `result`;
+     - Variables in the loop structure are named with `each`;
+     - Replace `each` with `entry` in map;
+     - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
+   - Utility class should be named in the form of `xxUtils`.
+   - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words).
  - Split codes that need to add notes with it into small methods, which are explained with method names.
  - Have constants on the left and variable on the right in `=` and `equals` conditional expressions; Have variable on the left and constants on the right in `greater than` and `less than` conditional expressions.
  - Beside using same names as input parameters and global fields in assign statement, avoid using `this` modifier.
@@ -55,15 +58,11 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Replace constructors, getters, setter methods and log variable with lombok in priority.
  - Use `LinkedList`  in priority. Use `ArrayList` for use index to get element only.
  - Use capacity based `Collection` such as `ArrayList`, `HashMap` must indicate initial capacity to avoid recalculate capacity.
- - Use English in all the logs and javadoc.
- - Include Javadoc, todo and fixme only in the comments.
- - Only `public` classes and methods need javadoc, the Javadoc for the user API and SPI needs to be written clearly and comprehensively, other methods, classes and override methods do not need javadoc.
  - Replace if else return and assign statement with ternary operator in priority.
  - Nested using ternary operator is forbidden.
  - Use forward semantics in priority for better understanding code logic in conditional expressions. For example: `if (null == param) {} else {}`.
  - Use concentrate `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
  - Avoid using Java Stream in hot methods, unless the performance of using Stream is better than using loop in that situation.
- - Utility class should be named in the form of `xxUtils`.
  - Reasonably use the @HighFrequencyInvocation annotation to focus on optimizing the performance of critical methods.
    - Occasions for using the @HighFrequencyInvocation annotation:
      - In frequently invoked requests, add annotation to classes, methods, or constructors with high frequency calls; precise matching within the scope of annotation;
@@ -72,6 +71,10 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
      - It is prohibited to call Java Stream API;
      - It is prohibited to concat String using "+";
      - It is prohibited to call LinkedList's get(int index) method.
+ - Comments & Logs covenant:
+   - Use English in all the logs and javadoc.
+   - Include Javadoc, todo and fixme only in the comments.
+   - Only `public` classes and methods need javadoc, the Javadoc for the user API and SPI needs to be written clearly and comprehensively, other methods, classes and override methods do not need javadoc.
 
 ## Contributor Covenant Unit Test of Conduct
 
