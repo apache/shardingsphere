@@ -316,7 +316,22 @@ dropUser
     ;
 
 alterUser
-    : ALTER USER
+    : ALTER USER ((username (IDENTIFIED (BY password (REPLACE password)?
+    | EXTERNALLY (AS CERTIFICATE_DN | AS KERBEROS_PRINCIPAL_NAME)?
+    | NO AUTHENTICATION
+    | GLOBALLY AS (STRING_ | SQ_ AZURE_ROLE EQ_ identifier SQ_ | SQ_ IAM_GROUP_NAME EQ_ identifier SQ_))
+    | DEFAULT COLLATION collationName
+    | DEFAULT TABLESPACE tablespaceName
+    | LOCAL? TEMPORARY TABLESPACE tablespaceName tablespaceGroupName
+    | QUOTA (sizeClause | UNLIMITED) ON tablespaceName
+    | PROFILE profileName
+    | DEFAULT ROLE (roleName (COMMA_ roleName)* |  allClause | NONE )
+    | PASSWORD EXPIRE
+    | ACCOUNT (LOCK | UNLOCK)
+    | ENABLE EDITIONS (FOR editionType (COMMA_ editionType)*)? FORCE?
+    | HTTP? DIGEST (ENABLE | DISABLE)
+    | CONTAINER EQ_ (CURRENT | ALL)
+    | containerDataClause)*) | username (COMMA_ username)* proxyClause*)
     ;
 
 createRole

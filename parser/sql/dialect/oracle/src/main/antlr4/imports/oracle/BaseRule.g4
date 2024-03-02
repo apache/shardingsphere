@@ -606,7 +606,7 @@ username
     ;
 
 password
-    : identifier
+    : identifier | STRING_
     ;
 
 logGroupName
@@ -2128,4 +2128,35 @@ agentDblink
 
 xPathsList
     : STRING_
+    ;
+
+sizeClause
+    : INTEGER_ capacityUnit?
+    ;
+
+maxsizeClause
+    : MAXSIZE (UNLIMITED | sizeClause)
+    ;
+
+editionType
+    : VIEW | SYNONYM | PROCEDURE | FUNCTION | PACKAGE | PACKAGE BODY | TRIGGER | TYPE | TYPE BODY | LIBRARY
+    ;
+
+containerDataClause
+    : (SET CONTAINER_DATA EQ_ (ALL | DEFAULT | containerName (COMMA_ containerName)*)
+    | (ADD | REMOVE) CONTAINER_DATA containerName (COMMA_ containerName)*)
+    (FOR (schemaName DOT_)? name)?
+    ;
+
+proxyClause
+    : GRANT CONNECT THROUGH (ENTERPRISE USERS | dbUserProxy dbUserProxyClauses)
+    | REVOKE CONNECT THROUGH (ENTERPRISE USERS | username)
+    ;
+
+dbUserProxy
+    : identifier
+    ;
+
+dbUserProxyClauses
+    : (WITH ((ROLE (ALL EXCEPT)? roleName (COMMA_ roleName)*) | NO ROLES))? (AUTHENTICATION REQUIRED | AUTHENTICATED USING PASSWORD)?
     ;
