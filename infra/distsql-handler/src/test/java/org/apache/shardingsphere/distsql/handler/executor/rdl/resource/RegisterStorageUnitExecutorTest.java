@@ -85,7 +85,7 @@ class RegisterStorageUnitExecutorTest {
     void assertExecuteUpdateWithDuplicateStorageUnitNamesWithDataSourceContainedRule() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
-        DataSourceMapperContainedRule rule = mock(DataSourceMapperContainedRule.class);
+        DataSourceMapperContainedRule rule = mock(DataSourceMapperContainedRule.class, RETURNS_DEEP_STUBS);
         when(rule.getDataSourceMapperRule().getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
         when(database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class)).thenReturn(Collections.singleton(rule));
         assertThrows(InvalidStorageUnitsException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
