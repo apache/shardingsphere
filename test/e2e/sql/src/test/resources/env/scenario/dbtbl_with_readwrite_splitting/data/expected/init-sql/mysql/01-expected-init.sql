@@ -29,9 +29,6 @@ CREATE TABLE write_dataset.t_product (product_id INT PRIMARY KEY, product_name V
 CREATE TABLE write_dataset.t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_dataset.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_dataset.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
--- TODO replace these tables with standard tables
-CREATE TABLE write_dataset.t_single_table (single_id INT NOT NULL AUTO_INCREMENT, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE write_dataset.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 
 CREATE INDEX order_index_t_order ON write_dataset.t_order (order_id);
 
@@ -47,8 +44,5 @@ CREATE TABLE read_dataset.t_product (product_id INT PRIMARY KEY, product_name VA
 CREATE TABLE read_dataset.t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_dataset.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_dataset.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
--- TODO replace these tables with standard tables
-CREATE TABLE read_dataset.t_single_table (single_id INT NOT NULL AUTO_INCREMENT, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE read_dataset.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 
 CREATE INDEX order_index_t_order ON read_dataset.t_order (order_id);
