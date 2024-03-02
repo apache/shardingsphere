@@ -26,7 +26,8 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -294,7 +295,7 @@ class CreateShardingTableRuleExecutorTest {
         return (DistSQLStatement) visitor.visit(parseASTNode.getRootNode());
     }
     
-    private static class MockDataSourceContainedRule implements DataSourceContainedRule {
+    private static class MockDataSourceContainedRule implements DataSourceMapperContainedRule {
         
         @Override
         public RuleConfiguration getConfiguration() {
@@ -302,8 +303,10 @@ class CreateShardingTableRuleExecutorTest {
         }
         
         @Override
-        public Map<String, Collection<String>> getDataSourceMapper() {
-            return Collections.singletonMap("logic_ds", null);
+        public DataSourceMapperRule getDataSourceMapperRule() {
+            DataSourceMapperRule result = mock(DataSourceMapperRule.class);
+            when(result.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_ds", null));
+            return result;
         }
     }
 }
