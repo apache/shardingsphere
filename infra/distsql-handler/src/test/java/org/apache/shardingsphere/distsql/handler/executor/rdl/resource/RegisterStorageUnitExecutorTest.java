@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -85,9 +85,9 @@ class RegisterStorageUnitExecutorTest {
     void assertExecuteUpdateWithDuplicateStorageUnitNamesWithDataSourceContainedRule() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
-        DataSourceContainedRule rule = mock(DataSourceContainedRule.class);
-        when(rule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
-        when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(rule));
+        DataSourceMapperContainedRule rule = mock(DataSourceMapperContainedRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getDataSourceMapperRule().getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
+        when(database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class)).thenReturn(Collections.singleton(rule));
         assertThrows(InvalidStorageUnitsException.class, () -> executor.executeUpdate(createRegisterStorageUnitStatement(), contextManager));
     }
     

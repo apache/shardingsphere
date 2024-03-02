@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChec
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -89,7 +89,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     private boolean containsInOtherRules(final String datasourceName, final Collection<ShardingSphereRule> rules) {
         for (ShardingSphereRule each : rules) {
-            if (each instanceof DataSourceContainedRule && ((DataSourceContainedRule) each).getDataSourceMapper().containsKey(datasourceName)) {
+            if (each instanceof DataSourceMapperContainedRule && ((DataSourceMapperContainedRule) each).getDataSourceMapperRule().getDataSourceMapper().containsKey(datasourceName)) {
                 return true;
             }
         }

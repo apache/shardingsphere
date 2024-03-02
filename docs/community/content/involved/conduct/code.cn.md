@@ -20,28 +20,34 @@ chapter = true
 
  - 确保遵守编码规范。
  - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Pcheck`。
+ - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 确保覆盖率不低于 master 分支。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
- - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
  - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
 
 ## 编码规范
 
  - 使用 linux 换行符。
  - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
- - 类、方法和变量的命名要做到顾名思义，类、方法名避免使用缩写，部分变量名可以使用缩写。
-   - 变量名 `arguments` 缩写为 `args`；
-   - 变量名 `parameters` 缩写为 `params`；
-   - 变量名 `environment` 缩写为 `env`；
-   - 变量名 `properties` 缩写为 `props`；
-   - 变量名 `configuration` 缩写为 `config`。
- - 三位以内字符的专有名词缩写使用大写，超过三位字符的缩写采用驼峰形式。
-   - 三位以内字符的类和方法名称缩写的示例：SQL92Lexer、XMLTransfer、MySQLAdminExecutorCreator；
-   - 三位以上字符的类和方法名称缩写的示例：JdbcUrlAppender、YamlAgentConfigurationSwapper；
-   - 变量应使用小驼峰形式：mysqlAuthenticationMethod、sqlStatement、mysqlConfig。
- - 除了直接返回方法入参，返回变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
- - 捕获的异常名称命名为 `ex` ；捕获异常且不做任何事情，异常名称命名为 `ignored`。
- - 配置文件使用 `Spinal Case` 命名（一种使用 `-` 分割单词的特殊 `Snake Case`）。
+ - 命名规范：
+   - 命名要做到顾名思义。
+   - 类、方法名避免使用缩写，部分变量名可以使用缩写。
+     - 变量名 `arguments` 缩写为 `args`；
+     - 变量名 `parameters` 缩写为 `params`；
+     - 变量名 `environment` 缩写为 `env`；
+     - 变量名 `properties` 缩写为 `props`；
+     - 变量名 `configuration` 缩写为 `config`。
+   - 三位以内字符的专有名词缩写使用大写，超过三位字符的缩写采用驼峰形式。
+     - 三位以内字符的类和方法名称缩写的示例：SQL92Lexer、XMLTransfer、MySQLAdminExecutorCreator；
+     - 三位以上字符的类和方法名称缩写的示例：JdbcUrlAppender、YamlAgentConfigurationSwapper；
+     - 变量应使用小驼峰形式：mysqlAuthenticationMethod、sqlStatement、mysqlConfig。
+   - 符合下列条件的局部变量，应参照下列规则命名：
+     - 除了直接返回方法入参，返回变量使用 `result` 命名；
+     - 循环中使用 `each` 命名循环变量；
+     - map 中使用 `entry` 代替 `each`；
+     - 捕获的异常名称命名为 `ex` ；捕获异常且不做任何事情，异常名称命名为 `ignored`。
+   - 工具类名称命名为 `xxUtils`。
+   - 配置文件使用 `Spinal Case` 命名（一种使用 `-` 分割单词的特殊 `Snake Case`）。
  - 需要注释解释的代码尽量提成小方法，用方法名称解释。
  - `equals` 和 `==` 条件表达式中，常量在左，变量在右；大于小于等条件表达式中，变量在左，常量在右。
  - 除了构造器入参与全局变量名称相同的赋值语句外，避免使用 `this` 修饰符。
@@ -55,23 +61,22 @@ chapter = true
  - 优先使用 lombok 代替构造器，getter, setter 方法和 log 变量。
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
- - 日志与注释一律使用英文。
- - 注释只能包含 javadoc，todo 和 fixme。
- - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
  - 优先使用三目运算符代替 if else 的返回和赋值语句。
  - 禁止嵌套使用三目运算符。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
  - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
- - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
- - 工具类名称命名为 `xxUtils`。
  - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法性能的优化。
    - 使用 `@HighFrequencyInvocation` 注解的时机：
      - 请求频繁调用的链路，标注其中高频调用的类、方法或构造器，标注范围精确匹配；
      - `canBeCached` 属性为 `true` 时，表示该目标为可复用的缓存资源，例如：数据库连接。
    - 标注 `@HighFrequencyInvocation` 的代码段须严格保证代码性能，以下为标注代码段内的禁止项：
      - 禁止调用 Java Stream API；
-     - 禁止通过 `+` 连接字符串；
+     - 禁止通过 `+` 拼接字符串；
      - 禁止调用 LinkedList 的 `get(int index)` 方法。
+ - 注释 & 日志规范：
+   - 日志与注释一律使用英文。
+   - 注释只能包含 javadoc，todo 和 fixme。
+   - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
 
 ## 单元测试规范
 

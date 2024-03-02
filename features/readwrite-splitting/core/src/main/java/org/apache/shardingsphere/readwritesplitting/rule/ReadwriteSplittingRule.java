@@ -27,9 +27,10 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
@@ -54,7 +55,7 @@ import java.util.stream.Collectors;
 /**
  * Readwrite-splitting rule.
  */
-public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceContainedRule, StaticDataSourceContainedRule, ExportableRule, StorageConnectorReusableRule {
+public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceMapperContainedRule, StaticDataSourceContainedRule, ExportableRule, StorageConnectorReusableRule {
     
     private final String databaseName;
     
@@ -68,12 +69,16 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     private final InstanceContext instanceContext;
     
+    @Getter
+    private final DataSourceMapperRule dataSourceMapperRule;
+    
     public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         this.databaseName = databaseName;
         configuration = ruleConfig;
         this.instanceContext = instanceContext;
         loadBalancers = createLoadBalancers(ruleConfig);
         dataSourceRules = createDataSourceRules(ruleConfig);
+        dataSourceMapperRule = new ReadwriteSplittingDataSourceMapperRule(dataSourceRules.values());
     }
     
     private Map<String, LoadBalanceAlgorithm> createLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {

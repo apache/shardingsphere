@@ -31,7 +31,7 @@ public final class ShadowCountResultRowBuilder implements CountResultRowBuilder<
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final ShadowRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("shadow", databaseName, rule.getDataSourceMapper().size()));
+        return Collections.singleton(new LocalDataQueryResultRow("shadow", databaseName, rule.getDataSourceMapperRule().getDataSourceMapper().size()));
     }
     
     @Override
