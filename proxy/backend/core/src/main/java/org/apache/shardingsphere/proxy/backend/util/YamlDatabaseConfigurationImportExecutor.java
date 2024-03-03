@@ -173,8 +173,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         Collection<RuleConfiguration> allRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        Map<Integer, Collection<RuleConfiguration>> ruleConfigsMap = swapToRuleConfigs(yamlRuleConfigs);
-        ruleConfigsMap.values().forEach(each -> addRules(allRuleConfigs, each, database));
+        swapToRuleConfigs(yamlRuleConfigs).values().forEach(each -> addRules(allRuleConfigs, each, database));
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), allRuleConfigs);
     }
     
