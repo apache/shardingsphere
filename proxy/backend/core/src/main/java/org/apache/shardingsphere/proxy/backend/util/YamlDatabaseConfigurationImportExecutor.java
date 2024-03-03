@@ -19,15 +19,11 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.yaml.swapper.YamlBroadcastRuleConfigurationSwapper;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -44,11 +40,11 @@ import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNo
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
-import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
@@ -62,31 +58,23 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checke
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleConfigurationSwapper;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -166,6 +154,18 @@ public final class YamlDatabaseConfigurationImportExecutor {
         }
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private Map<Integer, Collection<RuleConfiguration>> swapToRuleConfigs(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
+        Map<Integer, Collection<RuleConfiguration>> result = new TreeMap<>(Comparator.reverseOrder());
+        for (YamlRuleConfiguration each : yamlRuleConfigs) {
+            YamlRuleConfigurationSwapper swapper = OrderedSPILoader.getServicesByClass(YamlRuleConfigurationSwapper.class, Collections.singleton(each.getRuleConfigurationType()))
+                    .get(each.getRuleConfigurationType());
+            result.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+            result.get(swapper.getOrder()).add((RuleConfiguration) swapper.swapToObject(each));
+        }
+        return result;
+    }
+    
     private void addRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         if (null == yamlRuleConfigs || yamlRuleConfigs.isEmpty()) {
             return;
@@ -173,47 +173,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
         Collection<RuleConfiguration> allRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        Map<Integer, Collection<RuleConfiguration>> ruleConfigsMap = new HashMap<>();
-        for (YamlRuleConfiguration each : yamlRuleConfigs) {
-            if (each instanceof YamlShardingRuleConfiguration) {
-                YamlShardingRuleConfigurationSwapper swapper = new YamlShardingRuleConfigurationSwapper();
-                ShardingRuleConfiguration shardingRuleConfig = swapper.swapToObject((YamlShardingRuleConfiguration) each);
-                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigsMap.get(swapper.getOrder()).add(shardingRuleConfig);
-            } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
-                YamlReadwriteSplittingRuleConfigurationSwapper swapper = new YamlReadwriteSplittingRuleConfigurationSwapper();
-                ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = swapper.swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
-                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigsMap.get(swapper.getOrder()).add(readwriteSplittingRuleConfig);
-            } else if (each instanceof YamlEncryptRuleConfiguration) {
-                YamlEncryptRuleConfigurationSwapper swapper = new YamlEncryptRuleConfigurationSwapper();
-                EncryptRuleConfiguration encryptRuleConfig = swapper.swapToObject((YamlEncryptRuleConfiguration) each);
-                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigsMap.get(swapper.getOrder()).add(encryptRuleConfig);
-            } else if (each instanceof YamlShadowRuleConfiguration) {
-                YamlShadowRuleConfigurationSwapper swapper = new YamlShadowRuleConfigurationSwapper();
-                ShadowRuleConfiguration shadowRuleConfig = swapper.swapToObject((YamlShadowRuleConfiguration) each);
-                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigsMap.get(swapper.getOrder()).add(shadowRuleConfig);
-            } else if (each instanceof YamlMaskRuleConfiguration) {
-                YamlMaskRuleConfigurationSwapper swapper = new YamlMaskRuleConfigurationSwapper();
-                MaskRuleConfiguration maskRuleConfig = swapper.swapToObject((YamlMaskRuleConfiguration) each);
-                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigsMap.get(swapper.getOrder()).add(maskRuleConfig);
-            } else if (each instanceof YamlBroadcastRuleConfiguration) {
-                YamlBroadcastRuleConfigurationSwapper swapper = new YamlBroadcastRuleConfigurationSwapper();
-                BroadcastRuleConfiguration maskRuleConfig = swapper.swapToObject((YamlBroadcastRuleConfiguration) each);
-                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigsMap.get(swapper.getOrder()).add(maskRuleConfig);
-            } else if (each instanceof YamlSingleRuleConfiguration) {
-                YamlSingleRuleConfigurationSwapper swapper = new YamlSingleRuleConfigurationSwapper();
-                SingleRuleConfiguration maskRuleConfig = swapper.swapToObject((YamlSingleRuleConfiguration) each);
-                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigsMap.get(swapper.getOrder()).add(maskRuleConfig);
-            }
-        }
-        ruleConfigsMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())
-                .forEach(each -> addRules(allRuleConfigs, ruleConfigsMap.get(each), database));
+        Map<Integer, Collection<RuleConfiguration>> ruleConfigsMap = swapToRuleConfigs(yamlRuleConfigs);
+        ruleConfigsMap.values().forEach(each -> addRules(allRuleConfigs, each, database));
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), allRuleConfigs);
     }
     
