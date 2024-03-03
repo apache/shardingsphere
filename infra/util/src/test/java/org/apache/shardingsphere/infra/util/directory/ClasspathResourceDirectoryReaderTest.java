@@ -45,13 +45,13 @@ class ClasspathResourceDirectoryReaderTest {
         assertThat(resourceNameList.size(), is(5));
         final String separator = File.separator;
         assertThat(resourceNameList, hasItems("yaml" + separator + "accepted-class.yaml", "yaml" + separator + "customized-obj.yaml", "yaml" + separator + "empty-config.yaml",
-                "yaml" + separator + "shortcuts-fixture.yaml", "yaml/fixture/fixture.yaml"));
+                "yaml" + separator + "shortcuts-fixture.yaml", "yaml" + separator + "fixture" + separator + "fixture.yaml"));
     }
     
     @Test
     void assertReadNestedTest() {
         List<String> resourceNameList = ClasspathResourceDirectoryReader.read("yaml/fixture").collect(Collectors.toList());
         assertThat(resourceNameList.size(), is(1));
-        assertThat(resourceNameList, hasItems("yaml/fixture/fixture.yaml"));
+        assertThat(resourceNameList, hasItems("yaml/fixture" + File.separator + "fixture.yaml"));
     }
 }
