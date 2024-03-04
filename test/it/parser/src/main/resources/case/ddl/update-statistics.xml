@@ -69,4 +69,14 @@
             <sample-option strategy="RESAMPLE" persist-sample-percent="false" partitions="3" start-index="78" stop-index="102"/>
         </strategy>
     </update-statistics>
+
+    <update-statistics sql-case-id="update_statistics_with_index">
+        <table name="DatabaseLog" start-index="18" stop-index="36" start-delimiter="[" end-delimiter="]">
+            <owner name="dbo" start-index="18" stop-index="22" start-delimiter="[" end-delimiter="]"/>
+        </table>
+        <index name="mystats" start-index="38" stop-index="46" start-delimiter="[" end-delimiter="]"/>
+        <strategy start-index="48" stop-index="66">
+            <statistics-option auto-drop="true" start-index="53" stop-index="66"/>
+        </strategy>
+    </update-statistics>
 </sql-parser-test-cases>
