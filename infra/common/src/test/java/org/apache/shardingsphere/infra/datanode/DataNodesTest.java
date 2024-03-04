@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datanode;
 
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.junit.jupiter.api.Test;
@@ -136,8 +136,8 @@ class DataNodesTest {
     }
     
     private ShardingSphereRule mockDataSourceContainedRule() {
-        DataSourceContainedRule result = mock(FixtureRule.class);
-        when(result.getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
+        DataSourceMapperContainedRule result = mock(FixtureRule.class, RETURNS_DEEP_STUBS);
+        when(result.getDataSourceMapperRule().getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
         return result;
     }
     

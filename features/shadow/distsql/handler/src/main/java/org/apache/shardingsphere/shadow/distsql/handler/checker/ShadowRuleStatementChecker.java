@@ -19,14 +19,12 @@ package org.apache.shardingsphere.shadow.distsql.handler.checker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,17 +37,7 @@ import java.util.stream.Collectors;
  * Shadow rule statement checker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShadowRuleStatementChecker {
-    
-    /**
-     * Check if the rule configuration exists.
-     *
-     * @param databaseName database name
-     * @param ruleConfig rule configuration
-     */
-    public static void checkRuleConfigurationExists(final String databaseName, final ShadowRuleConfiguration ruleConfig) {
-        ShardingSpherePreconditions.checkNotNull(ruleConfig, () -> new MissingRequiredRuleException("shadow", databaseName));
-    }
+public final class ShadowRuleStatementChecker {
     
     /**
      * Check if storage units exist in meta data.
@@ -126,7 +114,7 @@ public class ShadowRuleStatementChecker {
     }
     
     private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
-                .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+        return database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class).stream()
+                .map(each -> each.getDataSourceMapperRule().getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

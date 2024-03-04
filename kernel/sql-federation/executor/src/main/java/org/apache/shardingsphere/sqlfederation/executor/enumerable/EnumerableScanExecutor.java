@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.AbstractEnumerable;
@@ -76,7 +77,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +90,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class EnumerableScanExecutor implements ScanExecutor {
     
-    private static final Collection<String> SYSTEM_CATALOG_TABLES = new HashSet<>(3, 1F);
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(3, 1F);
     
     private static final String DAT_COMPATIBILITY = "PG";
     
@@ -124,8 +124,8 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     
     @Override
     public Enumerable<Object> execute(final ShardingSphereTable table, final ScanExecutorContext scanContext) {
-        String databaseName = executorContext.getDatabaseName().toLowerCase();
-        String schemaName = executorContext.getSchemaName().toLowerCase();
+        String databaseName = executorContext.getDatabaseName();
+        String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = optimizerContext.getParserContext(databaseName).getDatabaseType();
         if (new SystemDatabase(databaseType).getSystemSchemas().contains(schemaName)) {
             return executeByShardingSphereData(databaseName, schemaName, table, databaseType);
@@ -156,7 +156,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
                 ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(),
                         new ExecutionGroupReportContext(executorContext.getFederationContext().getProcessId(), database.getName(), new Grantee("", "")));
                 setParameters(executionGroupContext.getInputGroups());
-                processEngine.executeSQL(executionGroupContext, context.getQueryContext());
+                processEngine.executeSQL(executionGroupContext, executorContext.getFederationContext().getQueryContext());
                 List<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(QueryResult.class::cast).collect(Collectors.toList());
                 MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
                 MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
@@ -179,7 +179,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
     
     private Enumerable<Object> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table, final DatabaseType databaseType) {
         // TODO move this logic to ShardingSphere statistics
-        if (databaseType instanceof OpenGaussDatabaseType && SYSTEM_CATALOG_TABLES.contains(table.getName().toLowerCase())) {
+        if (databaseType instanceof OpenGaussDatabaseType && SYSTEM_CATALOG_TABLES.contains(table.getName())) {
             return createMemoryEnumerator(createSystemCatalogTableData(table));
         }
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(statistics.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))

@@ -217,20 +217,27 @@ public final class PipelineDataSourceSink implements PipelineSink {
     }
     
     private void executeBatchDelete(final Collection<DataRecord> dataRecords) throws SQLException {
-        DataRecord dataRecord = dataRecords.iterator().next();
-        String sql = importSQLBuilder.buildDeleteSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord,
-                RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName())));
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            runningStatement.set(preparedStatement);
+        try (Connection connection = dataSource.getConnection()) {
             boolean transactionEnabled = dataRecords.size() > 1;
             if (transactionEnabled) {
                 connection.setAutoCommit(false);
             }
+            executeBatchDelete(connection, dataRecords, importerConfig.getShardingColumns(dataRecords.iterator().next().getTableName()));
+            if (transactionEnabled) {
+                connection.commit();
+            }
+        }
+    }
+    
+    private void executeBatchDelete(final Connection connection, final Collection<DataRecord> dataRecords, final Set<String> shardingColumns) throws SQLException {
+        DataRecord dataRecord = dataRecords.iterator().next();
+        String deleteSQL = importSQLBuilder.buildDeleteSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord,
+                RecordUtils.extractConditionColumns(dataRecord, shardingColumns));
+        try (PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
+            runningStatement.set(preparedStatement);
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
-                List<Column> conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(dataRecord.getTableName()));
+                List<Column> conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
                     Object oldValue = conditionColumns.get(i).getOldValue();
                     if (null == oldValue) {
@@ -241,9 +248,6 @@ public final class PipelineDataSourceSink implements PipelineSink {
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
-            if (transactionEnabled) {
-                connection.commit();
-            }
         } finally {
             runningStatement.set(null);
         }

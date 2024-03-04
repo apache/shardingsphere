@@ -24,19 +24,35 @@ grant
     ;
 
 revoke
-    : REVOKE (objectPrivilegeClause | systemPrivilegeClause | roleClause)
+    : REVOKE (((objectPrivilegeClause | systemPrivilegeClause) objectPrivilegeFrom) | roleClause roleClauseFrom)
     ;
 
 objectPrivilegeClause
     : objectPrivileges ON onObjectClause
     ;
 
+objectPrivilegeFrom
+    : FROM revokeeClause ((CASCADE CONSTRAINTS) | FORCE)?
+    ;
+
+revokeeClause
+    : (name | PUBLIC) (COMMA_ (name | PUBLIC))*
+    ;
+
 systemPrivilegeClause
-    : systemPrivilege
+    : systemPrivilege (COMMA_ systemPrivilege)*
     ;
     
 roleClause
     : ignoredIdentifiers
+    ;
+
+roleClauseFrom
+    : FROM programUnit (COMMA_ programUnit)*
+    ;
+
+programUnit
+    : (FUNCTION | PROCEDURE | PACKAGE) schemaName DOT_ name
     ;
 
 objectPrivileges
@@ -119,6 +135,7 @@ systemPrivilege
     | viewsSystemPrivilege
     | miscellaneousSystemPrivilege
     | ruleSystemPrivilege
+    | name
     ;
 
 systemPrivilegeOperation
@@ -316,7 +333,22 @@ dropUser
     ;
 
 alterUser
-    : ALTER USER
+    : ALTER USER ((username (IDENTIFIED (BY password (REPLACE password)?
+    | EXTERNALLY (AS CERTIFICATE_DN | AS KERBEROS_PRINCIPAL_NAME)?
+    | NO AUTHENTICATION
+    | GLOBALLY AS (STRING_ | SQ_ AZURE_ROLE EQ_ identifier SQ_ | SQ_ IAM_GROUP_NAME EQ_ identifier SQ_))
+    | DEFAULT COLLATION collationName
+    | DEFAULT TABLESPACE tablespaceName
+    | LOCAL? TEMPORARY TABLESPACE tablespaceName tablespaceGroupName
+    | QUOTA (sizeClause | UNLIMITED) ON tablespaceName
+    | PROFILE profileName
+    | DEFAULT ROLE (roleName (COMMA_ roleName)* |  allClause | NONE )
+    | PASSWORD EXPIRE
+    | ACCOUNT (LOCK | UNLOCK)
+    | ENABLE EDITIONS (FOR editionType (COMMA_ editionType)*)? FORCE?
+    | HTTP? DIGEST (ENABLE | DISABLE)
+    | CONTAINER EQ_ (CURRENT | ALL)
+    | containerDataClause)*) | username (COMMA_ username)* proxyClause*)
     ;
 
 createRole

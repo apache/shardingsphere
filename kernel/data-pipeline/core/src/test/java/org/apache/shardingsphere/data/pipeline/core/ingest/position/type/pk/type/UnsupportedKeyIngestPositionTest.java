@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPositionFactory;
+import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.Map;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-/**
- * ShardingSphere rule which contains data source.
- */
-public interface DataSourceContainedRule extends ShardingSphereRule {
+class UnsupportedKeyIngestPositionTest {
     
-    /**
-     * Get data source mapper.
-     * 
-     * @return data source mapper
-     */
-    Map<String, Collection<String>> getDataSourceMapper();
+    @Test
+    void assertInit() {
+        UnsupportedKeyIngestPosition position = (UnsupportedKeyIngestPosition) PrimaryKeyIngestPositionFactory.newInstance("u,,");
+        assertNull(position.getBeginValue());
+        assertNull(position.getEndValue());
+    }
+    
+    @Test
+    void assertToString() {
+        assertThat(new UnsupportedKeyIngestPosition().toString(), is("u,,"));
+    }
 }
