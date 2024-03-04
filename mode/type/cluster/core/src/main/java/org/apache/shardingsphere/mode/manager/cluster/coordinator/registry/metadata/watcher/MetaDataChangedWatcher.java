@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaMetadata;
+import org.apache.shardingsphere.infra.metadata.database.schema.SystemSchemaManager;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -108,7 +108,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         }
         Optional<String> tableName = DatabaseMetaDataNode.getTableName(event.getKey());
         Optional<String> viewName = DatabaseMetaDataNode.getViewName(event.getKey());
-        return tableName.isPresent() && !SystemSchemaMetadata.isSystemTable(databaseName.get(), tableName.get()) || viewName.isPresent();
+        return tableName.isPresent() && !SystemSchemaManager.isSystemTable(databaseName.get(), tableName.get()) || viewName.isPresent();
     }
     
     private Optional<GovernanceEvent> createDatabaseChangedEvent(final DataChangedEvent event) {

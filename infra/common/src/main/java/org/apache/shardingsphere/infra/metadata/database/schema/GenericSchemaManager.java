@@ -28,10 +28,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Schema meta data manager.
+ * Generic schema manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaManager {
+public final class GenericSchemaManager {
     
     /**
      * Get to be added tables by schemas.
