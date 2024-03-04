@@ -57,8 +57,8 @@ public final class SystemSchemaMetadata {
      * @return whether current table is system table or not
      */
     public static boolean isSystemTable(final String schema, final String tableName) {
-        for (final Entry<String, Map<String, Collection<String>>> each : DATABASE_TYPE_SCHEMA_TABLE_MAP.entrySet()) {
-            if (Optional.ofNullable(each.getValue().get(schema)).map(tables -> tables.contains(tableName)).orElse(false)) {
+        for (Entry<String, Map<String, Collection<String>>> entry : DATABASE_TYPE_SCHEMA_TABLE_MAP.entrySet()) {
+            if (Optional.ofNullable(entry.getValue().get(schema)).map(tables -> tables.contains(tableName)).orElse(false)) {
                 return true;
             }
         }
