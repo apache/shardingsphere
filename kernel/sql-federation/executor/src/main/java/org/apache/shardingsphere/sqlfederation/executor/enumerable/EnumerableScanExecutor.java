@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.executor.exception.SQLExecutionInterruptedException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -42,6 +44,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -138,11 +141,7 @@ public final class EnumerableScanExecutor implements ScanExecutor {
             federationContext.getPreviewExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
         }
-        try {
-            return createEnumerable(queryContext, database, context);
-        } finally {
-            processEngine.completeSQLExecution(federationContext.getProcessId());
-        }
+        return createEnumerable(queryContext, database, context);
     }
     
     private AbstractEnumerable<Object> createEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
@@ -156,6 +155,8 @@ public final class EnumerableScanExecutor implements ScanExecutor {
                 ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(),
                         new ExecutionGroupReportContext(executorContext.getFederationContext().getProcessId(), database.getName(), new Grantee("", "")));
                 setParameters(executionGroupContext.getInputGroups());
+                ShardingSpherePreconditions.checkState(!ProcessRegistry.getInstance().get(executorContext.getFederationContext().getProcessId()).isInterrupted(),
+                        SQLExecutionInterruptedException::new);
                 processEngine.executeSQL(executionGroupContext, executorContext.getFederationContext().getQueryContext());
                 List<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(QueryResult.class::cast).collect(Collectors.toList());
                 MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());

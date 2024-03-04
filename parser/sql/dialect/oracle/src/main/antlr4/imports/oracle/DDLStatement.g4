@@ -699,7 +699,7 @@ constraintClauses
     ;
 
 addConstraintSpecification
-    : ADD (LP_? outOfLineConstraint (COMMA_ outOfLineConstraint)* RP_? | outOfLineRefConstraint)
+    : ADD (LP_ outOfLineConstraint (COMMA_ outOfLineConstraint)* RP_ | outOfLineConstraint* | outOfLineRefConstraint)
     ;
 
 modifyConstraintClause
@@ -943,6 +943,7 @@ tableCompression
     : COMPRESS
     | ROW STORE COMPRESS (BASIC | ADVANCED)?
     | COLUMN STORE COMPRESS (FOR (QUERY | ARCHIVE) (LOW | HIGH)?)? (NO? ROW LEVEL LOCKING)?
+    | COMPRESS FOR OLTP
     | NOCOMPRESS
     ;
 
@@ -2994,7 +2995,7 @@ resolveClause
 alterAuditPolicy
     : ALTER AUDIT POLICY policyName
       ((ADD | DROP) subAuditClause)?
-      (CONDITION (DROP | SQ_ condition SQ_ EVALUATE PER (STATEMENT | SESSION | INSTANCE)))?
+      (CONDITION (DROP | STRING_ EVALUATE PER (STATEMENT | SESSION | INSTANCE)))?
     ;
 
 subAuditClause
@@ -3640,9 +3641,7 @@ scopedTableRefConstraint
     ;
 
 alterMvRefresh
-    : REFRESH (FAST
-    | COMPLETE
-    | FORCE
+    : REFRESH ( ((FAST | COMPLETE | FORCE) (START WITH dateValue)? (NEXT dateValue)?)
     | ON DEMAND
     | ON COMMIT
     | START WITH dateValue
