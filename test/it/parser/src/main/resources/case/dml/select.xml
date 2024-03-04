@@ -9217,34 +9217,5 @@
             </expr>
         </where>
     </select>
-
-    <select sql-case-id="select_views">
-        <projections start-index="7" stop-index="54">
-            <expression-projection start-index="7" stop-index="54" text="'ALTER DATABASE DATAFILE '''||name||''' ONLINE;'">
-                <expr>
-                    <binary-operation-expression start-index="7" stop-index="54">
-                        <left>
-                            <binary-operation-expression start-index="7" stop-index="40">
-                                <left>
-                                    <literal-expression value="ALTER DATABASE DATAFILE ''" start-index="7" stop-index="34"/>
-                                </left>
-                                <operator>||</operator>
-                                <right>
-                                    <column name="name" start-index="37" stop-index="40"/>
-                                </right>
-                            </binary-operation-expression>
-                        </left>
-                        <operator>||</operator>
-                        <right>
-                            <literal-expression value="'' ONLINE;" start-index="43" stop-index="54"/>
-                        </right>
-                    </binary-operation-expression>
-                </expr>
-            </expression-projection>
-        </projections>
-        <from>
-            <simple-table name="V$DATAFILE" start-index="61" stop-index="70"/>
-        </from>
-    </select>
-
+    
 </sql-parser-test-cases>

@@ -160,6 +160,5 @@ execute
     | createProfile
     | createTrigger
     | show
-    | spool
     ) SEMI_? SLASH_? EOF
     ;

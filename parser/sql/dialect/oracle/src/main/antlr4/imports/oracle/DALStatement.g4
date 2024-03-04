@@ -31,31 +31,51 @@ explain
     : EXPLAIN PLAN (SET STATEMENT_ID EQ_ stringLiterals)? (INTO (schemaName DOT_)? tableName (AT_ dbLinkInfo)? )? FOR (insert | delete | update | select)
     ;
 
+schema
+    : identifier
+    ;
+
 parameterName
     : identifier
     ;
 
-showErrors
-    : SHOW ERRORS
+originalName
+    : identifier
     ;
 
-showParameter
-    : SHOW (PARAMETER | PARAMETERS) parameterName
+systemVariable
+    : identifier
+    ;
+
+showOptions
+    : systemVariable
+    | ALL
+    | CON_ID
+    | CON_NAME
+    | EDITION
+    | (BTI | BTITLE)
+    | (ERR | ERRORS) ((ANALYTIC VIEW | ATTRIBUTE DIMENSION | HIERARCHY | FUNCTION | PROCEDURE | PACKAGE | PACKAGE BODY | TRIGGER  | VIEW | TYPE | TYPE BODY | DIMENSION | JAVA CLASS) (schema DOT_)? name)?
+    | HISTORY
+    | LNO
+    | LOBPREFETCH
+    | (PARAMETER | PARAMETERS) parameterName?
+    | PDBS
+    | PNO
+    | (RECYC | RECYCLEBIN) originalName?
+    | (REL | RELEASE)
+    | (REPF | REPFOOTER)
+    | (REPH | REPHEADER)
+    | (ROWPREF | ROWPREFETCH)
+    | SGA
+    | (SPOO | SPOOL)
+    | (SPPARAMETER | SPPARAMETERS) parameterName?
+    | SQLCODE
+    | (STATEMENTC | STATEMENTCACHE)
+    | (TTI | TLE)
+    | USER
+    | XQUERY
     ;
 
 show
-    : showErrors
-    | showParameter
-    ;
-
-fileExt
-    : DOT_ identifier
-    ;
-
-spoolFileName
-    : identifier fileExt?
-    ;
-
-spool
-    : SPOOL spoolFileName
+    : (SHO | SHOW) showOptions
     ;

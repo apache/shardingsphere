@@ -705,9 +705,7 @@ public enum SQLVisitorRule {
     
     CREATE_PROFILE("CreateProfile", SQLStatementType.DDL),
     
-    UPDATE_STATISTICS("UpdateStatistics", SQLStatementType.DDL),
-    
-    SPOOL("Spool", SQLStatementType.DAL);
+    UPDATE_STATISTICS("UpdateStatistics", SQLStatementType.DDL);
     
     private final String name;
     
