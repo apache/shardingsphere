@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaMetadata;
+import org.apache.shardingsphere.infra.metadata.database.schema.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
@@ -95,8 +95,8 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     private boolean isPassThroughSystemCatalogQuery(final SQLStatementContext sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        return !tableNames.isEmpty() && (SystemSchemaMetadata.isSystemTable("opengauss", "information_schema", tableNames)
-                || SystemSchemaMetadata.isSystemTable("opengauss", "pg_catalog", tableNames));
+        return !tableNames.isEmpty() && (SystemSchemaManager.isSystemTable("opengauss", "information_schema", tableNames)
+                || SystemSchemaManager.isSystemTable("opengauss", "pg_catalog", tableNames));
     }
     
     @Override

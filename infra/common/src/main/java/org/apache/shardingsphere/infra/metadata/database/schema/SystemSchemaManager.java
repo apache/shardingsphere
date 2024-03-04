@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.builder;
+package org.apache.shardingsphere.infra.metadata.database.schema;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
@@ -36,11 +36,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * System schema metadata.
+ * System schema manager.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SystemSchemaMetadata {
+public final class SystemSchemaManager {
     
     private static final Map<String, Map<String, Collection<String>>> DATABASE_TYPE_SCHEMA_TABLE_MAP;
     
@@ -124,26 +124,27 @@ public final class SystemSchemaMetadata {
     }
     
     /**
-     * Get schema streams.
+     * Get all input streams.
      *
      * @param databaseType database type
      * @param schema schema
      * @return inputStream collection
      */
-    public static Collection<InputStream> getSchemaStreams(final String databaseType, final String schema) {
+    public static Collection<InputStream> getAllInputStreams(final String databaseType, final String schema) {
         Collection<InputStream> result = new LinkedList<>();
-        getSchemaStreamsInternal(databaseType, schema).ifPresent(result::addAll);
-        getSchemaStreamsInternal(COMMON, schema).ifPresent(result::addAll);
+        result.addAll(getInputStreams(databaseType, schema));
+        result.addAll(getInputStreams(COMMON, schema));
         return result;
     }
     
-    private static Optional<Collection<InputStream>> getSchemaStreamsInternal(final String databaseType, final String schema) {
-        return Optional.ofNullable(DATABASE_TYPE_SCHEMA_RESOURCE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).map(resources -> {
-            Collection<InputStream> result = new LinkedList<>();
-            for (String each : resources) {
-                result.add(SystemSchemaMetadata.class.getClassLoader().getResourceAsStream(each));
-            }
-            return result;
-        });
+    private static Collection<InputStream> getInputStreams(final String databaseType, final String schema) {
+        if (!DATABASE_TYPE_SCHEMA_RESOURCE_MAP.containsKey(databaseType) || !DATABASE_TYPE_SCHEMA_RESOURCE_MAP.get(databaseType).containsKey(schema)) {
+            return Collections.emptyList();
+        }
+        Collection<InputStream> result = new LinkedList<>();
+        for (String each : DATABASE_TYPE_SCHEMA_RESOURCE_MAP.get(databaseType).get(schema)) {
+            result.add(SystemSchemaManager.class.getClassLoader().getResourceAsStream(each));
+        }
+        return result;
     }
 }

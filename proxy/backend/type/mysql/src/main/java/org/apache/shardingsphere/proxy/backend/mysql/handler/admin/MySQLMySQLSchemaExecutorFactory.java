@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaMetadata;
+import org.apache.shardingsphere.infra.metadata.database.schema.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -47,7 +47,7 @@ public final class MySQLMySQLSchemaExecutorFactory {
             return Optional.empty();
         }
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom()).getTableName().getIdentifier().getValue();
-        if (SystemSchemaMetadata.isSystemTable("mysql", "mysql", tableName)) {
+        if (SystemSchemaManager.isSystemTable("mysql", "mysql", tableName)) {
             return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
         }
         return Optional.empty();

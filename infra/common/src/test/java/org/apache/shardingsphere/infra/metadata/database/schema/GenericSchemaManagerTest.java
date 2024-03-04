@@ -28,7 +28,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SchemaManagerTest {
+class GenericSchemaManagerTest {
     
     @Test
     void assertGetToBeAddedTablesBySchemas() {
@@ -36,7 +36,7 @@ class SchemaManagerTest {
                 new ShardingSphereSchema(Collections.singletonMap("foo_table", new ShardingSphereTable("foo_table",
                         Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyMap()));
         Map<String, ShardingSphereSchema> currentSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(Collections.emptyMap(), Collections.emptyMap()));
-        Map<String, ShardingSphereSchema> actual = SchemaManager.getToBeAddedTablesBySchemas(reloadSchemas, currentSchemas);
+        Map<String, ShardingSphereSchema> actual = GenericSchemaManager.getToBeAddedTablesBySchemas(reloadSchemas, currentSchemas);
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_schema").getTables().size(), is(1));
         assertTrue(actual.get("foo_schema").getTables().containsKey("foo_table"));
@@ -48,7 +48,7 @@ class SchemaManagerTest {
                 new ShardingSphereSchema(Collections.singletonMap("foo_table", new ShardingSphereTable("foo_table",
                         Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyMap()));
         Map<String, ShardingSphereSchema> reloadSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema(Collections.emptyMap(), Collections.emptyMap()));
-        Map<String, ShardingSphereSchema> actual = SchemaManager.getToBeDeletedTablesBySchemas(reloadSchemas, currentSchemas);
+        Map<String, ShardingSphereSchema> actual = GenericSchemaManager.getToBeDeletedTablesBySchemas(reloadSchemas, currentSchemas);
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_schema").getTables().size(), is(1));
         assertTrue(actual.get("foo_schema").getTables().containsKey("foo_table"));
@@ -56,21 +56,21 @@ class SchemaManagerTest {
     
     @Test
     void assertGetToBeAddedTables() {
-        Map<String, ShardingSphereTable> actual = SchemaManager.getToBeAddedTables(Collections.singletonMap("foo_table", new ShardingSphereTable()), Collections.emptyMap());
+        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeAddedTables(Collections.singletonMap("foo_table", new ShardingSphereTable()), Collections.emptyMap());
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_table"));
     }
     
     @Test
     void assertGetToBeDeletedTables() {
-        Map<String, ShardingSphereTable> actual = SchemaManager.getToBeDeletedTables(Collections.emptyMap(), Collections.singletonMap("foo_table", new ShardingSphereTable()));
+        Map<String, ShardingSphereTable> actual = GenericSchemaManager.getToBeDeletedTables(Collections.emptyMap(), Collections.singletonMap("foo_table", new ShardingSphereTable()));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_table"));
     }
     
     @Test
     void assertGetToBeDeletedSchemaNames() {
-        Map<String, ShardingSphereSchema> actual = SchemaManager.getToBeDeletedSchemaNames(Collections.emptyMap(), Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
+        Map<String, ShardingSphereSchema> actual = GenericSchemaManager.getToBeDeletedSchemaNames(Collections.emptyMap(), Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_schema"));
         
