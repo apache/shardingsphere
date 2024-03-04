@@ -35,7 +35,7 @@ public final class ShadowDataNodeBuilder implements DataNodeBuilder<ShadowRule> 
     public Collection<DataNode> build(final Collection<DataNode> dataNodes, final ShadowRule rule) {
         Collection<DataNode> result = new LinkedList<>();
         for (DataNode each : dataNodes) {
-            result.addAll(DataNodeUtils.buildDataNode(each, rule.getDataSourceMapper()));
+            result.addAll(DataNodeUtils.buildDataNode(each, rule.getDataSourceMapperRule().getDataSourceMapper()));
         }
         return result;
     }

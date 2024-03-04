@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
@@ -65,16 +65,16 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     private Collection<String> getAggregatedDataSourceNames(final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new LinkedList<>(dataSources.keySet());
         for (ShardingSphereRule each : builtRules) {
-            if (each instanceof DataSourceContainedRule) {
-                result = getAggregatedDataSourceNames(result, (DataSourceContainedRule) each);
+            if (each instanceof DataSourceMapperContainedRule) {
+                result = getAggregatedDataSourceNames(result, (DataSourceMapperContainedRule) each);
             }
         }
         return result;
     }
     
-    private Collection<String> getAggregatedDataSourceNames(final Collection<String> dataSourceNames, final DataSourceContainedRule builtRule) {
+    private Collection<String> getAggregatedDataSourceNames(final Collection<String> dataSourceNames, final DataSourceMapperContainedRule builtRule) {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapperRule().getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
                 if (dataSourceNames.contains(each)) {
                     dataSourceNames.remove(each);

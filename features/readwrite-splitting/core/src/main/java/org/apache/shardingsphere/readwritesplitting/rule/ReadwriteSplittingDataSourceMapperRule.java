@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.fixture;
+package org.apache.shardingsphere.readwritesplitting.rule;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 
-import static org.mockito.Mockito.mock;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public final class FixtureRule implements DatabaseRule, DataSourceMapperContainedRule {
+/**
+ * Readwrite-splitting data source mapper rule.
+ */
+@RequiredArgsConstructor
+public final class ReadwriteSplittingDataSourceMapperRule implements DataSourceMapperRule {
+    
+    private final Collection<ReadwriteSplittingDataSourceRule> dataSourceRules;
     
     @Override
-    public RuleConfiguration getConfiguration() {
-        return mock(RuleConfiguration.class);
-    }
-    
-    @Override
-    public DataSourceMapperRule getDataSourceMapperRule() {
-        return mock(DataSourceMapperRule.class);
+    public Map<String, Collection<String>> getDataSourceMapper() {
+        Map<String, Collection<String>> result = new HashMap<>();
+        for (ReadwriteSplittingDataSourceRule each : dataSourceRules) {
+            result.put(each.getName(), each.getReadwriteSplittingGroup().getAllDataSources());
+        }
+        return result;
     }
 }

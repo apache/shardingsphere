@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
@@ -146,8 +146,8 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     }
     
     private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
-                .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
+        return database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class).stream()
+                .map(each -> each.getDataSourceMapperRule().getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
     @Override

@@ -13,8 +13,8 @@ Apache ShardingSphere 提供 XA 事务，集成了 Narayana 的实现。
 
 ```xml
 <properties>
-    <narayana.version>5.12.4.Final</narayana.version>
-    <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+    <narayana.version>5.12.7.Final</narayana.version>
+    <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
     <jboss-logging.version>3.2.1.Final</jboss-logging.version>
 </properties>
 

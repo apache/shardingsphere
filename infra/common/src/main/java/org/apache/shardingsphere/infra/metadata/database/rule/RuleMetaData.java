@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -106,8 +106,8 @@ public final class RuleMetaData {
     public Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap() {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
         for (ShardingSphereRule each : rules) {
-            if (each instanceof DataSourceContainedRule) {
-                mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataSourceContainedRule) each)));
+            if (each instanceof DataSourceMapperContainedRule) {
+                mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataSourceMapperContainedRule) each)));
             } else if (each instanceof DataNodeContainedRule) {
                 mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataNodeContainedRule) each)));
             }
@@ -126,8 +126,8 @@ public final class RuleMetaData {
         return result;
     }
     
-    private Collection<String> getInUsedStorageUnitNames(final DataSourceContainedRule rule) {
-        return rule.getDataSourceMapper().values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+    private Collection<String> getInUsedStorageUnitNames(final DataSourceMapperContainedRule rule) {
+        return rule.getDataSourceMapperRule().getDataSourceMapper().values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
     private Collection<String> getInUsedStorageUnitNames(final DataNodeContainedRule rule) {

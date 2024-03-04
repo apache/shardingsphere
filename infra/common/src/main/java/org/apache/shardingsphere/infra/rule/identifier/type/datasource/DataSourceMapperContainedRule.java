@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.fixture;
+package org.apache.shardingsphere.infra.rule.identifier.type.datasource;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import static org.mockito.Mockito.mock;
-
-public final class FixtureRule implements DatabaseRule, DataSourceMapperContainedRule {
+/**
+ * ShardingSphere rule which contains data source mapper.
+ */
+public interface DataSourceMapperContainedRule extends ShardingSphereRule {
     
-    @Override
-    public RuleConfiguration getConfiguration() {
-        return mock(RuleConfiguration.class);
-    }
-    
-    @Override
-    public DataSourceMapperRule getDataSourceMapperRule() {
-        return mock(DataSourceMapperRule.class);
-    }
+    /**
+     * Get data source mapper rule.
+     *
+     * @return data source mapper rule
+     */
+    DataSourceMapperRule getDataSourceMapperRule();
 }

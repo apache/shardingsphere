@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.datasource;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
-import java.util.Map;
-
 /**
- * ShardingSphere rule which contains data source.
+ * Static data source contained rule.
  */
-public interface DataSourceContainedRule extends ShardingSphereRule {
+public interface StaticDataSourceContainedRule extends ShardingSphereRule {
     
     /**
-     * Get data source mapper.
+     * Get static data source rule.
      * 
-     * @return data source mapper
+     * @return static data source rule
      */
-    Map<String, Collection<String>> getDataSourceMapper();
+    StaticDataSourceRule getStaticDataSourceRule();
 }
