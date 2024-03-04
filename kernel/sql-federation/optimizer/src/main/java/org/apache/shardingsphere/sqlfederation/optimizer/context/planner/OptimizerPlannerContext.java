@@ -40,7 +40,7 @@ public final class OptimizerPlannerContext {
      * @return validator
      */
     public SqlValidator getValidator(final String schemaName) {
-        return validators.get(schemaName.toLowerCase());
+        return validators.get(schemaName);
     }
     
     /**
@@ -50,6 +50,6 @@ public final class OptimizerPlannerContext {
      * @return converter
      */
     public SqlToRelConverter getConverter(final String schemaName) {
-        return converters.get(schemaName.toLowerCase());
+        return converters.get(schemaName);
     }
 }

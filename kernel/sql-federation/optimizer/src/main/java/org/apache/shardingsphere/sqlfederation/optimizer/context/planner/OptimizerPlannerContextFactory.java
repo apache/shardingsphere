@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.context.planner;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
@@ -34,10 +35,8 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.Optimize
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Optimizer planner context factory.
@@ -57,7 +56,7 @@ public final class OptimizerPlannerContextFactory {
      */
     public static Map<String, OptimizerPlannerContext> create(final Map<String, ShardingSphereDatabase> databases, final Map<String, OptimizerParserContext> parserContexts,
                                                               final SQLParserRule sqlParserRule) {
-        Map<String, OptimizerPlannerContext> result = new ConcurrentHashMap<>(databases.size(), 1F);
+        Map<String, OptimizerPlannerContext> result = new CaseInsensitiveMap<>(databases.size(), 1F);
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             result.put(entry.getKey(), create(entry.getValue(), parserContexts.get(entry.getKey()), sqlParserRule));
         }
@@ -73,8 +72,8 @@ public final class OptimizerPlannerContextFactory {
      * @return created optimizer planner context
      */
     public static OptimizerPlannerContext create(final ShardingSphereDatabase database, final OptimizerParserContext parserContext, final SQLParserRule sqlParserRule) {
-        Map<String, SqlValidator> validators = new LinkedHashMap<>();
-        Map<String, SqlToRelConverter> converters = new LinkedHashMap<>();
+        Map<String, SqlValidator> validators = new CaseInsensitiveMap<>();
+        Map<String, SqlToRelConverter> converters = new CaseInsensitiveMap<>();
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
             Schema sqlFederationSchema = new SQLFederationSchema(entry.getKey(), entry.getValue(), database.getProtocolType(), DEFAULT_DATA_TYPE_FACTORY);
