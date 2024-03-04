@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,30 +30,24 @@ class SystemSchemaMetadataTest {
     
     @Test
     void assertValueOfSchemaPathSuccess() {
-        Optional<Collection<String>> actualInformationSchema = SystemSchemaMetadata.getTables("MySQL", "information_schema");
-        assertTrue(actualInformationSchema.isPresent());
-        assertThat(actualInformationSchema.get().size(), is(61));
-        Optional<Collection<String>> actualMySQLSchema = SystemSchemaMetadata.getTables("MySQL", "mysql");
-        assertTrue(actualMySQLSchema.isPresent());
-        assertThat(actualMySQLSchema.get().size(), is(31));
-        Optional<Collection<String>> actualPerformanceSchema = SystemSchemaMetadata.getTables("MySQL", "performance_schema");
-        assertTrue(actualPerformanceSchema.isPresent());
-        assertThat(actualPerformanceSchema.get().size(), is(87));
-        Optional<Collection<String>> actualSysSchema = SystemSchemaMetadata.getTables("MySQL", "sys");
-        assertTrue(actualSysSchema.isPresent());
-        assertThat(actualSysSchema.get().size(), is(54));
-        Optional<Collection<String>> actualPgInformationSchema = SystemSchemaMetadata.getTables("PostgreSQL", "information_schema");
-        assertTrue(actualPgInformationSchema.isPresent());
-        assertThat(actualPgInformationSchema.get().size(), is(69));
-        Optional<Collection<String>> actualPgCatalog = SystemSchemaMetadata.getTables("PostgreSQL", "pg_catalog");
-        assertTrue(actualPgCatalog.isPresent());
-        assertThat(actualPgCatalog.get().size(), is(134));
-        Optional<Collection<String>> actualOgInformationSchema = SystemSchemaMetadata.getTables("openGauss", "information_schema");
-        assertTrue(actualOgInformationSchema.isPresent());
-        assertThat(actualOgInformationSchema.get().size(), is(66));
-        Optional<Collection<String>> actualOgPgCatalog = SystemSchemaMetadata.getTables("openGauss", "pg_catalog");
-        assertTrue(actualOgPgCatalog.isPresent());
-        assertThat(actualOgPgCatalog.get().size(), is(240));
+        Collection<String> actualInformationSchema = SystemSchemaMetadata.getTables("MySQL", "information_schema");
+        assertThat(actualInformationSchema.size(), is(61));
+        Collection<String> actualMySQLSchema = SystemSchemaMetadata.getTables("MySQL", "mysql");
+        assertThat(actualMySQLSchema.size(), is(31));
+        Collection<String> actualPerformanceSchema = SystemSchemaMetadata.getTables("MySQL", "performance_schema");
+        assertThat(actualPerformanceSchema.size(), is(87));
+        Collection<String> actualSysSchema = SystemSchemaMetadata.getTables("MySQL", "sys");
+        assertThat(actualSysSchema.size(), is(54));
+        Collection<String> actualShardingSphereSchema = SystemSchemaMetadata.getTables("MySQL", "shardingsphere");
+        assertThat(actualShardingSphereSchema.size(), is(2));
+        Collection<String> actualPgInformationSchema = SystemSchemaMetadata.getTables("PostgreSQL", "information_schema");
+        assertThat(actualPgInformationSchema.size(), is(69));
+        Collection<String> actualPgCatalog = SystemSchemaMetadata.getTables("PostgreSQL", "pg_catalog");
+        assertThat(actualPgCatalog.size(), is(134));
+        Collection<String> actualOgInformationSchema = SystemSchemaMetadata.getTables("openGauss", "information_schema");
+        assertThat(actualOgInformationSchema.size(), is(66));
+        Collection<String> actualOgPgCatalog = SystemSchemaMetadata.getTables("openGauss", "pg_catalog");
+        assertThat(actualOgPgCatalog.size(), is(240));
         
     }
     
@@ -88,5 +81,8 @@ class SystemSchemaMetadataTest {
         assertTrue(SystemSchemaMetadata.isSystemTable("pg_catalog", "pg_stat_progress_basebackup"));
         assertTrue(SystemSchemaMetadata.isSystemTable("pg_catalog", "pg_stat_progress_cluster"));
         assertFalse(SystemSchemaMetadata.isSystemTable("sharding_db", "t_order"));
+        assertTrue(SystemSchemaMetadata.isSystemTable("shardingsphere", "cluster_information"));
+        assertTrue(SystemSchemaMetadata.isSystemTable("shardingsphere", "sharding_table_statistics"));
+        assertFalse(SystemSchemaMetadata.isSystemTable("shardingsphere", "nonexistent"));
     }
 }

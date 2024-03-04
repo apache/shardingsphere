@@ -27,20 +27,16 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * System schema builder.
@@ -62,7 +58,7 @@ public final class SystemSchemaBuilder {
         boolean isSystemSchemaMetaDataEnabled = isSystemSchemaMetaDataEnabled(props.getProps());
         YamlTableSwapper swapper = new YamlTableSwapper();
         for (String each : getSystemSchemas(databaseName, databaseType, systemDatabase)) {
-            result.put(each.toLowerCase(), createSchema(each, getSchemaStreams(each, databaseType), swapper, isSystemSchemaMetaDataEnabled));
+            result.put(each.toLowerCase(), createSchema(each, SystemSchemaMetadata.getSchemaStreams(databaseType.getType(), each), swapper, isSystemSchemaMetaDataEnabled));
         }
         return result;
     }
@@ -76,14 +72,6 @@ public final class SystemSchemaBuilder {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         String databaseName = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName;
         return systemDatabase.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
-    }
-    
-    private static Collection<InputStream> getSchemaStreams(final String schemaName, final DatabaseType databaseType) {
-        try (
-                Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read(SystemSchemaBuilder.class.getClassLoader(),
-                        "schema" + File.separator + databaseType.getType().toLowerCase() + File.separator + schemaName)) {
-            return resourceNameStream.map(SystemSchemaBuilder.class.getClassLoader()::getResourceAsStream).collect(Collectors.toList());
-        }
     }
     
     private static ShardingSphereSchema createSchema(final String schemaName, final Collection<InputStream> schemaStreams, final YamlTableSwapper swapper,

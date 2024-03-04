@@ -24,8 +24,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -41,12 +44,21 @@ public final class SystemSchemaMetadata {
     
     private static final Map<String, Map<String, Collection<String>>> DATABASE_TYPE_SCHEMA_TABLE_MAP;
     
+    private static final Map<String, Map<String, Collection<String>>> DATABASE_TYPE_SCHEMA_RESOURCE_MAP;
+    
+    private static final String COMMON = "common";
+    
     static {
+        List<String> resourceNames;
         try (Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read("schema")) {
-            DATABASE_TYPE_SCHEMA_TABLE_MAP = resourceNameStream.map(Paths::get).collect(Collectors.groupingBy(path -> path.getName(1).toString(), CaseInsensitiveMap::new,
-                    Collectors.groupingBy(path -> path.getName(2).toString(), CaseInsensitiveMap::new, Collectors.mapping(path -> StringUtils.removeEnd(path.getName(3).toString(), ".yaml"),
-                            Collectors.toCollection(CaseInsensitiveSet::new)))));
+            resourceNames = resourceNameStream.collect(Collectors.toList());
         }
+        DATABASE_TYPE_SCHEMA_TABLE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new,
+                Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new, Collectors.mapping(path -> StringUtils.removeEnd(path[3], ".yaml"),
+                        Collectors.toCollection(CaseInsensitiveSet::new)))));
+        DATABASE_TYPE_SCHEMA_RESOURCE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new,
+                Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new, Collectors.mapping(path -> String.join("/", path),
+                        Collectors.toCollection(CaseInsensitiveSet::new)))));
     }
     
     /**
@@ -74,7 +86,8 @@ public final class SystemSchemaMetadata {
      * @return whether current table is system table or not
      */
     public static boolean isSystemTable(final String databaseType, final String schema, final String tableName) {
-        return Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false);
+        return Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false)
+                || Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON)).map(schemas -> schemas.get(schema)).map(tables -> tables.contains(tableName)).orElse(false);
     }
     
     /**
@@ -86,7 +99,14 @@ public final class SystemSchemaMetadata {
      * @return whether current table is system table or not
      */
     public static boolean isSystemTable(final String databaseType, final String schema, final Collection<String> tableNames) {
-        return Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).map(tables -> tables.containsAll(tableNames)).orElse(false);
+        Collection<String> databaseTypeTables = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).orElse(Collections.emptyList());
+        Collection<String> commonTables = Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON)).map(schemas -> schemas.get(schema)).orElse(Collections.emptyList());
+        for (final String each : tableNames) {
+            if (!databaseTypeTables.contains(each) && !commonTables.contains(each)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
@@ -96,7 +116,34 @@ public final class SystemSchemaMetadata {
      * @param schema schema
      * @return optional tables
      */
-    public static Optional<Collection<String>> getTables(final String databaseType, final String schema) {
-        return Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema));
+    public static Collection<String> getTables(final String databaseType, final String schema) {
+        Collection<String> result = new LinkedList<>();
+        Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).ifPresent(result::addAll);
+        Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON)).map(schemas -> schemas.get(schema)).ifPresent(result::addAll);
+        return result;
+    }
+    
+    /**
+     * Get schema streams.
+     *
+     * @param databaseType database type
+     * @param schema schema
+     * @return inputStream collection
+     */
+    public static Collection<InputStream> getSchemaStreams(final String databaseType, final String schema) {
+        Collection<InputStream> result = new LinkedList<>();
+        getSchemaStreamsInternal(databaseType, schema).ifPresent(result::addAll);
+        getSchemaStreamsInternal(COMMON, schema).ifPresent(result::addAll);
+        return result;
+    }
+    
+    private static Optional<Collection<InputStream>> getSchemaStreamsInternal(final String databaseType, final String schema) {
+        return Optional.ofNullable(DATABASE_TYPE_SCHEMA_RESOURCE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).map(resources -> {
+            Collection<InputStream> result = new LinkedList<>();
+            for (String each : resources) {
+                result.add(SystemSchemaMetadata.class.getClassLoader().getResourceAsStream(each));
+            }
+            return result;
+        });
     }
 }
