@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.util.directory;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
@@ -86,6 +85,7 @@ public class ClasspathResourceDirectoryReader {
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
+     * <p>The name of a resource directory is a /-separated path name</p>
      * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param directory directory
@@ -100,6 +100,7 @@ public class ClasspathResourceDirectoryReader {
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
+     * <p>The name of a resource directory is a /-separated path name</p>
      * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param classLoader class loader
@@ -178,6 +179,14 @@ public class ClasspathResourceDirectoryReader {
         Path directoryPath = Paths.get(directoryUrl.toURI());
         // noinspection resource
         Stream<Path> walkStream = Files.find(directoryPath, Integer.MAX_VALUE, (path, basicFileAttributes) -> !basicFileAttributes.isDirectory(), FileVisitOption.FOLLOW_LINKS);
-        return walkStream.map(path -> directory + File.separator + path.subpath(directoryPath.getNameCount(), path.getNameCount()));
+        return walkStream.map(path -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(directory);
+            for (Path each : path.subpath(directoryPath.getNameCount(), path.getNameCount())) {
+                stringBuilder.append("/");
+                stringBuilder.append(each);
+            }
+            return stringBuilder.toString();
+        });
     }
 }

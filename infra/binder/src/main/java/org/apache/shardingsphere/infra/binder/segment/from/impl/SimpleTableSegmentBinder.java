@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDataba
 import org.apache.shardingsphere.infra.exception.TableNotExistsException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -139,7 +139,7 @@ public final class SimpleTableSegmentBinder {
         if ("dual".equalsIgnoreCase(tableName)) {
             return;
         }
-        if (SystemSchemaBuilderRule.isSystemTable(schemaName, tableName)) {
+        if (SystemSchemaManager.isSystemTable(schemaName, tableName)) {
             return;
         }
         ShardingSpherePreconditions.checkState(statementBinderContext.getMetaData().containsDatabase(databaseName)
