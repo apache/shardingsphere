@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.sqlfederation.resultset;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.Schema;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -45,7 +46,6 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -78,8 +78,8 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final Schema sqlFederationSchema,
                                   final SelectStatementContext selectStatementContext, final RelDataType resultColumnType) {
         this.enumerator = enumerator;
-        columnLabelAndIndexes = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
-        Map<Integer, String> indexAndColumnLabels = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
+        columnLabelAndIndexes = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
+        Map<Integer, String> indexAndColumnLabels = new CaseInsensitiveMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, selectStatementContext);
         resultSetMetaData = new SQLFederationResultSetMetaData(schema, sqlFederationSchema, selectStatementContext, resultColumnType, indexAndColumnLabels);
     }
@@ -89,7 +89,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
         for (int columnIndex = 1; columnIndex <= projections.size(); columnIndex++) {
             Projection projection = projections.get(columnIndex - 1);
             String columnLabel = projection.getColumnLabel();
-            columnLabelAndIndexes.put(columnLabel.toLowerCase(), columnIndex);
+            columnLabelAndIndexes.put(columnLabel, columnIndex);
             indexAndColumnLabels.put(columnIndex, columnLabel);
         }
     }
@@ -455,7 +455,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     }
     
     private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
-        Integer result = columnLabelAndIndexes.get(columnLabel.toLowerCase());
+        Integer result = columnLabelAndIndexes.get(columnLabel);
         ShardingSpherePreconditions.checkNotNull(result, () -> new SQLFeatureNotSupportedException(String.format("can not get index from column label `%s`", columnLabel)));
         return result;
     }

@@ -46,13 +46,13 @@ class OptimizerContextTest {
     @Test
     void assertGetParserContext() {
         OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), mock(ConfigurationProperties.class));
-        assertThat(actual.getParserContext(DefaultDatabase.LOGIC_NAME.toLowerCase()), instanceOf(OptimizerParserContext.class));
+        assertThat(actual.getParserContext(DefaultDatabase.LOGIC_NAME), instanceOf(OptimizerParserContext.class));
     }
     
     @Test
     void assertGetPlannerContext() {
         OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), mock(ConfigurationProperties.class));
-        assertThat(actual.getPlannerContext(DefaultDatabase.LOGIC_NAME.toLowerCase()), instanceOf(OptimizerPlannerContext.class));
+        assertThat(actual.getPlannerContext(DefaultDatabase.LOGIC_NAME), instanceOf(OptimizerPlannerContext.class));
     }
     
     private ShardingSphereDatabase createShardingSphereDatabase() {
