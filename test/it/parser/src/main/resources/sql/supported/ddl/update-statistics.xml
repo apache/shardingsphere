@@ -23,4 +23,5 @@
     <sql-case id="update_statistics_with_sample" value="UPDATE STATISTICS Production.Product(Products) WITH SAMPLE 50 PERCENT;" db-types="SQLServer"/>
     <sql-case id="update_statistics_with_full_scan_no_recompute" value="UPDATE STATISTICS Production.Product(Products) WITH FULLSCAN, NORECOMPUTE;" db-types="SQLServer"/>
     <sql-case id="update_statistics_with_resample_on_partitions" value="UPDATE STATISTICS dbo.PartitionIncrStatDemo(IX_PartitionIncrStatDemo_ID) WITH RESAMPLE ON PARTITIONS(3)" db-types="SQLServer"/>
+    <sql-case id="update_statistics_with_index" value="UPDATE STATISTICS [dbo].[DatabaseLog] [mystats] WITH AUTO_DROP = ON" db-types="SQLServer"/>
 </sql-cases>
