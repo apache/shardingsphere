@@ -48,7 +48,6 @@ class SystemSchemaManagerTest {
         assertThat(actualOgInformationSchema.size(), is(66));
         Collection<String> actualOgPgCatalog = SystemSchemaManager.getTables("openGauss", "pg_catalog");
         assertThat(actualOgPgCatalog.size(), is(240));
-        
     }
     
     @Test
