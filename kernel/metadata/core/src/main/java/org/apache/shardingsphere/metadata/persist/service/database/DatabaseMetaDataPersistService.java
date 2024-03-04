@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.metadata.persist.service.database;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.database.schema.GenericSchemaManager;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;

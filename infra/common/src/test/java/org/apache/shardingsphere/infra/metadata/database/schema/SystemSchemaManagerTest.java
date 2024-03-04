@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
