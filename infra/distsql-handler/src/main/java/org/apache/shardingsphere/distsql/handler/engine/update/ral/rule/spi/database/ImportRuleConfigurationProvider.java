@@ -36,7 +36,7 @@ public interface ImportRuleConfigurationProvider extends TypedSPI {
      * @param database database
      * @param ruleConfig rule configuration
      */
-    void check(ShardingSphereDatabase database, final RuleConfiguration ruleConfig);
+    void check(ShardingSphereDatabase database, RuleConfiguration ruleConfig);
     
     /**
      * Build database rule.
