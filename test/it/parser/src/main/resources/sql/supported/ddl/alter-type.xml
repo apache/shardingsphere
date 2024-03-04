@@ -110,19 +110,19 @@
     <sql-case id="alter_type_add_static_function" value="ALTER TYPE type_name ADD
     STATIC FUNCTION p(b1 BOOL) RETURN NUMBER" db-types="Oracle" />
     <sql-case id="alter_type_add_static_procedure" value="ALTER TYPE type_name ADD
-    STATIC PROCEDURE p(b1 BOOL))" db-types="Oracle" />
+    STATIC PROCEDURE p(b1 BOOL)" db-types="Oracle" />
     <sql-case id="alter_type_add_static_function_as" value="ALTER TYPE type_name ADD
     STATIC FUNCTION p(b1 BOOL) RETURN NUMBER AS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
     <sql-case id="alter_type_add_static_procedure_is" value="ALTER TYPE type_name ADD
-    STATIC PROCEDURE p(b1 BOOL)) IS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
+    STATIC PROCEDURE p(b1 BOOL) IS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
     <sql-case id="alter_type_drop_static_function" value="ALTER TYPE type_name DROP
     STATIC FUNCTION p(b1 BOOL) RETURN NUMBER" db-types="Oracle" />
     <sql-case id="alter_type_drop_static_procedure" value="ALTER TYPE type_name DROP
-    STATIC PROCEDURE p(b1 BOOL))" db-types="Oracle" />
+    STATIC PROCEDURE p(b1 BOOL)" db-types="Oracle" />
     <sql-case id="alter_type_drop_static_function_as" value="ALTER TYPE type_name DROP
     STATIC FUNCTION p(b1 BOOL) RETURN NUMBER AS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
     <sql-case id="alter_type_drop_static_procedure_is" value="ALTER TYPE type_name DROP
-    STATIC PROCEDURE p(b1 BOOL)) IS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
+    STATIC PROCEDURE p(b1 BOOL) IS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
     <sql-case id="alter_type_add_single_attribute" value="ALTER TYPE type_name ADD ATTRIBUTE c1 NUMBER" db-types="Oracle" />
     <sql-case id="alter_type_add_multi_attribute" value="ALTER TYPE type_name ADD ATTRIBUTE (c1 NUMBER, b1 BOOL)" db-types="Oracle" />
     <sql-case id="alter_type_modify_single_attribute" value="ALTER TYPE type_name MODIFY ATTRIBUTE c1 NUMBER" db-types="Oracle" />
