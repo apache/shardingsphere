@@ -60,10 +60,8 @@ public abstract class InternalSQLParserIT {
             "create_table_with_out_of_line_constraints_oracle", "create_table_with_xmltype_column_clob_oracle", "create_table_with_xmltype_column_oracle", "create_tablespace_with_blocksize",
             "create_tablespace_with_temporary_tablespace_group", "create_tablespace_with_temporary_tempfile_spec_extent_management", "create_tablespace_with_undo_tablespace_spec",
             "create_user_identified_by_without_hostname", "create_user_with_lock_option", "create_user_with_password", "create_user_with_password_expire_lock", "create_user_with_password_option",
-            "create_user_with_quota_option", "create_user_with_tablespace", "drop_database_including_backups_noprompt", "drop_index_with_quota", "drop_user_with_hostname", "drop_user_with_ip",
-            "grant_all_object_privileges", "grant_all_system_privileges", "grant_object_privilege", "grant_object_privilege_to_users", "grant_object_privilege_column", "grant_object_privileges",
-            "grant_program", "grant_role", "grant_roles_to_programs", "grant_roles_to_users", "grant_system_privilege", "grant_system_privilege_to_users", "grant_system_privileges",
-            "grant_user_with_admin", "grant_user_with_grant", "grant_user_without_hostname"));
+            "create_user_with_quota_option", "create_user_with_tablespace", "drop_database_including_backups_noprompt", "drop_index_with_quota", "drop_user_with_hostname", "drop_user_with_ip"
+    ));
     // CHECKSTYLE:ON
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
