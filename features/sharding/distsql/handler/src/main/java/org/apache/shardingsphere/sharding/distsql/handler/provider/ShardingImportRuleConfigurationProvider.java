@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
     public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ruleConfig;
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         return new ShardingRule(shardingRuleConfig, dataSources, instanceContext);
     }
     
@@ -81,7 +82,7 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
         allLogicTables.addAll(tablesLogicTables);
         allLogicTables.addAll(autoTablesLogicTables);
         Set<String> duplicatedLogicTables = allLogicTables.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
+                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(duplicatedLogicTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedLogicTables));
     }
     
