@@ -80,7 +80,12 @@ exec
     ;
 
 update
-    : withClause? UPDATE top? tableReferences withTableHint? setAssignmentsClause outputClause? whereClause? optionHint?
+    : withClause? UPDATE top? tableReferences withtableHint? setAssignmentsClause outputClause? whereClause? optionHint?
+    | UPDATE statisticsHint? tableReferences withtableHint? optionHint?
+    ;
+
+statisticsHint
+    : STATISTICS
     ;
 
 assignment
@@ -98,7 +103,21 @@ assignmentValues
     ;
 
 assignmentValue
-    : expr | DEFAULT
+    : expr
+    | DEFAULT
+    ;
+
+withtableHint
+    : WITH tableHintItem (COMMA_ tableHintItem)*
+    ;
+
+tableHintItem
+    : AUTO_DROP EQ_ tableHintValue
+    ;
+
+tableHintValue
+    : OFF
+    | ON
     ;
 
 delete
