@@ -85,6 +85,7 @@ execute
     | dropEdition
     | dropTableSpace
     | dropOutline
+    | dropDatabase
     | alterOutline
     | alterAnalyticView
     | alterAttributeDimension

@@ -3096,8 +3096,16 @@ AZURE_ROLE
     : A Z U R E UL_ R O L E
     ;
 
+AZURE_USER
+    : A Z U R E UL_ U S E R
+    ;
+
 IAM_GROUP_NAME
     : I A M UL_ G R O U P UL_ N A M E
+    ;
+
+IAM_PRINCIPAL_NAME
+    : I A M UL_ P R I N C I P A L UL_ N A M E
     ;
 
 LOGICAL_READS_PER_SESSION
