@@ -144,4 +144,6 @@
     <sql-case id="show_warnings_limit" value="SHOW WARNINGS limit 1" db-types="MySQL" />
     <sql-case id="show_warnings_count" value="SHOW COUNT(*) WARNINGS" db-types="MySQL" />
     <sql-case id="show_search_path" value="SHOW search_path;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="show_errors" value="SHOW ERRORS;" db-types="Oracle"/>
+    <sql-case id="show_parameter_smtp_out_server" value="SHOW PARAMETER SMTP_OUT_SERVER" db-types="Oracle"/>
 </sql-cases>

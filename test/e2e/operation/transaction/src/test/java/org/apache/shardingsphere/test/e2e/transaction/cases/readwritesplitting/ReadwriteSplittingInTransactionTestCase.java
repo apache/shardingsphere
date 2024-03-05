@@ -40,6 +40,28 @@ public final class ReadwriteSplittingInTransactionTestCase extends BaseTransacti
     }
     
     @Override
+    protected void beforeTest() throws SQLException {
+        super.beforeTest();
+        unregisterAbnormalStoreUnitAfterForceStartup();
+    }
+    
+    private void unregisterAbnormalStoreUnitAfterForceStartup() throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            ResultSet resultSet = connection.createStatement().executeQuery("SHOW STORAGE UNITS");
+            boolean hasAbnormalStorageUnit = false;
+            while (resultSet.next()) {
+                if ("read_ds_error".equals(resultSet.getString("name"))) {
+                    hasAbnormalStorageUnit = true;
+                    break;
+                }
+            }
+            if (hasAbnormalStorageUnit) {
+                executeWithLog(connection, "UNREGISTER STORAGE UNIT read_ds_error");
+            }
+        }
+    }
+    
+    @Override
     protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback();
         assertCommit();
