@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Oracle show errors statement.
+ * Oracle show statement.
  */
 public final class OracleShowStatement extends AbstractSQLStatement implements DALStatement, OracleStatement {
 }
