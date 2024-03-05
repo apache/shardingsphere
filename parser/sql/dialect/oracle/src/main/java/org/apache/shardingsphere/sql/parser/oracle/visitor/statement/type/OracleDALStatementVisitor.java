@@ -63,5 +63,4 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitShow(final ShowContext ctx) {
         return new OracleShowStatement();
     }
-    
 }
