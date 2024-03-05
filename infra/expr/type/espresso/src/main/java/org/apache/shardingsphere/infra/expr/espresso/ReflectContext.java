@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
  * Reflect Context.
  * Avoid using JDK21 bytecode during compilation. Refer to `org.graalvm.polyglot.Context`.
  */
-public final class ReflectContext {
+public final class ReflectContext implements AutoCloseable {
     
     private static final String CONTEXT_CLASS_NAME = "org.graalvm.polyglot.Context";
     
@@ -48,7 +48,7 @@ public final class ReflectContext {
     public ReflectContext(final String javaClassPath) {
         Object builderInstance = Class.forName(CONTEXT_CLASS_NAME)
                 .getMethod("newBuilder", String[].class)
-                .invoke(null, (Object) new String[]{});
+                .invoke(null, (Object) new String[0]);
         builderInstance = builderInstance.getClass()
                 .getMethod("allowAllAccess", boolean.class)
                 .invoke(builderInstance, true);
@@ -72,5 +72,11 @@ public final class ReflectContext {
                 .getMethod("getBindings", String.class)
                 .invoke(contextInstance, languageId);
         return new ReflectValue(valueInstance);
+    }
+    
+    @Override
+    @SneakyThrows
+    public void close() {
+        Class.forName(CONTEXT_CLASS_NAME).getMethod("close").invoke(contextInstance);
     }
 }

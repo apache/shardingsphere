@@ -19,15 +19,14 @@ package org.apache.shardingsphere.infra.expr.espresso;
 
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.condition.OS;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -38,6 +37,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @EnabledForJreRange(min = JRE.JAVA_21)
 @EnabledOnOs(value = OS.LINUX, disabledReason = "Refer to https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too .")
+@EnabledIfSystemProperty(named = "java.vm.vendor", matches = "GraalVM",
+        disabledReason = "Executing unit tests of this type in batches will result in a timeout, while executing unit tests individually works fine.")
 class EspressoInlineExpressionParserTest {
     
     @Test
@@ -49,64 +50,56 @@ class EspressoInlineExpressionParserTest {
     
     @Test
     void assertEvaluateForSimpleString() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, " t_order_0, t_order_1 "))).splitAndEvaluate();
+        List<String> expected = createInlineExpressionParser(" t_order_0, t_order_1 ").splitAndEvaluate();
         assertThat(expected.size(), is(2));
         assertThat(expected, hasItems("t_order_0", "t_order_1"));
     }
     
     @Test
     void assertEvaluateForNull() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_order_${null}"))).splitAndEvaluate();
+        List<String> expected = createInlineExpressionParser("t_order_${null}").splitAndEvaluate();
         assertThat(expected.size(), is(1));
         assertThat(expected, hasItems("t_order_"));
     }
     
     @Test
     void assertEvaluateForLiteral() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_order_${'xx'}"))).splitAndEvaluate();
+        List<String> expected = createInlineExpressionParser("t_order_${'xx'}").splitAndEvaluate();
         assertThat(expected.size(), is(1));
         assertThat(expected, hasItems("t_order_xx"));
     }
     
     @Test
     void assertEvaluateForArray() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_order_${[0, 1, 2]},t_order_item_${[0, 2]}"))).splitAndEvaluate();
+        List<String> expected = createInlineExpressionParser("t_order_${[0, 1, 2]},t_order_item_${[0, 2]}").splitAndEvaluate();
         assertThat(expected.size(), is(5));
         assertThat(expected, hasItems("t_order_0", "t_order_1", "t_order_2", "t_order_item_0", "t_order_item_2"));
     }
     
     @Test
     void assertEvaluateForRange() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_order_${0..2},t_order_item_${0..1}"))).splitAndEvaluate();
+        List<String> expected = createInlineExpressionParser("t_order_${0..2},t_order_item_${0..1}").splitAndEvaluate();
         assertThat(expected.size(), is(5));
         assertThat(expected, hasItems("t_order_0", "t_order_1", "t_order_2", "t_order_item_0", "t_order_item_1"));
     }
     
     @Test
     void assertEvaluateForComplex() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${['new','old']}_order_${1..2}, t_config"))).splitAndEvaluate();
+        List<String> expected = createInlineExpressionParser("t_${['new','old']}_order_${1..2}, t_config").splitAndEvaluate();
         assertThat(expected.size(), is(5));
         assertThat(expected, hasItems("t_new_order_1", "t_new_order_2", "t_old_order_1", "t_old_order_2", "t_config"));
     }
     
     @Test
     void assertEvaluateForCalculate() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new${1+2}\",'old']}_order_${1..2}"))).splitAndEvaluate();
+        List<String> expected = createInlineExpressionParser("t_${[\"new${1+2}\",'old']}_order_${1..2}").splitAndEvaluate();
         assertThat(expected.size(), is(4));
         assertThat(expected, hasItems("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2"));
     }
     
     @Test
     void assertEvaluateForExpressionPlaceHolder() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}"))).splitAndEvaluate();
+        List<String> expected = createInlineExpressionParser("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}").splitAndEvaluate();
         assertThat(expected.size(), is(4));
         assertThat(expected, hasItems("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2"));
     }
@@ -123,24 +116,26 @@ class EspressoInlineExpressionParserTest {
                 expression.append(",");
             }
         }
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression.toString()))).splitAndEvaluate();
+        List<String> expected = createInlineExpressionParser(expression.toString()).splitAndEvaluate();
         assertThat(expected.size(), is(1024));
         assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
     }
     
     @Test
     void assertHandlePlaceHolder() {
-        assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_$->{[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_${[\"new${1+2}\"]}"));
-        assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_${[\"new${1+2}\"]}"));
+        String expectdString = "t_${[\"new${1+2}\"]}";
+        assertThat(createInlineExpressionParser("t_$->{[\"new$->{1+2}\"]}").handlePlaceHolder(), is(expectdString));
+        assertThat(createInlineExpressionParser("t_${[\"new$->{1+2}\"]}").handlePlaceHolder(), is(expectdString));
     }
     
     @Test
     void assertEvaluateWithArgs() {
-        assertThrows(UnsupportedOperationException.class, () -> TypedSPILoader.getService(
-                InlineExpressionParser.class, "ESPRESSO",
-                PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateWithArgs(new LinkedHashMap<>()));
+        assertThrows(UnsupportedOperationException.class, () -> createInlineExpressionParser("${1+2}").evaluateWithArgs(Collections.emptyMap()));
+    }
+    
+    private InlineExpressionParser createInlineExpressionParser(final String expression) {
+        Properties props = new Properties();
+        props.put(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression);
+        return TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", props);
     }
 }
