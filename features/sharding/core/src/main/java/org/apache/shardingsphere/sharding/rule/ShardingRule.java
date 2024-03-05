@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -86,7 +86,7 @@ import java.util.stream.Collectors;
  * Sharding rule.
  */
 @Getter
-public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, TableMapperContainedRule {
+public final class ShardingRule implements DatabaseRule, TableMapperContainedRule {
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
@@ -120,6 +120,9 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final ShardingTableMapperRule tableMapperRule;
     
+    @Getter
+    private final RuleIdentifiers ruleIdentifiers;
+    
     public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         this.dataSourceNames = getDataSourceNames(ruleConfig.getTables(), ruleConfig.getAutoTables(), dataSources.keySet());
@@ -147,6 +150,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
         dataNodeRule = new ShardingDataNodeRule(shardingTables);
         tableMapperRule = new ShardingTableMapperRule(shardingTables.values());
+        ruleIdentifiers = new RuleIdentifiers(dataNodeRule, tableMapperRule);
     }
     
     private void validateUniqueActualDataNodesInTableRules() {

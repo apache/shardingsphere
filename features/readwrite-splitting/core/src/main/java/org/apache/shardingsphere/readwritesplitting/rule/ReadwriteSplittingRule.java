@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
@@ -63,12 +64,16 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceMap
     @Getter
     private final ReadwriteSplittingStaticDataSourceRule staticDataSourceRule;
     
+    @Getter
+    private final RuleIdentifiers ruleIdentifiers;
+    
     public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         loadBalancers = createLoadBalancers(ruleConfig);
         dataSourceRules = createDataSourceRules(ruleConfig);
         dataSourceMapperRule = new ReadwriteSplittingDataSourceMapperRule(dataSourceRules.values());
         staticDataSourceRule = new ReadwriteSplittingStaticDataSourceRule(databaseName, dataSourceRules, instanceContext);
+        ruleIdentifiers = new RuleIdentifiers(dataSourceMapperRule, staticDataSourceRule);
     }
     
     private Map<String, LoadBalanceAlgorithm> createLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {

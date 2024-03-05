@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableNamesMapper;
@@ -29,16 +30,21 @@ public final class TableMapperContainedFixtureRule implements TableMapperContain
     
     @Override
     public TableMapperRule getTableMapperRule() {
-        TableMapperRule result = mock(TableMapperRule.class);
-        when(result.getLogicTableMapper()).thenReturn(new TableNamesMapper());
-        when(result.getActualTableMapper()).thenReturn(new TableNamesMapper());
-        when(result.getDistributedTableMapper()).thenReturn(new TableNamesMapper());
-        when(result.getEnhancedTableMapper()).thenReturn(new TableNamesMapper());
-        return result;
+        return mock(TableMapperRule.class);
     }
     
     @Override
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
+    }
+    
+    @Override
+    public RuleIdentifiers getRuleIdentifiers() {
+        TableMapperRule result = mock(TableMapperRule.class);
+        when(result.getLogicTableMapper()).thenReturn(new TableNamesMapper());
+        when(result.getActualTableMapper()).thenReturn(new TableNamesMapper());
+        when(result.getDistributedTableMapper()).thenReturn(new TableNamesMapper());
+        when(result.getEnhancedTableMapper()).thenReturn(new TableNamesMapper());
+        return new RuleIdentifiers(result);
     }
 }

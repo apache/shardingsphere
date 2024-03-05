@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule.identifier.type.datasource;
 
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,7 +26,7 @@ import java.util.Map;
 /**
  * Static data source rule.
  */
-public interface StaticDataSourceRule {
+public interface StaticDataSourceRule extends RuleIdentifier {
     
     /**
      * Get data source mapper.

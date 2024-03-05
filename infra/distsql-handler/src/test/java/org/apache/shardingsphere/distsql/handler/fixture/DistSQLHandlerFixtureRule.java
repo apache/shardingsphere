@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.handler.fixture;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 
 import java.util.Collections;
@@ -30,7 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DistSQLHandlerFixtureRule implements ShardingSphereRule, DataNodeContainedRule {
+public final class DistSQLHandlerFixtureRule implements ShardingSphereRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
@@ -38,7 +38,11 @@ public final class DistSQLHandlerFixtureRule implements ShardingSphereRule, Data
     }
     
     @Override
-    public DataNodeRule getDataNodeRule() {
+    public RuleIdentifiers getRuleIdentifiers() {
+        return new RuleIdentifiers(getDataNodeRule());
+    }
+    
+    private DataNodeRule getDataNodeRule() {
         DataNodeRule result = mock(DataNodeRule.class);
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");

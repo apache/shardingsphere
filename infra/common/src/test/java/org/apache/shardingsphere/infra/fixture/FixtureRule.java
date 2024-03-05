@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.fixture;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 
@@ -34,5 +35,10 @@ public final class FixtureRule implements DatabaseRule, DataSourceMapperContaine
     @Override
     public DataSourceMapperRule getDataSourceMapperRule() {
         return mock(DataSourceMapperRule.class);
+    }
+    
+    @Override
+    public RuleIdentifiers getRuleIdentifiers() {
+        return new RuleIdentifiers(mock(DataSourceMapperRule.class));
     }
 }

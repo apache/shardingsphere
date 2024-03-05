@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -300,6 +301,11 @@ class CreateShardingTableRuleExecutorTest {
         @Override
         public RuleConfiguration getConfiguration() {
             return mock(RuleConfiguration.class);
+        }
+        
+        @Override
+        public RuleIdentifiers getRuleIdentifiers() {
+            return new RuleIdentifiers(getDataSourceMapperRule());
         }
         
         @Override

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDa
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
@@ -55,7 +55,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Single rule.
  */
-public final class SingleRule implements DatabaseRule, DataNodeContainedRule, TableMapperContainedRule, MutableDataNodeRule, ExportableRule {
+public final class SingleRule implements DatabaseRule, TableMapperContainedRule, MutableDataNodeRule, ExportableRule {
     
     @Getter
     private final SingleRuleConfiguration configuration;
@@ -75,6 +75,9 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     @Getter
     private final SingleTableMapperRule tableMapperRule;
     
+    @Getter
+    private final RuleIdentifiers ruleIdentifiers;
+    
     public SingleRule(final SingleRuleConfiguration ruleConfig, final String databaseName,
                       final DatabaseType protocolType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
@@ -86,6 +89,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, protocolType, aggregateDataSourceMap, builtRules, configuration.getTables());
         dataNodeRule = new SingleDataNodeRule(singleTableDataNodes);
         tableMapperRule = new SingleTableMapperRule(singleTableDataNodes.values());
+        ruleIdentifiers = new RuleIdentifiers(dataNodeRule, tableMapperRule);
     }
     
     /**

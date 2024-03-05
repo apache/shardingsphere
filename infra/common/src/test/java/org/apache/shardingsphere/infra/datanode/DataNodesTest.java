@@ -19,9 +19,10 @@ package org.apache.shardingsphere.infra.datanode;
 
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -137,7 +138,11 @@ class DataNodesTest {
     
     private ShardingSphereRule mockDataSourceContainedRule() {
         DataSourceMapperContainedRule result = mock(FixtureRule.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceMapperRule().getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
+        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
+        when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
+        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
+        // TODO to be remove after dataSourceMapperRule removed
+        when(result.getDataSourceMapperRule()).thenReturn(dataSourceMapperRule);
         return result;
     }
     
@@ -151,8 +156,8 @@ class DataNodesTest {
     private ShardingSphereRule mockSingleRule() {
         DataNodeRule dataNodeRule = mock(DataNodeRule.class);
         when(dataNodeRule.getDataNodesByTableName("t_single")).thenReturn(Collections.singleton(new DataNode("readwrite_ds", "t_single")));
-        DataNodeContainedRule result = mock(DataNodeContainedRule.class, RETURNS_DEEP_STUBS);
-        when(result.getDataNodeRule()).thenReturn(dataNodeRule);
+        ShardingSphereRule result = mock(ShardingSphereRule.class);
+        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
         return result;
     }
     
@@ -162,8 +167,8 @@ class DataNodesTest {
         dataNodes.add(new DataNode("readwrite_ds", "t_order_1"));
         DataNodeRule dataNodeRule = mock(DataNodeRule.class);
         when(dataNodeRule.getDataNodesByTableName("t_order")).thenReturn(dataNodes);
-        DataNodeContainedRule result = mock(DataNodeContainedRule.class);
-        when(result.getDataNodeRule()).thenReturn(dataNodeRule);
+        ShardingSphereRule result = mock(ShardingSphereRule.class);
+        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
         return result;
     }
 }

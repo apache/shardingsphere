@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector.tables;
 
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereStatisticsCollector;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.ShardingSphereTableDataCollectorUtils;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -59,15 +59,18 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
     }
     
     private Collection<ShardingSphereRowData> decorateTableName(final Collection<ShardingSphereRowData> rows, final ShardingSphereTable table, final Collection<ShardingSphereRule> rules) {
-        Collection<DataNodeContainedRule> dataNodeContainedRules = rules.stream().filter(DataNodeContainedRule.class::isInstance).map(DataNodeContainedRule.class::cast).collect(Collectors.toList());
-        if (dataNodeContainedRules.isEmpty()) {
+        Collection<DataNodeRule> dataNodeRules = new LinkedList<>();
+        for (ShardingSphereRule each : rules) {
+            each.getRuleIdentifiers().findIdentifier(DataNodeRule.class).ifPresent(dataNodeRules::add);
+        }
+        if (dataNodeRules.isEmpty()) {
             return rows;
         }
         int tableNameIndex = table.getColumnNames().indexOf("relname");
         Collection<ShardingSphereRowData> result = new LinkedList<>();
         for (ShardingSphereRowData each : rows) {
             String tableName = (String) each.getRows().get(tableNameIndex);
-            String logicTableName = decorateTableName(dataNodeContainedRules, tableName);
+            String logicTableName = decorateTableName(dataNodeRules, tableName);
             List<Object> decoratedRow = new ArrayList<>(each.getRows());
             decoratedRow.set(tableNameIndex, logicTableName);
             result.add(new ShardingSphereRowData(decoratedRow));
@@ -75,10 +78,10 @@ public final class PgClassTableCollector implements ShardingSphereStatisticsColl
         return result;
     }
     
-    private String decorateTableName(final Collection<DataNodeContainedRule> dataNodeContainedRules, final String actualTableName) {
-        for (DataNodeContainedRule each : dataNodeContainedRules) {
-            if (each.getDataNodeRule().findLogicTableByActualTable(actualTableName).isPresent()) {
-                return each.getDataNodeRule().findLogicTableByActualTable(actualTableName).get();
+    private String decorateTableName(final Collection<DataNodeRule> dataNodeRules, final String actualTableName) {
+        for (DataNodeRule each : dataNodeRules) {
+            if (each.findLogicTableByActualTable(actualTableName).isPresent()) {
+                return each.findLogicTableByActualTable(actualTableName).get();
             }
         }
         return actualTableName;
