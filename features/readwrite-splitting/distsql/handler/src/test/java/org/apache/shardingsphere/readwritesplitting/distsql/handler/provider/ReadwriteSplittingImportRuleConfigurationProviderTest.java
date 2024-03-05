@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -37,22 +37,22 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ReadwriteSplittingRuleConfigurationImportCheckerTest {
+class ReadwriteSplittingImportRuleConfigurationProviderTest {
     
-    private final ReadwriteSplittingRuleConfigurationImportChecker importChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
+    private final ReadwriteSplittingImportRuleConfigurationProvider importRuleConfigProvider = new ReadwriteSplittingImportRuleConfigurationProvider();
     
     @Test
     void assertCheckDataSources() {
         ShardingSphereDatabase database = mockDatabaseWithDataSource();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = getRuleConfigWithNotExistedDataSources();
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> importChecker.check(database, currentRuleConfig));
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> importRuleConfigProvider.check(database, currentRuleConfig));
     }
     
     @Test
     void assertCheckLoadBalancers() {
         ShardingSphereDatabase database = mockDatabase();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createInvalidLoadBalancerRuleConfig();
-        assertThrows(ServiceProviderNotFoundException.class, () -> importChecker.check(database, currentRuleConfig));
+        assertThrows(ServiceProviderNotFoundException.class, () -> importRuleConfigProvider.check(database, currentRuleConfig));
     }
     
     private ShardingSphereDatabase mockDatabaseWithDataSource() {

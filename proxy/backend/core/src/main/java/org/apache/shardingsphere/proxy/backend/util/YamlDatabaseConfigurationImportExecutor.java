@@ -40,7 +40,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -55,10 +54,8 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyData
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.EncryptRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.MaskRuleConfigurationImportChecker;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShadowRuleConfigurationImportChecker;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -80,8 +77,6 @@ import java.util.stream.Collectors;
  * Yaml database configuration import executor.
  */
 public final class YamlDatabaseConfigurationImportExecutor {
-    
-    private final ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigImportChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
     
     private final EncryptRuleConfigurationImportChecker encryptRuleConfigImportChecker = new EncryptRuleConfigurationImportChecker();
     
@@ -168,13 +163,11 @@ public final class YamlDatabaseConfigurationImportExecutor {
             return;
         }
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
-        if (ruleConfig instanceof ShardingRuleConfiguration) {
+        if (ruleConfig instanceof ShardingRuleConfiguration || ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
             ImportRuleConfigurationProvider importRuleConfigurationProvider = TypedSPILoader.getService(ImportRuleConfigurationProvider.class, ruleConfig.getClass());
             importRuleConfigurationProvider.check(database, ruleConfig);
             allRuleConfigs.add(ruleConfig);
             database.getRuleMetaData().getRules().add(importRuleConfigurationProvider.build(database, ruleConfig, instanceContext));
-        } else if (ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
-            ruleConfigs.forEach(each -> addReadwriteSplittingRuleConfiguration((ReadwriteSplittingRuleConfiguration) each, allRuleConfigs, database));
         } else if (ruleConfig instanceof EncryptRuleConfiguration) {
             ruleConfigs.forEach(each -> addEncryptRuleConfiguration((EncryptRuleConfiguration) each, allRuleConfigs, database));
         } else if (ruleConfig instanceof ShadowRuleConfiguration) {
@@ -198,15 +191,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
             result.get(swapper.getOrder()).add((RuleConfiguration) swapper.swapToObject(each));
         }
         return result;
-    }
-    
-    private void addReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig,
-                                                        final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
-        InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
-        Collection<ShardingSphereRule> rules = database.getRuleMetaData().getRules();
-        readwriteSplittingRuleConfigImportChecker.check(database, readwriteSplittingRuleConfig);
-        allRuleConfigs.add(readwriteSplittingRuleConfig);
-        rules.add(new ReadwriteSplittingRule(database.getName(), readwriteSplittingRuleConfig, instanceContext));
     }
     
     private void addEncryptRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
