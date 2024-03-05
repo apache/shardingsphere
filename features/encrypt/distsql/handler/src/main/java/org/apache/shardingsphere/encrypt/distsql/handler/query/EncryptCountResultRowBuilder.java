@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.distsql.handler.query;
 import org.apache.shardingsphere.distsql.handler.executor.rql.rule.CountResultRowBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +32,8 @@ public final class EncryptCountResultRowBuilder implements CountResultRowBuilder
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final EncryptRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("encrypt", databaseName, rule.getTableMapperRule().getLogicTableMapper().getTableNames().size()));
+        return Collections.singleton(
+                new LocalDataQueryResultRow("encrypt", databaseName, rule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

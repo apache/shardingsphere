@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.executor.rql.rule.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
@@ -31,7 +32,7 @@ public final class SingleCountResultRowBuilder implements CountResultRowBuilder<
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final SingleRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("single", databaseName, rule.getTableMapperRule().getLogicTableMapper().getTableNames().size()));
+        return Collections.singleton(new LocalDataQueryResultRow("single", databaseName, rule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

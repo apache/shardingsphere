@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.mode.manager.context;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.util.Collections;
@@ -170,6 +171,12 @@ public final class ResourceMetaDataContextManager {
     }
     
     private boolean isSingleTable(final ShardingSphereDatabase database, final String tableName) {
-        return database.getRuleMetaData().findRules(TableMapperContainedRule.class).stream().noneMatch(each -> each.getTableMapperRule().getDistributedTableMapper().contains(tableName));
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            Optional<TableMapperRule> tableMapperRule = each.getRuleIdentifiers().findIdentifier(TableMapperRule.class);
+            if (tableMapperRule.isPresent() && tableMapperRule.get().getDistributedTableMapper().contains(tableName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

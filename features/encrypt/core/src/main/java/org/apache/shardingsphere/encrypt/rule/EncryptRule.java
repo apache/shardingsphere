@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.LinkedHashMap;
@@ -39,7 +38,7 @@ import java.util.Optional;
 /**
  * Encrypt rule.
  */
-public final class EncryptRule implements DatabaseRule, TableMapperContainedRule {
+public final class EncryptRule implements DatabaseRule {
     
     private final String databaseName;
     
@@ -47,9 +46,6 @@ public final class EncryptRule implements DatabaseRule, TableMapperContainedRule
     private final EncryptRuleConfiguration configuration;
     
     private final Map<String, EncryptTable> tables;
-    
-    @Getter
-    private final EncryptTableMapperRule tableMapperRule;
     
     @Getter
     private final RuleIdentifiers ruleIdentifiers;
@@ -63,8 +59,7 @@ public final class EncryptRule implements DatabaseRule, TableMapperContainedRule
             each.getColumns().forEach(columnRuleConfig -> checkEncryptorType(columnRuleConfig, encryptors));
             tables.put(each.getName().toLowerCase(), new EncryptTable(each, encryptors));
         }
-        tableMapperRule = new EncryptTableMapperRule(ruleConfig.getTables());
-        ruleIdentifiers = new RuleIdentifiers(tableMapperRule);
+        ruleIdentifiers = new RuleIdentifiers(new EncryptTableMapperRule(ruleConfig.getTables()));
     }
     
     private Map<String, EncryptAlgorithm> createEncryptors(final EncryptRuleConfiguration ruleConfig) {
