@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
-import com.google.common.base.Strings;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
@@ -48,23 +46,11 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         InstanceContext instanceContext = contextManager.getInstanceContext();
         ShardingSpherePreconditions.checkState(instanceContext.isCluster(),
                 () -> new PipelineInvalidParameterException(String.format("Only `Cluster` is supported now, but current mode type is `%s`", instanceContext.getModeConfiguration().getType())));
-        checkTargetDatabase(sqlStatement);
-        String targetDatabaseName;
-        if (Strings.isNullOrEmpty(sqlStatement.getTargetDatabaseName())) {
-            targetDatabaseName = database.getName();
-        } else {
-            ShardingSphereDatabase targetDatabase = PipelineContextManager.getProxyContext().getContextManager().getDatabase(sqlStatement.getTargetDatabaseName());
-            ShardingSpherePreconditions.checkNotNull(targetDatabase, () -> new PipelineInvalidParameterException(String.format("Target database `%s` is not exists",
-                    sqlStatement.getTargetDatabaseName())));
-            targetDatabaseName = targetDatabase.getName();
-        }
+        String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
+        ShardingSpherePreconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(targetDatabaseName),
+                () -> new MissingRequiredTargetDatabaseException(sqlStatement.getTargetDatabaseName()));
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
         jobAPI.start(new PipelineContextKey(InstanceType.PROXY), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
-    }
-    
-    private void checkTargetDatabase(final MigrateTableStatement sqlStatement) {
-        String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? database.getName() : sqlStatement.getTargetDatabaseName();
-        ShardingSpherePreconditions.checkNotNull(targetDatabaseName, MissingRequiredTargetDatabaseException::new);
     }
     
     @Override
