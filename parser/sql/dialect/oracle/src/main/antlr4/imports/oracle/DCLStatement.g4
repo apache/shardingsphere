@@ -20,11 +20,23 @@ grammar DCLStatement;
 import BaseRule;
 
 grant
-    : GRANT (objectPrivilegeClause | systemPrivilegeClause | roleClause)
+    : GRANT ((objectPrivilegeClause grantObjectTo) | (systemPrivilegeClause grantSystemTo) | (roleClause grantRoleTo))
+    ;
+
+grantObjectTo
+    : TO revokeeGranteeClause (WITH HIERARCHY OPTION)? (WITH GRANT OPTION)?
+    ;
+
+grantRoleTo
+    : TO roleClauseFrom
+    ;
+
+granteeIdentifiedBy
+    : name (COMMA_ name)* IDENTIFIED BY name (COMMA_ name)*
     ;
 
 revoke
-    : REVOKE (((objectPrivilegeClause | systemPrivilegeClause) objectPrivilegeFrom) | roleClause roleClauseFrom)
+    : REVOKE (((objectPrivilegeClause | systemPrivilegeClause) objectPrivilegeFrom) | roleClause FROM roleClauseFrom)
     ;
 
 objectPrivilegeClause
@@ -32,15 +44,19 @@ objectPrivilegeClause
     ;
 
 objectPrivilegeFrom
-    : FROM revokeeClause ((CASCADE CONSTRAINTS) | FORCE)?
+    : FROM revokeeGranteeClause ((CASCADE CONSTRAINTS) | FORCE)?
     ;
 
-revokeeClause
+revokeeGranteeClause
     : (name | PUBLIC) (COMMA_ (name | PUBLIC))*
     ;
 
 systemPrivilegeClause
     : systemPrivilege (COMMA_ systemPrivilege)*
+    ;
+
+grantSystemTo
+    : TO (revokeeGranteeClause | granteeIdentifiedBy) (WITH (ADMIN | DELEGATE) OPTION)?
     ;
     
 roleClause
@@ -48,7 +64,7 @@ roleClause
     ;
 
 roleClauseFrom
-    : FROM programUnit (COMMA_ programUnit)*
+    : programUnit (COMMA_ programUnit)*
     ;
 
 programUnit
@@ -307,7 +323,7 @@ usersSystemPrivilege
     ;
 
 ruleSystemPrivilege
-    : createOperation* TO username
+    : createOperation* (TO username)?
     ;
 
 createOperation

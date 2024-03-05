@@ -7808,6 +7808,10 @@ KERBEROS_PRINCIPAL_NAME
     : K E R B E R O S UL_ P R I N C I P A L UL_ N A M E
     ;
 
+DELEGATE
+    : D E L E G A T E
+    ;
+
 DEVICE
     : D E V I C E
     ;
