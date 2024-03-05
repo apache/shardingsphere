@@ -83,7 +83,7 @@
         <json-smart.version>2.4.10</json-smart.version>
         <accessors-smart.version>2.4.9</accessors-smart.version>
         <asm.version>9.3</asm.version>
-        <groovy.version>4.0.10</groovy.version>
+        <groovy.version>4.0.19</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
         <bytebuddy.version>1.14.8</bytebuddy.version>
         
