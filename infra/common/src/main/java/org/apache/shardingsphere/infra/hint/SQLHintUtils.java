@@ -97,7 +97,7 @@ public final class SQLHintUtils {
      * @return SQL after remove hint
      */
     public static String removeHint(final String sql) {
-        return startWithHint(sql, SQLHintTokenEnum.SQL_START_HINT_TOKEN) ? sql.substring(sql.indexOf(SQL_COMMENT_SUFFIX) + 2) : sql;
+        return startWithHint(sql, SQLHintTokenEnum.SQL_START_HINT_TOKEN) ? sql.substring(sql.indexOf(SQL_COMMENT_SUFFIX) + 2).trim() : sql;
     }
     
     private static Properties getSQLHintProps(final String comment) {
