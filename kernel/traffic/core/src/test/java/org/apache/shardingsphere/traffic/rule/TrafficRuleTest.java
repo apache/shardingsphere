@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -91,12 +90,11 @@ class TrafficRuleTest {
     
     private QueryContext createQueryContext(final boolean includeComments) {
         MySQLSelectStatement sqlStatement = mock(MySQLSelectStatement.class);
-        when(sqlStatement.getCommentSegments()).thenReturn(includeComments ? Collections.singleton(new CommentSegment("/* SHARDINGSPHERE_HINT: USE_TRAFFIC=true */", 0, 0)) : Collections.emptyList());
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         SQLStatementContext statementContext =
                 new SelectStatementContext(createShardingSphereMetaData(mockDatabase()), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
         HintValueContext hintValueContext = new HintValueContext();
-        hintValueContext.setUseTraffic(true);
+        hintValueContext.setUseTraffic(includeComments);
         return new QueryContext(statementContext, "", Collections.emptyList(), hintValueContext);
     }
     
