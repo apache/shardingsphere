@@ -73,7 +73,7 @@ class ShardingSphereMetaDataTest {
     void assertDropDatabase() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         MockedDataSource dataSource = new MockedDataSource();
-        ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
+        ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class, RETURNS_DEEP_STUBS);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resourceMetaData, dataSource, databaseResourceHeldRule))),
                 mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalResourceHeldRule)), new ConfigurationProperties(new Properties()));
