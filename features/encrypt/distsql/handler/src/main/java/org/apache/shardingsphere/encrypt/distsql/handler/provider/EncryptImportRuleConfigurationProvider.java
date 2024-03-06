@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
+package org.apache.shardingsphere.encrypt.distsql.handler.provider;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -35,23 +40,25 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Encrypt rule configuration import checker.
+ * Encrypt import rule configuration provider.
  */
-public final class EncryptRuleConfigurationImportChecker {
+public final class EncryptImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
     
-    /**
-     * Check encrypt rule configuration.
-     *
-     * @param database database
-     * @param currentRuleConfig current rule configuration
-     */
-    public void check(final ShardingSphereDatabase database, final EncryptRuleConfiguration currentRuleConfig) {
-        if (null == database || null == currentRuleConfig) {
+    @Override
+    public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+        if (null == database || null == ruleConfig) {
             return;
         }
-        checkTables(currentRuleConfig, database.getName());
-        checkEncryptors(currentRuleConfig);
-        checkTableEncryptorsExisted(currentRuleConfig, database.getName());
+        EncryptRuleConfiguration encryptRuleConfig = (EncryptRuleConfiguration) ruleConfig;
+        checkTables(encryptRuleConfig, database.getName());
+        checkEncryptors(encryptRuleConfig);
+        checkTableEncryptorsExisted(encryptRuleConfig, database.getName());
+    }
+    
+    @Override
+    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        EncryptRuleConfiguration encryptRuleConfig = (EncryptRuleConfiguration) ruleConfig;
+        return new EncryptRule(database.getName(), encryptRuleConfig);
     }
     
     private void checkTables(final EncryptRuleConfiguration currentRuleConfig, final String databaseName) {
@@ -76,5 +83,10 @@ public final class EncryptRuleConfigurationImportChecker {
         Collection<String> encryptors = config.getEncryptors().keySet();
         notExistedEncryptors.removeIf(encryptors::contains);
         ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedEncryptors));
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return EncryptRuleConfiguration.class;
     }
 }
