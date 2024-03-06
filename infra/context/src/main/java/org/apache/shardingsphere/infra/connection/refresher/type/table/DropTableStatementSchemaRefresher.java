@@ -25,11 +25,13 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Schema refresher for drop table statement.
@@ -53,8 +55,13 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     private boolean isSingleTable(final String tableName, final RuleMetaData ruleMetaData) {
-        return ruleMetaData.getRules().stream()
-                .map(each -> each.getRuleIdentifiers().findIdentifier(TableMapperRule.class)).anyMatch(each -> each.isPresent() && each.get().getDistributedTableMapper().contains(tableName));
+        for (ShardingSphereRule each : ruleMetaData.getRules()) {
+            Optional<TableMapperRule> tableMapperRule = each.getRuleIdentifiers().findIdentifier(TableMapperRule.class);
+            if (tableMapperRule.isPresent() && tableMapperRule.get().getDistributedTableMapper().contains(tableName)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override
