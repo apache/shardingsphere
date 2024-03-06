@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.mode.manager.context;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.util.Collections;
@@ -156,7 +155,7 @@ public final class ResourceMetaDataContextManager {
     
     private void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        if (isSingleTable(database, beBoChangedTable.getName())) {
+        if (TableRefreshUtils.isSingleTable(beBoChangedTable.getName(), database)) {
             database.reloadRules(MutableDataNodeRule.class);
         }
         database.getSchema(schemaName).putTable(beBoChangedTable.getName(), beBoChangedTable);
@@ -164,19 +163,9 @@ public final class ResourceMetaDataContextManager {
     
     private void alterView(final String databaseName, final String schemaName, final ShardingSphereView beBoChangedView) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        if (isSingleTable(database, beBoChangedView.getName())) {
+        if (TableRefreshUtils.isSingleTable(beBoChangedView.getName(), database)) {
             database.reloadRules(MutableDataNodeRule.class);
         }
         database.getSchema(schemaName).putView(beBoChangedView.getName(), beBoChangedView);
-    }
-    
-    private boolean isSingleTable(final ShardingSphereDatabase database, final String tableName) {
-        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            Optional<TableMapperRule> tableMapperRule = each.getRuleIdentifiers().findIdentifier(TableMapperRule.class);
-            if (tableMapperRule.isPresent() && tableMapperRule.get().getDistributedTableMapper().contains(tableName)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
