@@ -53,8 +53,9 @@ public abstract class InternalSQLParserIT {
     // TODO fix these sql parser cases after add eof in OracleStatement.g4
     // CHECKSTYLE:OFF
     private static final Collection<String> IGNORE_TEST_CASES = new HashSet<>(Arrays.asList(
-            "create_function_with_aggregate_using_function","create_table_with_out_of_line_constraints_oracle", "create_table_with_xmltype_column_clob_oracle", "create_table_with_xmltype_column_oracle", "create_tablespace_with_blocksize",
-            "create_tablespace_with_temporary_tablespace_group", "create_tablespace_with_temporary_tempfile_spec_extent_management", "create_tablespace_with_undo_tablespace_spec"));
+            "create_function_with_aggregate_using_function", "create_table_with_out_of_line_constraints_oracle", "create_table_with_xmltype_column_clob_oracle",
+            "create_table_with_xmltype_column_oracle", "create_tablespace_with_blocksize", "create_tablespace_with_temporary_tablespace_group",
+            "create_tablespace_with_temporary_tempfile_spec_extent_management", "create_tablespace_with_undo_tablespace_spec"));
     // CHECKSTYLE:ON
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
