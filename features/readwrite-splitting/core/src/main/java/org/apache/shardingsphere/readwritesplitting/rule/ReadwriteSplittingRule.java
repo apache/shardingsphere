@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
@@ -48,7 +46,7 @@ import java.util.stream.Collectors;
 /**
  * Readwrite-splitting rule.
  */
-public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceMapperContainedRule, StaticDataSourceContainedRule, ExportableRule, StorageConnectorReusableRule {
+public final class ReadwriteSplittingRule implements DatabaseRule, StaticDataSourceContainedRule, ExportableRule, StorageConnectorReusableRule {
     
     @Getter
     private final ReadwriteSplittingRuleConfiguration configuration;
@@ -57,9 +55,6 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceMap
     
     @Getter
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
-    
-    @Getter
-    private final DataSourceMapperRule dataSourceMapperRule;
     
     @Getter
     private final ReadwriteSplittingStaticDataSourceRule staticDataSourceRule;
@@ -71,9 +66,8 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceMap
         configuration = ruleConfig;
         loadBalancers = createLoadBalancers(ruleConfig);
         dataSourceRules = createDataSourceRules(ruleConfig);
-        dataSourceMapperRule = new ReadwriteSplittingDataSourceMapperRule(dataSourceRules.values());
         staticDataSourceRule = new ReadwriteSplittingStaticDataSourceRule(databaseName, dataSourceRules, instanceContext);
-        ruleIdentifiers = new RuleIdentifiers(dataSourceMapperRule, staticDataSourceRule);
+        ruleIdentifiers = new RuleIdentifiers(new ReadwriteSplittingDataSourceMapperRule(dataSourceRules.values()), staticDataSourceRule);
     }
     
     private Map<String, LoadBalanceAlgorithm> createLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {

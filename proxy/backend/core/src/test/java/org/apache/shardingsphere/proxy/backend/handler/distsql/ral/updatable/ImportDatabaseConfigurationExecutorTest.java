@@ -30,7 +30,8 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -49,6 +50,7 @@ import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -143,10 +145,9 @@ class ImportDatabaseConfigurationExecutorTest {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        DataSourceMapperContainedRule dataSourceMapperContainedRule = mock(DataSourceMapperContainedRule.class);
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
-        when(dataSourceMapperContainedRule.getDataSourceMapperRule()).thenReturn(dataSourceMapperRule);
-        when(database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class)).thenReturn(Collections.singleton(dataSourceMapperContainedRule));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(mock(DataSourceMapperRule.class)));
+        when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>(Collections.singleton(rule)));
         when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(databaseName, database));
         when(result.getMetaDataContexts().getMetaData().getDatabase(databaseName)).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(createProperties()));

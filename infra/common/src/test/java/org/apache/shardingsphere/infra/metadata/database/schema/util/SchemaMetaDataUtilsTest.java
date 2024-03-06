@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,7 @@ class SchemaMetaDataUtilsTest {
         when(dataNodeRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
-                Arrays.asList(rule, mock(DataSourceMapperContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
+                Arrays.asList(rule, mock(ShardingSphereRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
         assertThat(actual.size(), is(2));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
@@ -72,7 +71,7 @@ class SchemaMetaDataUtilsTest {
         when(dataNodeRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
-                Arrays.asList(rule, mock(DataSourceMapperContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
+                Arrays.asList(rule, mock(ShardingSphereRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();
@@ -88,7 +87,7 @@ class SchemaMetaDataUtilsTest {
         when(dataNodeRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
         when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
-                Arrays.asList(rule, mock(DataSourceMapperContainedRule.class)), mock(ConfigurationProperties.class), "public");
+                Arrays.asList(rule, mock(ShardingSphereRule.class)), mock(ConfigurationProperties.class), "public");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<MetaDataLoaderMaterial> iterator = actual.iterator();

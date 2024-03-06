@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 
@@ -56,16 +56,17 @@ public final class SingleTableLoadUtils {
     public static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
         for (ShardingSphereRule each : builtRules) {
-            if (each instanceof DataSourceMapperContainedRule) {
-                result = getAggregatedDataSourceMap(result, (DataSourceMapperContainedRule) each);
+            Optional<DataSourceMapperRule> dataSourceMapperRule = each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class);
+            if (dataSourceMapperRule.isPresent()) {
+                result = getAggregatedDataSourceMap(result, dataSourceMapperRule.get());
             }
         }
         return result;
     }
     
-    private static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceMapperContainedRule builtRule) {
+    private static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceMapperRule dataSourceMapperRule) {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapperRule().getDataSourceMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : dataSourceMapperRule.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
                 if (dataSourceMap.containsKey(each)) {
                     result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each));

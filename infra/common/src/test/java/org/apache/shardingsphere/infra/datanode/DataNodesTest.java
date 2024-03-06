@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.junit.jupiter.api.Test;
 
@@ -49,21 +48,21 @@ class DataNodesTest {
     
     @Test
     void assertGetDataNodesForShardingTableWithoutDataNodeContainedRule() {
-        DataNodes dataNodes = new DataNodes(Collections.singletonList(mockDataSourceContainedRule()));
+        DataNodes dataNodes = new DataNodes(Collections.singletonList(mockDataSourceMapperRule()));
         Collection<DataNode> actual = dataNodes.getDataNodes("t_order");
         assertThat(actual, is(Collections.emptyList()));
     }
     
     @Test
     void assertGetDataNodesForSingleTableWithoutDataNodeContainedRule() {
-        DataNodes dataNodes = new DataNodes(Collections.singletonList(mockDataSourceContainedRule()));
+        DataNodes dataNodes = new DataNodes(Collections.singletonList(mockDataSourceMapperRule()));
         Collection<DataNode> actual = dataNodes.getDataNodes("t_single");
         assertThat(actual, is(Collections.emptyList()));
     }
     
     @Test
     void assertGetDataNodesForShardingTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
-        DataNodes dataNodes = new DataNodes(mockDataNodeContainedRules());
+        DataNodes dataNodes = new DataNodes(mockDataNodeRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_order");
         assertThat(actual.size(), is(2));
         Iterator<DataNode> iterator = actual.iterator();
@@ -77,7 +76,7 @@ class DataNodesTest {
     
     @Test
     void assertGetDataNodesForSingleTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
-        DataNodes dataNodes = new DataNodes(mockDataNodeContainedRules());
+        DataNodes dataNodes = new DataNodes(mockDataNodeRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_single");
         assertThat(actual.size(), is(1));
         Iterator<DataNode> iterator = actual.iterator();
@@ -131,22 +130,20 @@ class DataNodesTest {
     
     private Collection<ShardingSphereRule> mockShardingSphereRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        result.add(mockDataSourceContainedRule());
-        result.addAll(mockDataNodeContainedRules());
+        result.add(mockDataSourceMapperRule());
+        result.addAll(mockDataNodeRules());
         return result;
     }
     
-    private ShardingSphereRule mockDataSourceContainedRule() {
-        DataSourceMapperContainedRule result = mock(FixtureRule.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereRule mockDataSourceMapperRule() {
+        ShardingSphereRule result = mock(FixtureRule.class, RETURNS_DEEP_STUBS);
         DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
         when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
         when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
-        // TODO to be remove after dataSourceMapperRule removed
-        when(result.getDataSourceMapperRule()).thenReturn(dataSourceMapperRule);
         return result;
     }
     
-    private Collection<ShardingSphereRule> mockDataNodeContainedRules() {
+    private Collection<ShardingSphereRule> mockDataNodeRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         result.add(mockSingleRule());
         result.add(mockShardingRule());

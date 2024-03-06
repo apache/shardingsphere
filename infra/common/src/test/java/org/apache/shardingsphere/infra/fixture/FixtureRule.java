@@ -20,21 +20,15 @@ package org.apache.shardingsphere.infra.fixture;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 
 import static org.mockito.Mockito.mock;
 
-public final class FixtureRule implements DatabaseRule, DataSourceMapperContainedRule {
+public final class FixtureRule implements DatabaseRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
-    }
-    
-    @Override
-    public DataSourceMapperRule getDataSourceMapperRule() {
-        return mock(DataSourceMapperRule.class);
     }
     
     @Override
