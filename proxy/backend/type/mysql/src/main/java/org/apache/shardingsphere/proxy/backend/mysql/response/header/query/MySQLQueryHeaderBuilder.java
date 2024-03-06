@@ -21,7 +21,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 
@@ -60,10 +61,13 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     }
     
     private String getLogicTableName(final ShardingSphereDatabase database, final String actualTableName) {
-        for (DataNodeContainedRule each : database.getRuleMetaData().findRules(DataNodeContainedRule.class)) {
-            Optional<String> logicTable = each.getDataNodeRule().findLogicTableByActualTable(actualTableName);
-            if (logicTable.isPresent()) {
-                return logicTable.get();
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            Optional<DataNodeRule> dataNodeRule = each.getRuleIdentifiers().findIdentifier(DataNodeRule.class);
+            if (dataNodeRule.isPresent()) {
+                Optional<String> logicTable = dataNodeRule.get().findLogicTableByActualTable(actualTableName);
+                if (logicTable.isPresent()) {
+                    return logicTable.get();
+                }
             }
         }
         return actualTableName;

@@ -23,9 +23,7 @@ import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUti
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
@@ -41,19 +39,14 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
                         final String schemaName, final DatabaseType databaseType, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         sqlStatement.getTables().forEach(each -> alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTableName().getIdentifier().getValue()));
-        RuleMetaData ruleMetaData = database.getRuleMetaData();
-        boolean isRuleRefreshRequired = TableRefreshUtils.isRuleRefreshRequired(ruleMetaData, schemaName, sqlStatement.getTables());
+        boolean isRuleRefreshRequired = TableRefreshUtils.isRuleRefreshRequired(database.getRuleMetaData(), schemaName, sqlStatement.getTables());
         modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
-            if (isRuleRefreshRequired && isSingleTable(each.getTableName().getIdentifier().getValue(), ruleMetaData)) {
-                modeContextManager.alterRuleConfiguration(database.getName(), ruleMetaData.getConfigurations());
+            if (isRuleRefreshRequired && TableRefreshUtils.isSingleTable(each.getTableName().getIdentifier().getValue(), database)) {
+                modeContextManager.alterRuleConfiguration(database.getName(), database.getRuleMetaData().getConfigurations());
                 break;
             }
         }
-    }
-    
-    private boolean isSingleTable(final String tableName, final RuleMetaData ruleMetaData) {
-        return ruleMetaData.findRules(TableMapperContainedRule.class).stream().noneMatch(each -> each.getTableMapperRule().getDistributedTableMapper().contains(tableName));
     }
     
     @Override

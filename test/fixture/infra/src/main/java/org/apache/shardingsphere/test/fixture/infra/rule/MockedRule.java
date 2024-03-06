@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.fixture.infra.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 
 import static org.mockito.Mockito.mock;
 
@@ -30,5 +31,10 @@ public final class MockedRule implements ShardingSphereRule {
     @Override
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
+    }
+    
+    @Override
+    public RuleIdentifiers getRuleIdentifiers() {
+        return new RuleIdentifiers();
     }
 }

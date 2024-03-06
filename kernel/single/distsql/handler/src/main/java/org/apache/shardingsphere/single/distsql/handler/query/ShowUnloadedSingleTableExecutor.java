@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTableStatement;
@@ -57,7 +58,7 @@ public final class ShowUnloadedSingleTableExecutor implements DistSQLQueryExecut
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowUnloadedSingleTableStatement sqlStatement, final ContextManager contextManager) {
         Map<String, Collection<DataNode>> actualDataNodes = getActualDataNodes(database);
-        for (String each : rule.getTableMapperRule().getLogicTableMapper().getTableNames()) {
+        for (String each : rule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().getTableNames()) {
             actualDataNodes.remove(each.toLowerCase());
         }
         return actualDataNodes.entrySet().stream().map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().iterator().next().getDataSourceName())).collect(Collectors.toList());

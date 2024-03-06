@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -29,7 +29,8 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -146,8 +148,11 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     }
     
     private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class).stream()
-                .map(each -> each.getDataSourceMapperRule().getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
+        Collection<String> result = new LinkedHashSet<>();
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class).ifPresent(optional -> result.addAll(optional.getDataSourceMapper().keySet()));
+        }
+        return result;
     }
     
     @Override
