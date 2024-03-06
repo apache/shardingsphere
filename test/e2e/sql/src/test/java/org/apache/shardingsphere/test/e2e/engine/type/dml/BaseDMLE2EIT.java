@@ -173,7 +173,7 @@ public abstract class BaseDMLE2EIT {
         } else if (Arrays.asList(Types.TIME, Types.TIME_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
             assertThat(DateTimeFormatterFactory.getTimeFormatter().format(actual.getTime(columnIndex).toLocalTime()), is(expected));
         } else if (Arrays.asList(Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
-            if ("Oracle".equals(databaseType.getType()) && "DATE".equalsIgnoreCase(actual.getMetaData().getColumnTypeName(columnIndex))) {
+            if ("Oracle".equals(databaseType.getType()) && "DATE".equalsIgnoreCase(actual.getMetaData().getColumnTypeName(columnIndex)) || "openGauss".equals(databaseType.getType())) {
                 assertThat(DateTimeFormatterFactory.getDateFormatter().format(actual.getDate(columnIndex).toLocalDate()), is(expected));
             } else {
                 assertThat(DateTimeFormatterFactory.getShortMillsFormatter().format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));

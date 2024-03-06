@@ -6520,7 +6520,7 @@
             <simple-table name="employees" start-index="210" stop-index="218" literal-start-index="210" literal-stop-index="218" />
         </from>
     </select>
-    
+
     <select sql-case-id="select_with_trim_function_simple">
         <projections start-index="7" stop-index="57">
             <expression-projection text="TRIM( '.,! ' FROM '     #     test    .')" start-index="7" stop-index="57" alias="Result">
@@ -6537,7 +6537,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_trim_function_leading">
         <projections start-index="7" stop-index="66">
             <expression-projection text="TRIM(LEADING '.,! ' FROM  '     .#     test    .')" start-index="7" stop-index="66" alias="Result">
@@ -6557,7 +6557,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_trim_function_trailing">
         <projections start-index="7" stop-index="66">
             <expression-projection text="TRIM(TRAILING '.,! ' FROM '     .#     test    .')" start-index="7" stop-index="66" alias="Result">
@@ -6577,7 +6577,7 @@
             </expression-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_trim_function_both">
         <projections start-index="7" stop-index="49">
             <expression-projection text="TRIM(BOTH '123' FROM '123abc123')" start-index="7" stop-index="49" alias="Result">

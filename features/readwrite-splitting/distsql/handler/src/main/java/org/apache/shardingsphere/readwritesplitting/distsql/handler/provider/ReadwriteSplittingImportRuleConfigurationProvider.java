@@ -15,37 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.provider;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
 /**
- * Readwrite-splitting rule configuration import checker.
+ * Readwrite-splitting import rule configuration provider.
  */
-public final class ReadwriteSplittingRuleConfigurationImportChecker {
+public final class ReadwriteSplittingImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
     
-    /**
-     * Check readwrite-splitting rule configuration.
-     *
-     * @param database          database
-     * @param currentRuleConfig current rule configuration
-     */
-    public void check(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        if (null == database || null == currentRuleConfig) {
+    @Override
+    public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+        if (null == database || null == ruleConfig) {
             return;
         }
+        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = (ReadwriteSplittingRuleConfiguration) ruleConfig;
         String databaseName = database.getName();
-        checkDataSources(databaseName, database, currentRuleConfig);
-        checkLoadBalancers(currentRuleConfig);
+        checkDataSources(databaseName, database, readwriteSplittingRuleConfig);
+        checkLoadBalancers(readwriteSplittingRuleConfig);
+    }
+    
+    @Override
+    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        return new ReadwriteSplittingRule(database.getName(), (ReadwriteSplittingRuleConfiguration) ruleConfig, instanceContext);
     }
     
     private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
@@ -64,5 +70,10 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(LoadBalanceAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return ReadwriteSplittingRuleConfiguration.class;
     }
 }

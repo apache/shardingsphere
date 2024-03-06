@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Missing required target database exception.
+ * Oracle show statement.
  */
-public final class MissingRequiredTargetDatabaseException extends PipelineSQLException {
-    
-    private static final long serialVersionUID = -1557471818392592482L;
-    
-    public MissingRequiredTargetDatabaseException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, String.format("Target database `%s` isn't exist.", databaseName));
-    }
+public final class OracleShowStatement extends AbstractSQLStatement implements DALStatement, OracleStatement {
 }

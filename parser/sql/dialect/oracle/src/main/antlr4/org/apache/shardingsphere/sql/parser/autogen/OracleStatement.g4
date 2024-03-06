@@ -85,6 +85,7 @@ execute
     | dropEdition
     | dropTableSpace
     | dropOutline
+    | dropDatabase
     | alterOutline
     | alterAnalyticView
     | alterAttributeDimension
@@ -159,5 +160,6 @@ execute
     | switch
     | createProfile
     | createTrigger
+    | show
     ) SEMI_? SLASH_? EOF
     ;

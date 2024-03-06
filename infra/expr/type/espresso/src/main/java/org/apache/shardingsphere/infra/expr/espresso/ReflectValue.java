@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.expr.espresso;
 
 import lombok.SneakyThrows;
 
+import java.util.stream.Stream;
+
 /**
  * Reflect Value.
  * Avoid using JDK21 bytecode during compilation. Refer to `org.graalvm.polyglot.Value`.
@@ -55,7 +57,7 @@ public class ReflectValue {
     public ReflectValue newInstance(final Object... arguments) {
         Object resultValueInstance = Class.forName(VALUE_CLASS_NAME)
                 .getMethod("newInstance", Object[].class)
-                .invoke(valueInstance, (Object) arguments);
+                .invoke(valueInstance, new Object[]{Stream.of(arguments).toArray()});
         return new ReflectValue(resultValueInstance);
     }
     

@@ -23,6 +23,7 @@ release.properties
 # idea ignore
 .idea/
 !/.idea/icon.png
+!/.idea/vcs.xml
 *.ipr
 *.iml
 *.iws

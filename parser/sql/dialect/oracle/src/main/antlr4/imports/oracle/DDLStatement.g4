@@ -142,7 +142,7 @@ dropTrigger
     ;
  
 dropIndex
-    : DROP INDEX indexName ONLINE? FORCE? invalidationSpecification?
+    : DROP INDEX indexName ONLINE? FORCE? invalidationSpecification? (ON tableName)?
     ;
 
 dropView

@@ -20,11 +20,23 @@ grammar DCLStatement;
 import BaseRule;
 
 grant
-    : GRANT (objectPrivilegeClause | systemPrivilegeClause | roleClause)
+    : GRANT ((objectPrivilegeClause grantObjectTo) | (systemPrivilegeClause grantSystemTo) | (roleClause grantRoleTo))
+    ;
+
+grantObjectTo
+    : TO revokeeGranteeClause (WITH HIERARCHY OPTION)? (WITH GRANT OPTION)?
+    ;
+
+grantRoleTo
+    : TO roleClauseFrom
+    ;
+
+granteeIdentifiedBy
+    : name (COMMA_ name)* IDENTIFIED BY name (COMMA_ name)*
     ;
 
 revoke
-    : REVOKE (((objectPrivilegeClause | systemPrivilegeClause) objectPrivilegeFrom) | roleClause roleClauseFrom)
+    : REVOKE (((objectPrivilegeClause | systemPrivilegeClause) objectPrivilegeFrom) | roleClause FROM roleClauseFrom)
     ;
 
 objectPrivilegeClause
@@ -32,15 +44,19 @@ objectPrivilegeClause
     ;
 
 objectPrivilegeFrom
-    : FROM revokeeClause ((CASCADE CONSTRAINTS) | FORCE)?
+    : FROM revokeeGranteeClause ((CASCADE CONSTRAINTS) | FORCE)?
     ;
 
-revokeeClause
+revokeeGranteeClause
     : (name | PUBLIC) (COMMA_ (name | PUBLIC))*
     ;
 
 systemPrivilegeClause
     : systemPrivilege (COMMA_ systemPrivilege)*
+    ;
+
+grantSystemTo
+    : TO (revokeeGranteeClause | granteeIdentifiedBy) (WITH (ADMIN | DELEGATE) OPTION)?
     ;
     
 roleClause
@@ -48,7 +64,7 @@ roleClause
     ;
 
 roleClauseFrom
-    : FROM programUnit (COMMA_ programUnit)*
+    : programUnit (COMMA_ programUnit)*
     ;
 
 programUnit
@@ -307,7 +323,7 @@ usersSystemPrivilege
     ;
 
 ruleSystemPrivilege
-    : createOperation* TO username
+    : createOperation* (TO username)?
     ;
 
 createOperation
@@ -325,7 +341,74 @@ miscellaneousSystemPrivilege
     ;
 
 createUser
-    : CREATE USER
+    : CREATE USER username createUserIdentifiedClause createUserOption*
+    ;
+
+createUserIdentifiedClause
+    : IDENTIFIED createUseridentifiedSegment
+    | noAuthOption
+    ;
+
+createUseridentifiedSegment
+    : BY password HTTP? DIGEST? (ENABLE | DISABLE)?
+    | identifiedExternallyOption
+    | identifiedGloballyOption
+    ;
+
+identifiedExternallyOption
+    : EXTERNALLY (AS SQ_ name SQ_)?
+    ;
+
+identifiedGloballyOption
+    : GLOBALLY (AS SQ_ (name | (AZURE_ROLE | AZURE_USER | IAM_GROUP_NAME | IAM_PRINCIPAL_NAME) EQ_ name) SQ_)
+    ;
+
+noAuthOption
+    : NO AUTHENTICATION
+    ;
+
+createUserOption
+    : collationOption
+    | tablespaceOption
+    | temporaryOption
+    | quotaOption
+    | profileOption
+    | passwordOption
+    | accountOption
+    | ENABLE EDITIONS
+    | containerOption
+    ;
+
+collationOption
+    : DEFAULT COLLATION collationName
+    ;
+
+tablespaceOption
+    : DEFAULT TABLESPACE tablespaceName
+    ;
+
+temporaryOption
+    : LOCAL? TEMPORARY TABLESPACE tablespaceName tablespaceGroupName
+    ;
+
+quotaOption
+    : QUOTA (sizeClause | UNLIMITED) ON tablespaceName
+    ;
+
+profileOption
+    : PROFILE profileName
+    ;
+
+passwordOption
+    : PASSWORD EXPIRE
+    ;
+
+accountOption
+    : ACCOUNT (LOCK | UNLOCK)
+    ;
+
+containerOption
+    : CONTAINER EQ_ (CURRENT | ALL)
     ;
 
 dropUser
