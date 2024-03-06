@@ -31,7 +31,7 @@
     <sql-case id="create_cluster_pctfree" value="CREATE CLUSTER test_cluster (col1 NUMBER) PCTFREE 2" db-types="Oracle" />
     <sql-case id="create_cluster_pctused" value="CREATE CLUSTER test_cluster (col1 NUMBER) PCTUSED 4" db-types="Oracle" />
     <sql-case id="create_cluster_initrans" value="CREATE CLUSTER test_cluster (col1 NUMBER) INITRANS 5" db-types="Oracle" />
-    <sql-case id="create_cluster_set_size" value="CREATE CLUSTER test_cluster (col1 NUMBER) SET 10M" db-types="Oracle" />
+    <sql-case id="create_cluster_set_size" value="CREATE CLUSTER test_cluster (col1 NUMBER) SIZE 10M" db-types="Oracle" />
     <sql-case id="create_cluster_storage_init" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (INITIAL 109G)" db-types="Oracle" />
     <sql-case id="create_cluster_storage_next" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (NEXT 109G)" db-types="Oracle" />
     <sql-case id="create_cluster_storage_minextents" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (MINEXTENTS 109)" db-types="Oracle" />
