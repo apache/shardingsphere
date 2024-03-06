@@ -341,7 +341,74 @@ miscellaneousSystemPrivilege
     ;
 
 createUser
-    : CREATE USER
+    : CREATE USER username createUserIdentifiedClause createUserOption*
+    ;
+
+createUserIdentifiedClause
+    : IDENTIFIED createUseridentifiedSegment
+    | noAuthOption
+    ;
+
+createUseridentifiedSegment
+    : BY password HTTP? DIGEST? (ENABLE | DISABLE)?
+    | identifiedExternallyOption
+    | identifiedGloballyOption
+    ;
+
+identifiedExternallyOption
+    : EXTERNALLY (AS SQ_ name SQ_)?
+    ;
+
+identifiedGloballyOption
+    : GLOBALLY (AS SQ_ (name | (AZURE_ROLE | AZURE_USER | IAM_GROUP_NAME | IAM_PRINCIPAL_NAME) EQ_ name) SQ_)
+    ;
+
+noAuthOption
+    : NO AUTHENTICATION
+    ;
+
+createUserOption
+    : collationOption
+    | tablespaceOption
+    | temporaryOption
+    | quotaOption
+    | profileOption
+    | passwordOption
+    | accountOption
+    | ENABLE EDITIONS
+    | containerOption
+    ;
+
+collationOption
+    : DEFAULT COLLATION collationName
+    ;
+
+tablespaceOption
+    : DEFAULT TABLESPACE tablespaceName
+    ;
+
+temporaryOption
+    : LOCAL? TEMPORARY TABLESPACE tablespaceName tablespaceGroupName
+    ;
+
+quotaOption
+    : QUOTA (sizeClause | UNLIMITED) ON tablespaceName
+    ;
+
+profileOption
+    : PROFILE profileName
+    ;
+
+passwordOption
+    : PASSWORD EXPIRE
+    ;
+
+accountOption
+    : ACCOUNT (LOCK | UNLOCK)
+    ;
+
+containerOption
+    : CONTAINER EQ_ (CURRENT | ALL)
     ;
 
 dropUser
