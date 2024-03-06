@@ -22,6 +22,8 @@ import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecut
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -86,11 +88,13 @@ class ShowSingleTableExecutorTest {
     }
     
     private SingleRule mockSingleRule() {
-        SingleRule result = mock(SingleRule.class, RETURNS_DEEP_STUBS);
-        Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
+        Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>(2, 1F);
         singleTableDataNodeMap.put("t_order", Collections.singleton(new DataNode("ds_1", "t_order")));
         singleTableDataNodeMap.put("t_order_item", Collections.singleton(new DataNode("ds_2", "t_order_item")));
-        when(result.getDataNodeRule().getAllDataNodes()).thenReturn(singleTableDataNodeMap);
+        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
+        when(dataNodeRule.getAllDataNodes()).thenReturn(singleTableDataNodeMap);
+        SingleRule result = mock(SingleRule.class);
+        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
         return result;
     }
 }

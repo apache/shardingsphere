@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mask.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.executor.rql.rule.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Collection;
@@ -31,7 +32,7 @@ public final class MaskCountResultRowBuilder implements CountResultRowBuilder<Ma
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final MaskRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("mask", databaseName, rule.getTableMapperRule().getLogicTableMapper().getTableNames().size()));
+        return Collections.singleton(new LocalDataQueryResultRow("mask", databaseName, rule.getRuleIdentifiers().getIdentifier(TableMapperRule.class).getLogicTableMapper().getTableNames().size()));
     }
     
     @Override

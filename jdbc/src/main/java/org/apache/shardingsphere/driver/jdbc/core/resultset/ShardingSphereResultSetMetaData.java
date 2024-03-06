@@ -25,13 +25,14 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere result set meta data.
@@ -140,15 +141,17 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     @Override
     public String getTableName(final int column) throws SQLException {
         String actualTableName = resultSetMetaData.getTableName(column);
-        Collection<DataNodeContainedRule> dataNodeContainedRules = database.getRuleMetaData().getRules().stream().filter(DataNodeContainedRule.class::isInstance)
-                .map(DataNodeContainedRule.class::cast).collect(Collectors.toList());
-        return decorateTableName(dataNodeContainedRules, actualTableName);
+        Collection<DataNodeRule> dataNodeRules = new LinkedList<>();
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(DataNodeRule.class).ifPresent(dataNodeRules::add);
+        }
+        return decorateTableName(dataNodeRules, actualTableName);
     }
     
-    private String decorateTableName(final Collection<DataNodeContainedRule> dataNodeContainedRules, final String actualTableName) {
-        for (DataNodeContainedRule each : dataNodeContainedRules) {
-            if (each.getDataNodeRule().findLogicTableByActualTable(actualTableName).isPresent()) {
-                return each.getDataNodeRule().findLogicTableByActualTable(actualTableName).get();
+    private String decorateTableName(final Collection<DataNodeRule> dataNodeRules, final String actualTableName) {
+        for (DataNodeRule each : dataNodeRules) {
+            if (each.findLogicTableByActualTable(actualTableName).isPresent()) {
+                return each.findLogicTableByActualTable(actualTableName).get();
             }
         }
         return actualTableName;

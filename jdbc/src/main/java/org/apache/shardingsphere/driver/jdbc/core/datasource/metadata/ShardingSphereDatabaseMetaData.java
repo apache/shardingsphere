@@ -23,7 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -201,20 +201,25 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private String getActualTableNamePattern(final String tableNamePattern) {
         return null == tableNamePattern
                 ? null
-                : findDataNodeContainedRule()
-                        .filter(optional -> optional.getDataNodeRule().findFirstActualTable(tableNamePattern).isPresent()).map(optional -> "%" + tableNamePattern + "%").orElse(tableNamePattern);
+                : findDataNodeRule().filter(optional -> optional.findFirstActualTable(tableNamePattern).isPresent()).map(optional -> "%" + tableNamePattern + "%").orElse(tableNamePattern);
     }
     
     private String getActualTable(final String catalog, final String table) {
-        return null == table ? null : findDataNodeContainedRule().map(each -> findActualTable(each, catalog, table).orElse(table)).orElse(table);
+        return null == table ? null : findDataNodeRule().map(each -> findActualTable(each, catalog, table).orElse(table)).orElse(table);
     }
     
-    private Optional<String> findActualTable(final DataNodeContainedRule dataNodeContainedRule, final String catalog, final String table) {
-        return Strings.isNullOrEmpty(catalog) ? dataNodeContainedRule.getDataNodeRule().findFirstActualTable(table) : dataNodeContainedRule.getDataNodeRule().findActualTableByCatalog(catalog, table);
+    private Optional<String> findActualTable(final DataNodeRule dataNodeRule, final String catalog, final String table) {
+        return Strings.isNullOrEmpty(catalog) ? dataNodeRule.findFirstActualTable(table) : dataNodeRule.findActualTableByCatalog(catalog, table);
     }
     
-    private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        return rules.stream().filter(DataNodeContainedRule.class::isInstance).findFirst().map(DataNodeContainedRule.class::cast);
+    private Optional<DataNodeRule> findDataNodeRule() {
+        for (ShardingSphereRule each : rules) {
+            Optional<DataNodeRule> dataNodeRule = each.getRuleIdentifiers().findIdentifier(DataNodeRule.class);
+            if (dataNodeRule.isPresent()) {
+                return dataNodeRule;
+            }
+        }
+        return Optional.empty();
     }
     
     private ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {

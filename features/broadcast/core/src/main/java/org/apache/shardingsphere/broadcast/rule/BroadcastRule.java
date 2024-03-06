@@ -21,17 +21,15 @@ import lombok.Getter;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -39,7 +37,7 @@ import java.util.stream.Collectors;
  * Broadcast rule.
  */
 @Getter
-public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule, TableMapperContainedRule {
+public final class BroadcastRule implements DatabaseRule {
     
     private final BroadcastRuleConfiguration configuration;
     
@@ -49,32 +47,30 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     
     private final Collection<String> dataSourceNames;
     
-    private final DataNodeRule dataNodeRule;
-    
-    private final TableMapperRule tableMapperRule;
+    private final RuleIdentifiers ruleIdentifiers;
     
     public BroadcastRule(final BroadcastRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         configuration = config;
         this.databaseName = databaseName;
         dataSourceNames = getAggregatedDataSourceNames(dataSources, builtRules);
         tables = createBroadcastTables(config.getTables());
-        dataNodeRule = new BroadcastDataNodeRule(dataSourceNames, tables);
-        tableMapperRule = new BroadcastTableMapperRule(tables);
+        ruleIdentifiers = new RuleIdentifiers(new BroadcastDataNodeRule(dataSourceNames, tables), new BroadcastTableMapperRule(tables));
     }
     
     private Collection<String> getAggregatedDataSourceNames(final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new LinkedList<>(dataSources.keySet());
         for (ShardingSphereRule each : builtRules) {
-            if (each instanceof DataSourceMapperContainedRule) {
-                result = getAggregatedDataSourceNames(result, (DataSourceMapperContainedRule) each);
+            Optional<DataSourceMapperRule> dataSourceMapperRule = each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class);
+            if (dataSourceMapperRule.isPresent()) {
+                result = getAggregatedDataSourceNames(result, dataSourceMapperRule.get());
             }
         }
         return result;
     }
     
-    private Collection<String> getAggregatedDataSourceNames(final Collection<String> dataSourceNames, final DataSourceMapperContainedRule builtRule) {
+    private Collection<String> getAggregatedDataSourceNames(final Collection<String> dataSourceNames, final DataSourceMapperRule dataSourceMapperRule) {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapperRule().getDataSourceMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : dataSourceMapperRule.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
                 if (dataSourceNames.contains(each)) {
                     dataSourceNames.remove(each);

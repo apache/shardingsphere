@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule.identifier.type.datanode;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 import java.util.Collection;
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.Optional;
 /**
  * Data node rule.
  */
-public interface DataNodeRule {
+public interface DataNodeRule extends RuleIdentifier {
     
     /**
      * Get all data nodes.

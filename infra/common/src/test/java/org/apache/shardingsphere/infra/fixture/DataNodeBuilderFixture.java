@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.fixture;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeBuilder;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,7 +31,7 @@ public final class DataNodeBuilderFixture implements DataNodeBuilder<FixtureRule
     public Collection<DataNode> build(final Collection<DataNode> dataNodes, final FixtureRule rule) {
         Collection<DataNode> result = new LinkedList<>();
         for (DataNode each : dataNodes) {
-            result.addAll(DataNodeUtils.buildDataNode(each, rule.getDataSourceMapperRule().getDataSourceMapper()));
+            result.addAll(DataNodeUtils.buildDataNode(each, rule.getRuleIdentifiers().getIdentifier(DataSourceMapperRule.class).getDataSourceMapper()));
         }
         return result;
     }

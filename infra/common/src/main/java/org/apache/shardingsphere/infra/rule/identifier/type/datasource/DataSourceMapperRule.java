@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type.datasource;
 
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
+
 import java.util.Collection;
 import java.util.Map;
 
 /**
  * Data source mapper rule.
  */
-public interface DataSourceMapperRule {
+public interface DataSourceMapperRule extends RuleIdentifier {
     
     /**
      * Get data source mapper.
