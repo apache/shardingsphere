@@ -20,23 +20,55 @@ grammar DCLStatement;
 import BaseRule;
 
 grant
-    : GRANT (objectPrivilegeClause | systemPrivilegeClause | roleClause)
+    : GRANT ((objectPrivilegeClause grantObjectTo) | (systemPrivilegeClause grantSystemTo) | (roleClause grantRoleTo))
+    ;
+
+grantObjectTo
+    : TO revokeeGranteeClause (WITH HIERARCHY OPTION)? (WITH GRANT OPTION)?
+    ;
+
+grantRoleTo
+    : TO roleClauseFrom
+    ;
+
+granteeIdentifiedBy
+    : name (COMMA_ name)* IDENTIFIED BY name (COMMA_ name)*
     ;
 
 revoke
-    : REVOKE (objectPrivilegeClause | systemPrivilegeClause | roleClause)
+    : REVOKE (((objectPrivilegeClause | systemPrivilegeClause) objectPrivilegeFrom) | roleClause FROM roleClauseFrom)
     ;
 
 objectPrivilegeClause
     : objectPrivileges ON onObjectClause
     ;
 
+objectPrivilegeFrom
+    : FROM revokeeGranteeClause ((CASCADE CONSTRAINTS) | FORCE)?
+    ;
+
+revokeeGranteeClause
+    : (name | PUBLIC) (COMMA_ (name | PUBLIC))*
+    ;
+
 systemPrivilegeClause
-    : systemPrivilege
+    : systemPrivilege (COMMA_ systemPrivilege)*
+    ;
+
+grantSystemTo
+    : TO (revokeeGranteeClause | granteeIdentifiedBy) (WITH (ADMIN | DELEGATE) OPTION)?
     ;
     
 roleClause
     : ignoredIdentifiers
+    ;
+
+roleClauseFrom
+    : programUnit (COMMA_ programUnit)*
+    ;
+
+programUnit
+    : (FUNCTION | PROCEDURE | PACKAGE) schemaName DOT_ name
     ;
 
 objectPrivileges
@@ -119,6 +151,7 @@ systemPrivilege
     | viewsSystemPrivilege
     | miscellaneousSystemPrivilege
     | ruleSystemPrivilege
+    | name
     ;
 
 systemPrivilegeOperation
@@ -290,7 +323,7 @@ usersSystemPrivilege
     ;
 
 ruleSystemPrivilege
-    : createOperation* TO username
+    : createOperation* (TO username)?
     ;
 
 createOperation
@@ -308,7 +341,74 @@ miscellaneousSystemPrivilege
     ;
 
 createUser
-    : CREATE USER
+    : CREATE USER username createUserIdentifiedClause createUserOption*
+    ;
+
+createUserIdentifiedClause
+    : IDENTIFIED createUseridentifiedSegment
+    | noAuthOption
+    ;
+
+createUseridentifiedSegment
+    : BY password HTTP? DIGEST? (ENABLE | DISABLE)?
+    | identifiedExternallyOption
+    | identifiedGloballyOption
+    ;
+
+identifiedExternallyOption
+    : EXTERNALLY (AS SQ_ name SQ_)?
+    ;
+
+identifiedGloballyOption
+    : GLOBALLY (AS SQ_ (name | (AZURE_ROLE | AZURE_USER | IAM_GROUP_NAME | IAM_PRINCIPAL_NAME) EQ_ name) SQ_)
+    ;
+
+noAuthOption
+    : NO AUTHENTICATION
+    ;
+
+createUserOption
+    : collationOption
+    | tablespaceOption
+    | temporaryOption
+    | quotaOption
+    | profileOption
+    | passwordOption
+    | accountOption
+    | ENABLE EDITIONS
+    | containerOption
+    ;
+
+collationOption
+    : DEFAULT COLLATION collationName
+    ;
+
+tablespaceOption
+    : DEFAULT TABLESPACE tablespaceName
+    ;
+
+temporaryOption
+    : LOCAL? TEMPORARY TABLESPACE tablespaceName tablespaceGroupName
+    ;
+
+quotaOption
+    : QUOTA (sizeClause | UNLIMITED) ON tablespaceName
+    ;
+
+profileOption
+    : PROFILE profileName
+    ;
+
+passwordOption
+    : PASSWORD EXPIRE
+    ;
+
+accountOption
+    : ACCOUNT (LOCK | UNLOCK)
+    ;
+
+containerOption
+    : CONTAINER EQ_ (CURRENT | ALL)
     ;
 
 dropUser
@@ -316,7 +416,22 @@ dropUser
     ;
 
 alterUser
-    : ALTER USER
+    : ALTER USER ((username (IDENTIFIED (BY password (REPLACE password)?
+    | EXTERNALLY (AS CERTIFICATE_DN | AS KERBEROS_PRINCIPAL_NAME)?
+    | NO AUTHENTICATION
+    | GLOBALLY AS (STRING_ | SQ_ AZURE_ROLE EQ_ identifier SQ_ | SQ_ IAM_GROUP_NAME EQ_ identifier SQ_))
+    | DEFAULT COLLATION collationName
+    | DEFAULT TABLESPACE tablespaceName
+    | LOCAL? TEMPORARY TABLESPACE tablespaceName tablespaceGroupName
+    | QUOTA (sizeClause | UNLIMITED) ON tablespaceName
+    | PROFILE profileName
+    | DEFAULT ROLE (roleName (COMMA_ roleName)* |  allClause | NONE )
+    | PASSWORD EXPIRE
+    | ACCOUNT (LOCK | UNLOCK)
+    | ENABLE EDITIONS (FOR editionType (COMMA_ editionType)*)? FORCE?
+    | HTTP? DIGEST (ENABLE | DISABLE)
+    | CONTAINER EQ_ (CURRENT | ALL)
+    | containerDataClause)*) | username (COMMA_ username)* proxyClause*)
     ;
 
 createRole

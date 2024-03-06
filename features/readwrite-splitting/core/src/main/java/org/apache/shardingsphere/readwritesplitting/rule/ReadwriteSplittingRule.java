@@ -17,46 +17,37 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.exception.rule.InvalidInlineExpressionDataSourceNameException;
 import org.apache.shardingsphere.readwritesplitting.group.type.StaticReadwriteSplittingGroup;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Readwrite-splitting rule.
  */
-public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceContainedRule, StaticDataSourceContainedRule, ExportableRule, StorageConnectorReusableRule {
-    
-    private final String databaseName;
+public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceMapperContainedRule, StaticDataSourceContainedRule, ExportableRule, StorageConnectorReusableRule {
     
     @Getter
     private final ReadwriteSplittingRuleConfiguration configuration;
@@ -66,14 +57,18 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     @Getter
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
-    private final InstanceContext instanceContext;
+    @Getter
+    private final DataSourceMapperRule dataSourceMapperRule;
+    
+    @Getter
+    private final ReadwriteSplittingStaticDataSourceRule staticDataSourceRule;
     
     public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        this.databaseName = databaseName;
         configuration = ruleConfig;
-        this.instanceContext = instanceContext;
         loadBalancers = createLoadBalancers(ruleConfig);
         dataSourceRules = createDataSourceRules(ruleConfig);
+        dataSourceMapperRule = new ReadwriteSplittingDataSourceMapperRule(dataSourceRules.values());
+        staticDataSourceRule = new ReadwriteSplittingStaticDataSourceRule(databaseName, dataSourceRules, instanceContext);
     }
     
     private Map<String, LoadBalanceAlgorithm> createLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
@@ -144,46 +139,6 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
      */
     public Optional<ReadwriteSplittingDataSourceRule> findDataSourceRule(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
-        for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingGroup().getAllDataSources());
-        }
-        return result;
-    }
-    
-    @Override
-    public void updateStatus(final DataSourceStatusChangedEvent event) {
-        StorageNodeDataSourceChangedEvent dataSourceEvent = (StorageNodeDataSourceChangedEvent) event;
-        QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
-        ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
-        Preconditions.checkNotNull(dataSourceRule, "Can not find readwrite-splitting data source rule in database `%s`", qualifiedDatabase.getDatabaseName());
-        if (DataSourceState.DISABLED == dataSourceEvent.getDataSource().getStatus()) {
-            dataSourceRule.disableDataSource(dataSourceEvent.getQualifiedDatabase().getDataSourceName());
-        } else {
-            dataSourceRule.enableDataSource(dataSourceEvent.getQualifiedDatabase().getDataSourceName());
-        }
-    }
-    
-    @Override
-    public void cleanStorageNodeDataSource(final String groupName) {
-        Preconditions.checkNotNull(dataSourceRules.get(groupName), String.format("`%s` group name not exist in database `%s`", groupName, databaseName));
-        deleteStorageNodeDataSources(dataSourceRules.get(groupName));
-    }
-    
-    private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceRule rule) {
-        rule.getReadwriteSplittingGroup().getReadDataSources()
-                .forEach(each -> instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDatabase(databaseName, rule.getName(), each))));
-    }
-    
-    @Override
-    public void cleanStorageNodeDataSources() {
-        for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-            deleteStorageNodeDataSources(entry.getValue());
-        }
     }
     
     @Override

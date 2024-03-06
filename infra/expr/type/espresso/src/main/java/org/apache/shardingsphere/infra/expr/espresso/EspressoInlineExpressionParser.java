@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.expr.espresso;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.groovy.GroovyUtils;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,12 +42,10 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     private String inlineExpression;
     
-    private final ReflectContext context = new ReflectContext(JAVA_CLASSPATH);
-    
     static {
-        URL resource = ClassLoader.getSystemResource("build" + File.separator + "libs");
-        String dir = null == resource ? null : resource.getPath();
-        JAVA_CLASSPATH = dir + File.separator + "groovy.jar";
+        URL groovyJarUrl = ClassLoader.getSystemResource("build/libs/groovy.jar");
+        ShardingSpherePreconditions.checkNotNull(groovyJarUrl, NullPointerException::new);
+        JAVA_CLASSPATH = groovyJarUrl.getPath();
     }
     
     @Override
@@ -72,10 +70,15 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     @Override
     public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(GroovyUtils.split(handlePlaceHolder(inlineExpression))));
+        try (ReflectContext context = new ReflectContext(JAVA_CLASSPATH)) {
+            if (Strings.isNullOrEmpty(inlineExpression)) {
+                return Collections.emptyList();
+            }
+            return flatten(evaluate(context, GroovyUtils.split(handlePlaceHolder(inlineExpression))));
+        }
     }
     
-    private List<ReflectValue> evaluate(final List<String> inlineExpressions) {
+    private List<ReflectValue> evaluate(final ReflectContext context, final List<String> inlineExpressions) {
         List<ReflectValue> result = new ArrayList<>(inlineExpressions.size());
         for (String each : inlineExpressions) {
             StringBuilder expression = new StringBuilder(handlePlaceHolder(each));
@@ -85,17 +88,17 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
             if (!each.endsWith("\"")) {
                 expression.append('"');
             }
-            result.add(evaluate(expression.toString()));
+            result.add(evaluate(context, expression.toString()));
         }
         return result;
     }
     
-    private ReflectValue evaluate(final String expression) {
+    private ReflectValue evaluate(final ReflectContext context, final String expression) {
         return context.getBindings("java")
                 .getMember("groovy.lang.GroovyShell")
                 .newInstance()
-                .invokeMember("parse", expression)
-                .invokeMember("run");
+                .invokeMember("parse/(Ljava/lang/String;)Lgroovy/lang/Script;", expression)
+                .invokeMember("run/()Ljava/lang/Object;");
     }
     
     /**
@@ -140,9 +143,9 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
      */
     @SuppressWarnings("unchecked")
     private Set<List<String>> getCartesianValues(final ReflectValue segment) {
-        Object[] temp = segment.invokeMember("getValues").as(Object[].class);
-        List<Set<String>> result = new ArrayList<>(temp.length);
-        for (Object each : temp) {
+        Object[] segmentAsObjectArray = segment.invokeMember("getValues/()[Ljava/lang/Object;").as(Object[].class);
+        List<Set<String>> result = new ArrayList<>(segmentAsObjectArray.length);
+        for (Object each : segmentAsObjectArray) {
             if (null == each) {
                 continue;
             }
@@ -163,10 +166,10 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
      * @return {@link java.lang.String}
      */
     private String assemblySegment(final List<String> cartesianValue, final ReflectValue segment) {
-        String[] temp = segment.invokeMember("getStrings").as(String[].class);
+        String[] segmentAsStringArray = segment.invokeMember("getStrings/()[Ljava/lang/String;").as(String[].class);
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < temp.length; i++) {
-            result.append(temp[i]);
+        for (int i = 0; i < segmentAsStringArray.length; i++) {
+            result.append(segmentAsStringArray[i]);
             if (i < cartesianValue.size()) {
                 result.append(cartesianValue.get(i));
             }

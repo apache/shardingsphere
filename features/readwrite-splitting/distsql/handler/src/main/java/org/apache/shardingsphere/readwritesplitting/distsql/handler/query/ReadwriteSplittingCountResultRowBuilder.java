@@ -31,7 +31,7 @@ public final class ReadwriteSplittingCountResultRowBuilder implements CountResul
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final ReadwriteSplittingRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("readwrite_splitting", databaseName, rule.getDataSourceMapper().size()));
+        return Collections.singleton(new LocalDataQueryResultRow("readwrite_splitting", databaseName, rule.getDataSourceMapperRule().getDataSourceMapper().size()));
     }
     
     @Override

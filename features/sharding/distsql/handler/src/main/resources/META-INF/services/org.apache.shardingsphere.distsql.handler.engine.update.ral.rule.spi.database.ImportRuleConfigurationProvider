@@ -15,13 +15,4 @@
 # limitations under the License.
 #
 
-name: cluster_information
-
-columns:
-  version:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: version
-    primaryKey: false
-    visible: true
+org.apache.shardingsphere.sharding.distsql.handler.provider.ShardingImportRuleConfigurationProvider

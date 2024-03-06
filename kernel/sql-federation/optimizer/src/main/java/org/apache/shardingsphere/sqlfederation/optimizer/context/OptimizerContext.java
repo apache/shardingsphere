@@ -45,7 +45,7 @@ public final class OptimizerContext {
      * @return parser context
      */
     public OptimizerParserContext getParserContext(final String databaseName) {
-        return parserContexts.get(databaseName.toLowerCase());
+        return parserContexts.get(databaseName);
     }
     
     /**
@@ -55,7 +55,7 @@ public final class OptimizerContext {
      * @param parserContext parser context
      */
     public void putParserContext(final String databaseName, final OptimizerParserContext parserContext) {
-        parserContexts.put(databaseName.toLowerCase(), parserContext);
+        parserContexts.put(databaseName, parserContext);
     }
     
     /**
@@ -64,7 +64,7 @@ public final class OptimizerContext {
      * @param databaseName database name
      */
     public void removeParserContext(final String databaseName) {
-        parserContexts.remove(databaseName.toLowerCase());
+        parserContexts.remove(databaseName);
     }
     
     /**
@@ -74,7 +74,7 @@ public final class OptimizerContext {
      * @return Planner
      */
     public OptimizerPlannerContext getPlannerContext(final String databaseName) {
-        return plannerContexts.get(databaseName.toLowerCase());
+        return plannerContexts.get(databaseName);
     }
     
     /**
@@ -84,7 +84,7 @@ public final class OptimizerContext {
      * @param plannerContext planner context
      */
     public void putPlannerContext(final String databaseName, final OptimizerPlannerContext plannerContext) {
-        plannerContexts.put(databaseName.toLowerCase(), plannerContext);
+        plannerContexts.put(databaseName, plannerContext);
     }
     
     /**
@@ -93,6 +93,6 @@ public final class OptimizerContext {
      * @param databaseName database name
      */
     public void removePlannerContext(final String databaseName) {
-        plannerContexts.remove(databaseName.toLowerCase());
+        plannerContexts.remove(databaseName);
     }
 }

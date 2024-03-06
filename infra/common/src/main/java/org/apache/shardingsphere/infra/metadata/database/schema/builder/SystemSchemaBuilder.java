@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
@@ -35,9 +36,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -48,7 +47,7 @@ public final class SystemSchemaBuilder {
     
     /**
      * Build system schema.
-     * 
+     *
      * @param databaseName database name
      * @param databaseType database type
      * @param props configuration properties
@@ -60,7 +59,7 @@ public final class SystemSchemaBuilder {
         boolean isSystemSchemaMetaDataEnabled = isSystemSchemaMetaDataEnabled(props.getProps());
         YamlTableSwapper swapper = new YamlTableSwapper();
         for (String each : getSystemSchemas(databaseName, databaseType, systemDatabase)) {
-            result.put(each.toLowerCase(), createSchema(each, getSchemaStreams(each, databaseType), swapper, isSystemSchemaMetaDataEnabled));
+            result.put(each.toLowerCase(), createSchema(each, SystemSchemaManager.getAllInputStreams(databaseType.getType(), each), swapper, isSystemSchemaMetaDataEnabled));
         }
         return result;
     }
@@ -74,19 +73,6 @@ public final class SystemSchemaBuilder {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         String databaseName = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName;
         return systemDatabase.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
-    }
-    
-    private static Collection<InputStream> getSchemaStreams(final String schemaName, final DatabaseType databaseType) {
-        Optional<SystemSchemaBuilderRule> builderRuleOptional = SystemSchemaBuilderRule.findBuilderRule(databaseType.getType(), schemaName);
-        if (!builderRuleOptional.isPresent()) {
-            return Collections.emptyList();
-        }
-        SystemSchemaBuilderRule builderRule = builderRuleOptional.get();
-        Collection<InputStream> result = new LinkedList<>();
-        for (String each : builderRule.getTables()) {
-            result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
-        }
-        return result;
     }
     
     private static ShardingSphereSchema createSchema(final String schemaName, final Collection<InputStream> schemaStreams, final YamlTableSwapper swapper,

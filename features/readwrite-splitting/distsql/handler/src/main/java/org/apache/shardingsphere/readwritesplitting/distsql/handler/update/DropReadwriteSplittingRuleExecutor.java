@@ -27,7 +27,8 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
@@ -76,12 +77,12 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     
     private Collection<String> getInUsedResources() {
         Collection<String> result = new HashSet<>();
-        for (DataSourceContainedRule each : database.getRuleMetaData().findRules(DataSourceContainedRule.class)) {
+        for (DataSourceMapperContainedRule each : database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class)) {
             if (each instanceof ReadwriteSplittingRule) {
                 continue;
             }
             Collection<String> actualDataSources = new HashSet<>();
-            each.getDataSourceMapper().values().forEach(actualDataSources::addAll);
+            each.getDataSourceMapperRule().getDataSourceMapper().values().forEach(actualDataSources::addAll);
             result.addAll(actualDataSources);
         }
         for (DataNodeContainedRule each : database.getRuleMetaData().findRules(DataNodeContainedRule.class)) {
@@ -125,6 +126,12 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     public boolean hasAnyOneToBeDropped(final DropReadwriteSplittingRuleStatement sqlStatement) {
         return !Collections.disjoint(
                 rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getNames());
+    }
+    
+    @Override
+    public void operate(final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) {
+        database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)
+                .ifPresent(optional -> sqlStatement.getNames().forEach(groupName -> optional.getStaticDataSourceRule().cleanStorageNodeDataSource(groupName)));
     }
     
     @Override

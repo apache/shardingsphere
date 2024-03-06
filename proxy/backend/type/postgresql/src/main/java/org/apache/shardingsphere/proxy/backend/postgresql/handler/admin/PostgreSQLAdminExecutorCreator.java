@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
@@ -70,8 +70,8 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
             if (!selectedTableNames.isEmpty() && KERNEL_SUPPORTED_TABLES.containsAll(selectedTableNames)) {
                 return Optional.empty();
             }
-            if (!selectedTableNames.isEmpty() && (SystemSchemaBuilderRule.POSTGRESQL_INFORMATION_SCHEMA.getTables().containsAll(selectedTableNames)
-                    || SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().containsAll(selectedTableNames))) {
+            if (!selectedTableNames.isEmpty() && (SystemSchemaManager.isSystemTable("postgresql", "information_schema", selectedTableNames)
+                    || SystemSchemaManager.isSystemTable("postgresql", "pg_catalog", selectedTableNames))) {
                 return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
             }
         }
