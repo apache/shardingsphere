@@ -20,9 +20,9 @@ package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsConverter;
@@ -31,7 +31,8 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -109,8 +111,11 @@ public final class RegisterStorageUnitExecutor implements DistSQLUpdateExecutor<
     }
     
     private Collection<String> getLogicalDataSourceNames() {
-        return database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class).stream()
-                .map(each -> each.getDataSourceMapperRule().getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toList());
+        Collection<String> result = new LinkedList<>();
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class).ifPresent(sourceMapperRule -> result.addAll(sourceMapperRule.getDataSourceMapper().keySet()));
+        }
+        return result;
     }
     
     @Override

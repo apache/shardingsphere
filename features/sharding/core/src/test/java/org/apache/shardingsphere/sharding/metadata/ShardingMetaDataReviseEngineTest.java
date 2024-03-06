@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaM
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,7 @@ class ShardingMetaDataReviseEngineTest {
         ShardingRule result = mock(ShardingRule.class);
         DataNodeRule dataNodeRule = mock(DataNodeRule.class);
         when(dataNodeRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
-        when(result.getDataNodeRule()).thenReturn(dataNodeRule);
+        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
         return result;
     }
     

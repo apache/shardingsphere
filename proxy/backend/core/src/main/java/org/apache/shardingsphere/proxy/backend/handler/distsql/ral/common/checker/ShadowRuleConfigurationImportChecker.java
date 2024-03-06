@@ -19,9 +19,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.check
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -74,8 +75,11 @@ public final class ShadowRuleConfigurationImportChecker {
     }
     
     private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findRules(DataSourceMapperContainedRule.class).stream()
-                .map(each -> each.getDataSourceMapperRule().getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+        Collection<String> result = new LinkedHashSet<>();
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class).ifPresent(sourceMapperRule -> result.addAll(sourceMapperRule.getDataSourceMapper().keySet()));
+        }
+        return result;
     }
     
     private void checkTables(final ShadowRuleConfiguration currentRuleConfig, final String databaseName) {

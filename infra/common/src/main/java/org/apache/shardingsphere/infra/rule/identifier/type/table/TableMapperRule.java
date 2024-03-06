@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type.table;
 
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
+
 /**
  * Table mapper rule.
  */
-public interface TableMapperRule {
+public interface TableMapperRule extends RuleIdentifier {
     
     /**
      * Get logic table mapper.

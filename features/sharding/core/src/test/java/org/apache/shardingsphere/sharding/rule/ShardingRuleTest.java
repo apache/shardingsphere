@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.algorithm.audit.DMLShardingConditionsShardingAuditAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -201,12 +202,12 @@ class ShardingRuleTest {
     
     @Test
     void assertFindLogicTableByActualTable() {
-        assertTrue(createMaximumShardingRule().getDataNodeRule().findLogicTableByActualTable("table_0").isPresent());
+        assertTrue(createMaximumShardingRule().getRuleIdentifiers().getIdentifier(DataNodeRule.class).findLogicTableByActualTable("table_0").isPresent());
     }
     
     @Test
     void assertNotFindLogicTableByActualTable() {
-        assertFalse(createMaximumShardingRule().getDataNodeRule().findLogicTableByActualTable("table_3").isPresent());
+        assertFalse(createMaximumShardingRule().getRuleIdentifiers().getIdentifier(DataNodeRule.class).findLogicTableByActualTable("table_3").isPresent());
     }
     
     @Test
@@ -705,7 +706,7 @@ class ShardingRuleTest {
     @Test
     void assertGetDataNodesByTableName() {
         ShardingRule shardingRule = createMinimumShardingRule();
-        Collection<DataNode> actual = shardingRule.getDataNodeRule().getDataNodesByTableName("logic_table");
+        Collection<DataNode> actual = shardingRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getDataNodesByTableName("logic_table");
         assertThat(actual.size(), is(6));
         Iterator<DataNode> iterator = actual.iterator();
         DataNode firstDataNode = iterator.next();
@@ -767,7 +768,7 @@ class ShardingRuleTest {
     @Test
     void assertGetAllDataNodes() {
         ShardingRule actual = createMaximumShardingRule();
-        Map<String, Collection<DataNode>> allDataNodes = actual.getDataNodeRule().getAllDataNodes();
+        Map<String, Collection<DataNode>> allDataNodes = actual.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes();
         assertTrue(allDataNodes.containsKey("logic_table"));
         assertTrue(allDataNodes.containsKey("sub_logic_table"));
         Collection<DataNode> logicTableDataNodes = allDataNodes.get("logic_table");
@@ -792,14 +793,14 @@ class ShardingRuleTest {
     @Test
     void assertFindFirstActualTable() {
         ShardingRule actual = createMaximumShardingRule();
-        Optional<String> logicTable = actual.getDataNodeRule().findFirstActualTable("logic_table");
+        Optional<String> logicTable = actual.getRuleIdentifiers().getIdentifier(DataNodeRule.class).findFirstActualTable("logic_table");
         assertThat(logicTable.orElse(""), is("table_0"));
     }
     
     @Test
     void assertFindActualTableByCatalog() {
         ShardingRule actual = createMaximumShardingRule();
-        Optional<String> actualTableByCatalog = actual.getDataNodeRule().findActualTableByCatalog("ds_0", "logic_table");
+        Optional<String> actualTableByCatalog = actual.getRuleIdentifiers().getIdentifier(DataNodeRule.class).findActualTableByCatalog("ds_0", "logic_table");
         assertThat(actualTableByCatalog.orElse(""), is("table_0"));
     }
     

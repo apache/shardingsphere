@@ -27,7 +27,7 @@ public final class MissingRequiredTargetDatabaseException extends PipelineSQLExc
     
     private static final long serialVersionUID = -1557471818392592482L;
     
-    public MissingRequiredTargetDatabaseException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Target database name is null. You could define it in DistSQL or select a database.");
+    public MissingRequiredTargetDatabaseException(final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, String.format("Target database `%s` isn't exist.", databaseName));
     }
 }

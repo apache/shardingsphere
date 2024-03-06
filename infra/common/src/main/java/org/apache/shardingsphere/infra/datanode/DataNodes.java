@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Data nodes.
@@ -53,22 +52,15 @@ public final class DataNodes {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<DataNode> getDataNodes(final String tableName) {
-        Optional<DataNodeContainedRule> dataNodeContainedRule = findDataNodeContainedRule(tableName);
-        if (!dataNodeContainedRule.isPresent()) {
-            return Collections.emptyList();
-        }
-        Collection<DataNode> result = new LinkedList<>(dataNodeContainedRule.get().getDataNodeRule().getDataNodesByTableName(tableName));
+        Collection<DataNode> result = new LinkedList<>(
+                rules.stream().map(each -> getDataNodes(each, tableName)).filter(dataNodes -> !dataNodes.isEmpty()).findFirst().orElse(Collections.emptyList()));
         for (Entry<ShardingSphereRule, DataNodeBuilder> entry : dataNodeBuilders.entrySet()) {
             result = entry.getValue().build(result, entry.getKey());
         }
         return result;
     }
     
-    private Optional<DataNodeContainedRule> findDataNodeContainedRule(final String tableName) {
-        return rules.stream().filter(each -> isDataNodeContainedRuleContainsTable(each, tableName)).findFirst().map(DataNodeContainedRule.class::cast);
-    }
-    
-    private boolean isDataNodeContainedRuleContainsTable(final ShardingSphereRule each, final String tableName) {
-        return each instanceof DataNodeContainedRule && !((DataNodeContainedRule) each).getDataNodeRule().getDataNodesByTableName(tableName).isEmpty();
+    private Collection<DataNode> getDataNodes(final ShardingSphereRule rule, final String tableName) {
+        return rule.getRuleIdentifiers().findIdentifier(DataNodeRule.class).map(optional -> optional.getDataNodesByTableName(tableName)).orElse(Collections.emptyList());
     }
 }

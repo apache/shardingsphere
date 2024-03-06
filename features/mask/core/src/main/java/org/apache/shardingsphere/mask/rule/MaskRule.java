@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
@@ -32,7 +32,7 @@ import java.util.Optional;
  * Mask rule.
  */
 @SuppressWarnings("rawtypes")
-public final class MaskRule implements DatabaseRule, TableMapperContainedRule {
+public final class MaskRule implements DatabaseRule {
     
     @Getter
     private final MaskRuleConfiguration configuration;
@@ -42,13 +42,13 @@ public final class MaskRule implements DatabaseRule, TableMapperContainedRule {
     private final Map<String, MaskTable> tables = new LinkedHashMap<>();
     
     @Getter
-    private final MaskTableMapperRule tableMapperRule;
+    private final RuleIdentifiers ruleIdentifiers;
     
     public MaskRule(final MaskRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         ruleConfig.getMaskAlgorithms().forEach((key, value) -> maskAlgorithms.put(key, TypedSPILoader.getService(MaskAlgorithm.class, value.getType(), value.getProps())));
         ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new MaskTable(each)));
-        tableMapperRule = new MaskTableMapperRule(ruleConfig.getTables());
+        ruleIdentifiers = new RuleIdentifiers(new MaskTableMapperRule(ruleConfig.getTables()));
     }
     
     /**

@@ -7819,3 +7819,135 @@ KERBEROS_PRINCIPAL_NAME
 DELEGATE
     : D E L E G A T E
     ;
+
+DEVICE
+    : D E V I C E
+    ;
+
+PARAMETER
+    :P A R A M E T E R
+    ;
+
+SHO
+    : S H O
+    ;
+
+ERR
+    : E R R
+    ;
+
+CON_ID
+    : C O N UL_ I D
+    ;
+
+CON_NAME
+    : C O N UL_ N A M E
+    ;
+
+BTI
+    : B T I
+    ;
+
+BTITLE
+    : B T I T L E
+    ;
+
+HISTORY
+    : H I S T O R Y
+    ;
+
+LNO
+    : L N O
+    ;
+
+LOBPREFETCH
+    : L O B P R E F E T C H
+    ;
+
+PDBS
+    : P D B S
+    ;
+
+PNO
+    : P N O
+    ;
+
+RECYC
+    : R E C Y C
+    ;
+
+REL
+    : R E L
+    ;
+
+RELEASE
+    : R E L E A S E
+    ;
+
+REPF
+    : R E P F
+    ;
+
+REPFOOTER
+    : R E P F O O T E R
+    ;
+
+REPH
+    : R E P H
+    ;
+
+REPHEADER
+    : R E P H E A D E R
+    ;
+
+ROWPREF
+    : R O W P R E F
+    ;
+
+ROWPREFETCH
+    : R O W P R E F E T C H
+    ;
+
+SGA
+    : S G A
+    ;
+
+SPOO
+    : S P O O
+    ;
+
+SPOOL
+    : S P O O L
+    ;
+
+SPPARAMETER
+    : S P P A R A M E T E R
+    ;
+
+SPPARAMETERS
+    : S P P A R A M E T E R S
+    ;
+
+SQLCODE
+    : S Q L C O D E
+    ;
+
+STATEMENTC
+    : S T A T E M E N T C
+    ;
+
+STATEMENTCACHE
+    : S T A T E M E N T C A C H E
+    ;
+
+TTI
+    : T T I
+    ;
+
+TLE
+    : T L E
+    ;
+
+XQUERY
+    : X Q U E R Y
+    ;
