@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
@@ -113,10 +112,6 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
         dataSourceRuleConfig.ifPresent(optional -> rule.getConfiguration().getDataSources().remove(optional));
     }
     
-    private void dropUnusedLoadBalancer(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        findUnusedLoadBalancers().forEach(each -> currentRuleConfig.getLoadBalancers().remove(each));
-    }
-    
     private Collection<String> findUnusedLoadBalancers() {
         Collection<String> inUsedAlgorithms = rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName).collect(Collectors.toSet());
         return rule.getConfiguration().getLoadBalancers().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
@@ -126,12 +121,6 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     public boolean hasAnyOneToBeDropped(final DropReadwriteSplittingRuleStatement sqlStatement) {
         return !Collections.disjoint(
                 rule.getConfiguration().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getNames());
-    }
-    
-    @Override
-    public void operate(final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) {
-        database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)
-                .ifPresent(optional -> sqlStatement.getNames().forEach(groupName -> optional.getStaticDataSourceRule().cleanStorageNodeDataSource(groupName)));
     }
     
     @Override
