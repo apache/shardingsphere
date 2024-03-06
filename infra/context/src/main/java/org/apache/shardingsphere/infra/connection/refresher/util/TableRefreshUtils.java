@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
@@ -62,8 +63,13 @@ public final class TableRefreshUtils {
      * @return whether single table
      */
     public static boolean isSingleTable(final String tableName, final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().getRules().stream()
-                .map(each -> each.getRuleIdentifiers().findIdentifier(TableMapperRule.class)).anyMatch(each -> each.isPresent() && each.get().getDistributedTableMapper().contains(tableName));
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            Optional<TableMapperRule> tableMapperRule = each.getRuleIdentifiers().findIdentifier(TableMapperRule.class);
+            if (tableMapperRule.isPresent() && tableMapperRule.get().getDistributedTableMapper().contains(tableName)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
