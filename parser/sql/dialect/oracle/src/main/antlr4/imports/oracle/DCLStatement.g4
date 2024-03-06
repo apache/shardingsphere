@@ -379,7 +379,6 @@ createUserOption
     | containerOption
     ;
 
-
 collationOption
     : DEFAULT COLLATION collationName
     ;
@@ -411,6 +410,7 @@ accountOption
 containerOption
     : CONTAINER EQ_ (CURRENT | ALL)
     ;
+
 dropUser
     : DROP USER username CASCADE?
     ;
