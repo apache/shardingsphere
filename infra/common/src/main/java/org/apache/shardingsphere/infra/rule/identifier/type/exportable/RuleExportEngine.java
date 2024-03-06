@@ -58,14 +58,4 @@ public final class RuleExportEngine {
     public Optional<Object> export(final String key) {
         return Optional.ofNullable(rule.getExportData().get(key));
     }
-    
-    /**
-     * Whether the current rule contains the specified key.
-     *
-     * @param keys specified keys
-     * @return contain or not
-     */
-    public boolean containExportableKey(final Collection<String> keys) {
-        return keys.stream().anyMatch(each -> rule.getExportData().containsKey(each));
-    }
 }
