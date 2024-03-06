@@ -39,14 +39,14 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQL
     
     public MySQLComQueryPacket(final String sql) {
         super(MySQLCommandPacketType.COM_QUERY);
-        hintValueContext = SQLHintUtils.extractHint(sql).orElseGet(HintValueContext::new);
+        hintValueContext = SQLHintUtils.extractHint(sql);
         this.sql = SQLHintUtils.removeHint(sql);
     }
     
     public MySQLComQueryPacket(final MySQLPacketPayload payload) {
         super(MySQLCommandPacketType.COM_QUERY);
         String originSQL = payload.readStringEOF();
-        hintValueContext = SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        hintValueContext = SQLHintUtils.extractHint(originSQL);
         sql = SQLHintUtils.removeHint(originSQL);
     }
     

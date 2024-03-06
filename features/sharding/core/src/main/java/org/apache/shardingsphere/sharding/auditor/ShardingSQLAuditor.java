@@ -43,7 +43,7 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
         if (auditStrategies.isEmpty()) {
             return;
         }
-        Collection<String> disableAuditNames = hintValueContext.findDisableAuditNames();
+        Collection<String> disableAuditNames = hintValueContext.getDisableAuditNames();
         for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
             for (String auditorName : auditStrategy.getAuditorNames()) {
                 if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(auditorName.toLowerCase())) {

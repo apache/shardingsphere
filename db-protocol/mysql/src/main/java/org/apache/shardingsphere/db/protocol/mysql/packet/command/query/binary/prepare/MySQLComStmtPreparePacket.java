@@ -40,7 +40,7 @@ public final class MySQLComStmtPreparePacket extends MySQLCommandPacket implemen
     public MySQLComStmtPreparePacket(final MySQLPacketPayload payload) {
         super(MySQLCommandPacketType.COM_STMT_PREPARE);
         String originSQL = payload.readStringEOF();
-        hintValueContext = SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        hintValueContext = SQLHintUtils.extractHint(originSQL);
         sql = SQLHintUtils.removeHint(originSQL);
     }
     
