@@ -39,7 +39,7 @@ public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket impl
     public PostgreSQLComQueryPacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
         String originSQL = payload.readStringNul();
-        hintValueContext = SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        hintValueContext = SQLHintUtils.extractHint(originSQL);
         sql = SQLHintUtils.removeHint(originSQL);
     }
     

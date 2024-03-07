@@ -90,7 +90,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     public Collection<LocalDataQueryResultRow> getRows(final PreviewStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         String toBePreviewedSQL = SQLHintUtils.removeHint(sqlStatement.getSql());
-        HintValueContext hintValueContext = SQLHintUtils.extractHint(sqlStatement.getSql()).orElseGet(HintValueContext::new);
+        HintValueContext hintValueContext = SQLHintUtils.extractHint(sqlStatement.getSql());
         SQLStatement toBePreviewedStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType()).parse(toBePreviewedSQL, false);
         SQLStatementContext toBePreviewedStatementContext = new SQLBindEngine(metaData, database.getName(), hintValueContext).bind(toBePreviewedStatement, Collections.emptyList());
         QueryContext queryContext = new QueryContext(toBePreviewedStatementContext, toBePreviewedSQL, Collections.emptyList(), hintValueContext);

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -56,10 +54,8 @@ import org.apache.shardingsphere.proxy.backend.exception.MissingDatabaseNameExce
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.EncryptRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.MaskRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShadowRuleConfigurationImportChecker;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
@@ -79,8 +75,6 @@ import java.util.stream.Collectors;
  */
 public final class YamlDatabaseConfigurationImportExecutor {
     
-    private final EncryptRuleConfigurationImportChecker encryptRuleConfigImportChecker = new EncryptRuleConfigurationImportChecker();
-    
     private final ShadowRuleConfigurationImportChecker shadowRuleConfigImportChecker = new ShadowRuleConfigurationImportChecker();
     
     private final MaskRuleConfigurationImportChecker maskRuleConfigImportChecker = new MaskRuleConfigurationImportChecker();
@@ -99,7 +93,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         checkDatabase(databaseName);
         checkDataSources(yamlConfig.getDataSources());
         addDatabase(databaseName);
-        addDataSouces(databaseName, yamlConfig.getDataSources());
+        addDataSources(databaseName, yamlConfig.getDataSources());
         try {
             addRules(databaseName, yamlConfig.getRules());
         } catch (final DistSQLException ex) {
@@ -127,7 +121,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType, contextManager.getMetaDataContexts().getMetaData().getProps());
     }
     
-    private void addDataSouces(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
+    private void addDataSources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
         Map<String, DataSourcePoolProperties> propsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1F);
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
             DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
@@ -163,14 +157,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
             return;
         }
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
-        if (ruleConfig instanceof ShardingRuleConfiguration || ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
-            ImportRuleConfigurationProvider provider = TypedSPILoader.getService(ImportRuleConfigurationProvider.class, ruleConfig.getClass());
-            provider.check(database, ruleConfig);
-            ruleConfigs.add(ruleConfig);
-            database.getRuleMetaData().getRules().add(provider.build(database, ruleConfig, instanceContext));
-        } else if (ruleConfig instanceof EncryptRuleConfiguration) {
-            addEncryptRuleConfiguration((EncryptRuleConfiguration) ruleConfig, ruleConfigs, database);
-        } else if (ruleConfig instanceof ShadowRuleConfiguration) {
+        if (ruleConfig instanceof ShadowRuleConfiguration) {
             addShadowRuleConfiguration((ShadowRuleConfiguration) ruleConfig, ruleConfigs, database);
         } else if (ruleConfig instanceof MaskRuleConfiguration) {
             addMaskRuleConfiguration((MaskRuleConfiguration) ruleConfig, ruleConfigs, database);
@@ -178,6 +165,11 @@ public final class YamlDatabaseConfigurationImportExecutor {
             addBroadcastRuleConfiguration((BroadcastRuleConfiguration) ruleConfig, ruleConfigs, database);
         } else if (ruleConfig instanceof SingleRuleConfiguration) {
             addSingleRuleConfiguration((SingleRuleConfiguration) ruleConfig, ruleConfigs, database);
+        } else {
+            ImportRuleConfigurationProvider provider = TypedSPILoader.getService(ImportRuleConfigurationProvider.class, ruleConfig.getClass());
+            provider.check(database, ruleConfig);
+            ruleConfigs.add(ruleConfig);
+            database.getRuleMetaData().getRules().add(provider.build(database, ruleConfig, instanceContext));
         }
     }
     
@@ -192,16 +184,10 @@ public final class YamlDatabaseConfigurationImportExecutor {
         return result;
     }
     
-    private void addEncryptRuleConfiguration(final EncryptRuleConfiguration ruleConfig, final Collection<RuleConfiguration> ruleConfigs, final ShardingSphereDatabase database) {
-        encryptRuleConfigImportChecker.check(database, ruleConfig);
-        ruleConfigs.add(ruleConfig);
-        database.getRuleMetaData().getRules().add(new EncryptRule(database.getName(), ruleConfig));
-    }
-    
-    private void addShadowRuleConfiguration(final ShadowRuleConfiguration ruleConfig, final Collection<RuleConfiguration> ruleConfigs, final ShardingSphereDatabase database) {
-        shadowRuleConfigImportChecker.check(database, ruleConfig);
-        ruleConfigs.add(ruleConfig);
-        database.getRuleMetaData().getRules().add(new ShadowRule(ruleConfig));
+    private void addShadowRuleConfiguration(final ShadowRuleConfiguration shadowRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
+        shadowRuleConfigImportChecker.check(database, shadowRuleConfig);
+        allRuleConfigs.add(shadowRuleConfig);
+        database.getRuleMetaData().getRules().add(new ShadowRule(shadowRuleConfig));
     }
     
     private void addMaskRuleConfiguration(final MaskRuleConfiguration ruleConfig, final Collection<RuleConfiguration> ruleConfigs, final ShardingSphereDatabase database) {
