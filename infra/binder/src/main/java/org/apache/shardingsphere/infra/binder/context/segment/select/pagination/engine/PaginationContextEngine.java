@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
@@ -50,7 +50,7 @@ public final class PaginationContextEngine {
      * @param whereSegments where segments
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final SelectStatement selectStatement, final ProjectionsContext projectionsContext,
+    public PaginationContext createPaginationContext(final GenericSelectStatement selectStatement, final ProjectionsContext projectionsContext,
                                                      final List<Object> params, final Collection<WhereSegment> whereSegments) {
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         if (limitSegment.isPresent()) {
@@ -70,14 +70,14 @@ public final class PaginationContextEngine {
         return new PaginationContext(null, null, params);
     }
     
-    private boolean containsRowNumberPagination(final SelectStatement selectStatement) {
+    private boolean containsRowNumberPagination(final GenericSelectStatement selectStatement) {
         return selectStatement instanceof OracleStatement || selectStatement instanceof SQLServerStatement;
     }
     
-    private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {
+    private Optional<TopProjectionSegment> findTopProjection(final GenericSelectStatement selectStatement) {
         List<SubqueryTableSegment> subqueryTableSegments = SQLUtils.getSubqueryTableSegmentFromTableSegment(selectStatement.getFrom());
         for (SubqueryTableSegment subquery : subqueryTableSegments) {
-            SelectStatement subquerySelect = subquery.getSubquery().getSelect();
+            GenericSelectStatement subquerySelect = subquery.getSubquery().getSelect();
             for (ProjectionSegment each : subquerySelect.getProjections().getProjections()) {
                 if (each instanceof TopProjectionSegment) {
                     return Optional.of((TopProjectionSegment) each);

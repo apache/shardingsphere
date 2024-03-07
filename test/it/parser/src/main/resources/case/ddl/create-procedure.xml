@@ -40,7 +40,7 @@
     <create-procedure sql-case-id="create_procedure_with_cursor_definition">
         <procedure-name name="my_proc" />
         <sql-statements>
-            <sql-statement start-index="69" stop-index="94" statement-class-simple-name="OracleSelectStatement" />
+            <sql-statement start-index="69" stop-index="94" statement-class-simple-name="OracleGenericSelectStatement" />
             <sql-statement start-index="143" stop-index="175" statement-class-simple-name="OracleInsertStatement" />
         </sql-statements>
     </create-procedure>

@@ -42,7 +42,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.Pa
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -104,7 +104,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     private void initResultNum(final SQLStatementContext sqlStatementContext) {
         resultNum = 0;
         maxLimitResultSize = HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.MAX_SCAN_LIMIT_SIZE);
-        Optional<PaginationValueSegment> paginationSegment = ((MySQLSelectStatement) sqlStatementContext.getSqlStatement()).getLimit().flatMap(LimitSegment::getRowCount);
+        Optional<PaginationValueSegment> paginationSegment = ((MySQLGenericSelectStatement) sqlStatementContext.getSqlStatement()).getLimit().flatMap(LimitSegment::getRowCount);
         paginationSegment.ifPresent(optional -> maxLimitResultSize = Math.min(maxLimitResultSize, ((NumberLiteralLimitValueSegment) optional).getValue()));
     }
     
@@ -217,7 +217,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     }
     
     @Override
-    public Class<MySQLSelectStatement> getType() {
-        return MySQLSelectStatement.class;
+    public Class<MySQLGenericSelectStatement> getType() {
+        return MySQLGenericSelectStatement.class;
     }
 }

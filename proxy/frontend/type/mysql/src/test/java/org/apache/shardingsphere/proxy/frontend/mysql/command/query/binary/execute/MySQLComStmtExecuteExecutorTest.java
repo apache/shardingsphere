@@ -52,7 +52,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -120,8 +120,8 @@ class MySQLComStmtExecuteExecutorTest {
         return result;
     }
     
-    private MySQLSelectStatement prepareSelectStatement() {
-        MySQLSelectStatement result = new MySQLSelectStatement();
+    private MySQLGenericSelectStatement prepareSelectStatement() {
+        MySQLGenericSelectStatement result = new MySQLGenericSelectStatement();
         result.setProjections(new ProjectionsSegment(0, 0));
         return result;
     }

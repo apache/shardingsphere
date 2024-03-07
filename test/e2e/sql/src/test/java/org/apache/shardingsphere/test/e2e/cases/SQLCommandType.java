@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.util.Arrays;
@@ -46,7 +46,7 @@ public enum SQLCommandType {
      * 
      * <p>Such as {@code SELECT}.</p>
      */
-    DQL(SelectStatement.class, "dql-integration", false, Arrays.asList("jdbc", "proxy")),
+    DQL(GenericSelectStatement.class, "dql-integration", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Data Manipulation Language.

@@ -26,12 +26,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -46,7 +46,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentIsPresentForMySQL() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -57,7 +57,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentIsPresentForPostgreSQL() {
-        PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
+        PostgreSQLGenericSelectStatement selectStatement = new PostgreSQLGenericSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -68,7 +68,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentIsPresentForSQL92() {
-        SQL92SelectStatement selectStatement = new SQL92SelectStatement();
+        SQL92GenericSelectStatement selectStatement = new SQL92GenericSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -79,7 +79,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentIsPresentForSQLServer() {
-        SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
+        SQLServerGenericSelectStatement selectStatement = new SQLServerGenericSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -90,10 +90,10 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentAbsentAndTopSegmentPresent() {
-        SQLServerSelectStatement subquerySelectStatement = new SQLServerSelectStatement();
+        SQLServerGenericSelectStatement subquerySelectStatement = new SQLServerGenericSelectStatement();
         subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
         subquerySelectStatement.getProjections().getProjections().add(new TopProjectionSegment(0, 10, null, "rowNumberAlias"));
-        SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
+        SQLServerGenericSelectStatement selectStatement = new SQLServerGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""), ""));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -104,7 +104,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentTopSegmentAbsentAndWhereSegmentPresent() {
-        SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
+        SQLServerGenericSelectStatement selectStatement = new SQLServerGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         WhereSegment where = new WhereSegment(0, 10, null);
         selectStatement.setWhere(where);
@@ -117,30 +117,30 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForMySQL() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new MySQLSelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new MySQLGenericSelectStatement());
     }
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForOracle() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new OracleSelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new OracleGenericSelectStatement());
     }
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForPostgreSQL() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new PostgreSQLSelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new PostgreSQLGenericSelectStatement());
     }
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForSQL92() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new SQL92SelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new SQL92GenericSelectStatement());
     }
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForSQLServer() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new SQLServerSelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new SQLServerGenericSelectStatement());
     }
     
-    private void assertCreatePaginationContextWhenResultIsPaginationContext(final SelectStatement selectStatement) {
+    private void assertCreatePaginationContextWhenResultIsPaginationContext(final GenericSelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         assertThat(new PaginationContextEngine().createPaginationContext(

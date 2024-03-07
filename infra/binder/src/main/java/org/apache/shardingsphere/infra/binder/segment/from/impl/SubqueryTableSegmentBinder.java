@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -58,7 +58,7 @@ public final class SubqueryTableSegmentBinder {
     public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final SQLStatementBinderContext statementBinderContext,
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         fillPivotColumnNamesInBinderContext(segment, statementBinderContext);
-        SelectStatement boundedSelect = new SelectStatementBinder().bindCorrelateSubquery(segment.getSubquery().getSelect(), statementBinderContext.getMetaData(),
+        GenericSelectStatement boundedSelect = new SelectStatementBinder().bindCorrelateSubquery(segment.getSubquery().getSelect(), statementBinderContext.getMetaData(),
                 statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts, statementBinderContext.getExternalTableBinderContexts());
         SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect, segment.getSubquery().getText());
         boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());

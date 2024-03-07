@@ -221,7 +221,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeS
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
@@ -344,7 +344,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleSystemActionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.CursorForLoopStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureCallNameSegment;
@@ -371,7 +371,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
         getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
-        result.setSelect((SelectStatement) visitor.visit(ctx.select()));
+        result.setSelect((GenericSelectStatement) visitor.visit(ctx.select()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.addParameterMarkerSegments(getGlobalParameterMarkerSegments());
         return result;
@@ -1628,7 +1628,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitSelectIntoStatement(final SelectIntoStatementContext ctx) {
         // TODO Visit intoClause
         OracleStatementVisitor visitor = createOracleDMLStatementVisitor();
-        OracleSelectStatement result = (OracleSelectStatement) visitor.visitSelectIntoStatement(ctx);
+        OracleGenericSelectStatement result = (OracleGenericSelectStatement) visitor.visitSelectIntoStatement(ctx);
         getSqlStatementsInPlsql().add(new SQLStatementSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), result));
         addToTempCursorForLoopStatements(result);
         return result;

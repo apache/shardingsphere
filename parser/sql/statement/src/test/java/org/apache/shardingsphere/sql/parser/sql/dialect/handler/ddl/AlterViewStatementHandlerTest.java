@@ -19,15 +19,15 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -41,8 +41,8 @@ class AlterViewStatementHandlerTest {
     @Test
     void assertGetSelectStatementWithSelectStatementForMySQL() {
         MySQLAlterViewStatement alterViewStatement = new MySQLAlterViewStatement();
-        alterViewStatement.setSelect(new MySQLSelectStatement());
-        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
+        alterViewStatement.setSelect(new MySQLGenericSelectStatement());
+        Optional<GenericSelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
         assertTrue(selectStatement.isPresent());
     }
     
@@ -86,7 +86,7 @@ class AlterViewStatementHandlerTest {
         assertFalse(AlterViewStatementHandler.getSelectStatement(new OracleAlterViewStatement()).isPresent());
         assertFalse(AlterViewStatementHandler.getSelectStatement(new PostgreSQLAlterViewStatement()).isPresent());
         SQLServerAlterViewStatement alterViewStatement = new SQLServerAlterViewStatement();
-        alterViewStatement.setSelect(mock(SQLServerSelectStatement.class));
+        alterViewStatement.setSelect(mock(SQLServerGenericSelectStatement.class));
         assertTrue(AlterViewStatementHandler.getSelectStatement(alterViewStatement).isPresent());
     }
     

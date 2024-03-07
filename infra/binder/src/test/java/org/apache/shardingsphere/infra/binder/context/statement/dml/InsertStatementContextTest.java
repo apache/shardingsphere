@@ -39,10 +39,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
@@ -160,7 +160,7 @@ class InsertStatementContextTest {
     @Test
     void assertInsertSelect() {
         InsertStatement insertStatement = new MySQLInsertStatement();
-        SelectStatement selectStatement = new MySQLSelectStatement();
+        GenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.addParameterMarkerSegments(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement, "");

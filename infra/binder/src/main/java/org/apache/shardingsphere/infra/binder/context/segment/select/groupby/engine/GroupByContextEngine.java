@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.Gro
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,7 +37,7 @@ public final class GroupByContextEngine {
      * @param selectStatement select statement
      * @return group by context
      */
-    public GroupByContext createGroupByContext(final SelectStatement selectStatement) {
+    public GroupByContext createGroupByContext(final GenericSelectStatement selectStatement) {
         if (!selectStatement.getGroupBy().isPresent()) {
             return new GroupByContext(new LinkedList<>());
         }

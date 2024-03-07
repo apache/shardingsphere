@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
@@ -67,8 +67,8 @@ public final class DMLStatementAssert {
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DMLStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof SelectStatement) {
-            SelectStatementAssert.assertIs(assertContext, (SelectStatement) actual, (SelectStatementTestCase) expected);
+        if (actual instanceof GenericSelectStatement) {
+            SelectStatementAssert.assertIs(assertContext, (GenericSelectStatement) actual, (SelectStatementTestCase) expected);
         } else if (actual instanceof UpdateStatement) {
             UpdateStatementAssert.assertIs(assertContext, (UpdateStatement) actual, (UpdateStatementTestCase) expected);
         } else if (actual instanceof MergeStatement) {

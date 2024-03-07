@@ -52,7 +52,7 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQL
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -123,7 +123,7 @@ class MySQLComStmtPrepareExecutorTest {
         MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLGenericSelectStatement.class));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
     }
     

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 /**
@@ -38,8 +38,8 @@ public final class HBaseCheckerFactory {
      * @return created instance
      */
     public static HeterogeneousSQLStatementChecker newInstance(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return new HeterogeneousSelectStatementChecker((SelectStatement) sqlStatement);
+        if (sqlStatement instanceof GenericSelectStatement) {
+            return new HeterogeneousSelectStatementChecker((GenericSelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new HeterogeneousInsertStatementChecker((InsertStatement) sqlStatement);

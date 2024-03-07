@@ -37,7 +37,7 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -81,7 +81,7 @@ class SelectInformationSchemataExecutorTest {
     
     private final String sql = "SELECT SCHEMA_NAME, DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA";
     
-    private SelectStatement statement;
+    private GenericSelectStatement statement;
     
     @Mock
     private ConnectionSession connectionSession;
@@ -89,7 +89,7 @@ class SelectInformationSchemataExecutorTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getGrantee()).thenReturn(grantee);
-        statement = (SelectStatement) new SQLParserRule(
+        statement = (GenericSelectStatement) new SQLParserRule(
                 new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
     }
     

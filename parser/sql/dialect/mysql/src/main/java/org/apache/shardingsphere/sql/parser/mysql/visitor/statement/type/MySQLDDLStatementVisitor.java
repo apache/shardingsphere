@@ -186,7 +186,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 
 import java.util.Collection;
@@ -205,7 +205,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         MySQLCreateViewStatement result = new MySQLCreateViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
-        result.setSelect((MySQLSelectStatement) visit(ctx.select()));
+        result.setSelect((MySQLGenericSelectStatement) visit(ctx.select()));
         return result;
     }
     
@@ -214,7 +214,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         MySQLAlterViewStatement result = new MySQLAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
-        result.setSelect((MySQLSelectStatement) visit(ctx.select()));
+        result.setSelect((MySQLGenericSelectStatement) visit(ctx.select()));
         return result;
     }
     
@@ -816,7 +816,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         } else if (null != ctx.delete()) {
             sqlStatement = (MySQLDeleteStatement) visit(ctx.delete());
         } else if (null != ctx.select()) {
-            sqlStatement = (MySQLSelectStatement) visit(ctx.select());
+            sqlStatement = (MySQLGenericSelectStatement) visit(ctx.select());
         }
         result.setSqlStatement(sqlStatement);
         return result;

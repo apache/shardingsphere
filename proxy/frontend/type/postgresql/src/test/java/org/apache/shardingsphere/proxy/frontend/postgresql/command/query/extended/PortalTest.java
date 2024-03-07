@@ -57,7 +57,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLEmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -149,7 +149,7 @@ class PortalTest {
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSelectStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new PostgreSQLGenericSelectStatement());
         PostgreSQLServerPreparedStatement preparedStatement =
                 new PostgreSQLServerPreparedStatement("", sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
@@ -183,7 +183,7 @@ class PortalTest {
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSelectStatement());
+        when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLGenericSelectStatement());
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", selectStatementContext, new HintValueContext(), Collections.emptyList(),
                 Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
