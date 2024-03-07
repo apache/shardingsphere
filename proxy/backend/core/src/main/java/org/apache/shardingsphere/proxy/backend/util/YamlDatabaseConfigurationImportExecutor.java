@@ -152,9 +152,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        if (null == ruleConfig) {
-            return;
-        }
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         if (ruleConfig instanceof ShadowRuleConfiguration) {
             addShadowRuleConfiguration((ShadowRuleConfiguration) ruleConfig, ruleConfigs, database);
