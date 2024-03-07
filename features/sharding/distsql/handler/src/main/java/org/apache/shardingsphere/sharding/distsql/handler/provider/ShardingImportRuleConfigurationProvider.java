@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -61,41 +60,36 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
             return;
         }
         ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ruleConfig;
-        String databaseName = database.getName();
-        checkLogicTables(databaseName, shardingRuleConfig);
-        checkResources(databaseName, database, shardingRuleConfig);
+        checkLogicTables(database.getName(), shardingRuleConfig);
+        checkDataSources(database, shardingRuleConfig);
         checkShardingAlgorithms(shardingRuleConfig.getShardingAlgorithms().values());
         checkKeyGeneratorAlgorithms(shardingRuleConfig.getKeyGenerators().values());
     }
     
     @Override
     public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
-        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ruleConfig;
         Map<String, DataSource> dataSources = database.getResourceMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new ShardingRule(shardingRuleConfig, dataSources, instanceContext);
+        return new ShardingRule((ShardingRuleConfiguration) ruleConfig, dataSources, instanceContext);
     }
     
     private void checkLogicTables(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> tablesLogicTables = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
-        Collection<String> autoTablesLogicTables = currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
-        Collection<String> allLogicTables = new LinkedList<>();
-        allLogicTables.addAll(tablesLogicTables);
-        allLogicTables.addAll(autoTablesLogicTables);
-        Set<String> duplicatedLogicTables = allLogicTables.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
+        Collection<String> logicTables = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
+        logicTables.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        Set<String> duplicatedLogicTables = logicTables.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(duplicatedLogicTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedLogicTables));
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
-        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(requiredResource);
-        Collection<String> logicResources = getLogicResources(database);
-        notExistedResources.removeIf(logicResources::contains);
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));
+    private void checkDataSources(final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> requiredDataSources = getRequiredDataSources(currentRuleConfig);
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
+        Collection<String> logicDataSources = getLogicDataSources(database);
+        notExistedDataSources.removeIf(logicDataSources::contains);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
     }
     
-    private Collection<String> getRequiredResources(final ShardingRuleConfiguration currentRuleConfig) {
+    private Collection<String> getRequiredDataSources(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         currentRuleConfig.getTables().forEach(each -> result.addAll(getDataSourceNames(each)));
         currentRuleConfig.getAutoTables().forEach(each -> result.addAll(getDataSourceNames(each)));
@@ -112,7 +106,7 @@ public final class ShardingImportRuleConfigurationProvider implements ImportRule
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
-    private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
+    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
         Collection<String> result = new LinkedHashSet<>();
         for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
             each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class).ifPresent(optional -> result.addAll(optional.getDataSourceMapper().keySet()));

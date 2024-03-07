@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 
 /**
- * Unsupported variable exception.
+ * Missing database name exception.
  */
-public final class UnsupportedVariableException extends SyntaxSQLException {
+public final class MissingDatabaseNameException extends DistSQLException {
     
-    private static final long serialVersionUID = 1955281568807066737L;
+    private static final long serialVersionUID = -1248634756191801109L;
     
-    public UnsupportedVariableException(final String variable) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 14, "Can not support variable `%s`.", variable);
+    public MissingDatabaseNameException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 8, "Missing required property `databaseName`.");
     }
 }
