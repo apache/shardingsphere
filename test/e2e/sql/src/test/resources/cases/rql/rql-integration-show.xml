@@ -95,13 +95,13 @@
         <assertion expected-data-file="show_single_table_rules.xml" />
     </test-case>
     
-    <!-- TODO add db,tbl,dbtbl_with_readwrite_splitting scenario when use standard table -->
-    <test-case sql="SHOW SINGLE TABLE t_single_table" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO add db,tbl,dbtbl_with_readwrite_splitting,encrypt scenario when use standard table -->
+    <test-case sql="SHOW SINGLE TABLE t_single_table" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="show_single_table.xml" />
     </test-case>
     
-    <!-- TODO add db,tbl,dbtbl_with_readwrite_splitting scenario when use standard table -->
-    <test-case sql="SHOW SINGLE TABLES" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO add db,tbl,dbtbl_with_readwrite_splitting,encrypt scenario when use standard table -->
+    <test-case sql="SHOW SINGLE TABLES" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="show_single_tables.xml" />
     </test-case>
     
