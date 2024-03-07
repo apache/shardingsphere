@@ -22,11 +22,11 @@ import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -66,7 +66,7 @@ public class ClasspathResourceDirectoryReader {
      * @param name resource name
      * @return true if the resource is a directory; false if the resource does not exist, is not a directory, or it cannot be determined if the resource is a directory or not.
      */
-    @SneakyThrows({IOException.class, URISyntaxException.class})
+    @SneakyThrows(URISyntaxException.class)
     public static boolean isDirectory(final ClassLoader classLoader, final String name) {
         URL resourceUrl = classLoader.getResource(name);
         if (null == resourceUrl) {
@@ -79,18 +79,13 @@ public class ClasspathResourceDirectoryReader {
             }
             return jarFile.getJarEntry(name).isDirectory();
         } else {
-            if ("resourceUrl".equals(resourceUrl.getProtocol())) {
-                try (FileSystem ignored = FileSystems.newFileSystem(URI.create("resource:/"), Collections.emptyMap())) {
-                    return Files.isDirectory(Paths.get(resourceUrl.toURI()));
-                }
-            }
             return Files.isDirectory(Paths.get(resourceUrl.toURI()));
         }
     }
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
-     *
+     * <p>The name of a resource directory is a /-separated path name</p>
      * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param directory directory
@@ -105,7 +100,7 @@ public class ClasspathResourceDirectoryReader {
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
-     *
+     * <p>The name of a resource directory is a /-separated path name</p>
      * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param classLoader class loader
@@ -125,7 +120,7 @@ public class ClasspathResourceDirectoryReader {
             if (JAR_URL_PROTOCOLS.contains(directoryUrl.getProtocol())) {
                 return readDirectoryInJar(directory, directoryUrl);
             } else {
-                return readDirectoryInFileSystem(directoryUrl);
+                return readDirectoryInFileSystem(directory, directoryUrl);
             }
         });
     }
@@ -135,13 +130,7 @@ public class ClasspathResourceDirectoryReader {
         if (null == jar) {
             return Stream.empty();
         }
-        return jar.stream().filter(jarEntry -> jarEntry.getName().startsWith(directory) && !jarEntry.isDirectory()).map(JarEntry::getName).onClose(() -> {
-            try {
-                jar.close();
-            } catch (final IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        return jar.stream().filter(each -> each.getName().startsWith(directory) && !each.isDirectory()).map(JarEntry::getName);
     }
     
     @SneakyThrows(IOException.class)
@@ -162,24 +151,42 @@ public class ClasspathResourceDirectoryReader {
      * This is mainly to align the behavior of `jdk.nio.zipfs.ZipFileSystem`,
      * so ShardingSphere need to manually open and close the FileSystem corresponding to the `resource:/` scheme.
      * For more background reference <a href="https://github.com/oracle/graal/issues/7682">oracle/graal#7682</a>.
+     * Under the context of third-party dependencies such as Spring Framework OSS,
+     * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystem` will be automatically created during the life cycle of the context,
+     * so additional determination is required.
      *
+     * @param directory directory
      * @param directoryUrl directory url
      * @return stream of resource name
      */
     @SneakyThrows({IOException.class, URISyntaxException.class})
-    private static Stream<String> readDirectoryInFileSystem(final URL directoryUrl) {
-        if ("resource".equals(directoryUrl.getProtocol())) {
-            try (FileSystem ignored = FileSystems.newFileSystem(URI.create("resource:/"), Collections.emptyMap())) {
-                return loadFromDirectory(directoryUrl);
-            }
+    private static Stream<String> readDirectoryInFileSystem(final String directory, final URL directoryUrl) {
+        try {
+            return loadFromDirectory(directory, directoryUrl);
+        } catch (final FileSystemNotFoundException ignore) {
+            FileSystem fileSystem = FileSystems.newFileSystem(directoryUrl.toURI(), Collections.emptyMap());
+            return loadFromDirectory(directory, directoryUrl).onClose(() -> {
+                try {
+                    fileSystem.close();
+                } catch (final IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
         }
-        return loadFromDirectory(directoryUrl);
     }
     
-    private static Stream<String> loadFromDirectory(final URL directoryUrl) throws URISyntaxException, IOException {
+    private static Stream<String> loadFromDirectory(final String directory, final URL directoryUrl) throws URISyntaxException, IOException {
         Path directoryPath = Paths.get(directoryUrl.toURI());
         // noinspection resource
         Stream<Path> walkStream = Files.find(directoryPath, Integer.MAX_VALUE, (path, basicFileAttributes) -> !basicFileAttributes.isDirectory(), FileVisitOption.FOLLOW_LINKS);
-        return walkStream.map(path -> path.subpath(directoryPath.getNameCount() - 1, path.getNameCount()).toString());
+        return walkStream.map(path -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(directory);
+            for (Path each : path.subpath(directoryPath.getNameCount(), path.getNameCount())) {
+                stringBuilder.append("/");
+                stringBuilder.append(each);
+            }
+            return stringBuilder.toString();
+        });
     }
 }

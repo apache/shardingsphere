@@ -112,7 +112,8 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             }
             Collection<PipelineIndexMetaData> uniqueIndexMetaData = uniqueKeys.entrySet().stream()
                     .map(entry -> new PipelineIndexMetaData(entry.getKey(), entry.getValue().stream().map(columnMetaDataMap::get).collect(Collectors.toList()))).collect(Collectors.toList());
-            result.put(new CaseInsensitiveIdentifier(each), new PipelineTableMetaData(each, columnMetaDataMap, uniqueIndexMetaData));
+            result.put(new CaseInsensitiveIdentifier(each), new PipelineTableMetaData(each,
+                    columnMetaDataMap.entrySet().stream().collect(Collectors.toMap(entry -> new CaseInsensitiveIdentifier(entry.getKey()), Entry::getValue)), uniqueIndexMetaData));
         }
         return result;
     }

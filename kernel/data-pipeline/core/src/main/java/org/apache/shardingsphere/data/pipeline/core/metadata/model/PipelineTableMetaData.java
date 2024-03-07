@@ -24,6 +24,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +45,7 @@ public final class PipelineTableMetaData {
     @NonNull
     private final String name;
     
-    private final Map<String, PipelineColumnMetaData> columnMetaDataMap;
+    private final Map<CaseInsensitiveIdentifier, PipelineColumnMetaData> columnMetaDataMap;
     
     @Getter
     private final List<String> columnNames;
@@ -55,7 +56,7 @@ public final class PipelineTableMetaData {
     @Getter
     private final Collection<PipelineIndexMetaData> uniqueIndexes;
     
-    public PipelineTableMetaData(final String name, final Map<String, PipelineColumnMetaData> columnMetaDataMap, final Collection<PipelineIndexMetaData> uniqueIndexes) {
+    public PipelineTableMetaData(final String name, final Map<CaseInsensitiveIdentifier, PipelineColumnMetaData> columnMetaDataMap, final Collection<PipelineIndexMetaData> uniqueIndexes) {
         this.name = name;
         this.columnMetaDataMap = columnMetaDataMap;
         List<PipelineColumnMetaData> columnMetaDataList = new ArrayList<>(columnMetaDataMap.values());
@@ -84,7 +85,7 @@ public final class PipelineTableMetaData {
      * @return column meta data
      */
     public PipelineColumnMetaData getColumnMetaData(final String columnName) {
-        PipelineColumnMetaData result = columnMetaDataMap.get(columnName);
+        PipelineColumnMetaData result = columnMetaDataMap.get(new CaseInsensitiveIdentifier(columnName));
         if (null == result) {
             log.warn("Can not get column meta data for column name '{}', columnNames={}", columnName, columnNames);
         }
