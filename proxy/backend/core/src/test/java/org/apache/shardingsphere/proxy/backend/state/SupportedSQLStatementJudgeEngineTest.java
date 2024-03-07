@@ -43,7 +43,8 @@ class SupportedSQLStatementJudgeEngineTest {
     
     @Test
     void assertIsSupportedWithOverlappedList() {
-        assertTrue(new SupportedSQLStatementJudgeEngine(Collections.singleton(GenericSelectStatement.class), Collections.singleton(SQLStatement.class)).isSupported(mock(GenericSelectStatement.class)));
+        assertTrue(
+                new SupportedSQLStatementJudgeEngine(Collections.singleton(GenericSelectStatement.class), Collections.singleton(SQLStatement.class)).isSupported(mock(GenericSelectStatement.class)));
     }
     
     @Test
