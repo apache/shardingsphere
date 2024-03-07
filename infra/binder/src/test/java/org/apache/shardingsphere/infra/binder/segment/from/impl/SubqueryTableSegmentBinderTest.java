@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -61,7 +61,7 @@ class SubqueryTableSegmentBinderTest {
     
     @Test
     void assertBindWithSubqueryTableAlias() {
-        MySQLSimpleSelectStatement selectStatement = mock(MySQLSimpleSelectStatement.class);
+        MySQLGenericSelectStatement selectStatement = mock(MySQLGenericSelectStatement.class);
         when(selectStatement.getDatabaseType()).thenReturn(databaseType);
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
@@ -93,7 +93,7 @@ class SubqueryTableSegmentBinderTest {
     
     @Test
     void assertBindWithSubqueryProjectionAlias() {
-        MySQLSimpleSelectStatement selectStatement = mock(MySQLSimpleSelectStatement.class);
+        MySQLGenericSelectStatement selectStatement = mock(MySQLGenericSelectStatement.class);
         when(selectStatement.getDatabaseType()).thenReturn(databaseType);
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
@@ -119,7 +119,7 @@ class SubqueryTableSegmentBinderTest {
     
     @Test
     void assertBindWithoutSubqueryTableAlias() {
-        MySQLSimpleSelectStatement selectStatement = mock(MySQLSimpleSelectStatement.class);
+        MySQLGenericSelectStatement selectStatement = mock(MySQLGenericSelectStatement.class);
         when(selectStatement.getDatabaseType()).thenReturn(databaseType);
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);

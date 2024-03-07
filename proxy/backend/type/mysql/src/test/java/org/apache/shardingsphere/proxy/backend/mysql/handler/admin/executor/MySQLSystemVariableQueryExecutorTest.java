@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -45,7 +45,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertTryGetSystemVariableQueryExecutorWithOtherExpressionProjection() {
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         VariableSegment variable = new VariableSegment(0, 0, "max_connections");
         variable.setScope("session");
@@ -56,7 +56,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertTryGetSystemVariableQueryExecutorWithUnknownVariable() {
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@unknown_variable", new VariableSegment(0, 0, "unknown_variable")));
         assertFalse(MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement).isPresent());
@@ -64,7 +64,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertTryGetSystemVariableQueryExecutorAndExecuteWithCorrectScope() throws SQLException {
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         VariableSegment maxConnectionsVariable = new VariableSegment(0, 0, "max_connections");
         maxConnectionsVariable.setScope("global");
@@ -94,7 +94,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertExecuteWithIncorrectScope() {
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         VariableSegment variable = new VariableSegment(0, 0, "max_connections");
         variable.setScope("session");

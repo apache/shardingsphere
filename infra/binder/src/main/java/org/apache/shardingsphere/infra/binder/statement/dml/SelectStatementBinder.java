@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collections;
@@ -38,18 +38,18 @@ import java.util.Map;
 /**
  * Select statement binder.
  */
-public final class SelectStatementBinder implements SQLStatementBinder<SimpleSelectStatement> {
+public final class SelectStatementBinder implements SQLStatementBinder<GenericSelectStatement> {
     
     @SneakyThrows
     @Override
-    public SimpleSelectStatement bind(final SimpleSelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    public GenericSelectStatement bind(final GenericSelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap(), Collections.emptyMap());
     }
     
     @SneakyThrows
-    private SimpleSelectStatement bind(final SimpleSelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                       final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
-        SimpleSelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private GenericSelectStatement bind(final GenericSelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                        final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+        GenericSelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
@@ -84,9 +84,9 @@ public final class SelectStatementBinder implements SQLStatementBinder<SimpleSel
      * @return bounded correlate subquery select statement
      */
     @SneakyThrows
-    public SimpleSelectStatement bindCorrelateSubquery(final SimpleSelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                                       final Map<String, TableSegmentBinderContext> outerTableBinderContexts,
-                                                       final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+    public GenericSelectStatement bindCorrelateSubquery(final GenericSelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                                        final Map<String, TableSegmentBinderContext> outerTableBinderContexts,
+                                                        final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         return bind(sqlStatement, metaData, defaultDatabaseName, outerTableBinderContexts, externalTableBinderContexts);
     }
     
@@ -99,8 +99,8 @@ public final class SelectStatementBinder implements SQLStatementBinder<SimpleSel
      * @param externalTableContexts external table contexts
      * @return select statement
      */
-    public SimpleSelectStatement bindWithExternalTableContexts(final SimpleSelectStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                                               final Map<String, TableSegmentBinderContext> externalTableContexts) {
+    public GenericSelectStatement bindWithExternalTableContexts(final GenericSelectStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                                                final Map<String, TableSegmentBinderContext> externalTableContexts) {
         return bind(statement, metaData, defaultDatabaseName, Collections.emptyMap(), externalTableContexts);
     }
 }

@@ -33,12 +33,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -143,30 +143,30 @@ class PaginationContextTest {
     
     @Test
     void assertGetRevisedRowCountForMySQL() {
-        getRevisedRowCount(new MySQLSimpleSelectStatement());
+        getRevisedRowCount(new MySQLGenericSelectStatement());
     }
     
     @Test
     void assertGetRevisedRowCountForOracle() {
-        getRevisedRowCount(new OracleSimpleSelectStatement());
+        getRevisedRowCount(new OracleGenericSelectStatement());
     }
     
     @Test
     void assertGetRevisedRowCountForPostgreSQL() {
-        getRevisedRowCount(new PostgreSQLSimpleSelectStatement());
+        getRevisedRowCount(new PostgreSQLGenericSelectStatement());
     }
     
     @Test
     void assertGetRevisedRowCountForSQL92() {
-        getRevisedRowCount(new SQL92SimpleSelectStatement());
+        getRevisedRowCount(new SQL92GenericSelectStatement());
     }
     
     @Test
     void assertGetRevisedRowCountForSQLServer() {
-        getRevisedRowCount(new SQLServerSimpleSelectStatement());
+        getRevisedRowCount(new SQLServerGenericSelectStatement());
     }
     
-    private void getRevisedRowCount(final SimpleSelectStatement selectStatement) {
+    private void getRevisedRowCount(final GenericSelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
@@ -183,30 +183,30 @@ class PaginationContextTest {
     
     @Test
     void assertGetRevisedRowCountWithMaxForMySQL() {
-        getRevisedRowCountWithMax(new MySQLSimpleSelectStatement());
+        getRevisedRowCountWithMax(new MySQLGenericSelectStatement());
     }
     
     @Test
     void assertGetRevisedRowCountWithMaxForOracle() {
-        getRevisedRowCountWithMax(new OracleSimpleSelectStatement());
+        getRevisedRowCountWithMax(new OracleGenericSelectStatement());
     }
     
     @Test
     void assertGetRevisedRowCountWithMaxForPostgreSQL() {
-        getRevisedRowCountWithMax(new PostgreSQLSimpleSelectStatement());
+        getRevisedRowCountWithMax(new PostgreSQLGenericSelectStatement());
     }
     
     @Test
     void assertGetRevisedRowCountWithMaxForSQL92() {
-        getRevisedRowCountWithMax(new SQL92SimpleSelectStatement());
+        getRevisedRowCountWithMax(new SQL92GenericSelectStatement());
     }
     
     @Test
     void assertGetRevisedRowCountWithMaxForSQLServer() {
-        getRevisedRowCountWithMax(new SQLServerSimpleSelectStatement());
+        getRevisedRowCountWithMax(new SQLServerGenericSelectStatement());
     }
     
-    private void getRevisedRowCountWithMax(final SimpleSelectStatement selectStatement) {
+    private void getRevisedRowCountWithMax(final GenericSelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));

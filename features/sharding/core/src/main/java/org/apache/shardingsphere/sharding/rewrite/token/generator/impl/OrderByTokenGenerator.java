@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 /**
@@ -59,7 +59,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
     }
     
     private int getGenerateOrderByStartIndex(final SelectStatementContext selectStatementContext) {
-        SimpleSelectStatement sqlStatement = selectStatementContext.getSqlStatement();
+        GenericSelectStatement sqlStatement = selectStatementContext.getSqlStatement();
         int stopIndex;
         if (SelectStatementHandler.getWindowSegment(sqlStatement).isPresent()) {
             stopIndex = SelectStatementHandler.getWindowSegment(sqlStatement).get().getStopIndex();

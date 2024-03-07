@@ -38,9 +38,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -53,7 +53,7 @@ class SubqueryExtractUtilsTest {
     
     @Test
     void assertGetSubquerySegmentsInWhere() {
-        MySQLSimpleSelectStatement subquerySelectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement subquerySelectStatement = new MySQLGenericSelectStatement();
         subquerySelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(73, 99, new IdentifierValue("t_order"))));
         subquerySelectStatement.setProjections(new ProjectionsSegment(59, 66));
         subquerySelectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(59, 66, new IdentifierValue("order_id"))));
@@ -61,7 +61,7 @@ class SubqueryExtractUtilsTest {
         LiteralExpressionSegment subqueryWhereRight = new LiteralExpressionSegment(96, 99, "OK");
         WhereSegment subqueryWhereSegment = new WhereSegment(81, 99, new BinaryOperationExpression(87, 99, subqueryWhereLeft, subqueryWhereRight, "=", "status = 'OK'"));
         subquerySelectStatement.setWhere(subqueryWhereSegment);
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(21, 32, new IdentifierValue("t_order_item"))));
         selectStatement.setProjections(new ProjectionsSegment(7, 14));
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 14, new IdentifierValue("order_id"))));
@@ -78,11 +78,11 @@ class SubqueryExtractUtilsTest {
     void assertGetSubquerySegmentsInProjection() {
         ColumnSegment left = new ColumnSegment(41, 48, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(52, 62, new IdentifierValue("order_id"));
-        MySQLSimpleSelectStatement subquerySelectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement subquerySelectStatement = new MySQLGenericSelectStatement();
         subquerySelectStatement.setWhere(new WhereSegment(35, 62, new BinaryOperationExpression(41, 62, left, right, "=", "order_id = oi.order_id")));
         SubquerySegment subquerySegment = new SubquerySegment(7, 63, subquerySelectStatement, "");
         SubqueryProjectionSegment subqueryProjectionSegment = new SubqueryProjectionSegment(subquerySegment, "(SELECT status FROM t_order WHERE order_id = oi.order_id)");
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(7, 79));
         selectStatement.getProjections().getProjections().add(subqueryProjectionSegment);
         Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
@@ -92,7 +92,7 @@ class SubqueryExtractUtilsTest {
     
     @Test
     void assertGetSubquerySegmentsInFrom1() {
-        MySQLSimpleSelectStatement subquery = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement subquery = new MySQLGenericSelectStatement();
         ColumnSegment left = new ColumnSegment(59, 66, new IdentifierValue("order_id"));
         LiteralExpressionSegment right = new LiteralExpressionSegment(70, 70, 1);
         subquery.setWhere(new WhereSegment(53, 70, new BinaryOperationExpression(59, 70, left, right, "=", "order_id = 1")));
@@ -100,7 +100,7 @@ class SubqueryExtractUtilsTest {
         subquery.setProjections(new ProjectionsSegment(31, 38));
         subquery.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(31, 38, new IdentifierValue("order_id"))));
         
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(7, 16));
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 16, new IdentifierValue("order_id"))));
         selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(23, 71, subquery, "")));
@@ -112,7 +112,7 @@ class SubqueryExtractUtilsTest {
     
     @Test
     void assertGetSubquerySegmentsInFrom2() {
-        MySQLSimpleSelectStatement subqueryLeftSelectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement subqueryLeftSelectStatement = new MySQLGenericSelectStatement();
         subqueryLeftSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(65, 71, new IdentifierValue("t_order"))));
         ColumnSegment leftColumnSegment = new ColumnSegment(79, 84, new IdentifierValue("status"));
         LiteralExpressionSegment leftLiteralExpressionSegment = new LiteralExpressionSegment(88, 91, "OK");
@@ -121,7 +121,7 @@ class SubqueryExtractUtilsTest {
         subqueryLeftSelectStatement.setProjections(new ProjectionsSegment(34, 58));
         subqueryLeftSelectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(34, 41, new IdentifierValue("order_id"))));
         subqueryLeftSelectStatement.getProjections().getProjections().add(new AggregationProjectionSegment(44, 51, AggregationType.COUNT, "COUNT(*)"));
-        MySQLSimpleSelectStatement subqueryRightSelectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement subqueryRightSelectStatement = new MySQLGenericSelectStatement();
         subqueryRightSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(143, 154, new IdentifierValue("t_order_item"))));
         ColumnSegment rightColumnSegment = new ColumnSegment(162, 167, new IdentifierValue("status"));
         LiteralExpressionSegment rightLiteralExpressionSegment = new LiteralExpressionSegment(171, 174, "OK");
@@ -130,7 +130,7 @@ class SubqueryExtractUtilsTest {
         subqueryRightSelectStatement.setProjections(new ProjectionsSegment(112, 136));
         subqueryRightSelectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(112, 119, new IdentifierValue("order_id"))));
         subqueryRightSelectStatement.getProjections().getProjections().add(new AggregationProjectionSegment(122, 129, AggregationType.COUNT, "COUNT(*)"));
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(7, 19));
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 11, new IdentifierValue("cnt"))));
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(14, 19, new IdentifierValue("cnt"))));
@@ -155,42 +155,42 @@ class SubqueryExtractUtilsTest {
     
     @Test
     void assertGetSubquerySegmentsWithMultiNestedSubquery() {
-        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        GenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setFrom(new SubqueryTableSegment(createSubquerySegmentForFrom()));
         Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(result.size(), is(2));
     }
     
     private SubquerySegment createSubquerySegmentForFrom() {
-        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        GenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         selectStatement.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
-                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSimpleSelectStatement(), "")), false)));
+                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLGenericSelectStatement(), "")), false)));
         return new SubquerySegment(0, 0, selectStatement, "");
     }
     
     @Test
     void assertGetSubquerySegmentsWithCombineSegment() {
-        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
-        selectStatement.setCombine(new CombineSegment(0, 0, new MySQLSimpleSelectStatement(), CombineType.UNION, createSelectStatementForCombineSegment()));
+        GenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        selectStatement.setCombine(new CombineSegment(0, 0, new MySQLGenericSelectStatement(), CombineType.UNION, createSelectStatementForCombineSegment()));
         Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(actual.size(), is(1));
     }
     
-    private SimpleSelectStatement createSelectStatementForCombineSegment() {
-        SimpleSelectStatement result = new MySQLSimpleSelectStatement();
+    private GenericSelectStatement createSelectStatementForCombineSegment() {
+        GenericSelectStatement result = new MySQLGenericSelectStatement();
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         result.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
-                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSimpleSelectStatement(), "")), false)));
+                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLGenericSelectStatement(), "")), false)));
         return result;
     }
     
     @Test
     void assertGetSubquerySegmentsFromProjectionFunctionParams() {
-        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        GenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "", "");
-        functionSegment.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSimpleSelectStatement(), "")));
+        functionSegment.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLGenericSelectStatement(), "")));
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "", functionSegment);
         selectStatement.getProjections().getProjections().add(expressionProjectionSegment);
         Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);

@@ -39,16 +39,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -64,30 +64,30 @@ class ShardingResultMergerEngineTest {
     
     @Test
     void assertNewInstanceWithSelectStatementForMySQL() {
-        assertNewInstanceWithSelectStatement(new MySQLSimpleSelectStatement());
+        assertNewInstanceWithSelectStatement(new MySQLGenericSelectStatement());
     }
     
     @Test
     void assertNewInstanceWithSelectStatementForOracle() {
-        assertNewInstanceWithSelectStatement(new OracleSimpleSelectStatement());
+        assertNewInstanceWithSelectStatement(new OracleGenericSelectStatement());
     }
     
     @Test
     void assertNewInstanceWithSelectStatementForPostgreSQL() {
-        assertNewInstanceWithSelectStatement(new PostgreSQLSimpleSelectStatement());
+        assertNewInstanceWithSelectStatement(new PostgreSQLGenericSelectStatement());
     }
     
     @Test
     void assertNewInstanceWithSelectStatementForSQL92() {
-        assertNewInstanceWithSelectStatement(new SQL92SimpleSelectStatement());
+        assertNewInstanceWithSelectStatement(new SQL92GenericSelectStatement());
     }
     
     @Test
     void assertNewInstanceWithSelectStatementForSQLServer() {
-        assertNewInstanceWithSelectStatement(new SQLServerSimpleSelectStatement());
+        assertNewInstanceWithSelectStatement(new SQLServerGenericSelectStatement());
     }
     
-    private void assertNewInstanceWithSelectStatement(final SimpleSelectStatement selectStatement) {
+    private void assertNewInstanceWithSelectStatement(final GenericSelectStatement selectStatement) {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));

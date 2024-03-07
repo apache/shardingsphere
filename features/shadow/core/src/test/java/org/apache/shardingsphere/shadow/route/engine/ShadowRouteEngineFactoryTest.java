@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shadow.route.engine.dml.ShadowSelectStatementRo
 import org.apache.shardingsphere.shadow.route.engine.dml.ShadowUpdateStatementRoutingEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.junit.jupiter.api.Test;
 
@@ -76,7 +76,7 @@ class ShadowRouteEngineFactoryTest {
     
     private SQLStatementContext createSelectSqlStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement()).thenReturn(mock(SimpleSelectStatement.class));
+        when(result.getSqlStatement()).thenReturn(mock(GenericSelectStatement.class));
         return result;
     }
 }

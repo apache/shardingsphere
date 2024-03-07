@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Optional;
 
 /**
- * PostgreSQL simple select statement.
+ * MySQL generic select statement.
  */
 @Setter
-public final class PostgreSQLSimpleSelectStatement extends SimpleSelectStatement implements PostgreSQLStatement {
+public final class MySQLGenericSelectStatement extends GenericSelectStatement implements MySQLStatement {
+    
+    private SimpleTableSegment table;
     
     private LimitSegment limit;
     
@@ -39,7 +42,7 @@ public final class PostgreSQLSimpleSelectStatement extends SimpleSelectStatement
     
     private WindowSegment window;
     
-    private TableSegment intoSegment;
+    private WithSegment withSegment;
     
     /**
      * Get order by segment.
@@ -69,12 +72,20 @@ public final class PostgreSQLSimpleSelectStatement extends SimpleSelectStatement
     }
     
     /**
-     * Get into segment.
+     * Get simple table segment.
      *
-     * @return into segment
+     * @return simple table segment
      */
-    public Optional<TableSegment> getIntoSegment() {
-        return Optional.ofNullable(intoSegment);
+    public Optional<SimpleTableSegment> getTable() {
+        return Optional.ofNullable(table);
     }
     
+    /**
+     * Get with segment.
+     *
+     * @return with segment.
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
+    }
 }

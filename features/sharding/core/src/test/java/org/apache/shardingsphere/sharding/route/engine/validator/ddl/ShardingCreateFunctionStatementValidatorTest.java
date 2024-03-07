@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -55,7 +55,7 @@ class ShardingCreateFunctionStatementValidatorTest {
     
     @Test
     void assertPreValidateCreateFunctionForMySQL() {
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement(false);
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
@@ -78,7 +78,7 @@ class ShardingCreateFunctionStatementValidatorTest {
     
     @Test
     void assertPreValidateCreateFunctionWithShardingTableForMySQL() {
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);
@@ -95,7 +95,7 @@ class ShardingCreateFunctionStatementValidatorTest {
     
     @Test
     void assertPreValidateCreateFunctionWithNoSuchTableForMySQL() {
-        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);

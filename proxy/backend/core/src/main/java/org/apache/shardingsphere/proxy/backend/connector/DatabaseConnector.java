@@ -71,7 +71,7 @@ import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionSt
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -192,7 +192,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SimpleSelectStatement);
+        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof GenericSelectStatement);
     }
     
     private <T> T doExecuteWithImplicitCommitTransaction(final ImplicitTransactionCallback<T> callback) throws SQLException {

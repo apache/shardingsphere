@@ -65,7 +65,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -113,7 +113,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private PaginationContext paginationContext;
     
-    public SelectStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final SimpleSelectStatement sqlStatement, final String defaultDatabaseName) {
+    public SelectStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final GenericSelectStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
@@ -346,8 +346,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     }
     
     @Override
-    public SimpleSelectStatement getSqlStatement() {
-        return (SimpleSelectStatement) super.getSqlStatement();
+    public GenericSelectStatement getSqlStatement() {
+        return (GenericSelectStatement) super.getSqlStatement();
     }
     
     @Override
@@ -370,7 +370,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return joinConditions;
     }
     
-    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SimpleSelectStatement selectStatement) {
+    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final GenericSelectStatement selectStatement) {
         selectStatement.getWhere().ifPresent(whereSegments::add);
         whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(selectStatement));
         whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(selectStatement));

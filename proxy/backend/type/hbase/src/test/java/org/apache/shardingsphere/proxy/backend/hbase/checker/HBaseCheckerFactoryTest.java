@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ class HBaseCheckerFactoryTest {
     
     @Test
     void assertExecuteSelectStatement() {
-        SQLStatement sqlStatement = mock(MySQLSimpleSelectStatement.class);
+        SQLStatement sqlStatement = mock(MySQLGenericSelectStatement.class);
         HeterogeneousSQLStatementChecker actual = HBaseCheckerFactory.newInstance(sqlStatement);
         assertThat(actual, instanceOf(HeterogeneousSelectStatementChecker.class));
         assertThat(actual.getSqlStatement(), is(sqlStatement));

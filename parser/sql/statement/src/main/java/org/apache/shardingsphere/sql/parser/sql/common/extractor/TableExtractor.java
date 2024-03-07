@@ -53,7 +53,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
@@ -77,7 +77,7 @@ public final class TableExtractor {
      *
      * @param selectStatement select statement
      */
-    public void extractTablesFromSelect(final SimpleSelectStatement selectStatement) {
+    public void extractTablesFromSelect(final GenericSelectStatement selectStatement) {
         if (selectStatement.getCombine().isPresent()) {
             CombineSegment combineSegment = selectStatement.getCombine().get();
             extractTablesFromSelect(combineSegment.getLeft());
@@ -344,8 +344,8 @@ public final class TableExtractor {
      * @param sqlStatement SQL statement
      */
     public void extractTablesFromSQLStatement(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SimpleSelectStatement) {
-            extractTablesFromSelect((SimpleSelectStatement) sqlStatement);
+        if (sqlStatement instanceof GenericSelectStatement) {
+            extractTablesFromSelect((GenericSelectStatement) sqlStatement);
         } else if (sqlStatement instanceof InsertStatement) {
             extractTablesFromInsert((InsertStatement) sqlStatement);
         } else if (sqlStatement instanceof UpdateStatement) {

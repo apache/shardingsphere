@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -72,7 +72,7 @@ class OrderByTokenGeneratorTest {
     void assertGenerateSQLToken() {
         WindowSegment windowSegment = mock(WindowSegment.class);
         when(windowSegment.getStopIndex()).thenReturn(2);
-        MySQLSimpleSelectStatement selectStatement = mock(MySQLSimpleSelectStatement.class);
+        MySQLGenericSelectStatement selectStatement = mock(MySQLGenericSelectStatement.class);
         when(selectStatement.getWindow()).thenReturn(Optional.of(windowSegment));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);

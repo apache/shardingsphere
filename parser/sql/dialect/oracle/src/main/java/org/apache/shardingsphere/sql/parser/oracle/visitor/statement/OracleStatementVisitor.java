@@ -169,7 +169,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlSe
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlTableColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlTableOptionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.CursorForLoopStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureBodyEndNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.plsql.ProcedureCallNameSegment;
@@ -507,7 +507,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             right = (ExpressionSegment) visit(ctx.predicate());
         } else {
             right = new SubqueryExpressionSegment(
-                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSimpleSelectStatement) visit(ctx.subquery()),
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleGenericSelectStatement) visit(ctx.subquery()),
                             getOriginalText(ctx.subquery())));
         }
         String operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() : ctx.SAFE_EQ_().getText();
@@ -540,7 +540,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             right = listExpression;
         } else {
             right = new SubqueryExpressionSegment(
-                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSimpleSelectStatement) visit(ctx.subquery()),
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleGenericSelectStatement) visit(ctx.subquery()),
                             getOriginalText(ctx.subquery())));
         }
         boolean not = null != ctx.NOT();
@@ -610,7 +610,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.subquery()) {
-            return new SubquerySegment(startIndex, stopIndex, (OracleSimpleSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
+            return new SubquerySegment(startIndex, stopIndex, (OracleGenericSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
@@ -1057,7 +1057,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CURSOR().toString(), ctx.getText());
         result.getParameters()
                 .add(new SubqueryExpressionSegment(
-                        new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSimpleSelectStatement) visit(ctx.subquery()),
+                        new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleGenericSelectStatement) visit(ctx.subquery()),
                                 getOriginalText(ctx.subquery()))));
         return result;
     }
@@ -1097,7 +1097,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         if (null != ctx.MULTISET()) {
             result.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(),
-                    (OracleSimpleSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()))));
+                    (OracleGenericSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()))));
         } else {
             result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         }

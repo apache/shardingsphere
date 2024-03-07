@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.state.impl;
 
 import org.apache.shardingsphere.proxy.backend.exception.ReadOnlyException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,6 +34,6 @@ class ReadOnlyProxyStateTest {
     
     @Test
     void assertExecuteWithSupportedSQL() {
-        new ReadOnlyProxyState().check(mock(SimpleSelectStatement.class));
+        new ReadOnlyProxyState().check(mock(GenericSelectStatement.class));
     }
 }

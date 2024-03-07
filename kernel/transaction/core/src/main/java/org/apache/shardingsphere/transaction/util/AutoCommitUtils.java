@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 /**
  * Auto commit utility class.
@@ -37,7 +37,7 @@ public final class AutoCommitUtils {
      * @return need to open a new transaction.
      */
     public static boolean needOpenTransaction(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SimpleSelectStatement && null == ((SimpleSelectStatement) sqlStatement).getFrom()) {
+        if (sqlStatement instanceof GenericSelectStatement && null == ((GenericSelectStatement) sqlStatement).getFrom()) {
             return false;
         }
         return sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement;

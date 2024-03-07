@@ -198,7 +198,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.Par
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussExecuteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussUpdateStatement;
 
 import lombok.AccessLevel;
@@ -415,7 +415,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     
     private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
-                ctx.selectWithParens().getStop().getStopIndex(), (OpenGaussSimpleSelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
+                ctx.selectWithParens().getStop().getStopIndex(), (OpenGaussGenericSelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
         if (null != ctx.EXISTS()) {
             subquerySegment.setSubqueryType(SubqueryType.EXISTS_SUBQUERY);
             return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
@@ -538,7 +538,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     @SuppressWarnings("unchecked")
     private ExpressionSegment createInExpressionSegment(final InExprContext ctx) {
         if (null != ctx.selectWithParens()) {
-            OpenGaussSimpleSelectStatement select = (OpenGaussSimpleSelectStatement) visit(ctx.selectWithParens());
+            OpenGaussGenericSelectStatement select = (OpenGaussGenericSelectStatement) visit(ctx.selectWithParens());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), select, getOriginalText(ctx.selectWithParens()));
             return new SubqueryExpressionSegment(subquerySegment);
         }
@@ -755,7 +755,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         OpenGaussInsertStatement result = new OpenGaussInsertStatement();
         ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
         if (null == valuesClause) {
-            OpenGaussSimpleSelectStatement selectStatement = (OpenGaussSimpleSelectStatement) visit(ctx.select());
+            OpenGaussGenericSelectStatement selectStatement = (OpenGaussGenericSelectStatement) visit(ctx.select());
             result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select())));
         } else {
             result.getValues().addAll(createInsertValuesSegments(valuesClause));
@@ -924,14 +924,14 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        OpenGaussSimpleSelectStatement result = (OpenGaussSimpleSelectStatement) visit(ctx.selectNoParens());
+        OpenGaussGenericSelectStatement result = (OpenGaussGenericSelectStatement) visit(ctx.selectNoParens());
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitSelectNoParens(final SelectNoParensContext ctx) {
-        OpenGaussSimpleSelectStatement result = (OpenGaussSimpleSelectStatement) visit(ctx.selectClauseN());
+        OpenGaussGenericSelectStatement result = (OpenGaussGenericSelectStatement) visit(ctx.selectClauseN());
         if (null != ctx.sortClause()) {
             OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.sortClause());
             result.setOrderBy(orderBySegment);
@@ -966,12 +966,12 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
             return visit(ctx.simpleSelect());
         }
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
-            OpenGaussSimpleSelectStatement result = new OpenGaussSimpleSelectStatement();
-            OpenGaussSimpleSelectStatement left = (OpenGaussSimpleSelectStatement) visit(ctx.selectClauseN(0));
+            OpenGaussGenericSelectStatement result = new OpenGaussGenericSelectStatement();
+            OpenGaussGenericSelectStatement left = (OpenGaussGenericSelectStatement) visit(ctx.selectClauseN(0));
             result.setProjections(left.getProjections());
             result.setFrom(left.getFrom());
             CombineSegment combineSegment = new CombineSegment(((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), left, getCombineType(ctx),
-                    (OpenGaussSimpleSelectStatement) visit(ctx.selectClauseN(1)));
+                    (OpenGaussGenericSelectStatement) visit(ctx.selectClauseN(1)));
             result.setCombine(combineSegment);
             return result;
         }
@@ -994,7 +994,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     
     @Override
     public ASTNode visitSimpleSelect(final SimpleSelectContext ctx) {
-        OpenGaussSimpleSelectStatement result = new OpenGaussSimpleSelectStatement();
+        OpenGaussGenericSelectStatement result = new OpenGaussGenericSelectStatement();
         if (null != ctx.targetList()) {
             ProjectionsSegment projects = (ProjectionsSegment) visit(ctx.targetList());
             if (null != ctx.distinctClause()) {
@@ -1202,7 +1202,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     }
     
     private SubqueryTableSegment getSubqueryTableSegment(final TableReferenceContext ctx) {
-        OpenGaussSimpleSelectStatement select = (OpenGaussSimpleSelectStatement) visit(ctx.selectWithParens());
+        OpenGaussGenericSelectStatement select = (OpenGaussGenericSelectStatement) visit(ctx.selectWithParens());
         SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select, getOriginalText(ctx.selectWithParens()));
         SubqueryTableSegment result = new SubqueryTableSegment(subquery);
         if (null != ctx.aliasClause()) {

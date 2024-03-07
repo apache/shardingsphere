@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.state;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.junit.jupiter.api.Test;
 
@@ -33,21 +33,21 @@ class SupportedSQLStatementJudgeEngineTest {
     
     @Test
     void assertIsSupportedWithInSupportedList() {
-        assertTrue(new SupportedSQLStatementJudgeEngine(Collections.singleton(SimpleSelectStatement.class), Collections.emptyList()).isSupported(mock(SimpleSelectStatement.class)));
+        assertTrue(new SupportedSQLStatementJudgeEngine(Collections.singleton(GenericSelectStatement.class), Collections.emptyList()).isSupported(mock(GenericSelectStatement.class)));
     }
     
     @Test
     void assertIsNotSupportedWithInUnsupportedList() {
-        assertFalse(new SupportedSQLStatementJudgeEngine(Collections.emptyList(), Collections.singleton(SimpleSelectStatement.class)).isSupported(mock(SimpleSelectStatement.class)));
+        assertFalse(new SupportedSQLStatementJudgeEngine(Collections.emptyList(), Collections.singleton(GenericSelectStatement.class)).isSupported(mock(GenericSelectStatement.class)));
     }
     
     @Test
     void assertIsSupportedWithOverlappedList() {
-        assertTrue(new SupportedSQLStatementJudgeEngine(Collections.singleton(SimpleSelectStatement.class), Collections.singleton(SQLStatement.class)).isSupported(mock(SimpleSelectStatement.class)));
+        assertTrue(new SupportedSQLStatementJudgeEngine(Collections.singleton(GenericSelectStatement.class), Collections.singleton(SQLStatement.class)).isSupported(mock(GenericSelectStatement.class)));
     }
     
     @Test
     void assertIsSupportedWithoutList() {
-        assertTrue(new SupportedSQLStatementJudgeEngine(Collections.singleton(SimpleSelectStatement.class), Collections.singleton(UpdateStatement.class)).isSupported(mock(DeleteStatement.class)));
+        assertTrue(new SupportedSQLStatementJudgeEngine(Collections.singleton(GenericSelectStatement.class), Collections.singleton(UpdateStatement.class)).isSupported(mock(DeleteStatement.class)));
     }
 }

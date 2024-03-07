@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public final class WhereExtractUtils {
      * @param selectStatement SelectStatement
      * @return join where segment collection
      */
-    public static Collection<WhereSegment> getJoinWhereSegments(final SimpleSelectStatement selectStatement) {
+    public static Collection<WhereSegment> getJoinWhereSegments(final GenericSelectStatement selectStatement) {
         return null == selectStatement.getFrom() ? Collections.emptyList() : getJoinWhereSegments(selectStatement.getFrom());
     }
     
@@ -69,7 +69,7 @@ public final class WhereExtractUtils {
      * @param selectStatement SelectStatement
      * @return subquery where segment collection
      */
-    public static Collection<WhereSegment> getSubqueryWhereSegments(final SimpleSelectStatement selectStatement) {
+    public static Collection<WhereSegment> getSubqueryWhereSegments(final GenericSelectStatement selectStatement) {
         Collection<WhereSegment> result = new LinkedList<>();
         for (SubquerySegment each : SubqueryExtractUtils.getSubquerySegments(selectStatement)) {
             each.getSelect().getWhere().ifPresent(result::add);
@@ -84,7 +84,7 @@ public final class WhereExtractUtils {
      * @param selectStatement SelectStatement
      * @return subquery where segment collection
      */
-    public static Collection<WhereSegment> getSubqueryWhereSegmentsWithoutJoinConditions(final SimpleSelectStatement selectStatement) {
+    public static Collection<WhereSegment> getSubqueryWhereSegmentsWithoutJoinConditions(final GenericSelectStatement selectStatement) {
         Collection<WhereSegment> result = new LinkedList<>();
         for (SubquerySegment each : SubqueryExtractUtils.getSubquerySegments(selectStatement)) {
             each.getSelect().getWhere().ifPresent(result::add);

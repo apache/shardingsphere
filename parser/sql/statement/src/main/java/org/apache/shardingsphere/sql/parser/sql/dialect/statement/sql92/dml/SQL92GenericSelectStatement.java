@@ -19,16 +19,16 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml;
 
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 import java.util.Optional;
 
 /**
- * SQL92 simple select statement.
+ * SQL92 generic select statement.
  */
 @Setter
-public final class SQL92SimpleSelectStatement extends SimpleSelectStatement implements SQL92Statement {
+public final class SQL92GenericSelectStatement extends GenericSelectStatement implements SQL92Statement {
     
     private LimitSegment limit;
     

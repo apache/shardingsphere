@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 /**
  * Create view statement.
@@ -34,5 +34,5 @@ public abstract class CreateViewStatement extends AbstractSQLStatement implement
     
     private String viewDefinition;
     
-    private SimpleSelectStatement select;
+    private GenericSelectStatement select;
 }

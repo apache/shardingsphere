@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,7 +45,7 @@ public final class OrderByContextEngine {
      * @param groupByContext group by context
      * @return order by context
      */
-    public OrderByContext createOrderBy(final SimpleSelectStatement selectStatement, final GroupByContext groupByContext) {
+    public OrderByContext createOrderBy(final GenericSelectStatement selectStatement, final GroupByContext groupByContext) {
         if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
             OrderByContext orderByItems = createOrderByContextForDistinctRowWithoutGroupBy(selectStatement, groupByContext);
             return null == orderByItems ? new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty()) : orderByItems;
@@ -61,7 +61,7 @@ public final class OrderByContextEngine {
         return new OrderByContext(orderByItems, false);
     }
     
-    private OrderByContext createOrderByContextForDistinctRowWithoutGroupBy(final SimpleSelectStatement selectStatement, final GroupByContext groupByContext) {
+    private OrderByContext createOrderByContextForDistinctRowWithoutGroupBy(final GenericSelectStatement selectStatement, final GroupByContext groupByContext) {
         if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
             int index = 0;
             List<OrderByItem> orderByItems = new LinkedList<>();

@@ -25,14 +25,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
 
 import java.util.Optional;
 
@@ -48,21 +48,21 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @return limit segment
      */
-    public static Optional<LimitSegment> getLimitSegment(final SimpleSelectStatement selectStatement) {
-        if (selectStatement instanceof MySQLSimpleSelectStatement) {
-            return ((MySQLSimpleSelectStatement) selectStatement).getLimit();
+    public static Optional<LimitSegment> getLimitSegment(final GenericSelectStatement selectStatement) {
+        if (selectStatement instanceof MySQLGenericSelectStatement) {
+            return ((MySQLGenericSelectStatement) selectStatement).getLimit();
         }
-        if (selectStatement instanceof PostgreSQLSimpleSelectStatement) {
-            return ((PostgreSQLSimpleSelectStatement) selectStatement).getLimit();
+        if (selectStatement instanceof PostgreSQLGenericSelectStatement) {
+            return ((PostgreSQLGenericSelectStatement) selectStatement).getLimit();
         }
-        if (selectStatement instanceof SQL92SimpleSelectStatement) {
-            return ((SQL92SimpleSelectStatement) selectStatement).getLimit();
+        if (selectStatement instanceof SQL92GenericSelectStatement) {
+            return ((SQL92GenericSelectStatement) selectStatement).getLimit();
         }
-        if (selectStatement instanceof SQLServerSimpleSelectStatement) {
-            return ((SQLServerSimpleSelectStatement) selectStatement).getLimit();
+        if (selectStatement instanceof SQLServerGenericSelectStatement) {
+            return ((SQLServerGenericSelectStatement) selectStatement).getLimit();
         }
-        if (selectStatement instanceof OpenGaussSimpleSelectStatement) {
-            return ((OpenGaussSimpleSelectStatement) selectStatement).getLimit();
+        if (selectStatement instanceof OpenGaussGenericSelectStatement) {
+            return ((OpenGaussGenericSelectStatement) selectStatement).getLimit();
         }
         return Optional.empty();
     }
@@ -73,21 +73,21 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @param  limitSegment limit segment
      */
-    public static void setLimitSegment(final SimpleSelectStatement selectStatement, final LimitSegment limitSegment) {
-        if (selectStatement instanceof MySQLSimpleSelectStatement) {
-            ((MySQLSimpleSelectStatement) selectStatement).setLimit(limitSegment);
+    public static void setLimitSegment(final GenericSelectStatement selectStatement, final LimitSegment limitSegment) {
+        if (selectStatement instanceof MySQLGenericSelectStatement) {
+            ((MySQLGenericSelectStatement) selectStatement).setLimit(limitSegment);
         }
-        if (selectStatement instanceof PostgreSQLSimpleSelectStatement) {
-            ((PostgreSQLSimpleSelectStatement) selectStatement).setLimit(limitSegment);
+        if (selectStatement instanceof PostgreSQLGenericSelectStatement) {
+            ((PostgreSQLGenericSelectStatement) selectStatement).setLimit(limitSegment);
         }
-        if (selectStatement instanceof SQL92SimpleSelectStatement) {
-            ((SQL92SimpleSelectStatement) selectStatement).setLimit(limitSegment);
+        if (selectStatement instanceof SQL92GenericSelectStatement) {
+            ((SQL92GenericSelectStatement) selectStatement).setLimit(limitSegment);
         }
-        if (selectStatement instanceof SQLServerSimpleSelectStatement) {
-            ((SQLServerSimpleSelectStatement) selectStatement).setLimit(limitSegment);
+        if (selectStatement instanceof SQLServerGenericSelectStatement) {
+            ((SQLServerGenericSelectStatement) selectStatement).setLimit(limitSegment);
         }
-        if (selectStatement instanceof OpenGaussSimpleSelectStatement) {
-            ((OpenGaussSimpleSelectStatement) selectStatement).setLimit(limitSegment);
+        if (selectStatement instanceof OpenGaussGenericSelectStatement) {
+            ((OpenGaussGenericSelectStatement) selectStatement).setLimit(limitSegment);
         }
     }
     
@@ -97,18 +97,18 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @return lock segment
      */
-    public static Optional<LockSegment> getLockSegment(final SimpleSelectStatement selectStatement) {
-        if (selectStatement instanceof MySQLSimpleSelectStatement) {
-            return ((MySQLSimpleSelectStatement) selectStatement).getLock();
+    public static Optional<LockSegment> getLockSegment(final GenericSelectStatement selectStatement) {
+        if (selectStatement instanceof MySQLGenericSelectStatement) {
+            return ((MySQLGenericSelectStatement) selectStatement).getLock();
         }
-        if (selectStatement instanceof OracleSimpleSelectStatement) {
-            return ((OracleSimpleSelectStatement) selectStatement).getLock();
+        if (selectStatement instanceof OracleGenericSelectStatement) {
+            return ((OracleGenericSelectStatement) selectStatement).getLock();
         }
-        if (selectStatement instanceof PostgreSQLSimpleSelectStatement) {
-            return ((PostgreSQLSimpleSelectStatement) selectStatement).getLock();
+        if (selectStatement instanceof PostgreSQLGenericSelectStatement) {
+            return ((PostgreSQLGenericSelectStatement) selectStatement).getLock();
         }
-        if (selectStatement instanceof OpenGaussSimpleSelectStatement) {
-            return ((OpenGaussSimpleSelectStatement) selectStatement).getLock();
+        if (selectStatement instanceof OpenGaussGenericSelectStatement) {
+            return ((OpenGaussGenericSelectStatement) selectStatement).getLock();
         }
         return Optional.empty();
     }
@@ -119,18 +119,18 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @param lockSegment lock segment
      */
-    public static void setLockSegment(final SimpleSelectStatement selectStatement, final LockSegment lockSegment) {
-        if (selectStatement instanceof MySQLSimpleSelectStatement) {
-            ((MySQLSimpleSelectStatement) selectStatement).setLock(lockSegment);
+    public static void setLockSegment(final GenericSelectStatement selectStatement, final LockSegment lockSegment) {
+        if (selectStatement instanceof MySQLGenericSelectStatement) {
+            ((MySQLGenericSelectStatement) selectStatement).setLock(lockSegment);
         }
-        if (selectStatement instanceof OracleSimpleSelectStatement) {
-            ((OracleSimpleSelectStatement) selectStatement).setLock(lockSegment);
+        if (selectStatement instanceof OracleGenericSelectStatement) {
+            ((OracleGenericSelectStatement) selectStatement).setLock(lockSegment);
         }
-        if (selectStatement instanceof PostgreSQLSimpleSelectStatement) {
-            ((PostgreSQLSimpleSelectStatement) selectStatement).setLock(lockSegment);
+        if (selectStatement instanceof PostgreSQLGenericSelectStatement) {
+            ((PostgreSQLGenericSelectStatement) selectStatement).setLock(lockSegment);
         }
-        if (selectStatement instanceof OpenGaussSimpleSelectStatement) {
-            ((OpenGaussSimpleSelectStatement) selectStatement).setLock(lockSegment);
+        if (selectStatement instanceof OpenGaussGenericSelectStatement) {
+            ((OpenGaussGenericSelectStatement) selectStatement).setLock(lockSegment);
         }
     }
     
@@ -140,15 +140,15 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @return window segment
      */
-    public static Optional<WindowSegment> getWindowSegment(final SimpleSelectStatement selectStatement) {
-        if (selectStatement instanceof MySQLSimpleSelectStatement) {
-            return ((MySQLSimpleSelectStatement) selectStatement).getWindow();
+    public static Optional<WindowSegment> getWindowSegment(final GenericSelectStatement selectStatement) {
+        if (selectStatement instanceof MySQLGenericSelectStatement) {
+            return ((MySQLGenericSelectStatement) selectStatement).getWindow();
         }
-        if (selectStatement instanceof PostgreSQLSimpleSelectStatement) {
-            return ((PostgreSQLSimpleSelectStatement) selectStatement).getWindow();
+        if (selectStatement instanceof PostgreSQLGenericSelectStatement) {
+            return ((PostgreSQLGenericSelectStatement) selectStatement).getWindow();
         }
-        if (selectStatement instanceof OpenGaussSimpleSelectStatement) {
-            return ((OpenGaussSimpleSelectStatement) selectStatement).getWindow();
+        if (selectStatement instanceof OpenGaussGenericSelectStatement) {
+            return ((OpenGaussGenericSelectStatement) selectStatement).getWindow();
         }
         return Optional.empty();
     }
@@ -159,15 +159,15 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @param windowSegment window segment
      */
-    public static void setWindowSegment(final SimpleSelectStatement selectStatement, final WindowSegment windowSegment) {
-        if (selectStatement instanceof MySQLSimpleSelectStatement) {
-            ((MySQLSimpleSelectStatement) selectStatement).setWindow(windowSegment);
+    public static void setWindowSegment(final GenericSelectStatement selectStatement, final WindowSegment windowSegment) {
+        if (selectStatement instanceof MySQLGenericSelectStatement) {
+            ((MySQLGenericSelectStatement) selectStatement).setWindow(windowSegment);
         }
-        if (selectStatement instanceof PostgreSQLSimpleSelectStatement) {
-            ((PostgreSQLSimpleSelectStatement) selectStatement).setWindow(windowSegment);
+        if (selectStatement instanceof PostgreSQLGenericSelectStatement) {
+            ((PostgreSQLGenericSelectStatement) selectStatement).setWindow(windowSegment);
         }
-        if (selectStatement instanceof OpenGaussSimpleSelectStatement) {
-            ((OpenGaussSimpleSelectStatement) selectStatement).setWindow(windowSegment);
+        if (selectStatement instanceof OpenGaussGenericSelectStatement) {
+            ((OpenGaussGenericSelectStatement) selectStatement).setWindow(windowSegment);
         }
     }
     
@@ -177,15 +177,15 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @return with segment
      */
-    public static Optional<WithSegment> getWithSegment(final SimpleSelectStatement selectStatement) {
-        if (selectStatement instanceof OracleSimpleSelectStatement) {
-            return ((OracleSimpleSelectStatement) selectStatement).getWithSegment();
+    public static Optional<WithSegment> getWithSegment(final GenericSelectStatement selectStatement) {
+        if (selectStatement instanceof OracleGenericSelectStatement) {
+            return ((OracleGenericSelectStatement) selectStatement).getWithSegment();
         }
-        if (selectStatement instanceof SQLServerSimpleSelectStatement) {
-            return ((SQLServerSimpleSelectStatement) selectStatement).getWithSegment();
+        if (selectStatement instanceof SQLServerGenericSelectStatement) {
+            return ((SQLServerGenericSelectStatement) selectStatement).getWithSegment();
         }
-        if (selectStatement instanceof MySQLSimpleSelectStatement) {
-            return ((MySQLSimpleSelectStatement) selectStatement).getWithSegment();
+        if (selectStatement instanceof MySQLGenericSelectStatement) {
+            return ((MySQLGenericSelectStatement) selectStatement).getWithSegment();
         }
         return Optional.empty();
     }
@@ -196,15 +196,15 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @param withSegment with segment
      */
-    public static void setWithSegment(final SimpleSelectStatement selectStatement, final WithSegment withSegment) {
-        if (selectStatement instanceof OracleSimpleSelectStatement) {
-            ((OracleSimpleSelectStatement) selectStatement).setWithSegment(withSegment);
+    public static void setWithSegment(final GenericSelectStatement selectStatement, final WithSegment withSegment) {
+        if (selectStatement instanceof OracleGenericSelectStatement) {
+            ((OracleGenericSelectStatement) selectStatement).setWithSegment(withSegment);
         }
-        if (selectStatement instanceof SQLServerSimpleSelectStatement) {
-            ((SQLServerSimpleSelectStatement) selectStatement).setWithSegment(withSegment);
+        if (selectStatement instanceof SQLServerGenericSelectStatement) {
+            ((SQLServerGenericSelectStatement) selectStatement).setWithSegment(withSegment);
         }
-        if (selectStatement instanceof MySQLSimpleSelectStatement) {
-            ((MySQLSimpleSelectStatement) selectStatement).setWithSegment(withSegment);
+        if (selectStatement instanceof MySQLGenericSelectStatement) {
+            ((MySQLGenericSelectStatement) selectStatement).setWithSegment(withSegment);
         }
     }
     
@@ -214,9 +214,9 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @return model segment
      */
-    public static Optional<ModelSegment> getModelSegment(final SimpleSelectStatement selectStatement) {
-        if (selectStatement instanceof OracleSimpleSelectStatement) {
-            return ((OracleSimpleSelectStatement) selectStatement).getModelSegment();
+    public static Optional<ModelSegment> getModelSegment(final GenericSelectStatement selectStatement) {
+        if (selectStatement instanceof OracleGenericSelectStatement) {
+            return ((OracleGenericSelectStatement) selectStatement).getModelSegment();
         }
         return Optional.empty();
     }
@@ -227,9 +227,9 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @param modelSegment model segment
      */
-    public static void setModelSegment(final SimpleSelectStatement selectStatement, final ModelSegment modelSegment) {
-        if (selectStatement instanceof OracleSimpleSelectStatement) {
-            ((OracleSimpleSelectStatement) selectStatement).setModelSegment(modelSegment);
+    public static void setModelSegment(final GenericSelectStatement selectStatement, final ModelSegment modelSegment) {
+        if (selectStatement instanceof OracleGenericSelectStatement) {
+            ((OracleGenericSelectStatement) selectStatement).setModelSegment(modelSegment);
         }
     }
     
@@ -239,13 +239,13 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @return into table segment
      */
-    public static Optional<TableSegment> getIntoSegment(final SimpleSelectStatement selectStatement) {
-        if (selectStatement instanceof SQLServerSimpleSelectStatement) {
-            return ((SQLServerSimpleSelectStatement) selectStatement).getIntoSegment();
-        } else if (selectStatement instanceof PostgreSQLSimpleSelectStatement) {
-            return ((PostgreSQLSimpleSelectStatement) selectStatement).getIntoSegment();
-        } else if (selectStatement instanceof OpenGaussSimpleSelectStatement) {
-            return ((OpenGaussSimpleSelectStatement) selectStatement).getIntoSegment();
+    public static Optional<TableSegment> getIntoSegment(final GenericSelectStatement selectStatement) {
+        if (selectStatement instanceof SQLServerGenericSelectStatement) {
+            return ((SQLServerGenericSelectStatement) selectStatement).getIntoSegment();
+        } else if (selectStatement instanceof PostgreSQLGenericSelectStatement) {
+            return ((PostgreSQLGenericSelectStatement) selectStatement).getIntoSegment();
+        } else if (selectStatement instanceof OpenGaussGenericSelectStatement) {
+            return ((OpenGaussGenericSelectStatement) selectStatement).getIntoSegment();
         }
         return Optional.empty();
     }
@@ -256,13 +256,13 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      * @param selectStatement select statement
      * @param intoSegment table into segment
      */
-    public static void setIntoSegment(final SimpleSelectStatement selectStatement, final TableSegment intoSegment) {
-        if (selectStatement instanceof SQLServerSimpleSelectStatement) {
-            ((SQLServerSimpleSelectStatement) selectStatement).setIntoSegment(intoSegment);
-        } else if (selectStatement instanceof PostgreSQLSimpleSelectStatement) {
-            ((PostgreSQLSimpleSelectStatement) selectStatement).setIntoSegment(intoSegment);
-        } else if (selectStatement instanceof OpenGaussSimpleSelectStatement) {
-            ((OpenGaussSimpleSelectStatement) selectStatement).setIntoSegment(intoSegment);
+    public static void setIntoSegment(final GenericSelectStatement selectStatement, final TableSegment intoSegment) {
+        if (selectStatement instanceof SQLServerGenericSelectStatement) {
+            ((SQLServerGenericSelectStatement) selectStatement).setIntoSegment(intoSegment);
+        } else if (selectStatement instanceof PostgreSQLGenericSelectStatement) {
+            ((PostgreSQLGenericSelectStatement) selectStatement).setIntoSegment(intoSegment);
+        } else if (selectStatement instanceof OpenGaussGenericSelectStatement) {
+            ((OpenGaussGenericSelectStatement) selectStatement).setIntoSegment(intoSegment);
         }
     }
 }

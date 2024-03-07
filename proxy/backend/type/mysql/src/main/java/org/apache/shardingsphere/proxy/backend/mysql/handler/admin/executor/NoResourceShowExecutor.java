@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
     
     private MergedResult mergedResult;
     
-    private final SimpleSelectStatement sqlStatement;
+    private final GenericSelectStatement sqlStatement;
     
     private Collection<Object> expressions = Collections.emptyList();
     

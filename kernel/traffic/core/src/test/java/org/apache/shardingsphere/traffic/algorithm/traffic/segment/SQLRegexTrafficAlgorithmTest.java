@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
@@ -44,7 +44,7 @@ class SQLRegexTrafficAlgorithmTest {
     
     @Test
     void assertMatchWhenExistSQLRegexMatch() {
-        SQLStatement sqlStatement = mock(SimpleSelectStatement.class);
+        SQLStatement sqlStatement = mock(GenericSelectStatement.class);
         assertTrue(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE t_order SET order_id = ? WHERE user_id = ?;")));
         assertTrue(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "update `t_order`  SET `order_id` = ? WHERE user_id = ?;")));
         assertTrue(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from `t_order` where user_id = ?;")));
@@ -53,7 +53,7 @@ class SQLRegexTrafficAlgorithmTest {
     
     @Test
     void assertMatchWhenNotExistSQLRegexMatch() {
-        SQLStatement sqlStatement = mock(SimpleSelectStatement.class);
+        SQLStatement sqlStatement = mock(GenericSelectStatement.class);
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "SELECT * FROM t_order")));
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from  t_order;")));
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from `t_order`;")));

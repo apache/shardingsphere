@@ -30,13 +30,13 @@ import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLShowVariableExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -99,7 +99,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     void assertCreateWithSelectDatabase() {
         SQLStatement sqlStatement = parseSQL(PSQL_SELECT_DATABASES);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getSqlStatement()).thenReturn((SimpleSelectStatement) sqlStatement);
+        when(selectStatementContext.getSqlStatement()).thenReturn((GenericSelectStatement) sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_DATABASES, "", Collections.emptyList());
         assertTrue(actual.isPresent());
     }
@@ -108,7 +108,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     void assertCreateWithSelectTablespace() {
         SQLStatement sqlStatement = parseSQL(PSQL_SELECT_TABLESPACES);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getSqlStatement()).thenReturn((SimpleSelectStatement) sqlStatement);
+        when(selectStatementContext.getSqlStatement()).thenReturn((GenericSelectStatement) sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_TABLESPACES, "", Collections.emptyList());
         assertTrue(actual.isPresent());
     }
@@ -117,7 +117,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     void assertCreateWithSelectPgCatalogWithSubquery() {
         SQLStatement sqlStatement = parseSQL(SELECT_PG_CATALOG_WITH_SUBQUERY);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getSqlStatement()).thenReturn((SimpleSelectStatement) sqlStatement);
+        when(selectStatementContext.getSqlStatement()).thenReturn((GenericSelectStatement) sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, SELECT_PG_CATALOG_WITH_SUBQUERY, "", Collections.emptyList());
         assertFalse(actual.isPresent());
     }
@@ -126,7 +126,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     void assertCreateWithSelectPgNamespaceAndPgClass() {
         SQLStatement sqlStatement = parseSQL(SELECT_PG_CLASS_AND_PG_NAMESPACE);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getSqlStatement()).thenReturn((SimpleSelectStatement) sqlStatement);
+        when(selectStatementContext.getSqlStatement()).thenReturn((GenericSelectStatement) sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, SELECT_PG_CLASS_AND_PG_NAMESPACE, "", Collections.emptyList());
         assertFalse(actual.isPresent());
     }
@@ -140,7 +140,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSelectNonPgCatalog() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSimpleSelectStatement());
+        when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLGenericSelectStatement());
         assertThat(new PostgreSQLAdminExecutorCreator().create(selectStatementContext, "select 1", "", Collections.emptyList()), is(Optional.empty()));
     }
     

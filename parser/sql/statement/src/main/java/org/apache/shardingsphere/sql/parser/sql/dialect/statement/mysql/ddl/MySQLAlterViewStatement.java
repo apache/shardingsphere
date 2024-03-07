@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Setter
 public final class MySQLAlterViewStatement extends AlterViewStatement implements MySQLStatement {
     
-    private SimpleSelectStatement select;
+    private GenericSelectStatement select;
     
     private String viewDefinition;
 }

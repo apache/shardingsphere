@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDa
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.information.SelectInformationSchemataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +45,7 @@ public final class MySQLInformationSchemaExecutorFactory {
      * @param parameters parameters
      * @return executor
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SimpleSelectStatement sqlStatement, final String sql, final List<Object> parameters) {
+    public static Optional<DatabaseAdminExecutor> newInstance(final GenericSelectStatement sqlStatement, final String sql, final List<Object> parameters) {
         if (!(sqlStatement.getFrom() instanceof SimpleTableSegment)) {
             return Optional.empty();
         }

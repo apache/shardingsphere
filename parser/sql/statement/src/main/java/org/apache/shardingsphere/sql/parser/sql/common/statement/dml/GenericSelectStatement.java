@@ -31,11 +31,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 import java.util.Optional;
 
 /**
- * Select statement.
+ * Generic select statement.
  */
 @Getter
 @Setter
-public abstract class SimpleSelectStatement extends AbstractSQLStatement implements SelectStatement {
+public abstract class GenericSelectStatement extends AbstractSQLStatement implements SelectStatement {
     
     private ProjectionsSegment projections;
     

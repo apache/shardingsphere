@@ -21,16 +21,16 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 import java.util.Optional;
 
 /**
- * Oracle select statement.
+ * Oracle generic select statement.
  */
 @Setter
-public final class OracleSimpleSelectStatement extends SimpleSelectStatement implements OracleStatement {
+public final class OracleGenericSelectStatement extends GenericSelectStatement implements OracleStatement {
     
     private LockSegment lock;
     

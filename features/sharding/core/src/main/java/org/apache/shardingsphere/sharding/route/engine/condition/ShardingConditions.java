@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 
 import java.util.Collection;
@@ -118,13 +118,13 @@ public final class ShardingConditions {
     }
     
     private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext sqlStatementContext) {
-        Collection<SimpleSelectStatement> simpleSelectStatements = getSelectStatements(sqlStatementContext);
+        Collection<GenericSelectStatement> simpleSelectStatements = getSelectStatements(sqlStatementContext);
         if (simpleSelectStatements.size() > 1) {
             Map<Integer, List<ShardingCondition>> startIndexShardingConditions = new HashMap<>();
             for (ShardingCondition each : conditions) {
                 startIndexShardingConditions.computeIfAbsent(each.getStartIndex(), unused -> new LinkedList<>()).add(each);
             }
-            for (SimpleSelectStatement each : simpleSelectStatements) {
+            for (GenericSelectStatement each : simpleSelectStatements) {
                 if (each.getFrom() instanceof SubqueryTableSegment) {
                     continue;
                 }
@@ -136,8 +136,8 @@ public final class ShardingConditions {
         return true;
     }
     
-    private Collection<SimpleSelectStatement> getSelectStatements(final SQLStatementContext sqlStatementContext) {
-        Collection<SimpleSelectStatement> result = new LinkedList<>();
+    private Collection<GenericSelectStatement> getSelectStatements(final SQLStatementContext sqlStatementContext) {
+        Collection<GenericSelectStatement> result = new LinkedList<>();
         if (sqlStatementContext instanceof SelectStatementContext) {
             result.add(((SelectStatementContext) sqlStatementContext).getSqlStatement());
             for (SelectStatementContext each : ((SelectStatementContext) sqlStatementContext).getSubqueryContexts().values()) {

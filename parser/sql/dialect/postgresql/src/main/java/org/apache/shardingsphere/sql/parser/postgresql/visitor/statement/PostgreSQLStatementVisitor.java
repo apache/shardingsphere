@@ -193,7 +193,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.Par
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLExecuteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLUpdateStatement;
 
 import java.util.ArrayList;
@@ -414,7 +414,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
-                ctx.selectWithParens().getStop().getStopIndex(), (PostgreSQLSimpleSelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
+                ctx.selectWithParens().getStop().getStopIndex(), (PostgreSQLGenericSelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
         if (null != ctx.EXISTS()) {
             subquerySegment.setSubqueryType(SubqueryType.EXISTS_SUBQUERY);
             return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
@@ -537,7 +537,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @SuppressWarnings("unchecked")
     private ExpressionSegment createInExpressionSegment(final InExprContext ctx) {
         if (null != ctx.selectWithParens()) {
-            PostgreSQLSimpleSelectStatement select = (PostgreSQLSimpleSelectStatement) visit(ctx.selectWithParens());
+            PostgreSQLGenericSelectStatement select = (PostgreSQLGenericSelectStatement) visit(ctx.selectWithParens());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), select, getOriginalText(ctx.selectWithParens()));
             return new SubqueryExpressionSegment(subquerySegment);
         }
@@ -759,7 +759,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         PostgreSQLInsertStatement result = new PostgreSQLInsertStatement();
         ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
         if (null == valuesClause) {
-            PostgreSQLSimpleSelectStatement selectStatement = (PostgreSQLSimpleSelectStatement) visit(ctx.select());
+            PostgreSQLGenericSelectStatement selectStatement = (PostgreSQLGenericSelectStatement) visit(ctx.select());
             result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select())));
         } else {
             result.getValues().addAll(createInsertValuesSegments(valuesClause));
@@ -893,14 +893,14 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        PostgreSQLSimpleSelectStatement result = (PostgreSQLSimpleSelectStatement) visit(ctx.selectNoParens());
+        PostgreSQLGenericSelectStatement result = (PostgreSQLGenericSelectStatement) visit(ctx.selectNoParens());
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitSelectNoParens(final SelectNoParensContext ctx) {
-        PostgreSQLSimpleSelectStatement result = (PostgreSQLSimpleSelectStatement) visit(ctx.selectClauseN());
+        PostgreSQLGenericSelectStatement result = (PostgreSQLGenericSelectStatement) visit(ctx.selectClauseN());
         if (null != ctx.sortClause()) {
             OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.sortClause());
             result.setOrderBy(orderBySegment);
@@ -935,12 +935,12 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return visit(ctx.simpleSelect());
         }
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
-            PostgreSQLSimpleSelectStatement result = new PostgreSQLSimpleSelectStatement();
-            PostgreSQLSimpleSelectStatement left = (PostgreSQLSimpleSelectStatement) visit(ctx.selectClauseN(0));
+            PostgreSQLGenericSelectStatement result = new PostgreSQLGenericSelectStatement();
+            PostgreSQLGenericSelectStatement left = (PostgreSQLGenericSelectStatement) visit(ctx.selectClauseN(0));
             result.setProjections(left.getProjections());
             result.setFrom(left.getFrom());
             CombineSegment combineSegment = new CombineSegment(((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), left, getCombineType(ctx),
-                    (PostgreSQLSimpleSelectStatement) visit(ctx.selectClauseN(1)));
+                    (PostgreSQLGenericSelectStatement) visit(ctx.selectClauseN(1)));
             result.setCombine(combineSegment);
             return result;
         }
@@ -960,7 +960,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitSimpleSelect(final SimpleSelectContext ctx) {
-        PostgreSQLSimpleSelectStatement result = new PostgreSQLSimpleSelectStatement();
+        PostgreSQLGenericSelectStatement result = new PostgreSQLGenericSelectStatement();
         if (null == ctx.targetList()) {
             result.setProjections(new ProjectionsSegment(-1, -1));
         } else {
@@ -1154,7 +1154,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return result;
         }
         if (null != ctx.selectWithParens()) {
-            PostgreSQLSimpleSelectStatement select = (PostgreSQLSimpleSelectStatement) visit(ctx.selectWithParens());
+            PostgreSQLGenericSelectStatement select = (PostgreSQLGenericSelectStatement) visit(ctx.selectWithParens());
             SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select, getOriginalText(ctx.selectWithParens()));
             AliasSegment alias = null == ctx.aliasClause() ? null : (AliasSegment) visit(ctx.aliasClause());
             SubqueryTableSegment result = new SubqueryTableSegment(subquery);

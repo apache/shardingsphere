@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.SQLStatementConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.delete.DeleteStatementConverter;
@@ -52,8 +52,8 @@ public final class ExplainStatementConverter implements SQLStatementConverter<Ex
     }
     
     private Optional<SqlNode> convertSqlNode(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SimpleSelectStatement) {
-            return Optional.of(new SelectStatementConverter().convert((SimpleSelectStatement) sqlStatement));
+        if (sqlStatement instanceof GenericSelectStatement) {
+            return Optional.of(new SelectStatementConverter().convert((GenericSelectStatement) sqlStatement));
         } else if (sqlStatement instanceof DeleteStatement) {
             return Optional.of(new DeleteStatementConverter().convert((DeleteStatement) sqlStatement));
         } else if (sqlStatement instanceof UpdateStatement) {

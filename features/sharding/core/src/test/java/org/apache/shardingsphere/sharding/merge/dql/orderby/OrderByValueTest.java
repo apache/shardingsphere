@@ -36,13 +36,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SimpleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.plugins.MemberAccessor;
@@ -63,30 +63,30 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new MySQLSimpleSelectStatement());
+        assertCompareToForAsc(new MySQLGenericSelectStatement());
     }
     
     @Test
     void assertCompareToForAscForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new OracleSimpleSelectStatement());
+        assertCompareToForAsc(new OracleGenericSelectStatement());
     }
     
     @Test
     void assertCompareToForAscForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new PostgreSQLSimpleSelectStatement());
+        assertCompareToForAsc(new PostgreSQLGenericSelectStatement());
     }
     
     @Test
     void assertCompareToForAscForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new SQL92SimpleSelectStatement());
+        assertCompareToForAsc(new SQL92GenericSelectStatement());
     }
     
     @Test
     void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForAsc(new SQLServerSimpleSelectStatement());
+        assertCompareToForAsc(new SQLServerGenericSelectStatement());
     }
     
-    private void assertCompareToForAsc(final SimpleSelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    private void assertCompareToForAsc(final GenericSelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mockDatabase();
@@ -127,30 +127,30 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToForDescForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new MySQLSimpleSelectStatement());
+        assertCompareToForDesc(new MySQLGenericSelectStatement());
     }
     
     @Test
     void assertCompareToForDescForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new OracleSimpleSelectStatement());
+        assertCompareToForDesc(new OracleGenericSelectStatement());
     }
     
     @Test
     void assertCompareToForDescForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new PostgreSQLSimpleSelectStatement());
+        assertCompareToForDesc(new PostgreSQLGenericSelectStatement());
     }
     
     @Test
     void assertCompareToForDescForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new SQL92SimpleSelectStatement());
+        assertCompareToForDesc(new SQL92GenericSelectStatement());
     }
     
     @Test
     void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToForDesc(new SQLServerSimpleSelectStatement());
+        assertCompareToForDesc(new SQLServerGenericSelectStatement());
     }
     
-    private void assertCompareToForDesc(final SimpleSelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    private void assertCompareToForDesc(final GenericSelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mockDatabase();
@@ -181,30 +181,30 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToWhenEqualForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new MySQLSimpleSelectStatement());
+        assertCompareToWhenEqual(new MySQLGenericSelectStatement());
     }
     
     @Test
     void assertCompareToWhenEqualForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new OracleSimpleSelectStatement());
+        assertCompareToWhenEqual(new OracleGenericSelectStatement());
     }
     
     @Test
     void assertCompareToWhenEqualForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new PostgreSQLSimpleSelectStatement());
+        assertCompareToWhenEqual(new PostgreSQLGenericSelectStatement());
     }
     
     @Test
     void assertCompareToWhenEqualForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new SQL92SimpleSelectStatement());
+        assertCompareToWhenEqual(new SQL92GenericSelectStatement());
     }
     
     @Test
     void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        assertCompareToWhenEqual(new SQLServerSimpleSelectStatement());
+        assertCompareToWhenEqual(new SQLServerGenericSelectStatement());
     }
     
-    private void assertCompareToWhenEqual(final SimpleSelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    private void assertCompareToWhenEqual(final GenericSelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mockDatabase();

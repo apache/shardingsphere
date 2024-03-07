@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Aggregat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
@@ -64,7 +64,7 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        SimpleSelectStatement selectStatement = ((CreateViewStatement) sqlStatementContext.getSqlStatement()).getSelect();
+        GenericSelectStatement selectStatement = ((CreateViewStatement) sqlStatementContext.getSqlStatement()).getSelect();
         if (isContainsNotSupportedViewStatement(selectStatement, routeContext)) {
             throw new UnsupportedCreateViewException();
         }
@@ -87,18 +87,18 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         return shardingRule.isAllBindingTables(bindTables);
     }
     
-    private boolean isContainsNotSupportedViewStatement(final SimpleSelectStatement selectStatement, final RouteContext routeContext) {
+    private boolean isContainsNotSupportedViewStatement(final GenericSelectStatement selectStatement, final RouteContext routeContext) {
         if (routeContext.getRouteUnits().size() <= 1) {
             return false;
         }
         return hasGroupBy(selectStatement) || hasAggregation(selectStatement) || hasDistinct(selectStatement) || hasLimit(selectStatement);
     }
     
-    private boolean hasGroupBy(final SimpleSelectStatement selectStatement) {
+    private boolean hasGroupBy(final GenericSelectStatement selectStatement) {
         return selectStatement.getGroupBy().map(groupBySegment -> !groupBySegment.getGroupByItems().isEmpty()).orElse(false);
     }
     
-    private boolean hasAggregation(final SimpleSelectStatement selectStatement) {
+    private boolean hasAggregation(final GenericSelectStatement selectStatement) {
         for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
             if (each instanceof AggregationProjectionSegment) {
                 return true;
@@ -107,11 +107,11 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         return false;
     }
     
-    private boolean hasDistinct(final SimpleSelectStatement selectStatement) {
+    private boolean hasDistinct(final GenericSelectStatement selectStatement) {
         return selectStatement.getProjections().isDistinctRow();
     }
     
-    private boolean hasLimit(final SimpleSelectStatement selectStatement) {
+    private boolean hasLimit(final GenericSelectStatement selectStatement) {
         return SelectStatementHandler.getLimitSegment(selectStatement).isPresent();
     }
 }

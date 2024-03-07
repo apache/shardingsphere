@@ -22,16 +22,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 import java.util.Optional;
 
 /**
- * OpenGauss simple select statement.
+ * OpenGauss generic select statement.
  */
 @Setter
-public final class OpenGaussSimpleSelectStatement extends SimpleSelectStatement implements OpenGaussStatement {
+public final class OpenGaussGenericSelectStatement extends GenericSelectStatement implements OpenGaussStatement {
     
     private LimitSegment limit;
     

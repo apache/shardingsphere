@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -56,13 +56,13 @@ public final class SubqueryExtractUtils {
      * @param selectStatement SelectStatement
      * @return subquery segment collection
      */
-    public static Collection<SubquerySegment> getSubquerySegments(final SimpleSelectStatement selectStatement) {
+    public static Collection<SubquerySegment> getSubquerySegments(final GenericSelectStatement selectStatement) {
         List<SubquerySegment> result = new LinkedList<>();
         extractSubquerySegments(result, selectStatement);
         return result;
     }
     
-    private static void extractSubquerySegments(final List<SubquerySegment> result, final SimpleSelectStatement selectStatement) {
+    private static void extractSubquerySegments(final List<SubquerySegment> result, final GenericSelectStatement selectStatement) {
         extractSubquerySegmentsFromProjections(result, selectStatement.getProjections());
         extractSubquerySegmentsFromTableSegment(result, selectStatement.getFrom());
         if (selectStatement.getWhere().isPresent()) {

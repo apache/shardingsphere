@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.checker;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -35,14 +35,14 @@ class CommonHeterogeneousSQLStatementCheckerTest {
     
     @Test
     void assertIsSinglePoint() {
-        SimpleSelectStatement sqlStatement = (SimpleSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey = '1'");
+        GenericSelectStatement sqlStatement = (GenericSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey = '1'");
         assertTrue(sqlStatement.getWhere().isPresent());
         new CommonHeterogeneousSQLStatementChecker(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere().get());
     }
     
     @Test
     void assertIsSinglePointWithErrorKey() {
-        SimpleSelectStatement sqlStatement = (SimpleSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where a = '1'");
+        GenericSelectStatement sqlStatement = (GenericSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where a = '1'");
         assertTrue(sqlStatement.getWhere().isPresent());
         Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere().get()));
         assertThat(ex.getMessage(), is("a is not a allowed key."));
@@ -50,7 +50,7 @@ class CommonHeterogeneousSQLStatementCheckerTest {
     
     @Test
     void assertIsSinglePointWithErrorOperation() {
-        SimpleSelectStatement sqlStatement = (SimpleSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey between '1' and '2' ");
+        GenericSelectStatement sqlStatement = (GenericSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey between '1' and '2' ");
         assertTrue(sqlStatement.getWhere().isPresent());
         Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere().get()));
         assertThat(ex.getMessage(), is("Only support binary operation expression."));
@@ -58,7 +58,7 @@ class CommonHeterogeneousSQLStatementCheckerTest {
     
     @Test
     void assertInExpression() {
-        SimpleSelectStatement sqlStatement = (SimpleSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey in ('1', '2') ");
+        GenericSelectStatement sqlStatement = (GenericSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey in ('1', '2') ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
         new CommonHeterogeneousSQLStatementChecker(sqlStatement).checkInExpressionIsExpected(whereSegment.get().getExpr());
@@ -66,7 +66,7 @@ class CommonHeterogeneousSQLStatementCheckerTest {
     
     @Test
     void assertInExpressionWithNotIn() {
-        SimpleSelectStatement sqlStatement = (SimpleSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey not in ('1', '2') ");
+        GenericSelectStatement sqlStatement = (GenericSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey not in ('1', '2') ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
         Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker(sqlStatement).checkInExpressionIsExpected(whereSegment.get().getExpr()));
@@ -75,7 +75,7 @@ class CommonHeterogeneousSQLStatementCheckerTest {
     
     @Test
     void assertInExpressionWithErrorKey() {
-        SimpleSelectStatement sqlStatement = (SimpleSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where a in ('1', '2') ");
+        GenericSelectStatement sqlStatement = (GenericSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where a in ('1', '2') ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
         Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker(sqlStatement).checkInExpressionIsExpected(whereSegment.get().getExpr()));
@@ -84,7 +84,7 @@ class CommonHeterogeneousSQLStatementCheckerTest {
     
     @Test
     void assertIsAllowExpressionSegment() {
-        SimpleSelectStatement sqlStatement = (SimpleSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey BETWEEN 'v1' AND 'v2' ");
+        GenericSelectStatement sqlStatement = (GenericSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey BETWEEN 'v1' AND 'v2' ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
         BetweenExpression betweenExpression = (BetweenExpression) whereSegment.get().getExpr();
@@ -95,7 +95,7 @@ class CommonHeterogeneousSQLStatementCheckerTest {
     
     @Test
     void assertIsAllowExpressionSegmentError() {
-        SimpleSelectStatement sqlStatement = (SimpleSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey = '1'");
+        GenericSelectStatement sqlStatement = (GenericSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey = '1'");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
         assertFalse(new CommonHeterogeneousSQLStatementChecker(sqlStatement).isAllowExpressionSegment(whereSegment.get().getExpr()));

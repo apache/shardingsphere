@@ -21,17 +21,17 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 import java.util.Optional;
 
 /**
- * SQLServer simple select statement.
+ * SQLServer generic select statement.
  */
 @Setter
-public final class SQLServerSimpleSelectStatement extends SimpleSelectStatement implements SQLServerStatement {
+public final class SQLServerGenericSelectStatement extends GenericSelectStatement implements SQLServerStatement {
     
     private LimitSegment limit;
     

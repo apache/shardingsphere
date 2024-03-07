@@ -43,7 +43,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -63,7 +63,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     private final DatabaseConnectorFactory databaseConnectorFactory = DatabaseConnectorFactory.getInstance();
     
-    private final SimpleSelectStatement sqlStatement;
+    private final GenericSelectStatement sqlStatement;
     
     private final String sql;
     
