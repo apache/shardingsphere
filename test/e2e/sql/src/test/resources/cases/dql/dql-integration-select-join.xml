@@ -104,8 +104,8 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <!-- TODO add encrypt scenario when use standard table -->
-    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO add encrypt,encrypt_and_readwrite_splitting scenario when use standard table -->
+    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
