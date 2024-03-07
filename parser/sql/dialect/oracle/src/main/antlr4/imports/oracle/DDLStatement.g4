@@ -639,6 +639,11 @@ columnProperties
 
 columnProperty
     : objectTypeColProperties
+    | xmlTypeColProperties
+    ;
+
+xmlTypeColProperties
+    : XMLTYPE COLUMN? columnName xmlTypeStorageClause?
     ;
 
 objectTypeColProperties
@@ -4061,7 +4066,7 @@ createTablespace
 permanentTablespaceClause
     : TABLESPACE tablespaceName (
     (MINIMUM EXTEND sizeClause)
-    | (BLOCKSIZE INTEGER_ K?)
+    | (BLOCKSIZE INTEGER_ capacityUnit?)
     | loggingClause
     | (FORCE LOGGING)
     | ENCRYPTION tablespaceEncryptionSpec
