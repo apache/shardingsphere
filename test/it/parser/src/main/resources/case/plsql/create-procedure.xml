@@ -21,7 +21,7 @@
         <procedure-name name="test_procedure" />
         <sql-statements>
             <sql-statement start-index="162" stop-index="187" statement-class-simple-name="OracleSavepointStatement" />
-            <sql-statement start-index="205" stop-index="269" statement-class-simple-name="OracleSelectStatement" />
+            <sql-statement start-index="205" stop-index="269" statement-class-simple-name="OracleGenericSelectStatement" />
             <sql-statement start-index="1200" stop-index="1205" statement-class-simple-name="OracleCommitStatement" />
             <sql-statement start-index="1246" stop-index="1288" statement-class-simple-name="OracleRollbackStatement" />
             <sql-statement start-index="1403" stop-index="1445" statement-class-simple-name="OracleRollbackStatement" />
