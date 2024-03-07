@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -48,12 +47,60 @@ public final class SQLHintUtils {
     private static final int SQL_HINT_VALUE_SIZE = 2;
     
     /**
-     * Get SQL hint props.
+     * Extract SQL hint.
      *
-     * @param comment SQL comment
-     * @return SQL hint props
+     * @param sql SQL
+     * @return hint value context
      */
-    public static Properties getSQLHintProps(final String comment) {
+    public static HintValueContext extractHint(final String sql) {
+        if (!startWithHint(sql, SQLHintTokenEnum.SQL_START_HINT_TOKEN)) {
+            return new HintValueContext();
+        }
+        HintValueContext result = new HintValueContext();
+        String hintText = sql.substring(0, sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
+        Properties hintProps = getSQLHintProps(hintText);
+        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.DATASOURCE_NAME_KEY)) {
+            result.setDataSourceName(getProperty(hintProps, SQLHintPropertiesKey.DATASOURCE_NAME_KEY));
+        }
+        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY)) {
+            result.setWriteRouteOnly(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY)));
+        }
+        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.USE_TRAFFIC_KEY)) {
+            result.setUseTraffic(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.USE_TRAFFIC_KEY)));
+        }
+        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)) {
+            result.setSkipSQLRewrite(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)));
+        }
+        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY)) {
+            String property = getProperty(hintProps, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY);
+            result.getDisableAuditNames().addAll(getSplitterSQLHintValue(property));
+        }
+        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.SHADOW_KEY)) {
+            result.setShadow(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.SHADOW_KEY)));
+        }
+        for (Entry<Object, Object> entry : hintProps.entrySet()) {
+            Comparable<?> value = entry.getValue() instanceof Comparable ? (Comparable<?>) entry.getValue() : Objects.toString(entry.getValue());
+            if (containsPropertyKey(Objects.toString(entry.getKey()), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY)) {
+                result.getShardingDatabaseValues().put(Objects.toString(entry.getKey()).toUpperCase(), value);
+            }
+            if (containsPropertyKey(Objects.toString(entry.getKey()), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY)) {
+                result.getShardingTableValues().put(Objects.toString(entry.getKey()).toUpperCase(), value);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Remove SQL hint.
+     *
+     * @param sql SQL
+     * @return SQL after remove hint
+     */
+    public static String removeHint(final String sql) {
+        return startWithHint(sql, SQLHintTokenEnum.SQL_START_HINT_TOKEN) ? sql.substring(sql.indexOf(SQL_COMMENT_SUFFIX) + 2).trim() : sql;
+    }
+    
+    private static Properties getSQLHintProps(final String comment) {
         Properties result = new Properties();
         int startIndex = getStartIndex(comment, SQLHintTokenEnum.SQL_START_HINT_TOKEN, SQLHintTokenEnum.SQL_HINT_TOKEN);
         if (startIndex < 0) {
@@ -89,59 +136,6 @@ public final class SQLHintUtils {
         }
     }
     
-    /**
-     * Get splitter SQL hint Value.
-     *
-     * @param value SQL hint value
-     * @return Splitter SQL hint value
-     */
-    public static Collection<String> getSplitterSQLHintValue(final String value) {
-        return value.isEmpty() ? Collections.emptySet() : new HashSet<>(Splitter.on(SQLHintUtils.SQL_HINT_VALUE_COLLECTION_SPLIT).omitEmptyStrings().trimResults().splitToList(value));
-    }
-    
-    /**
-     * Extract SQL hint.
-     *
-     * @param sql SQL
-     * @return Hint value context
-     */
-    public static Optional<HintValueContext> extractHint(final String sql) {
-        if (!startWithHint(sql, SQLHintTokenEnum.SQL_START_HINT_TOKEN)) {
-            return Optional.empty();
-        }
-        HintValueContext result = new HintValueContext();
-        String hintText = sql.substring(0, sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
-        Properties hintProps = SQLHintUtils.getSQLHintProps(hintText);
-        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.DATASOURCE_NAME_KEY)) {
-            result.setDataSourceName(getProperty(hintProps, SQLHintPropertiesKey.DATASOURCE_NAME_KEY));
-        }
-        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY)) {
-            result.setWriteRouteOnly(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY)));
-        }
-        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.USE_TRAFFIC_KEY)) {
-            result.setUseTraffic(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.USE_TRAFFIC_KEY)));
-        }
-        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)) {
-            result.setSkipSQLRewrite(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)));
-        }
-        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY)) {
-            result.setDisableAuditNames(getProperty(hintProps, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY));
-        }
-        if (containsPropertyKey(hintProps, SQLHintPropertiesKey.SHADOW_KEY)) {
-            result.setShadow(Boolean.parseBoolean(getProperty(hintProps, SQLHintPropertiesKey.SHADOW_KEY)));
-        }
-        for (Entry<Object, Object> entry : hintProps.entrySet()) {
-            Comparable<?> value = entry.getValue() instanceof Comparable ? (Comparable<?>) entry.getValue() : Objects.toString(entry.getValue());
-            if (containsPropertyKey(Objects.toString(entry.getKey()), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY)) {
-                result.getShardingDatabaseValues().put(Objects.toString(entry.getKey()).toUpperCase(), value);
-            }
-            if (containsPropertyKey(Objects.toString(entry.getKey()), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY)) {
-                result.getShardingTableValues().put(Objects.toString(entry.getKey()).toUpperCase(), value);
-            }
-        }
-        return Optional.of(result);
-    }
-    
     private static boolean startWithHint(final String sql, final SQLHintTokenEnum sqlStartHintToken) {
         return null != sql && (sql.startsWith(sqlStartHintToken.getKey()) || sql.startsWith(sqlStartHintToken.getAlias()));
     }
@@ -159,13 +153,7 @@ public final class SQLHintUtils {
         return null == result ? hintProps.getProperty(sqlHintPropsKey.getAlias()) : result;
     }
     
-    /**
-     * Remove SQL hint.
-     *
-     * @param sql SQL
-     * @return SQL after remove hint
-     */
-    public static String removeHint(final String sql) {
-        return startWithHint(sql, SQLHintTokenEnum.SQL_START_HINT_TOKEN) ? sql.substring(sql.indexOf(SQL_COMMENT_SUFFIX) + 2) : sql;
+    private static Collection<String> getSplitterSQLHintValue(final String property) {
+        return property.isEmpty() ? Collections.emptySet() : new HashSet<>(Splitter.on(SQLHintUtils.SQL_HINT_VALUE_COLLECTION_SPLIT).omitEmptyStrings().trimResults().splitToList(property));
     }
 }

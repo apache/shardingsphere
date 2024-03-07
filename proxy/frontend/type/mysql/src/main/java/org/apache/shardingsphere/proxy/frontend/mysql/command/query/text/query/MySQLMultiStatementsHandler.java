@@ -37,6 +37,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -115,8 +117,9 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     }
     
     private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getDatabaseName()).bind(sqlStatement, Collections.emptyList());
-        return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
+        HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+        return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
     }
     
     @Override

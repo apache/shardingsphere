@@ -58,9 +58,7 @@ public abstract class InternalSQLParserIT {
             "create_materialized_view_log_with_pctfree_storage_purge_repeat", "create_materialized_view_log_with_row_id_sequence_including_new", "create_materialized_view_log_with_tablespace",
             "create_no_identified_role", "create_role", "create_role_identified_by", "create_role_with_container", "create_role_with_identified_by_password",
             "create_table_with_out_of_line_constraints_oracle", "create_table_with_xmltype_column_clob_oracle", "create_table_with_xmltype_column_oracle", "create_tablespace_with_blocksize",
-            "create_tablespace_with_temporary_tablespace_group", "create_tablespace_with_temporary_tempfile_spec_extent_management", "create_tablespace_with_undo_tablespace_spec",
-            "create_user_identified_by_without_hostname", "create_user_with_lock_option", "create_user_with_password", "create_user_with_password_expire_lock", "create_user_with_password_option",
-            "create_user_with_quota_option", "create_user_with_tablespace", "drop_database_including_backups_noprompt", "drop_index_with_quota", "drop_user_with_hostname", "drop_user_with_ip"));
+            "create_tablespace_with_temporary_tablespace_group", "create_tablespace_with_temporary_tempfile_spec_extent_management", "create_tablespace_with_undo_tablespace_spec"));
     // CHECKSTYLE:ON
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnLabelNotFoun
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -107,11 +107,11 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final int indexNameColumnIndex, final ResultSet resultSet) throws SQLException {
         DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
-        Optional<DataNodeContainedRule> dataNodeContainedRule = findDataNodeContainedRule();
+        Optional<DataNodeRule> dataNodeRule = findDataNodeRule();
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Optional<String> logicTableName = dataNodeContainedRule.isPresent() ? dataNodeContainedRule.get().getDataNodeRule().findLogicTableByActualTable(tableName) : Optional.empty();
+                Optional<String> logicTableName = dataNodeRule.isPresent() ? dataNodeRule.get().findLogicTableByActualTable(tableName) : Optional.empty();
                 result.addObject(logicTableName.orElse(tableName));
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);
@@ -124,8 +124,14 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         return result;
     }
     
-    private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        return rules.stream().filter(DataNodeContainedRule.class::isInstance).findFirst().map(DataNodeContainedRule.class::cast);
+    private Optional<DataNodeRule> findDataNodeRule() {
+        for (ShardingSphereRule each : rules) {
+            Optional<DataNodeRule> dataNodeRule = each.getRuleIdentifiers().findIdentifier(DataNodeRule.class);
+            if (dataNodeRule.isPresent()) {
+                return dataNodeRule;
+            }
+        }
+        return Optional.empty();
     }
     
     @Override

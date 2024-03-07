@@ -70,7 +70,7 @@ class ShardingSQLAuditorTest {
     
     @BeforeEach
     void setUp() {
-        when(hintValueContext.findDisableAuditNames()).thenReturn(new HashSet<>(Collections.singletonList("auditor_1")));
+        when(hintValueContext.getDisableAuditNames()).thenReturn(new HashSet<>(Collections.singletonList("auditor_1")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_table"));
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(rule.findShardingTable("foo_table")).thenReturn(Optional.of(shardingTable));

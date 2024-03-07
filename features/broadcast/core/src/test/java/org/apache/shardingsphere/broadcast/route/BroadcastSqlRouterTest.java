@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -88,10 +90,10 @@ class BroadcastSqlRouterTest {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_order"));
         BroadcastRule broadcastRule = new BroadcastRule(currentConfig, DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tmp_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
-        broadcastRule.getDataNodeRule().getAllDataNodes().put("t_order", Collections.singletonList(createDataNode("tmp_ds")));
+        broadcastRule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).getAllDataNodes().put("t_order", Collections.singletonList(createDataNode("tmp_ds")));
         ShardingSphereDatabase database = mockSingleDatabase();
-        RouteContext routeContext = new BroadcastSQLRouter().createRouteContext(createQueryContext(), mock(RuleMetaData.class), database, broadcastRule, new ConfigurationProperties(new Properties()),
-                new ConnectionContext());
+        RouteContext routeContext = new BroadcastSQLRouter().createRouteContext(
+                createQueryContext(), mock(RuleMetaData.class), database, broadcastRule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = routeContext.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("tmp_ds"));
@@ -128,7 +130,7 @@ class BroadcastSqlRouterTest {
     private QueryContext createQueryContext() {
         CreateTableStatement createTableStatement = new MySQLCreateTableStatement(false);
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        return new QueryContext(new CreateTableStatementContext(createTableStatement), "CREATE TABLE", new LinkedList<>());
+        return new QueryContext(new CreateTableStatementContext(createTableStatement), "CREATE TABLE", new LinkedList<>(), new HintValueContext());
     }
     
     private Map<String, DataSource> createMultiDataSourceMap() throws SQLException {

@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type.datasource;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * ShardingSphere rule which contains data source mapper.
+ * Oracle show statement.
  */
-public interface DataSourceMapperContainedRule extends ShardingSphereRule {
-    
-    /**
-     * Get data source mapper rule.
-     *
-     * @return data source mapper rule
-     */
-    DataSourceMapperRule getDataSourceMapperRule();
+public final class OracleShowStatement extends AbstractSQLStatement implements DALStatement, OracleStatement {
 }

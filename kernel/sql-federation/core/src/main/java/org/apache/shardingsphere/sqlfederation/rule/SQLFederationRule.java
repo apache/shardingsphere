@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
@@ -61,5 +62,10 @@ public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
     public void dropDatabase(final String databaseName) {
         optimizerContext.removeParserContext(databaseName);
         optimizerContext.removePlannerContext(databaseName);
+    }
+    
+    @Override
+    public RuleIdentifiers getRuleIdentifiers() {
+        return new RuleIdentifiers();
     }
 }

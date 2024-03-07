@@ -25,6 +25,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -39,6 +40,8 @@ public final class HintValueContext {
     
     private final Multimap<String, Comparable<?>> shardingTableValues = ArrayListMultimap.create();
     
+    private final Collection<String> disableAuditNames = new LinkedHashSet<>();
+    
     private String dataSourceName = "";
     
     private boolean databaseShardingOnly;
@@ -49,18 +52,7 @@ public final class HintValueContext {
     
     private boolean skipSQLRewrite;
     
-    private String disableAuditNames = "";
-    
     private boolean shadow;
-    
-    /**
-     * Find hint disable audit names.
-     *
-     * @return disable audit names
-     */
-    public Collection<String> findDisableAuditNames() {
-        return SQLHintUtils.getSplitterSQLHintValue(disableAuditNames);
-    }
     
     /**
      * Find hint data source name.

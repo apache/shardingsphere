@@ -31,6 +31,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 class SingleRuleBuilderTest {
@@ -39,8 +40,8 @@ class SingleRuleBuilderTest {
     @Test
     void assertBuild() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
-        DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "", new MySQLDatabaseType(), Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)),
-                mock(InstanceContext.class));
+        DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "",
+                new MySQLDatabaseType(), Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
     
@@ -48,9 +49,8 @@ class SingleRuleBuilderTest {
     @Test
     void assertBuildWithDefaultDataSource() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
-        DatabaseRule actual = builder.build(
-                new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), "", new MySQLDatabaseType(), Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)),
-                mock(InstanceContext.class));
+        DatabaseRule actual = builder.build(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"), "", new MySQLDatabaseType(), Collections.emptyMap(),
+                Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
 }

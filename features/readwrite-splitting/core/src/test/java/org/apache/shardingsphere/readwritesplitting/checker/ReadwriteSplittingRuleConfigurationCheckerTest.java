@@ -19,7 +19,9 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -102,9 +104,11 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     void assertCheckWhenConfigOtherRulesDatasource() {
         ReadwriteSplittingRuleConfiguration config = createContainsOtherRulesDatasourceConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        DataSourceMapperContainedRule dataSourceMapperContainedRule = mock(DataSourceMapperContainedRule.class, RETURNS_DEEP_STUBS);
-        when(dataSourceMapperContainedRule.getDataSourceMapperRule().getDataSourceMapper().containsKey("otherDatasourceName")).thenReturn(true);
-        checker.check("test", config, mockDataSources(), Collections.singleton(dataSourceMapperContainedRule));
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class, RETURNS_DEEP_STUBS);
+        when(dataSourceMapperRule.getDataSourceMapper().containsKey("otherDatasourceName")).thenReturn(true);
+        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
+        checker.check("test", config, mockDataSources(), Collections.singleton(rule));
     }
     
     private ReadwriteSplittingRuleConfiguration createContainsOtherRulesDatasourceConfig() {

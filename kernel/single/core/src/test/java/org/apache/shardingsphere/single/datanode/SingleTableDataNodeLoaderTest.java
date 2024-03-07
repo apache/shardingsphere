@@ -21,7 +21,8 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,7 +96,11 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoad() {
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, getBuiltRulesWithExcludedTables(), configuredSingleTables);
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+        TableMapperRule tableMapperRule = mock(TableMapperRule.class, RETURNS_DEEP_STUBS);
+        when(tableMapperRule.getDistributedTableMapper().getTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
+        when(builtRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(tableMapperRule));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.singleton(builtRule), configuredSingleTables);
         assertFalse(actual.containsKey("employee"));
         assertFalse(actual.containsKey("salary"));
         assertFalse(actual.containsKey("student"));
@@ -105,13 +110,6 @@ class SingleTableDataNodeLoaderTest {
         assertThat(actual.get("dept").iterator().next().getDataSourceName(), is("ds0"));
         assertThat(actual.get("teacher").iterator().next().getDataSourceName(), is("ds1"));
         assertThat(actual.get("class").iterator().next().getDataSourceName(), is("ds1"));
-    }
-    
-    private Collection<ShardingSphereRule> getBuiltRulesWithExcludedTables() {
-        Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        TableMapperContainedRule tableContainedRule = mock(TableMapperContainedRule.class, RETURNS_DEEP_STUBS);
-        when(tableContainedRule.getTableMapperRule().getDistributedTableMapper().getTableNames()).thenReturn(excludedTables);
-        return Collections.singletonList(tableContainedRule);
     }
     
     @Test

@@ -114,7 +114,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 |-----------|-------------|------------------------------------------------------------------------------------|
 | 42S02     | 18002       | There is no rule in database \`%s\`.                                               |
 | 44000     | 18003       | Mode configuration does not exist.                                                 |
-| 44000     | 18004       | Target database name is null. You could define it in DistSQL or select a database. |
+| 44000     | 18004       | Target database \`%s\` isn't exist.                                                |
 | 22023     | 18005       | There is invalid parameter value: `%s`.                                            |
 | HY000     | 18020       | Failed to get DDL for table \`%s\`.                                                |
 | 42S01     | 18030       | Duplicate storage unit names \`%s\`.                                               |

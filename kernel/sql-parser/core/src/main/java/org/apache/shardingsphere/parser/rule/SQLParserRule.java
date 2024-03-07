@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.parser.SimpleSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
@@ -57,5 +58,10 @@ public final class SQLParserRule implements GlobalRule {
         return "Standard".equals(engineType)
                 ? new ShardingSphereSQLParserEngine(databaseType.getTrunkDatabaseType().orElse(databaseType), sqlStatementCache, parseTreeCache)
                 : new SimpleSQLParserEngine();
+    }
+    
+    @Override
+    public RuleIdentifiers getRuleIdentifiers() {
+        return new RuleIdentifiers();
     }
 }

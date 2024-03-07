@@ -33,6 +33,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -116,7 +118,9 @@ class BatchPreparedStatementExecutorTest {
     
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
-        when(result.getDataNodeRule().isNeedAccumulate(any())).thenReturn(true);
+        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
+        when(dataNodeRule.isNeedAccumulate(any())).thenReturn(true);
+        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
         return result;
     }
     

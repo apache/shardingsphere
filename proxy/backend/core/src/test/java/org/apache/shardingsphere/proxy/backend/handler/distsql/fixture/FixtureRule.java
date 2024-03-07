@@ -19,11 +19,17 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 
 public final class FixtureRule implements ShardingSphereRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
         return new FixtureRuleConfiguration();
+    }
+    
+    @Override
+    public RuleIdentifiers getRuleIdentifiers() {
+        return new RuleIdentifiers();
     }
 }

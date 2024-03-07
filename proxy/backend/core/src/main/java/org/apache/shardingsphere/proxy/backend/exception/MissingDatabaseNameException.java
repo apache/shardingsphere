@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type.datanode;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 
 /**
- * ShardingSphere rule which contains data node.
+ * Missing database name exception.
  */
-public interface DataNodeContainedRule extends ShardingSphereRule {
+public final class MissingDatabaseNameException extends DistSQLException {
     
-    /**
-     * Get data node rule.
-     * 
-     * @return data node rule
-     */
-    DataNodeRule getDataNodeRule();
+    private static final long serialVersionUID = -1248634756191801109L;
+    
+    public MissingDatabaseNameException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 8, "Missing required property `databaseName`.");
+    }
 }

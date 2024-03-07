@@ -19,7 +19,7 @@ databaseName: passthrough
 
 dataSources:
   passthrough:
-    url: jdbc:opengauss://opengauss.passthrough.host:5432/passthrough
+    url: jdbc:opengauss://opengauss.passthrough.host:5432/passthrough?stringtype=unspecified
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000

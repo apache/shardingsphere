@@ -15,19 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type.table;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Table mapper contained rule.
+ * Oracle drop database statement.
  */
-public interface TableMapperContainedRule extends ShardingSphereRule {
-    
-    /**
-     * Get table mapper rule.
-     * 
-     * @return table mapper rule
-     */
-    TableMapperRule getTableMapperRule();
+public final class OracleDropDatabaseStatement extends DropDatabaseStatement implements OracleStatement {
 }

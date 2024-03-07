@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.distsql.handler.exception.rule.RuleNotExistedException;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -46,7 +47,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -55,7 +57,6 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -342,8 +343,14 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
-        Optional<DataNodeContainedRule> dataNodeContainedRule = database.getRuleMetaData().findSingleRule(DataNodeContainedRule.class);
-        return dataNodeContainedRule.isPresent() && dataNodeContainedRule.get().getDataNodeRule().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
+        Optional<DataNodeRule> dataNodeRule = Optional.empty();
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            dataNodeRule = each.getRuleIdentifiers().findIdentifier(DataNodeRule.class);
+            if (dataNodeRule.isPresent()) {
+                break;
+            }
+        }
+        return dataNodeRule.isPresent() && dataNodeRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     /**

@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -127,7 +129,8 @@ public abstract class SQLRewriterIT {
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(DefaultDatabase.LOGIC_NAME);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache());
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(testParams.getInputSQL(), false);
+        String sql = SQLHintUtils.removeHint(testParams.getInputSQL());
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement, databaseType);
         RuleMetaData databaseRuleMetaData = new RuleMetaData(databaseRules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
@@ -135,14 +138,15 @@ public abstract class SQLRewriterIT {
         databases.put(schemaName, database);
         RuleMetaData globalRuleMetaData = new RuleMetaData(createGlobalRules());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, mock(ConfigurationProperties.class));
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, schemaName).bind(sqlStatement, Collections.emptyList());
+        HintValueContext hintValueContext = SQLHintUtils.extractHint(testParams.getInputSQL());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, schemaName, hintValueContext).bind(sqlStatement, Collections.emptyList());
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(testParams.getInputParameters());
         }
         if (sqlStatementContext instanceof CursorDefinitionAware) {
             ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(createCursorDefinition(schemaName, metaData, sqlStatementParserEngine));
         }
-        QueryContext queryContext = new QueryContext(sqlStatementContext, testParams.getInputSQL(), testParams.getInputParameters());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(new ConnectionContext(), queryContext, globalRuleMetaData, database);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, globalRuleMetaData, props);
@@ -172,7 +176,7 @@ public abstract class SQLRewriterIT {
     
     private CursorStatementContext createCursorDefinition(final String schemaName, final ShardingSphereMetaData metaData, final SQLStatementParserEngine sqlStatementParserEngine) {
         SQLStatement sqlStatement = sqlStatementParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false);
-        return (CursorStatementContext) new SQLBindEngine(metaData, schemaName).bind(sqlStatement, Collections.emptyList());
+        return (CursorStatementContext) new SQLBindEngine(metaData, schemaName, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
     }
     
     protected abstract void mockDataSource(Map<String, DataSource> dataSources) throws SQLException;
