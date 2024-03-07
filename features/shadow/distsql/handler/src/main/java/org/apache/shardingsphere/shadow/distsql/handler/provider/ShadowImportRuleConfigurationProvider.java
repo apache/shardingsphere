@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
+package org.apache.shardingsphere.shadow.distsql.handler.provider;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -33,24 +38,25 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Shadow rule configuration import checker.
+ * Shadow import rule configuration provider.
  */
-public final class ShadowRuleConfigurationImportChecker {
+public final class ShadowImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
     
-    /**
-     * Check shadow rule configuration.
-     *
-     * @param database database
-     * @param currentRuleConfig current rule configuration
-     */
-    public void check(final ShardingSphereDatabase database, final ShadowRuleConfiguration currentRuleConfig) {
-        if (null == database || null == currentRuleConfig) {
+    @Override
+    public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+        if (null == database || null == ruleConfig) {
             return;
         }
+        ShadowRuleConfiguration shadowRuleConfig = (ShadowRuleConfiguration) ruleConfig;
         String databaseName = database.getName();
-        checkDataSources(databaseName, database, currentRuleConfig);
-        checkTables(currentRuleConfig, databaseName);
-        checkShadowAlgorithms(currentRuleConfig);
+        checkDataSources(databaseName, database, shadowRuleConfig);
+        checkTables(shadowRuleConfig, databaseName);
+        checkShadowAlgorithms(shadowRuleConfig);
+    }
+    
+    @Override
+    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        return new ShadowRule((ShadowRuleConfiguration) ruleConfig);
     }
     
     private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ShadowRuleConfiguration currentRuleConfig) {
@@ -91,5 +97,10 @@ public final class ShadowRuleConfigurationImportChecker {
     
     private void checkShadowAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getShadowAlgorithms().values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return ShadowRuleConfiguration.class;
     }
 }
