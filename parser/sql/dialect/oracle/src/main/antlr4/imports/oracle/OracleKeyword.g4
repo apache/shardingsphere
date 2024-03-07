@@ -7955,3 +7955,19 @@ TLE
 XQUERY
     : X Q U E R Y
     ;
+
+SPO
+    : S P O
+    ;
+
+CRE
+    : C R E
+    ;
+
+REP
+    : R E P
+    ;
+
+APP
+    : A P P
+    ;

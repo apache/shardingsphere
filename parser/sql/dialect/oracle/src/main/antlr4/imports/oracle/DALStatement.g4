@@ -79,3 +79,15 @@ showOptions
 show
     : (SHO | SHOW) showOptions
     ;
+
+fileExt
+    : DOT_ identifier
+    ;
+
+spoolFileName
+    : identifier fileExt?
+    ;
+
+spool
+    : (SPOOL | SPO) (spoolFileName (CRE | CREATE | REP | REPLACE | APP | APPEND)?) | OFF | OUT
+    ;
