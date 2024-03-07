@@ -40,7 +40,7 @@ public final class SpoolStatementAssert {
      * @param expected expected spool statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OracleSpoolStatement actual, final SpoolStatementTestCase expected) {
-        if(null != expected.getFilename()){
+        if (null != expected.getFilename()) {
             assertThat(assertContext.getText("Actual filename does not match: "), actual.getFileName(), is(expected.getFilename()));
         }
     }

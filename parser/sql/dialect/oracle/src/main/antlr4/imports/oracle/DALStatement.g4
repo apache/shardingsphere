@@ -80,6 +80,8 @@ show
     : (SHO | SHOW) showOptions
     ;
 
+
+
 fileExt
     : DOT_ identifier
     ;
@@ -89,5 +91,5 @@ spoolFileName
     ;
 
 spool
-    : (SPOOL | SPO) (spoolFileName | OFF | OUT)
+    : (SPOOL | SPO) (spoolFileName (CRE | CREATE | REP | REPLACE | APP | APPEND)?) | OFF | OUT
     ;

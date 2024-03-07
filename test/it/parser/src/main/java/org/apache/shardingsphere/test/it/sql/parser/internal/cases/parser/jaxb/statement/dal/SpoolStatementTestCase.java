@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Spool statement test case.
@@ -30,6 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class SpoolStatementTestCase extends SQLParserTestCase {
+    
     @XmlAttribute
     private String filename;
 }
