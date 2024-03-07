@@ -80,8 +80,6 @@ show
     : (SHO | SHOW) showOptions
     ;
 
-
-
 fileExt
     : DOT_ identifier
     ;
