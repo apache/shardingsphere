@@ -7951,7 +7951,3 @@ TLE
 XQUERY
     : X Q U E R Y
     ;
-
-SPOOL
-    :S P O O L
-    ;

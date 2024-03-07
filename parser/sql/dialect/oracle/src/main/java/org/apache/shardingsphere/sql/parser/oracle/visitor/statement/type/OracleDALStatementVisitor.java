@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleAlterResourceCostStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleSpoolStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleSpoolStatement;
 
