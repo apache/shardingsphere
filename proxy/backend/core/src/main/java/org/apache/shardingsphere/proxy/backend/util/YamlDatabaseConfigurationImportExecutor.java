@@ -23,8 +23,6 @@ import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -52,13 +50,10 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceCo
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.EncryptRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.MaskRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShadowRuleConfigurationImportChecker;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
@@ -77,8 +72,6 @@ import java.util.stream.Collectors;
  * Yaml database configuration import executor.
  */
 public final class YamlDatabaseConfigurationImportExecutor {
-    
-    private final EncryptRuleConfigurationImportChecker encryptRuleConfigImportChecker = new EncryptRuleConfigurationImportChecker();
     
     private final ShadowRuleConfigurationImportChecker shadowRuleConfigImportChecker = new ShadowRuleConfigurationImportChecker();
     
@@ -163,14 +156,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
             return;
         }
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
-        if (ruleConfig instanceof ShardingRuleConfiguration || ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
-            ImportRuleConfigurationProvider importRuleConfigurationProvider = TypedSPILoader.getService(ImportRuleConfigurationProvider.class, ruleConfig.getClass());
-            importRuleConfigurationProvider.check(database, ruleConfig);
-            allRuleConfigs.add(ruleConfig);
-            database.getRuleMetaData().getRules().add(importRuleConfigurationProvider.build(database, ruleConfig, instanceContext));
-        } else if (ruleConfig instanceof EncryptRuleConfiguration) {
-            ruleConfigs.forEach(each -> addEncryptRuleConfiguration((EncryptRuleConfiguration) each, allRuleConfigs, database));
-        } else if (ruleConfig instanceof ShadowRuleConfiguration) {
+        if (ruleConfig instanceof ShadowRuleConfiguration) {
             ruleConfigs.forEach(each -> addShadowRuleConfiguration((ShadowRuleConfiguration) each, allRuleConfigs, database));
         } else if (ruleConfig instanceof MaskRuleConfiguration) {
             ruleConfigs.forEach(each -> addMaskRuleConfiguration((MaskRuleConfiguration) each, allRuleConfigs, database));
@@ -178,6 +164,11 @@ public final class YamlDatabaseConfigurationImportExecutor {
             ruleConfigs.forEach(each -> addBroadcastRuleConfiguration((BroadcastRuleConfiguration) each, allRuleConfigs, database));
         } else if (ruleConfig instanceof SingleRuleConfiguration) {
             ruleConfigs.forEach(each -> addSingleRuleConfiguration((SingleRuleConfiguration) each, allRuleConfigs, database));
+        } else {
+            ImportRuleConfigurationProvider importRuleConfigurationProvider = TypedSPILoader.getService(ImportRuleConfigurationProvider.class, ruleConfig.getClass());
+            importRuleConfigurationProvider.check(database, ruleConfig);
+            allRuleConfigs.add(ruleConfig);
+            database.getRuleMetaData().getRules().add(importRuleConfigurationProvider.build(database, ruleConfig, instanceContext));
         }
     }
     
@@ -191,12 +182,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
             result.get(swapper.getOrder()).add((RuleConfiguration) swapper.swapToObject(each));
         }
         return result;
-    }
-    
-    private void addEncryptRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
-        encryptRuleConfigImportChecker.check(database, encryptRuleConfig);
-        allRuleConfigs.add(encryptRuleConfig);
-        database.getRuleMetaData().getRules().add(new EncryptRule(database.getName(), encryptRuleConfig));
     }
     
     private void addShadowRuleConfiguration(final ShadowRuleConfiguration shadowRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
