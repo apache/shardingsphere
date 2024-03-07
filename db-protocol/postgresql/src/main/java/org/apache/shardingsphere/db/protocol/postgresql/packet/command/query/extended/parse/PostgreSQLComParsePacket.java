@@ -51,7 +51,7 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket impl
         payload.readInt4();
         statementId = payload.readStringNul();
         String originSQL = payload.readStringNul();
-        hintValueContext = SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        hintValueContext = SQLHintUtils.extractHint(originSQL);
         sql = SQLHintUtils.removeHint(originSQL);
     }
     
