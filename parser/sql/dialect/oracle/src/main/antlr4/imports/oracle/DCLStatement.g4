@@ -360,7 +360,7 @@ identifiedExternallyOption
     ;
 
 identifiedGloballyOption
-    : GLOBALLY (AS SQ_ (name | (AZURE_ROLE | AZURE_USER | IAM_GROUP_NAME | IAM_PRINCIPAL_NAME) EQ_ name) SQ_)
+    : GLOBALLY (AS SQ_ (name | (AZURE_ROLE | AZURE_USER | IAM_GROUP_NAME | IAM_PRINCIPAL_NAME) EQ_ name) SQ_)?
     ;
 
 noAuthOption
@@ -418,8 +418,8 @@ dropUser
 alterUser
     : ALTER USER ((username (IDENTIFIED (BY password (REPLACE password)?
     | EXTERNALLY (AS CERTIFICATE_DN | AS KERBEROS_PRINCIPAL_NAME)?
-    | NO AUTHENTICATION
     | GLOBALLY AS (STRING_ | SQ_ AZURE_ROLE EQ_ identifier SQ_ | SQ_ IAM_GROUP_NAME EQ_ identifier SQ_))
+    | NO AUTHENTICATION
     | DEFAULT COLLATION collationName
     | DEFAULT TABLESPACE tablespaceName
     | LOCAL? TEMPORARY TABLESPACE tablespaceName tablespaceGroupName
@@ -435,7 +435,7 @@ alterUser
     ;
 
 createRole
-    : CREATE ROLE
+    : CREATE ROLE roleName ( NOT IDENTIFIED | identifiedCluase)? (CONTAINER EQ_ (CURRENT | ALL))?
     ;
 
 dropRole
@@ -443,11 +443,16 @@ dropRole
     ;
 
 alterRole
-    : ALTER ROLE roleName ( NOT IDENTIFIED | IDENTIFIED (
-    | BY password 
-    | USING packageName 
-    | EXTERNALLY 
-    | GLOBALLY AS (STRING_ | SQ_ AZURE_ROLE EQ_ identifier SQ_ | SQ_ IAM_GROUP_NAME EQ_ identifier SQ_) ) ) (CONTAINER EQ_ (CURRENT | ALL))?
+    : ALTER ROLE roleName ( NOT IDENTIFIED | identifiedCluase  ) (CONTAINER EQ_ (CURRENT | ALL))?
+    ;
+
+identifiedCluase
+    : IDENTIFIED (
+    | BY password
+    | USING packageName
+    | EXTERNALLY
+    | GLOBALLY AS (STRING_ | SQ_ AZURE_ROLE EQ_ identifier SQ_ | SQ_ IAM_GROUP_NAME EQ_ identifier SQ_)
+    | GLOBALLY)
     ;
 
 setRole

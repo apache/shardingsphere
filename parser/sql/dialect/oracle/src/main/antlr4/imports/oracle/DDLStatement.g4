@@ -2819,8 +2819,8 @@ createPFile
     ;
 
 createControlFile
-    : CREATE CONTROLFILE REUSE? SET? DATABASE databaseName logfileForControlClause? resetLogsOrNot
-    ( MAXLOGFILES INTEGER_
+    : CREATE CONTROLFILE REUSE? SET? DATABASE databaseName (logfileForControlClause | RESETLOGS | NORESETLOGS | DATAFILE fileSpecifications
+    |( MAXLOGFILES INTEGER_
     | MAXLOGMEMBERS INTEGER_
     | MAXLOGHISTORY INTEGER_
     | MAXDATAFILES INTEGER_
@@ -2828,17 +2828,16 @@ createControlFile
     | ARCHIVELOG
     | NOARCHIVELOG
     | FORCE LOGGING
-    | SET STANDBY NOLOGGING FOR (DATA AVAILABILITY | LOAD PERFORMANCE)
-    )*
+    | SET STANDBY NOLOGGING FOR (DATA AVAILABILITY | LOAD PERFORMANCE)))+
     characterSetClause?
     ;
 
 resetLogsOrNot
-   :  ( RESETLOGS | NORESETLOGS) (DATAFILE fileSpecifications)?
+   :  ( RESETLOGS | NORESETLOGS)? (DATAFILE fileSpecifications)?
    ;
 
 logfileForControlClause
-    : LOGFILE (GROUP INTEGER_)? fileSpecification (COMMA_ (GROUP INTEGER_)? fileSpecification)+
+    : LOGFILE (GROUP INTEGER_)? fileSpecification (COMMA_ (GROUP INTEGER_)? fileSpecification)*
     ;
 
 characterSetClause
@@ -3323,7 +3322,7 @@ diskOfflineClause
     ;
 
 timeoutClause
-    : DROP AFTER INTEGER_ TIME_UNIT
+    : DROP AFTER INTEGER_ timeUnit
     ;
 
 checkDiskgroupClause
@@ -3555,7 +3554,7 @@ buildClause
     ;
 
 createMaterializedViewLog
-    : CREATE MATERIALIZED VIEW LOG ON tableName materializedViewLogAttribute? parallelClause? ( WITH ( COMMA_? ( OBJECT ID | PRIMARY KEY | ROWID | SEQUENCE | COMMIT SCN ) )* (LP_ ( COMMA_? identifier )+ RP_ newViewValuesClause? )? mvLogPurgeClause? )*
+    : CREATE MATERIALIZED VIEW LOG ON tableName materializedViewLogAttribute? parallelClause? ( WITH ( ( COMMA_? ( OBJECT ID | PRIMARY KEY | ROWID | SEQUENCE | COMMIT SCN ) ) | (LP_ columnName ( COMMA_ columnName )* RP_ ) )* )? newViewValuesClause? mvLogPurgeClause? createMvRefresh? ((FOR UPDATE)? ( (DISABLE | ENABLE) QUERY REWRITE )? AS selectSubquery)?
     ;
 
 materializedViewLogAttribute
@@ -3716,14 +3715,15 @@ newValuesClause
     ;
 
 mvLogPurgeClause
-    : PURGE IMMEDIATE (SYNCHRONOUS | ASYNCHRONOUS)?
+    : PURGE (IMMEDIATE (SYNCHRONOUS | ASYNCHRONOUS)?
     | START WITH dateValue nextOrRepeatClause?
-    | (START WITH dateValue)? nextOrRepeatClause
+    | (START WITH dateValue)? nextOrRepeatClause)
     ;
 
 nextOrRepeatClause
-    : NEXT dateValue | REPEAT INTERVAL intervalExpression
+    : NEXT dateValue | REPEAT intervalLiterals
     ;
+
 
 forRefreshClause
     : FOR ((SYNCHRONOUS REFRESH USING stagingLogName) | (FAST REFRESH))
@@ -4209,7 +4209,7 @@ alterType
 
 createCluster
     : CREATE CLUSTER (schemaName DOT_)? clusterName LP_ (columnName dataType (COLLATE columnCollationName)? SORT? (COMMA_ columnName dataType (COLLATE columnCollationName)? SORT?)*) RP_
-    ( physicalAttributesClause | SIZE sizeClause | TABLESPACE tablespaceName | INDEX | (SINGLE TABLE)? HASHKEYS INTEGER_ (HASH IS expr)?)? parallelClause?
+    ( physicalAttributesClause | SIZE sizeClause | TABLESPACE tablespaceName | INDEX | (SINGLE TABLE)? HASHKEYS INTEGER_ (HASH IS expr)?)* parallelClause?
     ( NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)? clusterRangePartitions?
     ;
 

@@ -87,7 +87,7 @@ identifier
     ;
 
 unreservedWord
-    : unreservedWord1 | unreservedWord2 | unreservedWord3 | capacityUnit
+    : unreservedWord1 | unreservedWord2 | unreservedWord3 | capacityUnit | timeUnit
     ;
 
 unreservedWord1
@@ -1779,7 +1779,11 @@ externalDatatype
     ;
 
 capacityUnit
-    : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
+    : ('K' | 'M' | 'G' | 'T' | 'P' | 'E' | 'k' | 'm' | 'g' | 't' | 'p' | 'e')
+    ;
+
+timeUnit
+    : 'M' | 'H' | 'm' | 'h'
     ;
 
 attributeDimensionName
@@ -2107,7 +2111,7 @@ keyForBlob
     ;
 
 sourceText
-    : identifier
+    : .*? RBE_
     ;
 
 fullPathName
