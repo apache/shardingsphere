@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.util.Optional;
@@ -34,7 +34,7 @@ import java.util.Optional;
 @Setter
 public abstract class PrepareStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private SelectStatement select;
+    private GenericSelectStatement select;
     
     private InsertStatement insert;
     
@@ -47,7 +47,7 @@ public abstract class PrepareStatement extends AbstractSQLStatement implements D
      *
      * @return select statement
      */
-    public Optional<SelectStatement> getSelect() {
+    public Optional<GenericSelectStatement> getSelect() {
         return Optional.ofNullable(select);
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.converter;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ class HBaseRowKeyExtractorTest {
     
     @Test
     void assertGetRowKeys() {
-        SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey in ('1', '2') ");
+        GenericSelectStatement sqlStatement = (GenericSelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey in ('1', '2') ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
         List<String> actual = Arrays.asList("1", "2");

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -111,7 +111,7 @@ class ProjectionsTokenGeneratorTest {
         Collection<Projection> projections = Arrays.asList(getAggregationProjection(), getDerivedProjection(), getOtherDerivedProjection());
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(projections);
         when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(2);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new MySQLSelectStatement());
+        when(selectStatementContext.getSqlStatement()).thenReturn(new MySQLGenericSelectStatement());
         ProjectionsTokenGenerator generator = getProjectionsTokenGenerator();
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
         assertThat(actual.toString(routeUnit), is(", " + TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION + " AS " + TEST_AGGREGATION_DISTINCT_PROJECTION_ALIAS + " "

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,7 +38,7 @@ public abstract class CreateTableStatement extends AbstractSQLStatement implemen
     
     private SimpleTableSegment table;
     
-    private SelectStatement selectStatement;
+    private GenericSelectStatement selectStatement;
     
     private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
     
@@ -49,7 +49,7 @@ public abstract class CreateTableStatement extends AbstractSQLStatement implemen
      *
      * @return select statement
      */
-    public Optional<SelectStatement> getSelectStatement() {
+    public Optional<GenericSelectStatement> getSelectStatement() {
         return Optional.ofNullable(selectStatement);
     }
 }

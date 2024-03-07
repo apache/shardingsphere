@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionalErrorAllowedSQLStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.junit.jupiter.api.Test;
@@ -49,6 +49,6 @@ class OpenGaussTransactionalErrorAllowedSQLStatementHandlerTest {
     
     @Test
     void assertJudgeContinueToExecuteWithNotAllowedStatement() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> allowedSQLStatementHandler.judgeContinueToExecute(mock(SelectStatement.class)));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> allowedSQLStatementHandler.judgeContinueToExecute(mock(GenericSelectStatement.class)));
     }
 }

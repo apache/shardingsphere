@@ -39,10 +39,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ro
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -59,7 +59,7 @@ class RowNumberDecoratorMergedResultTest {
     
     @Test
     void assertNextForSkipAll() throws SQLException {
-        OracleSelectStatement selectStatement = new OracleSelectStatement();
+        OracleGenericSelectStatement selectStatement = new OracleGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
@@ -69,7 +69,7 @@ class RowNumberDecoratorMergedResultTest {
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
+        GenericSelectStatement subSelectStatement = mock(MySQLGenericSelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
         when(topProjectionSegment.getAlias()).thenReturn("row_id");
@@ -92,7 +92,7 @@ class RowNumberDecoratorMergedResultTest {
     void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        OracleSelectStatement selectStatement = new OracleSelectStatement();
+        OracleGenericSelectStatement selectStatement = new OracleGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), null, selectStatement, DefaultDatabase.LOGIC_NAME);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
@@ -106,7 +106,7 @@ class RowNumberDecoratorMergedResultTest {
     
     @Test
     void assertNextForRowCountBoundOpenedFalse() throws SQLException {
-        OracleSelectStatement selectStatement = new OracleSelectStatement();
+        OracleGenericSelectStatement selectStatement = new OracleGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
@@ -116,7 +116,7 @@ class RowNumberDecoratorMergedResultTest {
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
+        GenericSelectStatement subSelectStatement = mock(MySQLGenericSelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
         when(topProjectionSegment.getAlias()).thenReturn("row_id");
@@ -140,7 +140,7 @@ class RowNumberDecoratorMergedResultTest {
     
     @Test
     void assertNextForRowCountBoundOpenedTrue() throws SQLException {
-        OracleSelectStatement selectStatement = new OracleSelectStatement();
+        OracleGenericSelectStatement selectStatement = new OracleGenericSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
@@ -150,7 +150,7 @@ class RowNumberDecoratorMergedResultTest {
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
+        GenericSelectStatement subSelectStatement = mock(MySQLGenericSelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
         when(topProjectionSegment.getAlias()).thenReturn("row_id");

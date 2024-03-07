@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatem
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
 import org.junit.jupiter.api.Test;
 
@@ -126,7 +126,7 @@ class MergeStatementBinderTest {
                 new ColumnSegment(0, 0, new IdentifierValue("status")), new LiteralExpressionSegment(0, 0, 1), "+", "status + 1"));
         expressionProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("new_status")));
         projectionsSegment.getProjections().add(expressionProjectionSegment);
-        OracleSelectStatement oracleSelectStatement = new OracleSelectStatement();
+        OracleGenericSelectStatement oracleSelectStatement = new OracleGenericSelectStatement();
         oracleSelectStatement.setProjections(projectionsSegment);
         oracleSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, oracleSelectStatement, ""));

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
@@ -74,7 +74,7 @@ public final class SQLStatementUtils {
     }
     
     private static SQLStatementType getDMLType(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
+        if (sqlStatement instanceof GenericSelectStatement) {
             return SQLStatementType.SELECT;
         }
         if (sqlStatement instanceof InsertStatement) {

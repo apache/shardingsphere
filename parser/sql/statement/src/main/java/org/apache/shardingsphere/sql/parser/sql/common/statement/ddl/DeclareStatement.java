@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 
 /**
  * Declare statement.
@@ -32,5 +32,5 @@ public abstract class DeclareStatement extends AbstractSQLStatement implements D
     
     private CursorNameSegment cursorName;
     
-    private SelectStatement select;
+    private GenericSelectStatement select;
 }

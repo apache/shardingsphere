@@ -40,7 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.prepare.Prepa
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -114,7 +114,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     private PrepareStatementQuerySegment extractPrepareStatementQuerySegmentFromPreparableStmt(final PreparableStmtContext ctx) {
         PrepareStatementQuerySegment result = new PrepareStatementQuerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.select()) {
-            result.setSelect((SelectStatement) visit(ctx.select()));
+            result.setSelect((GenericSelectStatement) visit(ctx.select()));
         } else if (null != ctx.insert()) {
             result.setInsert((InsertStatement) visit(ctx.insert()));
         } else if (null != ctx.update()) {
