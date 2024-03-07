@@ -7951,3 +7951,7 @@ TLE
 XQUERY
     : X Q U E R Y
     ;
+
+SPO
+    : S P O
+    ;

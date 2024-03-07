@@ -89,5 +89,5 @@ spoolFileName
     ;
 
 spool
-    : SPOOL spoolFileName
+    : (SPOOL | SPO) (spoolFileName | OFF | OUT)
     ;
