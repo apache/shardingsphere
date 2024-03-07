@@ -60,6 +60,7 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     }
     
     private Optional<Collection<String>> parseSQLComments() {
+        // TODO use SQLHintUtil to parse SQL comments and remove hint in sql
         Collection<String> result = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getCommentSegments().stream().map(CommentSegment::getText).collect(Collectors.toList());
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }

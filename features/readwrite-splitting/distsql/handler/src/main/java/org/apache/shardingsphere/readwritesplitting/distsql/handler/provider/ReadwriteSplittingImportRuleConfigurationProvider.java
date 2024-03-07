@@ -24,14 +24,18 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 
 /**
  * Readwrite-splitting import rule configuration provider.
@@ -44,8 +48,7 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
             return;
         }
         ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = (ReadwriteSplittingRuleConfiguration) ruleConfig;
-        String databaseName = database.getName();
-        checkDataSources(databaseName, database, readwriteSplittingRuleConfig);
+        checkDataSources(database, readwriteSplittingRuleConfig);
         checkLoadBalancers(readwriteSplittingRuleConfig);
     }
     
@@ -54,7 +57,7 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
         return new ReadwriteSplittingRule(database.getName(), (ReadwriteSplittingRuleConfiguration) ruleConfig, instanceContext);
     }
     
-    private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    private void checkDataSources(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Collection<String> requiredDataSources = new LinkedHashSet<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
             if (null != each.getWriteDataSourceName()) {
@@ -65,7 +68,18 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
             }
         }
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
-        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
+        Collection<String> logicalDataSources = getLogicDataSources(database);
+        notExistedDataSources.removeIf(logicalDataSources::contains);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedDataSources));
+    }
+    
+    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
+        Collection<String> result = new HashSet<>();
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            Optional<DataSourceMapperRule> dataSourceMapperRule = each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class);
+            dataSourceMapperRule.ifPresent(optional -> result.addAll(optional.getDataSourceMapper().keySet()));
+        }
+        return result;
     }
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {

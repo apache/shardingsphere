@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -142,7 +143,8 @@ class DatabaseConnectorTest {
     void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), databaseConnectionManager, true);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext()),
+                databaseConnectionManager, true);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseConnector.class));
         Field queryHeadersField = DatabaseConnector.class.getDeclaredField("queryHeaders");
@@ -192,7 +194,8 @@ class DatabaseConnectorTest {
     void assertAddStatementCorrectly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), databaseConnectionManager, false);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext()),
+                databaseConnectionManager, false);
         engine.add(statement);
         Collection<?> actual = getField(engine, "cachedStatements");
         assertThat(actual.size(), is(1));
@@ -203,7 +206,8 @@ class DatabaseConnectorTest {
     void assertAddResultSetCorrectly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), databaseConnectionManager, false);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext()),
+                databaseConnectionManager, false);
         engine.add(resultSet);
         Collection<?> actual = getField(engine, "cachedResultSets");
         assertThat(actual.size(), is(1));
@@ -214,7 +218,8 @@ class DatabaseConnectorTest {
     void assertCloseCorrectly() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), databaseConnectionManager, false);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext()),
+                databaseConnectionManager, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         cachedResultSets.add(resultSet);
         Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
@@ -231,7 +236,8 @@ class DatabaseConnectorTest {
     void assertCloseResultSetsWithExceptionThrown() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), databaseConnectionManager, false);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext()),
+                databaseConnectionManager, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
         doThrow(sqlExceptionByResultSet).when(resultSet).close();

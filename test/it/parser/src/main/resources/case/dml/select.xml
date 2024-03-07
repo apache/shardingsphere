@@ -9359,4 +9359,22 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_hour_from_table">
+        <projections start-index="7" stop-index="10">
+            <column-projection name="hour" start-index="7" stop-index="10"/>
+        </projections>
+        <from start-index="17" stop-index="22">
+            <simple-table name="table1" start-index="17" stop-index="22"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_minute_from_table">
+        <projections start-index="7" stop-index="12">
+            <column-projection name="minute" start-index="7" stop-index="12"/>
+        </projections>
+        <from start-index="19" stop-index="24">
+            <simple-table name="table1" start-index="19" stop-index="24"/>
+        </from>
+    </select>
 </sql-parser-test-cases>

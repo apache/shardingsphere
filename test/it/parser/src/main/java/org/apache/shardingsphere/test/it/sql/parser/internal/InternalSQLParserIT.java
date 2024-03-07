@@ -53,12 +53,9 @@ public abstract class InternalSQLParserIT {
     // TODO fix these sql parser cases after add eof in OracleStatement.g4
     // CHECKSTYLE:OFF
     private static final Collection<String> IGNORE_TEST_CASES = new HashSet<>(Arrays.asList(
-            "create_function_call_spec_java", "create_cluster_number_size_hashkeys", "create_cluster_set_size", "create_cluster_size_initial_next", "create_external_role",
-            "create_external_user", "create_control_file", "create_global_role", "create_global_user", "create_java", "create_materialized_view_log_with_including_new",
-            "create_materialized_view_log_with_pctfree_storage_purge_repeat", "create_materialized_view_log_with_row_id_sequence_including_new", "create_materialized_view_log_with_tablespace",
-            "create_no_identified_role", "create_role", "create_role_identified_by", "create_role_with_container", "create_role_with_identified_by_password",
-            "create_table_with_out_of_line_constraints_oracle", "create_table_with_xmltype_column_clob_oracle", "create_table_with_xmltype_column_oracle", "create_tablespace_with_blocksize",
-            "create_tablespace_with_temporary_tablespace_group", "create_tablespace_with_temporary_tempfile_spec_extent_management", "create_tablespace_with_undo_tablespace_spec"));
+            "create_function_with_aggregate_using_function", "create_table_with_out_of_line_constraints_oracle", "create_table_with_xmltype_column_clob_oracle",
+            "create_table_with_xmltype_column_oracle", "create_tablespace_with_blocksize", "create_tablespace_with_temporary_tablespace_group",
+            "create_tablespace_with_temporary_tempfile_spec_extent_management", "create_tablespace_with_undo_tablespace_spec"));
     // CHECKSTYLE:ON
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")

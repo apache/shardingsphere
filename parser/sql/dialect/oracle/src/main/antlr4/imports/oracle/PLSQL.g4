@@ -57,18 +57,23 @@ createTrigger
     ;
 
 plsqlFunctionSource
-    : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
+    : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? returnDateType?
     sharingClause? (invokerRightsClause
-    | accessibleByClause 
+    | accessibleByClause
     | defaultCollationoOptionClause
     | deterministicClause
     | parallelEnableClause
     | resultCacheClause
+    | aggregateClause
     | pipelinedClause
     | sqlMacroClause)*
-    (aggregateClause | ((IS | AS) (callSpec | declareSection? body)))
+    (IS | AS) (callSpec | declareSection? body)
     ;
-    
+
+returnDateType
+    : RETURN dataType
+    ;
+
 body
     : BEGIN statement+ (EXCEPTION (exceptionHandler)+)? END (identifier)? SEMI_
     ;

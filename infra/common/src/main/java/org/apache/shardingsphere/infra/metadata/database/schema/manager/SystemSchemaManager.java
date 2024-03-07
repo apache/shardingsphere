@@ -51,14 +51,14 @@ public final class SystemSchemaManager {
     static {
         List<String> resourceNames;
         try (Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read("schema")) {
-            resourceNames = resourceNameStream.collect(Collectors.toList());
+            resourceNames = resourceNameStream.filter(each -> each.endsWith(".yaml")).collect(Collectors.toList());
         }
-        DATABASE_TYPE_SCHEMA_TABLE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new,
-                Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new, Collectors.mapping(path -> StringUtils.removeEnd(path[3], ".yaml"),
-                        Collectors.toCollection(CaseInsensitiveSet::new)))));
-        DATABASE_TYPE_SCHEMA_RESOURCE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new,
-                Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new, Collectors.mapping(path -> String.join("/", path),
-                        Collectors.toCollection(CaseInsensitiveSet::new)))));
+        DATABASE_TYPE_SCHEMA_TABLE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).filter(each -> each.length == 4)
+                .collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new, Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new,
+                        Collectors.mapping(path -> StringUtils.removeEnd(path[3], ".yaml"), Collectors.toCollection(CaseInsensitiveSet::new)))));
+        DATABASE_TYPE_SCHEMA_RESOURCE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).filter(each -> each.length == 4)
+                .collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new, Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new,
+                        Collectors.mapping(path -> String.join("/", path), Collectors.toCollection(CaseInsensitiveSet::new)))));
     }
     
     /**

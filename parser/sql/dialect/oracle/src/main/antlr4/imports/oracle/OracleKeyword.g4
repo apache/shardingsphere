@@ -7820,6 +7820,10 @@ DELEGATE
     : D E L E G A T E
     ;
 
+TIME_UNIT
+    : T I M E UL_ U N I T
+    ;
+
 DEVICE
     : D E V I C E
     ;

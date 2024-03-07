@@ -25,8 +25,9 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -111,7 +112,9 @@ public final class ShardingSphereMetaData {
         String databaseName = database.getName();
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
         database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
-        database.getRuleMetaData().findRules(StaticDataSourceContainedRule.class).forEach(each -> each.getStaticDataSourceRule().cleanStorageNodeDataSources());
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(StaticDataSourceRule.class).ifPresent(StaticDataSourceRule::cleanStorageNodeDataSources);
+        }
         Optional.ofNullable(database.getResourceMetaData())
                 .ifPresent(optional -> optional.getStorageUnits().values().forEach(each -> new DataSourcePoolDestroyer(each.getDataSource()).asyncDestroy()));
     }

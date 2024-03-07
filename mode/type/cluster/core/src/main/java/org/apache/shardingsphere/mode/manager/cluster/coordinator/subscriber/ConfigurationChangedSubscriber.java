@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceUnitsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 
 import java.util.Collection;
 import java.util.Map;
@@ -98,26 +99,28 @@ public final class ConfigurationChangedSubscriber {
     private void disableDataSources() {
         Map<String, StorageNodeDataSource> storageNodes = getDisabledDataSources();
         for (Entry<String, ShardingSphereDatabase> entry : contextManager.getMetaDataContexts().getMetaData().getDatabases().entrySet()) {
-            entry.getValue().getRuleMetaData().findRules(StaticDataSourceContainedRule.class).forEach(each -> disableDataSources(entry.getKey(), each, storageNodes));
+            for (ShardingSphereRule each : entry.getValue().getRuleMetaData().getRules()) {
+                each.getRuleIdentifiers().findIdentifier(StaticDataSourceRule.class).ifPresent(optional -> disableDataSources(entry.getKey(), optional, storageNodes));
+            }
         }
     }
     
-    private void disableDataSources(final String databaseName, final StaticDataSourceContainedRule rule, final Map<String, StorageNodeDataSource> storageNodes) {
+    private void disableDataSources(final String databaseName, final StaticDataSourceRule staticDataSourceRule, final Map<String, StorageNodeDataSource> storageNodes) {
         for (Entry<String, StorageNodeDataSource> entry : storageNodes.entrySet()) {
             QualifiedDatabase database = new QualifiedDatabase(entry.getKey());
             if (!database.getDatabaseName().equals(databaseName)) {
                 continue;
             }
-            disableDataSources(entry.getValue(), rule, database);
+            disableDataSources(entry.getValue(), staticDataSourceRule, database);
         }
     }
     
-    private void disableDataSources(final StorageNodeDataSource storageNodeDataSource, final StaticDataSourceContainedRule rule, final QualifiedDatabase database) {
-        for (Entry<String, Collection<String>> entry : rule.getStaticDataSourceRule().getDataSourceMapper().entrySet()) {
+    private void disableDataSources(final StorageNodeDataSource storageNodeDataSource, final StaticDataSourceRule staticDataSourceRule, final QualifiedDatabase database) {
+        for (Entry<String, Collection<String>> entry : staticDataSourceRule.getDataSourceMapper().entrySet()) {
             if (!database.getGroupName().equals(entry.getKey())) {
                 continue;
             }
-            entry.getValue().forEach(each -> rule.getStaticDataSourceRule().updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
+            entry.getValue().forEach(each -> staticDataSourceRule.updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
         }
     }
     

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
@@ -148,8 +148,9 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     
     @Override
     public void operate(final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) {
-        database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)
-                .ifPresent(optional -> sqlStatement.getNames().forEach(groupName -> optional.getStaticDataSourceRule().cleanStorageNodeDataSource(groupName)));
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(StaticDataSourceRule.class).ifPresent(optional -> sqlStatement.getNames().forEach(optional::cleanStorageNodeDataSource));
+        }
     }
     
     @Override

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -52,7 +53,7 @@ class HBaseDeleteOperationConverterTest {
     @Test
     void assertConvert() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation hbaseOperation = converter.convert();
         assertThat(hbaseOperation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
@@ -63,7 +64,7 @@ class HBaseDeleteOperationConverterTest {
     void assertConvertWithIn() {
         String sql = " delete /*+ hbase */ from t_test_order where rowKey in ('2', '1')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation hBaseOperation = converter.convert();
         assertThat(hBaseOperation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
