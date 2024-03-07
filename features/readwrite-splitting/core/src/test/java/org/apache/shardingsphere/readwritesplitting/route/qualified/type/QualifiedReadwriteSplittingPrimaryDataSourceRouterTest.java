@@ -20,8 +20,8 @@ package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +46,7 @@ class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
     
     @Test
     void assertWriteRouteStatement() {
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        MySQLSimpleSelectStatement selectStatement = mock(MySQLSimpleSelectStatement.class);
         when(selectStatement.getLock()).thenReturn(Optional.of(new LockSegment(0, 1)));
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
@@ -56,7 +56,7 @@ class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
     
     @Test
     void assertHintRouteWriteOnly() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SimpleSelectStatement.class));
         when(hintValueContext.isWriteRouteOnly()).thenReturn(false);
         assertFalse(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
         when(hintValueContext.isWriteRouteOnly()).thenReturn(true);

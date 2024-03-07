@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -45,7 +45,7 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
     public static final String FUNCTION_NAME = "version()";
     
-    private final SelectStatement sqlStatement;
+    private final SimpleSelectStatement sqlStatement;
     
     private MergedResult mergedResult;
     

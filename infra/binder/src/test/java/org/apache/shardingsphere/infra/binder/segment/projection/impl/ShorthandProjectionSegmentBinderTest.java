@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -83,7 +83,7 @@ class ShorthandProjectionSegmentBinderTest {
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
         tableBinderContexts.put("o", new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
-        SubqueryTableSegment boundedTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, mock(MySQLSelectStatement.class), ""));
+        SubqueryTableSegment boundedTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, mock(MySQLSimpleSelectStatement.class), ""));
         boundedTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
         ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundedTableSegment, tableBinderContexts);
         assertThat(actual.getActualProjectionSegments().size(), is(1));

@@ -39,10 +39,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
@@ -160,10 +160,10 @@ class InsertStatementContextTest {
     @Test
     void assertInsertSelect() {
         InsertStatement insertStatement = new MySQLInsertStatement();
-        SelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.addParameterMarkerSegments(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement, "");
+        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
+        simpleSelectStatement.addParameterMarkerSegments(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
+        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SubquerySegment insertSelect = new SubquerySegment(0, 0, simpleSelectStatement, "");
         insertStatement.setInsertSelect(insertSelect);
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         InsertStatementContext actual = createInsertStatementContext(Collections.singletonList("param"), insertStatement);

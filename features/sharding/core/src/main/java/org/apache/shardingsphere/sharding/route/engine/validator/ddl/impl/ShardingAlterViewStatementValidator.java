@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterViewStatementHandler;
 
 import java.util.Arrays;
@@ -45,7 +45,7 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         AlterViewStatement alterViewStatement = (AlterViewStatement) sqlStatementContext.getSqlStatement();
-        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
+        Optional<SimpleSelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
         if (selectStatement.isPresent()) {
             TableExtractor extractor = new TableExtractor();
             extractor.extractTablesFromSelect(selectStatement.get());

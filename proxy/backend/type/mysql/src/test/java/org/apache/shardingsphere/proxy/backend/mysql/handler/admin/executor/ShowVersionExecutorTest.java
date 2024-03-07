@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,9 +55,9 @@ class ShowVersionExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithoutAlias());
-        ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
+        SimpleSelectStatement simpleSelectStatement = mock(SimpleSelectStatement.class);
+        when(simpleSelectStatement.getProjections()).thenReturn(createProjectionsSegmentWithoutAlias());
+        ShowVersionExecutor executor = new ShowVersionExecutor(simpleSelectStatement);
         executor.execute(mockConnectionSession());
         assertQueryResult(executor, ShowVersionExecutor.FUNCTION_NAME);
     }
@@ -77,9 +77,9 @@ class ShowVersionExecutorTest {
     
     @Test
     void assertExecuteWithAlias() throws SQLException {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithAlias());
-        ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
+        SimpleSelectStatement simpleSelectStatement = mock(SimpleSelectStatement.class);
+        when(simpleSelectStatement.getProjections()).thenReturn(createProjectionsSegmentWithAlias());
+        ShowVersionExecutor executor = new ShowVersionExecutor(simpleSelectStatement);
         executor.execute(mockConnectionSession());
         assertQueryResult(executor, "foo_alias");
     }

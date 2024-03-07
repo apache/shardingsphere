@@ -26,12 +26,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSimpleSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -46,7 +46,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentIsPresentForMySQL() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -57,7 +57,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentIsPresentForPostgreSQL() {
-        PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
+        PostgreSQLSimpleSelectStatement selectStatement = new PostgreSQLSimpleSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -68,7 +68,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentIsPresentForSQL92() {
-        SQL92SelectStatement selectStatement = new SQL92SelectStatement();
+        SQL92SimpleSelectStatement selectStatement = new SQL92SimpleSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -79,7 +79,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentIsPresentForSQLServer() {
-        SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
+        SQLServerSimpleSelectStatement selectStatement = new SQLServerSimpleSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -90,10 +90,10 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentAbsentAndTopSegmentPresent() {
-        SQLServerSelectStatement subquerySelectStatement = new SQLServerSelectStatement();
+        SQLServerSimpleSelectStatement subquerySelectStatement = new SQLServerSimpleSelectStatement();
         subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
         subquerySelectStatement.getProjections().getProjections().add(new TopProjectionSegment(0, 10, null, "rowNumberAlias"));
-        SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
+        SQLServerSimpleSelectStatement selectStatement = new SQLServerSimpleSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""), ""));
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
@@ -104,7 +104,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenLimitSegmentTopSegmentAbsentAndWhereSegmentPresent() {
-        SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
+        SQLServerSimpleSelectStatement selectStatement = new SQLServerSimpleSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         WhereSegment where = new WhereSegment(0, 10, null);
         selectStatement.setWhere(where);
@@ -117,33 +117,33 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForMySQL() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new MySQLSelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new MySQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForOracle() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new OracleSelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new OracleSimpleSelectStatement());
     }
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForPostgreSQL() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new PostgreSQLSelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new PostgreSQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForSQL92() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new SQL92SelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new SQL92SimpleSelectStatement());
     }
     
     @Test
     void assertCreatePaginationContextWhenResultIsPaginationContextForSQLServer() {
-        assertCreatePaginationContextWhenResultIsPaginationContext(new SQLServerSelectStatement());
+        assertCreatePaginationContextWhenResultIsPaginationContext(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCreatePaginationContextWhenResultIsPaginationContext(final SelectStatement selectStatement) {
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+    private void assertCreatePaginationContextWhenResultIsPaginationContext(final SimpleSelectStatement simpleSelectStatement) {
+        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         assertThat(new PaginationContextEngine().createPaginationContext(
-                selectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList()), instanceOf(PaginationContext.class));
+                simpleSelectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList()), instanceOf(PaginationContext.class));
     }
 }

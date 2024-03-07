@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
@@ -34,5 +34,5 @@ public final class OpenGaussCursorStatement extends AbstractSQLStatement impleme
     
     private CursorNameSegment cursorName;
     
-    private SelectStatement select;
+    private SimpleSelectStatement select;
 }

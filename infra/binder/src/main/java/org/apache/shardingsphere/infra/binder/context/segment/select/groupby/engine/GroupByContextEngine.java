@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.Gro
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,15 +34,15 @@ public final class GroupByContextEngine {
     /**
      * Create group by context.
      *
-     * @param selectStatement select statement
+     * @param simpleSelectStatement select statement
      * @return group by context
      */
-    public GroupByContext createGroupByContext(final SelectStatement selectStatement) {
-        if (!selectStatement.getGroupBy().isPresent()) {
+    public GroupByContext createGroupByContext(final SimpleSelectStatement simpleSelectStatement) {
+        if (!simpleSelectStatement.getGroupBy().isPresent()) {
             return new GroupByContext(new LinkedList<>());
         }
         Collection<OrderByItem> groupByItems = new LinkedList<>();
-        for (OrderByItemSegment each : selectStatement.getGroupBy().get().getGroupByItems()) {
+        for (OrderByItemSegment each : simpleSelectStatement.getGroupBy().get().getGroupByItems()) {
             OrderByItem orderByItem = new OrderByItem(each);
             if (each instanceof IndexOrderByItemSegment) {
                 orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());

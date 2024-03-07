@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -44,7 +44,7 @@ public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecuto
     
     public static final String FUNCTION_NAME = "connection_id()";
     
-    private final SelectStatement sqlStatement;
+    private final SimpleSelectStatement sqlStatement;
     
     private MergedResult mergedResult;
     

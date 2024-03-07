@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -70,23 +70,23 @@ class ShowConnectionIdExecutorTest {
         return result;
     }
     
-    private SelectStatement mockSelectStatement() {
+    private SimpleSelectStatement mockSelectStatement() {
         Collection<ProjectionSegment> projections = new LinkedList<>();
         ProjectionsSegment segment = mock(ProjectionsSegment.class);
         when(segment.getProjections()).thenReturn(projections);
-        SelectStatement result = mock(SelectStatement.class);
+        SimpleSelectStatement result = mock(SimpleSelectStatement.class);
         when(result.getProjections()).thenReturn(segment);
         return result;
     }
     
-    private SelectStatement mockSelectStatementWithAlias() {
+    private SimpleSelectStatement mockSelectStatementWithAlias() {
         Collection<ProjectionSegment> projections = new LinkedList<>();
         ExpressionProjectionSegment projectionSegment = new ExpressionProjectionSegment(0, 0, "connection_id()");
         projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("test_alias")));
         projections.add(projectionSegment);
         ProjectionsSegment segment = mock(ProjectionsSegment.class);
         when(segment.getProjections()).thenReturn(projections);
-        SelectStatement result = mock(SelectStatement.class);
+        SimpleSelectStatement result = mock(SimpleSelectStatement.class);
         when(result.getProjections()).thenReturn(segment);
         return result;
     }

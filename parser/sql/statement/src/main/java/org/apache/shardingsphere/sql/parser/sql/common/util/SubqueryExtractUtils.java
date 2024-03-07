@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -53,23 +53,23 @@ public final class SubqueryExtractUtils {
     /**
      * Get subquery segment from SelectStatement.
      *
-     * @param selectStatement SelectStatement
+     * @param simpleSelectStatement SelectStatement
      * @return subquery segment collection
      */
-    public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement) {
+    public static Collection<SubquerySegment> getSubquerySegments(final SimpleSelectStatement simpleSelectStatement) {
         List<SubquerySegment> result = new LinkedList<>();
-        extractSubquerySegments(result, selectStatement);
+        extractSubquerySegments(result, simpleSelectStatement);
         return result;
     }
     
-    private static void extractSubquerySegments(final List<SubquerySegment> result, final SelectStatement selectStatement) {
-        extractSubquerySegmentsFromProjections(result, selectStatement.getProjections());
-        extractSubquerySegmentsFromTableSegment(result, selectStatement.getFrom());
-        if (selectStatement.getWhere().isPresent()) {
-            extractSubquerySegmentsFromWhere(result, selectStatement.getWhere().get().getExpr());
+    private static void extractSubquerySegments(final List<SubquerySegment> result, final SimpleSelectStatement simpleSelectStatement) {
+        extractSubquerySegmentsFromProjections(result, simpleSelectStatement.getProjections());
+        extractSubquerySegmentsFromTableSegment(result, simpleSelectStatement.getFrom());
+        if (simpleSelectStatement.getWhere().isPresent()) {
+            extractSubquerySegmentsFromWhere(result, simpleSelectStatement.getWhere().get().getExpr());
         }
-        if (selectStatement.getCombine().isPresent()) {
-            extractSubquerySegmentsFromCombine(result, selectStatement.getCombine().get());
+        if (simpleSelectStatement.getCombine().isPresent()) {
+            extractSubquerySegmentsFromCombine(result, simpleSelectStatement.getCombine().get());
         }
     }
     

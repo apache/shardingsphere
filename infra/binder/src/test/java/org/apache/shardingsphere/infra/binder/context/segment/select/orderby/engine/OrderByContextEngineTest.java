@@ -30,13 +30,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSimpleSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -53,72 +53,72 @@ class OrderByContextEngineTest {
     
     @Test
     void assertCreateOrderByWithoutOrderByForMySQL() {
-        assertCreateOrderByWithoutOrderBy(new MySQLSelectStatement());
+        assertCreateOrderByWithoutOrderBy(new MySQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderByWithoutOrderByForOracle() {
-        assertCreateOrderByWithoutOrderBy(new OracleSelectStatement());
+        assertCreateOrderByWithoutOrderBy(new OracleSimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderByWithoutOrderByForPostgreSQL() {
-        assertCreateOrderByWithoutOrderBy(new PostgreSQLSelectStatement());
+        assertCreateOrderByWithoutOrderBy(new PostgreSQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderByWithoutOrderByForSQL92() {
-        assertCreateOrderByWithoutOrderBy(new SQL92SelectStatement());
+        assertCreateOrderByWithoutOrderBy(new SQL92SimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderByWithoutOrderByForSQLServer() {
-        assertCreateOrderByWithoutOrderBy(new SQLServerSelectStatement());
+        assertCreateOrderByWithoutOrderBy(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCreateOrderByWithoutOrderBy(final SelectStatement selectStatement) {
+    private void assertCreateOrderByWithoutOrderBy(final SimpleSelectStatement simpleSelectStatement) {
         OrderByItem orderByItem1 = new OrderByItem(new IndexOrderByItemSegment(0, 1, 1, OrderDirection.ASC, NullsOrderType.LAST));
         OrderByItem orderByItem2 = new OrderByItem(new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, NullsOrderType.LAST));
         Collection<OrderByItem> orderByItems = Arrays.asList(orderByItem1, orderByItem2);
         GroupByContext groupByContext = new GroupByContext(orderByItems);
-        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(simpleSelectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems(), is(orderByItems));
         assertTrue(actualOrderByContext.isGenerated());
     }
     
     @Test
     void assertCreateOrderByWithOrderByForMySQL() {
-        assertCreateOrderByWithOrderBy(new MySQLSelectStatement());
+        assertCreateOrderByWithOrderBy(new MySQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderByWithOrderByForOracle() {
-        assertCreateOrderByWithOrderBy(new OracleSelectStatement());
+        assertCreateOrderByWithOrderBy(new OracleSimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderByWithOrderByForPostgreSQL() {
-        assertCreateOrderByWithOrderBy(new PostgreSQLSelectStatement());
+        assertCreateOrderByWithOrderBy(new PostgreSQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderByWithOrderByForSQL92() {
-        assertCreateOrderByWithOrderBy(new SQL92SelectStatement());
+        assertCreateOrderByWithOrderBy(new SQL92SimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderByWithOrderByForSQLServer() {
-        assertCreateOrderByWithOrderBy(new SQLServerSelectStatement());
+        assertCreateOrderByWithOrderBy(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCreateOrderByWithOrderBy(final SelectStatement selectStatement) {
+    private void assertCreateOrderByWithOrderBy(final SimpleSelectStatement simpleSelectStatement) {
         OrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")), OrderDirection.ASC, NullsOrderType.FIRST);
         OrderByItemSegment indexOrderByItemSegment1 = new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, NullsOrderType.LAST);
         OrderByItemSegment indexOrderByItemSegment2 = new IndexOrderByItemSegment(2, 3, 3, OrderDirection.ASC, NullsOrderType.LAST);
         OrderBySegment orderBySegment = new OrderBySegment(0, 1, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
-        selectStatement.setOrderBy(orderBySegment);
+        simpleSelectStatement.setOrderBy(orderBySegment);
         GroupByContext emptyGroupByContext = new GroupByContext(Collections.emptyList());
-        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, emptyGroupByContext);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(simpleSelectStatement, emptyGroupByContext);
         OrderByItem expectedOrderByItem1 = new OrderByItem(columnOrderByItemSegment);
         OrderByItem expectedOrderByItem2 = new OrderByItem(indexOrderByItemSegment1);
         expectedOrderByItem2.setIndex(2);
@@ -130,39 +130,39 @@ class OrderByContextEngineTest {
     
     @Test
     void assertCreateOrderInDistinctByWithoutOrderByForMySQL() {
-        assertCreateOrderInDistinctByWithoutOrderBy(new MySQLSelectStatement());
+        assertCreateOrderInDistinctByWithoutOrderBy(new MySQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderInDistinctByWithoutOrderByForOracle() {
-        assertCreateOrderInDistinctByWithoutOrderBy(new OracleSelectStatement());
+        assertCreateOrderInDistinctByWithoutOrderBy(new OracleSimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderInDistinctByWithoutOrderByForPostgreSQL() {
-        assertCreateOrderInDistinctByWithoutOrderBy(new PostgreSQLSelectStatement());
+        assertCreateOrderInDistinctByWithoutOrderBy(new PostgreSQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderInDistinctByWithoutOrderByForSQL92() {
-        assertCreateOrderInDistinctByWithoutOrderBy(new SQL92SelectStatement());
+        assertCreateOrderInDistinctByWithoutOrderBy(new SQL92SimpleSelectStatement());
     }
     
     @Test
     void assertCreateOrderInDistinctByWithoutOrderByForSQLServer() {
-        assertCreateOrderInDistinctByWithoutOrderBy(new SQLServerSelectStatement());
+        assertCreateOrderInDistinctByWithoutOrderBy(new SQLServerSimpleSelectStatement());
     }
     
-    void assertCreateOrderInDistinctByWithoutOrderBy(final SelectStatement selectStatement) {
+    void assertCreateOrderInDistinctByWithoutOrderBy(final SimpleSelectStatement simpleSelectStatement) {
         ColumnProjectionSegment columnProjectionSegment1 = new ColumnProjectionSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")));
         ColumnProjectionSegment columnProjectionSegment2 = new ColumnProjectionSegment(new ColumnSegment(1, 2, new IdentifierValue("column2")));
         List<ProjectionSegment> list = Arrays.asList(columnProjectionSegment1, columnProjectionSegment2);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(list);
-        selectStatement.setProjections(projectionsSegment);
+        simpleSelectStatement.setProjections(projectionsSegment);
         GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
-        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(simpleSelectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems().size(), is(list.size()));
         List<OrderByItem> items = (List<OrderByItem>) actualOrderByContext.getItems();
         assertThat(((ColumnOrderByItemSegment) items.get(0).getSegment()).getColumn(), is(columnProjectionSegment1.getColumn()));

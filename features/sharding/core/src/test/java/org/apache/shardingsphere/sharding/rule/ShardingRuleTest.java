@@ -58,9 +58,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -584,7 +584,7 @@ class ShardingRuleTest {
     void assertIsAllBindingTableWithJoinQueryWithoutJoinCondition() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SimpleSelectStatement.class));
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -600,7 +600,7 @@ class ShardingRuleTest {
         BinaryOperationExpression condition = createBinaryOperationExpression(leftDatabaseJoin, rightDatabaseJoin, EQUAL);
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         when(joinTable.getCondition()).thenReturn(condition);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        MySQLSimpleSelectStatement selectStatement = mock(MySQLSimpleSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(joinTable);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
@@ -622,7 +622,7 @@ class ShardingRuleTest {
         BinaryOperationExpression condition = createBinaryOperationExpression(leftDatabaseJoin, rightDatabaseJoin, EQUAL);
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         when(joinTable.getCondition()).thenReturn(condition);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        MySQLSimpleSelectStatement selectStatement = mock(MySQLSimpleSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(joinTable);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
@@ -651,7 +651,7 @@ class ShardingRuleTest {
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         BinaryOperationExpression condition = createBinaryOperationExpression(databaseJoin, tableJoin, AND);
         when(joinTable.getCondition()).thenReturn(condition);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        MySQLSimpleSelectStatement selectStatement = mock(MySQLSimpleSelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(joinTable);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);

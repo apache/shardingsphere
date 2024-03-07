@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterViewStatement;
@@ -49,7 +49,7 @@ public final class AlterViewStatementHandler implements SQLStatementHandler {
      * @param alterViewStatement AlterViewStatement
      * @return select statement
      */
-    public static Optional<SelectStatement> getSelectStatement(final AlterViewStatement alterViewStatement) {
+    public static Optional<SimpleSelectStatement> getSelectStatement(final AlterViewStatement alterViewStatement) {
         if (alterViewStatement instanceof MySQLStatement) {
             return Optional.of(((MySQLAlterViewStatement) alterViewStatement).getSelect());
         }

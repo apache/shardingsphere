@@ -37,9 +37,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.Cursor
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
 import org.junit.jupiter.api.Test;
 
@@ -91,12 +91,12 @@ class ShardingDDLResultMergerTest {
     
     private CursorStatementContext createCursorStatementContext(final ShardingSphereDatabase database) {
         CursorStatementContext result = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = createSelectStatement();
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SimpleSelectStatement simpleSelectStatement = createSelectStatement();
+        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
-                selectStatement, DefaultDatabase.LOGIC_NAME);
+                simpleSelectStatement, DefaultDatabase.LOGIC_NAME);
         when(result.getSelectStatementContext()).thenReturn(selectStatementContext);
-        when(result.getSqlStatement().getSelect()).thenReturn(selectStatement);
+        when(result.getSqlStatement().getSelect()).thenReturn(simpleSelectStatement);
         return result;
     }
     
@@ -136,8 +136,8 @@ class ShardingDDLResultMergerTest {
         return result;
     }
     
-    private SelectStatement createSelectStatement() {
-        SelectStatement result = new MySQLSelectStatement();
+    private SimpleSelectStatement createSelectStatement() {
+        SimpleSelectStatement result = new MySQLSimpleSelectStatement();
         result.setFrom(new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl"))));
         result.setProjections(new ProjectionsSegment(0, 0));
         return result;

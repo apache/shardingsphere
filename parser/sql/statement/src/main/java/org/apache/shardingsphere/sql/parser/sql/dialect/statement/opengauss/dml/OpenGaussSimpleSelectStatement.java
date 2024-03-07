@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml;
 
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 import java.util.Optional;
 
 /**
- * PostgreSQL select statement.
+ * OpenGauss simple select statement.
  */
 @Setter
-public final class PostgreSQLSelectStatement extends SelectStatement implements PostgreSQLStatement {
+public final class OpenGaussSimpleSelectStatement extends SimpleSelectStatement implements OpenGaussStatement {
     
     private LimitSegment limit;
     
@@ -76,5 +76,4 @@ public final class PostgreSQLSelectStatement extends SelectStatement implements 
     public Optional<TableSegment> getIntoSegment() {
         return Optional.ofNullable(intoSegment);
     }
-    
 }

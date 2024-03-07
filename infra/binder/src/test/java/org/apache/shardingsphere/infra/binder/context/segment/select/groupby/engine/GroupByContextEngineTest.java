@@ -26,13 +26,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSimpleSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -45,66 +45,66 @@ class GroupByContextEngineTest {
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForMySQL() {
-        assertCreateGroupByContextWithoutGroupBy(new MySQLSelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new MySQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForOracle() {
-        assertCreateGroupByContextWithoutGroupBy(new OracleSelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new OracleSimpleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForPostgreSQL() {
-        assertCreateGroupByContextWithoutGroupBy(new PostgreSQLSelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new PostgreSQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForSQL92() {
-        assertCreateGroupByContextWithoutGroupBy(new SQL92SelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new SQL92SimpleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForSQLServer() {
-        assertCreateGroupByContextWithoutGroupBy(new SQLServerSelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCreateGroupByContextWithoutGroupBy(final SelectStatement selectStatement) {
-        GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
+    private void assertCreateGroupByContextWithoutGroupBy(final SimpleSelectStatement simpleSelectStatement) {
+        GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(simpleSelectStatement);
         assertTrue(actualGroupByContext.getItems().isEmpty());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForMySQL() {
-        assertCreateGroupByContextWithGroupBy(new MySQLSelectStatement());
+        assertCreateGroupByContextWithGroupBy(new MySQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForOracle() {
-        assertCreateGroupByContextWithGroupBy(new OracleSelectStatement());
+        assertCreateGroupByContextWithGroupBy(new OracleSimpleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForPostgreSQL() {
-        assertCreateGroupByContextWithGroupBy(new PostgreSQLSelectStatement());
+        assertCreateGroupByContextWithGroupBy(new PostgreSQLSimpleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForSQL92() {
-        assertCreateGroupByContextWithGroupBy(new SQL92SelectStatement());
+        assertCreateGroupByContextWithGroupBy(new SQL92SimpleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForSQLServer() {
-        assertCreateGroupByContextWithGroupBy(new SQLServerSelectStatement());
+        assertCreateGroupByContextWithGroupBy(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCreateGroupByContextWithGroupBy(final SelectStatement selectStatement) {
+    private void assertCreateGroupByContextWithGroupBy(final SimpleSelectStatement simpleSelectStatement) {
         OrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")), OrderDirection.ASC, NullsOrderType.LAST);
         OrderByItemSegment indexOrderByItemSegment1 = new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, NullsOrderType.LAST);
         OrderByItemSegment indexOrderByItemSegment2 = new IndexOrderByItemSegment(2, 3, 3, OrderDirection.ASC, NullsOrderType.LAST);
         GroupBySegment groupBySegment = new GroupBySegment(0, 10, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
-        selectStatement.setGroupBy(groupBySegment);
-        GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
+        simpleSelectStatement.setGroupBy(groupBySegment);
+        GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(simpleSelectStatement);
         OrderByItem expectedOrderByItem1 = new OrderByItem(columnOrderByItemSegment);
         OrderByItem expectedOrderByItem2 = new OrderByItem(indexOrderByItemSegment1);
         expectedOrderByItem2.setIndex(2);

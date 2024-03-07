@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
 import org.junit.jupiter.api.AfterEach;
@@ -72,7 +72,7 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseSelectSQL() {
-        assertParse(new MySQLSelectStatement(), "SELECT=1");
+        assertParse(new MySQLSimpleSelectStatement(), "SELECT=1");
     }
     
     @Test

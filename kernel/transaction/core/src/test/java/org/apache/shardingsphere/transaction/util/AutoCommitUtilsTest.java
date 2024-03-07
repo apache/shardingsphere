@@ -20,11 +20,11 @@ package org.apache.shardingsphere.transaction.util;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -36,10 +36,10 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertNeedOpenTransactionForSelectStatement() {
-        SelectStatement selectStatement = new MySQLSelectStatement();
-        assertFalse(AutoCommitUtils.needOpenTransaction(selectStatement));
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("foo"))));
-        assertTrue(AutoCommitUtils.needOpenTransaction(selectStatement));
+        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
+        assertFalse(AutoCommitUtils.needOpenTransaction(simpleSelectStatement));
+        simpleSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("foo"))));
+        assertTrue(AutoCommitUtils.needOpenTransaction(simpleSelectStatement));
     }
     
     @Test

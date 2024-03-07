@@ -23,12 +23,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Loc
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSimpleSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -39,198 +39,198 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SelectStatementHandlerTest {
+class SimpleSelectStatementHandlerTest {
     
     @Test
     void assertGetLimitSegmentForMySQL() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         assertTrue(limitSegment.isPresent());
         assertThat(limitSegment.get(), is(selectStatement.getLimit().get()));
-        assertFalse(SelectStatementHandler.getLimitSegment(new MySQLSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLimitSegment(new MySQLSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLimitSegmentForPostgreSQL() {
-        PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
+        PostgreSQLSimpleSelectStatement selectStatement = new PostgreSQLSimpleSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         assertTrue(limitSegment.isPresent());
         assertThat(limitSegment.get(), is(selectStatement.getLimit().get()));
-        assertFalse(SelectStatementHandler.getLimitSegment(new PostgreSQLSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLimitSegment(new PostgreSQLSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLimitSegmentForSQL92() {
-        SQL92SelectStatement selectStatement = new SQL92SelectStatement();
+        SQL92SimpleSelectStatement selectStatement = new SQL92SimpleSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         assertTrue(limitSegment.isPresent());
         assertThat(limitSegment.get(), is(selectStatement.getLimit().get()));
-        assertFalse(SelectStatementHandler.getLimitSegment(new SQL92SelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLimitSegment(new SQL92SimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLimitSegmentForSQLServer() {
-        SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
+        SQLServerSimpleSelectStatement selectStatement = new SQLServerSimpleSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         assertTrue(limitSegment.isPresent());
         assertThat(limitSegment.get(), is(selectStatement.getLimit().get()));
-        assertFalse(SelectStatementHandler.getLimitSegment(new SQLServerSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLimitSegment(new SQLServerSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLimitSegmentForOpenGauss() {
-        OpenGaussSelectStatement selectStatement = new OpenGaussSelectStatement();
+        OpenGaussSimpleSelectStatement selectStatement = new OpenGaussSimpleSelectStatement();
         selectStatement.setLimit(new LimitSegment(1, 2, new NumberLiteralLimitValueSegment(0, 3, 5L), new NumberLiteralLimitValueSegment(0, 3, 2L)));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         assertTrue(limitSegment.isPresent());
         assertThat(limitSegment.get(), is(selectStatement.getLimit().get()));
-        assertFalse(SelectStatementHandler.getLimitSegment(new OpenGaussSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLimitSegment(new OpenGaussSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLimitSegmentForOracle() {
-        assertFalse(SelectStatementHandler.getLimitSegment(new OracleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLimitSegment(new OracleSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLockSegmentForMySQL() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
         selectStatement.setLock(new LockSegment(0, 0));
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         assertTrue(lockSegment.isPresent());
         assertThat(lockSegment.get(), is(selectStatement.getLock().get()));
-        assertFalse(SelectStatementHandler.getLockSegment(new MySQLSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLockSegment(new MySQLSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLockSegmentForOracle() {
-        OracleSelectStatement selectStatement = new OracleSelectStatement();
+        OracleSimpleSelectStatement selectStatement = new OracleSimpleSelectStatement();
         selectStatement.setLock(new LockSegment(0, 0));
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         assertTrue(lockSegment.isPresent());
         assertThat(lockSegment.get(), is(selectStatement.getLock().get()));
-        assertFalse(SelectStatementHandler.getLockSegment(new OracleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLockSegment(new OracleSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLockSegmentForPostgreSQL() {
-        PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
+        PostgreSQLSimpleSelectStatement selectStatement = new PostgreSQLSimpleSelectStatement();
         selectStatement.setLock(new LockSegment(0, 0));
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         assertTrue(lockSegment.isPresent());
         assertThat(lockSegment.get(), is(selectStatement.getLock().get()));
-        assertFalse(SelectStatementHandler.getLockSegment(new PostgreSQLSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLockSegment(new PostgreSQLSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLockSegmentForOpenGauss() {
-        OpenGaussSelectStatement selectStatement = new OpenGaussSelectStatement();
+        OpenGaussSimpleSelectStatement selectStatement = new OpenGaussSimpleSelectStatement();
         selectStatement.setLock(new LockSegment(0, 2));
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         assertTrue(lockSegment.isPresent());
         assertThat(lockSegment.get(), is(selectStatement.getLock().get()));
-        assertFalse(SelectStatementHandler.getLockSegment(new OpenGaussSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLockSegment(new OpenGaussSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetLockSegmentForOtherDatabases() {
-        assertFalse(SelectStatementHandler.getLockSegment(new SQL92SelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getLockSegment(new SQLServerSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLockSegment(new SQL92SimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getLockSegment(new SQLServerSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetWindowSegmentForMySQL() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
         selectStatement.setWindow(new WindowSegment(0, 0));
         Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
         assertTrue(windowSegment.isPresent());
-        assertFalse(SelectStatementHandler.getWindowSegment(new MySQLSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWindowSegment(new MySQLSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetWindowSegmentForPostgreSQL() {
-        PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
+        PostgreSQLSimpleSelectStatement selectStatement = new PostgreSQLSimpleSelectStatement();
         selectStatement.setWindow(new WindowSegment(0, 0));
         Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
         assertTrue(windowSegment.isPresent());
-        assertFalse(SelectStatementHandler.getWindowSegment(new PostgreSQLSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWindowSegment(new PostgreSQLSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetWindowSegmentForOpenGauss() {
-        OpenGaussSelectStatement selectStatement = new OpenGaussSelectStatement();
+        OpenGaussSimpleSelectStatement selectStatement = new OpenGaussSimpleSelectStatement();
         selectStatement.setWindow(new WindowSegment(0, 2));
         Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
         assertTrue(windowSegment.isPresent());
         assertThat(windowSegment.get(), is(selectStatement.getWindow().get()));
-        assertFalse(SelectStatementHandler.getWindowSegment(new OpenGaussSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWindowSegment(new OpenGaussSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetWindowSegmentForOtherDatabases() {
-        assertFalse(SelectStatementHandler.getWindowSegment(new OracleSelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getWindowSegment(new SQL92SelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getWindowSegment(new SQLServerSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWindowSegment(new OracleSimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWindowSegment(new SQL92SimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWindowSegment(new SQLServerSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetWithSegmentForOracle() {
-        OracleSelectStatement selectStatement = new OracleSelectStatement();
+        OracleSimpleSelectStatement selectStatement = new OracleSimpleSelectStatement();
         selectStatement.setWithSegment(new WithSegment(0, 2, new LinkedList<>()));
         Optional<WithSegment> withSegment = SelectStatementHandler.getWithSegment(selectStatement);
         assertTrue(withSegment.isPresent());
         assertThat(withSegment.get(), is(selectStatement.getWithSegment().get()));
-        assertFalse(SelectStatementHandler.getWithSegment(new OracleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWithSegment(new OracleSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetWithSegmentForMysql() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        MySQLSimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
         selectStatement.setWithSegment(new WithSegment(0, 2, new LinkedList<>()));
         Optional<WithSegment> withSegment = SelectStatementHandler.getWithSegment(selectStatement);
         assertTrue(withSegment.isPresent());
         assertThat(withSegment.get(), is(selectStatement.getWithSegment().get()));
-        assertFalse(SelectStatementHandler.getWithSegment(new MySQLSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWithSegment(new MySQLSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetWithSegmentForSQLServer() {
-        SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
+        SQLServerSimpleSelectStatement selectStatement = new SQLServerSimpleSelectStatement();
         selectStatement.setWithSegment(new WithSegment(0, 2, new LinkedList<>()));
         Optional<WithSegment> withSegment = SelectStatementHandler.getWithSegment(selectStatement);
         assertTrue(withSegment.isPresent());
         assertThat(withSegment.get(), is(selectStatement.getWithSegment().get()));
-        assertFalse(SelectStatementHandler.getWithSegment(new SQLServerSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWithSegment(new SQLServerSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetWithSegmentForOtherDatabases() {
-        assertFalse(SelectStatementHandler.getWithSegment(new MySQLSelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getWithSegment(new OpenGaussSelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getWithSegment(new PostgreSQLSelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getWithSegment(new SQL92SelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWithSegment(new MySQLSimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWithSegment(new OpenGaussSimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWithSegment(new PostgreSQLSimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWithSegment(new SQL92SimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetModelSegmentForOracle() {
-        OracleSelectStatement selectStatement = new OracleSelectStatement();
+        OracleSimpleSelectStatement selectStatement = new OracleSimpleSelectStatement();
         selectStatement.setModelSegment(new ModelSegment(0, 2));
         Optional<ModelSegment> modelSegment = SelectStatementHandler.getModelSegment(selectStatement);
         assertTrue(modelSegment.isPresent());
         assertThat(modelSegment.get(), is(selectStatement.getModelSegment().get()));
-        assertFalse(SelectStatementHandler.getModelSegment(new OracleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getModelSegment(new OracleSimpleSelectStatement()).isPresent());
     }
     
     @Test
     void assertGetModelSegmentForOtherDatabases() {
-        assertFalse(SelectStatementHandler.getModelSegment(new MySQLSelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getModelSegment(new OpenGaussSelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getModelSegment(new PostgreSQLSelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getModelSegment(new SQL92SelectStatement()).isPresent());
-        assertFalse(SelectStatementHandler.getModelSegment(new SQLServerSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getModelSegment(new MySQLSimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getModelSegment(new OpenGaussSimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getModelSegment(new PostgreSQLSimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getModelSegment(new SQL92SimpleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getModelSegment(new SQLServerSimpleSelectStatement()).isPresent());
     }
 }

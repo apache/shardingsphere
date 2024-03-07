@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,8 +65,8 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof SelectStatement) {
-            Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
+        if (sqlStatement instanceof SimpleSelectStatement) {
+            Collection<String> selectedTableNames = getSelectedTableNames((SimpleSelectStatement) sqlStatement);
             if (!selectedTableNames.isEmpty() && KERNEL_SUPPORTED_TABLES.containsAll(selectedTableNames)) {
                 return Optional.empty();
             }
@@ -84,7 +84,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
         return Optional.empty();
     }
     
-    private Collection<String> getSelectedTableNames(final SelectStatement sqlStatement) {
+    private Collection<String> getSelectedTableNames(final SimpleSelectStatement sqlStatement) {
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromSelect(sqlStatement);
         List<TableSegment> extracted = new LinkedList<>(extractor.getTableContext());

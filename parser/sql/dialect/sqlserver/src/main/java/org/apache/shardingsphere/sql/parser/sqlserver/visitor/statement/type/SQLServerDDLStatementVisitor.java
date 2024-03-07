@@ -115,7 +115,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerTruncateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 
 import java.util.Collection;
@@ -383,7 +383,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
         SQLServerCreateViewStatement result = new SQLServerCreateViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.createOrAlterViewClause().select()));
-        result.setSelect((SQLServerSelectStatement) visit(ctx.createOrAlterViewClause().select()));
+        result.setSelect((SQLServerSimpleSelectStatement) visit(ctx.createOrAlterViewClause().select()));
         return result;
     }
     
@@ -454,7 +454,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
         SQLServerAlterViewStatement result = new SQLServerAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.createOrAlterViewClause().select()));
-        result.setSelect((SQLServerSelectStatement) visit(ctx.createOrAlterViewClause().select()));
+        result.setSelect((SQLServerSimpleSelectStatement) visit(ctx.createOrAlterViewClause().select()));
         return result;
     }
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public enum SQLStatementType {
         if (INVOLVE_DATA_CHANGES_STATEMENTS.contains(sqlStatementClass)) {
             return true;
         }
-        if (sqlStatement instanceof SelectStatement) {
+        if (sqlStatement instanceof SimpleSelectStatement) {
             NOT_INVOLVE_DATA_CHANGES_STATEMENTS.add(sqlStatementClass);
             return false;
         }

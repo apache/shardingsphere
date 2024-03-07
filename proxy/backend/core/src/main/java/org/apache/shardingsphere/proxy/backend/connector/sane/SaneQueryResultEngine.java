@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -53,7 +53,7 @@ public final class SaneQueryResultEngine {
      */
     public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
         if (null == dialectEngine) {
-            return sqlStatement instanceof SelectStatement ? Optional.of(getDefaultQueryResult()) : Optional.empty();
+            return sqlStatement instanceof SimpleSelectStatement ? Optional.of(getDefaultQueryResult()) : Optional.empty();
         }
         return dialectEngine.getSaneQueryResult(sqlStatement, ex);
     }

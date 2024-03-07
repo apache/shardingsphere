@@ -36,8 +36,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSimpleSelectStatement;
 
 import java.util.Optional;
 
@@ -46,9 +46,9 @@ import java.util.Optional;
  */
 public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLStatementChecker {
     
-    private final SelectStatement sqlStatement;
+    private final SimpleSelectStatement sqlStatement;
     
-    public HeterogeneousSelectStatementChecker(final SelectStatement sqlStatement) {
+    public HeterogeneousSelectStatementChecker(final SimpleSelectStatement sqlStatement) {
         super(sqlStatement);
         this.sqlStatement = sqlStatement;
     }
@@ -65,7 +65,7 @@ public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneo
         Preconditions.checkArgument(sqlStatement.getFrom() instanceof SimpleTableSegment, "Only supported simple table segment.");
         Preconditions.checkArgument(!sqlStatement.getHaving().isPresent(), "Do not supported having segment.");
         Preconditions.checkArgument(!sqlStatement.getGroupBy().isPresent(), "Do not supported group by segment.");
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) sqlStatement;
+        MySQLSimpleSelectStatement selectStatement = (MySQLSimpleSelectStatement) sqlStatement;
         Preconditions.checkArgument(!selectStatement.getWindow().isPresent(), "Do not supported window segment.");
         Preconditions.checkArgument(!selectStatement.getLock().isPresent(), "Do not supported lock segment.");
         Optional<LimitSegment> limitSegment = selectStatement.getLimit();

@@ -53,7 +53,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
@@ -75,30 +75,30 @@ public final class TableExtractor {
     /**
      * Extract table that should be rewritten from select statement.
      *
-     * @param selectStatement select statement
+     * @param simpleSelectStatement select statement
      */
-    public void extractTablesFromSelect(final SelectStatement selectStatement) {
-        if (selectStatement.getCombine().isPresent()) {
-            CombineSegment combineSegment = selectStatement.getCombine().get();
+    public void extractTablesFromSelect(final SimpleSelectStatement simpleSelectStatement) {
+        if (simpleSelectStatement.getCombine().isPresent()) {
+            CombineSegment combineSegment = simpleSelectStatement.getCombine().get();
             extractTablesFromSelect(combineSegment.getLeft());
             extractTablesFromSelect(combineSegment.getRight());
         }
-        if (null != selectStatement.getFrom() && !selectStatement.getCombine().isPresent()) {
-            extractTablesFromTableSegment(selectStatement.getFrom());
+        if (null != simpleSelectStatement.getFrom() && !simpleSelectStatement.getCombine().isPresent()) {
+            extractTablesFromTableSegment(simpleSelectStatement.getFrom());
         }
-        if (selectStatement.getWhere().isPresent()) {
-            extractTablesFromExpression(selectStatement.getWhere().get().getExpr());
+        if (simpleSelectStatement.getWhere().isPresent()) {
+            extractTablesFromExpression(simpleSelectStatement.getWhere().get().getExpr());
         }
-        if (null != selectStatement.getProjections() && !selectStatement.getCombine().isPresent()) {
-            extractTablesFromProjections(selectStatement.getProjections());
+        if (null != simpleSelectStatement.getProjections() && !simpleSelectStatement.getCombine().isPresent()) {
+            extractTablesFromProjections(simpleSelectStatement.getProjections());
         }
-        if (selectStatement.getGroupBy().isPresent()) {
-            extractTablesFromOrderByItems(selectStatement.getGroupBy().get().getGroupByItems());
+        if (simpleSelectStatement.getGroupBy().isPresent()) {
+            extractTablesFromOrderByItems(simpleSelectStatement.getGroupBy().get().getGroupByItems());
         }
-        if (selectStatement.getOrderBy().isPresent()) {
-            extractTablesFromOrderByItems(selectStatement.getOrderBy().get().getOrderByItems());
+        if (simpleSelectStatement.getOrderBy().isPresent()) {
+            extractTablesFromOrderByItems(simpleSelectStatement.getOrderBy().get().getOrderByItems());
         }
-        Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
+        Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(simpleSelectStatement);
         lockSegment.ifPresent(this::extractTablesFromLock);
     }
     
@@ -344,8 +344,8 @@ public final class TableExtractor {
      * @param sqlStatement SQL statement
      */
     public void extractTablesFromSQLStatement(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            extractTablesFromSelect((SelectStatement) sqlStatement);
+        if (sqlStatement instanceof SimpleSelectStatement) {
+            extractTablesFromSelect((SimpleSelectStatement) sqlStatement);
         } else if (sqlStatement instanceof InsertStatement) {
             extractTablesFromInsert((InsertStatement) sqlStatement);
         } else if (sqlStatement instanceof UpdateStatement) {

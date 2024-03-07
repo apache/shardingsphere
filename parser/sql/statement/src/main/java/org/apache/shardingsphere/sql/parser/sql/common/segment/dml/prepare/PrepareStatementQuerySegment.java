@@ -23,7 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.util.Optional;
@@ -40,7 +40,7 @@ public final class PrepareStatementQuerySegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private SelectStatement select;
+    private SimpleSelectStatement select;
     
     private InsertStatement insert;
     
@@ -53,7 +53,7 @@ public final class PrepareStatementQuerySegment implements SQLSegment {
      *
      * @return select statement
      */
-    public Optional<SelectStatement> getSelect() {
+    public Optional<SimpleSelectStatement> getSelect() {
         return Optional.ofNullable(select);
     }
     

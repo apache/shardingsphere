@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabase
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.ConstructionMockSettings;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -66,7 +66,7 @@ class DatabaseBackendHandlerFactoryTest {
     void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SimpleSelectStatement.class));
         DatabaseBackendHandler actual =
                 DatabaseBackendHandlerFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext()), mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));

@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Optional;
 
 /**
- * OpenGauss select statement.
+ * MySQL simple select statement.
  */
 @Setter
-public final class OpenGaussSelectStatement extends SelectStatement implements OpenGaussStatement {
+public final class MySQLSimpleSelectStatement extends SimpleSelectStatement implements MySQLStatement {
+    
+    private SimpleTableSegment table;
     
     private LimitSegment limit;
     
@@ -39,7 +42,7 @@ public final class OpenGaussSelectStatement extends SelectStatement implements O
     
     private WindowSegment window;
     
-    private TableSegment intoSegment;
+    private WithSegment withSegment;
     
     /**
      * Get order by segment.
@@ -69,11 +72,20 @@ public final class OpenGaussSelectStatement extends SelectStatement implements O
     }
     
     /**
-     * Get into segment.
+     * Get simple table segment.
      *
-     * @return into segment
+     * @return simple table segment
      */
-    public Optional<TableSegment> getIntoSegment() {
-        return Optional.ofNullable(intoSegment);
+    public Optional<SimpleTableSegment> getTable() {
+        return Optional.ofNullable(table);
+    }
+    
+    /**
+     * Get with segment.
+     *
+     * @return with segment.
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
     }
 }

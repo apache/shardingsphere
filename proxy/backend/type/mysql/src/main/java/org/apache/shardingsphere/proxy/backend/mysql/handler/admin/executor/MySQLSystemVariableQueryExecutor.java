@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -78,11 +78,11 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
     /**
      * Try to get {@link MySQLSystemVariableQueryExecutor} for select statement.
      *
-     * @param selectStatement select statement
+     * @param simpleSelectStatement select statement
      * @return {@link MySQLSystemVariableQueryExecutor}
      */
-    public static Optional<DatabaseAdminExecutor> tryGetSystemVariableQueryExecutor(final SelectStatement selectStatement) {
-        Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
+    public static Optional<DatabaseAdminExecutor> tryGetSystemVariableQueryExecutor(final SimpleSelectStatement simpleSelectStatement) {
+        Collection<ProjectionSegment> projections = simpleSelectStatement.getProjections().getProjections();
         List<ExpressionProjectionSegment> expressionProjectionSegments = new ArrayList<>(projections.size());
         List<MySQLSystemVariable> variables = new ArrayList<>(projections.size());
         for (ProjectionSegment each : projections) {

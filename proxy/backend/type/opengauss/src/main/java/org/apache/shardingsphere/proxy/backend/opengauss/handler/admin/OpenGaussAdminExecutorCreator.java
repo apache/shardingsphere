@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreSQLAdminExecutorCreator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.util.Collection;
 import java.util.List;
@@ -84,11 +84,11 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     }
     
     private boolean isSQLFederationSystemCatalogQueryExpressions(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext.getSqlStatement() instanceof SelectStatement)) {
+        if (!(sqlStatementContext.getSqlStatement() instanceof SimpleSelectStatement)) {
             return false;
         }
-        SelectStatement selectStatement = (SelectStatement) sqlStatementContext.getSqlStatement();
-        Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
+        SimpleSelectStatement simpleSelectStatement = (SimpleSelectStatement) sqlStatementContext.getSqlStatement();
+        Collection<ProjectionSegment> projections = simpleSelectStatement.getProjections().getProjections();
         return 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
                 && SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(((ExpressionProjectionSegment) projections.iterator().next()).getText());
     }

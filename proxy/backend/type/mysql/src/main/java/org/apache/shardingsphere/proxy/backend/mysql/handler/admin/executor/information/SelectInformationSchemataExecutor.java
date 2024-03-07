@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SimpleSelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -56,13 +56,13 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     private static final Collection<String> SCHEMA_WITHOUT_DATA_SOURCE = new LinkedHashSet<>();
     
-    private final SelectStatement sqlStatement;
+    private final SimpleSelectStatement sqlStatement;
     
     private String schemaNameAlias = SCHEMA_NAME;
     
     private boolean queryDatabase;
     
-    public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
+    public SelectInformationSchemataExecutor(final SimpleSelectStatement sqlStatement, final String sql, final List<Object> parameters) {
         super(sql, parameters);
         this.sqlStatement = sqlStatement;
     }
