@@ -166,12 +166,12 @@ class PaginationContextTest {
         getRevisedRowCount(new SQLServerSimpleSelectStatement());
     }
     
-    private void getRevisedRowCount(final SimpleSelectStatement simpleSelectStatement) {
-        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
+    private void getRevisedRowCount(final SimpleSelectStatement selectStatement) {
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), simpleSelectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is(50L));
     }
     
@@ -206,14 +206,14 @@ class PaginationContextTest {
         getRevisedRowCountWithMax(new SQLServerSimpleSelectStatement());
     }
     
-    private void getRevisedRowCountWithMax(final SimpleSelectStatement simpleSelectStatement) {
-        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
-        simpleSelectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))));
-        simpleSelectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
+    private void getRevisedRowCountWithMax(final SimpleSelectStatement selectStatement) {
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase());
         ShardingSphereMetaData metaData =
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), simpleSelectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is((long) Integer.MAX_VALUE));
     }
 }

@@ -370,10 +370,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return joinConditions;
     }
     
-    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SimpleSelectStatement simpleSelectStatement) {
-        simpleSelectStatement.getWhere().ifPresent(whereSegments::add);
-        whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(simpleSelectStatement));
-        whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(simpleSelectStatement));
+    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SimpleSelectStatement selectStatement) {
+        selectStatement.getWhere().ifPresent(whereSegments::add);
+        whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(selectStatement));
+        whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(selectStatement));
     }
     
     private Collection<TableSegment> getAllTableSegments() {

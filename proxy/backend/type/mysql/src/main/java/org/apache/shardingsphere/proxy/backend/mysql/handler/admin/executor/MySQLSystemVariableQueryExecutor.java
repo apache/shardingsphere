@@ -78,11 +78,11 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
     /**
      * Try to get {@link MySQLSystemVariableQueryExecutor} for select statement.
      *
-     * @param simpleSelectStatement select statement
+     * @param selectStatement select statement
      * @return {@link MySQLSystemVariableQueryExecutor}
      */
-    public static Optional<DatabaseAdminExecutor> tryGetSystemVariableQueryExecutor(final SimpleSelectStatement simpleSelectStatement) {
-        Collection<ProjectionSegment> projections = simpleSelectStatement.getProjections().getProjections();
+    public static Optional<DatabaseAdminExecutor> tryGetSystemVariableQueryExecutor(final SimpleSelectStatement selectStatement) {
+        Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
         List<ExpressionProjectionSegment> expressionProjectionSegments = new ArrayList<>(projections.size());
         List<MySQLSystemVariable> variables = new ArrayList<>(projections.size());
         for (ProjectionSegment each : projections) {

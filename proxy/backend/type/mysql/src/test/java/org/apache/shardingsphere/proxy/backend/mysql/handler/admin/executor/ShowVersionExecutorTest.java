@@ -55,9 +55,9 @@ class ShowVersionExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        SimpleSelectStatement simpleSelectStatement = mock(SimpleSelectStatement.class);
-        when(simpleSelectStatement.getProjections()).thenReturn(createProjectionsSegmentWithoutAlias());
-        ShowVersionExecutor executor = new ShowVersionExecutor(simpleSelectStatement);
+        SimpleSelectStatement selectStatement = mock(SimpleSelectStatement.class);
+        when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithoutAlias());
+        ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
         executor.execute(mockConnectionSession());
         assertQueryResult(executor, ShowVersionExecutor.FUNCTION_NAME);
     }
@@ -77,9 +77,9 @@ class ShowVersionExecutorTest {
     
     @Test
     void assertExecuteWithAlias() throws SQLException {
-        SimpleSelectStatement simpleSelectStatement = mock(SimpleSelectStatement.class);
-        when(simpleSelectStatement.getProjections()).thenReturn(createProjectionsSegmentWithAlias());
-        ShowVersionExecutor executor = new ShowVersionExecutor(simpleSelectStatement);
+        SimpleSelectStatement selectStatement = mock(SimpleSelectStatement.class);
+        when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithAlias());
+        ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
         executor.execute(mockConnectionSession());
         assertQueryResult(executor, "foo_alias");
     }

@@ -284,9 +284,9 @@ class ShardingInsertStatementValidatorTest {
     
     private InsertStatement createInsertSelectStatement() {
         InsertStatement result = createInsertStatement();
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
-        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
-        result.setInsertSelect(new SubquerySegment(0, 0, simpleSelectStatement, ""));
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        result.setInsertSelect(new SubquerySegment(0, 0, selectStatement, ""));
         return result;
     }
     

@@ -155,25 +155,25 @@ class SubqueryExtractUtilsTest {
     
     @Test
     void assertGetSubquerySegmentsWithMultiNestedSubquery() {
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
-        simpleSelectStatement.setFrom(new SubqueryTableSegment(createSubquerySegmentForFrom()));
-        Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(simpleSelectStatement);
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        selectStatement.setFrom(new SubqueryTableSegment(createSubquerySegmentForFrom()));
+        Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(result.size(), is(2));
     }
     
     private SubquerySegment createSubquerySegmentForFrom() {
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        simpleSelectStatement.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
+        selectStatement.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
                 left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSimpleSelectStatement(), "")), false)));
-        return new SubquerySegment(0, 0, simpleSelectStatement, "");
+        return new SubquerySegment(0, 0, selectStatement, "");
     }
     
     @Test
     void assertGetSubquerySegmentsWithCombineSegment() {
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
-        simpleSelectStatement.setCombine(new CombineSegment(0, 0, new MySQLSimpleSelectStatement(), CombineType.UNION, createSelectStatementForCombineSegment()));
-        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(simpleSelectStatement);
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        selectStatement.setCombine(new CombineSegment(0, 0, new MySQLSimpleSelectStatement(), CombineType.UNION, createSelectStatementForCombineSegment()));
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(actual.size(), is(1));
     }
     
@@ -187,13 +187,13 @@ class SubqueryExtractUtilsTest {
     
     @Test
     void assertGetSubquerySegmentsFromProjectionFunctionParams() {
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
-        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "", "");
         functionSegment.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSimpleSelectStatement(), "")));
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "", functionSegment);
-        simpleSelectStatement.getProjections().getProjections().add(expressionProjectionSegment);
-        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(simpleSelectStatement);
+        selectStatement.getProjections().getProjections().add(expressionProjectionSegment);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(actual.size(), is(1));
     }
 }

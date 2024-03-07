@@ -76,12 +76,12 @@ class OrderByContextEngineTest {
         assertCreateOrderByWithoutOrderBy(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCreateOrderByWithoutOrderBy(final SimpleSelectStatement simpleSelectStatement) {
+    private void assertCreateOrderByWithoutOrderBy(final SimpleSelectStatement selectStatement) {
         OrderByItem orderByItem1 = new OrderByItem(new IndexOrderByItemSegment(0, 1, 1, OrderDirection.ASC, NullsOrderType.LAST));
         OrderByItem orderByItem2 = new OrderByItem(new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, NullsOrderType.LAST));
         Collection<OrderByItem> orderByItems = Arrays.asList(orderByItem1, orderByItem2);
         GroupByContext groupByContext = new GroupByContext(orderByItems);
-        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(simpleSelectStatement, groupByContext);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems(), is(orderByItems));
         assertTrue(actualOrderByContext.isGenerated());
     }
@@ -111,14 +111,14 @@ class OrderByContextEngineTest {
         assertCreateOrderByWithOrderBy(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCreateOrderByWithOrderBy(final SimpleSelectStatement simpleSelectStatement) {
+    private void assertCreateOrderByWithOrderBy(final SimpleSelectStatement selectStatement) {
         OrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")), OrderDirection.ASC, NullsOrderType.FIRST);
         OrderByItemSegment indexOrderByItemSegment1 = new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, NullsOrderType.LAST);
         OrderByItemSegment indexOrderByItemSegment2 = new IndexOrderByItemSegment(2, 3, 3, OrderDirection.ASC, NullsOrderType.LAST);
         OrderBySegment orderBySegment = new OrderBySegment(0, 1, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
-        simpleSelectStatement.setOrderBy(orderBySegment);
+        selectStatement.setOrderBy(orderBySegment);
         GroupByContext emptyGroupByContext = new GroupByContext(Collections.emptyList());
-        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(simpleSelectStatement, emptyGroupByContext);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, emptyGroupByContext);
         OrderByItem expectedOrderByItem1 = new OrderByItem(columnOrderByItemSegment);
         OrderByItem expectedOrderByItem2 = new OrderByItem(indexOrderByItemSegment1);
         expectedOrderByItem2.setIndex(2);
@@ -153,16 +153,16 @@ class OrderByContextEngineTest {
         assertCreateOrderInDistinctByWithoutOrderBy(new SQLServerSimpleSelectStatement());
     }
     
-    void assertCreateOrderInDistinctByWithoutOrderBy(final SimpleSelectStatement simpleSelectStatement) {
+    void assertCreateOrderInDistinctByWithoutOrderBy(final SimpleSelectStatement selectStatement) {
         ColumnProjectionSegment columnProjectionSegment1 = new ColumnProjectionSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")));
         ColumnProjectionSegment columnProjectionSegment2 = new ColumnProjectionSegment(new ColumnSegment(1, 2, new IdentifierValue("column2")));
         List<ProjectionSegment> list = Arrays.asList(columnProjectionSegment1, columnProjectionSegment2);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(list);
-        simpleSelectStatement.setProjections(projectionsSegment);
+        selectStatement.setProjections(projectionsSegment);
         GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
-        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(simpleSelectStatement, groupByContext);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems().size(), is(list.size()));
         List<OrderByItem> items = (List<OrderByItem>) actualOrderByContext.getItems();
         assertThat(((ColumnOrderByItemSegment) items.get(0).getSegment()).getColumn(), is(columnProjectionSegment1.getColumn()));

@@ -87,8 +87,8 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
         if (!(sqlStatementContext.getSqlStatement() instanceof SimpleSelectStatement)) {
             return false;
         }
-        SimpleSelectStatement simpleSelectStatement = (SimpleSelectStatement) sqlStatementContext.getSqlStatement();
-        Collection<ProjectionSegment> projections = simpleSelectStatement.getProjections().getProjections();
+        SimpleSelectStatement selectStatement = (SimpleSelectStatement) sqlStatementContext.getSqlStatement();
+        Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
         return 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
                 && SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(((ExpressionProjectionSegment) projections.iterator().next()).getText());
     }

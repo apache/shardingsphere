@@ -232,12 +232,12 @@ class ProxySQLExecutorTest {
     private CursorStatementContext createCursorStatementContext() {
         CursorStatementContext result = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SimpleSelectStatement simpleSelectStatement = createSelectStatement();
-        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SimpleSelectStatement selectStatement = createSelectStatement();
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         OpenGaussCursorStatement sqlStatement = new OpenGaussCursorStatement();
-        sqlStatement.setSelect(simpleSelectStatement);
+        sqlStatement.setSelect(selectStatement);
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
-                simpleSelectStatement, DefaultDatabase.LOGIC_NAME);
+                selectStatement, DefaultDatabase.LOGIC_NAME);
         when(result.getSelectStatementContext()).thenReturn(selectStatementContext);
         when(result.getSqlStatement()).thenReturn(sqlStatement);
         return result;

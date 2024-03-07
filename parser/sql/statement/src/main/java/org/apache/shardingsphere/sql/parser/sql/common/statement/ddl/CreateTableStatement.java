@@ -38,7 +38,7 @@ public abstract class CreateTableStatement extends AbstractSQLStatement implemen
     
     private SimpleTableSegment table;
     
-    private SimpleSelectStatement simpleSelectStatement;
+    private SimpleSelectStatement selectStatement;
     
     private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
     
@@ -50,6 +50,6 @@ public abstract class CreateTableStatement extends AbstractSQLStatement implemen
      * @return select statement
      */
     public Optional<SimpleSelectStatement> getSimpleSelectStatement() {
-        return Optional.ofNullable(simpleSelectStatement);
+        return Optional.ofNullable(selectStatement);
     }
 }

@@ -160,10 +160,10 @@ class InsertStatementContextTest {
     @Test
     void assertInsertSelect() {
         InsertStatement insertStatement = new MySQLInsertStatement();
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
-        simpleSelectStatement.addParameterMarkerSegments(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
-        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SubquerySegment insertSelect = new SubquerySegment(0, 0, simpleSelectStatement, "");
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        selectStatement.addParameterMarkerSegments(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement, "");
         insertStatement.setInsertSelect(insertSelect);
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         InsertStatementContext actual = createInsertStatementContext(Collections.singletonList("param"), insertStatement);

@@ -87,13 +87,13 @@ class ShardingResultMergerEngineTest {
         assertNewInstanceWithSelectStatement(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertNewInstanceWithSelectStatement(final SimpleSelectStatement simpleSelectStatement) {
+    private void assertNewInstanceWithSelectStatement(final SimpleSelectStatement selectStatement) {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
-        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext sqlStatementContext = new SelectStatementContext(createShardingSphereMetaData(database),
-                Collections.emptyList(), simpleSelectStatement, DefaultDatabase.LOGIC_NAME);
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
     }

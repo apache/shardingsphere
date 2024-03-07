@@ -55,9 +55,9 @@ class SimpleSelectStatementBinderTest {
     
     @Test
     void assertBind() {
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
-        simpleSelectStatement.setProjections(projections);
+        selectStatement.setProjections(projections);
         ColumnProjectionSegment orderIdProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id")));
         ColumnProjectionSegment userIdProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
         ColumnProjectionSegment statusProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
@@ -65,16 +65,16 @@ class SimpleSelectStatementBinderTest {
         projections.getProjections().add(userIdProjection);
         projections.getProjections().add(statusProjection);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        simpleSelectStatement.setFrom(simpleTableSegment);
-        simpleSelectStatement.setWhere(mockWhereSegment());
-        SimpleSelectStatement actual = new SelectStatementBinder().bind(simpleSelectStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
-        assertThat(actual, not(simpleSelectStatement));
-        assertThat(actual.getFrom(), not(simpleSelectStatement.getFrom()));
+        selectStatement.setFrom(simpleTableSegment);
+        selectStatement.setWhere(mockWhereSegment());
+        SimpleSelectStatement actual = new SelectStatementBinder().bind(selectStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        assertThat(actual, not(selectStatement));
+        assertThat(actual.getFrom(), not(selectStatement.getFrom()));
         assertThat(actual.getFrom(), instanceOf(SimpleTableSegment.class));
         assertThat(((SimpleTableSegment) actual.getFrom()).getTableName(), not(simpleTableSegment.getTableName()));
-        assertThat(actual.getProjections(), not(simpleSelectStatement.getProjections()));
+        assertThat(actual.getProjections(), not(selectStatement.getProjections()));
         List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getProjections().getProjections());
-        assertThat(actualProjections, not(simpleSelectStatement.getProjections()));
+        assertThat(actualProjections, not(selectStatement.getProjections()));
         assertThat(actualProjections.get(0), not(orderIdProjection));
         assertThat(actualProjections.get(0), instanceOf(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) actualProjections.get(0)).getColumn(), not(orderIdProjection.getColumn()));
@@ -85,10 +85,10 @@ class SimpleSelectStatementBinderTest {
         assertThat(actualProjections.get(2), instanceOf(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) actualProjections.get(2)).getColumn(), not(statusProjection.getColumn()));
         assertTrue(actual.getWhere().isPresent());
-        assertThat(actual.getWhere().get(), not(simpleSelectStatement.getWhere()));
+        assertThat(actual.getWhere().get(), not(selectStatement.getWhere()));
         assertThat(actual.getWhere().get(), instanceOf(WhereSegment.class));
-        assertTrue(simpleSelectStatement.getWhere().isPresent());
-        assertThat(actual.getWhere().get().getExpr(), not(simpleSelectStatement.getWhere().get().getExpr()));
+        assertTrue(selectStatement.getWhere().isPresent());
+        assertThat(actual.getWhere().get().getExpr(), not(selectStatement.getWhere().get().getExpr()));
         assertThat(actual.getWhere().get().getExpr(), instanceOf(BinaryOperationExpression.class));
         assertThat(((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft(), instanceOf(FunctionSegment.class));
         assertThat(((FunctionSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getParameters().iterator().next(), instanceOf(ColumnSegment.class));

@@ -69,13 +69,13 @@ class ShardingCreateViewStatementValidatorTest {
     private CreateViewStatement createViewStatement;
     
     @Mock
-    private SimpleSelectStatement simpleSelectStatement;
+    private SimpleSelectStatement selectStatement;
     
     @BeforeEach
     void setUp() {
         when(createViewStatementContext.getSqlStatement()).thenReturn(createViewStatement);
-        when(createViewStatement.getSelect()).thenReturn(simpleSelectStatement);
-        when(simpleSelectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        when(createViewStatement.getSelect()).thenReturn(selectStatement);
+        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(createViewStatement.getView()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_view"))));
         when(routeContext.getRouteUnits().size()).thenReturn(2);
     }
@@ -107,7 +107,7 @@ class ShardingCreateViewStatementValidatorTest {
     @Test
     void assertPostValidateCreateView() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(simpleSelectStatement.getProjections()).thenReturn(projectionsSegment);
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator(mock(RuleMetaData.class)).postValidate(
                 shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
@@ -116,7 +116,7 @@ class ShardingCreateViewStatementValidatorTest {
     void assertPostValidateCreateViewWithException() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.isDistinctRow()).thenReturn(true);
-        when(simpleSelectStatement.getProjections()).thenReturn(projectionsSegment);
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         assertThrows(UnsupportedCreateViewException.class,
                 () -> new ShardingCreateViewStatementValidator(mock(RuleMetaData.class)).postValidate(shardingRule,
                         createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));

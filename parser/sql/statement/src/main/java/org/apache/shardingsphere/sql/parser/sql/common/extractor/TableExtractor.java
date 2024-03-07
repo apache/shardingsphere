@@ -75,30 +75,30 @@ public final class TableExtractor {
     /**
      * Extract table that should be rewritten from select statement.
      *
-     * @param simpleSelectStatement select statement
+     * @param selectStatement select statement
      */
-    public void extractTablesFromSelect(final SimpleSelectStatement simpleSelectStatement) {
-        if (simpleSelectStatement.getCombine().isPresent()) {
-            CombineSegment combineSegment = simpleSelectStatement.getCombine().get();
+    public void extractTablesFromSelect(final SimpleSelectStatement selectStatement) {
+        if (selectStatement.getCombine().isPresent()) {
+            CombineSegment combineSegment = selectStatement.getCombine().get();
             extractTablesFromSelect(combineSegment.getLeft());
             extractTablesFromSelect(combineSegment.getRight());
         }
-        if (null != simpleSelectStatement.getFrom() && !simpleSelectStatement.getCombine().isPresent()) {
-            extractTablesFromTableSegment(simpleSelectStatement.getFrom());
+        if (null != selectStatement.getFrom() && !selectStatement.getCombine().isPresent()) {
+            extractTablesFromTableSegment(selectStatement.getFrom());
         }
-        if (simpleSelectStatement.getWhere().isPresent()) {
-            extractTablesFromExpression(simpleSelectStatement.getWhere().get().getExpr());
+        if (selectStatement.getWhere().isPresent()) {
+            extractTablesFromExpression(selectStatement.getWhere().get().getExpr());
         }
-        if (null != simpleSelectStatement.getProjections() && !simpleSelectStatement.getCombine().isPresent()) {
-            extractTablesFromProjections(simpleSelectStatement.getProjections());
+        if (null != selectStatement.getProjections() && !selectStatement.getCombine().isPresent()) {
+            extractTablesFromProjections(selectStatement.getProjections());
         }
-        if (simpleSelectStatement.getGroupBy().isPresent()) {
-            extractTablesFromOrderByItems(simpleSelectStatement.getGroupBy().get().getGroupByItems());
+        if (selectStatement.getGroupBy().isPresent()) {
+            extractTablesFromOrderByItems(selectStatement.getGroupBy().get().getGroupByItems());
         }
-        if (simpleSelectStatement.getOrderBy().isPresent()) {
-            extractTablesFromOrderByItems(simpleSelectStatement.getOrderBy().get().getOrderByItems());
+        if (selectStatement.getOrderBy().isPresent()) {
+            extractTablesFromOrderByItems(selectStatement.getOrderBy().get().getOrderByItems());
         }
-        Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(simpleSelectStatement);
+        Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         lockSegment.ifPresent(this::extractTablesFromLock);
     }
     

@@ -64,8 +64,8 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        SimpleSelectStatement simpleSelectStatement = ((CreateViewStatement) sqlStatementContext.getSqlStatement()).getSelect();
-        if (isContainsNotSupportedViewStatement(simpleSelectStatement, routeContext)) {
+        SimpleSelectStatement selectStatement = ((CreateViewStatement) sqlStatementContext.getSqlStatement()).getSelect();
+        if (isContainsNotSupportedViewStatement(selectStatement, routeContext)) {
             throw new UnsupportedCreateViewException();
         }
     }
@@ -87,19 +87,19 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         return shardingRule.isAllBindingTables(bindTables);
     }
     
-    private boolean isContainsNotSupportedViewStatement(final SimpleSelectStatement simpleSelectStatement, final RouteContext routeContext) {
+    private boolean isContainsNotSupportedViewStatement(final SimpleSelectStatement selectStatement, final RouteContext routeContext) {
         if (routeContext.getRouteUnits().size() <= 1) {
             return false;
         }
-        return hasGroupBy(simpleSelectStatement) || hasAggregation(simpleSelectStatement) || hasDistinct(simpleSelectStatement) || hasLimit(simpleSelectStatement);
+        return hasGroupBy(selectStatement) || hasAggregation(selectStatement) || hasDistinct(selectStatement) || hasLimit(selectStatement);
     }
     
-    private boolean hasGroupBy(final SimpleSelectStatement simpleSelectStatement) {
-        return simpleSelectStatement.getGroupBy().map(groupBySegment -> !groupBySegment.getGroupByItems().isEmpty()).orElse(false);
+    private boolean hasGroupBy(final SimpleSelectStatement selectStatement) {
+        return selectStatement.getGroupBy().map(groupBySegment -> !groupBySegment.getGroupByItems().isEmpty()).orElse(false);
     }
     
-    private boolean hasAggregation(final SimpleSelectStatement simpleSelectStatement) {
-        for (ProjectionSegment each : simpleSelectStatement.getProjections().getProjections()) {
+    private boolean hasAggregation(final SimpleSelectStatement selectStatement) {
+        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
             if (each instanceof AggregationProjectionSegment) {
                 return true;
             }
@@ -107,11 +107,11 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         return false;
     }
     
-    private boolean hasDistinct(final SimpleSelectStatement simpleSelectStatement) {
-        return simpleSelectStatement.getProjections().isDistinctRow();
+    private boolean hasDistinct(final SimpleSelectStatement selectStatement) {
+        return selectStatement.getProjections().isDistinctRow();
     }
     
-    private boolean hasLimit(final SimpleSelectStatement simpleSelectStatement) {
-        return SelectStatementHandler.getLimitSegment(simpleSelectStatement).isPresent();
+    private boolean hasLimit(final SimpleSelectStatement selectStatement) {
+        return SelectStatementHandler.getLimitSegment(selectStatement).isPresent();
     }
 }

@@ -53,23 +53,23 @@ public final class SubqueryExtractUtils {
     /**
      * Get subquery segment from SelectStatement.
      *
-     * @param simpleSelectStatement SelectStatement
+     * @param selectStatement SelectStatement
      * @return subquery segment collection
      */
-    public static Collection<SubquerySegment> getSubquerySegments(final SimpleSelectStatement simpleSelectStatement) {
+    public static Collection<SubquerySegment> getSubquerySegments(final SimpleSelectStatement selectStatement) {
         List<SubquerySegment> result = new LinkedList<>();
-        extractSubquerySegments(result, simpleSelectStatement);
+        extractSubquerySegments(result, selectStatement);
         return result;
     }
     
-    private static void extractSubquerySegments(final List<SubquerySegment> result, final SimpleSelectStatement simpleSelectStatement) {
-        extractSubquerySegmentsFromProjections(result, simpleSelectStatement.getProjections());
-        extractSubquerySegmentsFromTableSegment(result, simpleSelectStatement.getFrom());
-        if (simpleSelectStatement.getWhere().isPresent()) {
-            extractSubquerySegmentsFromWhere(result, simpleSelectStatement.getWhere().get().getExpr());
+    private static void extractSubquerySegments(final List<SubquerySegment> result, final SimpleSelectStatement selectStatement) {
+        extractSubquerySegmentsFromProjections(result, selectStatement.getProjections());
+        extractSubquerySegmentsFromTableSegment(result, selectStatement.getFrom());
+        if (selectStatement.getWhere().isPresent()) {
+            extractSubquerySegmentsFromWhere(result, selectStatement.getWhere().get().getExpr());
         }
-        if (simpleSelectStatement.getCombine().isPresent()) {
-            extractSubquerySegmentsFromCombine(result, simpleSelectStatement.getCombine().get());
+        if (selectStatement.getCombine().isPresent()) {
+            extractSubquerySegmentsFromCombine(result, selectStatement.getCombine().get());
         }
     }
     

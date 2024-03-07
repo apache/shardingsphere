@@ -36,10 +36,10 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertNeedOpenTransactionForSelectStatement() {
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
-        assertFalse(AutoCommitUtils.needOpenTransaction(simpleSelectStatement));
-        simpleSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("foo"))));
-        assertTrue(AutoCommitUtils.needOpenTransaction(simpleSelectStatement));
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        assertFalse(AutoCommitUtils.needOpenTransaction(selectStatement));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("foo"))));
+        assertTrue(AutoCommitUtils.needOpenTransaction(selectStatement));
     }
     
     @Test

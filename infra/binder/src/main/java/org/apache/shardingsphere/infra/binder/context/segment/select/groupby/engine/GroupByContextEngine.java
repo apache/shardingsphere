@@ -34,15 +34,15 @@ public final class GroupByContextEngine {
     /**
      * Create group by context.
      *
-     * @param simpleSelectStatement select statement
+     * @param selectStatement select statement
      * @return group by context
      */
-    public GroupByContext createGroupByContext(final SimpleSelectStatement simpleSelectStatement) {
-        if (!simpleSelectStatement.getGroupBy().isPresent()) {
+    public GroupByContext createGroupByContext(final SimpleSelectStatement selectStatement) {
+        if (!selectStatement.getGroupBy().isPresent()) {
             return new GroupByContext(new LinkedList<>());
         }
         Collection<OrderByItem> groupByItems = new LinkedList<>();
-        for (OrderByItemSegment each : simpleSelectStatement.getGroupBy().get().getGroupByItems()) {
+        for (OrderByItemSegment each : selectStatement.getGroupBy().get().getGroupByItems()) {
             OrderByItem orderByItem = new OrderByItem(each);
             if (each instanceof IndexOrderByItemSegment) {
                 orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());

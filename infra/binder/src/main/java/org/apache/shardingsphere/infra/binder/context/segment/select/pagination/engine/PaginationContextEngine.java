@@ -44,19 +44,19 @@ public final class PaginationContextEngine {
     /**
      * Create pagination context.
      * 
-     * @param simpleSelectStatement SQL statement
+     * @param selectStatement SQL statement
      * @param projectionsContext projections context
      * @param params SQL parameters
      * @param whereSegments where segments
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final SimpleSelectStatement simpleSelectStatement, final ProjectionsContext projectionsContext,
+    public PaginationContext createPaginationContext(final SimpleSelectStatement selectStatement, final ProjectionsContext projectionsContext,
                                                      final List<Object> params, final Collection<WhereSegment> whereSegments) {
-        Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(simpleSelectStatement);
+        Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         if (limitSegment.isPresent()) {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), params);
         }
-        Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(simpleSelectStatement);
+        Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
         Collection<ExpressionSegment> expressions = new LinkedList<>();
         for (WhereSegment each : whereSegments) {
             expressions.add(each.getExpr());
@@ -64,18 +64,18 @@ public final class PaginationContextEngine {
         if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, params);
         }
-        if (!expressions.isEmpty() && containsRowNumberPagination(simpleSelectStatement)) {
+        if (!expressions.isEmpty() && containsRowNumberPagination(selectStatement)) {
             return new RowNumberPaginationContextEngine().createPaginationContext(expressions, projectionsContext, params);
         }
         return new PaginationContext(null, null, params);
     }
     
-    private boolean containsRowNumberPagination(final SimpleSelectStatement simpleSelectStatement) {
-        return simpleSelectStatement instanceof OracleStatement || simpleSelectStatement instanceof SQLServerStatement;
+    private boolean containsRowNumberPagination(final SimpleSelectStatement selectStatement) {
+        return selectStatement instanceof OracleStatement || selectStatement instanceof SQLServerStatement;
     }
     
-    private Optional<TopProjectionSegment> findTopProjection(final SimpleSelectStatement simpleSelectStatement) {
-        List<SubqueryTableSegment> subqueryTableSegments = SQLUtils.getSubqueryTableSegmentFromTableSegment(simpleSelectStatement.getFrom());
+    private Optional<TopProjectionSegment> findTopProjection(final SimpleSelectStatement selectStatement) {
+        List<SubqueryTableSegment> subqueryTableSegments = SQLUtils.getSubqueryTableSegmentFromTableSegment(selectStatement.getFrom());
         for (SubqueryTableSegment subquery : subqueryTableSegments) {
             SimpleSelectStatement subquerySelect = subquery.getSubquery().getSelect();
             for (ProjectionSegment each : subquerySelect.getProjections().getProjections()) {

@@ -86,13 +86,13 @@ class OrderByValueTest {
         assertCompareToForAsc(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCompareToForAsc(final SimpleSelectStatement simpleSelectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    private void assertCompareToForAsc(final SimpleSelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        simpleSelectStatement.setProjections(projectionsSegment);
+        selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mockDatabase();
-        simpleSelectStatement.setOrderBy(createOrderBySegment());
+        selectStatement.setOrderBy(createOrderBySegment());
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createShardingSphereMetaData(database), Collections.emptyList(), simpleSelectStatement, DefaultDatabase.LOGIC_NAME);
+                createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
@@ -150,13 +150,13 @@ class OrderByValueTest {
         assertCompareToForDesc(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCompareToForDesc(final SimpleSelectStatement simpleSelectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    private void assertCompareToForDesc(final SimpleSelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        simpleSelectStatement.setProjections(projectionsSegment);
+        selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mockDatabase();
-        simpleSelectStatement.setOrderBy(createOrderBySegment());
+        selectStatement.setOrderBy(createOrderBySegment());
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database),
-                Collections.emptyList(), simpleSelectStatement, DefaultDatabase.LOGIC_NAME);
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getTable("table")).thenReturn(new ShardingSphereTable());
         QueryResult queryResult1 = createQueryResult("1", "2");
@@ -204,13 +204,13 @@ class OrderByValueTest {
         assertCompareToWhenEqual(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCompareToWhenEqual(final SimpleSelectStatement simpleSelectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
+    private void assertCompareToWhenEqual(final SimpleSelectStatement selectStatement) throws SQLException, NoSuchFieldException, IllegalAccessException {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        simpleSelectStatement.setProjections(projectionsSegment);
+        selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mockDatabase();
-        simpleSelectStatement.setOrderBy(createOrderBySegment());
+        selectStatement.setOrderBy(createOrderBySegment());
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database),
-                Collections.emptyList(), simpleSelectStatement, DefaultDatabase.LOGIC_NAME);
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(

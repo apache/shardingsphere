@@ -41,17 +41,17 @@ public final class OrderByContextEngine {
     /**
      * Create order by context.
      *
-     * @param simpleSelectStatement select statement
+     * @param selectStatement select statement
      * @param groupByContext group by context
      * @return order by context
      */
-    public OrderByContext createOrderBy(final SimpleSelectStatement simpleSelectStatement, final GroupByContext groupByContext) {
-        if (!simpleSelectStatement.getOrderBy().isPresent() || simpleSelectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
-            OrderByContext orderByItems = createOrderByContextForDistinctRowWithoutGroupBy(simpleSelectStatement, groupByContext);
+    public OrderByContext createOrderBy(final SimpleSelectStatement selectStatement, final GroupByContext groupByContext) {
+        if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
+            OrderByContext orderByItems = createOrderByContextForDistinctRowWithoutGroupBy(selectStatement, groupByContext);
             return null == orderByItems ? new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty()) : orderByItems;
         }
         List<OrderByItem> orderByItems = new LinkedList<>();
-        for (OrderByItemSegment each : simpleSelectStatement.getOrderBy().get().getOrderByItems()) {
+        for (OrderByItemSegment each : selectStatement.getOrderBy().get().getOrderByItems()) {
             OrderByItem orderByItem = new OrderByItem(each);
             if (each instanceof IndexOrderByItemSegment) {
                 orderByItem.setIndex(((IndexOrderByItemSegment) each).getColumnIndex());
@@ -61,12 +61,12 @@ public final class OrderByContextEngine {
         return new OrderByContext(orderByItems, false);
     }
     
-    private OrderByContext createOrderByContextForDistinctRowWithoutGroupBy(final SimpleSelectStatement simpleSelectStatement, final GroupByContext groupByContext) {
-        if (groupByContext.getItems().isEmpty() && simpleSelectStatement.getProjections().isDistinctRow()) {
+    private OrderByContext createOrderByContextForDistinctRowWithoutGroupBy(final SimpleSelectStatement selectStatement, final GroupByContext groupByContext) {
+        if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
             int index = 0;
             List<OrderByItem> orderByItems = new LinkedList<>();
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(simpleSelectStatement.getDatabaseType()).getDialectDatabaseMetaData();
-            for (ProjectionSegment projectionSegment : simpleSelectStatement.getProjections().getProjections()) {
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(selectStatement.getDatabaseType()).getDialectDatabaseMetaData();
+            for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
                 if (projectionSegment instanceof ColumnProjectionSegment) {
                     ColumnProjectionSegment columnProjectionSegment = (ColumnProjectionSegment) projectionSegment;
                     ColumnOrderByItemSegment columnOrderByItemSegment =

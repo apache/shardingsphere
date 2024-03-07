@@ -111,45 +111,45 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         return Optional.empty();
     }
     
-    private Optional<DatabaseAdminExecutor> create(final SimpleSelectStatement simpleSelectStatement, final String sql, final String databaseName, final List<Object> parameters) {
-        if (null == simpleSelectStatement.getFrom()) {
-            return findAdminExecutorForSelectWithoutFrom(sql, databaseName, simpleSelectStatement);
+    private Optional<DatabaseAdminExecutor> create(final SimpleSelectStatement selectStatement, final String sql, final String databaseName, final List<Object> parameters) {
+        if (null == selectStatement.getFrom()) {
+            return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
         }
         if (isQueryInformationSchema(databaseName)) {
-            return MySQLInformationSchemaExecutorFactory.newInstance(simpleSelectStatement, sql, parameters);
+            return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
         }
         if (isQueryPerformanceSchema(databaseName)) {
-            return MySQLPerformanceSchemaExecutorFactory.newInstance(simpleSelectStatement, sql, parameters);
+            return MySQLPerformanceSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
         }
         if (isQueryMySQLSchema(databaseName)) {
-            return MySQLMySQLSchemaExecutorFactory.newInstance(simpleSelectStatement, sql, parameters);
+            return MySQLMySQLSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
         }
         if (isQuerySysSchema(databaseName)) {
-            return MySQLSysSchemaExecutorFactory.newInstance(simpleSelectStatement, sql, parameters);
+            return MySQLSysSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
         }
         return Optional.empty();
     }
     
-    private Optional<DatabaseAdminExecutor> findAdminExecutorForSelectWithoutFrom(final String sql, final String databaseName, final SimpleSelectStatement simpleSelectStatement) {
-        Optional<DatabaseAdminExecutor> result = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(simpleSelectStatement);
-        return result.isPresent() ? result : getSelectFunctionOrVariableExecutor(simpleSelectStatement, sql, databaseName);
+    private Optional<DatabaseAdminExecutor> findAdminExecutorForSelectWithoutFrom(final String sql, final String databaseName, final SimpleSelectStatement selectStatement) {
+        Optional<DatabaseAdminExecutor> result = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement);
+        return result.isPresent() ? result : getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
     }
     
-    private Optional<DatabaseAdminExecutor> getSelectFunctionOrVariableExecutor(final SimpleSelectStatement simpleSelectStatement, final String sql, final String databaseName) {
-        if (isShowSpecialFunction(simpleSelectStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
-            return Optional.of(new ShowConnectionIdExecutor(simpleSelectStatement));
+    private Optional<DatabaseAdminExecutor> getSelectFunctionOrVariableExecutor(final SimpleSelectStatement selectStatement, final String sql, final String databaseName) {
+        if (isShowSpecialFunction(selectStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
+            return Optional.of(new ShowConnectionIdExecutor(selectStatement));
         }
-        if (isShowSpecialFunction(simpleSelectStatement, ShowVersionExecutor.FUNCTION_NAME)) {
-            return Optional.of(new ShowVersionExecutor(simpleSelectStatement));
+        if (isShowSpecialFunction(selectStatement, ShowVersionExecutor.FUNCTION_NAME)) {
+            return Optional.of(new ShowVersionExecutor(selectStatement));
         }
-        if (isShowSpecialFunction(simpleSelectStatement, ShowCurrentUserExecutor.FUNCTION_NAME)
-                || isShowSpecialFunction(simpleSelectStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
+        if (isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME)
+                || isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
             return Optional.of(new ShowCurrentUserExecutor());
         }
-        if (isShowSpecialFunction(simpleSelectStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
+        if (isShowSpecialFunction(selectStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
             return Optional.of(new ShowCurrentDatabaseExecutor());
         }
-        return mockExecutor(databaseName, simpleSelectStatement, sql);
+        return mockExecutor(databaseName, selectStatement, sql);
     }
     
     private boolean isShowSpecialFunction(final SimpleSelectStatement sqlStatement, final String functionName) {

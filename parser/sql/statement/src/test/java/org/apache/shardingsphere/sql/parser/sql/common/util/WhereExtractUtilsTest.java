@@ -52,9 +52,9 @@ class WhereExtractUtilsTest {
         ColumnSegment left = new ColumnSegment(57, 67, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(71, 80, new IdentifierValue("order_id"));
         tableSegment.setCondition(new BinaryOperationExpression(1, 31, left, right, "=", "oi.order_id = o.order_id"));
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
-        simpleSelectStatement.setFrom(tableSegment);
-        Collection<WhereSegment> joinWhereSegments = WhereExtractUtils.getJoinWhereSegments(simpleSelectStatement);
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        selectStatement.setFrom(tableSegment);
+        Collection<WhereSegment> joinWhereSegments = WhereExtractUtils.getJoinWhereSegments(selectStatement);
         assertThat(joinWhereSegments.size(), is(1));
         WhereSegment actual = joinWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(tableSegment.getCondition()));
@@ -69,9 +69,9 @@ class WhereExtractUtilsTest {
         subQuerySelectStatement.setWhere(where);
         ProjectionsSegment projections = new ProjectionsSegment(7, 79);
         projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(7, 63, subQuerySelectStatement, ""), "(SELECT status FROM t_order WHERE order_id = oi.order_id)"));
-        SimpleSelectStatement simpleSelectStatement = new MySQLSimpleSelectStatement();
-        simpleSelectStatement.setProjections(projections);
-        Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(simpleSelectStatement);
+        SimpleSelectStatement selectStatement = new MySQLSimpleSelectStatement();
+        selectStatement.setProjections(projections);
+        Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         Preconditions.checkState(subQuerySelectStatement.getWhere().isPresent());
         assertThat(actual.getExpr(), is(subQuerySelectStatement.getWhere().get().getExpr()));

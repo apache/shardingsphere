@@ -140,10 +140,10 @@ class PaginationContextEngineTest {
         assertCreatePaginationContextWhenResultIsPaginationContext(new SQLServerSimpleSelectStatement());
     }
     
-    private void assertCreatePaginationContextWhenResultIsPaginationContext(final SimpleSelectStatement simpleSelectStatement) {
-        simpleSelectStatement.setProjections(new ProjectionsSegment(0, 0));
+    private void assertCreatePaginationContextWhenResultIsPaginationContext(final SimpleSelectStatement selectStatement) {
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         assertThat(new PaginationContextEngine().createPaginationContext(
-                simpleSelectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList()), instanceOf(PaginationContext.class));
+                selectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList()), instanceOf(PaginationContext.class));
     }
 }
