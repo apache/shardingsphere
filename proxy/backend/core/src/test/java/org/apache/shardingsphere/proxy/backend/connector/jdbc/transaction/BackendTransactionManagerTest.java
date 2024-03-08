@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -192,11 +193,14 @@ class BackendTransactionManagerTest {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     private RuleMetaData mockGlobalRuleMetaData() {
         ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingSphereTransactionManager);
         TransactionRule transactionRule = mock(TransactionRule.class);
-        when(transactionRule.getRuleIdentifiers().getIdentifier(ResourceHeldRule.class).getResource()).thenReturn(transactionManagerEngine);
+        ResourceHeldRule<ShardingSphereTransactionManagerEngine> resourceHeldRule = mock(ResourceHeldRule.class);
+        when(resourceHeldRule.getResource()).thenReturn(transactionManagerEngine);
+        when(transactionRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(resourceHeldRule));
         return new RuleMetaData(Collections.singleton(transactionRule));
     }
 }
