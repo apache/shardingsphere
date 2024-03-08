@@ -44,11 +44,13 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
      - Replace `each` with `entry` in map;
      - Exceptions when catch are named with `ex`;
      - Exceptions when catch but do nothing are named with `ignored`.
+   - It is prohibited to use `result`, `each`, or `entry` as method parameter names.
    - Utility class should be named in the form of `xxUtils`.
    - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words).
  - Split codes that need to add notes with it into small methods, which are explained with method names.
  - Have constants on the left and variable on the right in `=` and `equals` conditional expressions; Have variable on the left and constants on the right in `greater than` and `less than` conditional expressions.
  - Beside using same names as input parameters and global fields in assign statement, avoid using `this` modifier.
+ - Local variables should not be set as final.
  - Design class as `final` class except abstract class for extend.
  - Make nested loop structures a new method.
  - Order of members definition and parameters should be consistent during classes and methods.
