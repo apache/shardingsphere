@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.metadata.MetaDataHeldRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.util.Collections;
@@ -148,20 +148,22 @@ public final class ResourceMetaDataContextManager {
     
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
         metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).removeTable(toBeDeletedTableName);
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().filter(MutableDataNodeRule.class::isInstance).findFirst()
-                .ifPresent(optional -> ((MutableDataNodeRule) optional).remove(schemaName, toBeDeletedTableName));
+        for (ShardingSphereRule each : metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(MutableDataNodeRule.class).ifPresent(optional -> optional.remove(schemaName, toBeDeletedTableName));
+        }
     }
     
     private void dropView(final String databaseName, final String schemaName, final String toBeDeletedViewName) {
         metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchema(schemaName).removeView(toBeDeletedViewName);
-        metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().filter(MutableDataNodeRule.class::isInstance).findFirst()
-                .ifPresent(optional -> ((MutableDataNodeRule) optional).remove(schemaName, toBeDeletedViewName));
+        for (ShardingSphereRule each : metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(MutableDataNodeRule.class).ifPresent(optional -> optional.remove(schemaName, toBeDeletedViewName));
+        }
     }
     
     private void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         if (TableRefreshUtils.isSingleTable(beBoChangedTable.getName(), database)) {
-            database.reloadRules(MutableDataNodeRule.class);
+            database.reloadRules();
         }
         database.getSchema(schemaName).putTable(beBoChangedTable.getName(), beBoChangedTable);
     }
@@ -169,7 +171,7 @@ public final class ResourceMetaDataContextManager {
     private void alterView(final String databaseName, final String schemaName, final ShardingSphereView beBoChangedView) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         if (TableRefreshUtils.isSingleTable(beBoChangedView.getName(), database)) {
-            database.reloadRules(MutableDataNodeRule.class);
+            database.reloadRules();
         }
         database.getSchema(schemaName).putView(beBoChangedView.getName(), beBoChangedView);
     }

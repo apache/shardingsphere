@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
 import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -85,7 +86,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     private void routeDDLStatement(final RouteContext routeContext, final SingleRule rule) {
         if (sqlStatement instanceof CreateTableStatement) {
             QualifiedTable table = singleTables.iterator().next();
-            Optional<DataNode> dataNode = rule.findTableDataNode(table.getSchemaName(), table.getTableName());
+            Optional<DataNode> dataNode = rule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).findTableDataNode(table.getSchemaName(), table.getTableName());
             boolean containsIfNotExists = CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement);
             if (dataNode.isPresent() && containsIfNotExists) {
                 String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElse(null);
@@ -104,7 +105,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     private void fillRouteContext(final SingleRule singleRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables) {
         for (QualifiedTable each : logicTables) {
             String tableName = each.getTableName();
-            Optional<DataNode> dataNode = singleRule.findTableDataNode(each.getSchemaName(), tableName);
+            Optional<DataNode> dataNode = singleRule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).findTableDataNode(each.getSchemaName(), tableName);
             ShardingSpherePreconditions.checkState(dataNode.isPresent(), () -> new SingleTableNotFoundException(tableName));
             String dataSource = dataNode.get().getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(tableName, tableName)));

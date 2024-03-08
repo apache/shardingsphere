@@ -19,13 +19,15 @@ package org.apache.shardingsphere.infra.metadata.database;
 
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -49,8 +51,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShardingSphereDatabase.class)
@@ -145,13 +147,19 @@ class ShardingSphereDatabaseTest {
     
     @Test
     void assertReloadRules() {
-        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource()));
         Collection<ShardingSphereRule> rules = new LinkedList<>();
-        rules.add(mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS));
-        rules.add(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS));
+        ShardingSphereRule rule0 = mock(ShardingSphereRule.class);
+        when(rule0.getConfiguration()).thenReturn(mock(RuleConfiguration.class));
+        when(rule0.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(mock(MutableDataNodeRule.class)));
+        rules.add(rule0);
+        ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
+        when(rule1.getConfiguration()).thenReturn(mock(RuleConfiguration.class));
+        when(rule1.getRuleIdentifiers()).thenReturn(new RuleIdentifiers());
+        rules.add(rule1);
         RuleMetaData ruleMetaData = new RuleMetaData(rules);
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, Collections.emptyMap());
-        database.reloadRules(MutableDataNodeRule.class);
+        database.reloadRules();
         assertThat(database.getRuleMetaData().getRules().size(), is(2));
     }
     
