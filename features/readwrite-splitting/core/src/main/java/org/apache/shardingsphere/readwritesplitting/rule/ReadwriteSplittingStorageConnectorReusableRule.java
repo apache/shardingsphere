@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.readwritesplitting.rule;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.StorageConnectorReusableRule;
 
 /**
- * Storage connector reusable rule.
+ * Readwrite-splitting storage connector reusable rule.
  */
-public interface StorageConnectorReusableRule extends ShardingSphereRule {
+public final class ReadwriteSplittingStorageConnectorReusableRule implements StorageConnectorReusableRule {
 }
