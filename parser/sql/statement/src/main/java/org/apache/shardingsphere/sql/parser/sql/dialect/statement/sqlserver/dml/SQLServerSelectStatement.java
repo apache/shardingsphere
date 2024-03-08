@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
 
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.sqlserver.hint.WithTableHintSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 import java.util.Optional;
 
 /**
- * OpenGauss generic select statement.
+ * SQLServer select statement.
  */
 @Setter
-public final class OpenGaussGenericSelectStatement extends GenericSelectStatement implements OpenGaussStatement {
+public final class SQLServerSelectStatement extends SelectStatement implements SQLServerStatement {
     
     private LimitSegment limit;
     
-    private LockSegment lock;
-    
-    private WindowSegment window;
+    private WithSegment withSegment;
     
     private TableSegment intoSegment;
+    
+    private WithTableHintSegment withTableHintSegment;
     
     /**
      * Get order by segment.
@@ -51,21 +51,12 @@ public final class OpenGaussGenericSelectStatement extends GenericSelectStatemen
     }
     
     /**
-     * Get lock segment.
+     * Get with segment.
      *
-     * @return lock segment
+     * @return with segment.
      */
-    public Optional<LockSegment> getLock() {
-        return Optional.ofNullable(lock);
-    }
-    
-    /**
-     * Get window segment.
-     *
-     * @return window segment
-     */
-    public Optional<WindowSegment> getWindow() {
-        return Optional.ofNullable(window);
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
     }
     
     /**
@@ -75,5 +66,14 @@ public final class OpenGaussGenericSelectStatement extends GenericSelectStatemen
      */
     public Optional<TableSegment> getIntoSegment() {
         return Optional.ofNullable(intoSegment);
+    }
+    
+    /**
+     * Get with table hint segment.
+     *
+     * @return with table hint segment.
+     */
+    public Optional<WithTableHintSegment> getWithTableHintSegment() {
+        return Optional.ofNullable(withTableHintSegment);
     }
 }

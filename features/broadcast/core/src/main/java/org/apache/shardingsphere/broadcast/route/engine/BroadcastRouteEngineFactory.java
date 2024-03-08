@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
@@ -164,7 +164,7 @@ public final class BroadcastRouteEngineFactory {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (broadcastRule.isAllBroadcastTables(tableNames)) {
-            return sqlStatementContext.getSqlStatement() instanceof GenericSelectStatement
+            return sqlStatementContext.getSqlStatement() instanceof SelectStatement
                     ? new BroadcastUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext)
                     : new BroadcastDatabaseBroadcastRoutingEngine();
         }

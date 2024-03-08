@@ -204,7 +204,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -808,7 +808,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         PostgreSQLCreateViewStatement result = new PostgreSQLCreateViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
-        result.setSelect((GenericSelectStatement) visit(ctx.select()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
     }
     
@@ -885,7 +885,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitPrepare(final PrepareContext ctx) {
         PostgreSQLPrepareStatement result = new PostgreSQLPrepareStatement();
         if (null != ctx.preparableStmt().select()) {
-            result.setSelect((GenericSelectStatement) visit(ctx.preparableStmt().select()));
+            result.setSelect((SelectStatement) visit(ctx.preparableStmt().select()));
         }
         if (null != ctx.preparableStmt().insert()) {
             result.setInsert((InsertStatement) visit(ctx.preparableStmt().insert()));
@@ -1197,7 +1197,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitDeclare(final DeclareContext ctx) {
         PostgreSQLDeclareStatement result = new PostgreSQLDeclareStatement();
         result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
-        result.setSelect((GenericSelectStatement) visit(ctx.select()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
     }
     
