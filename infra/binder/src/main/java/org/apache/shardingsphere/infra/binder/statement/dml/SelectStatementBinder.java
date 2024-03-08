@@ -61,8 +61,8 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         SelectStatementHandler.getWithSegment(sqlStatement).ifPresent(optional -> {
             Map<String, TableSegmentBinderContext> withExternalTableBinderContexts = new CaseInsensitiveMap<>(externalTableBinderContexts);
             for (CommonTableExpressionSegment tableExpressionSegment : optional.getCommonTableExpressions()) {
-                GenericSelectStatement subqueryStatement = tableExpressionSegment.getSubquery().getSelect();
-                GenericSelectStatement boundedSelectStatement = SelectStatementBinder.this.bind(subqueryStatement, metaData, defaultDatabaseName, tableBinderContexts, withExternalTableBinderContexts);
+                SelectStatement subqueryStatement = tableExpressionSegment.getSubquery().getSelect();
+                SelectStatement boundedSelectStatement = SelectStatementBinder.this.bind(subqueryStatement, metaData, defaultDatabaseName, tableBinderContexts, withExternalTableBinderContexts);
                 withExternalTableBinderContexts.put(tableExpressionSegment.getIdentifier().getValue(), new SimpleTableSegmentBinderContext(boundedSelectStatement.getProjections().getProjections()));
             }
             statementBinderContext.getExternalTableBinderContexts().putAll(withExternalTableBinderContexts);
