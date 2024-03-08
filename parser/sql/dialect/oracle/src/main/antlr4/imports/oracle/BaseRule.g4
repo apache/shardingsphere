@@ -947,7 +947,7 @@ dataType
     ;
 
 specialDatatype
-    : dataTypeName (LP_ NUMBER_ CHAR RP_) | NATIONAL? dataTypeName VARYING? LP_ (INTEGER_ | NUMBER_) RP_ | dataTypeName LP_? columnName RP_? | (SYS DOT_)? dataTypeName
+    : dataTypeName (LP_ NUMBER_ CHAR RP_) | NATIONAL? dataTypeName VARYING? LP_ (INTEGER_ | NUMBER_) RP_ | (SYS DOT_)? dataTypeName
     ;
 
 dataTypeName

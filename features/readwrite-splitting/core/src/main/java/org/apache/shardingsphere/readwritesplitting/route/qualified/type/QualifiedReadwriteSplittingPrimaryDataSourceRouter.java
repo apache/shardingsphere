@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 /**
@@ -43,11 +43,11 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     
     private boolean isWriteRouteStatement(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !(sqlStatement instanceof GenericSelectStatement);
+        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !(sqlStatement instanceof SelectStatement);
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof GenericSelectStatement && SelectStatementHandler.getLockSegment((GenericSelectStatement) sqlStatement).isPresent();
+        return sqlStatement instanceof SelectStatement && SelectStatementHandler.getLockSegment((SelectStatement) sqlStatement).isPresent();
     }
     
     private boolean containsLastInsertIdProjection(final SQLStatementContext sqlStatementContext) {

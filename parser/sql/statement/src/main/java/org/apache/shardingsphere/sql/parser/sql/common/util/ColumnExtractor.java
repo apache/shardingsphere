@@ -43,7 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Col
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.join.OuterJoinExpression;
 
 import java.util.Collection;
@@ -113,7 +113,7 @@ public final class ColumnExtractor {
      * @param statement select statement
      * @param containsSubQuery whether contains sub query
      */
-    public static void extractFromSelectStatement(final Collection<ColumnSegment> columnSegments, final GenericSelectStatement statement, final boolean containsSubQuery) {
+    public static void extractFromSelectStatement(final Collection<ColumnSegment> columnSegments, final SelectStatement statement, final boolean containsSubQuery) {
         extractFromProjections(columnSegments, statement.getProjections().getProjections(), containsSubQuery);
         extractFromSelectStatementWithoutProjection(columnSegments, statement, containsSubQuery);
     }
@@ -125,7 +125,7 @@ public final class ColumnExtractor {
      * @param statement select statement
      * @param containsSubQuery whether contains sub query
      */
-    public static void extractFromSelectStatementWithoutProjection(final Collection<ColumnSegment> columnSegments, final GenericSelectStatement statement, final boolean containsSubQuery) {
+    public static void extractFromSelectStatementWithoutProjection(final Collection<ColumnSegment> columnSegments, final SelectStatement statement, final boolean containsSubQuery) {
         extractFromTable(columnSegments, statement.getFrom(), containsSubQuery);
         statement.getWhere().ifPresent(optional -> extractFromWhere(columnSegments, optional, containsSubQuery));
         statement.getGroupBy().ifPresent(optional -> extractFromGroupBy(columnSegments, optional, containsSubQuery));

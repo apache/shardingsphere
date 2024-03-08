@@ -101,10 +101,7 @@ public final class PipelineJobProgressPersistService {
      */
     public static void persistNow(final String jobId, final int shardingItem) {
         getPersistContext(jobId, shardingItem).ifPresent(persistContext -> {
-            if (null == persistContext.getBeforePersistingProgressMillis().get()) {
-                log.warn("Force persisting progress is not permitted since not previous persisting, jobId={}, shardingItem={}", jobId, shardingItem);
-                return;
-            }
+            // TODO Recover persistContext.getBeforePersistingProgressMillis() null check after compatible with PostgreSQLMigrationGeneralE2EIT
             notifyPersist(persistContext);
             PersistJobContextRunnable.persist(jobId, shardingItem, persistContext);
         });

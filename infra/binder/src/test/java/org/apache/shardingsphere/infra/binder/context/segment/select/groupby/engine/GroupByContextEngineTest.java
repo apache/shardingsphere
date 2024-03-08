@@ -26,13 +26,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92GenericSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -45,60 +45,60 @@ class GroupByContextEngineTest {
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForMySQL() {
-        assertCreateGroupByContextWithoutGroupBy(new MySQLGenericSelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new MySQLSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForOracle() {
-        assertCreateGroupByContextWithoutGroupBy(new OracleGenericSelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new OracleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForPostgreSQL() {
-        assertCreateGroupByContextWithoutGroupBy(new PostgreSQLGenericSelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForSQL92() {
-        assertCreateGroupByContextWithoutGroupBy(new SQL92GenericSelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new SQL92SelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithoutGroupByForSQLServer() {
-        assertCreateGroupByContextWithoutGroupBy(new SQLServerGenericSelectStatement());
+        assertCreateGroupByContextWithoutGroupBy(new SQLServerSelectStatement());
     }
     
-    private void assertCreateGroupByContextWithoutGroupBy(final GenericSelectStatement selectStatement) {
+    private void assertCreateGroupByContextWithoutGroupBy(final SelectStatement selectStatement) {
         GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         assertTrue(actualGroupByContext.getItems().isEmpty());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForMySQL() {
-        assertCreateGroupByContextWithGroupBy(new MySQLGenericSelectStatement());
+        assertCreateGroupByContextWithGroupBy(new MySQLSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForOracle() {
-        assertCreateGroupByContextWithGroupBy(new OracleGenericSelectStatement());
+        assertCreateGroupByContextWithGroupBy(new OracleSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForPostgreSQL() {
-        assertCreateGroupByContextWithGroupBy(new PostgreSQLGenericSelectStatement());
+        assertCreateGroupByContextWithGroupBy(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForSQL92() {
-        assertCreateGroupByContextWithGroupBy(new SQL92GenericSelectStatement());
+        assertCreateGroupByContextWithGroupBy(new SQL92SelectStatement());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupByForSQLServer() {
-        assertCreateGroupByContextWithGroupBy(new SQLServerGenericSelectStatement());
+        assertCreateGroupByContextWithGroupBy(new SQLServerSelectStatement());
     }
     
-    private void assertCreateGroupByContextWithGroupBy(final GenericSelectStatement selectStatement) {
+    private void assertCreateGroupByContextWithGroupBy(final SelectStatement selectStatement) {
         OrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")), OrderDirection.ASC, NullsOrderType.LAST);
         OrderByItemSegment indexOrderByItemSegment1 = new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, NullsOrderType.LAST);
         OrderByItemSegment indexOrderByItemSegment2 = new IndexOrderByItemSegment(2, 3, 3, OrderDirection.ASC, NullsOrderType.LAST);

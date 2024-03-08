@@ -48,7 +48,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStateme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
@@ -87,7 +87,7 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfSelectStatement() {
-        assertThat(PostgreSQLCommand.valueOf(GenericSelectStatement.class).orElse(null), is(PostgreSQLCommand.SELECT));
+        assertThat(PostgreSQLCommand.valueOf(SelectStatement.class).orElse(null), is(PostgreSQLCommand.SELECT));
         assertThat(PostgreSQLCommand.SELECT.getTag(), is("SELECT"));
     }
     

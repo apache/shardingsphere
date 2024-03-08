@@ -228,7 +228,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerMergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerUpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.SampleOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.segment.SampleStrategy;
@@ -529,7 +529,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             }
             right = listExpression;
         } else {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SQLServerGenericSelectStatement) visit(ctx.subquery()),
+            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(ctx.subquery()),
                     getOriginalText(ctx.subquery())));
         }
         boolean not = null != ctx.NOT();
@@ -587,7 +587,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.subquery()) {
-            return new SubquerySegment(startIndex, stopIndex, (SQLServerGenericSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
+            return new SubquerySegment(startIndex, stopIndex, (SQLServerSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
@@ -956,7 +956,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        SQLServerGenericSelectStatement result = (SQLServerGenericSelectStatement) visit(ctx.aggregationClause());
+        SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -969,7 +969,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SQLServerGenericSelectStatement result = new SQLServerGenericSelectStatement();
+        SQLServerSelectStatement result = new SQLServerSelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
             Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
@@ -1009,7 +1009,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         Collection<CommonTableExpressionSegment> result = new LinkedList<>();
         for (CteClauseContext each : ctx.cteClause()) {
             SubquerySegment subquery = new SubquerySegment(each.subquery().aggregationClause().start.getStartIndex(),
-                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerGenericSelectStatement) visit(each.subquery()), getOriginalText(each.subquery()));
+                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()), getOriginalText(each.subquery()));
             IdentifierValue identifier = (IdentifierValue) visit(each.identifier());
             CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
             if (null != each.columnNames()) {
@@ -1319,7 +1319,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
-        SQLServerGenericSelectStatement selectStatement = (SQLServerGenericSelectStatement) visit(ctx.select());
+        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) visit(ctx.select());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
     }
     
@@ -1593,7 +1593,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             if (null != ctx.subquery().merge()) {
                 subquerySegment.setMerge((MergeStatement) visit(ctx.subquery()));
             } else {
-                subquerySegment.setSelect((SQLServerGenericSelectStatement) visit(ctx.subquery()));
+                subquerySegment.setSelect((SQLServerSelectStatement) visit(ctx.subquery()));
             }
             SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
             if (null != ctx.alias()) {
@@ -1671,7 +1671,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         SQLServerCreateTableStatement result = new SQLServerCreateTableStatement();
         if (null != ctx.createTableAsSelect()) {
             result.setTable((SimpleTableSegment) visit(ctx.createTableAsSelect().tableName()));
-            result.setSelectStatement((SQLServerGenericSelectStatement) visit(ctx.createTableAsSelect().select()));
+            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createTableAsSelect().select()));
             if (null != ctx.createTableAsSelect().columnNames()) {
                 CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.createTableAsSelect().columnNames());
                 for (ColumnSegment each : columnSegments.getValue()) {
@@ -1680,7 +1680,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             }
         } else {
             result.setTable((SimpleTableSegment) visit(ctx.createRemoteTableAsSelect().tableName()));
-            result.setSelectStatement((SQLServerGenericSelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
+            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
         }
         return result;
     }

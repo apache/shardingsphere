@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 
@@ -78,8 +78,8 @@ public final class SQLBindEngine {
     }
     
     private static SQLStatement bindDMLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        if (statement instanceof GenericSelectStatement) {
-            return new SelectStatementBinder().bind((GenericSelectStatement) statement, metaData, defaultDatabaseName);
+        if (statement instanceof SelectStatement) {
+            return new SelectStatementBinder().bind((SelectStatement) statement, metaData, defaultDatabaseName);
         }
         if (statement instanceof InsertStatement) {
             return new InsertStatementBinder().bind((InsertStatement) statement, metaData, defaultDatabaseName);

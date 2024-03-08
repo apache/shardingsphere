@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContex
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
  * Combine segment binder.
@@ -41,9 +41,9 @@ public final class CombineSegmentBinder {
     public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext statementBinderContext) {
         ShardingSphereMetaData metaData = statementBinderContext.getMetaData();
         String defaultDatabaseName = statementBinderContext.getDefaultDatabaseName();
-        GenericSelectStatement boundedLeftSelect = new SelectStatementBinder().bindWithExternalTableContexts(segment.getLeft(), metaData, defaultDatabaseName,
+        SelectStatement boundedLeftSelect = new SelectStatementBinder().bindWithExternalTableContexts(segment.getLeft(), metaData, defaultDatabaseName,
                 statementBinderContext.getExternalTableBinderContexts());
-        GenericSelectStatement boundedRightSelect = new SelectStatementBinder().bindWithExternalTableContexts(segment.getRight(), metaData, defaultDatabaseName,
+        SelectStatement boundedRightSelect = new SelectStatementBinder().bindWithExternalTableContexts(segment.getRight(), metaData, defaultDatabaseName,
                 statementBinderContext.getExternalTableBinderContexts());
         return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundedLeftSelect, segment.getCombineType(), boundedRightSelect);
     }

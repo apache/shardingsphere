@@ -31,7 +31,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 
 import java.util.Collection;
@@ -55,7 +55,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     
     @Override
     public void route(final RouteContext routeContext, final SingleRule singleRule) {
-        if (routeContext.getRouteUnits().isEmpty() || sqlStatement instanceof GenericSelectStatement) {
+        if (routeContext.getRouteUnits().isEmpty() || sqlStatement instanceof SelectStatement) {
             routeStatement(routeContext, singleRule);
         } else {
             RouteContext newRouteContext = new RouteContext();

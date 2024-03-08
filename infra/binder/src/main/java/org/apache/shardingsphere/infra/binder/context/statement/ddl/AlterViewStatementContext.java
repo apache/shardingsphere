@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterViewStatementHandler;
 
 import java.util.Collection;
@@ -43,7 +43,7 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
         super(sqlStatement);
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         tables.add(sqlStatement.getView());
-        Optional<GenericSelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(sqlStatement);
+        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(sqlStatement);
         selectStatement.ifPresent(optional -> {
             TableExtractor extractor = new TableExtractor();
             extractor.extractTablesFromSelect(optional);
