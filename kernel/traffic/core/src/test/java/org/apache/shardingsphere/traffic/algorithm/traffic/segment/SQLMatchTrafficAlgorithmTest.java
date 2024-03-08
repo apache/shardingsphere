@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
@@ -44,7 +44,7 @@ class SQLMatchTrafficAlgorithmTest {
     
     @Test
     void assertMatchWhenExistSQLMatch() {
-        SQLStatement sqlStatement = mock(GenericSelectStatement.class);
+        SQLStatement sqlStatement = mock(SelectStatement.class);
         assertTrue(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "SELECT * FROM t_order")));
         assertTrue(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from  t_order;")));
         assertTrue(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from `t_order`;")));
@@ -54,7 +54,7 @@ class SQLMatchTrafficAlgorithmTest {
     
     @Test
     void assertMatchWhenNotExistSQLMatch() {
-        SQLStatement sqlStatement = mock(GenericSelectStatement.class);
+        SQLStatement sqlStatement = mock(SelectStatement.class);
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from `t_order` where order_id = ?;")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));

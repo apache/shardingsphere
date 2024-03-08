@@ -45,7 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -72,7 +72,7 @@ class TableExtractorTest {
         aggregationProjection.getParameters().add(columnSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(10, 20);
         projectionsSegment.getProjections().add(aggregationProjection);
-        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(projectionsSegment);
         tableExtractor.extractTablesFromSelect(selectStatement);
         assertThat(tableExtractor.getRewriteTables().size(), is(1));
@@ -83,7 +83,7 @@ class TableExtractorTest {
     @Test
     void assertExtractTablesFromSelectProjectsWithFunctionWithSubQuery() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "", "");
-        MySQLGenericSelectStatement subQuerySegment = new MySQLGenericSelectStatement();
+        MySQLSelectStatement subQuerySegment = new MySQLSelectStatement();
         subQuerySegment.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subQuerySegment, "");
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(subquerySegment);
@@ -91,7 +91,7 @@ class TableExtractorTest {
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "", functionSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(expressionProjectionSegment);
-        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(projectionsSegment);
         tableExtractor.extractTablesFromSelect(selectStatement);
         assertThat(tableExtractor.getRewriteTables().size(), is(1));
@@ -99,7 +99,7 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromSelectLockWithValue() {
-        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         LockSegment lockSegment = new LockSegment(108, 154);
         selectStatement.setLock(lockSegment);
         lockSegment.getTables().add(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
@@ -150,7 +150,7 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromCombineSegment() {
-        MySQLGenericSelectStatement selectStatement = createSelectStatement("t_order");
+        MySQLSelectStatement selectStatement = createSelectStatement("t_order");
         selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatement("t_order"), CombineType.UNION, createSelectStatement("t_order_item")));
         tableExtractor.extractTablesFromSelect(selectStatement);
         Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
@@ -160,8 +160,8 @@ class TableExtractorTest {
         assertTableSegment(iterator.next(), 0, 0, "t_order_item");
     }
     
-    private static MySQLGenericSelectStatement createSelectStatement(final String tableName) {
-        MySQLGenericSelectStatement result = new MySQLGenericSelectStatement();
+    private static MySQLSelectStatement createSelectStatement(final String tableName) {
+        MySQLSelectStatement result = new MySQLSelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new ShorthandProjectionSegment(0, 0));
         result.setProjections(projections);
@@ -171,7 +171,7 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromCombineSegmentWithColumnProjection() {
-        MySQLGenericSelectStatement selectStatement = createSelectStatementWithColumnProjection("t_order");
+        MySQLSelectStatement selectStatement = createSelectStatementWithColumnProjection("t_order");
         selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatementWithColumnProjection("t_order"), CombineType.UNION, createSelectStatementWithColumnProjection("t_order_item")));
         tableExtractor.extractTablesFromSelect(selectStatement);
         Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
@@ -181,8 +181,8 @@ class TableExtractorTest {
         assertTableSegment(iterator.next(), 0, 0, "t_order_item");
     }
     
-    private MySQLGenericSelectStatement createSelectStatementWithColumnProjection(final String tableName) {
-        MySQLGenericSelectStatement result = new MySQLGenericSelectStatement();
+    private MySQLSelectStatement createSelectStatementWithColumnProjection(final String tableName) {
+        MySQLSelectStatement result = new MySQLSelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
@@ -196,7 +196,7 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromCombineWithSubQueryProjection() {
-        MySQLGenericSelectStatement selectStatement = createSelectStatementWithSubQueryProjection("t_order");
+        MySQLSelectStatement selectStatement = createSelectStatementWithSubQueryProjection("t_order");
         selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatementWithSubQueryProjection("t_order"), CombineType.UNION, createSelectStatementWithSubQueryProjection("t_order_item")));
         tableExtractor.extractTablesFromSelect(selectStatement);
         Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
@@ -206,8 +206,8 @@ class TableExtractorTest {
         assertTableSegment(iterator.next(), 0, 0, "t_order_item");
     }
     
-    private MySQLGenericSelectStatement createSelectStatementWithSubQueryProjection(final String tableName) {
-        MySQLGenericSelectStatement result = new MySQLGenericSelectStatement();
+    private MySQLSelectStatement createSelectStatementWithSubQueryProjection(final String tableName) {
+        MySQLSelectStatement result = new MySQLSelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createSelectStatement(tableName), ""), ""));
         result.setProjections(projections);
@@ -222,7 +222,7 @@ class TableExtractorTest {
         joinTableSegment.setJoinType("INNER");
         joinTableSegment.setCondition(new BinaryOperationExpression(56, 79, new ColumnSegment(56, 65, new IdentifierValue("order_id")),
                 new ColumnSegment(69, 79, new IdentifierValue("order_id")), "=", "oi.order_id = o.order_id"));
-        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(joinTableSegment);
         tableExtractor.extractTablesFromSelect(selectStatement);
         assertThat(tableExtractor.getJoinTables().size(), is(1));

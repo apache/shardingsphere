@@ -37,9 +37,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.Cursor
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
 import org.junit.jupiter.api.Test;
 
@@ -91,7 +91,7 @@ class ShardingDDLResultMergerTest {
     
     private CursorStatementContext createCursorStatementContext(final ShardingSphereDatabase database) {
         CursorStatementContext result = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        GenericSelectStatement selectStatement = createSelectStatement();
+        SelectStatement selectStatement = createSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
@@ -136,8 +136,8 @@ class ShardingDDLResultMergerTest {
         return result;
     }
     
-    private GenericSelectStatement createSelectStatement() {
-        GenericSelectStatement result = new MySQLGenericSelectStatement();
+    private SelectStatement createSelectStatement() {
+        SelectStatement result = new MySQLSelectStatement();
         result.setFrom(new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl"))));
         result.setProjections(new ProjectionsSegment(0, 0));
         return result;

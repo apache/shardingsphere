@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
@@ -57,8 +57,7 @@ public final class DatabaseBackendHandlerFactory {
         if (sqlStatement instanceof SetStatement && null == connectionSession.getDatabaseName()) {
             return () -> new UpdateResponseHeader(sqlStatement);
         }
-        if (sqlStatement instanceof DALStatement && !isDatabaseRequiredDALStatement(sqlStatement)
-                || sqlStatement instanceof GenericSelectStatement && null == ((GenericSelectStatement) sqlStatement).getFrom()) {
+        if (sqlStatement instanceof DALStatement && !isDatabaseRequiredDALStatement(sqlStatement) || sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom()) {
             return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
         }
         return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), preferPreparedStatement);

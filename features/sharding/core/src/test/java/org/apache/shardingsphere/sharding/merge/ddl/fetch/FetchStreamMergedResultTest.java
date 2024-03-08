@@ -37,11 +37,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSelectStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -115,8 +115,8 @@ class FetchStreamMergedResultTest {
                 mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
-    private static GenericSelectStatement createSelectStatement() {
-        GenericSelectStatement result = new OpenGaussGenericSelectStatement();
+    private static SelectStatement createSelectStatement() {
+        SelectStatement result = new OpenGaussSelectStatement();
         result.setProjections(new ProjectionsSegment(0, 0));
         result.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return result;

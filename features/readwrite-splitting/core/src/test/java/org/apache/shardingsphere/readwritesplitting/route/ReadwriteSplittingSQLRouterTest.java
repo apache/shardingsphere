@@ -40,9 +40,9 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -116,7 +116,7 @@ class ReadwriteSplittingSQLRouterTest {
     
     @Test
     void assertCreateRouteContextToReplicaDataSource() {
-        MySQLGenericSelectStatement selectStatement = mock(MySQLGenericSelectStatement.class);
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -136,7 +136,7 @@ class ReadwriteSplittingSQLRouterTest {
     @Test
     void assertDecorateRouteContextToReplicaDataSource() {
         RouteContext actual = mockRouteContext();
-        MySQLGenericSelectStatement selectStatement = mock(MySQLGenericSelectStatement.class);
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -151,7 +151,7 @@ class ReadwriteSplittingSQLRouterTest {
     
     @Test
     void assertCreateRouteContextToPrimaryDataSourceWithLock() {
-        MySQLGenericSelectStatement selectStatement = mock(MySQLGenericSelectStatement.class);
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -167,7 +167,7 @@ class ReadwriteSplittingSQLRouterTest {
     @Test
     void assertDecorateRouteContextToPrimaryDataSourceWithLock() {
         RouteContext actual = mockRouteContext();
-        MySQLGenericSelectStatement selectStatement = mock(MySQLGenericSelectStatement.class);
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -205,7 +205,7 @@ class ReadwriteSplittingSQLRouterTest {
                 mock(RuleMetaData.class), database, staticRule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(WRITE_DATASOURCE));
-        MySQLGenericSelectStatement selectStatement = mock(MySQLGenericSelectStatement.class);
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -217,7 +217,7 @@ class ReadwriteSplittingSQLRouterTest {
     
     @Test
     void assertSqlHintRouteWriteOnly() {
-        GenericSelectStatement statement = mock(GenericSelectStatement.class);
+        SelectStatement statement = mock(SelectStatement.class);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(statement);
         HintValueContext hintValueContext = mock(HintValueContext.class);

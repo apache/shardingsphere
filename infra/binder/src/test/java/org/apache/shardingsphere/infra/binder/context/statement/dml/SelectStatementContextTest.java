@@ -55,13 +55,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleGenericSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLGenericSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92GenericSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -87,30 +87,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexForItemsByIndexOrderByForMySQL() {
-        assertSetIndexForItemsByIndexOrderBy(new MySQLGenericSelectStatement());
+        assertSetIndexForItemsByIndexOrderBy(new MySQLSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByIndexOrderByForOracle() {
-        assertSetIndexForItemsByIndexOrderBy(new OracleGenericSelectStatement());
+        assertSetIndexForItemsByIndexOrderBy(new OracleSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByIndexOrderByForPostgreSQL() {
-        assertSetIndexForItemsByIndexOrderBy(new PostgreSQLGenericSelectStatement());
+        assertSetIndexForItemsByIndexOrderBy(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByIndexOrderByForSQL92() {
-        assertSetIndexForItemsByIndexOrderBy(new SQL92GenericSelectStatement());
+        assertSetIndexForItemsByIndexOrderBy(new SQL92SelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByIndexOrderByForSQLServer() {
-        assertSetIndexForItemsByIndexOrderBy(new SQLServerGenericSelectStatement());
+        assertSetIndexForItemsByIndexOrderBy(new SQLServerSelectStatement());
     }
     
-    private void assertSetIndexForItemsByIndexOrderBy(final GenericSelectStatement selectStatement) {
+    private void assertSetIndexForItemsByIndexOrderBy(final SelectStatement selectStatement) {
         ShardingSphereDatabase database = mockDatabase();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(INDEX_ORDER_BY))));
         selectStatement.setProjections(createProjectionsSegment());
@@ -132,30 +132,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithOwnerForMySQL() {
-        assertSetIndexForItemsByColumnOrderByWithOwner(new MySQLGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithOwner(new MySQLSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithOwnerForOracle() {
-        assertSetIndexForItemsByColumnOrderByWithOwner(new OracleGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithOwner(new OracleSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithOwnerForPostgreSQL() {
-        assertSetIndexForItemsByColumnOrderByWithOwner(new PostgreSQLGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithOwner(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithOwnerForSQL92() {
-        assertSetIndexForItemsByColumnOrderByWithOwner(new SQL92GenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithOwner(new SQL92SelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithOwnerForSQLServer() {
-        assertSetIndexForItemsByColumnOrderByWithOwner(new SQLServerGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithOwner(new SQLServerSelectStatement());
     }
     
-    private void assertSetIndexForItemsByColumnOrderByWithOwner(final GenericSelectStatement selectStatement) {
+    private void assertSetIndexForItemsByColumnOrderByWithOwner(final SelectStatement selectStatement) {
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITH_OWNER))));
         selectStatement.setProjections(createProjectionsSegment());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table")));
@@ -169,30 +169,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithAliasForMySQL() {
-        assertSetIndexForItemsByColumnOrderByWithAlias(new MySQLGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithAlias(new MySQLSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithAliasForOracle() {
-        assertSetIndexForItemsByColumnOrderByWithAlias(new OracleGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithAlias(new OracleSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithAliasForPostgreSQL() {
-        assertSetIndexForItemsByColumnOrderByWithAlias(new PostgreSQLGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithAlias(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithAliasForSQL92() {
-        assertSetIndexForItemsByColumnOrderByWithAlias(new SQL92GenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithAlias(new SQL92SelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithAliasForSQLServer() {
-        assertSetIndexForItemsByColumnOrderByWithAlias(new SQLServerGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithAlias(new SQLServerSelectStatement());
     }
     
-    private void assertSetIndexForItemsByColumnOrderByWithAlias(final GenericSelectStatement selectStatement) {
+    private void assertSetIndexForItemsByColumnOrderByWithAlias(final SelectStatement selectStatement) {
         ShardingSphereDatabase database = mockDatabase();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITH_ALIAS))));
         selectStatement.setProjections(createProjectionsSegment());
@@ -203,30 +203,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithoutAliasForMySQL() {
-        assertSetIndexForItemsByColumnOrderByWithoutAlias(new MySQLGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithoutAlias(new MySQLSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithoutAliasForOracle() {
-        assertSetIndexForItemsByColumnOrderByWithoutAlias(new OracleGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithoutAlias(new OracleSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithoutAliasForPostgreSQL() {
-        assertSetIndexForItemsByColumnOrderByWithoutAlias(new PostgreSQLGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithoutAlias(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithoutAliasForSQL92() {
-        assertSetIndexForItemsByColumnOrderByWithoutAlias(new SQL92GenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithoutAlias(new SQL92SelectStatement());
     }
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithoutAliasForSQLServer() {
-        assertSetIndexForItemsByColumnOrderByWithoutAlias(new SQLServerGenericSelectStatement());
+        assertSetIndexForItemsByColumnOrderByWithoutAlias(new SQLServerSelectStatement());
     }
     
-    private void assertSetIndexForItemsByColumnOrderByWithoutAlias(final GenericSelectStatement selectStatement) {
+    private void assertSetIndexForItemsByColumnOrderByWithoutAlias(final SelectStatement selectStatement) {
         ShardingSphereDatabase database = mockDatabase();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS))));
         selectStatement.setProjections(createProjectionsSegment());
@@ -237,30 +237,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertIsSameGroupByAndOrderByItemsForMySQL() {
-        assertIsSameGroupByAndOrderByItems(new MySQLGenericSelectStatement());
+        assertIsSameGroupByAndOrderByItems(new MySQLSelectStatement());
     }
     
     @Test
     void assertIsSameGroupByAndOrderByItemsForOracle() {
-        assertIsSameGroupByAndOrderByItems(new OracleGenericSelectStatement());
+        assertIsSameGroupByAndOrderByItems(new OracleSelectStatement());
     }
     
     @Test
     void assertIsSameGroupByAndOrderByItemsForPostgreSQL() {
-        assertIsSameGroupByAndOrderByItems(new PostgreSQLGenericSelectStatement());
+        assertIsSameGroupByAndOrderByItems(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertIsSameGroupByAndOrderByItemsForSQL92() {
-        assertIsSameGroupByAndOrderByItems(new SQL92GenericSelectStatement());
+        assertIsSameGroupByAndOrderByItems(new SQL92SelectStatement());
     }
     
     @Test
     void assertIsSameGroupByAndOrderByItemsForSQLServer() {
-        assertIsSameGroupByAndOrderByItems(new SQLServerGenericSelectStatement());
+        assertIsSameGroupByAndOrderByItems(new SQLServerSelectStatement());
     }
     
-    private void assertIsSameGroupByAndOrderByItems(final GenericSelectStatement selectStatement) {
+    private void assertIsSameGroupByAndOrderByItems(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
@@ -268,7 +268,7 @@ class SelectStatementContextTest {
         assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     
-    private SelectStatementContext createSelectStatementContext(final GenericSelectStatement selectStatement) {
+    private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         return new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
@@ -276,30 +276,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupByForMySQL() {
-        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new MySQLGenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new MySQLSelectStatement());
     }
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupByForOracle() {
-        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new OracleGenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new OracleSelectStatement());
     }
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupByForPostgreSQL() {
-        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new PostgreSQLGenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupByForSQL92() {
-        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new SQL92GenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new SQL92SelectStatement());
     }
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupByForSQLServer() {
-        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new SQLServerGenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(new SQLServerSelectStatement());
     }
     
-    private void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(final GenericSelectStatement selectStatement) {
+    private void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
@@ -307,30 +307,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderByForMySQL() {
-        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new MySQLGenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new MySQLSelectStatement());
     }
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderByForOracle() {
-        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new OracleGenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new OracleSelectStatement());
     }
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderByForPostgreSQL() {
-        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new PostgreSQLGenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderByForSQL92() {
-        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new SQL92GenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new SQL92SelectStatement());
     }
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderByForSQLServer() {
-        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new SQLServerGenericSelectStatement());
+        assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(new SQLServerSelectStatement());
     }
     
-    private void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(final GenericSelectStatement selectStatement) {
+    private void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
@@ -340,30 +340,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexWhenAggregationProjectionsPresentForMySQL() {
-        assertSetIndexWhenAggregationProjectionsPresent(new MySQLGenericSelectStatement());
+        assertSetIndexWhenAggregationProjectionsPresent(new MySQLSelectStatement());
     }
     
     @Test
     void assertSetIndexWhenAggregationProjectionsPresentForOracle() {
-        assertSetIndexWhenAggregationProjectionsPresent(new OracleGenericSelectStatement());
+        assertSetIndexWhenAggregationProjectionsPresent(new OracleSelectStatement());
     }
     
     @Test
     void assertSetIndexWhenAggregationProjectionsPresentForPostgreSQL() {
-        assertSetIndexWhenAggregationProjectionsPresent(new PostgreSQLGenericSelectStatement());
+        assertSetIndexWhenAggregationProjectionsPresent(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertSetIndexWhenAggregationProjectionsPresentForSQL92() {
-        assertSetIndexWhenAggregationProjectionsPresent(new SQL92GenericSelectStatement());
+        assertSetIndexWhenAggregationProjectionsPresent(new SQL92SelectStatement());
     }
     
     @Test
     void assertSetIndexWhenAggregationProjectionsPresentForSQLServer() {
-        assertSetIndexWhenAggregationProjectionsPresent(new SQLServerGenericSelectStatement());
+        assertSetIndexWhenAggregationProjectionsPresent(new SQLServerSelectStatement());
     }
     
-    private void assertSetIndexWhenAggregationProjectionsPresent(final GenericSelectStatement selectStatement) {
+    private void assertSetIndexWhenAggregationProjectionsPresent(final SelectStatement selectStatement) {
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 0, AggregationType.MAX, "MAX(id)");
@@ -378,30 +378,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetWhereForMySQL() {
-        assertSetWhere(new MySQLGenericSelectStatement());
+        assertSetWhere(new MySQLSelectStatement());
     }
     
     @Test
     void assertSetWhereForOracle() {
-        assertSetWhere(new OracleGenericSelectStatement());
+        assertSetWhere(new OracleSelectStatement());
     }
     
     @Test
     void assertSetWhereForPostgreSQL() {
-        assertSetWhere(new PostgreSQLGenericSelectStatement());
+        assertSetWhere(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertSetWhereForSQL92() {
-        assertSetWhere(new SQL92GenericSelectStatement());
+        assertSetWhere(new SQL92SelectStatement());
     }
     
     @Test
     void assertSetWhereForSQLServer() {
-        assertSetWhere(new SQLServerGenericSelectStatement());
+        assertSetWhere(new SQLServerSelectStatement());
     }
     
-    private void assertSetWhere(final GenericSelectStatement selectStatement) {
+    private void assertSetWhere(final SelectStatement selectStatement) {
         WhereSegment whereSegment = mock(WhereSegment.class);
         selectStatement.setWhere(whereSegment);
         ShardingSphereDatabase database = mockDatabase();
@@ -415,30 +415,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsSubqueryForMySQL() {
-        assertContainsSubquery(new MySQLGenericSelectStatement(), new MySQLGenericSelectStatement());
+        assertContainsSubquery(new MySQLSelectStatement(), new MySQLSelectStatement());
     }
     
     @Test
     void assertContainsSubqueryForOracle() {
-        assertContainsSubquery(new OracleGenericSelectStatement(), new OracleGenericSelectStatement());
+        assertContainsSubquery(new OracleSelectStatement(), new OracleSelectStatement());
     }
     
     @Test
     void assertContainsSubqueryForPostgreSQL() {
-        assertContainsSubquery(new PostgreSQLGenericSelectStatement(), new PostgreSQLGenericSelectStatement());
+        assertContainsSubquery(new PostgreSQLSelectStatement(), new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertContainsSubqueryForSQL92() {
-        assertContainsSubquery(new SQL92GenericSelectStatement(), new SQL92GenericSelectStatement());
+        assertContainsSubquery(new SQL92SelectStatement(), new SQL92SelectStatement());
     }
     
     @Test
     void assertContainsSubqueryForSQLServer() {
-        assertContainsSubquery(new SQLServerGenericSelectStatement(), new SQLServerGenericSelectStatement());
+        assertContainsSubquery(new SQLServerSelectStatement(), new SQLServerSelectStatement());
     }
     
-    private void assertContainsSubquery(final GenericSelectStatement selectStatement, final GenericSelectStatement subSelectStatement) {
+    private void assertContainsSubquery(final SelectStatement selectStatement, final SelectStatement subSelectStatement) {
         WhereSegment whereSegment = new WhereSegment(0, 0, null);
         subSelectStatement.setWhere(whereSegment);
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
@@ -455,30 +455,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsSubqueryWhereEmptyForMySQL() {
-        assertContainsSubqueryWhereEmpty(new MySQLGenericSelectStatement(), new MySQLGenericSelectStatement());
+        assertContainsSubqueryWhereEmpty(new MySQLSelectStatement(), new MySQLSelectStatement());
     }
     
     @Test
     void assertContainsSubqueryWhereEmptyForOracle() {
-        assertContainsSubqueryWhereEmpty(new OracleGenericSelectStatement(), new OracleGenericSelectStatement());
+        assertContainsSubqueryWhereEmpty(new OracleSelectStatement(), new OracleSelectStatement());
     }
     
     @Test
     void assertContainsSubqueryWhereEmptyForPostgreSQL() {
-        assertContainsSubqueryWhereEmpty(new PostgreSQLGenericSelectStatement(), new PostgreSQLGenericSelectStatement());
+        assertContainsSubqueryWhereEmpty(new PostgreSQLSelectStatement(), new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertContainsSubqueryWhereEmptyForSQL92() {
-        assertContainsSubqueryWhereEmpty(new SQL92GenericSelectStatement(), new SQL92GenericSelectStatement());
+        assertContainsSubqueryWhereEmpty(new SQL92SelectStatement(), new SQL92SelectStatement());
     }
     
     @Test
     void assertContainsSubqueryWhereEmptyForSQLServer() {
-        assertContainsSubqueryWhereEmpty(new SQLServerGenericSelectStatement(), new SQLServerGenericSelectStatement());
+        assertContainsSubqueryWhereEmpty(new SQLServerSelectStatement(), new SQLServerSelectStatement());
     }
     
-    private void assertContainsSubqueryWhereEmpty(final GenericSelectStatement selectStatement, final GenericSelectStatement subSelectStatement) {
+    private void assertContainsSubqueryWhereEmpty(final SelectStatement selectStatement, final SelectStatement subSelectStatement) {
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue("id"));
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, 20);
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "=", null);
@@ -503,30 +503,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsDollarParameterMarkerForMySQL() {
-        assertContainsDollarParameterMarker(new MySQLGenericSelectStatement());
+        assertContainsDollarParameterMarker(new MySQLSelectStatement());
     }
     
     @Test
     void assertContainsDollarParameterMarkerForOracle() {
-        assertContainsDollarParameterMarker(new OracleGenericSelectStatement());
+        assertContainsDollarParameterMarker(new OracleSelectStatement());
     }
     
     @Test
     void assertContainsDollarParameterMarkerForPostgreSQL() {
-        assertContainsDollarParameterMarker(new PostgreSQLGenericSelectStatement());
+        assertContainsDollarParameterMarker(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertContainsDollarParameterMarkerForSQL92() {
-        assertContainsDollarParameterMarker(new SQL92GenericSelectStatement());
+        assertContainsDollarParameterMarker(new SQL92SelectStatement());
     }
     
     @Test
     void assertContainsDollarParameterMarkerForSQLServer() {
-        assertContainsDollarParameterMarker(new SQLServerGenericSelectStatement());
+        assertContainsDollarParameterMarker(new SQLServerSelectStatement());
     }
     
-    private void assertContainsDollarParameterMarker(final GenericSelectStatement selectStatement) {
+    private void assertContainsDollarParameterMarker(final SelectStatement selectStatement) {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
         selectStatement.setProjections(projectionsSegment);
@@ -544,30 +544,30 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsPartialDistinctAggregationForMySQL() {
-        assertContainsPartialDistinctAggregation(new MySQLGenericSelectStatement());
+        assertContainsPartialDistinctAggregation(new MySQLSelectStatement());
     }
     
     @Test
     void assertContainsPartialDistinctAggregationForOracle() {
-        assertContainsPartialDistinctAggregation(new OracleGenericSelectStatement());
+        assertContainsPartialDistinctAggregation(new OracleSelectStatement());
     }
     
     @Test
     void assertContainsPartialDistinctAggregationForPostgreSQL() {
-        assertContainsPartialDistinctAggregation(new PostgreSQLGenericSelectStatement());
+        assertContainsPartialDistinctAggregation(new PostgreSQLSelectStatement());
     }
     
     @Test
     void assertContainsPartialDistinctAggregationForSQL92() {
-        assertContainsPartialDistinctAggregation(new SQL92GenericSelectStatement());
+        assertContainsPartialDistinctAggregation(new SQL92SelectStatement());
     }
     
     @Test
     void assertContainsPartialDistinctAggregationForSQLServer() {
-        assertContainsPartialDistinctAggregation(new SQLServerGenericSelectStatement());
+        assertContainsPartialDistinctAggregation(new SQLServerSelectStatement());
     }
     
-    private void assertContainsPartialDistinctAggregation(final GenericSelectStatement selectStatement) {
+    private void assertContainsPartialDistinctAggregation(final SelectStatement selectStatement) {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         projectionsSegment.getProjections().add(new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "COUNT(1)", "distinctExpression"));
@@ -623,7 +623,7 @@ class SelectStatementContextTest {
     void assertIsContainsEnhancedTable() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
-        GenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ResourceMetaData.class),
@@ -634,7 +634,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsEnhancedTable() {
-        GenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(0, 0, createSubSelectStatement(), "")));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ResourceMetaData.class),
@@ -643,10 +643,10 @@ class SelectStatementContextTest {
         assertTrue(actual.containsTableSubquery());
     }
     
-    private GenericSelectStatement createSubSelectStatement() {
+    private SelectStatement createSubSelectStatement() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
-        GenericSelectStatement result = new MySQLGenericSelectStatement();
+        SelectStatement result = new MySQLSelectStatement();
         result.setProjections(projectionsSegment);
         result.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return result;

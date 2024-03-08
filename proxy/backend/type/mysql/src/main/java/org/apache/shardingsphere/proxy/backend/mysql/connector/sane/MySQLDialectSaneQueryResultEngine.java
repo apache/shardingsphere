@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegme
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 
@@ -53,8 +53,8 @@ public final class MySQLDialectSaneQueryResultEngine implements DialectSaneQuery
         if (ER_PARSE_ERROR == ex.getErrorCode()) {
             return Optional.empty();
         }
-        if (sqlStatement instanceof GenericSelectStatement) {
-            return createQueryResult((GenericSelectStatement) sqlStatement);
+        if (sqlStatement instanceof SelectStatement) {
+            return createQueryResult((SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof MySQLShowOtherStatement) {
             return Optional.of(createQueryResult());
@@ -65,7 +65,7 @@ public final class MySQLDialectSaneQueryResultEngine implements DialectSaneQuery
         return Optional.empty();
     }
     
-    private Optional<ExecuteResult> createQueryResult(final GenericSelectStatement sqlStatement) {
+    private Optional<ExecuteResult> createQueryResult(final SelectStatement sqlStatement) {
         if (null != sqlStatement.getFrom()) {
             return Optional.empty();
         }

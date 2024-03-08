@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -51,14 +51,14 @@ class MySQLDialectSaneQueryResultEngineTest {
     
     @Test
     void assertGetSaneQueryResultForSelectStatementWithFrom() {
-        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))));
         assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException()), is(Optional.empty()));
     }
     
     @Test
     void assertGetSaneQueryResultForSelectStatementWithoutFrom() {
-        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.transaction_read_only", new VariableSegment(0, 0, "transaction_read_only")));
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "unknown_variable"));
@@ -75,7 +75,7 @@ class MySQLDialectSaneQueryResultEngineTest {
     
     @Test
     void assertGetSaneQueryResultForSelectNoProjectionsStatementWithoutFrom() {
-        MySQLGenericSelectStatement selectStatement = new MySQLGenericSelectStatement();
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException()), is(Optional.empty()));
     }
