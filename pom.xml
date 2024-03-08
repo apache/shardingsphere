@@ -146,7 +146,7 @@
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
-        <native-maven-plugin.version>0.10.0</native-maven-plugin.version>
+        <native-maven-plugin.version>0.10.1</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
