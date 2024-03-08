@@ -31,8 +31,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
@@ -53,7 +51,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Single rule.
  */
-public final class SingleRule implements DatabaseRule, MutableDataNodeRule, ExportableRule {
+public final class SingleRule implements DatabaseRule, MutableDataNodeRule {
     
     @Getter
     private final SingleRuleConfiguration configuration;
@@ -82,7 +80,7 @@ public final class SingleRule implements DatabaseRule, MutableDataNodeRule, Expo
         this.protocolType = protocolType;
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, protocolType, aggregateDataSourceMap, builtRules, configuration.getTables());
         tableMapperRule = new SingleTableMapperRule(singleTableDataNodes.values());
-        ruleIdentifiers = new RuleIdentifiers(new SingleDataNodeRule(singleTableDataNodes), tableMapperRule);
+        ruleIdentifiers = new RuleIdentifiers(new SingleDataNodeRule(singleTableDataNodes), tableMapperRule, new SingleExportableRule(tableMapperRule));
     }
     
     /**
@@ -254,10 +252,5 @@ public final class SingleRule implements DatabaseRule, MutableDataNodeRule, Expo
     public ShardingSphereRule reloadRule(final RuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSourceMap,
                                          final Collection<ShardingSphereRule> builtRules) {
         return new SingleRule((SingleRuleConfiguration) config, databaseName, protocolType, dataSourceMap, builtRules);
-    }
-    
-    @Override
-    public Map<String, Object> getExportData() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableMapperRule.getLogicTableMapper().getTableNames());
     }
 }
