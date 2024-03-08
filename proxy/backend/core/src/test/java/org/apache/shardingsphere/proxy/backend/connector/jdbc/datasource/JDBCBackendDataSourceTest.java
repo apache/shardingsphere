@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -103,7 +104,7 @@ class JDBCBackendDataSourceTest {
     
     private RuleMetaData mockGlobalRuleMetaData() {
         TransactionRule transactionRule = mock(TransactionRule.class);
-        when(transactionRule.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
+        when(transactionRule.getRuleIdentifiers().getIdentifier(ResourceHeldRule.class).getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
         return new RuleMetaData(Collections.singleton(transactionRule));
     }
     
