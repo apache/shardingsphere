@@ -48,6 +48,8 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
+    private final boolean showFullProcesslist;
+    
     private Collection<Process> processes;
     
     @Getter
@@ -56,7 +58,8 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     @Getter
     private MergedResult mergedResult;
     
-    public ShowProcessListExecutor() {
+    public ShowProcessListExecutor(final boolean showFullProcesslist) {
+        this.showFullProcesslist = showFullProcesslist;
         ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().register(this);
     }
     
@@ -102,7 +105,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
             rowValues.add(statePrefix + processDoneCount + "/" + process.getTotalUnitCount());
             sql = process.getSql();
         }
-        if (null != sql && sql.length() > 100) {
+        if (null != sql && sql.length() > 100 && !showFullProcesslist) {
             sql = sql.substring(0, 100);
         }
         rowValues.add(null != sql ? sql : "");

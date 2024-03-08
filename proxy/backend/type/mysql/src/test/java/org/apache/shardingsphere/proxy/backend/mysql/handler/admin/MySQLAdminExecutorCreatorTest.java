@@ -141,7 +141,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithMySQLShowProcessListStatement() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowProcessListStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowProcessListStatement(false));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowProcessListExecutor.class));
