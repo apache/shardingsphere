@@ -29,7 +29,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.metadata.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
@@ -204,7 +205,9 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     }
     
     private void refreshMetaDataHeldRule(final ShardingSphereDatabase database) {
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(MetaDataHeldRule.class).forEach(each -> each.alterDatabase(database));
+        for (ShardingSphereRule each : contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(MetaDataHeldRule.class).ifPresent(optional -> optional.alterDatabase(database));
+        }
     }
     
     @Override

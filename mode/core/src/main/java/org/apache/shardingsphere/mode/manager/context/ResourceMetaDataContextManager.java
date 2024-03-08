@@ -25,7 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.metadata.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
@@ -58,7 +59,9 @@ public final class ResourceMetaDataContextManager {
     }
     
     private void alterMetaDataHeldRule(final ShardingSphereDatabase database) {
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(MetaDataHeldRule.class).forEach(each -> each.alterDatabase(database));
+        for (ShardingSphereRule each : metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(MetaDataHeldRule.class).ifPresent(optional -> optional.alterDatabase(database));
+        }
     }
     
     /**
@@ -71,7 +74,9 @@ public final class ResourceMetaDataContextManager {
             return;
         }
         metaDataContexts.get().getMetaData().dropDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName());
-        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(MetaDataHeldRule.class).forEach(each -> each.dropDatabase(databaseName));
+        for (ShardingSphereRule each : metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(MetaDataHeldRule.class).ifPresent(optional -> optional.dropDatabase(databaseName));
+        }
     }
     
     /**

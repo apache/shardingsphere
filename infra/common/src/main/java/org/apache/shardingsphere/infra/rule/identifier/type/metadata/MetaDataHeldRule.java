@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 /**
- * ShardingSphere rule which held metadata.
+ * Meta data held rule.
  */
-public interface MetaDataHeldRule extends ShardingSphereRule {
+public interface MetaDataHeldRule extends RuleIdentifier {
     
     /**
      * Alter database.
