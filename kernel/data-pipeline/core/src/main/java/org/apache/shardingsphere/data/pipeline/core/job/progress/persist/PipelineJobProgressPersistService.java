@@ -21,10 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -85,7 +86,7 @@ public final class PipelineJobProgressPersistService {
     }
     
     private static void notifyPersist(final PipelineJobProgressPersistContext persistContext) {
-        persistContext.getHasNewEvents().set(true);
+        persistContext.getUnhandledEventCount().incrementAndGet();
     }
     
     private static Optional<PipelineJobProgressPersistContext> getPersistContext(final String jobId, final int shardingItem) {
@@ -101,8 +102,8 @@ public final class PipelineJobProgressPersistService {
      */
     public static void persistNow(final String jobId, final int shardingItem) {
         getPersistContext(jobId, shardingItem).ifPresent(persistContext -> {
-            if (null == persistContext.getBeforePersistingProgressMillis().get()) {
-                log.warn("Force persisting progress is not permitted since there is no previous persisting, jobId={}, shardingItem={}", jobId, shardingItem);
+            if (persistContext.getUnhandledEventCount().get() <= 0) {
+                log.info("Force persisting progress is not permitted since there is no unhandled event, jobId={}, shardingItem={}", jobId, shardingItem);
                 return;
             }
             notifyPersist(persistContext);
@@ -135,23 +136,19 @@ public final class PipelineJobProgressPersistService {
         }
         
         private static void persist0(final String jobId, final int shardingItem, final PipelineJobProgressPersistContext persistContext) {
-            Long beforePersistingProgressMillis = persistContext.getBeforePersistingProgressMillis().get();
-            if ((null == beforePersistingProgressMillis || System.currentTimeMillis() - beforePersistingProgressMillis < TimeUnit.SECONDS.toMillis(DELAY_SECONDS))
-                    && !persistContext.getHasNewEvents().get()) {
+            long currentUnhandledEventCount = persistContext.getUnhandledEventCount().get();
+            ShardingSpherePreconditions.checkState(currentUnhandledEventCount >= 0, () -> new IllegalStateException("Current unhandled event count must be greater than or equal to 0"));
+            if (0 == currentUnhandledEventCount) {
                 return;
             }
             Optional<PipelineJobItemContext> jobItemContext = PipelineJobRegistry.getItemContext(jobId, shardingItem);
             if (!jobItemContext.isPresent()) {
                 return;
             }
-            if (null == beforePersistingProgressMillis) {
-                persistContext.getBeforePersistingProgressMillis().set(System.currentTimeMillis());
-            }
-            persistContext.getHasNewEvents().set(false);
             long startTimeMillis = System.currentTimeMillis();
             new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobType.class,
                     PipelineJobIdUtils.parseJobType(jobId).getType()).getYamlJobItemProgressSwapper()).updateProgress(jobItemContext.get());
-            persistContext.getBeforePersistingProgressMillis().set(null);
+            persistContext.getUnhandledEventCount().addAndGet(-currentUnhandledEventCount);
             if (6 == ThreadLocalRandom.current().nextInt(100)) {
                 log.info("persist, jobId={}, shardingItem={}, cost {} ms", jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);
             }
