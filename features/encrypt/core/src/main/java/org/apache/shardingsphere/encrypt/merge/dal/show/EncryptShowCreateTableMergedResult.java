@@ -69,7 +69,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
         if (CREATE_TABLE_DEFINITION_INDEX == columnIndex) {
             String result = getOriginalValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent()) {
+            if (!encryptTable.isPresent() || !result.contains("(")) {
                 return result;
             }
             StringBuilder builder = new StringBuilder(result.substring(0, result.indexOf('(') + 1));
