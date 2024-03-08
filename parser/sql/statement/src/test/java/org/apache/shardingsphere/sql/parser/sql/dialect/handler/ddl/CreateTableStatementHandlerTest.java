@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTableStatement;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -55,8 +55,8 @@ class CreateTableStatementHandlerTest {
     @Test
     void assertGetSelectStatement() {
         SQLServerCreateTableStatement sqlServerCreateTableStatement = new SQLServerCreateTableStatement();
-        sqlServerCreateTableStatement.setSelectStatement(new SQLServerGenericSelectStatement());
-        Optional<GenericSelectStatement> actual = CreateTableStatementHandler.getSelectStatement(sqlServerCreateTableStatement);
+        sqlServerCreateTableStatement.setSelectStatement(new SQLServerSelectStatement());
+        Optional<SelectStatement> actual = CreateTableStatementHandler.getSelectStatement(sqlServerCreateTableStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(sqlServerCreateTableStatement.getSelectStatement().get()));
         assertFalse(CreateTableStatementHandler.getSelectStatement(new MySQLCreateTableStatement(false)).isPresent());

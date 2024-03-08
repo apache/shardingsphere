@@ -98,7 +98,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
@@ -148,8 +148,8 @@ public final class SQLStatementContextFactory {
     
     private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData,
                                                               final List<Object> params, final DMLStatement sqlStatement, final String defaultDatabaseName) {
-        if (sqlStatement instanceof GenericSelectStatement) {
-            return new SelectStatementContext(metaData, params, (GenericSelectStatement) sqlStatement, defaultDatabaseName);
+        if (sqlStatement instanceof SelectStatement) {
+            return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);

@@ -89,7 +89,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitor;
 
@@ -208,7 +208,7 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        SQL92GenericSelectStatement result = (SQL92GenericSelectStatement) visit(ctx.combineClause());
+        SQL92SelectStatement result = (SQL92SelectStatement) visit(ctx.combineClause());
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -221,7 +221,7 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SQL92GenericSelectStatement result = new SQL92GenericSelectStatement();
+        SQL92SelectStatement result = new SQL92SelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (!ctx.selectSpecification().isEmpty()) {
             result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
@@ -404,7 +404,7 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
-            SQL92GenericSelectStatement subquery = (SQL92GenericSelectStatement) visit(ctx.subquery());
+            SQL92SelectStatement subquery = (SQL92SelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
             SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
             if (null != ctx.alias()) {

@@ -23,7 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
  * Subquery segment.
@@ -37,7 +37,7 @@ public final class SubquerySegment implements ExpressionSegment {
     private final int stopIndex;
     
     @Setter
-    private GenericSelectStatement select;
+    private SelectStatement select;
     
     @Setter
     private MergeStatement merge;
@@ -47,7 +47,7 @@ public final class SubquerySegment implements ExpressionSegment {
     @Setter
     private SubqueryType subqueryType;
     
-    public SubquerySegment(final int startIndex, final int stopIndex, final GenericSelectStatement select, final String text) {
+    public SubquerySegment(final int startIndex, final int stopIndex, final SelectStatement select, final String text) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.select = select;

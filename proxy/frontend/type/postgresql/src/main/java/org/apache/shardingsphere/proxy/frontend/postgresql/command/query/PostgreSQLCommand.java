@@ -59,7 +59,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStateme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
@@ -84,7 +84,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public enum PostgreSQLCommand {
     
-    SELECT(GenericSelectStatement.class),
+    SELECT(SelectStatement.class),
     INSERT(InsertStatement.class),
     UPDATE(UpdateStatement.class),
     DELETE(DeleteStatement.class),

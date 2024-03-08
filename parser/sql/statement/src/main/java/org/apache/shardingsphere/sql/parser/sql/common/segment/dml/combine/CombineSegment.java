@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
  * Combine segment.
@@ -34,9 +34,9 @@ public final class CombineSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final GenericSelectStatement left;
+    private final SelectStatement left;
     
     private final CombineType combineType;
     
-    private final GenericSelectStatement right;
+    private final SelectStatement right;
 }

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.delete.DeleteStatementConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.explain.ExplainStatementConverter;
@@ -63,8 +63,8 @@ public final class SQLNodeConverterEngine {
     }
     
     private static Optional<SqlNode> convert(final DMLStatement sqlStatement) {
-        if (sqlStatement instanceof GenericSelectStatement) {
-            return Optional.of(new SelectStatementConverter().convert((GenericSelectStatement) sqlStatement));
+        if (sqlStatement instanceof SelectStatement) {
+            return Optional.of(new SelectStatementConverter().convert((SelectStatement) sqlStatement));
         }
         if (sqlStatement instanceof DeleteStatement) {
             return Optional.of(new DeleteStatementConverter().convert((DeleteStatement) sqlStatement));

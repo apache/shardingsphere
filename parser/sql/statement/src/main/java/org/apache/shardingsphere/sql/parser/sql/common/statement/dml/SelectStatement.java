@@ -17,8 +17,82 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Optional;
+
 /**
  * Select statement.
  */
-public interface SelectStatement extends DMLStatement {
+@Getter
+@Setter
+public abstract class SelectStatement extends AbstractSQLStatement implements DMLStatement {
+    
+    private ProjectionsSegment projections;
+    
+    private TableSegment from;
+    
+    private WhereSegment where;
+    
+    private GroupBySegment groupBy;
+    
+    private HavingSegment having;
+    
+    private OrderBySegment orderBy;
+    
+    private CombineSegment combine;
+    
+    /**
+     * Get where.
+     *
+     * @return where segment
+     */
+    public Optional<WhereSegment> getWhere() {
+        return Optional.ofNullable(where);
+    }
+    
+    /**
+     * Get group by segment.
+     *
+     * @return group by segment
+     */
+    public Optional<GroupBySegment> getGroupBy() {
+        return Optional.ofNullable(groupBy);
+    }
+    
+    /**
+     * Get having segment.
+     *
+     * @return having segment
+     */
+    public Optional<HavingSegment> getHaving() {
+        return Optional.ofNullable(having);
+    }
+    
+    /**
+     * Get order by segment.
+     *
+     * @return order by segment
+     */
+    public Optional<OrderBySegment> getOrderBy() {
+        return Optional.ofNullable(orderBy);
+    }
+    
+    /**
+     * Get combine segment.
+     *
+     * @return combine segment
+     */
+    public Optional<CombineSegment> getCombine() {
+        return Optional.ofNullable(combine);
+    }
 }

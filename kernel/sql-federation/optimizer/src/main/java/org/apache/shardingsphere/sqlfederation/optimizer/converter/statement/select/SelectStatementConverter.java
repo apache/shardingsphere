@@ -25,7 +25,7 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.groupby.GroupByConverter;
@@ -46,10 +46,10 @@ import java.util.Optional;
 /**
  * Select statement converter.
  */
-public final class SelectStatementConverter implements SQLStatementConverter<GenericSelectStatement, SqlNode> {
+public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final GenericSelectStatement selectStatement) {
+    public SqlNode convert(final SelectStatement selectStatement) {
         SqlSelect sqlSelect = convertSelect(selectStatement);
         SqlNode sqlWith = convertWith(sqlSelect, selectStatement);
         SqlNode sqlCombine = convertCombine(null != sqlWith ? sqlWith : sqlSelect, selectStatement);
@@ -63,11 +63,11 @@ public final class SelectStatementConverter implements SQLStatementConverter<Gen
         return orderBy.isEmpty() ? sqlCombine : new SqlOrderBy(SqlParserPos.ZERO, sqlCombine, orderBy, null, null);
     }
     
-    private SqlNode convertWith(final SqlNode sqlSelect, final GenericSelectStatement selectStatement) {
+    private SqlNode convertWith(final SqlNode sqlSelect, final SelectStatement selectStatement) {
         return SelectStatementHandler.getWithSegment(selectStatement).flatMap(segment -> WithConverter.convert(segment, sqlSelect)).orElse(null);
     }
     
-    private SqlSelect convertSelect(final GenericSelectStatement selectStatement) {
+    private SqlSelect convertSelect(final SelectStatement selectStatement) {
         SqlNodeList distinct = DistinctConverter.convert(selectStatement.getProjections()).orElse(null);
         SqlNodeList projection = ProjectionsConverter.convert(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
         SqlNode from = TableConverter.convert(selectStatement.getFrom()).orElse(null);
@@ -78,7 +78,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Gen
         return new SqlSelect(SqlParserPos.ZERO, distinct, projection, from, where, groupBy, having, window, null, null, null, null, SqlNodeList.EMPTY);
     }
     
-    private SqlNode convertCombine(final SqlNode sqlNode, final GenericSelectStatement selectStatement) {
+    private SqlNode convertCombine(final SqlNode sqlNode, final SelectStatement selectStatement) {
         if (selectStatement.getCombine().isPresent()) {
             CombineSegment combineSegment = selectStatement.getCombine().get();
             return new SqlBasicCall(CombineOperatorConverter.convert(combineSegment.getCombineType()),

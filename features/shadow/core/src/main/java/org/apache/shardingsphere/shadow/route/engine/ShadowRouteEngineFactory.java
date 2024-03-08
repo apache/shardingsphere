@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shadow.route.engine.impl.ShadowNonDMLStatementR
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 /**
@@ -58,7 +58,7 @@ public final class ShadowRouteEngineFactory {
         if (sqlStatement instanceof UpdateStatement) {
             return createShadowUpdateStatementRoutingEngine(queryContext);
         }
-        if (sqlStatement instanceof GenericSelectStatement) {
+        if (sqlStatement instanceof SelectStatement) {
             return createShadowSelectStatementRoutingEngine(queryContext);
         }
         return createShadowNonMDLStatementRoutingEngine(queryContext);

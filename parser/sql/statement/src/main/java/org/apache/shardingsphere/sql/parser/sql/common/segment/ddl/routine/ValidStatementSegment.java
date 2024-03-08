@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.util.Optional;
@@ -124,7 +124,7 @@ public class ValidStatementSegment implements SQLSegment {
      *
      * @return select statement
      */
-    public Optional<GenericSelectStatement> getSelect() {
-        return sqlStatement instanceof GenericSelectStatement ? Optional.of((GenericSelectStatement) sqlStatement) : Optional.empty();
+    public Optional<SelectStatement> getSelect() {
+        return sqlStatement instanceof SelectStatement ? Optional.of((SelectStatement) sqlStatement) : Optional.empty();
     }
 }

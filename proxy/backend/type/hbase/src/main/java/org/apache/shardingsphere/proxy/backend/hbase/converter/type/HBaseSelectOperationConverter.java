@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLGenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -124,7 +124,7 @@ public final class HBaseSelectOperationConverter implements HBaseOperationConver
     
     private void appendLimit(final Scan scan, final SelectStatementContext selectStatementContext) {
         // TODO consider about other dialect
-        MySQLGenericSelectStatement selectStatement = (MySQLGenericSelectStatement) selectStatementContext.getSqlStatement();
+        MySQLSelectStatement selectStatement = (MySQLSelectStatement) selectStatementContext.getSqlStatement();
         if (selectStatement.getLimit().isPresent()) {
             selectStatement.getLimit().get().getRowCount().ifPresent(optional -> scan.setLimit((int) ((NumberLiteralLimitValueSegment) optional).getValue()));
         }

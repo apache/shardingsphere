@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.GenericSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ class SQLStatementTypeTest {
     
     @Test
     void assertInvolvesDataChangesWithSelectStatement() {
-        assertFalse(SQLStatementType.involvesDataChanges(mock(GenericSelectStatement.class)));
+        assertFalse(SQLStatementType.involvesDataChanges(mock(SelectStatement.class)));
     }
     
     @Test
@@ -52,8 +52,8 @@ class SQLStatementTypeTest {
     
     @Test
     void assertInvolvesDataChangesWithCache() {
-        assertFalse(SQLStatementType.involvesDataChanges(mock(GenericSelectStatement.class)));
-        assertFalse(SQLStatementType.involvesDataChanges(mock(GenericSelectStatement.class)));
+        assertFalse(SQLStatementType.involvesDataChanges(mock(SelectStatement.class)));
+        assertFalse(SQLStatementType.involvesDataChanges(mock(SelectStatement.class)));
     }
     
     @Test
