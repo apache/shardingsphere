@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchema
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.metadata.MetaDataHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -230,8 +230,9 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         SwitchingResource switchingResource =
                 new ResourceSwitchManager().create(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getConfigurationContextManager().createChangedDatabases(databaseName, false, switchingResource, null));
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class)
-                .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
+        for (ShardingSphereRule each : contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(ResourceHeldRule.class).ifPresent(optional -> optional.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
+        }
         contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchemas()
                 .forEach((schemaName, schema) -> contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
                         .persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
@@ -245,8 +246,9 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         SwitchingResource switchingResource =
                 new ResourceSwitchManager().create(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getConfigurationContextManager().createChangedDatabases(databaseName, true, switchingResource, null));
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class)
-                .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
+        for (ShardingSphereRule each : contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(ResourceHeldRule.class).ifPresent(optional -> optional.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
+        }
         contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(
                 contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), toBeUpdatedProps);
         switchingResource.closeStaleDataSources();
