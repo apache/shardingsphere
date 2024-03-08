@@ -20,8 +20,11 @@ package org.apache.shardingsphere.driver.state.ok;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.Test;
 
@@ -36,11 +39,15 @@ import static org.mockito.Mockito.when;
 
 class OKDriverStateTest {
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertGetConnection() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
-                .thenReturn(new RuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class))));
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        ResourceHeldRule<ShardingSphereTransactionManagerEngine> resourceHeldRule = mock(ResourceHeldRule.class);
+        when(resourceHeldRule.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
+        when(transactionRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(resourceHeldRule));
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(transactionRule, mock(TrafficRule.class))));
         Connection actual = new OKDriverState().getConnection(DefaultDatabase.LOGIC_NAME, contextManager);
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
