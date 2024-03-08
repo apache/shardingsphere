@@ -77,7 +77,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.raw.RawExecutionRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
