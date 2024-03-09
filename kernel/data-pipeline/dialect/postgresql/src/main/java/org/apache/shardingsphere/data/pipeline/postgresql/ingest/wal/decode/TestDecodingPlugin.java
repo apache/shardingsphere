@@ -48,14 +48,15 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
+        AbstractWALEvent result;
         String type = readEventType(data);
         if (type.startsWith("BEGIN")) {
-            return new BeginTXEvent(Long.parseLong(readNextSegment(data)));
+            result = new BeginTXEvent(Long.parseLong(readNextSegment(data)));
+        } else if (type.startsWith("COMMIT")) {
+            result = new CommitTXEvent(Long.parseLong(readNextSegment(data)), null);
+        } else {
+            result = "table".equals(type) ? readTableEvent(data) : new PlaceholderEvent();
         }
-        if (type.startsWith("COMMIT")) {
-            return new CommitTXEvent(Long.parseLong(readNextSegment(data)), null);
-        }
-        AbstractWALEvent result = "table".equals(type) ? readTableEvent(data) : new PlaceholderEvent();
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }
