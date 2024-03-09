@@ -37,4 +37,6 @@ public final class PipelineJobProgressPersistContext {
     private final AtomicBoolean hasNewEvents = new AtomicBoolean(false);
     
     private final AtomicReference<Long> beforePersistingProgressMillis = new AtomicReference<>(null);
+    
+    private final AtomicBoolean firstExceptionLogged = new AtomicBoolean(false);
 }
