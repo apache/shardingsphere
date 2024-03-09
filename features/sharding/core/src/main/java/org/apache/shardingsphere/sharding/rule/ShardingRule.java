@@ -114,7 +114,6 @@ public final class ShardingRule implements DatabaseRule {
     
     private final ShardingCache shardingCache;
     
-    @Getter
     private final RuleIdentifiers ruleIdentifiers;
     
     public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final InstanceContext instanceContext) {
