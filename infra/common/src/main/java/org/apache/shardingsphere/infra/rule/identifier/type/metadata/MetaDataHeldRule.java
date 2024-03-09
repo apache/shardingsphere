@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type.exportable;
+package org.apache.shardingsphere.infra.rule.identifier.type.metadata;
 
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
-import java.util.Map;
-
 /**
- * Exportable rule.
+ * Meta data held rule.
  */
-public interface ExportableRule extends RuleIdentifier {
+public interface MetaDataHeldRule extends RuleIdentifier {
     
     /**
-     * Get export data.
-     *
-     * @return exported data
+     * Alter database.
+     * 
+     * @param database database
      */
-    Map<String, Object> getExportData();
+    void alterDatabase(ShardingSphereDatabase database);
+    
+    /**
+     * Drop database.
+     * 
+     * @param databaseName database name
+     */
+    void dropDatabase(String databaseName);
 }

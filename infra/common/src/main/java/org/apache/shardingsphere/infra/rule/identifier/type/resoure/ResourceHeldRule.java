@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.resoure;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 /**
  * Resource held rule.
  * 
  * @param <T> type of resource
  */
-public interface ResourceHeldRule<T> extends ShardingSphereRule {
+public interface ResourceHeldRule<T> extends RuleIdentifier {
     
     /**
      * Get resource.

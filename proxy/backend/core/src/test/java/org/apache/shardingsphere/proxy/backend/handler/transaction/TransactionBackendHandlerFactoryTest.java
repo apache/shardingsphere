@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -34,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.hamcrest.Matcher;
@@ -92,9 +95,14 @@ class TransactionBackendHandlerFactoryTest {
         assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(databaseConnectionManager));
     }
     
+    @SuppressWarnings("unchecked")
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class))));
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        ResourceHeldRule<ShardingSphereTransactionManagerEngine> resourceHeldRule = mock(ResourceHeldRule.class);
+        when(resourceHeldRule.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
+        when(transactionRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(resourceHeldRule));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(transactionRule)));
         return result;
     }
     

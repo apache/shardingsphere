@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type.exportable;
+package org.apache.shardingsphere.single.rule;
 
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
- * Exportable rule.
+ * Single exportable rule.
  */
-public interface ExportableRule extends RuleIdentifier {
+@RequiredArgsConstructor
+public final class SingleExportableRule implements ExportableRule {
     
-    /**
-     * Get export data.
-     *
-     * @return exported data
-     */
-    Map<String, Object> getExportData();
+    private final SingleTableMapperRule tableMapperRule;
+    
+    @Override
+    public Map<String, Object> getExportData() {
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableMapperRule.getLogicTableMapper().getTableNames());
+    }
 }

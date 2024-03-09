@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -98,11 +99,15 @@ public final class TableRefreshUtils {
      * @return whether the rule need to be refreshed
      */
     public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
-        Optional<MutableDataNodeRule> singleRule = ruleMetaData.findSingleRule(MutableDataNodeRule.class);
-        if (!singleRule.isPresent()) {
+        Collection<ShardingSphereRule> rules = new LinkedList<>();
+        for (ShardingSphereRule each : ruleMetaData.getRules()) {
+            each.getRuleIdentifiers().findIdentifier(MutableDataNodeRule.class).ifPresent(optional -> rules.add(each));
+        }
+        if (rules.isEmpty()) {
             return false;
         }
-        RuleConfiguration ruleConfig = singleRule.get().getConfiguration();
+        ShardingSphereRule rule = rules.iterator().next();
+        RuleConfiguration ruleConfig = rule.getConfiguration();
         if (!(ruleConfig instanceof SingleRuleConfiguration)) {
             return false;
         }
@@ -110,7 +115,7 @@ public final class TableRefreshUtils {
         if (tablesConfig.contains(SingleTableConstants.ALL_TABLES) || tablesConfig.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return false;
         }
-        Optional<DataNode> dataNode = singleRule.get().findTableDataNode(schemaName, tableName);
+        Optional<DataNode> dataNode = rule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).findTableDataNode(schemaName, tableName);
         if (!dataNode.isPresent()) {
             return false;
         }

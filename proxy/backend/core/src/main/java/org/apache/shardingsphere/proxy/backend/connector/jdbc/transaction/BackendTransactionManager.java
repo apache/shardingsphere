@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -55,7 +56,7 @@ public final class BackendTransactionManager implements TransactionManager {
         transactionType = connection.getConnectionSession().getTransactionStatus().getTransactionType();
         localTransactionManager = new LocalTransactionManager(databaseConnectionManager);
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-        ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
+        ShardingSphereTransactionManagerEngine engine = (ShardingSphereTransactionManagerEngine) transactionRule.getRuleIdentifiers().getIdentifier(ResourceHeldRule.class).getResource();
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
         transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
     }

@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.readwritesplitting.rule;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.StorageConnectorReusableRule;
 
 /**
- * ShardingSphere rule which held metadata.
+ * Readwrite-splitting storage connector reusable rule.
  */
-public interface MetaDataHeldRule extends ShardingSphereRule {
-    
-    /**
-     * Alter database.
-     * 
-     * @param database database
-     */
-    void alterDatabase(ShardingSphereDatabase database);
-    
-    /**
-     * Drop database.
-     * 
-     * @param databaseName database name
-     */
-    void dropDatabase(String databaseName);
+public final class ReadwriteSplittingStorageConnectorReusableRule implements StorageConnectorReusableRule {
 }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
@@ -131,7 +132,7 @@ class SingleRuleTest {
     @Test
     void assertFindSingleTableDataNode() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
-        Optional<DataNode> actual = singleRule.findTableDataNode(DefaultDatabase.LOGIC_NAME, "employee");
+        Optional<DataNode> actual = singleRule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).findTableDataNode(DefaultDatabase.LOGIC_NAME, "employee");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceName(), is("foo_ds"));
         assertThat(actual.get().getTableName(), is("employee"));
@@ -140,7 +141,7 @@ class SingleRuleTest {
     @Test
     void assertFindSingleTableDataNodeWithUpperCase() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
-        Optional<DataNode> actual = singleRule.findTableDataNode(DefaultDatabase.LOGIC_NAME, "EMPLOYEE");
+        Optional<DataNode> actual = singleRule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).findTableDataNode(DefaultDatabase.LOGIC_NAME, "EMPLOYEE");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceName(), is("foo_ds"));
         assertThat(actual.get().getTableName(), is("employee"));
@@ -182,7 +183,7 @@ class SingleRuleTest {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
         String tableName = "teacher";
         String dataSourceName = "foo_ds";
-        singleRule.put(dataSourceName, DefaultDatabase.LOGIC_NAME, tableName);
+        singleRule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put(dataSourceName, DefaultDatabase.LOGIC_NAME, tableName);
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "teacher"));
         assertThat(singleRule.getSingleTables(tableNames).iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
@@ -198,7 +199,7 @@ class SingleRuleTest {
     void assertRemove() {
         SingleRule singleRule = new SingleRule(ruleConfig, DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
         String tableName = "employee";
-        singleRule.remove(DefaultDatabase.LOGIC_NAME, tableName);
+        singleRule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).remove(DefaultDatabase.LOGIC_NAME, tableName);
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "employee"));
         assertTrue(singleRule.getSingleTables(tableNames).isEmpty());
