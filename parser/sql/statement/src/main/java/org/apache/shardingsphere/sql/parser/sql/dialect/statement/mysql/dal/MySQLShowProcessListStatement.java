@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -24,5 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL show process list statement.
  */
+@RequiredArgsConstructor
+@Getter
 public final class MySQLShowProcessListStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+    
+    private final boolean full;
 }
