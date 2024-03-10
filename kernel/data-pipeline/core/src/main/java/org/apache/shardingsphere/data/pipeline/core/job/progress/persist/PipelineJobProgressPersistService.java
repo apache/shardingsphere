@@ -82,11 +82,7 @@ public final class PipelineJobProgressPersistService {
      * @param shardingItem sharding item
      */
     public static void notifyPersist(final String jobId, final int shardingItem) {
-        getPersistContext(jobId, shardingItem).ifPresent(PipelineJobProgressPersistService::notifyPersist);
-    }
-    
-    private static void notifyPersist(final PipelineJobProgressPersistContext persistContext) {
-        persistContext.getUnhandledEventCount().incrementAndGet();
+        getPersistContext(jobId, shardingItem).ifPresent(persistContext -> persistContext.getUnhandledEventCount().incrementAndGet());
     }
     
     private static Optional<PipelineJobProgressPersistContext> getPersistContext(final String jobId, final int shardingItem) {
@@ -101,14 +97,7 @@ public final class PipelineJobProgressPersistService {
      * @param shardingItem sharding item
      */
     public static void persistNow(final String jobId, final int shardingItem) {
-        getPersistContext(jobId, shardingItem).ifPresent(persistContext -> {
-            if (persistContext.getUnhandledEventCount().get() <= 0) {
-                log.info("Force persisting progress is not permitted since there is no unhandled event, jobId={}, shardingItem={}", jobId, shardingItem);
-                return;
-            }
-            notifyPersist(persistContext);
-            PersistJobContextRunnable.persist(jobId, shardingItem, persistContext);
-        });
+        getPersistContext(jobId, shardingItem).ifPresent(persistContext -> PersistJobContextRunnable.persist(jobId, shardingItem, persistContext));
     }
     
     private static final class PersistJobContextRunnable implements Runnable {
