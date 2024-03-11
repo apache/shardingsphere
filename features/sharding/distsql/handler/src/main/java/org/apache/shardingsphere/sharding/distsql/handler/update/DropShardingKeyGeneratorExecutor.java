@@ -51,7 +51,9 @@ public final class DropShardingKeyGeneratorExecutor implements DatabaseRuleDropE
         if (!sqlStatement.isIfExists()) {
             checkExist(sqlStatement);
         }
-        checkInUsed(sqlStatement);
+        if (null != rule) {
+            checkInUsed(sqlStatement);
+        }
     }
     
     private void checkExist(final DropShardingKeyGeneratorStatement sqlStatement) {

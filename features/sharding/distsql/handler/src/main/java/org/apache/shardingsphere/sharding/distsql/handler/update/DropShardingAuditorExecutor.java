@@ -50,7 +50,9 @@ public final class DropShardingAuditorExecutor implements DatabaseRuleDropExecut
         if (!sqlStatement.isIfExists()) {
             checkExist(sqlStatement);
         }
-        checkInUsed(sqlStatement);
+        if (null != rule) {
+            checkInUsed(sqlStatement);
+        }
     }
     
     private void checkExist(final DropShardingAuditorStatement sqlStatement) {
