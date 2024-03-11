@@ -100,7 +100,11 @@ alterService
     ;
 
 alterSchema
-    : ALTER SCHEMA schemaName TRANSFER class_? ignoredIdentifier
+    : ALTER SCHEMA schemaName TRANSFER class_? securableName
+    ;
+
+securableName
+    : identifier (DOT_ identifier)?
     ;
 
 dropTable
@@ -717,7 +721,7 @@ funcInlineReturn
     ;
 
 funcScalarReturn
-    : RETURNS dataType (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN expr
+    : RETURNS dataType (WITH functionOption (COMMA_ functionOption)*)? AS? BEGIN compoundStatement RETURN expr SEMI_ END
     ;
 
 tableTypeDefinition

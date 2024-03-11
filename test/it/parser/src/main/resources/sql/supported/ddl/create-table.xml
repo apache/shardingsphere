@@ -322,5 +322,5 @@
     <sql-case id="create_table_with_result_cache_annotations" value="CREATE TABLE foo (a NUMBER, b VARCHAR2(20)) RESULT_CACHE (MODE FORCE);" db-types="Oracle"/>
     <sql-case id="create_table_with_as_sub_query" value="CREATE TABLE employees_temp AS SELECT * FROM EMPLOYEES;" db-types="Oracle"/>
     <sql-case id="create_table_parallel_with_as_sub_query" value="CREATE TABLE hr.admin_emp_dept PARALLEL COMPRESS AS SELECT * FROM hr.employees WHERE department_id = 10;" db-types="Oracle"/>
-    <sql-case id="create_table_with_edge_constraint" value="CREATE TABLE bought ( PurchaseCount INT ,CONSTRAINT EC_BOUGHT CONNECTION (Customer TO Product) ON DELETE NO ACTION ) AS EDGE;" db-types="SQLServer"/>
+    <sql-case id="create_table_with_edge_constraint" value="CREATE TABLE bought ( PurchaseCount INT ,CONSTRAINT EC_BOUGHT CONNECTION (Customer TO Product) ON DELETE NO ACTION );" db-types="SQLServer"/>
 </sql-cases>

@@ -80,5 +80,5 @@ execute
     | revert
     | updateStatistics
     | merge
-    ) SEMI_?
+    ) SEMI_? EOF
     ;
