@@ -68,6 +68,6 @@ public final class DatabaseRuleDefinitionExecuteEngine {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private boolean getRefreshStatus(final boolean currentRuleExists) {
-        return !(executor instanceof DatabaseRuleDropExecutor) || (currentRuleExists && ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement));
+        return !(executor instanceof DatabaseRuleDropExecutor) || currentRuleExists && ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement);
     }
 }
