@@ -707,7 +707,7 @@ rowLimitingClause
     ;
 
 merge
-    : MERGE hint? intoClause usingClause mergeUpdateClause? mergeInsertClause? errorLoggingClause?
+    : MERGE hint? intoClause usingClause (mergeUpdateClause? mergeInsertClause? | mergeInsertClause? mergeUpdateClause?) errorLoggingClause?
     ;
 
 hint
