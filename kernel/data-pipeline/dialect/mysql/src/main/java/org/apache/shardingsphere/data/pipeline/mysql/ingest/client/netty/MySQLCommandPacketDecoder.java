@@ -29,6 +29,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * MySQL command packet decoder.
  */
+@HighFrequencyInvocation
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private final AtomicReference<States> currentState = new AtomicReference<>(States.RESPONSE_PACKET);

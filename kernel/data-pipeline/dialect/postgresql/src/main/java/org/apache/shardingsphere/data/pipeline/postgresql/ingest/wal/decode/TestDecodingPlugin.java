@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Delet
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -41,6 +42,7 @@ import java.util.List;
 /**
  * Test decoding plugin.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class TestDecodingPlugin implements DecodingPlugin {
     
