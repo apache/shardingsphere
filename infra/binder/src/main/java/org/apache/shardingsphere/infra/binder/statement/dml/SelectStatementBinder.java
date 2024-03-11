@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.segment.combine.CombineSegmentBinder;
-import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.lock.LockSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.projection.ProjectionsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.where.WhereSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
@@ -56,18 +54,8 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
-        // FIX: for Oracle's "with [temp] as clause", the metadata of temp is missing, throw TableNotExistsException when SimpleTableSegmentBinder.checkTableExists
-        // TODO optimize
-        SelectStatementHandler.getWithSegment(sqlStatement).ifPresent(optional -> {
-            Map<String, TableSegmentBinderContext> withExternalTableBinderContexts = new CaseInsensitiveMap<>(externalTableBinderContexts);
-            for (CommonTableExpressionSegment tableExpressionSegment : optional.getCommonTableExpressions()) {
-                SelectStatement subqueryStatement = tableExpressionSegment.getSubquery().getSelect();
-                SelectStatement boundedSelectStatement = SelectStatementBinder.this.bind(subqueryStatement, metaData, defaultDatabaseName, tableBinderContexts, withExternalTableBinderContexts);
-                withExternalTableBinderContexts.put(tableExpressionSegment.getIdentifier().getValue(), new SimpleTableSegmentBinderContext(boundedSelectStatement.getProjections().getProjections()));
-            }
-            statementBinderContext.getExternalTableBinderContexts().putAll(withExternalTableBinderContexts);
-            SelectStatementHandler.setWithSegment(result, optional);
-        });
+        SelectStatementHandler.getWithSegment(sqlStatement).ifPresent(optional -> SelectStatementHandler.setWithSegment(result,
+                WithSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, statementBinderContext.getExternalTableBinderContexts())));
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getFrom(), statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         result.setFrom(boundedTableSegment);
         result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), statementBinderContext, boundedTableSegment, tableBinderContexts, outerTableBinderContexts));
