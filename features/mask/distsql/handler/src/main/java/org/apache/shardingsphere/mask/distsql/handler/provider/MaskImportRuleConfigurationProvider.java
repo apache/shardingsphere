@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
+package org.apache.shardingsphere.mask.distsql.handler.provider;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
@@ -33,23 +38,24 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Mask rule configuration import checker.
+ * Mask import rule configuration provider.
  */
-public final class MaskRuleConfigurationImportChecker {
+public final class MaskImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
     
-    /**
-     * Check mask rule configuration.
-     *
-     * @param database database
-     * @param currentRuleConfig current rule configuration
-     */
-    public void check(final ShardingSphereDatabase database, final MaskRuleConfiguration currentRuleConfig) {
-        if (null == database || null == currentRuleConfig) {
+    @Override
+    public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
+        if (null == database || null == ruleConfig) {
             return;
         }
-        checkTables(currentRuleConfig, database.getName());
-        checkMaskAlgorithms(currentRuleConfig);
-        checkMaskAlgorithmsExisted(currentRuleConfig, database.getName());
+        MaskRuleConfiguration maskRuleConfig = (MaskRuleConfiguration) ruleConfig;
+        checkTables(maskRuleConfig, database.getName());
+        checkMaskAlgorithms(maskRuleConfig);
+        checkMaskAlgorithmsExisted(maskRuleConfig, database.getName());
+    }
+    
+    @Override
+    public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+        return new MaskRule((MaskRuleConfiguration) ruleConfig);
     }
     
     private void checkTables(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
@@ -70,5 +76,10 @@ public final class MaskRuleConfigurationImportChecker {
         Collection<String> maskAlgorithms = currentRuleConfig.getMaskAlgorithms().keySet();
         notExistedAlgorithms.removeIf(maskAlgorithms::contains);
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedAlgorithms));
+    }
+    
+    @Override
+    public Class<? extends RuleConfiguration> getType() {
+        return MaskRuleConfiguration.class;
     }
 }

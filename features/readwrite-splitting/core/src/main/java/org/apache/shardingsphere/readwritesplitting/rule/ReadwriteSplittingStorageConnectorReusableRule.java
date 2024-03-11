@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.readwritesplitting.rule;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.StorageConnectorReusableRule;
 
 /**
- * Pipeline job has already started exception.
+ * Readwrite-splitting storage connector reusable rule.
  */
-public final class PipelineJobHasAlreadyStartedException extends PipelineSQLException {
-    
-    private static final long serialVersionUID = 2854259384634892428L;
-    
-    public PipelineJobHasAlreadyStartedException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 81, String.format("Job `%s` has already started.", jobId));
-    }
+public final class ReadwriteSplittingStorageConnectorReusableRule implements StorageConnectorReusableRule {
 }

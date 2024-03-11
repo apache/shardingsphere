@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -44,6 +46,22 @@ class TestDecodingPluginTest {
     private final LogSequenceNumber pgSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
     
     private final PostgreSQLLogSequenceNumber logSequenceNumber = new PostgreSQLLogSequenceNumber(pgSequenceNumber);
+    
+    @Test
+    void assertDecodeBeginTxEvent() {
+        ByteBuffer data = ByteBuffer.wrap("BEGIN 616281".getBytes(StandardCharsets.UTF_8));
+        BeginTXEvent actual = (BeginTXEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
+        assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
+        assertThat(actual.getXid(), is(616281L));
+    }
+    
+    @Test
+    void assertDecodeCommitTxEvent() {
+        ByteBuffer data = ByteBuffer.wrap("COMMIT 616281".getBytes(StandardCharsets.UTF_8));
+        CommitTXEvent actual = (CommitTXEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
+        assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
+        assertThat(actual.getXid(), is(616281L));
+    }
     
     @Test
     void assertDecodeWriteRowEvent() {

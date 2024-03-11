@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.resoure;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 /**
- * ShardingSphere rule which held metadata.
+ * Storage connector reusable rule.
  */
-public interface MetaDataHeldRule extends ShardingSphereRule {
-    
-    /**
-     * Alter database.
-     * 
-     * @param database database
-     */
-    void alterDatabase(ShardingSphereDatabase database);
-    
-    /**
-     * Drop database.
-     * 
-     * @param databaseName database name
-     */
-    void dropDatabase(String databaseName);
+public interface StorageConnectorReusableRule extends RuleIdentifier {
 }

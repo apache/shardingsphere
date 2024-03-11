@@ -77,8 +77,8 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.raw.RawExecutionRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.StorageConnectorReusableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -220,7 +220,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private boolean isStatementsCacheable(final RuleMetaData databaseRuleMetaData) {
-        return databaseRuleMetaData.findRules(StorageConnectorReusableRule.class).size() == databaseRuleMetaData.getRules().size() && !HintManager.isInstantiated();
+        Collection<StorageConnectorReusableRule> storageConnectorReusableRules = new LinkedList<>();
+        for (ShardingSphereRule each : databaseRuleMetaData.getRules()) {
+            each.getRuleIdentifiers().findIdentifier(StorageConnectorReusableRule.class).ifPresent(storageConnectorReusableRules::add);
+        }
+        return storageConnectorReusableRules.size() == databaseRuleMetaData.getRules().size() && !HintManager.isInstantiated();
     }
     
     @Override

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.GroupedD
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import javax.sql.DataSource;
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
 /**
  * Pipeline data source sink.
  */
+@HighFrequencyInvocation
 @Slf4j
 public final class PipelineDataSourceSink implements PipelineSink {
     

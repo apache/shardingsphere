@@ -25,15 +25,10 @@ import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.exception.rule.InvalidInlineExpressionDataSourceNameException;
-import org.apache.shardingsphere.readwritesplitting.group.type.StaticReadwriteSplittingGroup;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -45,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Readwrite-splitting rule.
  */
-public final class ReadwriteSplittingRule implements DatabaseRule, ExportableRule, StorageConnectorReusableRule {
+public final class ReadwriteSplittingRule implements DatabaseRule {
     
     @Getter
     private final ReadwriteSplittingRuleConfiguration configuration;
@@ -63,7 +58,8 @@ public final class ReadwriteSplittingRule implements DatabaseRule, ExportableRul
         loadBalancers = createLoadBalancers(ruleConfig);
         dataSourceRules = createDataSourceRules(ruleConfig);
         ruleIdentifiers = new RuleIdentifiers(
-                new ReadwriteSplittingDataSourceMapperRule(dataSourceRules.values()), new ReadwriteSplittingStaticDataSourceRule(databaseName, dataSourceRules, instanceContext));
+                new ReadwriteSplittingDataSourceMapperRule(dataSourceRules.values()), new ReadwriteSplittingStaticDataSourceRule(databaseName, dataSourceRules, instanceContext),
+                new ReadwriteSplittingExportableRule(dataSourceRules), new ReadwriteSplittingStorageConnectorReusableRule());
     }
     
     private Map<String, LoadBalanceAlgorithm> createLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
@@ -134,25 +130,5 @@ public final class ReadwriteSplittingRule implements DatabaseRule, ExportableRul
      */
     public Optional<ReadwriteSplittingDataSourceRule> findDataSourceRule(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));
-    }
-    
-    @Override
-    public Map<String, Object> getExportData() {
-        Map<String, Object> result = new HashMap<>(2, 1F);
-        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportStaticDataSources());
-        return result;
-    }
-    
-    private Map<String, Map<String, String>> exportStaticDataSources() {
-        Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1F);
-        for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
-            if (each.getReadwriteSplittingGroup() instanceof StaticReadwriteSplittingGroup) {
-                Map<String, String> exportedDataSources = new LinkedHashMap<>(2, 1F);
-                exportedDataSources.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, each.getWriteDataSource());
-                exportedDataSources.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", each.getReadwriteSplittingGroup().getReadDataSources()));
-                result.put(each.getName(), exportedDataSources);
-            }
-        }
-        return result;
     }
 }

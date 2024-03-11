@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSc
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
 import javax.sql.DataSource;
@@ -189,20 +189,19 @@ public final class ShardingSphereDatabase {
     
     /**
      * Reload rules.
-     *
-     * @param ruleClass to be reloaded rule class
      */
-    public synchronized void reloadRules(final Class<? extends ShardingSphereRule> ruleClass) {
-        Collection<? extends ShardingSphereRule> toBeReloadedRules = ruleMetaData.findRules(ruleClass);
+    public synchronized void reloadRules() {
+        Collection<ShardingSphereRule> toBeReloadedRules = ruleMetaData.getRules().stream()
+                .filter(each -> each.getRuleIdentifiers().findIdentifier(MutableDataNodeRule.class).isPresent()).collect(Collectors.toList());
         RuleConfiguration ruleConfig = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
-        Collection<ShardingSphereRule> databaseRules = new LinkedList<>(ruleMetaData.getRules());
+        Collection<ShardingSphereRule> rules = new LinkedList<>(ruleMetaData.getRules());
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
-            databaseRules.removeAll(toBeReloadedRules);
+            rules.removeAll(toBeReloadedRules);
             Map<String, DataSource> dataSources = resourceMetaData.getStorageUnits().entrySet().stream()
                     .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-            databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, dataSources, databaseRules));
+            rules.add(optional.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).reloadRule(ruleConfig, name, dataSources, rules));
         });
         ruleMetaData.getRules().clear();
-        ruleMetaData.getRules().addAll(databaseRules);
+        ruleMetaData.getRules().addAll(rules);
     }
 }

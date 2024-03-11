@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
 
 import java.util.Collections;
@@ -96,7 +96,9 @@ public final class ShardingSphereMetaData {
     public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType, props);
         databases.put(database.getName().toLowerCase(), database);
-        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
+        for (ShardingSphereRule each : globalRuleMetaData.getRules()) {
+            each.getRuleIdentifiers().findIdentifier(ResourceHeldRule.class).ifPresent(optional -> optional.addResource(database));
+        }
     }
     
     /**
@@ -110,8 +112,12 @@ public final class ShardingSphereMetaData {
     
     private void cleanResources(final ShardingSphereDatabase database) {
         String databaseName = database.getName();
-        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
-        database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
+        for (ShardingSphereRule each : globalRuleMetaData.getRules()) {
+            each.getRuleIdentifiers().findIdentifier(ResourceHeldRule.class).ifPresent(optional -> optional.closeStaleResource(databaseName));
+        }
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            each.getRuleIdentifiers().findIdentifier(ResourceHeldRule.class).ifPresent(optional -> optional.closeStaleResource(databaseName));
+        }
         for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
             each.getRuleIdentifiers().findIdentifier(StaticDataSourceRule.class).ifPresent(StaticDataSourceRule::cleanStorageNodeDataSources);
         }

@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -152,7 +154,9 @@ class SingleStandardRouteEngineTest {
     private SingleRule mockSingleRule() {
         SingleRule result = mock(SingleRule.class);
         DataNode dataNode = mock(DataNode.class);
-        when(result.findTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(dataNode));
+        MutableDataNodeRule mutableDataNodeRule = mock(MutableDataNodeRule.class);
+        when(mutableDataNodeRule.findTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(dataNode));
+        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(mutableDataNodeRule));
         return result;
     }
 }

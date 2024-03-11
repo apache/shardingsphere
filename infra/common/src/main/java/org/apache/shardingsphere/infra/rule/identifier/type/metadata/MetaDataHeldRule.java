@@ -15,10 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.metadata;
+
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 /**
- * Raw execution rule.
+ * Meta data held rule.
  */
-public interface RawExecutionRule {
+public interface MetaDataHeldRule extends RuleIdentifier {
+    
+    /**
+     * Alter database.
+     * 
+     * @param database database
+     */
+    void alterDatabase(ShardingSphereDatabase database);
+    
+    /**
+     * Drop database.
+     * 
+     * @param databaseName database name
+     */
+    void dropDatabase(String databaseName);
 }
