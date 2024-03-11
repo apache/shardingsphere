@@ -161,6 +161,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\`.     |
 | 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used.  |
 | 44000     | 19153       | Duplicate %s algorithms \`%s\` in database \`%s\`.          |
+| 44000     | 19154       | Invalid mode, error message is: \`%s\`.                     |
+| 44000     | 19155       | Plugin class \`%s\` not found..                             |
 
 ## Feature Exception
 
