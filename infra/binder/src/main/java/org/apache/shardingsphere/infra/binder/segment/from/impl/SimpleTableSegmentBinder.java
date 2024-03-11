@@ -142,6 +142,9 @@ public final class SimpleTableSegmentBinder {
         if (SystemSchemaManager.isSystemTable(schemaName, tableName)) {
             return;
         }
+        if (statementBinderContext.getExternalTableBinderContexts().containsKey(tableName)) {
+            return;
+        }
         ShardingSpherePreconditions.checkState(statementBinderContext.getMetaData().containsDatabase(databaseName)
                 && statementBinderContext.getMetaData().getDatabase(databaseName).containsSchema(schemaName)
                 && statementBinderContext.getMetaData().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName),
