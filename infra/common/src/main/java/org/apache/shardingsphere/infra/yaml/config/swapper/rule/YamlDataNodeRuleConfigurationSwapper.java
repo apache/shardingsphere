@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.yaml.swapper;
+package org.apache.shardingsphere.infra.yaml.config.swapper.rule;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlDataNodeConfigurationSwapper;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-// TODO Rename YamlTrafficRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
-class NewYamlTrafficRuleConfigurationSwapperTest {
+/**
+ * YAML data node rule configuration swapper.
+ *
+ * @param <T> type of rule configuration
+ */
+@SingletonSPI
+public interface YamlDataNodeRuleConfigurationSwapper<T extends RuleConfiguration> extends YamlDataNodeConfigurationSwapper<T>, OrderedSPI<T> {
     
-    private final YamlTrafficDataNodeRuleConfigurationSwapper swapper = new YamlTrafficDataNodeRuleConfigurationSwapper();
-    
-    @Test
-    void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new TrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
-    }
+    /**
+     * Get YAML rule tag name.
+     * 
+     * @return YAML rule tag name
+     */
+    String getRuleTagName();
 }
