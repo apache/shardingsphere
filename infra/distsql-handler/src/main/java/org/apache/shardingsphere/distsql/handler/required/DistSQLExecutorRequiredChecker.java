@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.distsql.handler.required;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.exception.mode.InvalidModeException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.DropRuleStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -50,7 +50,7 @@ public final class DistSQLExecutorRequiredChecker {
     }
     
     private void checkClusterMode(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`"));
+        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new InvalidModeException("Mode must be `Cluster`"));
     }
     
     private void checkCurrentRule(final SQLStatement sqlStatement, final ContextManager contextManager, final ShardingSphereDatabase database,

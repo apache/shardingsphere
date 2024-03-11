@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.metadata;
+package org.apache.shardingsphere.distsql.handler.exception.mode;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 
 /**
- * Duplicate sharding actual data node exception.
+ * Invalid mode exception.
  */
-public final class DuplicateSharingActualDataNodeException extends ShardingSQLException {
+public final class InvalidModeException extends DistSQLException {
     
-    private static final long serialVersionUID = 3503761639898230998L;
+    private static final long serialVersionUID = 7094702927472630479L;
     
-    public DuplicateSharingActualDataNodeException(final String logicalTableName, final String dataSourceName, final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 14, String.format(
-                "Same actual data node cannot be configured in multiple logic tables in same database, logical table:`%s`, actual data node: `%s`.`%s`.", logicalTableName, dataSourceName, tableName));
+    public InvalidModeException(final String errorMessage) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 154, "Invalid mode, error message is: %s", errorMessage);
     }
 }
