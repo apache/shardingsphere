@@ -135,7 +135,6 @@ class DatabaseConnectorTest {
         when(database.containsDataSource()).thenReturn(true);
         when(database.isComplete()).thenReturn(true);
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "H2"));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("foo_db", database);
     }
     

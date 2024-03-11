@@ -58,7 +58,6 @@ class LoadSingleTableExecutorTest {
     
     @BeforeEach
     void setUp() {
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_db")).thenReturn(schema);
     }

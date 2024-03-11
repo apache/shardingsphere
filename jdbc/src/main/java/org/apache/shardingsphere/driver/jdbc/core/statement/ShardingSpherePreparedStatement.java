@@ -76,10 +76,9 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.raw.RawExecutionRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.resoure.StorageConnectorReusableRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -220,11 +219,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private boolean isStatementsCacheable(final RuleMetaData databaseRuleMetaData) {
-        Collection<StorageConnectorReusableRule> storageConnectorReusableRules = new LinkedList<>();
-        for (ShardingSphereRule each : databaseRuleMetaData.getRules()) {
-            each.getRuleIdentifiers().findIdentifier(StorageConnectorReusableRule.class).ifPresent(storageConnectorReusableRules::add);
-        }
-        return storageConnectorReusableRules.size() == databaseRuleMetaData.getRules().size() && !HintManager.isInstantiated();
+        return databaseRuleMetaData.getRuleIdentifiers(StorageConnectorReusableRule.class).size() == databaseRuleMetaData.getRules().size() && !HintManager.isInstantiated();
     }
     
     @Override
@@ -447,12 +442,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private boolean hasRawExecutionRule() {
-        for (ShardingSphereRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
-            if (each instanceof RawExecutionRule) {
-                return true;
-            }
-        }
-        return false;
+        return !metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRuleIdentifiers(RawExecutionRule.class).isEmpty();
     }
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
@@ -766,9 +756,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public boolean isAccumulate() {
-        for (ShardingSphereRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
-            Optional<DataNodeRule> dataNodeRule = each.getRuleIdentifiers().findIdentifier(DataNodeRule.class);
-            if (dataNodeRule.isPresent() && dataNodeRule.get().isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames())) {
+        for (DataNodeRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRuleIdentifiers(DataNodeRule.class)) {
+            if (each.isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames())) {
                 return true;
             }
         }
