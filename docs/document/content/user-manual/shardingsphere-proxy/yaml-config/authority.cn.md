@@ -21,6 +21,7 @@ authority:
   users:
     - user: # 用于登录计算节点的用户名和授权主机的组合，格式：<username>@<hostname>，hostname 为 % 或空字符串表示不限制授权主机，username 和 hostname 大小写不敏感
       password: # 用户密码
+      admin: # 可选项，管理员身份标识。若为 true，该用户拥有最高权限，缺省值为 false
       authenticationMethodName: # 可选项，用于为用户指定密码认证方式
   authenticators: # 可选项，默认不需要配置，Proxy 根据前端协议类型自动选择
     authenticatorName:
