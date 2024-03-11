@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.database;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
+import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -54,7 +54,7 @@ public final class DatabaseRuleDefinitionExecuteEngine {
         executor.setRule(rule.orElse(null));
         checkBeforeUpdate();
         RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
-        if (getRefreshStatus()) {
+        if (getRefreshStatus(rule.isPresent())) {
             contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService()
                     .switchActiveVersion(DatabaseRuleOperatorFactory.newInstance(contextManager, executor).operate(sqlStatement, database, currentRuleConfig));
         }
@@ -67,7 +67,7 @@ public final class DatabaseRuleDefinitionExecuteEngine {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private boolean getRefreshStatus() {
-        return !(executor instanceof DatabaseRuleDropExecutor) || ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement);
+    private boolean getRefreshStatus(final boolean currentRuleExists) {
+        return !(executor instanceof DatabaseRuleDropExecutor) || (currentRuleExists && ((DatabaseRuleDropExecutor) executor).hasAnyOneToBeDropped(sqlStatement));
     }
 }
