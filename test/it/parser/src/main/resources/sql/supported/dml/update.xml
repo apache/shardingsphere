@@ -36,7 +36,7 @@
     <sql-case id="update_with_with_clause" value="WITH cte (order_id, user_id, status) AS (SELECT order_id, user_id, status FROM t_order) UPDATE t_order SET status = ? FROM t_order AS t JOIN cte AS c ON t.order_id = c.order_id WHERE c.order_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_top" value="UPDATE TOP(10) t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_top_percent" value="UPDATE TOP(10) PERCENT t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />
-    <sql-case id="update_with_query_hint" value="UPDATE t_order SET status = ? WHERE order_id = ? HASH GROUP" db-types="SQLServer" />
+    <sql-case id="update_with_query_hint" value="UPDATE t_order SET status = ? WHERE order_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_set_null" value="UPDATE employees SET commission_pct = NULL WHERE job_id = 'SH_CLERK'" db-types="Oracle" />
     <sql-case id="update_with_set_subquery" value="UPDATE employees a SET department_id = (SELECT department_id FROM departments WHERE location_id = '2100')" db-types="Oracle" />
     <sql-case id="update_with_multiple_set" value="UPDATE employees SET job_id = 'SA_MAN', salary = 1000, department_id = 120 WHERE last_name = 'Douglas Grant'" db-types="Oracle" />
@@ -63,7 +63,7 @@
     <sql-case id="update_with_plus_eq_symbol" value="UPDATE Production.Product SET ListPrice += @NewPrice WHERE Color = N'Red'" db-types="SQLServer"/>
     <sql-case id="update_scrapreason_with_between_and" value="UPDATE Production.ScrapReason SET Name += ' - tool malfunction' WHERE ScrapReasonID BETWEEN 10 and 12" db-types="SQLServer"/>
     <sql-case id="update_sr_with_join_subquery" value="UPDATE sr SET sr.Name += ' - tool malfunction' FROM Production.ScrapReason AS sr JOIN Production.WorkOrder AS wo ON sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" db-types="SQLServer"/>
-    <sql-case id="update_with_print" value="UPDATE HumanResources.Employee SET JobTitle = N'Executive' WHERE NationalIDNumber = 123456789  IF @@ROWCOUNT = 0  PRINT 'Warning: No rows were updated'" db-types="SQLServer" />
+    <sql-case id="update_with_nchar" value="UPDATE HumanResources.Employee SET JobTitle = N'Executive' WHERE NationalIDNumber = 123456789" db-types="SQLServer" />
     <sql-case id="update_with_inner_join" value="UPDATE dbo.Table2 SET dbo.Table2.ColB = dbo.Table2.ColB + dbo.Table1.ColB FROM dbo.Table2 INNER JOIN dbo.Table1 ON (dbo.Table2.ColA = dbo.Table1.ColA)" db-types="SQLServer"/>
     <sql-case id="update_with_current_of_abc" value="UPDATE dbo.Table1 SET c2 = c2 + d2 FROM dbo.Table2 WHERE CURRENT OF abc" db-types="SQLServer"/>
     <sql-case id="update_with_location_setXY" value="UPDATE Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>

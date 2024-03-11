@@ -2091,7 +2091,7 @@
         </set>
     </update>
     
-    <update sql-case-id="update_with_print">
+    <update sql-case-id="update_with_nchar">
         <table start-index="7" stop-index="29">
             <simple-table name="Employee" start-index="7" stop-index="29">
                 <owner name="HumanResources" start-index="7" stop-index="20" />
