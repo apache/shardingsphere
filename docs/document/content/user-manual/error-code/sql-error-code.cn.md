@@ -125,7 +125,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`.  |
 | 0A000     | 18054       | Unsupported mode type \`%s\`.                                                      |
 | HY000     | 18080       | Can not find pipeline job \`%s\`.                                                  |
-| HY000     | 18081       | Job has already started.                                                           |
 | HY000     | 18082       | Sharding count of job \`%s\` is 0.                                                 |
 | HY000     | 18083       | Can not split by range for table \`%s\`, reason is: %s                             |
 | HY000     | 18084       | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s                 |

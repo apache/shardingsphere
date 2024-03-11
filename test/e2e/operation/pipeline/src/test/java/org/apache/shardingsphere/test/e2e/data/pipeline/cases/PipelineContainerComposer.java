@@ -401,6 +401,27 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
+     * Wait job status reached.
+     *
+     * @param distSQL dist SQL
+     * @param jobStatus job status
+     * @param maxSleepSeconds max sleep seconds
+     * @throws IllegalStateException if job status not reached
+     */
+    public void waitJobStatusReached(final String distSQL, final JobStatus jobStatus, final int maxSleepSeconds) {
+        for (int i = 0, count = maxSleepSeconds / 2 + (0 == maxSleepSeconds % 2 ? 0 : 1); i < count; i++) {
+            List<Map<String, Object>> resultList = queryForListWithLog(distSQL);
+            log.info("Job status result: {}", resultList);
+            Set<String> statusSet = resultList.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
+            if (statusSet.stream().allMatch(each -> each.equals(jobStatus.name()))) {
+                return;
+            }
+            Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+        }
+        throw new IllegalStateException("Job status not reached: " + jobStatus);
+    }
+    
+    /**
      * Query for list with log.
      *
      * @param sql SQL

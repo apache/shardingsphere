@@ -19,11 +19,12 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.general
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
@@ -114,7 +115,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     private void checkOrderItemMigration(final PipelineContainerComposer containerComposer) throws SQLException {
         startMigrationWithSchema(containerComposer, "t_order_item", "t_order_item");
         String jobId = getJobIdByTableName(containerComposer, "ds_0.test.t_order_item");
-        containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        containerComposer.waitJobStatusReached(String.format("SHOW MIGRATION STATUS '%s'", jobId), JobStatus.EXECUTE_INCREMENTAL_TASK, 15);
         assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
     }
     
