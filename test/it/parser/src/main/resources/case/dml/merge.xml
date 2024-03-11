@@ -333,6 +333,119 @@
             </where>
         </insert>
     </merge>
+    <merge sql-case-id="merge_insert_and_update_table">
+        <target>
+            <simple-table alias="t1" name="t_order" start-index="11" stop-index="20" />
+        </target>
+        <source>
+            <subquery-table alias="t2">
+                <subquery>
+                    <select>
+                        <projections start-index="92" stop-index="116">
+                            <expression-projection text="1" start-index="92" stop-index="102" alias="userId">
+                                <literal-expression value="1" start-index="92" stop-index="92" />
+                            </expression-projection>
+                            <expression-projection text="1" start-index="105" stop-index="116" alias="orderId">
+                                <literal-expression value="1" start-index="105" stop-index="105" />
+                            </expression-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="DUAL" start-index="186" stop-index="189" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="255" stop-index="305">
+                <left>
+                    <binary-operation-expression start-index="255" stop-index="276">
+                        <left>
+                            <column name="user_id" start-index="255" stop-index="264">
+                                <owner name="t1" start-index="255" stop-index="256" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="userId" start-index="268" stop-index="276">
+                                <owner name="t2" start-index="268" stop-index="269" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </left>
+                <operator>AND</operator>
+                <right>
+                    <binary-operation-expression start-index="282" stop-index="305">
+                        <left>
+                            <column name="order_id" start-index="282" stop-index="292">
+                                <owner name="t1" start-index="282" stop-index="283" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="orderId" start-index="296" stop-index="305">
+                                <owner name="t2" start-index="296" stop-index="297" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <update>
+            <set start-index="824" stop-index="1000">
+                <assignment>
+                    <columns name="merchant_id" start-index="824" stop-index="834" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="838" stop-index="838" />
+                    </assignment-value>
+                </assignment>
+                <assignment>
+                    <columns name="remark" start-index="905" stop-index="910" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="919" stop-index="919" />
+                    </assignment-value>
+                </assignment>
+                <assignment>
+                    <columns name="status" start-index="986" stop-index="991" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="1000" stop-index="1000" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+        <insert>
+            <columns start-index="453" stop-index="515">
+                <column name="order_id" start-index="454" stop-index="461" />
+                <column name="user_id" start-index="464" stop-index="470" />
+                <column name="status" start-index="473" stop-index="478" />
+                <column name="merchant_id" start-index="481" stop-index="491" />
+                <column name="remark" start-index="494" stop-index="499" />
+                <column name="creation_date" start-index="502" stop-index="514" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="585" stop-index="585" />
+                    </assignment-value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="588" stop-index="588" />
+                    </assignment-value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="591" stop-index="591" />
+                    </assignment-value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="594" stop-index="594" />
+                    </assignment-value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="597" stop-index="597" />
+                    </assignment-value>
+                    <assignment-value>
+                        <literal-expression value="DATE '2017-08-08'" start-index="600" stop-index="616" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </merge>
     <merge sql-case-id="merge_into_select">
         <target>
             <subquery-table alias="D">

@@ -23,11 +23,13 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterR
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExecuteContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ShowContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SpoolContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleAlterResourceCostStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleShowStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleSpoolStatement;
 
 /**
  * DAL statement visitor for Oracle.
@@ -62,5 +64,14 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
         return new OracleShowStatement();
+    }
+    
+    @Override
+    public ASTNode visitSpool(final SpoolContext ctx) {
+        OracleSpoolStatement result = new OracleSpoolStatement();
+        if (null != ctx.spoolFileName()) {
+            result.setFileName(ctx.spoolFileName().getText());
+        }
+        return result;
     }
 }

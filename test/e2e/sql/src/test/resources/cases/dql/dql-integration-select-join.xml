@@ -104,7 +104,8 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO add encrypt,encrypt_and_readwrite_splitting scenario when use standard table -->
+    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -121,10 +122,10 @@
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
-    <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id = m.user_id WHERE u.user_id IN (10, 11)" scenario-types="encrypt">
+    <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,encrypt scenario when use standard t_user table in issue#21286 -->
+    <!--<test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id = m.user_id WHERE u.user_id IN (10, 11)" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select join statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />

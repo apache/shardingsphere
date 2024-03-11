@@ -23,8 +23,11 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Quo
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -77,5 +80,18 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public String getDatabaseType() {
         return "Oracle";
+    }
+    
+    @Override
+    public Map<String, Integer> getExtraDataTypes() {
+        Map<String, Integer> result = new HashMap<>(8);
+        result.put("TEXT", Types.LONGVARCHAR);
+        result.put("CHARACTER", Types.CHAR);
+        result.put("VARCHAR2", Types.VARCHAR);
+        result.put("DATETIME", Types.TIMESTAMP);
+        result.put("ROWID", Types.ROWID);
+        result.put("BINARY_DOUBLE", Types.DOUBLE);
+        result.put("BINARY_FLOAT", Types.FLOAT);
+        return result;
     }
 }

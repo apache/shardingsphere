@@ -88,6 +88,9 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
         boolean started = false;
         try {
             started = execute(buildJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext));
+            if (started) {
+                PipelineJobProgressPersistService.persistNow(jobId, shardingItem);
+            }
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -98,7 +101,6 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfigur
             }
         } finally {
             if (started) {
-                PipelineJobProgressPersistService.persistNow(jobId, shardingItem);
                 jobRunnerManager.getTasksRunner(shardingItem).ifPresent(PipelineTasksRunner::stop);
             }
         }

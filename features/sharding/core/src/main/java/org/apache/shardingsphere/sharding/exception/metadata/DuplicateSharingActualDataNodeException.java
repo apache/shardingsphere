@@ -28,7 +28,7 @@ public final class DuplicateSharingActualDataNodeException extends ShardingSQLEx
     private static final long serialVersionUID = 3503761639898230998L;
     
     public DuplicateSharingActualDataNodeException(final String logicalTableName, final String dataSourceName, final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 154, String.format(
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 14, String.format(
                 "Same actual data node cannot be configured in multiple logic tables in same database, logical table:`%s`, actual data node: `%s`.`%s`.", logicalTableName, dataSourceName, tableName));
     }
 }

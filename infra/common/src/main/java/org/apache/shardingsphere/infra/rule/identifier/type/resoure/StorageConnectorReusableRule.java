@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.resoure;
+
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 /**
- * Raw execution rule.
+ * Storage connector reusable rule.
  */
-public interface RawExecutionRule {
+public interface StorageConnectorReusableRule extends RuleIdentifier {
 }

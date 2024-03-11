@@ -17,8 +17,8 @@
   -->
 
 <integration-test-cases>
-    <!-- TODO add db,tbl,dbtbl_with_readwrite_splitting scenario when use standard table -->
-    <test-case sql="COUNT SINGLE TABLE" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO add db,tbl,dbtbl_with_readwrite_splitting,encrypt,encrypt_and_readwrite_splitting scenario when use standard table -->
+    <test-case sql="COUNT SINGLE TABLE" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-file="count_single_table.xml" />
     </test-case>
     

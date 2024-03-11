@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Delet
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.opengauss.util.PGInterval;
 import org.opengauss.util.PGobject;
@@ -48,6 +49,7 @@ import java.util.List;
 /**
  * Mppdb decoding plugin in openGauss.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class MppdbDecodingPlugin implements DecodingPlugin {
     

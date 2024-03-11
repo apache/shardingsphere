@@ -20,6 +20,7 @@ package org.apache.shardingsphere.authority.checker;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 /**
  * Authority checker.
@@ -38,6 +39,7 @@ public final class AuthorityChecker {
      * @return authorized or not
      */
     public boolean isAuthorized(final String database) {
-        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
+        return null == grantee || rule.findUser(grantee).map(ShardingSphereUser::isAdmin).orElse(false)
+                || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
     }
 }

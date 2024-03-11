@@ -15,27 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.resoure;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 /**
- * ShardingSphere rule which held metadata.
+ * Resource held rule.
+ * 
+ * @param <T> type of resource
  */
-public interface MetaDataHeldRule extends ShardingSphereRule {
+public interface ResourceHeldRule<T> extends RuleIdentifier {
     
     /**
-     * Alter database.
+     * Get resource.
      * 
+     * @return got resource
+     */
+    T getResource();
+    
+    /**
+     * Add resource.
+     *
      * @param database database
      */
-    void alterDatabase(ShardingSphereDatabase database);
+    void addResource(ShardingSphereDatabase database);
     
     /**
-     * Drop database.
-     * 
+     * Close stale resource with database name.
+     *
      * @param databaseName database name
      */
-    void dropDatabase(String databaseName);
+    void closeStaleResource(String databaseName);
+    
+    /**
+     * Close stale resource.
+     */
+    void closeStaleResource();
 }

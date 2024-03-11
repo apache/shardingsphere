@@ -15,41 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Resource held rule.
- * 
- * @param <T> type of resource
+ * Spool statement test case.
  */
-public interface ResourceHeldRule<T> extends ShardingSphereRule {
+@Getter
+@Setter
+public final class SpoolStatementTestCase extends SQLParserTestCase {
     
-    /**
-     * Get resource.
-     * 
-     * @return got resource
-     */
-    T getResource();
-    
-    /**
-     * Add resource.
-     *
-     * @param database database
-     */
-    void addResource(ShardingSphereDatabase database);
-    
-    /**
-     * Close stale resource with database name.
-     *
-     * @param databaseName database name
-     */
-    void closeStaleResource(String databaseName);
-    
-    /**
-     * Close stale resource.
-     */
-    void closeStaleResource();
+    @XmlAttribute
+    private String filename;
 }

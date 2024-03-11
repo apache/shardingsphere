@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.datanode;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -27,9 +28,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ShardingSphere rule which contains mutable data node.
+ * Mutable data node rule.
  */
-public interface MutableDataNodeRule extends ShardingSphereRule {
+public interface MutableDataNodeRule extends RuleIdentifier {
     
     /**
      * Add data node.

@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.distsql.handler.exception.mode;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 
 /**
- * Pipeline job has already started exception.
+ * Invalid mode exception.
  */
-public final class PipelineJobHasAlreadyStartedException extends PipelineSQLException {
+public final class InvalidModeException extends DistSQLException {
     
-    private static final long serialVersionUID = 2854259384634892428L;
+    private static final long serialVersionUID = 7094702927472630479L;
     
-    public PipelineJobHasAlreadyStartedException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 81, String.format("Job `%s` has already started.", jobId));
+    public InvalidModeException(final String errorMessage) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 154, "Invalid mode, error message is: %s", errorMessage);
     }
 }

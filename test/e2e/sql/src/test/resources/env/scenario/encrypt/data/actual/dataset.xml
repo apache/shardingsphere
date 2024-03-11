@@ -42,17 +42,6 @@
         <column name="user_telephone_like" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="encrypt.t_user_item">
-        <column name="item_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-        <column name="creation_date" type="datetime" />
-    </metadata>
-    <metadata data-nodes="encrypt.t_single_table">
-        <column name="single_id" type="numeric" />
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <metadata data-nodes="encrypt.t_merchant">
         <column name="merchant_id" type="numeric" />
         <column name="country_id" type="numeric" />
@@ -183,10 +172,6 @@
     <row data-node="encrypt.t_order_item" values="290002, 2900, 29, 19, 1, 2017-08-08" />
     <row data-node="encrypt.t_order_item" values="290101, 2901, 29, 20, 1, 2017-08-08" />
     <row data-node="encrypt.t_order_item" values="290102, 2901, 29, 20, 1, 2017-08-08" />
-    <row data-node="encrypt.t_single_table" values="1, 10, init" />
-    <row data-node="encrypt.t_single_table" values="2, 11, init" />
-    <row data-node="encrypt.t_single_table" values="3, 12, init" />
-    <row data-node="encrypt.t_single_table" values="4, 13, init" />
     <row data-node="encrypt.t_user" values="10, sVq8Lmm+j6bZE5EKSilJEQ==, yi`mht`m, aQol0b6th65d0aXe+zFPsQ==, WM0fHOH91JNWnHTkiqBdyNmzk4uJ7CCz4mB1va9Ya1M=, kLjLJIMnfyHT2nA+viaoaQ==, 01454589811, 2017-08-08" />
     <row data-node="encrypt.t_user" values="11, fQ7IzBxKVuNHtUF6h6WSBg==, mhth, wuhmEKgdgrWQYt+Ev0hgGA==, svATu3uWv9KfiloWJeWx3A==, 0kDFxndQdzauFwL/wyCsNQ==, 01454589810, 2017-08-08" />
     <row data-node="encrypt.t_user" values="12, AQRWSlufQPog/b64YRhu6Q==, x`mhxt, x7A+2jq9B6DSOSFtSOibdA==, nHJv9e6NiClIuGHOjHLvCAq2ZLhWcqfQ8/EQnIqMx+g=, a/SzSJLapt5iBXvF2c9ycw==, 01454589811, 2017-08-08" />
@@ -217,26 +202,6 @@
     <row data-node="encrypt.t_user" values="37, aXS0VfnqHIAnOAtDjsF/9Q==, 伈嶱啴, bO/8ha1eS/H8/3DugjdOAQ==, fwyOxfHtLxNuSCFmghYiY0qMsgbpjg5UIo3xmJOLGu0=, 60fpnMdKCWeyKzxkdthn2Q==, 09101401454, 2017-08-08" />
     <row data-node="encrypt.t_user" values="38, 59/68izQEdnwNSueX1lPAA==, 伈乄, ilD/Tk7DUG4+EuznS1bNLg==, 2emhAeiXPr0kHbFrhYlM1dmzk4uJ7CCz4mB1va9Ya1M=, 60fpnMdKCWeyKzxkdthn2Q==, 09101401454, 2017-08-08" />
     <row data-node="encrypt.t_user" values="39, fn9LnNltUAOWO0F0iy0+Jw==, 伈妅, qe/WdUiSPP1RAsSSuejGJw==, zx2omwIbXHpEJeh8ta7HqQq2ZLhWcqfQ8/EQnIqMx+g=, 60fpnMdKCWeyKzxkdthn2Q==, 09101401454, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="100000, 10, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="110000, 11, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="120000, 12, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="130000, 13, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="140000, 14, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="150000, 15, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="160000, 16, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="170000, 17, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="180000, 18, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="190000, 19, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="200000, 20, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="210000, 21, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="220000, 22, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="230000, 23, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="240000, 24, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="250000, 25, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="260000, 26, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="270000, 27, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="280000, 28, init, 2017-08-08" />
-    <row data-node="encrypt.t_user_item" values="290000, 29, init, 2017-08-08" />
     <row data-node="encrypt.t_merchant" values="1, 86, tencent, k/LC4zsaZ+N6RgluwW+8BQ==, 95111110, hRoqv9Jw8ZFM6Zdt3PL1Aw==, 95011111110, 2017-08-08" />
     <row data-node="encrypt.t_merchant" values="2, 86, haier, RINN9TpLonpAT8bAdJmKbA==, 95111111, 9SCFkitrhrqandvIXg2U5Q==, 95011111111, 2017-08-08" />
     <row data-node="encrypt.t_merchant" values="3, 86, huawei, 3S6kkaTmrJNzCfuy07df4A==, 95111114, L1okJVzt5ixaGjd1fUmujA==, 95011111114, 2017-08-08" />
