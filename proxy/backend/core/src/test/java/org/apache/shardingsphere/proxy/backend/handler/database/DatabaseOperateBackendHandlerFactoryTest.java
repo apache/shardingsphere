@@ -147,7 +147,6 @@ class DatabaseOperateBackendHandlerFactoryTest {
     private Map<String, ShardingSphereDatabase> getDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("foo_db", database);
     }
     

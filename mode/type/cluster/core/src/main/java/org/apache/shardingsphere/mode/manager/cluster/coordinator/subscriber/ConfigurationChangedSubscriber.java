@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
@@ -99,9 +98,7 @@ public final class ConfigurationChangedSubscriber {
     private void disableDataSources() {
         Map<String, StorageNodeDataSource> storageNodes = getDisabledDataSources();
         for (Entry<String, ShardingSphereDatabase> entry : contextManager.getMetaDataContexts().getMetaData().getDatabases().entrySet()) {
-            for (ShardingSphereRule each : entry.getValue().getRuleMetaData().getRules()) {
-                each.getRuleIdentifiers().findIdentifier(StaticDataSourceRule.class).ifPresent(optional -> disableDataSources(entry.getKey(), optional, storageNodes));
-            }
+            entry.getValue().getRuleMetaData().getRuleIdentifiers(StaticDataSourceRule.class).forEach(each -> disableDataSources(entry.getKey(), each, storageNodes));
         }
     }
     

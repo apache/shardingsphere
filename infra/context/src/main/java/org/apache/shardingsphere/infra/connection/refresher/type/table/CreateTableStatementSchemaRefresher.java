@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
@@ -52,9 +51,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         boolean isSingleTable = TableRefreshUtils.isSingleTable(tableName, database);
         if (isSingleTable) {
-            for (ShardingSphereRule each : ruleMetaData.getRules()) {
-                each.getRuleIdentifiers().findIdentifier(MutableDataNodeRule.class).ifPresent(optional -> optional.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
-            }
+            ruleMetaData.getRuleIdentifiers(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
                 database.getProtocolType(), database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);

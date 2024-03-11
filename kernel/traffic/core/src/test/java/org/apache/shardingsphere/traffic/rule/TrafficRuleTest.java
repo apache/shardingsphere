@@ -91,20 +91,14 @@ class TrafficRuleTest {
         MySQLSelectStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         SQLStatementContext statementContext =
-                new SelectStatementContext(createShardingSphereMetaData(mockDatabase()), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+                new SelectStatementContext(createShardingSphereMetaData(), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setUseTraffic(includeComments);
         return new QueryContext(statementContext, "", Collections.emptyList(), hintValueContext);
     }
     
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return result;
-    }
-    
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
+    private ShardingSphereMetaData createShardingSphereMetaData() {
+        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)), mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
