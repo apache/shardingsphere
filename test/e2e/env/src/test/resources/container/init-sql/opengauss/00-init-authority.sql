@@ -18,3 +18,4 @@
 CREATE USER test_user WITH ENCRYPTED PASSWORD 'Test@123';
 ALTER ROLE test_user SYSADMIN;
 CREATE DATABASE test_user;
+ALTER USER test_user set session_timeout = 0;
