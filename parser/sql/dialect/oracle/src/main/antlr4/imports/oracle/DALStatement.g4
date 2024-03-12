@@ -48,8 +48,9 @@ systemVariable
     ;
 
 showOptions
-    : systemVariable
-    | ALL
+// TODO refactor systemVariable sytax according to https://docs.oracle.com/en/database/oracle/oracle-database/23/sqpug/SET-system-variable-summary.html#GUID-A6A5ADFF-4119-4BA4-A13E-BC8D29166FAE
+//    : systemVariable
+    : ALL
     | CON_ID
     | CON_NAME
     | EDITION
