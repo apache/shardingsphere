@@ -170,7 +170,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private void processLocalTransaction() throws SQLException {
         databaseConnectionManager.setAutoCommit(autoCommit);
         if (!autoCommit) {
-            getConnectionContext().getTransactionContext().setInTransaction(true);
+            getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
         }
     }
     
@@ -190,7 +190,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private void beginDistributedTransaction() throws SQLException {
         databaseConnectionManager.close();
         databaseConnectionManager.getConnectionTransaction().begin();
-        getConnectionContext().getTransactionContext().setInTransaction(true);
+        getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
     }
     
     /**
@@ -203,7 +203,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             if (TransactionType.isDistributedTransaction(databaseConnectionManager.getConnectionTransaction().getTransactionType())) {
                 beginDistributedTransaction();
             } else {
-                getConnectionContext().getTransactionContext().setInTransaction(true);
+                getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(databaseConnectionManager.getConnectionTransaction().getTransactionType()));
             }
         }
     }

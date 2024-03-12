@@ -65,7 +65,7 @@ public final class BackendTransactionManager implements TransactionManager {
     public void begin() {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
-            getTransactionContext().setInTransaction(true);
+            getTransactionContext().beginTransaction(String.valueOf(transactionType));
             connection.closeHandlers(true);
             connection.closeConnections(false);
         }
@@ -100,8 +100,8 @@ public final class BackendTransactionManager implements TransactionManager {
                 }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
-                connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
-                connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
+                connection.getConnectionSession().getConnectionContext().clearTransactionContext();
+                connection.getConnectionSession().getConnectionContext().clearCursorContext();
             }
         }
     }
@@ -124,8 +124,8 @@ public final class BackendTransactionManager implements TransactionManager {
                 }
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setExceptionOccur(false);
-                connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
-                connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
+                connection.getConnectionSession().getConnectionContext().clearTransactionContext();
+                connection.getConnectionSession().getConnectionContext().clearCursorContext();
             }
         }
     }
