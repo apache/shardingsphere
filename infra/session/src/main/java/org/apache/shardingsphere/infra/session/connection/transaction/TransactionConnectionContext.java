@@ -35,7 +35,7 @@ public final class TransactionConnectionContext implements AutoCloseable {
     
     @Setter
     private volatile String readWriteSplitReplicaRoute;
-
+    
     /**
      * Begin transaction.
      *
