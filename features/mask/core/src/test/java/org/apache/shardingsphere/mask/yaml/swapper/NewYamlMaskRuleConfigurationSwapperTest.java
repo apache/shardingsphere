@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlMaskRuleConfigurationSwapperTest {
     
-    private final NewYamlMaskRuleConfigurationSwapper swapper = new NewYamlMaskRuleConfigurationSwapper();
+    private final YamlMaskDataNodeRuleConfigurationSwapper swapper = new YamlMaskDataNodeRuleConfigurationSwapper();
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {

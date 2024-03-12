@@ -47,7 +47,6 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -262,7 +261,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             prepareCursorStatementContext(statementContext, connectionSession, cursorName);
         }
         if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
-            connectionSession.getConnectionContext().clearCursorConnectionContext();
+            connectionSession.getConnectionContext().clearCursorContext();
         }
     }
     
@@ -343,14 +342,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
-        Optional<DataNodeRule> dataNodeRule = Optional.empty();
-        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            dataNodeRule = each.getRuleIdentifiers().findIdentifier(DataNodeRule.class);
-            if (dataNodeRule.isPresent()) {
-                break;
-            }
-        }
-        return dataNodeRule.isPresent() && dataNodeRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
+        Collection<DataNodeRule> dataNodeRules = database.getRuleMetaData().getRuleIdentifiers(DataNodeRule.class);
+        return !dataNodeRules.isEmpty() && dataNodeRules.iterator().next().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     /**

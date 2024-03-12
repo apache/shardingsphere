@@ -87,7 +87,6 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
                 continue;
             }
             Collection<String> actualDataSources = new HashSet<>();
-            
             dataSourceMapperRule.get().getDataSourceMapper().values().forEach(actualDataSources::addAll);
             result.addAll(actualDataSources);
         }
@@ -148,8 +147,8 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     
     @Override
     public void operate(final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) {
-        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            each.getRuleIdentifiers().findIdentifier(StaticDataSourceRule.class).ifPresent(optional -> sqlStatement.getNames().forEach(optional::cleanStorageNodeDataSource));
+        for (StaticDataSourceRule each : database.getRuleMetaData().getRuleIdentifiers(StaticDataSourceRule.class)) {
+            sqlStatement.getNames().forEach(each::cleanStorageNodeDataSource);
         }
     }
     

@@ -100,7 +100,6 @@ class ShardingInsertStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.containsShardingTable(tableNames)).thenReturn(true);
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
                 sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }

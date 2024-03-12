@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
@@ -149,8 +148,8 @@ public final class LoadSingleTableExecutor implements DatabaseRuleCreateExecutor
     
     private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
         Collection<String> result = new LinkedHashSet<>();
-        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class).ifPresent(optional -> result.addAll(optional.getDataSourceMapper().keySet()));
+        for (DataSourceMapperRule each : database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class)) {
+            result.addAll(each.getDataSourceMapper().keySet());
         }
         return result;
     }

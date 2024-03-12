@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Delet
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -41,6 +42,7 @@ import java.util.List;
 /**
  * Test decoding plugin.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class TestDecodingPlugin implements DecodingPlugin {
     
@@ -48,14 +50,15 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
+        AbstractWALEvent result;
         String type = readEventType(data);
         if (type.startsWith("BEGIN")) {
-            return new BeginTXEvent(Long.parseLong(readNextSegment(data)));
+            result = new BeginTXEvent(Long.parseLong(readNextSegment(data)));
+        } else if (type.startsWith("COMMIT")) {
+            result = new CommitTXEvent(Long.parseLong(readNextSegment(data)), null);
+        } else {
+            result = "table".equals(type) ? readTableEvent(data) : new PlaceholderEvent();
         }
-        if (type.startsWith("COMMIT")) {
-            return new CommitTXEvent(Long.parseLong(readNextSegment(data)), null);
-        }
-        AbstractWALEvent result = "table".equals(type) ? readTableEvent(data) : new PlaceholderEvent();
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }

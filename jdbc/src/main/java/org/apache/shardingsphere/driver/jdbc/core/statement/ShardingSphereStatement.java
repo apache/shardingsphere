@@ -71,9 +71,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.raw.RawExecutionRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -225,7 +224,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private List<QueryResult> executeQuery0(final ExecutionContext executionContext) throws SQLException {
-        if (metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().anyMatch(RawExecutionRule.class::isInstance)) {
+        if (!metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRuleIdentifiers(RawExecutionRule.class).isEmpty()) {
             return executor.getRawExecutor().execute(
                     createRawExecutionContext(executionContext), executionContext.getQueryContext(), new RawSQLExecutorCallback()).stream().map(QueryResult.class::cast).collect(Collectors.toList());
         }
@@ -331,7 +330,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return executor.getTrafficExecutor().execute(executionUnit, trafficCallback);
         }
         executionContext = createExecutionContext(queryContext);
-        if (metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().anyMatch(RawExecutionRule.class::isInstance)) {
+        if (!metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRuleIdentifiers(RawExecutionRule.class).isEmpty()) {
             Collection<ExecuteResult> results = executor.getRawExecutor().execute(createRawExecutionContext(executionContext), executionContext.getQueryContext(), new RawSQLExecutorCallback());
             return accumulate(results);
         }
@@ -460,7 +459,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return null != resultSet;
             }
             executionContext = createExecutionContext(queryContext);
-            if (metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().anyMatch(RawExecutionRule.class::isInstance)) {
+            if (!metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRuleIdentifiers(RawExecutionRule.class).isEmpty()) {
                 Collection<ExecuteResult> results = executor.getRawExecutor().execute(createRawExecutionContext(executionContext), executionContext.getQueryContext(), new RawSQLExecutorCallback());
                 return results.iterator().next() instanceof QueryResult;
             }
@@ -667,9 +666,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        for (ShardingSphereRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
-            Optional<DataNodeRule> dataNodeRule = each.getRuleIdentifiers().findIdentifier(DataNodeRule.class);
-            if (dataNodeRule.isPresent() && dataNodeRule.get().isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames())) {
+        for (DataNodeRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRuleIdentifiers(DataNodeRule.class)) {
+            if (each.isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames())) {
                 return true;
             }
         }

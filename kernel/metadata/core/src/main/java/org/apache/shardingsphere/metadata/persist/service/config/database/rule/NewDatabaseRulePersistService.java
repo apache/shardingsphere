@@ -21,8 +21,8 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlDataNodeRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.metadata.persist.service.config.AbstractPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
@@ -53,8 +53,8 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -67,8 +67,8 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     @Override
     public Collection<MetaDataVersion> persistConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -100,8 +100,8 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     @Override
     public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
         Collection<MetaDataVersion> result = new LinkedList<>();
-        Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-        for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
+        Map<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> yamlConfigs = new YamlDataNodeRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
+        for (Entry<RuleConfiguration, YamlDataNodeRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
@@ -131,6 +131,6 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
         Collection<YamlDataNode> dataNodes = getDataNodes(NewDatabaseMetaDataNode.getRulesNode(databaseName));
-        return dataNodes.isEmpty() ? Collections.emptyList() : new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
+        return dataNodes.isEmpty() ? Collections.emptyList() : new YamlDataNodeRuleConfigurationSwapperEngine().swapToRuleConfigurations(dataNodes);
     }
 }

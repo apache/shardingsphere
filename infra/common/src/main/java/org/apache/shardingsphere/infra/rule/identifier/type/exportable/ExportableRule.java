@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type.exportable;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 
 import java.util.Map;
 
 /**
  * Exportable rule.
  */
-public interface ExportableRule extends ShardingSphereRule {
+public interface ExportableRule extends RuleIdentifier {
     
     /**
      * Get export data.

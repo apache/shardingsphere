@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
@@ -67,7 +68,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTables) {
         Collection<DataNode> result = new HashSet<>();
         for (QualifiedTable each : singleTables) {
-            rule.findTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
+            rule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).findTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
         }
         return result;
     }

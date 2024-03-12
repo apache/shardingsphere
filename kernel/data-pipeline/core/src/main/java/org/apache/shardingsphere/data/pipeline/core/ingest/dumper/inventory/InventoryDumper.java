@@ -44,6 +44,7 @@ import org.apache.shardingsphere.data.pipeline.core.query.JDBCStreamQueryBuilder
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineInventoryDumpSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -65,6 +66,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Inventory dumper.
  */
+@HighFrequencyInvocation
 @Slf4j
 public final class InventoryDumper extends AbstractPipelineLifecycleRunnable implements Dumper {
     

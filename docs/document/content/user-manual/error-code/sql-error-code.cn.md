@@ -125,7 +125,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`.  |
 | 0A000     | 18054       | Unsupported mode type \`%s\`.                                                      |
 | HY000     | 18080       | Can not find pipeline job \`%s\`.                                                  |
-| HY000     | 18081       | Job has already started.                                                           |
 | HY000     | 18082       | Sharding count of job \`%s\` is 0.                                                 |
 | HY000     | 18083       | Can not split by range for table \`%s\`, reason is: %s                             |
 | HY000     | 18084       | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s                 |
@@ -162,6 +161,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\`.     |
 | 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used.  |
 | 44000     | 19153       | Duplicate %s algorithms \`%s\` in database \`%s\`.          |
+| 44000     | 19154       | Invalid mode, error message is: \`%s\`.                     |
+| 44000     | 19155       | Plugin class \`%s\` not found..                             |
 
 ## 功能异常
 

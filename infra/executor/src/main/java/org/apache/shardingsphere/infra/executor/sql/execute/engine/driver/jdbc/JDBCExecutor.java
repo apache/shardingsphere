@@ -35,7 +35,6 @@ public final class JDBCExecutor {
     
     private final ExecutorEngine executorEngine;
     
-    // TODO add transaction type to ConnectionContext
     private final ConnectionContext connectionContext;
     
     /**
@@ -64,7 +63,7 @@ public final class JDBCExecutor {
     public <T> List<T> execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                final JDBCExecutorCallback<T> firstCallback, final JDBCExecutorCallback<T> callback) throws SQLException {
         try {
-            return executorEngine.execute(executionGroupContext, firstCallback, callback, connectionContext.getTransactionContext().isInTransaction());
+            return executorEngine.execute(executionGroupContext, firstCallback, callback, connectionContext.getTransactionContext().isInXATransaction());
         } catch (final SQLException ex) {
             SQLExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

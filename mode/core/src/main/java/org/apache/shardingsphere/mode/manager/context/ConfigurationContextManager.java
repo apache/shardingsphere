@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
@@ -306,9 +306,8 @@ public final class ConfigurationContextManager {
     
     @SuppressWarnings("rawtypes")
     private Collection<ResourceHeldRule> getStaleResourceHeldRules(final String databaseName) {
-        Collection<ResourceHeldRule> result = new LinkedList<>();
-        result.addAll(metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class));
-        result.addAll(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class));
+        Collection<ResourceHeldRule> result = metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getRuleIdentifiers(ResourceHeldRule.class);
+        result.addAll(metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRuleIdentifiers(ResourceHeldRule.class));
         return result;
     }
     
@@ -419,13 +418,11 @@ public final class ConfigurationContextManager {
      *
      * @param ruleConfigs global rule configuration
      */
-    @SuppressWarnings("rawtypes")
     public synchronized void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
         if (ruleConfigs.isEmpty()) {
             return;
         }
-        Collection<ResourceHeldRule> staleResourceHeldRules = metaDataContexts.get().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class);
-        staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
+        metaDataContexts.get().getMetaData().getGlobalRuleMetaData().getRuleIdentifiers(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
         RuleMetaData toBeChangedGlobalRuleMetaData = new RuleMetaData(
                 GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getProps()));
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(metaDataContexts.get().getMetaData().getDatabases(), metaDataContexts.get().getMetaData().getGlobalResourceMetaData(),

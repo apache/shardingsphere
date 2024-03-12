@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
@@ -46,7 +47,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -57,7 +57,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SimpleTableSegmentBinder {
     
-    private static final Collection<String> SYSTEM_CATALOG_TABLES = new HashSet<>(4, 1F);
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new CaseInsensitiveSet<>(4, 1F);
     
     private static final String PG_CATALOG = "pg_catalog";
     
@@ -110,7 +110,7 @@ public final class SimpleTableSegmentBinder {
         // TODO getSchemaName according to search path
         DatabaseType databaseType = statementBinderContext.getDatabaseType();
         if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
-                && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue().toLowerCase())) {
+                && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue())) {
             return new IdentifierValue(PG_CATALOG);
         }
         return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(statementBinderContext.getDefaultDatabaseName()));
@@ -140,6 +140,9 @@ public final class SimpleTableSegmentBinder {
             return;
         }
         if (SystemSchemaManager.isSystemTable(schemaName, tableName)) {
+            return;
+        }
+        if (statementBinderContext.getExternalTableBinderContexts().containsKey(tableName)) {
             return;
         }
         ShardingSpherePreconditions.checkState(statementBinderContext.getMetaData().containsDatabase(databaseName)

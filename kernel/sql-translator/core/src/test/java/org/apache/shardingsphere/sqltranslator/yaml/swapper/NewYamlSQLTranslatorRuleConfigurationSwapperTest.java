@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 // TODO Rename YamlSQLTranslatorRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
 class NewYamlSQLTranslatorRuleConfigurationSwapperTest {
     
-    private final NewYamlSQLTranslatorRuleConfigurationSwapper swapper = new NewYamlSQLTranslatorRuleConfigurationSwapper();
+    private final YamlSQLTranslatorDataNodeRuleConfigurationSwapper swapper = new YamlSQLTranslatorDataNodeRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodes() {

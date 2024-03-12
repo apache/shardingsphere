@@ -85,7 +85,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
     private ResponseHeader begin() throws SQLException {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
         ResponseHeader result = backendHandler.execute();
-        connectionSession.getConnectionContext().getTransactionContext().setInTransaction(true);
+        connectionSession.getConnectionContext().getTransactionContext().beginTransaction(String.valueOf(connectionSession.getTransactionStatus().getTransactionType()));
         return result;
     }
     
@@ -93,8 +93,8 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
         try {
             return backendHandler.execute();
         } finally {
-            connectionSession.getConnectionContext().clearTransactionConnectionContext();
-            connectionSession.getConnectionContext().clearCursorConnectionContext();
+            connectionSession.getConnectionContext().clearTransactionContext();
+            connectionSession.getConnectionContext().clearCursorContext();
         }
     }
 }

@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 // TODO Rename YamlGlobalClockRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
 class NewYamlGlobalClockRuleConfigurationSwapperTest {
     
-    private final NewYamlGlobalClockRuleConfigurationSwapper swapper = new NewYamlGlobalClockRuleConfigurationSwapper();
+    private final YamlGlobalClockDataNodeRuleConfigurationSwapper swapper = new YamlGlobalClockDataNodeRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodes() {

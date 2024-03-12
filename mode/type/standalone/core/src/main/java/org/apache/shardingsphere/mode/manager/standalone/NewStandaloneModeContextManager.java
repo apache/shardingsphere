@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
-import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.metadata.MetaDataHeldRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
@@ -109,7 +109,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     private void addDataNode(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName, final Collection<String> tobeAddedTableNames) {
         tobeAddedTableNames.forEach(each -> {
             if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(each, database)) {
-                database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, each));
+                database.getRuleMetaData().getRuleIdentifiers(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, each));
             }
         });
     }
@@ -123,7 +123,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     private void addTablesToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final Map<String, ShardingSphereTable> toBeAddedTables) {
         for (Entry<String, ShardingSphereTable> entry : toBeAddedTables.entrySet()) {
             if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(entry.getKey(), database)) {
-                database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
+                database.getRuleMetaData().getRuleIdentifiers(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
             }
             database.getSchema(schemaName).putTable(entry.getKey(), entry.getValue());
         }
@@ -133,7 +133,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
                                     final Map<String, ShardingSphereTable> toBeAddedTables, final Map<String, ShardingSphereView> toBeAddedViews) {
         for (Entry<String, ShardingSphereView> entry : toBeAddedViews.entrySet()) {
             if (!Strings.isNullOrEmpty(logicDataSourceName) && TableRefreshUtils.isSingleTable(entry.getKey(), database)) {
-                database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
+                database.getRuleMetaData().getRuleIdentifiers(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceName, schemaName, entry.getKey()));
             }
             database.getSchema(schemaName).putTable(entry.getKey(), toBeAddedTables.get(entry.getKey().toLowerCase()));
             database.getSchema(schemaName).putView(entry.getKey(), entry.getValue());
@@ -143,7 +143,8 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     private void removeSchemaMetaData(final ShardingSphereDatabase database, final String schemaName) {
         ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables(), database.getSchema(schemaName).getViews());
         database.dropSchema(schemaName);
-        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), Collections.singletonList(schemaName), schema.getAllTableNames());
+        Collection<MutableDataNodeRule> mutableDataNodeRules = database.getRuleMetaData().getRuleIdentifiers(MutableDataNodeRule.class);
+        removeDataNode(mutableDataNodeRules, Collections.singletonList(schemaName), schema.getAllTableNames());
     }
     
     private void removeDataNode(final Collection<MutableDataNodeRule> rules, final Collection<String> schemaNames, final Collection<String> tobeRemovedTables) {
@@ -160,12 +161,14 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     }
     
     private void removeTablesToDataNode(final ShardingSphereDatabase database, final String schemaName, final Collection<String> toBeDroppedTables) {
-        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), schemaName, toBeDroppedTables);
+        Collection<MutableDataNodeRule> mutableDataNodeRules = database.getRuleMetaData().getRuleIdentifiers(MutableDataNodeRule.class);
+        removeDataNode(mutableDataNodeRules, schemaName, toBeDroppedTables);
         toBeDroppedTables.forEach(each -> database.getSchema(schemaName).removeTable(each));
     }
     
     private void removeViewsToDataNode(final ShardingSphereDatabase database, final String schemaName, final Collection<String> toBeDroppedTables, final Collection<String> toBeDroppedViews) {
-        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), schemaName, toBeDroppedViews);
+        Collection<MutableDataNodeRule> mutableDataNodeRules = database.getRuleMetaData().getRuleIdentifiers(MutableDataNodeRule.class);
+        removeDataNode(mutableDataNodeRules, schemaName, toBeDroppedViews);
         ShardingSphereSchema schema = database.getSchema(schemaName);
         toBeDroppedTables.forEach(schema::removeTable);
         toBeDroppedViews.forEach(schema::removeView);
@@ -182,7 +185,8 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
             Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
         }
-        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), tobeRemovedSchemas, tobeRemovedTables);
+        Collection<MutableDataNodeRule> mutableDataNodeRules = database.getRuleMetaData().getRuleIdentifiers(MutableDataNodeRule.class);
+        removeDataNode(mutableDataNodeRules, tobeRemovedSchemas, tobeRemovedTables);
         refreshMetaDataHeldRule(database);
     }
     
@@ -204,7 +208,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     }
     
     private void refreshMetaDataHeldRule(final ShardingSphereDatabase database) {
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(MetaDataHeldRule.class).forEach(each -> each.alterDatabase(database));
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRuleIdentifiers(MetaDataHeldRule.class).forEach(each -> each.alterDatabase(database));
     }
     
     @Override
@@ -212,7 +216,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
         SwitchingResource switchingResource =
                 new NewResourceSwitchManager().registerStorageUnit(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisteredProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getConfigurationContextManager().createChangedDatabases(databaseName, false, switchingResource, null));
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class)
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRuleIdentifiers(ResourceHeldRule.class)
                 .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
         contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchemas()
                 .forEach((schemaName, schema) -> contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
@@ -227,7 +231,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
         SwitchingResource switchingResource =
                 new NewResourceSwitchManager().alterStorageUnit(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getConfigurationContextManager().createChangedDatabases(databaseName, true, switchingResource, null));
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class)
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRuleIdentifiers(ResourceHeldRule.class)
                 .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
         contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(
                 contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), toBeUpdatedProps);

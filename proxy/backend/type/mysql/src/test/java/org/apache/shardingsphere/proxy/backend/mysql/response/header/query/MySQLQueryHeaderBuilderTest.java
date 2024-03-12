@@ -24,11 +24,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -83,9 +80,7 @@ class MySQLQueryHeaderBuilderTest {
         when(database.getSchemas()).thenReturn(Collections.emptyMap());
         DataNodeRule dataNodeRule = mock(DataNodeRule.class);
         when(dataNodeRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
+        when(database.getRuleMetaData().getRuleIdentifiers(DataNodeRule.class)).thenReturn(Collections.singleton(dataNodeRule));
         QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
         QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, database, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
         assertFalse(actual.isPrimaryKey());
@@ -108,11 +103,9 @@ class MySQLQueryHeaderBuilderTest {
         when(schema.getTable("t_logic_order")).thenReturn(
                 new ShardingSphereTable("t_logic_order", Collections.singleton(column), Collections.singleton(new ShardingSphereIndex("order_id")), Collections.emptyList()));
         when(result.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        ShardingRule shardingRule = mock(ShardingRule.class);
         DataNodeRule dataNodeRule = mock(DataNodeRule.class);
         when(dataNodeRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
-        when(shardingRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
-        when(result.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
+        when(result.getRuleMetaData().getRuleIdentifiers(DataNodeRule.class)).thenReturn(Collections.singleton(dataNodeRule));
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         return result;
     }

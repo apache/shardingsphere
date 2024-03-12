@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 
 /**
  * Readwrite-splitting import rule configuration provider.
@@ -75,9 +73,8 @@ public final class ReadwriteSplittingImportRuleConfigurationProvider implements 
     
     private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
         Collection<String> result = new HashSet<>();
-        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            Optional<DataSourceMapperRule> dataSourceMapperRule = each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class);
-            dataSourceMapperRule.ifPresent(optional -> result.addAll(optional.getDataSourceMapper().keySet()));
+        for (DataSourceMapperRule each : database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class)) {
+            result.addAll(each.getDataSourceMapper().keySet());
         }
         return result;
     }

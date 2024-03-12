@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.h2.type.H2DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -293,7 +294,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     public static SingleRule createSingleRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         SingleRule result = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, new H2DatabaseType(), dataSourceMap, rules);
-        result.put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
+        result.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
         return result;
     }
     

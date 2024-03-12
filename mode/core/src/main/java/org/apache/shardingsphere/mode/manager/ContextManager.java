@@ -33,12 +33,11 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
@@ -218,7 +217,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private ShardingSphereSchema loadSchema(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName) throws SQLException {
-        database.reloadRules(MutableDataNodeRule.class);
+        database.reloadRules();
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
                 Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getStorageType()),
                 Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getDataSource()),

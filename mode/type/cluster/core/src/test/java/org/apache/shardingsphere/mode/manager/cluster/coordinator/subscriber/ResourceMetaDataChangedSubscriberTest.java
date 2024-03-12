@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.event.schema.TableMetaDataChangedEvent;
@@ -105,7 +104,6 @@ class ResourceMetaDataChangedSubscriberTest {
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        when(database.getRuleMetaData().findRules(ResourceHeldRule.class)).thenReturn(Collections.emptyList());
         return Collections.singletonMap("db", database);
     }
     

@@ -30,9 +30,6 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -46,12 +43,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,7 +55,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ImportDatabaseConfigurationExecutorTest {
     
     private ImportDatabaseConfigurationExecutor executor;
@@ -146,9 +139,6 @@ class ImportDatabaseConfigurationExecutorTest {
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(mock(DataSourceMapperRule.class)));
-        when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>(Collections.singleton(rule)));
         when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(databaseName, database));
         when(result.getMetaDataContexts().getMetaData().getDatabase(databaseName)).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(createProperties()));

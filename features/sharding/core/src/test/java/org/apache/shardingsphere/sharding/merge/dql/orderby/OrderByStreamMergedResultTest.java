@@ -74,19 +74,11 @@ class OrderByStreamMergedResultTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        ShardingSphereDatabase database = mockDatabase();
-        selectStatementContext = new SelectStatementContext(
-                createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return result;
-    }
-    
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
+    private ShardingSphereMetaData createShardingSphereMetaData() {
+        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)), mock(ResourceMetaData.class),
                 mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
