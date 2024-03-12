@@ -33,11 +33,11 @@ import java.util.stream.Collectors;
  * Single import rule configuration provider.
  */
 public final class SingleImportRuleConfigurationProvider implements ImportRuleConfigurationProvider {
-
+    
     @Override
     public void check(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
     }
-
+    
     @Override
     public DatabaseRule build(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         return new SingleRule((SingleRuleConfiguration) ruleConfig, database.getName(), database.getProtocolType(),
@@ -45,7 +45,7 @@ public final class SingleImportRuleConfigurationProvider implements ImportRuleCo
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 database.getRuleMetaData().getRules());
     }
-
+    
     @Override
     public Class<? extends RuleConfiguration> getType() {
         return SingleRuleConfiguration.class;
