@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NewYamlShardingRuleConfigurationSwapperTest {
     
-    private final NewYamlShardingRuleConfigurationSwapper swapper = new NewYamlShardingRuleConfigurationSwapper();
+    private final YamlShardingDataNodeRuleConfigurationSwapper swapper = new YamlShardingDataNodeRuleConfigurationSwapper();
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {

@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlReadwriteSplittingRuleConfigurationSwapperTest {
     
-    private final NewYamlReadwriteSplittingRuleConfigurationSwapper swapper = new NewYamlReadwriteSplittingRuleConfigurationSwapper();
+    private final YamlReadwriteSplittingDataNodeRuleConfigurationSwapper swapper = new YamlReadwriteSplittingDataNodeRuleConfigurationSwapper();
     
     @Test
     void assertSwapToDataNodesLoadBalancersEmpty() {

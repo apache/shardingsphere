@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewYamlEncryptRuleConfigurationSwapperTest {
     
-    private final NewYamlEncryptRuleConfigurationSwapper swapper = new NewYamlEncryptRuleConfigurationSwapper();
+    private final YamlEncryptDataNodeRuleConfigurationSwapper swapper = new YamlEncryptDataNodeRuleConfigurationSwapper();
     
     @Test
     void assertSwapEmptyConfigToDataNodes() {

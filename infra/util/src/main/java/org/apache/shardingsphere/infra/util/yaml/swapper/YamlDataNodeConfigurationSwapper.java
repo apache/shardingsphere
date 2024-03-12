@@ -15,21 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.yaml.swapper;
+package org.apache.shardingsphere.infra.util.yaml.swapper;
 
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Collection;
+import java.util.Optional;
 
-// TODO Rename YamlTrafficRuleConfigurationSwapperTest when metadata structure adjustment completed. #25485
-class NewYamlTrafficRuleConfigurationSwapperTest {
+/**
+ * TODO Rename YamlConfigurationSwapper when metadata structure adjustment completed. #25485
+ * YAML configuration swapper.
+ *
+ * @param <T> type of swapped object
+ */
+public interface YamlDataNodeConfigurationSwapper<T> {
     
-    private final YamlTrafficDataNodeRuleConfigurationSwapper swapper = new YamlTrafficDataNodeRuleConfigurationSwapper();
+    /**
+    * Swap to YAML data node.
+    *
+    * @param data data to be swapped
+    * @return YAML data nodes
+    */
+    Collection<YamlDataNode> swapToDataNodes(T data);
     
-    @Test
-    void assertSwapToDataNodes() {
-        assertThat(swapper.swapToDataNodes(new TrafficRuleConfiguration()).iterator().next().getKey(), is("traffic"));
-    }
+    /**
+     * Swap from data node to object.
+     *
+     * @param dataNodes data nodes
+     * @return swapped object
+     */
+    Optional<T> swapToObject(Collection<YamlDataNode> dataNodes);
 }
