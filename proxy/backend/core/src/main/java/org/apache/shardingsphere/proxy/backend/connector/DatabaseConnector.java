@@ -261,7 +261,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             prepareCursorStatementContext(statementContext, connectionSession, cursorName);
         }
         if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
-            connectionSession.getConnectionContext().clearCursorConnectionContext();
+            connectionSession.getConnectionContext().clearCursorContext();
         }
     }
     

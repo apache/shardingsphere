@@ -24,14 +24,26 @@ import lombok.Setter;
  * Transaction connection context.
  */
 @Getter
-@Setter
 public final class TransactionConnectionContext implements AutoCloseable {
+    
+    private volatile String transactionType;
     
     private volatile boolean inTransaction;
     
+    @Setter
     private volatile long beginMills;
     
+    @Setter
     private volatile String readWriteSplitReplicaRoute;
+    
+    public void beginTransaction(final String transactionType) {
+        this.transactionType = transactionType;
+        inTransaction = true;
+    }
+    
+    public boolean isInXATransaction() {
+        return inTransaction && "XA".equals(transactionType);
+    }
     
     @Override
     public void close() {
