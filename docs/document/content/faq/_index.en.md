@@ -5,22 +5,6 @@ weight = 8
 chapter = true
 +++
 
-## MODE
-
-### [MODE] What is the difference between standalone mode `Standalone` and `Compatible_Standalone`?
-
-Answer:
-
-The metadata structure was adjusted in version 5.4.0, `Standalone` represents the metadata structure of the new version,
-and `Compatible_Standalone` represents the metadata structure of versions before 5.4.0.
-
-### [MODE] What is the difference between cluster mode `Cluster` and `Compatible_Cluster`?
-
-Answer:
-
-The metadata structure was adjusted in version 5.4.0, `Cluster` represents the metadata structure of the new version, 
-and `Compatible_Cluster` represents the metadata structure of versions before 5.4.0.
-
 ## JDBC
 
 ### [JDBC] Found a JtaTransactionManager in spring boot project when integrating with XAtransaction.
@@ -190,6 +174,51 @@ Answer:
 Yes. But there is restriction to the use of native auto-increment keys, which means they cannot be used as sharding keys at the same time.
 Since ShardingSphere does not have the database table structure and native auto-increment key is not included in original SQL, it cannot parse that field to the sharding field. If the auto-increment key is not sharding key, it can be returned normally and is needless to be cared. But if the auto-increment key is also used as sharding key, ShardingSphere cannot parse its sharding value, which will make SQL routed to multiple tables and influence the rightness of the application.
 The premise for returning native auto-increment key is that INSERT SQL is eventually routed to one table. Therefore, auto-increment key will return zero when INSERT SQL returns multiple tables.
+
+## Single table
+
+### [Single table] Table or view `%s` does not exist. How to solve the exception?
+
+Answer:
+
+In versions before ShardingSphere 5.4.0, single tables used automatic loading. This way has many problems in actual use:
+
+1. After a large number of data sources are registered in the logical database, too many automatically loaded single tables will cause ShardingSphere-Proxy/JDBC to start slowly;
+2. When users use DistSQL, they will operate in the order of: **Register storage unit -> Create sharding, encryption, read-write separation and other rules -> Create table**. Due to the existence of the single-table automatic loading mechanism, the database will be accessed multiple times for loading during the operation, and when multiple rules are mixed and used, the single-table metadata will be confused;
+3. Automatically load single tables from all data sources. Users cannot exclude single tables or abandoned tables that they do not want to be managed by ShardingSphere.
+
+In order to solve the above problems, starting from ShardingSphere 5.4.0 version, the loading method of single tables has been adjusted. Users need to manually load a single table in the database through YAML configuration or DistSQL.
+It should be noted that when using the DistSQL LOAD statement to load a single table, you need to ensure that all data sources are registered. Therefore, after the rules are created, the single table LOAD operation is performed based on the logical data source (if there is no logical data source, use the physical data source).
+
+* YAML loading single table example:
+
+```yaml
+rules:
+   - !SINGLE
+     tables:
+       - "*.*"
+   - !READWRITE_SPLITTING
+     dataSources:
+       readwrite_ds:
+         writeDataSourceName: write_ds
+         readDataSourceNames:
+           - read_ds_0
+           - read_ds_1
+         loadBalancerName: random
+     loadBalancers:
+       random:
+         type: RANDOM
+```
+
+For more YAML configuration of loading single table, please refer to [Single](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/single/).
+
+* DistSQL loading single table example:
+
+```sql
+LOAD SINGLE TABLE *.*;
+```
+
+For more LOAD single table DistSQL, please refer to [Load Single Table](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/).
 
 ## DistSQL
 

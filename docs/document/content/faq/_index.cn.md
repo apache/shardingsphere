@@ -5,18 +5,6 @@ weight = 8
 chapter = true
 +++
 
-## MODE
-
-### [MODE] 单机模式 `Standalone` 和 `Compatible_Standalone` 区别?
-
-在 5.4.0 版本中调整了元数据存储结构，`Standalone` 代表新版本的元数据结构，`Compatible_Standalone` 则代表 5.4.0 之前版本的元数据结构。
-
-### [MODE] 集群模式 `Cluster` 和 `Compatible_Cluster` 区别?
-
-回答:
-
-在 5.4.0 版本中调整了元数据存储结构，`Cluster` 代表新版本的元数据结构，`Compatible_Cluster` 则代表 5.4.0 之前版本的元数据结构。
-
 ## JDBC
 
 ### [JDBC] 引入 `shardingsphere-transaction-xa-core` 后，如何避免 spring-boot 自动加载默认的 JtaTransactionManager？
@@ -24,7 +12,9 @@ chapter = true
 回答:
 
 1. 需要在 spring-boot 的引导类中添加 `@SpringBootApplication(exclude = JtaAutoConfiguration.class)`。
+
 ### [JDBC] Oracle 表名、字段名配置大小写在加载 `metadata` 元数据时结果不正确？
+
 回答：
 需要注意，Oracle 表名和字段名，默认元数据都是大写，除非建表语句中带双引号，如 `CREATE TABLE "TableName"("Id" number)` 元数据为双引号中内容，可参考以下SQL查看元数据的具体情况：
 ```sql
@@ -181,6 +171,51 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 是的，可以支持。但原生自增主键有使用限制，即不能将原生自增主键同时作为分片键使用。
 由于 ShardingSphere 并不知晓数据库的表结构，而原生自增主键是不包含在原始 SQL 中内的，因此 ShardingSphere 无法将该字段解析为分片字段。如自增主键非分片键，则无需关注，可正常返回；若自增主键同时作为分片键使用，ShardingSphere 无法解析其分片值，导致 SQL 路由至多张表，从而影响应用的正确性。
 而原生自增主键返回的前提条件是 INSERT SQL 必须最终路由至一张表，因此，面对返回多表的 INSERT SQL，自增主键则会返回零。
+
+## 单表
+
+### [单表] Table or view `%s` does not exist. 异常如何解决？
+
+回答：
+
+在 ShardingSphere 5.4.0 之前的版本，单表采用了自动加载的方式，这种方式在实际使用中存在诸多问题：
+
+1. 逻辑库中注册大量数据源后，自动加载的单表数量过多会导致 ShardingSphere-Proxy/JDBC 启动变慢；
+2. 用户通过 DistSQL 方式使用时，通过会按照：**注册存储单元 -> 创建分片、加密、读写分离等规则 -> 创建表**的顺序进行操作。由于单表自动加载机制的存在，会导致操作过程中多次访问数据库进行加载，并且在多个规则混合使用时会导致单表元数据的错乱；
+3. 自动加载全部数据源中的单表，用户无法排除不想被 ShardingSphere 管理的单表或废弃表。
+
+为了解决以上问题，从 ShardingSphere 5.4.0 版本开始，调整了单表的加载方式，用户需要通过 YAML 配置或者 DistSQL 的方式手动加载数据库中的单表。
+需要注意的是，使用 DistSQL LOAD 语句加载单表时，需要保证所有数据源完成注册，所以规则创建完成后，再基于逻辑数据源（不存在逻辑数据源则使用物理数据源）进行单表 LOAD 操作。
+
+* YAML 加载单表示例：
+
+```yaml
+rules:
+  - !SINGLE
+    tables:
+      - "*.*"
+  - !READWRITE_SPLITTING
+    dataSources:
+      readwrite_ds:
+        writeDataSourceName: write_ds
+        readDataSourceNames:
+          - read_ds_0
+          - read_ds_1
+        loadBalancerName: random
+    loadBalancers:
+      random:
+        type: RANDOM
+```
+
+更多加载单表 YAML 配置请参考[单表](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/single/)。
+
+* DistSQL 加载单表示例：
+
+```sql
+LOAD SINGLE TABLE *.*;
+```
+
+更多 LOAD 单表 DistSQL 请参考[单表加载](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/)。
 
 ## DistSQL
 
