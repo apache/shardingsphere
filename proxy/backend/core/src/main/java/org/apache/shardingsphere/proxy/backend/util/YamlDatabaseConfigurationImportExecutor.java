@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.engine.update.ral.rule.spi.database.ImportRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
@@ -141,9 +139,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void addRule(final Collection<RuleConfiguration> ruleConfigs, final RuleConfiguration ruleConfig, final ShardingSphereDatabase database) {
-        if (ruleConfig instanceof BroadcastRuleConfiguration) {
-            addBroadcastRuleConfiguration((BroadcastRuleConfiguration) ruleConfig, ruleConfigs, database);
-        } else if (ruleConfig instanceof SingleRuleConfiguration) {
+        if (ruleConfig instanceof SingleRuleConfiguration) {
             addSingleRuleConfiguration((SingleRuleConfiguration) ruleConfig, ruleConfigs, database);
         } else {
             ImportRuleConfigurationProvider provider = TypedSPILoader.getService(ImportRuleConfigurationProvider.class, ruleConfig.getClass());
@@ -162,14 +158,6 @@ public final class YamlDatabaseConfigurationImportExecutor {
             result.put(swapper.getOrder(), (RuleConfiguration) swapper.swapToObject(each));
         }
         return result;
-    }
-    
-    private void addBroadcastRuleConfiguration(final BroadcastRuleConfiguration ruleConfig, final Collection<RuleConfiguration> ruleConfigs, final ShardingSphereDatabase database) {
-        ruleConfigs.add(ruleConfig);
-        database.getRuleMetaData().getRules().add(new BroadcastRule(ruleConfig, database.getName(),
-                database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                database.getRuleMetaData().getRules()));
     }
     
     private void addSingleRuleConfiguration(final SingleRuleConfiguration ruleConfig, final Collection<RuleConfiguration> ruleConfigs, final ShardingSphereDatabase database) {
