@@ -39,6 +39,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 /**
  * State changed subscriber.
  */
+@SuppressWarnings("unused")
 public final class StateChangedSubscriber {
     
     private final RegistryCenter registryCenter;

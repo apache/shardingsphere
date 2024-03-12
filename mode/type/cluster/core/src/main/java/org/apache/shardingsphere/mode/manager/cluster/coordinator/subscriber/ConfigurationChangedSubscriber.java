@@ -18,111 +18,118 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.event.config.AlterDatabaseRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.DropDatabaseRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.global.AlterGlobalRuleConfigurationEvent;
+import org.apache.shardingsphere.mode.event.config.global.AlterPropertiesEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.AlterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.RegisterStorageUnitEvent;
+import org.apache.shardingsphere.mode.event.datasource.unit.UnregisterStorageUnitEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceUnitsChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Configuration changed subscriber.
  */
+@SuppressWarnings("unused")
 public final class ConfigurationChangedSubscriber {
-    
-    private final RegistryCenter registryCenter;
     
     private final ContextManager contextManager;
     
-    public ConfigurationChangedSubscriber(final RegistryCenter registryCenter, final ContextManager contextManager) {
-        this.registryCenter = registryCenter;
+    public ConfigurationChangedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
-        disableDataSources();
     }
     
     /**
-     * Renew data source units configuration.
+     * Renew for register storage unit.
      *
-     * @param event data source changed event.
+     * @param event register storage unit event
      */
     @Subscribe
-    public synchronized void renew(final DataSourceUnitsChangedEvent event) {
-        contextManager.getConfigurationContextManager().alterDataSourceUnitsConfiguration(event.getDatabaseName(), event.getDataSourcePoolPropertiesMap());
-        disableDataSources();
-    }
-    
-    /**
-     * Renew rule configurations.
-     *
-     * @param event rule configurations changed event
-     */
-    @Subscribe
-    public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        contextManager.getConfigurationContextManager().alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigs());
-        disableDataSources();
-    }
-    
-    /**
-     * Renew global rule configurations.
-     *
-     * @param event global rule configurations changed event
-     */
-    @Subscribe
-    public synchronized void renew(final GlobalRuleConfigurationsChangedEvent event) {
-        contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(event.getRuleConfigs());
-        disableDataSources();
-    }
-    
-    /**
-     * Renew properties.
-     *
-     * @param event properties changed event
-     */
-    @Subscribe
-    public synchronized void renew(final PropertiesChangedEvent event) {
-        contextManager.getConfigurationContextManager().alterProperties(event.getProps());
-    }
-    
-    private void disableDataSources() {
-        Map<String, StorageNodeDataSource> storageNodes = getDisabledDataSources();
-        for (Entry<String, ShardingSphereDatabase> entry : contextManager.getMetaDataContexts().getMetaData().getDatabases().entrySet()) {
-            entry.getValue().getRuleMetaData().getRuleIdentifiers(StaticDataSourceRule.class).forEach(each -> disableDataSources(entry.getKey(), each, storageNodes));
+    public void renew(final RegisterStorageUnitEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+            return;
         }
+        contextManager.getConfigurationContextManager().registerStorageUnit(event.getDatabaseName(),
+                contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
-    private void disableDataSources(final String databaseName, final StaticDataSourceRule staticDataSourceRule, final Map<String, StorageNodeDataSource> storageNodes) {
-        for (Entry<String, StorageNodeDataSource> entry : storageNodes.entrySet()) {
-            QualifiedDatabase database = new QualifiedDatabase(entry.getKey());
-            if (!database.getDatabaseName().equals(databaseName)) {
-                continue;
-            }
-            disableDataSources(entry.getValue(), staticDataSourceRule, database);
+    /**
+     * Renew for alter storage unit.
+     *
+     * @param event register storage unit event
+     */
+    @Subscribe
+    public void renew(final AlterStorageUnitEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+            return;
         }
+        contextManager.getConfigurationContextManager().alterStorageUnit(
+                event.getDatabaseName(), contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(event.getDatabaseName(), event.getStorageUnitName()));
     }
     
-    private void disableDataSources(final StorageNodeDataSource storageNodeDataSource, final StaticDataSourceRule staticDataSourceRule, final QualifiedDatabase database) {
-        for (Entry<String, Collection<String>> entry : staticDataSourceRule.getDataSourceMapper().entrySet()) {
-            if (!database.getGroupName().equals(entry.getKey())) {
-                continue;
-            }
-            entry.getValue().forEach(each -> staticDataSourceRule.updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
+    /**
+     * Renew for unregister storage unit.
+     *
+     * @param event register storage unit event
+     */
+    @Subscribe
+    public void renew(final UnregisterStorageUnitEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
         }
+        contextManager.getConfigurationContextManager().unregisterStorageUnit(event.getDatabaseName(), event.getStorageUnitName());
     }
     
-    private Map<String, StorageNodeDataSource> getDisabledDataSources() {
-        return registryCenter.getStorageNodeStatusService().loadStorageNodes().entrySet()
-                .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    /**
+     * Renew for database rule configuration.
+     *
+     * @param event database rule changed event
+     */
+    @Subscribe
+    public synchronized void renew(final AlterDatabaseRuleConfigurationEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        contextManager.getConfigurationContextManager().alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
+    }
+    
+    /**
+     * Renew for database rule configuration.
+     *
+     * @param event database rule changed event
+     */
+    @Subscribe
+    public synchronized void renew(final DropDatabaseRuleConfigurationEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getDatabaseName())) {
+            return;
+        }
+        contextManager.getConfigurationContextManager().dropRuleConfiguration(event.getDatabaseName(), event.getRuleConfig());
+    }
+    
+    /**
+     * Renew for global rule configuration.
+     *
+     * @param event global rule alter event
+     */
+    @Subscribe
+    public synchronized void renew(final AlterGlobalRuleConfigurationEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.getConfigurationContextManager().alterGlobalRuleConfiguration(contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().load(event.getRuleSimpleName()));
+    }
+    
+    /**
+     * Renew for global properties.
+     *
+     * @param event global properties alter event
+     */
+    @Subscribe
+    public synchronized void renew(final AlterPropertiesEvent event) {
+        if (!event.getActiveVersion().equals(contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().getActiveVersionByFullPath(event.getActiveVersionKey()))) {
+            return;
+        }
+        contextManager.getConfigurationContextManager().alterProperties(contextManager.getMetaDataContexts().getPersistService().getPropsService().load());
     }
 }
