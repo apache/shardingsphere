@@ -35,12 +35,22 @@ public final class TransactionConnectionContext implements AutoCloseable {
     
     @Setter
     private volatile String readWriteSplitReplicaRoute;
-    
+
+    /**
+     * Begin transaction.
+     *
+     * @param transactionType transaction type 
+     */
     public void beginTransaction(final String transactionType) {
         this.transactionType = transactionType;
         inTransaction = true;
     }
     
+    /**
+     * Judge is in XA transaction or not.
+     *
+     * @return in XA transaction or not
+     */
     public boolean isInXATransaction() {
         return inTransaction && "XA".equals(transactionType);
     }
