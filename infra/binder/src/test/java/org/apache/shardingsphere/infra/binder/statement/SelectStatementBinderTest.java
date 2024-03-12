@@ -45,7 +45,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -132,7 +131,6 @@ class SelectStatementBinderTest {
         return result;
     }
     
-    @Disabled("FIXME")
     @Test
     void assertBindWithOracleWithClause() {
         String sql = "WITH user_temp AS (SELECT t.id, t.user_id, t.user_sn, t.user_no FROM t_user t), "
