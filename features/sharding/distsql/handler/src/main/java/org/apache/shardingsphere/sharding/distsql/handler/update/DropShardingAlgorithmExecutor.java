@@ -50,7 +50,9 @@ public final class DropShardingAlgorithmExecutor implements DatabaseRuleDropExec
         if (!sqlStatement.isIfExists()) {
             checkToBeDroppedShardingAlgorithms(sqlStatement);
         }
-        checkShardingAlgorithmsInUsed(sqlStatement);
+        if (null != rule) {
+            checkShardingAlgorithmsInUsed(sqlStatement);
+        }
     }
     
     private void checkToBeDroppedShardingAlgorithms(final DropShardingAlgorithmStatement sqlStatement) {

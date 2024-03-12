@@ -23,8 +23,6 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -71,7 +69,6 @@ class CreateReadwriteSplittingRuleExecutorTest {
     @BeforeEach
     void setUp() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         executor.setDatabase(database);
     }
     
@@ -103,9 +100,7 @@ class CreateReadwriteSplittingRuleExecutorTest {
     void assertCheckSQLStatementWithDuplicateLogicResource() {
         DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
         when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("duplicate_ds", Collections.singleton("ds_0")));
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
+        when(database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class)).thenReturn(Collections.singleton(dataSourceMapperRule));
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("duplicate_ds", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"),
                 new AlgorithmSegment(null, new Properties()));
         executor.setDatabase(database);
@@ -155,16 +150,14 @@ class CreateReadwriteSplittingRuleExecutorTest {
     void assertUpdateSuccess() {
         DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class, RETURNS_DEEP_STUBS);
         when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ms_group", Collections.singleton("ds_0")));
-        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
+        when(database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class)).thenReturn(Collections.singleton(dataSourceMapperRule));
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment(
                 "static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), new AlgorithmSegment("TEST", new Properties()));
         CreateReadwriteSplittingRuleStatement sqlStatement = createSQLStatement(false, staticSegment);
         executor.setDatabase(database);
         executor.checkBeforeUpdate(sqlStatement);
         ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
-        executor.setRule(rule);
+        executor.setRule(mock(ReadwriteSplittingRule.class));
         ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
         executor.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getDataSources().size(), is(1));

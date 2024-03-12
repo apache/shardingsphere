@@ -49,7 +49,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -81,13 +80,11 @@ class DropReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithInUsed() throws RuleDefinitionViolationException {
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class, RETURNS_DEEP_STUBS);
-        when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton("readwrite_ds")));
-        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
+        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
+        when(database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class)).thenReturn(Collections.singleton(dataSourceMapperRule));
         DataNodeRule dataNodeRule = mock(DataNodeRule.class);
         when(dataNodeRule.getAllDataNodes()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton(new DataNode("readwrite_ds.tbl"))));
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
         executor.setDatabase(database);

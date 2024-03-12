@@ -19,8 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
@@ -59,16 +58,15 @@ public final class StateChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final StorageNodeChangedEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
+        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
+        if (!metaData.containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
             return;
         }
-        QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        for (ShardingSphereRule each : contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()) {
-            each.getRuleIdentifiers().findIdentifier(StaticDataSourceRule.class)
-                    .ifPresent(optional -> optional.updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
+        for (StaticDataSourceRule each : metaData.getDatabase(event.getQualifiedDatabase().getDatabaseName()).getRuleMetaData().getRuleIdentifiers(StaticDataSourceRule.class)) {
+            each.updateStatus(new StorageNodeDataSourceChangedEvent(event.getQualifiedDatabase(), event.getDataSource()));
         }
         DataSourceStateManager.getInstance().updateState(
-                qualifiedDatabase.getDatabaseName(), qualifiedDatabase.getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().name()));
+                event.getQualifiedDatabase().getDatabaseName(), event.getQualifiedDatabase().getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().name()));
     }
     
     /**

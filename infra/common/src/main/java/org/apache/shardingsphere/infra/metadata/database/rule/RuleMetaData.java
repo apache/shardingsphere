@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifier;
 import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
 
@@ -149,5 +150,20 @@ public final class RuleMetaData {
                 storageUnitNameAndRules.put(entry.getKey(), entry.getValue());
             }
         }
+    }
+    
+    /**
+     * Get rule identifiers.
+     * 
+     * @param ruleIdentifierClass rule identifier class
+     * @param <T> type of rule identifiers
+     * @return rule identifiers
+     */
+    public <T extends RuleIdentifier> Collection<T> getRuleIdentifiers(final Class<T> ruleIdentifierClass) {
+        Collection<T> result = new LinkedList<>();
+        for (ShardingSphereRule each : rules) {
+            each.getRuleIdentifiers().findIdentifier(ruleIdentifierClass).ifPresent(result::add);
+        }
+        return result;
     }
 }

@@ -344,7 +344,7 @@ alterUser
 setItem
     : NAME EQ_ userName
     | DEFAULT_SCHEMA EQ_ (schemaName | NULL)
-    | LOGIN EQ_ identifier
+    | LOGIN EQ_ userName
     | PASSWORD EQ_ stringLiterals (OLD_PASSWORD EQ_ stringLiterals)?
     | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
     | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?

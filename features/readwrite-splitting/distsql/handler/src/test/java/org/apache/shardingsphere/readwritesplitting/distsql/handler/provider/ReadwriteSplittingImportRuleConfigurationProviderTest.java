@@ -60,7 +60,6 @@ class ReadwriteSplittingImportRuleConfigurationProviderTest {
         Collection<String> dataSources = new LinkedList<>();
         dataSources.add("su_1");
         when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
-        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return result;
     }
     
@@ -75,7 +74,6 @@ class ReadwriteSplittingImportRuleConfigurationProviderTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return result;
     }
     

@@ -53,7 +53,9 @@ public final class DropShardingTableRuleExecutor implements DatabaseRuleDropExec
         if (!sqlStatement.isIfExists()) {
             checkToBeDroppedShardingTableNames(sqlStatement);
         }
-        checkBindingTables(sqlStatement);
+        if (null != rule) {
+            checkBindingTables(sqlStatement);
+        }
     }
     
     private void checkToBeDroppedShardingTableNames(final DropShardingTableRuleStatement sqlStatement) {
