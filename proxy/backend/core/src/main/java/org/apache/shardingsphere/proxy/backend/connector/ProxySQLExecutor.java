@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.raw.RawExecutionRule;
+import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -178,7 +178,7 @@ public final class ProxySQLExecutor {
     
     private boolean hasRawExecutionRule(final Collection<ShardingSphereRule> rules) {
         for (ShardingSphereRule each : rules) {
-            if (each instanceof RawExecutionRule) {
+            if (each.getAttributes().findAttribute(RawExecutionRuleAttribute.class).isPresent()) {
                 return true;
             }
         }

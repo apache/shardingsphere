@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNo
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -59,9 +59,9 @@ class ShardingSphereMetaDataTest {
     
     @Test
     void assertAddDatabase() {
-        ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
+        ResourceHeldRuleAttribute<?> globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
-        when(globalRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(globalResourceHeldRule));
+        when(globalRule.getAttributes()).thenReturn(new RuleAttributes(globalResourceHeldRuleAttribute));
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);
         DatabaseType databaseType = mock(DatabaseType.class);
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
@@ -70,34 +70,34 @@ class ShardingSphereMetaDataTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), configProps);
         metaData.addDatabase("foo_db", databaseType, configProps);
         assertThat(metaData.getDatabases(), is(databases));
-        verify(globalResourceHeldRule).addResource(database);
+        verify(globalResourceHeldRuleAttribute).addResource(database);
     }
     
     @Test
     void assertDropDatabase() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         MockedDataSource dataSource = new MockedDataSource();
-        ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class, RETURNS_DEEP_STUBS);
-        ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
+        ResourceHeldRuleAttribute<?> databaseResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class, RETURNS_DEEP_STUBS);
+        ResourceHeldRuleAttribute<?> globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
         ShardingSphereRule databaseRule = mock(ShardingSphereRule.class);
-        when(databaseRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(databaseResourceHeldRule));
+        when(databaseRule.getAttributes()).thenReturn(new RuleAttributes(databaseResourceHeldRuleAttribute));
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
-        when(globalRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(globalResourceHeldRule));
+        when(globalRule.getAttributes()).thenReturn(new RuleAttributes(globalResourceHeldRuleAttribute));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resourceMetaData, dataSource, databaseRule))),
                 mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalRule)), new ConfigurationProperties(new Properties()));
         metaData.dropDatabase("foo_db");
         assertTrue(metaData.getDatabases().isEmpty());
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
-        verify(databaseResourceHeldRule).closeStaleResource("foo_db");
-        verify(globalResourceHeldRule).closeStaleResource("foo_db");
+        verify(databaseResourceHeldRuleAttribute).closeStaleResource("foo_db");
+        verify(globalResourceHeldRuleAttribute).closeStaleResource("foo_db");
     }
     
     @Test
     void assertContainsDatabase() {
-        ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
+        ResourceHeldRuleAttribute<?> globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
-        when(globalRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(globalResourceHeldRule));
+        when(globalRule.getAttributes()).thenReturn(new RuleAttributes(globalResourceHeldRuleAttribute));
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
@@ -107,9 +107,9 @@ class ShardingSphereMetaDataTest {
     
     @Test
     void assertGetDatabase() {
-        ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
+        ResourceHeldRuleAttribute<?> globalResourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
-        when(globalRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(globalResourceHeldRule));
+        when(globalRule.getAttributes()).thenReturn(new RuleAttributes(globalResourceHeldRuleAttribute));
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalRule);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());

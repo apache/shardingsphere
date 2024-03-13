@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.datanode;
 
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -137,9 +137,9 @@ class DataNodesTest {
     
     private ShardingSphereRule mockDataSourceMapperRule() {
         ShardingSphereRule result = mock(FixtureRule.class, RETURNS_DEEP_STUBS);
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
-        when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
-        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
     
@@ -151,10 +151,10 @@ class DataNodesTest {
     }
     
     private ShardingSphereRule mockSingleRule() {
-        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
-        when(dataNodeRule.getDataNodesByTableName("t_single")).thenReturn(Collections.singleton(new DataNode("readwrite_ds", "t_single")));
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.getDataNodesByTableName("t_single")).thenReturn(Collections.singleton(new DataNode("readwrite_ds", "t_single")));
         ShardingSphereRule result = mock(ShardingSphereRule.class);
-        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
     
@@ -162,10 +162,10 @@ class DataNodesTest {
         Collection<DataNode> dataNodes = new LinkedList<>();
         dataNodes.add(new DataNode("readwrite_ds", "t_order_0"));
         dataNodes.add(new DataNode("readwrite_ds", "t_order_1"));
-        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
-        when(dataNodeRule.getDataNodesByTableName("t_order")).thenReturn(dataNodes);
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.getDataNodesByTableName("t_order")).thenReturn(dataNodes);
         ShardingSphereRule result = mock(ShardingSphereRule.class);
-        when(result.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
     }
 }

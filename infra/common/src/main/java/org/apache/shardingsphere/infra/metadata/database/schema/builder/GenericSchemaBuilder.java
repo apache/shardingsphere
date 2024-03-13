@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SchemaMetaDataUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -87,7 +87,7 @@ public final class GenericSchemaBuilder {
     private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
         Collection<String> result = new HashSet<>();
         for (ShardingSphereRule each : rules) {
-            each.getRuleIdentifiers().findIdentifier(TableMapperRule.class).ifPresent(mapperRule -> result.addAll(mapperRule.getLogicTableMapper().getTableNames()));
+            each.getAttributes().findAttribute(TableMapperRuleAttribute.class).ifPresent(mapperRule -> result.addAll(mapperRule.getLogicTableMapper().getTableNames()));
         }
         return result;
     }
@@ -113,7 +113,7 @@ public final class GenericSchemaBuilder {
     private static Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
         result.putAll(new MetaDataReviseEngine(material.getRules().stream()
-                .filter(each -> each.getRuleIdentifiers().findIdentifier(TableMapperRule.class).isPresent()).collect(Collectors.toList())).revise(result, material));
+                .filter(each -> each.getAttributes().findAttribute(TableMapperRuleAttribute.class).isPresent()).collect(Collectors.toList())).revise(result, material));
         return convertToSchemaMap(result, material);
     }
     

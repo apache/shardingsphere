@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -103,11 +103,11 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
     protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
         Optional<SingleRule> singleRule = rules.stream().filter(each -> each instanceof SingleRule).map(each -> (SingleRule) each).findFirst();
         if (singleRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
-            singleRule.get().getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put("encrypt_ds", schemaName, "t_account");
-            singleRule.get().getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put("encrypt_ds", schemaName, "t_account_bak");
-            singleRule.get().getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put("encrypt_ds", schemaName, "t_account_detail");
-            singleRule.get().getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put("encrypt_ds", schemaName, "t_order");
-            singleRule.get().getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).put("encrypt_ds", schemaName, "t_user");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account_bak");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_account_detail");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_order");
+            singleRule.get().getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).put("encrypt_ds", schemaName, "t_user");
         }
     }
     

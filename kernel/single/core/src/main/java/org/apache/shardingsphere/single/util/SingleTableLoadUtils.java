@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 
 import javax.sql.DataSource;
@@ -56,17 +56,17 @@ public final class SingleTableLoadUtils {
     public static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
         for (ShardingSphereRule each : builtRules) {
-            Optional<DataSourceMapperRule> dataSourceMapperRule = each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class);
-            if (dataSourceMapperRule.isPresent()) {
-                result = getAggregatedDataSourceMap(result, dataSourceMapperRule.get());
+            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
+            if (ruleAttribute.isPresent()) {
+                result = getAggregatedDataSourceMap(result, ruleAttribute.get());
             }
         }
         return result;
     }
     
-    private static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceMapperRule dataSourceMapperRule) {
+    private static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceMapperRuleAttribute ruleAttribute) {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<String>> entry : dataSourceMapperRule.getDataSourceMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : ruleAttribute.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
                 if (dataSourceMap.containsKey(each)) {
                     result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each));
@@ -86,10 +86,10 @@ public final class SingleTableLoadUtils {
     public static Collection<String> getExcludedTables(final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ShardingSphereRule each : builtRules) {
-            Optional<TableMapperRule> tableMapperRule = each.getRuleIdentifiers().findIdentifier(TableMapperRule.class);
-            if (tableMapperRule.isPresent()) {
-                result.addAll(tableMapperRule.get().getDistributedTableMapper().getTableNames());
-                result.addAll(tableMapperRule.get().getActualTableMapper().getTableNames());
+            Optional<TableMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(TableMapperRuleAttribute.class);
+            if (ruleAttribute.isPresent()) {
+                result.addAll(ruleAttribute.get().getDistributedTableMapper().getTableNames());
+                result.addAll(ruleAttribute.get().getActualTableMapper().getTableNames());
             }
         }
         return result;
@@ -104,14 +104,14 @@ public final class SingleTableLoadUtils {
     public static Collection<String> getFeatureRequiredSingleTables(final Collection<ShardingSphereRule> builtRules) {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (ShardingSphereRule each : builtRules) {
-            Optional<TableMapperRule> tableMapperRule = each.getRuleIdentifiers().findIdentifier(TableMapperRule.class);
-            if (!tableMapperRule.isPresent()) {
+            Optional<TableMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(TableMapperRuleAttribute.class);
+            if (!ruleAttribute.isPresent()) {
                 continue;
             }
-            if (tableMapperRule.get().getEnhancedTableMapper().getTableNames().isEmpty() || !tableMapperRule.get().getDistributedTableMapper().getTableNames().isEmpty()) {
+            if (ruleAttribute.get().getEnhancedTableMapper().getTableNames().isEmpty() || !ruleAttribute.get().getDistributedTableMapper().getTableNames().isEmpty()) {
                 continue;
             }
-            result.addAll(tableMapperRule.get().getEnhancedTableMapper().getTableNames());
+            result.addAll(ruleAttribute.get().getEnhancedTableMapper().getTableNames());
         }
         return result;
     }

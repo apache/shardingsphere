@@ -19,8 +19,8 @@ package org.apache.shardingsphere.transaction.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
@@ -44,7 +44,7 @@ public final class TransactionRule implements GlobalRule {
     
     private final Map<String, ShardingSphereDatabase> databases;
     
-    private final RuleIdentifiers ruleIdentifiers;
+    private final RuleAttributes attributes;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
@@ -52,6 +52,6 @@ public final class TransactionRule implements GlobalRule {
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
         this.databases = new ConcurrentHashMap<>(databases);
-        ruleIdentifiers = new RuleIdentifiers(new TransactionResourceHeldRule(defaultType, providerType, this.databases));
+        attributes = new RuleAttributes(new TransactionResourceHeldRuleAttribute(defaultType, providerType, this.databases));
     }
 }

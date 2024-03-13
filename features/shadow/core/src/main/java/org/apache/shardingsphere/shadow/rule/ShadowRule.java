@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -56,7 +56,7 @@ public final class ShadowRule implements DatabaseRule {
     private final ShadowAlgorithm defaultShadowAlgorithm;
     
     @Getter
-    private final RuleIdentifiers ruleIdentifiers;
+    private final RuleAttributes attributes;
     
     public ShadowRule(final ShadowRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
@@ -67,7 +67,7 @@ public final class ShadowRule implements DatabaseRule {
             hintShadowAlgorithmNames.add(ruleConfig.getDefaultShadowAlgorithmName());
         }
         initShadowTableRules(ruleConfig.getTables());
-        ruleIdentifiers = new RuleIdentifiers(new ShadowDataSourceMapperRule(shadowDataSourceMappings));
+        attributes = new RuleAttributes(new ShadowDataSourceMapperRuleAttribute(shadowDataSourceMappings));
     }
     
     private void initShadowDataSourceMappings(final Collection<ShadowDataSourceConfiguration> dataSources) {

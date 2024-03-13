@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 
 import static org.mockito.Mockito.mock;
 
@@ -31,7 +31,7 @@ public class ShardingSphereRuleFixture implements ShardingSphereRule {
     }
     
     @Override
-    public RuleIdentifiers getRuleIdentifiers() {
-        return new RuleIdentifiers();
+    public RuleAttributes getAttributes() {
+        return new RuleAttributes();
     }
 }

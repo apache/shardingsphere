@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
@@ -60,10 +60,10 @@ public final class SingleRule implements DatabaseRule {
     
     private final DatabaseType protocolType;
     
-    private final SingleMutableDataNodeRule mutableDataNodeRule;
+    private final SingleMutableDataNodeRuleAttribute mutableDataNodeRuleAttribute;
     
     @Getter
-    private final RuleIdentifiers ruleIdentifiers;
+    private final RuleAttributes attributes;
     
     public SingleRule(final SingleRuleConfiguration ruleConfig, final String databaseName,
                       final DatabaseType protocolType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
@@ -74,9 +74,10 @@ public final class SingleRule implements DatabaseRule {
         dataSourceNames = aggregateDataSourceMap.keySet();
         this.protocolType = protocolType;
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, protocolType, aggregateDataSourceMap, builtRules, configuration.getTables());
-        SingleTableMapperRule tableMapperRule = new SingleTableMapperRule(singleTableDataNodes.values());
-        mutableDataNodeRule = new SingleMutableDataNodeRule(configuration, dataSourceNames, singleTableDataNodes, protocolType, tableMapperRule);
-        ruleIdentifiers = new RuleIdentifiers(new SingleDataNodeRule(singleTableDataNodes), tableMapperRule, new SingleExportableRule(tableMapperRule), mutableDataNodeRule);
+        SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
+        mutableDataNodeRuleAttribute = new SingleMutableDataNodeRuleAttribute(configuration, dataSourceNames, singleTableDataNodes, protocolType, tableMapperRuleAttribute);
+        attributes = new RuleAttributes(
+                new SingleDataNodeRuleAttribute(singleTableDataNodes), tableMapperRuleAttribute, new SingleExportableRuleAttribute(tableMapperRuleAttribute), mutableDataNodeRuleAttribute);
     }
     
     /**
@@ -100,7 +101,7 @@ public final class SingleRule implements DatabaseRule {
             return false;
         }
         QualifiedTable sampleTable = singleTables.iterator().next();
-        Optional<DataNode> sampleDataNode = mutableDataNodeRule.findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
+        Optional<DataNode> sampleDataNode = mutableDataNodeRuleAttribute.findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
         if (sampleDataNode.isPresent()) {
             for (DataNode each : dataNodes) {
                 if (!isSameComputeNode(sampleDataNode.get().getDataSourceName(), each.getDataSourceName())) {
@@ -118,7 +119,7 @@ public final class SingleRule implements DatabaseRule {
     private boolean isSingleTablesInSameComputeNode(final Collection<QualifiedTable> singleTables) {
         String sampleDataSourceName = null;
         for (QualifiedTable each : singleTables) {
-            Optional<DataNode> dataNode = mutableDataNodeRule.findTableDataNode(each.getSchemaName(), each.getTableName());
+            Optional<DataNode> dataNode = mutableDataNodeRuleAttribute.findTableDataNode(each.getSchemaName(), each.getTableName());
             if (!dataNode.isPresent()) {
                 continue;
             }

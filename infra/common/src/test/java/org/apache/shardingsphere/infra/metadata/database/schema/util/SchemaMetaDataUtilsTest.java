@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -48,9 +48,9 @@ class SchemaMetaDataUtilsTest {
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenConfigCheckMetaDataEnable() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
-        when(dataNodeRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
                 Arrays.asList(rule, mock(ShardingSphereRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
@@ -67,9 +67,9 @@ class SchemaMetaDataUtilsTest {
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnable() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
-        when(dataNodeRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
                 Arrays.asList(rule, mock(ShardingSphereRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
@@ -83,9 +83,9 @@ class SchemaMetaDataUtilsTest {
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnableForSingleTableDataNode() {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        DataNodeRule dataNodeRule = mock(DataNodeRule.class);
-        when(dataNodeRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataNodeRule));
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
+        when(ruleAttribute.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), mockStorageTypes(), mockDataSourceMap(),
                 Arrays.asList(rule, mock(ShardingSphereRule.class)), mock(ConfigurationProperties.class), "public");
         Collection<MetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);

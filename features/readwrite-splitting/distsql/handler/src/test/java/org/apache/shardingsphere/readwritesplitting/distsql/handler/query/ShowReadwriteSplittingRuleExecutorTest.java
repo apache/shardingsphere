@@ -22,13 +22,13 @@ import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecut
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingExportableRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingExportableRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -62,10 +62,10 @@ class ShowReadwriteSplittingRuleExecutorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase("foo_db")).thenReturn(database);
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        ReadwriteSplittingExportableRule exportableRule = mock(ReadwriteSplittingExportableRule.class);
-        when(exportableRule.getExportData()).thenReturn(createExportedData());
+        ReadwriteSplittingExportableRuleAttribute ruleAttribute = mock(ReadwriteSplittingExportableRuleAttribute.class);
+        when(ruleAttribute.getExportData()).thenReturn(createExportedData());
         when(rule.getConfiguration()).thenReturn(ruleConfig);
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(exportableRule));
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         when(database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(rule));
         return result;
     }

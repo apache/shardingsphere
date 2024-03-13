@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 
 public final class FixtureRule implements ShardingSphereRule {
     
@@ -29,7 +29,7 @@ public final class FixtureRule implements ShardingSphereRule {
     }
     
     @Override
-    public RuleIdentifiers getRuleIdentifiers() {
-        return new RuleIdentifiers();
+    public RuleAttributes getAttributes() {
+        return new RuleAttributes();
     }
 }

@@ -45,7 +45,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.databa
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -129,7 +129,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     }
     
     private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final String databaseName, final Collection<String> tableNames) {
-        for (TableMapperRule each : getTableMapperRules(metaData, databaseName)) {
+        for (TableMapperRuleAttribute each : getTableMapperRuleAttributes(metaData, databaseName)) {
             for (String tableName : tableNames) {
                 if (each.getEnhancedTableMapper().contains(tableName)) {
                     return true;
@@ -139,14 +139,14 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return false;
     }
     
-    private Collection<TableMapperRule> getTableMapperRules(final ShardingSphereMetaData metaData, final String databaseName) {
+    private Collection<TableMapperRuleAttribute> getTableMapperRuleAttributes(final ShardingSphereMetaData metaData, final String databaseName) {
         if (null == databaseName) {
             ShardingSpherePreconditions.checkState(tablesContext.getSimpleTableSegments().isEmpty(), NoDatabaseSelectedException::new);
             return Collections.emptyList();
         }
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
-        return database.getRuleMetaData().getRuleIdentifiers(TableMapperRule.class);
+        return database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class);
     }
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String defaultDatabaseName) {
