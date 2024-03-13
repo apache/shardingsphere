@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.constraint;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,6 +42,7 @@ import static org.mockito.Mockito.when;
 class ShardingConstraintReviserTest {
 
     private ShardingConstraintReviser reviser;
+
     private ShardingRule shardingRule;
 
     @BeforeEach
@@ -48,14 +51,14 @@ class ShardingConstraintReviserTest {
         ShardingTable shardingTable = mock(ShardingTable.class);
         reviser = new ShardingConstraintReviser(shardingTable);
         when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode[]{
-            new DataNode("schema_name", "table_name_0"),
-            new DataNode("schema_name", "table_name_1")
+          new DataNode("schema_name", "table_name_0"),
+          new DataNode("schema_name", "table_name_1")
         }));
     }
 
     private ShardingRule mockShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("table_name",  "ds.table_name");
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("table_name", "ds.table_name");
         ruleConfig.setTables(Collections.singleton(shardingTableRuleConfig));
         return new ShardingRule(ruleConfig, Maps.of("ds", new MockedDataSource()), mock(InstanceContext.class));
     }
@@ -75,5 +78,4 @@ class ShardingConstraintReviserTest {
         Optional<ConstraintMetaData> result = reviser.revise("table_name_1", originalMetaData, shardingRule);
         assertFalse(result.isPresent());
     }
-
 }
