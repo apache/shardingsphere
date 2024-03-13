@@ -6,7 +6,6 @@
     {"excludeClasses": "com.sun.org.apache.xerces.internal.jaxp.**"},
     {"excludeClasses": "java.**"},
     {"includeClasses": "java.lang.Boolean"},
-    {"includeClasses": "java.lang.Thread"},
     {"includeClasses": "java.util.Properties"},
     {"excludeClasses": "javax.security.auth.x500.**"},
     {"excludeClasses": "javax.smartcardio.**"},

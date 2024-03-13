@@ -47,12 +47,12 @@ public final class TransactionConnectionContext implements AutoCloseable {
     }
     
     /**
-     * Judge is in XA transaction or not.
+     * Judge is in distributed transaction or not.
      *
-     * @return in XA transaction or not
+     * @return in distributed transaction or not
      */
-    public boolean isInXATransaction() {
-        return inTransaction && "XA".equals(transactionType);
+    public boolean isInDistributedTransaction() {
+        return inTransaction && ("XA".equals(transactionType) || "BASE".equals(transactionType));
     }
     
     @Override

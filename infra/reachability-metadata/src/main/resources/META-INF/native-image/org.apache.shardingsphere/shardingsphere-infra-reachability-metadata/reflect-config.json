@@ -14,7 +14,7 @@
   "name":"org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.broadcast.yaml.swapper.NewYamlBroadcastRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.broadcast.yaml.swapper.YamlBroadcastDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getTables","parameterTypes":[] }]
@@ -125,7 +125,7 @@
   "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfigurationCustomizer"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.swapper.NewYamlEncryptRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getColumns","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }]
@@ -150,7 +150,7 @@
   "name":"org.apache.shardingsphere.globalclock.core.yaml.config.YamlGlobalClockRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.swapper.NewYamlEncryptRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
@@ -163,19 +163,19 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }, {"name":"setType","parameterTypes":["java.lang.String"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.swapper.NewYamlMaskRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.swapper.YamlMaskDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.NewYamlShadowRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.NewYamlShardingRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
@@ -466,7 +466,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setColumns","parameterTypes":["java.util.Map"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.swapper.NewYamlMaskRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.swapper.YamlMaskDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getColumns","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }]
@@ -614,7 +614,7 @@
   "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.swapper.NewYamlSQLParserRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.swapper.YamlSQLParserDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getParseTreeCache","parameterTypes":[] }, {"name":"getSqlStatementCache","parameterTypes":[] }]
@@ -654,7 +654,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setReadDataSourceNames","parameterTypes":["java.util.List"] }, {"name":"setWriteDataSourceName","parameterTypes":["java.lang.String"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.yaml.swapper.NewYamlReadwriteSplittingRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getLoadBalancerName","parameterTypes":[] }, {"name":"getReadDataSourceNames","parameterTypes":[] }, {"name":"getTransactionalReadQueryStrategy","parameterTypes":[] }, {"name":"getWriteDataSourceName","parameterTypes":[] }]
@@ -709,7 +709,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setProductionDataSourceName","parameterTypes":["java.lang.String"] }, {"name":"setShadowDataSourceName","parameterTypes":["java.lang.String"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.NewYamlShadowRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getProductionDataSourceName","parameterTypes":[] }, {"name":"getShadowDataSourceName","parameterTypes":[] }]
@@ -730,7 +730,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDataSourceNames","parameterTypes":["java.util.Collection"] }, {"name":"setShadowAlgorithmNames","parameterTypes":["java.util.Collection"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.NewYamlShadowRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getDataSourceNames","parameterTypes":[] }, {"name":"getShadowAlgorithmNames","parameterTypes":[] }]
@@ -825,7 +825,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setActualDataNodes","parameterTypes":["java.lang.String"] }, {"name":"setKeyGenerateStrategy","parameterTypes":["org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.NewYamlShardingRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getActualDataNodes","parameterTypes":[] }, {"name":"getAuditStrategy","parameterTypes":[] }, {"name":"getDatabaseStrategy","parameterTypes":[] }, {"name":"getKeyGenerateStrategy","parameterTypes":[] }, {"name":"getLogicTable","parameterTypes":[] }, {"name":"getTableStrategy","parameterTypes":[] }]
@@ -866,7 +866,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setStandard","parameterTypes":["org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.NewYamlShardingRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getComplex","parameterTypes":[] }, {"name":"getHint","parameterTypes":[] }, {"name":"getNone","parameterTypes":[] }, {"name":"getStandard","parameterTypes":[] }]
@@ -931,7 +931,7 @@
   "queryAllPublicMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.single.yaml.config.swapper.NewYamlSingleRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getDefaultDataSource","parameterTypes":[] }, {"name":"getTables","parameterTypes":[] }]
@@ -1157,6 +1157,10 @@
   "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.rule.SQLFederationMetaDataHeldRule"},
+  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule"},
   "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
 },
@@ -1228,7 +1232,7 @@
   "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.yaml.swapper.NewYamlTransactionRuleConfigurationSwapper"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.yaml.swapper.YamlTransactionDataNodeRuleConfigurationSwapper"},
   "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"getDefaultType","parameterTypes":[] }, {"name":"getProps","parameterTypes":[] }, {"name":"getProviderType","parameterTypes":[] }]
