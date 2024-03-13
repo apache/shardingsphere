@@ -92,13 +92,13 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
                 optional -> result.setInsert(bindMergeInsert(optional, (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, targetTableBinderContexts, sourceTableBinderContexts)));
         sqlStatement.getUpdate().ifPresent(
                 optional -> result.setUpdate(bindMergeUpdate(optional, (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, targetTableBinderContexts, sourceTableBinderContexts)));
-        addParameterMarkerSegments(result, sqlStatement);
+        addParameterMarkerSegments(result);
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
     }
     
-    private void addParameterMarkerSegments(final MergeStatement mergeStatement, final MergeStatement originalSQLStatement) {
-        mergeStatement.addParameterMarkerSegments(originalSQLStatement.getParameterMarkerSegments());
+    private void addParameterMarkerSegments(final MergeStatement mergeStatement) {
+        // TODO bind parameter marker segments for merge statement
         mergeStatement.getInsert().ifPresent(optional -> mergeStatement.addParameterMarkerSegments(optional.getParameterMarkerSegments()));
         mergeStatement.getUpdate().ifPresent(optional -> mergeStatement.addParameterMarkerSegments(optional.getParameterMarkerSegments()));
     }
