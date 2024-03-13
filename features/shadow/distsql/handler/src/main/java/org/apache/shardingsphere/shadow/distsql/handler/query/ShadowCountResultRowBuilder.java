@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.executor.rql.rule.CountResultRowBuilder;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
@@ -32,7 +32,7 @@ public final class ShadowCountResultRowBuilder implements CountResultRowBuilder<
     
     @Override
     public Collection<LocalDataQueryResultRow> generateRows(final ShadowRule rule, final String databaseName) {
-        return Collections.singleton(new LocalDataQueryResultRow("shadow", databaseName, rule.getRuleIdentifiers().getIdentifier(DataSourceMapperRule.class).getDataSourceMapper().size()));
+        return Collections.singleton(new LocalDataQueryResultRow("shadow", databaseName, rule.getAttributes().getAttribute(DataSourceMapperRuleAttribute.class).getDataSourceMapper().size()));
     }
     
     @Override

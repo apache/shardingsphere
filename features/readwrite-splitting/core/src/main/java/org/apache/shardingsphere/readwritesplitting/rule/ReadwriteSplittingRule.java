@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceA
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -51,15 +51,15 @@ public final class ReadwriteSplittingRule implements DatabaseRule {
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
     @Getter
-    private final RuleIdentifiers ruleIdentifiers;
+    private final RuleAttributes attributes;
     
     public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         loadBalancers = createLoadBalancers(ruleConfig);
         dataSourceRules = createDataSourceRules(ruleConfig);
-        ruleIdentifiers = new RuleIdentifiers(
-                new ReadwriteSplittingDataSourceMapperRule(dataSourceRules.values()), new ReadwriteSplittingStaticDataSourceRule(databaseName, dataSourceRules, instanceContext),
-                new ReadwriteSplittingExportableRule(dataSourceRules), new ReadwriteSplittingStorageConnectorReusableRule());
+        attributes = new RuleAttributes(
+                new ReadwriteSplittingDataSourceMapperRuleAttribute(dataSourceRules.values()), new ReadwriteSplittingStaticDataSourceRuleAttribute(databaseName, dataSourceRules, instanceContext),
+                new ReadwriteSplittingExportableRuleAttribute(dataSourceRules), new ReadwriteSplittingStorageConnectorReusableRuleAttribute());
     }
     
     private Map<String, LoadBalanceAlgorithm> createLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {

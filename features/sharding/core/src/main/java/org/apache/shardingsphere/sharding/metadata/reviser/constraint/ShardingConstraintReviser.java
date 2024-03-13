@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
@@ -42,7 +42,7 @@ public final class ShardingConstraintReviser implements ConstraintReviser<Shardi
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
                 return Optional.of(new ConstraintMetaData(
-                        logicIndexName.get(), rule.getRuleIdentifiers().getIdentifier(DataNodeRule.class).findLogicTableByActualTable(referencedTableName).orElse(referencedTableName)));
+                        logicIndexName.get(), rule.getAttributes().getAttribute(DataNodeRuleAttribute.class).findLogicTableByActualTable(referencedTableName).orElse(referencedTableName)));
             }
         }
         return Optional.empty();

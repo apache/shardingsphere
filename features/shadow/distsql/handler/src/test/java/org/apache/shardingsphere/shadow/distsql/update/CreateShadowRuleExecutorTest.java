@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -93,9 +93,9 @@ class CreateShadowRuleExecutorTest {
     
     @Test
     void assertExecuteWithDuplicateLogicResource() {
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class, RETURNS_DEEP_STUBS);
-        when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("duplicate_ds", Collections.singleton("ds_0")));
-        when(database.getRuleMetaData().getRuleIdentifiers(DataSourceMapperRule.class)).thenReturn(Collections.singleton(dataSourceMapperRule));
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("duplicate_ds", Collections.singleton("ds_0")));
+        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         executor.setDatabase(database);
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("duplicate_ds", null, null, null);
         assertThrows(InvalidRuleConfigurationException.class, () -> executor.checkBeforeUpdate(new CreateShadowRuleStatement(false, Collections.singleton(ruleSegment))));

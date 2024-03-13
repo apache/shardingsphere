@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.datanode;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeBuilder;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
@@ -36,7 +36,7 @@ public final class ReadwriteSplittingDataNodeBuilder implements DataNodeBuilder<
     public Collection<DataNode> build(final Collection<DataNode> dataNodes, final ReadwriteSplittingRule rule) {
         Collection<DataNode> result = new LinkedList<>();
         for (DataNode each : dataNodes) {
-            result.addAll(DataNodeUtils.buildDataNode(each, rule.getRuleIdentifiers().getIdentifier(DataSourceMapperRule.class).getDataSourceMapper()));
+            result.addAll(DataNodeUtils.buildDataNode(each, rule.getAttributes().getAttribute(DataSourceMapperRuleAttribute.class).getDataSourceMapper()));
         }
         return result;
     }

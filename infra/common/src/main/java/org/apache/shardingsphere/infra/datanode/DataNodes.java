@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
@@ -61,6 +61,6 @@ public final class DataNodes {
     }
     
     private Collection<DataNode> getDataNodes(final ShardingSphereRule rule, final String tableName) {
-        return rule.getRuleIdentifiers().findIdentifier(DataNodeRule.class).map(optional -> optional.getDataNodesByTableName(tableName)).orElse(Collections.emptyList());
+        return rule.getAttributes().findAttribute(DataNodeRuleAttribute.class).map(optional -> optional.getDataNodesByTableName(tableName)).orElse(Collections.emptyList());
     }
 }

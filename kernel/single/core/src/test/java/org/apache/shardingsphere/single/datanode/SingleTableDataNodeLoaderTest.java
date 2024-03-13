@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,9 +97,9 @@ class SingleTableDataNodeLoaderTest {
     @Test
     void assertLoad() {
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
-        TableMapperRule tableMapperRule = mock(TableMapperRule.class, RETURNS_DEEP_STUBS);
-        when(tableMapperRule.getDistributedTableMapper().getTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
-        when(builtRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(tableMapperRule));
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDistributedTableMapper().getTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, databaseType, dataSourceMap, Collections.singleton(builtRule), configuredSingleTables);
         assertFalse(actual.containsKey("employee"));
         assertFalse(actual.containsKey("salary"));

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
@@ -98,26 +98,25 @@ public final class ConfigurationChangedSubscriber {
     private void disableDataSources() {
         Map<String, StorageNodeDataSource> storageNodes = getDisabledDataSources();
         for (Entry<String, ShardingSphereDatabase> entry : contextManager.getMetaDataContexts().getMetaData().getDatabases().entrySet()) {
-            entry.getValue().getRuleMetaData().getRuleIdentifiers(StaticDataSourceRule.class).forEach(each -> disableDataSources(entry.getKey(), each, storageNodes));
+            entry.getValue().getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class).forEach(each -> disableDataSources(entry.getKey(), each, storageNodes));
         }
     }
     
-    private void disableDataSources(final String databaseName, final StaticDataSourceRule staticDataSourceRule, final Map<String, StorageNodeDataSource> storageNodes) {
+    private void disableDataSources(final String databaseName, final StaticDataSourceRuleAttribute ruleAttribute, final Map<String, StorageNodeDataSource> storageNodes) {
         for (Entry<String, StorageNodeDataSource> entry : storageNodes.entrySet()) {
             QualifiedDatabase database = new QualifiedDatabase(entry.getKey());
             if (!database.getDatabaseName().equals(databaseName)) {
                 continue;
             }
-            disableDataSources(entry.getValue(), staticDataSourceRule, database);
+            disableDataSources(entry.getValue(), ruleAttribute, database);
         }
     }
     
-    private void disableDataSources(final StorageNodeDataSource storageNodeDataSource, final StaticDataSourceRule staticDataSourceRule, final QualifiedDatabase database) {
-        for (Entry<String, Collection<String>> entry : staticDataSourceRule.getDataSourceMapper().entrySet()) {
-            if (!database.getGroupName().equals(entry.getKey())) {
-                continue;
+    private void disableDataSources(final StorageNodeDataSource storageNodeDataSource, final StaticDataSourceRuleAttribute ruleAttribute, final QualifiedDatabase database) {
+        for (Entry<String, Collection<String>> entry : ruleAttribute.getDataSourceMapper().entrySet()) {
+            if (database.getGroupName().equals(entry.getKey())) {
+                entry.getValue().forEach(each -> ruleAttribute.updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
             }
-            entry.getValue().forEach(each -> staticDataSourceRule.updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
         }
     }
     

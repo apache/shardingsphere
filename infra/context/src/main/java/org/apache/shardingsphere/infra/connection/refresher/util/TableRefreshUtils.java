@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.table.TableMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -64,7 +64,7 @@ public final class TableRefreshUtils {
      * @return whether single table
      */
     public static boolean isSingleTable(final String tableName, final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().getRuleIdentifiers(TableMapperRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
+        return database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
     }
     
     /**
@@ -95,7 +95,7 @@ public final class TableRefreshUtils {
     public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         for (ShardingSphereRule each : ruleMetaData.getRules()) {
-            each.getRuleIdentifiers().findIdentifier(MutableDataNodeRule.class).ifPresent(optional -> rules.add(each));
+            each.getAttributes().findAttribute(MutableDataNodeRuleAttribute.class).ifPresent(optional -> rules.add(each));
         }
         if (rules.isEmpty()) {
             return false;
@@ -109,7 +109,7 @@ public final class TableRefreshUtils {
         if (tablesConfig.contains(SingleTableConstants.ALL_TABLES) || tablesConfig.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return false;
         }
-        Optional<DataNode> dataNode = rule.getRuleIdentifiers().getIdentifier(MutableDataNodeRule.class).findTableDataNode(schemaName, tableName);
+        Optional<DataNode> dataNode = rule.getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode(schemaName, tableName);
         if (!dataNode.isPresent()) {
             return false;
         }

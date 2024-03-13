@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sqlfederation.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
@@ -38,11 +38,11 @@ public final class SQLFederationRule implements GlobalRule {
     
     private final OptimizerContext optimizerContext;
     
-    private final RuleIdentifiers ruleIdentifiers;
+    private final RuleAttributes attributes;
     
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         configuration = ruleConfig;
         optimizerContext = OptimizerContextFactory.create(databases, props);
-        ruleIdentifiers = new RuleIdentifiers(new SQLFederationMetaDataHeldRule(optimizerContext));
+        attributes = new RuleAttributes(new SQLFederationMetaDataHeldRuleAttribute(optimizerContext));
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.resoure.ResourceHeldRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.ResourceHeldRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -198,9 +198,9 @@ class BackendTransactionManagerTest {
         ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingSphereTransactionManager);
         TransactionRule transactionRule = mock(TransactionRule.class);
-        ResourceHeldRule<ShardingSphereTransactionManagerEngine> resourceHeldRule = mock(ResourceHeldRule.class);
-        when(resourceHeldRule.getResource()).thenReturn(transactionManagerEngine);
-        when(transactionRule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(resourceHeldRule));
+        ResourceHeldRuleAttribute<ShardingSphereTransactionManagerEngine> resourceHeldRuleAttribute = mock(ResourceHeldRuleAttribute.class);
+        when(resourceHeldRuleAttribute.getResource()).thenReturn(transactionManagerEngine);
+        when(transactionRule.getAttributes()).thenReturn(new RuleAttributes(resourceHeldRuleAttribute));
         return new RuleMetaData(Collections.singleton(transactionRule));
     }
 }

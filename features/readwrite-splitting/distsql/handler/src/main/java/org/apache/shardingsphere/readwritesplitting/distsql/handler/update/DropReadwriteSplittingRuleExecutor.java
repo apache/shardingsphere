@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.StaticDataSourceRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
@@ -82,12 +82,12 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
             if (each instanceof ReadwriteSplittingRule) {
                 continue;
             }
-            Optional<DataSourceMapperRule> dataSourceMapperRule = each.getRuleIdentifiers().findIdentifier(DataSourceMapperRule.class);
-            if (!dataSourceMapperRule.isPresent()) {
+            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
+            if (!ruleAttribute.isPresent()) {
                 continue;
             }
             Collection<String> actualDataSources = new HashSet<>();
-            dataSourceMapperRule.get().getDataSourceMapper().values().forEach(actualDataSources::addAll);
+            ruleAttribute.get().getDataSourceMapper().values().forEach(actualDataSources::addAll);
             result.addAll(actualDataSources);
         }
         for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
@@ -95,9 +95,9 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
                 continue;
             }
             Collection<DataNode> actualDataNodes = new HashSet<>();
-            Optional<DataNodeRule> dataNodeRule = each.getRuleIdentifiers().findIdentifier(DataNodeRule.class);
-            if (dataNodeRule.isPresent()) {
-                dataNodeRule.get().getAllDataNodes().values().forEach(actualDataNodes::addAll);
+            Optional<DataNodeRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataNodeRuleAttribute.class);
+            if (ruleAttribute.isPresent()) {
+                ruleAttribute.get().getAllDataNodes().values().forEach(actualDataNodes::addAll);
                 result.addAll(actualDataNodes.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()));
             }
         }
@@ -147,7 +147,7 @@ public final class DropReadwriteSplittingRuleExecutor implements DatabaseRuleDro
     
     @Override
     public void operate(final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) {
-        for (StaticDataSourceRule each : database.getRuleMetaData().getRuleIdentifiers(StaticDataSourceRule.class)) {
+        for (StaticDataSourceRuleAttribute each : database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)) {
             sqlStatement.getNames().forEach(each::cleanStorageNodeDataSource);
         }
     }

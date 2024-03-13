@@ -25,7 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnLabelNotFoun
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -107,11 +107,11 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final int indexNameColumnIndex, final ResultSet resultSet) throws SQLException {
         DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
-        Optional<DataNodeRule> dataNodeRule = findDataNodeRule();
+        Optional<DataNodeRuleAttribute> ruleAttribute = findDataNodeRuleAttribute();
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Optional<String> logicTableName = dataNodeRule.isPresent() ? dataNodeRule.get().findLogicTableByActualTable(tableName) : Optional.empty();
+                Optional<String> logicTableName = ruleAttribute.isPresent() ? ruleAttribute.get().findLogicTableByActualTable(tableName) : Optional.empty();
                 result.addObject(logicTableName.orElse(tableName));
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);
@@ -124,11 +124,11 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         return result;
     }
     
-    private Optional<DataNodeRule> findDataNodeRule() {
+    private Optional<DataNodeRuleAttribute> findDataNodeRuleAttribute() {
         for (ShardingSphereRule each : rules) {
-            Optional<DataNodeRule> dataNodeRule = each.getRuleIdentifiers().findIdentifier(DataNodeRule.class);
-            if (dataNodeRule.isPresent()) {
-                return dataNodeRule;
+            Optional<DataNodeRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataNodeRuleAttribute.class);
+            if (ruleAttribute.isPresent()) {
+                return ruleAttribute;
             }
         }
         return Optional.empty();

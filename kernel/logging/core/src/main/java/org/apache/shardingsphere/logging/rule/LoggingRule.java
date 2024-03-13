@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.logging.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 
 /**
@@ -35,7 +35,7 @@ public final class LoggingRule implements GlobalRule {
     }
     
     @Override
-    public RuleIdentifiers getRuleIdentifiers() {
-        return new RuleIdentifiers();
+    public RuleAttributes getAttributes() {
+        return new RuleAttributes();
     }
 }

@@ -47,7 +47,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -342,8 +342,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
-        Collection<DataNodeRule> dataNodeRules = database.getRuleMetaData().getRuleIdentifiers(DataNodeRule.class);
-        return !dataNodeRules.isEmpty() && dataNodeRules.iterator().next().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
+        Collection<DataNodeRuleAttribute> ruleAttributes = database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
+        return !ruleAttributes.isEmpty() && ruleAttributes.iterator().next().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     /**

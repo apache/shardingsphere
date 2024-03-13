@@ -20,8 +20,8 @@ package org.apache.shardingsphere.distsql.handler.fixture;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.DataNodeRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -38,12 +38,12 @@ public final class DistSQLHandlerFixtureRule implements ShardingSphereRule {
     }
     
     @Override
-    public RuleIdentifiers getRuleIdentifiers() {
-        return new RuleIdentifiers(getDataNodeRule());
+    public RuleAttributes getAttributes() {
+        return new RuleAttributes(getDataNodeRuleAttribute());
     }
     
-    private DataNodeRule getDataNodeRule() {
-        DataNodeRule result = mock(DataNodeRule.class);
+    private DataNodeRuleAttribute getDataNodeRuleAttribute() {
+        DataNodeRuleAttribute result = mock(DataNodeRuleAttribute.class);
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(result.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));

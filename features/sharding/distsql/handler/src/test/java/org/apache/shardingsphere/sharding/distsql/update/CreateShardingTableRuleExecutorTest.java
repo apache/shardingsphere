@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
-import org.apache.shardingsphere.infra.rule.identifier.type.datasource.DataSourceMapperRule;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -82,10 +82,10 @@ class CreateShardingTableRuleExecutorTest {
         when(database.getName()).thenReturn("schema");
         ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSource());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        DataSourceMapperRule dataSourceMapperRule = mock(DataSourceMapperRule.class);
-        when(dataSourceMapperRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_ds", null));
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_ds", null));
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(dataSourceMapperRule));
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         executor.setDatabase(database);
     }

@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.datanode.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RuleIdentifiers;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -150,11 +150,11 @@ class ShardingSphereDatabaseTest {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         ShardingSphereRule rule0 = mock(ShardingSphereRule.class);
         when(rule0.getConfiguration()).thenReturn(mock(RuleConfiguration.class));
-        when(rule0.getRuleIdentifiers()).thenReturn(new RuleIdentifiers(mock(MutableDataNodeRule.class)));
+        when(rule0.getAttributes()).thenReturn(new RuleAttributes(mock(MutableDataNodeRuleAttribute.class)));
         rules.add(rule0);
         ShardingSphereRule rule1 = mock(ShardingSphereRule.class);
         when(rule1.getConfiguration()).thenReturn(mock(RuleConfiguration.class));
-        when(rule1.getRuleIdentifiers()).thenReturn(new RuleIdentifiers());
+        when(rule1.getAttributes()).thenReturn(new RuleAttributes());
         rules.add(rule1);
         RuleMetaData ruleMetaData = new RuleMetaData(rules);
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource()));
