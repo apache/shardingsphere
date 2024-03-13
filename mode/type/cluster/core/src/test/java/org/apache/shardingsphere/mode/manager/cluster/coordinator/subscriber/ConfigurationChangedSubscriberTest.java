@@ -150,9 +150,9 @@ class ConfigurationChangedSubscriberTest {
         subscriber.renew(event);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), not(globalRuleMetaData));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().size(), is(3));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).count(), is(1L));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLTranslatorRule).count(), is(1L));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(AuthorityRule.class).size(), is(1));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(TransactionRule.class).size(), is(1));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(SQLTranslatorRule.class).size(), is(1));
     }
     
     private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
