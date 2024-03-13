@@ -1297,12 +1297,19 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 (ExpressionSegment) visit(ctx.usingClause().expr()));
         onExpression.getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
         result.setExpression(onExpression);
+        if (null != ctx.mergeUpdateClause() && null != ctx.mergeInsertClause() && ctx.mergeUpdateClause().start.getStartIndex() > ctx.mergeInsertClause().start.getStartIndex()) {
+            result.setInsert((InsertStatement) visitMergeInsertClause(ctx.mergeInsertClause()));
+            result.setUpdate((UpdateStatement) visitMergeUpdateClause(ctx.mergeUpdateClause()));
+            result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+            return result;
+        }
         if (null != ctx.mergeUpdateClause()) {
             result.setUpdate((UpdateStatement) visitMergeUpdateClause(ctx.mergeUpdateClause()));
         }
         if (null != ctx.mergeInsertClause()) {
             result.setInsert((InsertStatement) visitMergeInsertClause(ctx.mergeInsertClause()));
         }
+        result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         return result;
     }
     
