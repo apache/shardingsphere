@@ -219,13 +219,18 @@ public final class DataSetEnvironmentManager {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
                     DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
-                    DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", dialectDatabaseMetaData.getQuoteCharacter().wrap(each)))) {
+                    String quotedTableName = getQuotedTableName(each, databaseType);
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", quotedTableName))) {
                         preparedStatement.execute();
                     }
                 }
             }
             return null;
+        }
+        
+        private String getQuotedTableName(final String tableName, final DatabaseType databaseType) {
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+            return dialectDatabaseMetaData.getQuoteCharacter().wrap(tableName);
         }
     }
 }
