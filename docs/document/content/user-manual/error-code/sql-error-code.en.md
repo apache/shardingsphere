@@ -306,10 +306,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Infra algorithm - load balance
 
-| SQL State | Vendor Code | Reason                                                              |
-|-----------|-------------|---------------------------------------------------------------------|
-| 44000     | 21280       | Invalid available target weight \`%s\`.                             |
-| HY000     | 21281       | \'%s\' load balance algorithm initialization failed, reason is: %s. |
+| SQL State | Vendor Code | Reason                                                            |
+|-----------|-------------|-------------------------------------------------------------------|
+| 44000     | 21280       | '%s' load balance algorithm initialization failed, reason is: %s. |
 
 ## Other Exception
 

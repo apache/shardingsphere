@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.algorithm.load.balancer.weight;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.algorithm.load.balancer.core.LoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.load.balancer.core.exception.InvalidAvailableTargetWeightException;
 import org.apache.shardingsphere.infra.algorithm.load.balancer.core.exception.LoadBalanceAlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
@@ -50,15 +49,15 @@ public final class WeightLoadBalanceAlgorithm implements LoadBalanceAlgorithm {
     public void init(final Properties props) {
         this.props = props;
         availableTargetNames = props.stringPropertyNames();
-        ShardingSpherePreconditions.checkState(!availableTargetNames.isEmpty(), () -> new LoadBalanceAlgorithmInitializationException(getType(), "Available target is required"));
+        ShardingSpherePreconditions.checkState(!availableTargetNames.isEmpty(), () -> new LoadBalanceAlgorithmInitializationException(getType(), "Available target is required."));
         for (String each : availableTargetNames) {
             String weight = props.getProperty(each);
             ShardingSpherePreconditions.checkNotNull(weight,
-                    () -> new LoadBalanceAlgorithmInitializationException(getType(), String.format("Available target `%s` access weight is not configured.", each)));
+                    () -> new LoadBalanceAlgorithmInitializationException(getType(), "Weight of available target `%s` is required.", each));
             try {
                 Double.parseDouble(weight);
             } catch (final NumberFormatException ex) {
-                throw new InvalidAvailableTargetWeightException(weight);
+                throw new LoadBalanceAlgorithmInitializationException(getType(), "Weight `%s` of available target `%s` should be number.", weight, each);
             }
         }
     }

@@ -29,8 +29,8 @@ public interface LoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     /**
      * Get available target name.
      * 
-     * @param groupName group name, which uniquely identifies available target names
-     * @param availableTargetNames available data sources or instance id
+     * @param groupName group name which uniquely identifies available target names
+     * @param availableTargetNames available target names
      * @return available target name
      */
     String getAvailableTargetName(String groupName, List<String> availableTargetNames);
