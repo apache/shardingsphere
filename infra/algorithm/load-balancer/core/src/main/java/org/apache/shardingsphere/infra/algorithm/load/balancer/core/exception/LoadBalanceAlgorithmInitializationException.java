@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpe
 /**
  * Load balance algorithm initialization exception.
  */
-public class LoadBalanceAlgorithmInitializationException extends LoadBalanceSQLException {
+public final class LoadBalanceAlgorithmInitializationException extends LoadBalanceSQLException {
     
     private static final long serialVersionUID = 3025471428679102820L;
     
